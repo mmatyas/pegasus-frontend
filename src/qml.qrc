@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>PlatformCard.qml</file>
+        <file>PlatformBar.qml</file>
     </qresource>
 </RCC>

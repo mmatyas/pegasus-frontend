@@ -7,4 +7,6 @@ Window {
     height: 720
     title: qsTr("Pegasus")
     color: "#222"
+
+    PlatformBar {}
 }
