@@ -54,4 +54,18 @@ Item {
             anchors.left: parent.left
         }
     }
+
+    Image {
+        //source: "file:" + appDirPath + "/../img/" + text + ".svg"
+        sourceSize.height: 100
+        width: 250
+        height: 40
+        fillMode: Image.PreserveAspectFit
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: 6
+            horizontalCenter: parent.horizontalCenter
+            horizontalCenterOffset: -40
+        }
+    }
 }
