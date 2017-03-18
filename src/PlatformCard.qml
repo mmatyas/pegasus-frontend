@@ -41,7 +41,7 @@ Item {
             font {
                 bold: true
                 capitalization: Font.AllUppercase
-                pixelSize: 20
+                pixelSize: 16
                 family: "Roboto Condensed"
             }
         }
