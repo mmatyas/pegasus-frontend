@@ -16,12 +16,12 @@ Rectangle {
 
             PathAttribute { name: "itemZ"; value: 201 }
             PathAttribute { name: "itemScale"; value: 1.2 }
-            PathLine { x: 220; y: 20 }
+            PathLine { x: 210; y: 20 }
 
             PathPercent { value: 0.04 }
             PathAttribute { name: "itemZ"; value: 200 }
             PathAttribute { name: "itemScale"; value: 1.2 }
-            PathLine { x: 300; y: 20 }
+            PathLine { x: 290; y: 20 }
 
             PathPercent { value: 0.08 }
             PathAttribute { name: "itemScale"; value: 1 }
