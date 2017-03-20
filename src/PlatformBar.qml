@@ -15,21 +15,17 @@ Rectangle {
             startY: 28
 
             PathAttribute { name: "itemZ"; value: 201 }
-            PathAttribute { name: "itemScale"; value: 1.2 }
             PathLine { x: parent.width * 0.2; y: 28 }
 
             PathPercent { value: 0.04 }
             PathAttribute { name: "itemZ"; value: 200 }
-            PathAttribute { name: "itemScale"; value: 1.2 }
             PathLine { x: parent.width * 0.23; y: 12 }
 
             PathPercent { value: 0.08 }
-            PathAttribute { name: "itemScale"; value: 1 }
             PathLine { x: parent.width * 0.7; y: 12 }
 
             PathPercent { value: 1 }
             PathAttribute { name: "itemZ"; value: 5 }
-            PathAttribute { name: "itemScale"; value: 1 }
         }
 
         pathItemCount: 20
@@ -50,7 +46,6 @@ Rectangle {
             text: modelData
             visible: PathView.onPath
             z: PathView.itemZ
-            scale: PathView.itemScale
         }
     }
 }
