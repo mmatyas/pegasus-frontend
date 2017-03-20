@@ -2,8 +2,8 @@ import QtQuick 2.6
 import QtQuick.Window 2.2
 
 Item {
-    width: 420
-    height: 70
+    width: rootWindow.width * 0.5
+    height: 88
     clip: true
     antialiasing: true
 
