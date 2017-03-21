@@ -67,7 +67,7 @@ void Es2XmlReader::parseSystem()
             xml.skipCurrentElement();
     }
 
-    qDebug() << Platforms::shortName(platform.id);
+    qDebug() << platform.short_name;
     qDebug() << platform.rom_dir_path;
     qDebug() << platform.launch_cmd;
 }
@@ -80,7 +80,7 @@ void Es2XmlReader::parseSystemName(Model::Platform& platform)
     if (xml_text.isEmpty())
         return;
 
-    platform.id = Platforms::idFromShortName(xml_text);
+    platform.short_name = xml.readElementText();
 }
 
 void Es2XmlReader::parseSystemRomDirPath(Model::Platform& platform)

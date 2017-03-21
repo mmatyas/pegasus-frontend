@@ -3,8 +3,4 @@
 
 namespace Model {
 
-Platform::Platform()
-    : id(Platforms::UNKNOWN)
-{}
-
 } // namespace Model

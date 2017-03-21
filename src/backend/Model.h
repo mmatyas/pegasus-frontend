@@ -3,6 +3,7 @@
 #include "PlatformList.h"
 
 #include <QString>
+#include <QVector>
 
 
 namespace Model {
@@ -21,11 +22,12 @@ struct Game {
 };
 
 struct Platform {
-    Platforms::Id id;
+    QString short_name;
+    QString long_name;
     QString rom_dir_path;
     QString launch_cmd;
 
-    Platform();
+    QVector<Game> games;
 };
 
 } // namespace Model
