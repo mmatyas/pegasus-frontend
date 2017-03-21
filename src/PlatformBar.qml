@@ -46,6 +46,9 @@ Rectangle {
             text: modelData
             visible: PathView.onPath
             z: PathView.itemZ
+
+            width: parent.parent.width * 0.5
+            height: 88
         }
     }
 }
