@@ -1,10 +1,14 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick xml
 CONFIG += c++11
 
 SOURCES += \
-    backend/main.cpp
+    backend/main.cpp \
+    backend/Es2XmlReader.cpp \
+    backend/Model.cpp \
+    backend/Platforms.cpp \
+    backend/Utils.cpp
 
 RESOURCES += qml.qrc
 
@@ -23,3 +27,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # Default rules for deployment.
 target.path = /tmp/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    backend/Es2XmlReader.h \
+    backend/Utils.h \
+    backend/Model.h \
+    backend/Platforms.h
