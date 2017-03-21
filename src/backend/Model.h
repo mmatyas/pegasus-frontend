@@ -9,14 +9,15 @@
 namespace Model {
 
 struct GameAssets {
-    const QString box_front;
+    QString box_front_path;
 };
 
 struct Game {
-    QString filename;
+    QString path;
 
     QString title;
     QString description;
+    QString developer;
 
     GameAssets assets;
 };
