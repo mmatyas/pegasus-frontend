@@ -11,7 +11,7 @@ QXmlStreamReader Es2XmlReader::xml;
 
 bool Es2XmlReader::read()
 {
-    QString systemscfg_path = es2SystemsCfgPath();
+    QString systemscfg_path = systemsCfgPath();
     QFile systemscfg(systemscfg_path);
     if (!systemscfg.open(QIODevice::ReadOnly)) {
         xml.raiseError(QObject::tr("Could not open `%1`").arg(systemscfg_path));
@@ -21,11 +21,11 @@ bool Es2XmlReader::read()
     xml.setDevice(&systemscfg);
     if (xml.readNextStartElement()) {
         if (xml.name() != "systemList")
-            xml.raiseError(QObject::tr("`%1` must have a `systemList` node!"));
+            xml.raiseError(QObject::tr("`%1` does not start with a `<systemList>` node!"));
         else {
             while (xml.readNextStartElement()) {
                 if (xml.name() == "system")
-                    parseSystem();
+                    readSystem();
                 else
                     xml.skipCurrentElement();
             }
@@ -35,22 +35,24 @@ bool Es2XmlReader::read()
     return !xml.error();
 }
 
-QString Es2XmlReader::es2SystemsCfgPath()
+QString Es2XmlReader::systemsCfgPath()
 {
+    static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
+
     QString file_path = QDir::homePath() + "/.config/emulationstation/es_systems.cfg";
     if (validFile(file_path))
         return file_path;
 
-    qInfo() << "`es_systems.cfg` not found under ~/.config/emulationstation, trying next fallback";
+    qInfo() << FALLBACK_MSG.arg(file_path);
     file_path = QDir::homePath() + "/.emulationstation/es_systems.cfg";
     if (validFile(file_path))
         return file_path;
 
-    qInfo() << "`es_systems.cfg` not found under ~/.emulationstation, trying next fallback";
+    qInfo() << FALLBACK_MSG.arg(file_path);
     return "/etc/emulationstation/es_systems.cfg";
 }
 
-void Es2XmlReader::parseSystem()
+void Es2XmlReader::readSystem()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -58,7 +60,7 @@ void Es2XmlReader::parseSystem()
 
     while (xml.readNextStartElement()) {
         if (xml.name() == "name")
-            parseSystemName(platform);
+            parseSystemShortName(platform);
         else if (xml.name() == "path")
             parseSystemRomDirPath(platform);
         else if (xml.name() == "command")
@@ -72,27 +74,20 @@ void Es2XmlReader::parseSystem()
     qDebug() << platform.launch_cmd;
 }
 
-void Es2XmlReader::parseSystemName(Model::Platform& platform)
+void Es2XmlReader::parseSystemShortName(Model::Platform& platform)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "name");
-
-    QString xml_text = xml.readElementText();
-    if (xml_text.isEmpty())
-        return;
-
     platform.short_name = xml.readElementText();
 }
 
 void Es2XmlReader::parseSystemRomDirPath(Model::Platform& platform)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
-
     platform.rom_dir_path = xml.readElementText();
 }
 
 void Es2XmlReader::parseSystemRunCmd(Model::Platform& platform)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "command");
-
     platform.launch_cmd = xml.readElementText();
 }

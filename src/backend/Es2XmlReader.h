@@ -10,10 +10,9 @@ public:
     static bool read();
 
 private:
-    static QString es2SystemsCfgPath();
-
-    static void parseSystem();
-    static void parseSystemName(Model::Platform&);
+    static QString systemsCfgPath();
+    static void readSystem();
+    static void parseSystemShortName(Model::Platform&);
     static void parseSystemRomDirPath(Model::Platform&);
     static void parseSystemRunCmd(Model::Platform&);
 
