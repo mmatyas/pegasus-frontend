@@ -5,7 +5,7 @@ Window {
     visible: true
     width: 1280
     height: 720
-    title: qsTr("Pegasus")
+    title: "Pegasus"
     color: "#222"
 
     PlatformBar {
