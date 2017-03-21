@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Platforms.h"
+#include "PlatformList.h"
 
 #include <QString>
 

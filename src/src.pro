@@ -7,8 +7,8 @@ SOURCES += \
     backend/main.cpp \
     backend/Es2XmlReader.cpp \
     backend/Model.cpp \
-    backend/Platforms.cpp \
-    backend/Utils.cpp
+    backend/Utils.cpp \
+    backend/PlatformList.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +32,4 @@ HEADERS += \
     backend/Es2XmlReader.h \
     backend/Utils.h \
     backend/Model.h \
-    backend/Platforms.h
+    backend/PlatformList.h
