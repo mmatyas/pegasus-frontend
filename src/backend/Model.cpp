@@ -19,7 +19,7 @@ int PlatformModel::rowCount(const QModelIndex&) const {
 }
 
 QVariant PlatformModel::data(const QModelIndex& index, int role) const {
-    if (index.row() < 0 || index.row() >= platforms.count()) {
+    if (!index.isValid() || index.row() >= platforms.count()) {
         Q_ASSERT(false);
         return QVariant();
     }

@@ -7,7 +7,7 @@ Rectangle {
     color: "#333"
 
     PathView {
-        model: platforms
+        model: pegasus.platforms
         delegate: platformCardDelegate
 
         path: Path {

@@ -1,6 +1,4 @@
-#include "Es2XmlReader.h"
-
-#include "Model.h"
+#include "Api.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -11,11 +9,10 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    Model::PlatformModel platform_model;
-    Es2XmlReader::read(platform_model); // TODO: check result
+    ApiObject pegasus_api;
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("platforms", &platform_model);
+    engine.rootContext()->setContextProperty("pegasus", &pegasus_api);
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
     return app.exec();
