@@ -2,6 +2,7 @@
 
 #include "PlatformList.h"
 
+#include <QAbstractListModel>
 #include <QString>
 #include <QVector>
 
@@ -29,6 +30,29 @@ struct Platform {
     QString launch_cmd;
 
     QVector<Game> games;
+};
+
+class PlatformModel : public QAbstractListModel {
+    Q_OBJECT
+
+public:
+    enum PlatformRoles {
+        ShortNameRole = Qt::UserRole + 1,
+        LongNameRole,
+    };
+
+    explicit PlatformModel(QObject* parent = nullptr);
+
+    void append(const Platform&);
+
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+
+protected:
+    QHash<int, QByteArray> roleNames() const;
+
+private:
+    QVector<Platform> platforms;
 };
 
 } // namespace Model

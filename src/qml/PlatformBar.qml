@@ -7,7 +7,7 @@ Rectangle {
     color: "#333"
 
     PathView {
-        model: 30
+        model: platforms
         delegate: platformCardDelegate
 
         path: Path {
@@ -43,7 +43,7 @@ Rectangle {
         id: platformCardDelegate
 
         PlatformCard {
-            text: modelData
+            text: shortName
             visible: PathView.onPath
             z: PathView.itemZ
 

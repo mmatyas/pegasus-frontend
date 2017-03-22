@@ -9,16 +9,23 @@
 
 QXmlStreamReader Es2XmlReader::xml;
 
-bool Es2XmlReader::read()
+bool Es2XmlReader::read(Model::PlatformModel& platform_model)
 {
     QVector<Model::Platform> platforms = readSystemsFile();
-
-    if (!xml.error()) {
-        for (auto& platform : platforms)
-            platform.games = readGamelistFile(platform);
+    if (xml.error()) {
+        qWarning() << xml.errorString();
+        return false;
     }
 
-    return !xml.error();
+    for (auto& platform : platforms) {
+        platform.games = readGamelistFile(platform);
+        if (xml.error())
+            qWarning() << xml.errorString();
+
+        platform_model.append(platform);
+    }
+
+    return true;
 }
 
 QVector<Model::Platform> Es2XmlReader::readSystemsFile()

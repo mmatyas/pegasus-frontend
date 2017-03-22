@@ -4,11 +4,12 @@
 
 namespace Model { class Game; }
 namespace Model { class Platform; }
+namespace Model { class PlatformModel; }
 
 
 class Es2XmlReader {
 public:
-    static bool read();
+    static bool read(Model::PlatformModel&);
 
 private:
     static QVector<Model::Platform> readSystemsFile();
