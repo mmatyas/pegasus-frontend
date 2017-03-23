@@ -43,7 +43,7 @@ Rectangle {
         id: platformCardDelegate
 
         PlatformCard {
-            text: shortName
+            platformShortName: shortName
             visible: PathView.onPath
             z: PathView.itemZ
 

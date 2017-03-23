@@ -4,7 +4,7 @@ Item {
     clip: true
     antialiasing: true
 
-    property alias text: label.text
+    property alias platformShortName: label.text
 
     Rectangle {
         id: main
@@ -53,16 +53,16 @@ Item {
     }
 
     Image {
-        //source: "file:" + appDirPath + "/../img/" + text + ".svg"
+        source: "/platform_logo/" + platformShortName + ".svg"
         sourceSize.height: 100
-        width: 250
-        height: 40
+        width: parent.width * 0.8
+        height: parent.height * 0.65
         fillMode: Image.PreserveAspectFit
         anchors {
             bottom: parent.bottom
             bottomMargin: 6
             horizontalCenter: parent.horizontalCenter
-            horizontalCenterOffset: -40
+            horizontalCenterOffset: -30
         }
     }
 }

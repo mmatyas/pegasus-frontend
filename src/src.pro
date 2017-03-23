@@ -11,7 +11,9 @@ SOURCES += \
     backend/PlatformList.cpp \
     backend/Api.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += \
+    qml.qrc \
+    ../assets/assets.qrc
 
 
 # The following define makes your compiler emit warnings if you use
