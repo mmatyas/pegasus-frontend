@@ -55,14 +55,14 @@ Item {
     Image {
         source: "/platform_logo/" + platformShortName + ".svg"
         sourceSize.height: 100
-        width: parent.width * 0.8
-        height: parent.height * 0.65
+        width: parent.width * 0.6
+        height: parent.height - 12
         fillMode: Image.PreserveAspectFit
         anchors {
             bottom: parent.bottom
             bottomMargin: 6
             horizontalCenter: parent.horizontalCenter
-            horizontalCenterOffset: -30
+            horizontalCenterOffset: -32
         }
     }
 }
