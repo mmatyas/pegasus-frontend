@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QXmlStreamReader>
+#include "Model.h"
 
-namespace Model { class Game; }
-namespace Model { class Platform; }
-namespace Model { class PlatformModel; }
+#include <QXmlStreamReader>
 
 
 class Es2XmlReader {
@@ -12,21 +10,21 @@ public:
     static bool read(Model::PlatformModel&);
 
 private:
-    static QVector<Model::Platform> readSystemsFile();
+    static QVector<Model::PlatformItemPtr> readSystemsFile();
     static QString systemsCfgPath();
-    static Model::Platform readSystem();
-    static void parseSystemShortName(Model::Platform&);
-    static void parseSystemRomDirPath(Model::Platform&);
-    static void parseSystemRunCmd(Model::Platform&);
+    static Model::PlatformItemPtr readSystem();
+    static void parseSystemShortName(Model::PlatformItemPtr&);
+    static void parseSystemRomDirPath(Model::PlatformItemPtr&);
+    static void parseSystemRunCmd(Model::PlatformItemPtr&);
 
-    static QVector<Model::Game> readGamelistFile(const Model::Platform&);
+    static QVector<Model::GameItemPtr> readGamelistFile(const Model::PlatformItemPtr&);
     static QString gamelistPath(const QString&);
-    static Model::Game readGame();
-    static void parseGamePath(Model::Game&);
-    static void parseGameName(Model::Game&);
-    static void parseGameDescription(Model::Game&);
-    static void parseGameDeveloper(Model::Game&);
-    static void parseGameImage(Model::Game&);
+    static Model::GameItemPtr readGame();
+    static void parseGamePath(Model::GameItemPtr&);
+    static void parseGameName(Model::GameItemPtr&);
+    static void parseGameDescription(Model::GameItemPtr&);
+    static void parseGameDeveloper(Model::GameItemPtr&);
+    static void parseGameImage(Model::GameItemPtr&);
 
     static QXmlStreamReader xml;
 };

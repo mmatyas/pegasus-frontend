@@ -11,24 +11,26 @@ QXmlStreamReader Es2XmlReader::xml;
 
 bool Es2XmlReader::read(Model::PlatformModel& platform_model)
 {
-    QVector<Model::Platform> platforms = readSystemsFile();
+    QVector<Model::PlatformItemPtr> platforms = readSystemsFile();
     if (xml.error()) {
         qWarning() << xml.errorString();
         return false;
     }
 
     for (auto& platform : platforms) {
-        platform.games = readGamelistFile(platform);
+        QVector<Model::GameItemPtr> games = readGamelistFile(platform);
         if (xml.error())
             qWarning() << xml.errorString();
 
+        for (auto& game : games)
+            platform->game_model->append(game);
         platform_model.append(platform);
     }
 
     return true;
 }
 
-QVector<Model::Platform> Es2XmlReader::readSystemsFile()
+QVector<Model::PlatformItemPtr> Es2XmlReader::readSystemsFile()
 {
     QString systemscfg_path = systemsCfgPath();
     QFile systemscfg(systemscfg_path);
@@ -37,7 +39,7 @@ QVector<Model::Platform> Es2XmlReader::readSystemsFile()
         return {};
     }
 
-    QVector<Model::Platform> platforms;
+    QVector<Model::PlatformItemPtr> platforms;
 
     xml.setDevice(&systemscfg);
     if (xml.readNextStartElement()) {
@@ -46,8 +48,8 @@ QVector<Model::Platform> Es2XmlReader::readSystemsFile()
         else {
             while (xml.readNextStartElement()) {
                 if (xml.name() == "system") {
-                    Model::Platform platform = readSystem();
-                    if (!platform.short_name.isEmpty())
+                    Model::PlatformItemPtr platform = readSystem();
+                    if (!platform->short_name.isEmpty())
                         platforms.push_back(platform);
                 }
                 else
@@ -76,11 +78,11 @@ QString Es2XmlReader::systemsCfgPath()
     return "/etc/emulationstation/es_systems.cfg";
 }
 
-Model::Platform Es2XmlReader::readSystem()
+Model::PlatformItemPtr Es2XmlReader::readSystem()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
-    Model::Platform platform;
+    Model::PlatformItemPtr platform(new Model::PlatformItem);
 
     while (xml.readNextStartElement()) {
         if (xml.name() == "name")
@@ -96,31 +98,31 @@ Model::Platform Es2XmlReader::readSystem()
     return platform;
 }
 
-void Es2XmlReader::parseSystemShortName(Model::Platform& platform) {
+void Es2XmlReader::parseSystemShortName(Model::PlatformItemPtr& platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "name");
-    platform.short_name = xml.readElementText();
+    platform->short_name = xml.readElementText();
 }
 
-void Es2XmlReader::parseSystemRomDirPath(Model::Platform& platform) {
+void Es2XmlReader::parseSystemRomDirPath(Model::PlatformItemPtr& platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
-    platform.rom_dir_path = xml.readElementText();
+    platform->rom_dir_path = xml.readElementText();
 }
 
-void Es2XmlReader::parseSystemRunCmd(Model::Platform& platform) {
+void Es2XmlReader::parseSystemRunCmd(Model::PlatformItemPtr& platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "command");
-    platform.launch_cmd = xml.readElementText();
+    platform->launch_cmd = xml.readElementText();
 }
 
-QVector<Model::Game> Es2XmlReader::readGamelistFile(const Model::Platform& platform)
+QVector<Model::GameItemPtr> Es2XmlReader::readGamelistFile(const Model::PlatformItemPtr& platform)
 {
-    QString gamelist_path = gamelistPath(platform.short_name);
+    QString gamelist_path = gamelistPath(platform->short_name);
     QFile gamelist(gamelist_path);
     if (!gamelist.open(QIODevice::ReadOnly)) {
         xml.raiseError(QObject::tr("Could not open `%1`").arg(gamelist_path));
         return {};
     }
 
-    QVector<Model::Game> games;
+    QVector<Model::GameItemPtr> games;
 
     xml.setDevice(&gamelist);
     if (xml.readNextStartElement()) {
@@ -129,8 +131,8 @@ QVector<Model::Game> Es2XmlReader::readGamelistFile(const Model::Platform& platf
         else {
             while (xml.readNextStartElement()) {
                 if (xml.name() == "game") {
-                    Model::Game game = readGame();
-                    if (!game.path.isEmpty())
+                    Model::GameItemPtr game = readGame();
+                    if (!game->rom_path.isEmpty())
                         games.push_back(game);
                 }
                 else
@@ -163,11 +165,11 @@ QString Es2XmlReader::gamelistPath(const QString& platform_name)
     return "/etc/emulationstation/" + path_suffix;
 }
 
-Model::Game Es2XmlReader::readGame()
+Model::GameItemPtr Es2XmlReader::readGame()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
-    Model::Game game;
+    Model::GameItemPtr game(new Model::GameItem);
 
     while (xml.readNextStartElement()) {
         if (xml.name() == "path")
@@ -187,27 +189,27 @@ Model::Game Es2XmlReader::readGame()
     return game;
 }
 
-void Es2XmlReader::parseGamePath(Model::Game& game) {
+void Es2XmlReader::parseGamePath(Model::GameItemPtr& game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
-    game.path = xml.readElementText();
+    game->rom_path = xml.readElementText();
 }
 
-void Es2XmlReader::parseGameName(Model::Game& game) {
+void Es2XmlReader::parseGameName(Model::GameItemPtr& game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "name");
-    game.title = xml.readElementText();
+    game->title = xml.readElementText();
 }
 
-void Es2XmlReader::parseGameDescription(Model::Game& game) {
+void Es2XmlReader::parseGameDescription(Model::GameItemPtr& game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "desc");
-    game.description = xml.readElementText();
+    game->description = xml.readElementText();
 }
 
-void Es2XmlReader::parseGameDeveloper(Model::Game& game) {
+void Es2XmlReader::parseGameDeveloper(Model::GameItemPtr& game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "developer");
-    game.developer = xml.readElementText();
+    game->developer = xml.readElementText();
 }
 
-void Es2XmlReader::parseGameImage(Model::Game& game) {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "image");
-    game.assets.box_front_path = xml.readElementText();
+void Es2XmlReader::parseGameImage(Model::GameItemPtr& /*game*/) {
+    //Q_ASSERT(xml.isStartElement() && xml.name() == "image");
+    //game->assets.box_front_path = xml.readElementText();
 }
