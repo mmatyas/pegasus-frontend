@@ -210,6 +210,6 @@ void Es2XmlReader::parseGameDeveloper(Model::GameItemPtr& game) {
 }
 
 void Es2XmlReader::parseGameImage(Model::GameItemPtr& /*game*/) {
-    //Q_ASSERT(xml.isStartElement() && xml.name() == "image");
-    //game->assets.box_front_path = xml.readElementText();
+    Q_ASSERT(xml.isStartElement() && xml.name() == "image");
+    /*game->assets.box_front_path =*/ xml.readElementText();
 }
