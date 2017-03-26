@@ -13,11 +13,6 @@ namespace Model {
 class GameItem : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString romPath MEMBER rom_path CONSTANT)
-    Q_PROPERTY(QString title MEMBER title CONSTANT)
-    Q_PROPERTY(QString description MEMBER description CONSTANT)
-    Q_PROPERTY(QString developer MEMBER developer CONSTANT)
-
 public:
     explicit GameItem(QObject* parent = nullptr);
 
