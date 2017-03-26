@@ -47,8 +47,6 @@ private:
     QVector<GameItemPtr> games;
 };
 
-using GameModelPtr = GameModel*;
-
 
 class PlatformItem : public QObject {
     Q_OBJECT
