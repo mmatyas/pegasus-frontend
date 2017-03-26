@@ -21,6 +21,8 @@ public:
     QString title;
     QString description;
     QString developer;
+    QString publisher;
+    QString genre;
 };
 
 using GameItemPtr = GameItem*;
@@ -31,6 +33,10 @@ class GameModel : public QAbstractListModel {
 public:
     enum Roles {
         TitleRole = Qt::UserRole + 1,
+        DescriptionRole,
+        DeveloperRole,
+        PublisherRole,
+        GenreRole,
     };
 
     explicit GameModel(QObject* parent = nullptr);

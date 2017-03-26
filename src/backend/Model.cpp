@@ -32,6 +32,14 @@ QVariant GameModel::data(const QModelIndex& index, int role) const {
     switch (role) {
         case Roles::TitleRole:
             return game->title;
+        case Roles::DescriptionRole:
+            return game->description;
+        case Roles::DeveloperRole:
+            return game->developer;
+        case Roles::PublisherRole:
+            return game->publisher;
+        case Roles::GenreRole:
+            return game->genre;
         default:
             break;
     }
@@ -43,6 +51,10 @@ QVariant GameModel::data(const QModelIndex& index, int role) const {
 QHash<int, QByteArray> GameModel::roleNames() const {
     static const QHash<int, QByteArray> roles = {
         { Roles::TitleRole, "title" },
+        { Roles::DescriptionRole, "description" },
+        { Roles::DeveloperRole, "developer" },
+        { Roles::PublisherRole, "publisher" },
+        { Roles::GenreRole, "genre" },
     };
 
     return roles;
