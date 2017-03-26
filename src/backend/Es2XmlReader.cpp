@@ -19,8 +19,10 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
 
     for (auto& platform : platforms) {
         QVector<Model::GameItemPtr> games = readGamelistFile(platform);
-        if (xml.error())
-            qWarning() << xml.errorString();
+        if (xml.error()) {
+            // qWarning() << xml.errorString();
+            continue;
+        }
 
         for (auto& game : games)
             platform->game_model.append(game);
