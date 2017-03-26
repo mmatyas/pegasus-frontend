@@ -23,7 +23,8 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
             qWarning() << xml.errorString();
 
         for (auto& game : games)
-            platform->game_model->append(game);
+            platform->game_model.append(game);
+
         platform_model.append(platform);
     }
 
@@ -82,7 +83,7 @@ Model::PlatformItemPtr Es2XmlReader::readSystem()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
-    Model::PlatformItemPtr platform(new Model::PlatformItem);
+    Model::PlatformItemPtr platform(new Model::PlatformItem());
 
     while (xml.readNextStartElement()) {
         if (xml.name() == "name")
@@ -169,7 +170,7 @@ Model::GameItemPtr Es2XmlReader::readGame()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
-    Model::GameItemPtr game(new Model::GameItem);
+    Model::GameItemPtr game(new Model::GameItem());
 
     while (xml.readNextStartElement()) {
         if (xml.name() == "path")

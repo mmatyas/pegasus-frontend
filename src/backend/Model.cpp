@@ -11,7 +11,7 @@ GameModel::GameModel(QObject* parent)
     : QAbstractListModel(parent)
 {}
 
-void GameModel::append(GameItemPtr& game)
+void GameModel::append(GameItemPtr game)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     games << game;
@@ -28,7 +28,7 @@ QVariant GameModel::data(const QModelIndex& index, int role) const {
         return QVariant();
     }
 
-    GameItemPtr game = games.at(index.row());
+    const GameItemPtr& game = games.at(index.row());
     switch (role) {
         case Roles::TitleRole:
             return game->title;
@@ -50,14 +50,13 @@ QHash<int, QByteArray> GameModel::roleNames() const {
 
 PlatformItem::PlatformItem(QObject* parent)
     : QObject(parent)
-    , game_model(new GameModel)
 {}
 
 PlatformModel::PlatformModel(QObject* parent)
     : QAbstractListModel(parent)
 {}
 
-void PlatformModel::append(PlatformItemPtr& platform)
+void PlatformModel::append(PlatformItemPtr platform)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     platforms << platform;
@@ -74,14 +73,14 @@ QVariant PlatformModel::data(const QModelIndex& index, int role) const {
         return QVariant();
     }
 
-    PlatformItemPtr platform = platforms.at(index.row());
+    const PlatformItemPtr& platform = platforms.at(index.row());
     switch (role) {
         case Roles::ShortNameRole:
             return platform->short_name;
         case Roles::LongNameRole:
             return platform->long_name;
         case Roles::GameModelRole:
-            return QVariant::fromValue<QObject*>(platform->game_model.data());
+            return QVariant::fromValue<GameModel*>(&platform->game_model);
         default:
             break;
     }

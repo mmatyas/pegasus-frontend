@@ -28,7 +28,7 @@ public:
     QString developer;
 };
 
-using GameItemPtr = QSharedPointer<GameItem>;
+using GameItemPtr = GameItem*;
 
 class GameModel : public QAbstractListModel {
     Q_OBJECT
@@ -40,7 +40,7 @@ public:
 
     explicit GameModel(QObject* parent = nullptr);
 
-    void append(GameItemPtr&);
+    void append(GameItemPtr);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
@@ -52,15 +52,11 @@ private:
     QVector<GameItemPtr> games;
 };
 
-using GameModelPtr = QSharedPointer<GameModel>;
+using GameModelPtr = GameModel*;
 
 
 class PlatformItem : public QObject {
     Q_OBJECT
-
-    Q_PROPERTY(QString shortName MEMBER short_name CONSTANT)
-    Q_PROPERTY(QString longName MEMBER long_name CONSTANT)
-    Q_PROPERTY(GameModelPtr gameModel MEMBER game_model CONSTANT)
 
 public:
     explicit PlatformItem(QObject* parent = nullptr);
@@ -70,10 +66,10 @@ public:
     QString rom_dir_path;
     QString launch_cmd;
 
-    GameModelPtr game_model;
+    GameModel game_model;
 };
 
-using PlatformItemPtr = QSharedPointer<Model::PlatformItem>;
+using PlatformItemPtr = PlatformItem*;
 
 class PlatformModel : public QAbstractListModel {
     Q_OBJECT
@@ -83,11 +79,12 @@ public:
         ShortNameRole = Qt::UserRole + 1,
         LongNameRole,
         GameModelRole,
+        GameCountRole,
     };
 
     explicit PlatformModel(QObject* parent = nullptr);
 
-    void append(PlatformItemPtr&);
+    void append(PlatformItemPtr);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
