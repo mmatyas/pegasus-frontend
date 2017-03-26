@@ -24,7 +24,10 @@ private:
     static void parseGameName(Model::GameItemPtr&);
     static void parseGameDescription(Model::GameItemPtr&);
     static void parseGameDeveloper(Model::GameItemPtr&);
-    static void parseGameImage(Model::GameItemPtr&);
+
+    static QString gameAssetPath(const Model::PlatformItemPtr&,
+                                 const Model::GameItemPtr&, const QString&);
+    static void findGameAssets(Model::PlatformItemPtr&, Model::GameItemPtr&);
 
     static QXmlStreamReader xml;
 };

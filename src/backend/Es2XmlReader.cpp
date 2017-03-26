@@ -24,8 +24,11 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
             continue;
         }
 
-        for (auto& game : games)
+        for (Model::GameItemPtr& game : games) {
+            game->assets.box_front = "hello!";
+            findGameAssets(platform, game);
             platform->game_model.append(game);
+        }
 
         platform_model.append(platform);
     }
@@ -183,8 +186,6 @@ Model::GameItemPtr Es2XmlReader::readGame()
             parseGameDescription(game);
         else if (xml.name() == "developer")
             parseGameDeveloper(game);
-        else if (xml.name() == "image")
-            parseGameImage(game);
         else
             xml.skipCurrentElement();
     }
@@ -212,7 +213,71 @@ void Es2XmlReader::parseGameDeveloper(Model::GameItemPtr& game) {
     game->developer = xml.readElementText();
 }
 
-void Es2XmlReader::parseGameImage(Model::GameItemPtr& /*game*/) {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "image");
-    /*game->assets.box_front_path =*/ xml.readElementText();
+QString Es2XmlReader::gameAssetPath(const Model::PlatformItemPtr& platform,
+                                    const Model::GameItemPtr& game,
+                                    const QString& asset_suffix)
+{
+    static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
+
+    Q_ASSERT(!asset_suffix.isEmpty());
+    if (platform->short_name.isEmpty() || game->rom_path.isEmpty())
+        return "";
+
+    // first, find out the base name of the rom
+    QFileInfo rom_path_info(game->rom_path);
+    const QString rom_basename = rom_path_info.completeBaseName();
+    if (rom_basename.isEmpty())
+        return "";
+
+    // then search for the asset in all supported paths
+    const QString path_suffix = "downloaded_images/" + platform->short_name
+                              + "/" + rom_basename + asset_suffix;
+    QString file_path = QDir::homePath() + "/.config/emulationstation/" + path_suffix;
+    if (validFile(file_path))
+        return file_path;
+
+    // qInfo() << FALLBACK_MSG.arg(file_path);
+    file_path = QDir::homePath() + "/.emulationstation/" + path_suffix;
+    if (validFile(file_path))
+        return file_path;
+
+    // qInfo() << FALLBACK_MSG.arg(file_path);
+    file_path = "/etc/emulationstation/" + path_suffix;
+    if (validFile(file_path))
+        return file_path;
+
+    return "";
+}
+
+void Es2XmlReader::findGameAssets(Model::PlatformItemPtr& platform, Model::GameItemPtr& game)
+{
+    Model::GameAssets& assets = game->assets;
+
+    assets.box_front = gameAssetPath(platform, game, "-boxart2D.png");
+    if (assets.box_front.isEmpty())
+        assets.box_front = gameAssetPath(platform, game, "-boxart2D.jpg");
+    if (assets.box_front.isEmpty())
+        assets.box_front = gameAssetPath(platform, game, ".png");
+    if (assets.box_front.isEmpty())
+        assets.box_front = gameAssetPath(platform, game, ".jpg");
+
+    assets.logo = gameAssetPath(platform, game, "-logo.png");
+    if (assets.logo.isEmpty())
+        assets.logo = gameAssetPath(platform, game, "-logo.jpg");
+
+    // TODO: support multiple
+    QString screenshot_path = gameAssetPath(platform, game, "-screenshot.png");
+    if (screenshot_path.isEmpty())
+        screenshot_path = gameAssetPath(platform, game, "-screenshot.jpg");
+
+    assets.screenshot_list << screenshot_path;
+
+    // TODO: support multiple
+    QString video_path = gameAssetPath(platform, game, "-video.webm");
+    if (video_path.isEmpty())
+        video_path = gameAssetPath(platform, game, "-screenshot.mp4");
+    if (video_path.isEmpty())
+        video_path = gameAssetPath(platform, game, "-screenshot.avi");
+
+    assets.video_list << video_path;
 }
