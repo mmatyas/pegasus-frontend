@@ -11,6 +11,13 @@ SOURCES += \
     backend/PlatformList.cpp \
     backend/Api.cpp
 
+HEADERS += \
+    backend/Es2XmlReader.h \
+    backend/Utils.h \
+    backend/Model.h \
+    backend/PlatformList.h \
+    backend/Api.h
+
 RESOURCES += \
     qml.qrc \
     ../assets/assets.qrc
@@ -30,10 +37,3 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # Default rules for deployment.
 target.path = /tmp/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-HEADERS += \
-    backend/Es2XmlReader.h \
-    backend/Utils.h \
-    backend/Model.h \
-    backend/PlatformList.h \
-    backend/Api.h
