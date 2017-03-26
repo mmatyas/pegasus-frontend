@@ -3,6 +3,10 @@
 
 namespace Model {
 
+GameAssets::GameAssets(QObject* parent)
+    : QObject(parent)
+{}
+
 GameItem::GameItem(QObject* parent)
     : QObject(parent)
 {}
@@ -40,6 +44,8 @@ QVariant GameModel::data(const QModelIndex& index, int role) const {
             return game->publisher;
         case Roles::GenreRole:
             return game->genre;
+        case Roles::AssetsRole:
+            return QVariant::fromValue(&game->assets);
         default:
             break;
     }
@@ -55,6 +61,7 @@ QHash<int, QByteArray> GameModel::roleNames() const {
         { Roles::DeveloperRole, "developer" },
         { Roles::PublisherRole, "publisher" },
         { Roles::GenreRole, "genre" },
+        { Roles::AssetsRole, "assets" },
     };
 
     return roles;

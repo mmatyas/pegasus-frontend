@@ -10,6 +10,29 @@
 
 namespace Model {
 
+class GameAssets : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(QString boxFront MEMBER box_front CONSTANT)
+    Q_PROPERTY(QString logo MEMBER logo CONSTANT)
+
+public:
+    explicit GameAssets(QObject* parent = nullptr);
+
+    Q_INVOKABLE const QStringList& screenshots() const {
+        return screenshot_list;
+    }
+    Q_INVOKABLE const QStringList& videos() const {
+        return video_list;
+    }
+
+    QString box_front;
+    QString logo;
+    QStringList screenshot_list;
+    QStringList video_list;
+};
+
+
 class GameItem : public QObject {
     Q_OBJECT
 
@@ -23,6 +46,8 @@ public:
     QString developer;
     QString publisher;
     QString genre;
+
+    GameAssets assets;
 };
 
 using GameItemPtr = GameItem*;
@@ -37,6 +62,7 @@ public:
         DeveloperRole,
         PublisherRole,
         GenreRole,
+        AssetsRole,
     };
 
     explicit GameModel(QObject* parent = nullptr);
@@ -96,3 +122,5 @@ private:
 };
 
 } // namespace Model
+
+Q_DECLARE_METATYPE(Model::GameAssets*)
