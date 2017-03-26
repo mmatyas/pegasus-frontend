@@ -13,21 +13,76 @@ Window {
         z: 2
     }
 
-    Item {
+    ListView {
+        id: contentView
         width: parent.width
         anchors {
             top: topbar.bottom
             bottom: parent.bottom
         }
+
+        model: pegasus.platforms
+        delegate: contentViewDelegate
+
+        orientation: ListView.Horizontal
+        snapMode: ListView.SnapOneItem
+        clip: true
+    }
+
+    Component {
+        id: contentViewDelegate
+
         Item {
-            width: parent.width * 0.35
-            height: parent.height
-            anchors.left: parent.left
-        }
-        Item {
-            width: parent.width * 0.65
-            height: parent.height
-            anchors.right: parent.right
+            width: ListView.view.width
+            height: ListView.view.height
+
+            Item {
+                width: parent.width * 0.35
+                height: parent.height
+                anchors.left: parent.left
+
+                ListView {
+                    y: 50
+                    model: gameModel
+                    delegate: gameInfoDelegate
+                    height: parent.height
+                }
+
+                Component {
+                    id: gameInfoDelegate
+
+                    Text {
+                        color: "white"
+                        text: model.title
+                    }
+                }
+            }
+            Item {
+                width: parent.width * 0.65
+                height: parent.height
+                anchors.right: parent.right
+
+                Text {
+                    color: "white"
+                    text: gameCount
+                }
+
+                ListView {
+                    y: 50
+                    model: gameModel
+                    delegate: gameGridDelegate
+                    height: parent.height
+                }
+
+                Component {
+                    id: gameGridDelegate
+
+                    Text {
+                        color: "white"
+                        text: model.title
+                    }
+                }
+            }
         }
     }
 }

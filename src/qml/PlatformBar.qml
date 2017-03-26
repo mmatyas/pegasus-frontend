@@ -37,6 +37,8 @@ Rectangle {
         focus: true
         Keys.onRightPressed: incrementCurrentIndex()
         Keys.onLeftPressed: decrementCurrentIndex()
+
+        onCurrentIndexChanged: contentView.positionViewAtIndex(currentIndex, ListView.Contain)
     }
 
     Component {
