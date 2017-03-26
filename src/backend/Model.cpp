@@ -81,6 +81,8 @@ QVariant PlatformModel::data(const QModelIndex& index, int role) const {
             return platform->long_name;
         case Roles::GameModelRole:
             return QVariant::fromValue<GameModel*>(&platform->game_model);
+        case Roles::GameCountRole:
+            return platform->game_model.rowCount();
         default:
             break;
     }
@@ -94,6 +96,7 @@ QHash<int, QByteArray> PlatformModel::roleNames() const {
         { Roles::ShortNameRole, "shortName" },
         { Roles::LongNameRole, "longName" },
         { Roles::GameModelRole, "gameModel" },
+        { Roles::GameCountRole, "gameCount" },
     };
 
     return roles;
