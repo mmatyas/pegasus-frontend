@@ -27,6 +27,8 @@ Window {
         orientation: ListView.Horizontal
         snapMode: ListView.SnapOneItem
         clip: true
+
+        // onCurrentIndexChanged: contentView.positionViewAtIndex(currentIndex, ListView.Contain)
     }
 
     Component {
@@ -42,18 +44,64 @@ Window {
                 anchors.left: parent.left
 
                 ListView {
-                    y: 50
+                    y: 32
                     model: gameModel
                     delegate: gameInfoDelegate
-                    height: parent.height
+                    anchors.fill: parent
                 }
 
                 Component {
                     id: gameInfoDelegate
 
-                    Text {
-                        color: "white"
-                        text: model.title
+                    Item {
+                        width: ListView.view.width
+                        height: ListView.view.height
+                        x: 32
+
+                        Image {
+                            y: 64
+                            source: "file:" + model.assets.logo
+                            sourceSize.width: parent.width * 0.75
+
+                            fillMode: Image.PreserveAspectFit
+                        }
+
+                        Text {
+                            y: 220
+                            color: "white"
+                            text: model.title
+
+                            font {
+                                bold: true
+                                pixelSize: 24
+                                capitalization: Font.SmallCaps
+                                family: "Roboto"
+                            }
+                        }
+                        Text {
+                            y: 256
+                            color: "white"
+                            text: model.description
+                            width: parent.width * 0.75
+                            wrapMode: Text.WordWrap
+
+                            font {
+                                pixelSize: 16
+                                family: "Roboto"
+                            }
+                        }
+                        Text {
+                            y: 450
+                            color: "white"
+                            text: "Developer: " + model.developer
+                            width: parent.width * 0.75
+                            wrapMode: Text.WordWrap
+
+                            font {
+                                pixelSize: 16
+                                family: "Roboto"
+                            }
+                        }
                     }
                 }
             }
@@ -67,19 +115,29 @@ Window {
                     text: gameCount
                 }
 
-                ListView {
-                    y: 50
-                    model: gameModel
-                    delegate: gameGridDelegate
-                    height: parent.height
+                Flow {
+                    anchors {
+                        fill: parent
+                        topMargin: 32
+                    }
+                    spacing: 10
+
+                    Repeater {
+                        model: gameModel
+                        delegate: gameGridDelegate
+
+                    }
                 }
 
                 Component {
                     id: gameGridDelegate
 
-                    Text {
-                        color: "white"
-                        text: model.title
+                    Image {
+                        source: "file:" + model.assets.boxFront
+                        sourceSize.width: 200
+                        sourceSize.height: 200
+
+                        fillMode: Image.PreserveAspectFit
                     }
                 }
             }
