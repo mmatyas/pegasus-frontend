@@ -3,5 +3,7 @@
         <file>qml/main.qml</file>
         <file>qml/PlatformBar.qml</file>
         <file>qml/PlatformCard.qml</file>
+        <file>qml/GamePreview.qml</file>
+        <file>qml/GameGrid.qml</file>
     </qresource>
 </RCC>
