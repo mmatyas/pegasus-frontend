@@ -7,8 +7,7 @@ Window {
     width: 1280
     height: 720
     title: "Pegasus"
-    color: "#222"
-
+    color: "#181818"
 
     PlatformBar {
         id: topbar
@@ -30,6 +29,8 @@ Window {
         snapMode: ListView.SnapOneItem
         clip: true
 
+        interactive: false
+
         // onCurrentIndexChanged: contentView.positionViewAtIndex(currentIndex, ListView.Contain)
     }
 
@@ -43,9 +44,7 @@ Window {
             Item {
                 width: parent.width * 0.35
                 height: parent.height
-                anchors {
-                    left: parent.left
-                }
+                anchors.left: parent.left
 
                 GamePreview {
                     anchors.fill: parent
@@ -58,7 +57,10 @@ Window {
                 anchors.right: parent.right
 
                 GameGrid {
+                    id: gamegrid
                     anchors.fill: parent
+                    anchors.topMargin: 32
+                    displayMarginBeginning: 32
                 }
             }
         }
