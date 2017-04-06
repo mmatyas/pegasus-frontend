@@ -52,6 +52,8 @@ Window {
             width: ListView.view.width
             height: ListView.view.height
 
+            visible: ListView.isCurrentItem
+
             property variant delegateModel: model
             property alias selectedGame: gamegrid.selectedGame
 
