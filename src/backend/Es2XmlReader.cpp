@@ -25,7 +25,6 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
         }
 
         for (Model::GameItemPtr& game : games) {
-            game->assets.box_front = "hello!";
             findGameAssets(platform, game);
             platform->game_model.append(game);
         }
