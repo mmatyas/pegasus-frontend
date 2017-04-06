@@ -9,13 +9,21 @@ Window {
     title: "Pegasus"
     color: "#181818"
 
+    property variant currentGame: null
+    property variant currentPlatform: null
+
     PlatformBar {
         id: topbar
         z: 2
+
+        onChanged: {
+            gridList.positionViewAtIndex(index, ListView.Contain);
+            gridList.currentIndex = index;
+        }
     }
 
     ListView {
-        id: contentView
+        id: gridList
         width: parent.width
         anchors {
             top: topbar.bottom
@@ -23,7 +31,7 @@ Window {
         }
 
         model: pegasus.platforms
-        delegate: contentViewDelegate
+        delegate: gridListDelegate
 
         orientation: ListView.Horizontal
         snapMode: ListView.SnapOneItem
@@ -31,38 +39,50 @@ Window {
 
         interactive: false
 
-        // onCurrentIndexChanged: contentView.positionViewAtIndex(currentIndex, ListView.Contain)
+        onCurrentIndexChanged: {
+            currentPlatform = currentItem.delegateModel;
+            currentGame = currentItem.selectedGame;
+        }
     }
 
     Component {
-        id: contentViewDelegate
+        id: gridListDelegate
 
         Item {
             width: ListView.view.width
             height: ListView.view.height
 
-            Item {
-                width: parent.width * 0.35
-                height: parent.height
-                anchors.left: parent.left
+            property variant delegateModel: model
+            property alias selectedGame: gamegrid.selectedGame
 
-                GamePreview {
-                    anchors.fill: parent
-                    model: gameModel
-                }
-            }
-            Item {
+            GameGrid {
+                id: gamegrid
                 width: parent.width * 0.65
                 height: parent.height
-                anchors.right: parent.right
+                anchors {
+                    right: parent.right
+                    top: parent.top; topMargin: 32
+                    bottom: parent.bottom
+                }
+                displayMarginBeginning: anchors.topMargin
 
-                GameGrid {
-                    id: gamegrid
-                    anchors.fill: parent
-                    anchors.topMargin: 32
-                    displayMarginBeginning: 32
+                onChanged: {
+                    if (parent.ListView.isCurrentItem === true)
+                        currentGame = game
                 }
             }
+        }
+    }
+
+    GamePreview {
+        id: gamepreview
+        gameData: currentGame
+
+        width: (parent.width * 0.35) - anchors.leftMargin - 48
+        anchors {
+            left: parent.left; leftMargin: 10
+            top: topbar.bottom; topMargin: 32
+            bottom: parent.bottom
         }
     }
 }

@@ -6,6 +6,8 @@ Rectangle {
     height: 54
     color: "#333"
 
+    signal changed(int index, variant platform)
+
     PathView {
         model: pegasus.platforms
         delegate: platformCardDelegate
@@ -38,13 +40,15 @@ Rectangle {
         Keys.onRightPressed: incrementCurrentIndex()
         Keys.onLeftPressed: decrementCurrentIndex()
 
-        onCurrentIndexChanged: contentView.positionViewAtIndex(currentIndex, ListView.Contain)
+        onCurrentIndexChanged: changed(currentIndex, currentItem.delegateModel)
     }
 
     Component {
         id: platformCardDelegate
 
         PlatformCard {
+            property variant delegateModel: model
+
             platformShortName: shortName
             visible: PathView.onPath
             z: PathView.itemZ

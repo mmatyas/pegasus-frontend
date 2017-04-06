@@ -3,8 +3,12 @@ import QtQuick 2.6
 
 GridView {
     // TODO: make this customizable
-    cellWidth: parent.width * (shortName === "nes" ? 0.2 : 0.25)
-    cellHeight: parent.height * 0.3
+    cellWidth: width * (shortName === "nes" ? 0.2 : 0.25)
+    cellHeight: height * 0.3
+
+    property variant selectedGame: null
+
+    signal changed(int index, variant game)
 
     model: gameModel
 
@@ -14,16 +18,23 @@ GridView {
         height: GridView.view.cellHeight
     }
 
+    onCurrentIndexChanged: {
+        selectedGame = currentItem.delegateModel;
+        changed(currentIndex, currentItem.delegateModel);
+    }
+
     delegate: Item {
+        id: gamegridDelegate
         width: GridView.view.cellWidth
         height: GridView.view.cellHeight
 
-        Image {
-            width: parent.GridView.isCurrentItem ? parent.width - 10 : parent.width - 16
-            height: parent.GridView.isCurrentItem ? parent.height - 10 : parent.height - 16
+        property variant delegateModel: model
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+        Image {
+            width: parent.GridView.isCurrentItem ? parent.width - 8 : parent.width - 16
+            height: parent.GridView.isCurrentItem ? parent.height - 8 : parent.height - 16
+
+            anchors.centerIn: parent
 
             asynchronous: true
 

@@ -1,24 +1,28 @@
 import QtQuick 2.0
 
-ListView {
-    delegate: Item {
-        width: ListView.view.width
-        height: ListView.view.height
-        x: 32
+Item {
+    property variant gameData
+
+    Column {
+        width: parent.width
+        height: parent.height
+        spacing: 16
 
         Image {
-            y: 64
-            source: "file:" + model.assets.logo
-            sourceSize.width: parent.width * 0.75
+            width: parent.width
+            height: 192
+
+            source: "file:" + gameData.assets.logo
+            sourceSize { width: 512; height: 192 }
 
             fillMode: Image.PreserveAspectFit
         }
 
         Text {
-            y: 220
-            color: "white"
-            text: model.title
+            width: parent.width
 
+            color: "#eee"
+            text: gameData.title
             font {
                 bold: true
                 pixelSize: 24
@@ -27,22 +31,24 @@ ListView {
             }
         }
         Text {
-            y: 256
-            color: "white"
-            text: model.description
-            width: parent.width * 0.75
-            wrapMode: Text.WordWrap
+            width: parent.width
+            height: 300
 
+            color: "#eee"
+            text: gameData.description
+            wrapMode: Text.WordWrap
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignJustify
             font {
                 pixelSize: 16
                 family: "Roboto"
             }
         }
         Text {
-            y: 450
-            color: "white"
-            text: "Developer: " + model.developer
-            width: parent.width * 0.75
+            width: parent.width
+
+            color: "#eee"
+            text: "Developer: " + gameData.developer
             wrapMode: Text.WordWrap
 
             font {
