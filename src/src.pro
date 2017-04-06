@@ -1,5 +1,7 @@
 TEMPLATE = app
 
+TARGET = pegasus
+
 QT += qml quick xml
 CONFIG += c++11
 
