@@ -2,6 +2,7 @@
 
 #include <QFileInfo>
 #include <QString>
+#include <QVector>
 
 
 bool validFile(const QString& path) {

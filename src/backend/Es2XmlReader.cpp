@@ -218,6 +218,12 @@ Model::GameItemPtr Es2XmlReader::readGame()
 void Es2XmlReader::parseGamePath(Model::GameItemPtr& game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
     game->rom_path = xml.readElementText();
+
+    // find out the base name of the rom
+    if (!game->rom_path.isEmpty()) {
+        const QFileInfo rom_path_info(game->rom_path);
+        game->rom_filename = rom_path_info.completeBaseName();
+    }
 }
 
 void Es2XmlReader::parseGameName(Model::GameItemPtr& game) {
@@ -235,71 +241,89 @@ void Es2XmlReader::parseGameDeveloper(Model::GameItemPtr& game) {
     game->developer = xml.readElementText();
 }
 
-QString Es2XmlReader::gameAssetPath(const Model::PlatformItemPtr& platform,
-                                    const Model::GameItemPtr& game,
-                                    const QString& asset_suffix)
-{
-    static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
-
-    Q_ASSERT(!asset_suffix.isEmpty());
-    if (platform->short_name.isEmpty() || game->rom_path.isEmpty())
-        return "";
-
-    // first, find out the base name of the rom
-    QFileInfo rom_path_info(game->rom_path);
-    const QString rom_basename = rom_path_info.completeBaseName();
-    if (rom_basename.isEmpty())
-        return "";
-
-    // then search for the asset in all supported paths
-    const QString path_suffix = "downloaded_images/" + platform->short_name
-                              + "/" + rom_basename + asset_suffix;
-    QString file_path = QDir::homePath() + "/.config/emulationstation/" + path_suffix;
-    if (validFile(file_path))
-        return file_path;
-
-    // qInfo() << FALLBACK_MSG.arg(file_path);
-    file_path = QDir::homePath() + "/.emulationstation/" + path_suffix;
-    if (validFile(file_path))
-        return file_path;
-
-    // qInfo() << FALLBACK_MSG.arg(file_path);
-    file_path = "/etc/emulationstation/" + path_suffix;
-    if (validFile(file_path))
-        return file_path;
-
-    return "";
-}
-
 void Es2XmlReader::findGameAssets(Model::PlatformItemPtr& platform, Model::GameItemPtr& game)
 {
+    using AssetType = Es2Assets::AssetType;
+
     Model::GameAssets& assets = game->assets;
 
-    assets.box_front = gameAssetPath(platform, game, "-boxart2D.png");
-    if (assets.box_front.isEmpty())
-        assets.box_front = gameAssetPath(platform, game, "-boxart2D.jpg");
-    if (assets.box_front.isEmpty())
-        assets.box_front = gameAssetPath(platform, game, ".png");
-    if (assets.box_front.isEmpty())
-        assets.box_front = gameAssetPath(platform, game, ".jpg");
-
-    assets.logo = gameAssetPath(platform, game, "-logo.png");
-    if (assets.logo.isEmpty())
-        assets.logo = gameAssetPath(platform, game, "-logo.jpg");
+    assets.box_front = Es2Assets::find(AssetType::BOX_FRONT, platform, game);
+    assets.logo = Es2Assets::find(AssetType::LOGO, platform, game);
 
     // TODO: support multiple
-    QString screenshot_path = gameAssetPath(platform, game, "-screenshot.png");
-    if (screenshot_path.isEmpty())
-        screenshot_path = gameAssetPath(platform, game, "-screenshot.jpg");
+    assets.screenshot_list << Es2Assets::find(AssetType::SCREENSHOT, platform, game);
+    assets.video_list << Es2Assets::find(AssetType::VIDEO, platform, game);
+}
 
-    assets.screenshot_list << screenshot_path;
 
-    // TODO: support multiple
-    QString video_path = gameAssetPath(platform, game, "-video.webm");
-    if (video_path.isEmpty())
-        video_path = gameAssetPath(platform, game, "-screenshot.mp4");
-    if (video_path.isEmpty())
-        video_path = gameAssetPath(platform, game, "-screenshot.avi");
+QVector<QString> Es2Assets::possibleSuffixes(AssetType asset_type)
+{
+    static const QMap<AssetType, QVector<QString>> suffix_map = {
+        { AssetType::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
+        { AssetType::LOGO, { "-logo" } },
+        { AssetType::SCREENSHOT, { "-screenshot" } },
+        { AssetType::VIDEO, { "-video" } },
+    };
 
-    assets.video_list << video_path;
+    Q_ASSERT(suffix_map.contains(asset_type));
+    return suffix_map.value(asset_type);
+}
+
+QVector<QString> Es2Assets::possibleExtensions(AssetType asset_type)
+{
+    static const QVector<QString> image_exts = { ".png", ".jpg" };
+    static const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
+
+    switch (asset_type) {
+        case AssetType::BOX_FRONT:
+        case AssetType::LOGO:
+        case AssetType::SCREENSHOT:
+            return image_exts;
+        case AssetType::VIDEO:
+            return video_exts;
+    }
+
+    Q_ASSERT(false);
+    return {};
+}
+
+QString Es2Assets::find(AssetType asset_type,
+                        const Model::PlatformItemPtr& platform,
+                        const Model::GameItemPtr& game)
+{
+    if (platform->short_name.isEmpty() ||
+        platform->rom_dir_path.isEmpty() ||
+        game->rom_filename.isEmpty())
+        return QString();
+
+    // check all possible [basedir] + [subdir] + [suffix] + [extension]
+    // combination when searching for an asset
+
+    const QVector<QString> possible_suffixes = possibleSuffixes(asset_type);
+    const QVector<QString> possible_exts = possibleExtensions(asset_type);
+    Q_ASSERT(!possible_suffixes.isEmpty());
+    Q_ASSERT(!possible_exts.isEmpty());
+
+    // in portable mode, the files are next to the roms under ./media/,
+    // but for regular installations, it's under ./downloaded_images/
+    const QString subdir = "/downloaded_images/" + platform->short_name + "/" + game->rom_filename;
+    const QVector<QString> possible_base_paths = {
+        platform->rom_dir_path + "/media/" + game->rom_filename, // portable edition
+        platform->rom_dir_path + subdir,
+        QDir::homePath() + "/.config/emulationstation" + subdir,
+        QDir::homePath() + "/.emulationstation" + subdir,
+        "/etc/emulationstation" + subdir,
+    };
+
+    // check every combination until there's a match
+    for (const auto& base_path : possible_base_paths) {
+        for (const auto& asset_suffix : possible_suffixes) {
+            for (const auto& ext : possible_exts) {
+                if (validFile(base_path + asset_suffix + ext))
+                    return base_path + asset_suffix + ext;
+            }
+        }
+    }
+
+    return QString();
 }

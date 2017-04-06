@@ -15,6 +15,7 @@ class GameAssets : public QObject {
 
     Q_PROPERTY(QString boxFront MEMBER box_front CONSTANT)
     Q_PROPERTY(QString logo MEMBER logo CONSTANT)
+    Q_PROPERTY(QString background MEMBER background CONSTANT)
 
 public:
     explicit GameAssets(QObject* parent = nullptr);
@@ -28,6 +29,7 @@ public:
 
     QString box_front;
     QString logo;
+    QString background;
     QStringList screenshot_list;
     QStringList video_list;
 };
@@ -40,6 +42,7 @@ public:
     explicit GameItem(QObject* parent = nullptr);
 
     QString rom_path;
+    QString rom_filename;
 
     QString title;
     QString description;

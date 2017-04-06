@@ -24,10 +24,23 @@ private:
     static void parseGameName(Model::GameItemPtr&);
     static void parseGameDescription(Model::GameItemPtr&);
     static void parseGameDeveloper(Model::GameItemPtr&);
-
-    static QString gameAssetPath(const Model::PlatformItemPtr&,
-                                 const Model::GameItemPtr&, const QString&);
     static void findGameAssets(Model::PlatformItemPtr&, Model::GameItemPtr&);
 
     static QXmlStreamReader xml;
+};
+
+class Es2Assets {
+public:
+    enum class AssetType : uint8_t {
+        BOX_FRONT,
+        LOGO,
+        SCREENSHOT,
+        VIDEO,
+    };
+
+    static QString find(AssetType, const Model::PlatformItemPtr&, const Model::GameItemPtr&);
+
+private:
+    static QVector<QString> possibleSuffixes(AssetType);
+    static QVector<QString> possibleExtensions(AssetType);
 };
