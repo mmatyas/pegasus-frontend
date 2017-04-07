@@ -29,7 +29,8 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
             platform->game_model.append(game);
         }
 
-        platform_model.append(platform);
+        if (platform->game_model.rowCount() > 0)
+            platform_model.append(platform);
     }
 
     return true;
