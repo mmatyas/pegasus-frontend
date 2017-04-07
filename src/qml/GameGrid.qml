@@ -37,8 +37,9 @@ GridView {
             anchors.centerIn: parent
 
             asynchronous: true
+            visible: model.assets.boxFront
 
-            source: "file:" + model.assets.boxFront
+            source: model.assets.boxFront ? "file:" + model.assets.boxFront : ""
             sourceSize { width: 256; height: 256 }
 
             fillMode: Image.PreserveAspectFit
