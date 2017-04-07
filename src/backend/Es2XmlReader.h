@@ -18,7 +18,7 @@ private:
     static void parseSystemRunCmd(Model::PlatformItemPtr&);
 
     static QVector<Model::GameItemPtr> readGamelistFile(const Model::PlatformItemPtr&);
-    static QString gamelistPath(const QString&);
+    static QString gamelistPath(const Model::PlatformItemPtr&);
     static Model::GameItemPtr readGame();
     static void parseGamePath(Model::GameItemPtr&);
     static void parseGameName(Model::GameItemPtr&);

@@ -38,6 +38,11 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
 QVector<Model::PlatformItemPtr> Es2XmlReader::readSystemsFile()
 {
     QString systemscfg_path = systemsCfgPath();
+    if (systemscfg_path.isEmpty()) {
+        xml.raiseError(QObject::tr("System config not found"));
+        return {};
+    }
+
     QFile systemscfg(systemscfg_path);
     if (!systemscfg.open(QIODevice::ReadOnly)) {
         xml.raiseError(QObject::tr("Could not open `%1`").arg(systemscfg_path));
@@ -68,19 +73,24 @@ QVector<Model::PlatformItemPtr> Es2XmlReader::readSystemsFile()
 
 QString Es2XmlReader::systemsCfgPath()
 {
+    static const QString FOUND_MSG = "Found `%1`";
     static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-    QString file_path = QDir::homePath() + "/.config/emulationstation/es_systems.cfg";
-    if (validFile(file_path))
-        return file_path;
+    static const QVector<QString> possible_paths = {
+        QDir::homePath() + "/.config/emulationstation/es_systems.cfg",
+        QDir::homePath() + "/.emulationstation/es_systems.cfg",
+        "/etc/emulationstation/es_systems.cfg",
+    };
 
-    // qInfo() << FALLBACK_MSG.arg(file_path);
-    file_path = QDir::homePath() + "/.emulationstation/es_systems.cfg";
-    if (validFile(file_path))
-        return file_path;
+    for (const auto& path : possible_paths) {
+        if (validFile(path)) {
+            qDebug() << FOUND_MSG.arg(path);
+            return path;
+        }
+        // qDebug() << FALLBACK_MSG.arg(path);
+    }
 
-    // qInfo() << FALLBACK_MSG.arg(file_path);
-    return "/etc/emulationstation/es_systems.cfg";
+    return QString();
 }
 
 Model::PlatformItemPtr Es2XmlReader::readSystem()
@@ -120,7 +130,12 @@ void Es2XmlReader::parseSystemRunCmd(Model::PlatformItemPtr& platform) {
 
 QVector<Model::GameItemPtr> Es2XmlReader::readGamelistFile(const Model::PlatformItemPtr& platform)
 {
-    QString gamelist_path = gamelistPath(platform->short_name);
+    QString gamelist_path = gamelistPath(platform);
+    if (gamelist_path.isEmpty()) {
+        xml.raiseError(QObject::tr("Gamelist for platform `%1` not found").arg(platform->short_name));
+        return {};
+    }
+
     QFile gamelist(gamelist_path);
     if (!gamelist.open(QIODevice::ReadOnly)) {
         xml.raiseError(QObject::tr("Could not open `%1`").arg(gamelist_path));
@@ -149,25 +164,32 @@ QVector<Model::GameItemPtr> Es2XmlReader::readGamelistFile(const Model::Platform
     return games;
 }
 
-QString Es2XmlReader::gamelistPath(const QString& platform_name)
+QString Es2XmlReader::gamelistPath(const Model::PlatformItemPtr& platform)
 {
+    static constexpr auto FILENAME = "/gamelist.xml";
+    static const QString FOUND_MSG = "Found `%1`";
     static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-    if (platform_name.isEmpty())
+    if (platform->short_name.isEmpty())
         return "";
 
-    const QString path_suffix = "gamelists/" + platform_name + "/gamelist.xml";
-    QString file_path = QDir::homePath() + "/.config/emulationstation/" + path_suffix;
-    if (validFile(file_path))
-        return file_path;
+    const QString path_suffix = "/gamelists/" + platform->short_name + FILENAME;
+    const QVector<QString> possible_paths = {
+        platform->rom_dir_path + FILENAME,
+        QDir::homePath() + "/.config/emulationstation" + path_suffix,
+        QDir::homePath() + "/.emulationstation" + path_suffix,
+        "/etc/emulationstation" + path_suffix,
+    };
 
-    // qInfo() << FALLBACK_MSG.arg(file_path);
-    file_path = QDir::homePath() + "/.emulationstation/" + path_suffix;
-    if (validFile(file_path))
-        return file_path;
+    for (const auto& path : possible_paths) {
+        if (validFile(path)) {
+            qDebug() << FOUND_MSG.arg(path);
+            return path;
+        }
+        // qDebug() << FALLBACK_MSG.arg(path);
+    }
 
-    // qInfo() << FALLBACK_MSG.arg(file_path);
-    return "/etc/emulationstation/" + path_suffix;
+    return QString();
 }
 
 Model::GameItemPtr Es2XmlReader::readGame()
