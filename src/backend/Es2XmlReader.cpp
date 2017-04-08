@@ -38,9 +38,9 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
 
 QVector<Model::PlatformItemPtr> Es2XmlReader::readSystemsFile()
 {
-    QString systemscfg_path = systemsCfgPath();
+    QString systemscfg_path = findSystemsCfg();
     if (systemscfg_path.isEmpty()) {
-        xml.raiseError(QObject::tr("System config not found"));
+        xml.raiseError(QObject::tr("ES2 system config not found"));
         return {};
     }
 
@@ -72,7 +72,7 @@ QVector<Model::PlatformItemPtr> Es2XmlReader::readSystemsFile()
     return platforms;
 }
 
-QString Es2XmlReader::systemsCfgPath()
+QString Es2XmlReader::findSystemsCfg()
 {
     static const QString FOUND_MSG = "Found `%1`";
     static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
@@ -131,7 +131,7 @@ void Es2XmlReader::parseSystemRunCmd(Model::PlatformItemPtr& platform) {
 
 QVector<Model::GameItemPtr> Es2XmlReader::readGamelistFile(const Model::PlatformItemPtr& platform)
 {
-    QString gamelist_path = gamelistPath(platform);
+    QString gamelist_path = findGamelist(platform);
     if (gamelist_path.isEmpty()) {
         xml.raiseError(QObject::tr("Gamelist for platform `%1` not found").arg(platform->short_name));
         return {};
@@ -165,7 +165,7 @@ QVector<Model::GameItemPtr> Es2XmlReader::readGamelistFile(const Model::Platform
     return games;
 }
 
-QString Es2XmlReader::gamelistPath(const Model::PlatformItemPtr& platform)
+QString Es2XmlReader::findGamelist(const Model::PlatformItemPtr& platform)
 {
     static constexpr auto FILENAME = "/gamelist.xml";
     static const QString FOUND_MSG = "Found `%1`";

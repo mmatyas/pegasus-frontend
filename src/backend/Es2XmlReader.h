@@ -11,14 +11,14 @@ public:
 
 private:
     static QVector<Model::PlatformItemPtr> readSystemsFile();
-    static QString systemsCfgPath();
+    static QString findSystemsCfg();
     static Model::PlatformItemPtr readSystem();
     static void parseSystemShortName(Model::PlatformItemPtr&);
     static void parseSystemRomDirPath(Model::PlatformItemPtr&);
     static void parseSystemRunCmd(Model::PlatformItemPtr&);
 
     static QVector<Model::GameItemPtr> readGamelistFile(const Model::PlatformItemPtr&);
-    static QString gamelistPath(const Model::PlatformItemPtr&);
+    static QString findGamelist(const Model::PlatformItemPtr&);
     static Model::GameItemPtr readGame();
     static void parseGamePath(Model::GameItemPtr&);
     static void parseGameName(Model::GameItemPtr&);
