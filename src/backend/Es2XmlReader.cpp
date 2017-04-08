@@ -13,14 +13,14 @@ bool Es2XmlReader::read(Model::PlatformModel& platform_model)
 {
     QVector<Model::PlatformItemPtr> platforms = readSystemsFile();
     if (xml.error()) {
-        qWarning() << xml.errorString();
+        qWarning().noquote() << xml.errorString();
         return false;
     }
 
     for (auto& platform : platforms) {
         QVector<Model::GameItemPtr> games = readGamelistFile(platform);
         if (xml.error()) {
-            qWarning() << xml.errorString();
+            qWarning().noquote() << xml.errorString();
             continue;
         }
 
@@ -40,7 +40,7 @@ QVector<Model::PlatformItemPtr> Es2XmlReader::readSystemsFile()
 {
     QString systemscfg_path = findSystemsCfg();
     if (systemscfg_path.isEmpty()) {
-        qWarning() << QObject::tr("ES2 system config not found");
+        qWarning().noquote() << QObject::tr("ES2 system config not found");
         return {};
     }
 
@@ -85,7 +85,7 @@ QString Es2XmlReader::findSystemsCfg()
 
     for (const auto& path : possible_paths) {
         if (validFile(path)) {
-            qInfo() << FOUND_MSG.arg(path);
+            qInfo().noquote() << FOUND_MSG.arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -135,7 +135,7 @@ QVector<Model::GameItemPtr> Es2XmlReader::readGamelistFile(const Model::Platform
 {
     QString gamelist_path = findGamelist(platform);
     if (gamelist_path.isEmpty()) {
-        // qWarning() << QObject::tr("Gamelist for platform `%1` not found").arg(platform->short_name);
+        // qWarning().noquote() << QObject::tr("Gamelist for platform `%1` not found").arg(platform->short_name);
         return {};
     }
 
@@ -186,7 +186,7 @@ QString Es2XmlReader::findGamelist(const Model::PlatformItemPtr& platform)
 
     for (const auto& path : possible_paths) {
         if (validFile(path)) {
-            qInfo() << FOUND_MSG.arg(path);
+            qInfo().noquote() << FOUND_MSG.arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
