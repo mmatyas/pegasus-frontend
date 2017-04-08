@@ -12,7 +12,7 @@ Item {
 
         Image {
             width: parent.width
-            height: 192
+            height: width * 0.4
 
             source: gameData ? (gameData.assets.logo ? "file:" + gameData.assets.logo : "") : ""
             sourceSize { width: 512; height: 192 }
