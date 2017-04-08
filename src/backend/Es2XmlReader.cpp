@@ -121,7 +121,9 @@ void Es2XmlReader::parseSystemShortName(Model::PlatformItemPtr& platform) {
 
 void Es2XmlReader::parseSystemRomDirPath(Model::PlatformItemPtr& platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
-    platform->rom_dir_path = xml.readElementText();
+    platform->rom_dir_path = xml.readElementText()
+        .replace("\\", "/")
+        .replace("~", QDir::homePath());
 }
 
 void Es2XmlReader::parseSystemRunCmd(Model::PlatformItemPtr& platform) {
