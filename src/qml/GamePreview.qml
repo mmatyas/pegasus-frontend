@@ -1,7 +1,19 @@
 import QtQuick 2.0
+import QtMultimedia 5.8
 
 Item {
     property variant gameData
+
+    onGameDataChanged: {
+        videoPreview.playlist.clear();
+        if (gameData && gameData.assets.videos.length > 0) {
+            for (var i = 0; i < gameData.assets.videos.length; i++) {
+                if (gameData.assets.videos[i])
+                    videoPreview.playlist.addItem("file:" + gameData.assets.videos[i]);
+            }
+            videoPreview.play();
+        }
+    }
 
     Column {
         width: parent.width
@@ -11,6 +23,7 @@ Item {
         visible: gameData
 
         Image {
+            // logo
             width: parent.width
             height: width * 0.4
 
@@ -19,6 +32,7 @@ Item {
             fillMode: Image.PreserveAspectFit
         }
         Text {
+            // title
             width: parent.width
 
             color: "#eee"
@@ -33,29 +47,29 @@ Item {
             }
         }
         Text {
+            // description
             width: parent.width
-            height: 300
 
             color: "#eee"
             text: gameData ? gameData.description : ""
             wrapMode: Text.WordWrap
-            elide: Text.ElideRight
             horizontalAlignment: Text.AlignJustify
+            elide: Text.ElideRight
+            maximumLineCount: 5
             font {
                 pixelSize: 16
                 family: "Roboto"
             }
         }
-        Text {
+        Video {
+            id: videoPreview
+
             width: parent.width
+            height: width * 0.75
+            fillMode: VideoOutput.PreserveAspectFit
 
-            color: "#eee"
-            text: gameData ? "Developer: " + gameData.developer : ""
-            wrapMode: Text.WordWrap
-
-            font {
-                pixelSize: 16
-                family: "Roboto"
+            playlist: Playlist {
+                playbackMode: Playlist.Loop
             }
         }
     }
