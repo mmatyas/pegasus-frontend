@@ -1,1 +1,15 @@
-pegasus.pro.user
+# ignore build dir
+build
+
+# ignore all dotfiles
+.*
+
+# except these
+!.gitignore
+!.travis.yml
+!.appveyor.yml
+
+# ignore IDE project files
+*.pro.user
+*.kdev4
+*.workspace
