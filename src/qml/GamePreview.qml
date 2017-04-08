@@ -16,15 +16,15 @@ Item {
 
             source: gameData ? (gameData.assets.logo ? "file:" + gameData.assets.logo : "") : ""
             sourceSize { width: 512; height: 192 }
-
             fillMode: Image.PreserveAspectFit
         }
-
         Text {
             width: parent.width
 
             color: "#eee"
             text: gameData ? gameData.title : ""
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignJustify
             font {
                 bold: true
                 pixelSize: 24
