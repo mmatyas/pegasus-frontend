@@ -85,7 +85,7 @@ QString Es2XmlReader::systemsCfgPath()
 
     for (const auto& path : possible_paths) {
         if (validFile(path)) {
-            qDebug() << FOUND_MSG.arg(path);
+            qInfo() << FOUND_MSG.arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -184,7 +184,7 @@ QString Es2XmlReader::gamelistPath(const Model::PlatformItemPtr& platform)
 
     for (const auto& path : possible_paths) {
         if (validFile(path)) {
-            qDebug() << FOUND_MSG.arg(path);
+            qInfo() << FOUND_MSG.arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
