@@ -17,15 +17,13 @@ class GameAssets : public QObject {
     Q_PROPERTY(QString logo MEMBER logo CONSTANT)
     Q_PROPERTY(QString background MEMBER background CONSTANT)
 
+    // TODO: these could be optimized
+    // see https://doc.qt.io/qt-5/qtqml-cppintegration-data.html
+    Q_PROPERTY(QStringList screenshots MEMBER screenshot_list CONSTANT)
+    Q_PROPERTY(QStringList videos MEMBER video_list CONSTANT)
+
 public:
     explicit GameAssets(QObject* parent = nullptr);
-
-    Q_INVOKABLE const QStringList& screenshots() const {
-        return screenshot_list;
-    }
-    Q_INVOKABLE const QStringList& videos() const {
-        return video_list;
-    }
 
     QString box_front;
     QString logo;

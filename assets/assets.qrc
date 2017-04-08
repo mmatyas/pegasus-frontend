@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>scanline.png</file>
         <file>platform_logo/3do.svg</file>
         <file>platform_logo/amiga.svg</file>
         <file>platform_logo/amstradcpc.svg</file>
