@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 
 
 Window {
+    id: appWindow
     visible: true
     width: 1280
     height: 720
@@ -22,57 +23,12 @@ Window {
         }
     }
 
-    ListView {
+    GameGridList {
         id: gridList
-        width: parent.width
         anchors {
             top: topbar.bottom
             bottom: parent.bottom
-        }
-
-        model: pegasus.platforms
-        delegate: gridListDelegate
-
-        orientation: ListView.Horizontal
-        snapMode: ListView.SnapOneItem
-        clip: true
-
-        interactive: false
-
-        onCurrentIndexChanged: {
-            currentPlatform = currentItem.delegateModel;
-            currentGame = currentItem.selectedGame;
-        }
-    }
-
-    Component {
-        id: gridListDelegate
-
-        Item {
-            width: ListView.view.width
-            height: ListView.view.height
-
-            visible: ListView.isCurrentItem
-
-            property variant delegateModel: model
-            property alias selectedGame: gamegrid.selectedGame
-
-            GameGrid {
-                id: gamegrid
-                width: parent.width * 0.65
-                height: parent.height
-                anchors {
-                    right: parent.right
-                    top: parent.top; topMargin: 32
-                    bottom: parent.bottom
-                }
-                displayMarginBeginning: anchors.topMargin
-
-                onChanged: {
-                    if (parent.ListView.isCurrentItem === true)
-                        currentGame = game
-                }
-            }
+            left: parent.left; right: parent.right
         }
     }
 
