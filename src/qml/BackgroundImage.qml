@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 
 
 Item {
@@ -16,13 +17,19 @@ Item {
         smooth: false
     }
 
-    Image {
+    LinearGradient {
         z: parent.z + 1
-        anchors.fill: parent
-        horizontalAlignment: Image.AlignLeft
-
-        source: "/scanline.png"
-        fillMode: Image.PreserveAspectFit
-        smooth: false
+        width: parent.width * 0.75
+        anchors {
+            top: parent.top
+            right: parent.right
+            bottom: parent.bottom
+        }
+        start: Qt.point(0, 0)
+        end: Qt.point(width, 0)
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#00000000" }
+            GradientStop { position: 0.5; color: "#FF000000" }
+        }
     }
 }
