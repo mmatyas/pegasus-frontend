@@ -1,10 +1,10 @@
 import QtQuick 2.6
 
 Item {
+    property alias platformShortName: label.text
+
     clip: true
     antialiasing: true
-
-    property alias platformShortName: label.text
 
     Rectangle {
         id: main

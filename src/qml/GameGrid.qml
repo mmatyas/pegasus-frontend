@@ -12,12 +12,11 @@ GridView {
 
 
     model: platformData ? platformData.gameModel : 0
+    onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel);
 
     cellWidth: width / columnCount
     cellHeight: height / rowCount
     displayMarginBeginning: anchors.topMargin
-
-    onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel);
 
     highlight: Rectangle {
         color: "#0074da"

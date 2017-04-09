@@ -2,14 +2,15 @@ import QtQuick 2.0
 
 
 Rectangle {
-    width: parent.width
-    height: 54
-    color: "#333"
+    property variant platformModel
 
     signal indexChanged(int index, variant platform)
 
+    color: "#333"
+    height: 54
+
     PathView {
-        model: pegasus.platforms
+        model: platformModel
         delegate: platformCardDelegate
 
         path: Path {

@@ -4,19 +4,24 @@ import QtQuick.Window 2.2
 
 Window {
     id: appWindow
+
+    property variant currentGame: null
+    property variant currentPlatform: null
+
     visible: true
     width: 1280
     height: 720
     title: "Pegasus"
     color: "#000"
 
-    property variant currentGame: null
-    property variant currentPlatform: null
-
     PlatformBar {
         id: topbar
-        z: 500
+
+        platformModel: pegasus.platforms
         onIndexChanged: appWindow.currentPlatform = platform
+
+        z: 500
+        width: parent.width
     }
 
     BackgroundImage {
