@@ -6,7 +6,7 @@ Rectangle {
     height: 54
     color: "#333"
 
-    signal changed(int index, variant platform)
+    signal indexChanged(int index, variant platform)
 
     PathView {
         model: pegasus.platforms
@@ -40,7 +40,8 @@ Rectangle {
         Keys.onRightPressed: incrementCurrentIndex()
         Keys.onLeftPressed: decrementCurrentIndex()
 
-        onCurrentIndexChanged: changed(currentIndex, currentItem.delegateModel)
+        onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel)
+        Component.onCompleted: indexChanged(currentIndex, currentItem.delegateModel)
     }
 
     Component {

@@ -1,39 +1,39 @@
 import QtQuick 2.6
 
-
 GridView {
-    // TODO: make this customizable
-    cellWidth: width * (shortName === "nes" ? 0.2 : 0.25)
-    cellHeight: height * 0.3
+    property variant platformData
+    // TODO: make these customizable
+    property real rowCount: 3.4
+    property real columnCount: platformData
+                               ? (platformData.shortName === "nes" ? 5 : 4)
+                               : 1
 
-    property variant selectedGame: null
+    signal indexChanged(int index, variant game)
 
-    signal changed(int index, variant game)
 
-    model: gameModel
+    model: platformData ? platformData.gameModel : 0
+
+    cellWidth: width / columnCount
+    cellHeight: height / rowCount
+    displayMarginBeginning: anchors.topMargin
+
+    onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel);
 
     highlight: Rectangle {
         color: "#0074da"
-        width: GridView.view.cellWidth
-        height: GridView.view.cellHeight
-    }
-
-    onCurrentIndexChanged: {
-        selectedGame = currentItem.delegateModel;
-        changed(currentIndex, currentItem.delegateModel);
+        width: cellWidth
+        height: cellHeight
     }
 
     delegate: Item {
-        id: gamegridDelegate
+        property variant delegateModel: model
+
         width: GridView.view.cellWidth
         height: GridView.view.cellHeight
-
-        property variant delegateModel: model
 
         Image {
             width: parent.GridView.isCurrentItem ? parent.width - 8 : parent.width - 16
             height: parent.GridView.isCurrentItem ? parent.height - 8 : parent.height - 16
-
             anchors.centerIn: parent
 
             asynchronous: true
@@ -41,7 +41,6 @@ GridView {
 
             source: model.assets.boxFront ? "file:" + model.assets.boxFront : ""
             sourceSize { width: 256; height: 256 }
-
             fillMode: Image.PreserveAspectFit
         }
 

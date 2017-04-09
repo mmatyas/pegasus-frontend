@@ -16,40 +16,38 @@ Window {
     PlatformBar {
         id: topbar
         z: 500
-        onChanged: {
-            gridList.positionViewAtIndex(index, ListView.Contain);
-            gridList.currentIndex = index;
-        }
+        onIndexChanged: appWindow.currentPlatform = platform
     }
 
     BackgroundImage {
         z: 100
         anchors {
-            top: topbar.bottom
-            bottom: parent.bottom
+            top: topbar.bottom; bottom: parent.bottom
             left: parent.left; right: parent.right
         }
     }
 
-    GameGridList {
-        id: gridList
+    GameGrid {
+        platformData: appWindow.currentPlatform
+        onIndexChanged: appWindow.currentGame = game
+
         z: 200
+        width: parent.width * 0.65
         anchors {
-            top: topbar.bottom
+            top: topbar.bottom; topMargin: 32
+            right: parent.right
             bottom: parent.bottom
-            left: parent.left; right: parent.right
         }
     }
 
     GamePreview {
-        id: gamepreview
-        z: 400
-        gameData: currentGame
+        gameData: appWindow.currentGame
 
-        width: (parent.width * 0.35) - anchors.leftMargin - 48
+        z: 400
+        width: (parent.width * 0.35) - anchors.leftMargin - 40
         anchors {
-            left: parent.left; leftMargin: 10
             top: topbar.bottom; topMargin: 32
+            left: parent.left; leftMargin: 10
             bottom: parent.bottom
         }
     }
