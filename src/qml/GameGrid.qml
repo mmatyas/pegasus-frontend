@@ -43,6 +43,22 @@ GridView {
             fillMode: Image.PreserveAspectFit
         }
 
+        Text {
+            width: parent.width - 64
+            anchors.centerIn: parent
+
+            visible: !model.assets.boxFront
+
+            text: model.title
+            wrapMode: Text.Wrap
+            horizontalAlignment: Text.AlignHCenter
+            color: "#eee"
+            font {
+                pixelSize: 16
+                family: "Roboto"
+            }
+        }
+
         MouseArea {
             anchors.fill: parent
             onClicked: parent.GridView.view.currentIndex = index
