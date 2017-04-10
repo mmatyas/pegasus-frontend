@@ -42,6 +42,9 @@ GridView {
             source: model.assets.boxFront ? "file:" + model.assets.boxFront : ""
             sourceSize { width: 256; height: 256 }
             fillMode: Image.PreserveAspectFit
+
+            Behavior on width { PropertyAnimation { duration: 150 } }
+            Behavior on height { PropertyAnimation { duration: 150 } }
         }
 
         Text {
