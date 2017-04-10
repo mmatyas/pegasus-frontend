@@ -22,6 +22,7 @@ GridView {
         color: "#0074da"
         width: cellWidth
         height: cellHeight
+        scale: 1.05
     }
 
     delegate: Item {
