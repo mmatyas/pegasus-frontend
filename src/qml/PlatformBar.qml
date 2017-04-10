@@ -69,9 +69,11 @@ Rectangle {
             property variant delegateModel: model
 
             platformShortName: shortName
-            visible: PathView.onPath
-            z: PathView.itemZ
+            isOnTop: PathView.isCurrentItem
 
+            visible: PathView.onPath
+
+            z: PathView.itemZ
             width: parent.parent.width * 0.5
             height: 72
         }

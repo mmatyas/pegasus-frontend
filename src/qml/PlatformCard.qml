@@ -2,6 +2,7 @@ import QtQuick 2.6
 
 Item {
     property alias platformShortName: label.text
+    property bool isOnTop: false
 
     clip: true
     antialiasing: true
@@ -55,9 +56,12 @@ Item {
     Image {
         source: "/platform_logo/" + platformShortName + ".svg"
         sourceSize.height: 100
+        fillMode: Image.PreserveAspectFit
+
+        opacity: parent.isOnTop ? 1.0 : 0.3
+
         width: parent.width * 0.6
         height: parent.height - 12
-        fillMode: Image.PreserveAspectFit
         anchors {
             bottom: parent.bottom
             bottomMargin: 6
