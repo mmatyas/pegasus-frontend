@@ -14,46 +14,57 @@ Window {
     title: "Pegasus"
     color: "#000"
 
-    PlatformBar {
-        id: topbar
 
-        platformModel: pegasus.platforms
-        onIndexChanged: appWindow.currentPlatform = platform
+    // wrapper to receive keyboard events
+    Item {
+        anchors.fill: parent
 
-        z: 500
-        width: parent.width
-    }
+        focus: true
+        Keys.forwardTo: [topbar, gamegrid]
 
-    BackgroundImage {
-        z: 100
-        anchors {
-            top: topbar.bottom; bottom: parent.bottom
-            left: parent.left; right: parent.right
+        PlatformBar {
+            id: topbar
+
+            platformModel: pegasus.platforms
+            onIndexChanged: appWindow.currentPlatform = platform
+
+            z: 500
+            width: parent.width
         }
-    }
 
-    GameGrid {
-        platformData: appWindow.currentPlatform
-        onIndexChanged: appWindow.currentGame = game
-
-        z: 200
-        width: parent.width * 0.65
-        anchors {
-            top: topbar.bottom; topMargin: 32
-            right: parent.right
-            bottom: parent.bottom
+        BackgroundImage {
+            z: 100
+            anchors {
+                top: topbar.bottom; bottom: parent.bottom
+                left: parent.left; right: parent.right
+            }
         }
-    }
 
-    GamePreview {
-        gameData: appWindow.currentGame
+        GameGrid {
+            id: gamegrid
 
-        z: 400
-        width: (parent.width * 0.35) - anchors.leftMargin - 40
-        anchors {
-            top: topbar.bottom; topMargin: 32
-            left: parent.left; leftMargin: 10
-            bottom: parent.bottom
+            platformData: appWindow.currentPlatform
+            onIndexChanged: appWindow.currentGame = game
+
+            z: 200
+            width: parent.width * 0.65
+            anchors {
+                top: topbar.bottom; topMargin: 32
+                right: parent.right
+                bottom: parent.bottom
+            }
+        }
+
+        GamePreview {
+            gameData: appWindow.currentGame
+
+            z: 400
+            width: (parent.width * 0.35) - anchors.leftMargin - 40
+            anchors {
+                top: topbar.bottom; topMargin: 32
+                left: parent.left; leftMargin: 10
+                bottom: parent.bottom
+            }
         }
     }
 }

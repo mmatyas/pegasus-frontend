@@ -9,7 +9,10 @@ Rectangle {
     color: "#333"
     height: 54
 
+    Keys.forwardTo: platformPath
+
     PathView {
+        id: platformPath
         model: platformModel
         delegate: platformCardDelegate
 
@@ -37,9 +40,23 @@ Rectangle {
         preferredHighlightBegin: 0.04
         preferredHighlightEnd: 0.05
 
-        focus: true
-        Keys.onRightPressed: incrementCurrentIndex()
-        Keys.onLeftPressed: decrementCurrentIndex()
+        Keys.onPressed: {
+            const qaed = [Qt.Key_Q, Qt.Key_A, Qt.Key_E, Qt.Key_D]; // QWERTx/AZERTY support
+            if (qaed.indexOf(event.key) >= 0) {
+                event.accepted = true;
+
+                switch (event.key) {
+                case Qt.Key_Q:
+                case Qt.Key_A:
+                    decrementCurrentIndex();
+                    break;
+                case Qt.Key_E:
+                case Qt.Key_D:
+                    incrementCurrentIndex();
+                    break;
+                }
+            }
+        }
 
         onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel)
         Component.onCompleted: indexChanged(currentIndex, currentItem.delegateModel)
