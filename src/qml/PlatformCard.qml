@@ -58,6 +58,7 @@ Item {
         sourceSize.height: 100
         fillMode: Image.PreserveAspectFit
 
+        asynchronous: true
         opacity: parent.isOnTop ? 1.0 : 0.3
 
         width: parent.width * 0.6
