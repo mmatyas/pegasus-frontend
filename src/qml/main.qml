@@ -5,8 +5,8 @@ import QtQuick.Window 2.2
 Window {
     id: appWindow
 
-    property variant currentGame: null
-    property variant currentPlatform: null
+    property var currentGame: null
+    property var currentPlatform: null
 
     visible: true
     width: 1280

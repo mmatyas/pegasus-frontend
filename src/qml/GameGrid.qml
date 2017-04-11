@@ -2,14 +2,14 @@ import QtQuick 2.6
 
 
 GridView {
-    property variant platformData
+    property var platformData
     // TODO: make these customizable
     property real rowCount: 3.4
     property real columnCount: platformData
                                ? (platformData.shortName === "nes" ? 5 : 4)
                                : 1
 
-    signal indexChanged(int index, variant game)
+    signal indexChanged(int index, var game)
 
 
     cellWidth: width / columnCount
@@ -27,7 +27,7 @@ GridView {
     }
 
     delegate: Item {
-        property variant delegateModel: model
+        property var delegateModel: model
 
         width: GridView.view.cellWidth
         height: GridView.view.cellHeight

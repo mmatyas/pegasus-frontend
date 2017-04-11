@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtMultimedia 5.8
 
 Item {
-    property variant gameData
+    property var gameData
 
     onGameDataChanged: {
         videoPreview.playlist.clear();

@@ -2,9 +2,9 @@ import QtQuick 2.0
 
 
 Rectangle {
-    property variant platformModel
+    property var platformModel
 
-    signal indexChanged(int index, variant platform)
+    signal indexChanged(int index, var platform)
 
     color: "#333"
     height: 54
@@ -66,7 +66,7 @@ Rectangle {
         id: platformCardDelegate
 
         PlatformCard {
-            property variant delegateModel: model
+            property var delegateModel: model
 
             platformShortName: shortName
             isOnTop: PathView.isCurrentItem
