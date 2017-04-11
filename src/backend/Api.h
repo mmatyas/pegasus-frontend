@@ -3,19 +3,19 @@
 #include "Model.h"
 
 #include <QObject>
+#include <QQmlListProperty>
 
 
 /// A wrapper class for QML that contains every public property of the backend
 class ApiObject : public QObject {
     Q_OBJECT
-
-    Q_PROPERTY(QObject* platforms READ platformsPtr CONSTANT)
+    Q_PROPERTY(QQmlListProperty<Model::Platform> platforms READ getPlatformsProp CONSTANT)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
-    Model::PlatformModel* platformsPtr() { return &m_platforms; }
+    QQmlListProperty<Model::Platform> getPlatformsProp();
 
 private:
-    Model::PlatformModel m_platforms;
+    QList<Model::Platform*> m_platforms;
 };

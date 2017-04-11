@@ -9,6 +9,10 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    qmlRegisterType<Model::Platform>("PegasusAPI", 0, 1, "Platform");
+    qmlRegisterType<Model::Game>("PegasusAPI", 0, 1, "Game");
+    qmlRegisterType<Model::GameAssets>("PegasusAPI", 0, 1, "GameAssets");
+
     ApiObject pegasus_api;
 
     QQmlApplicationEngine engine;

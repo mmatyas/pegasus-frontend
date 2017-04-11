@@ -1,12 +1,11 @@
 #pragma once
 
-#include "PlatformList.h"
-
-#include <QAbstractListModel>
-#include <QSharedPointer>
 #include <QString>
-#include <QVector>
+#include <QQmlListProperty>
 
+
+// NOTE: `QQmlListProperty` requires including the namespace in
+// the template parameter! See QTBUG-15459.
 
 namespace Model {
 
@@ -17,8 +16,8 @@ class GameAssets : public QObject {
     Q_PROPERTY(QString logo MEMBER logo CONSTANT)
     Q_PROPERTY(QString background MEMBER background CONSTANT)
 
-    // TODO: these could be optimized
-    // see https://doc.qt.io/qt-5/qtqml-cppintegration-data.html
+    // TODO: these could be optimized, see
+    // https://doc.qt.io/qt-5/qtqml-cppintegration-data.html (Sequence Type to JavaScript Array)
     Q_PROPERTY(QStringList screenshots MEMBER screenshot_list CONSTANT)
     Q_PROPERTY(QStringList videos MEMBER video_list CONSTANT)
 
@@ -33,95 +32,48 @@ public:
 };
 
 
-class GameItem : public QObject {
+class Game : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QString title MEMBER m_title CONSTANT)
+    Q_PROPERTY(QString description MEMBER m_description CONSTANT)
+    Q_PROPERTY(QString developer MEMBER m_developer CONSTANT)
+    Q_PROPERTY(QString publisher MEMBER m_publisher CONSTANT)
+    Q_PROPERTY(QString genre MEMBER m_genre CONSTANT)
+    Q_PROPERTY(Model::GameAssets* assets MEMBER m_assets CONSTANT)
 
 public:
-    explicit GameItem(QObject* parent = nullptr);
+    explicit Game(QObject* parent = nullptr);
 
-    QString rom_path;
-    QString rom_filename;
+    QString m_rom_path;
+    QString m_rom_filename;
 
-    QString title;
-    QString description;
-    QString developer;
-    QString publisher;
-    QString genre;
+    QString m_title;
+    QString m_description;
+    QString m_developer;
+    QString m_publisher;
+    QString m_genre;
 
-    GameAssets assets;
-};
-
-using GameItemPtr = GameItem*;
-
-class GameModel : public QAbstractListModel {
-    Q_OBJECT
-
-public:
-    enum Roles {
-        TitleRole = Qt::UserRole + 1,
-        DescriptionRole,
-        DeveloperRole,
-        PublisherRole,
-        GenreRole,
-        AssetsRole,
-    };
-
-    explicit GameModel(QObject* parent = nullptr);
-
-    void append(GameItemPtr);
-
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-
-protected:
-    QHash<int, QByteArray> roleNames() const;
-
-private:
-    QVector<GameItemPtr> games;
+    GameAssets* m_assets;
 };
 
 
-class PlatformItem : public QObject {
+class Platform : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QString shortName MEMBER m_short_name CONSTANT)
+    Q_PROPERTY(QString longName MEMBER m_long_name CONSTANT)
+    Q_PROPERTY(QQmlListProperty<Model::Game> games READ getGamesProp CONSTANT)
 
 public:
-    explicit PlatformItem(QObject* parent = nullptr);
+    explicit Platform(QObject* parent = nullptr);
 
-    QString short_name;
-    QString long_name;
-    QString rom_dir_path;
-    QString launch_cmd;
+    QQmlListProperty<Model::Game> getGamesProp();
 
-    GameModel game_model;
-};
+    QString m_short_name;
+    QString m_long_name;
+    QString m_rom_dir_path;
+    QString m_launch_cmd;
 
-using PlatformItemPtr = PlatformItem*;
-
-class PlatformModel : public QAbstractListModel {
-    Q_OBJECT
-
-public:
-    enum Roles {
-        ShortNameRole = Qt::UserRole + 1,
-        LongNameRole,
-        GameModelRole,
-        GameCountRole,
-    };
-
-    explicit PlatformModel(QObject* parent = nullptr);
-
-    void append(PlatformItemPtr);
-
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-
-protected:
-    QHash<int, QByteArray> roleNames() const;
-
-private:
-    QVector<PlatformItemPtr> platforms;
+    QList<Game*> m_games;
 };
 
 } // namespace Model
-
-Q_DECLARE_METATYPE(Model::GameAssets*)

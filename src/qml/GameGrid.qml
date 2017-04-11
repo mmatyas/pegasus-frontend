@@ -1,5 +1,6 @@
 import QtQuick 2.6
 
+
 GridView {
     property variant platformData
     // TODO: make these customizable
@@ -11,12 +12,12 @@ GridView {
     signal indexChanged(int index, variant game)
 
 
-    model: platformData ? platformData.gameModel : 0
-    onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel);
-
     cellWidth: width / columnCount
     cellHeight: height / rowCount
     displayMarginBeginning: anchors.topMargin
+
+    model: platformData ? platformData.games : 0
+    onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel);
 
     highlight: Rectangle {
         color: "#0074da"

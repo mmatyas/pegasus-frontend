@@ -7,24 +7,24 @@
 
 class Es2XmlReader {
 public:
-    static bool read(Model::PlatformModel&);
+    static bool read(QList<Model::Platform*>&);
 
 private:
-    static QVector<Model::PlatformItemPtr> readSystemsFile();
+    static QVector<Model::Platform*> readSystemsFile();
     static QString findSystemsCfg();
-    static Model::PlatformItemPtr readSystem();
-    static void parseSystemShortName(Model::PlatformItemPtr&);
-    static void parseSystemRomDirPath(Model::PlatformItemPtr&);
-    static void parseSystemRunCmd(Model::PlatformItemPtr&);
+    static Model::Platform* readSystem();
+    static void parseSystemShortName(Model::Platform*);
+    static void parseSystemRomDirPath(Model::Platform*);
+    static void parseSystemRunCmd(Model::Platform*);
 
-    static QVector<Model::GameItemPtr> readGamelistFile(const Model::PlatformItemPtr&);
-    static QString findGamelist(const Model::PlatformItemPtr&);
-    static Model::GameItemPtr readGame();
-    static void parseGamePath(Model::GameItemPtr&);
-    static void parseGameName(Model::GameItemPtr&);
-    static void parseGameDescription(Model::GameItemPtr&);
-    static void parseGameDeveloper(Model::GameItemPtr&);
-    static void findGameAssets(Model::PlatformItemPtr&, Model::GameItemPtr&);
+    static QVector<Model::Game*> readGamelistFile(Model::Platform*);
+    static QString findGamelist(const Model::Platform*);
+    static Model::Game* readGame(Model::Platform*);
+    static void parseGamePath(Model::Game*);
+    static void parseGameName(Model::Game*);
+    static void parseGameDescription(Model::Game*);
+    static void parseGameDeveloper(Model::Game*);
+    static void findGameAssets(Model::Platform*, Model::Game*);
 
     static QXmlStreamReader xml;
 };
@@ -38,7 +38,7 @@ public:
         VIDEO,
     };
 
-    static QString find(AssetType, const Model::PlatformItemPtr&, const Model::GameItemPtr&);
+    static QString find(AssetType, const Model::Platform*, const Model::Game*);
 
 private:
     static QVector<QString> possibleSuffixes(AssetType);

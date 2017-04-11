@@ -1,5 +1,7 @@
 #include "Model.h"
 
+#include <QDebug>
+
 
 namespace Model {
 
@@ -7,118 +9,18 @@ GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
 {}
 
-GameItem::GameItem(QObject* parent)
+Game::Game(QObject* parent)
+    : QObject(parent)
+    , m_assets(new GameAssets(this))
+{}
+
+Platform::Platform(QObject* parent)
     : QObject(parent)
 {}
 
-GameModel::GameModel(QObject* parent)
-    : QAbstractListModel(parent)
-{}
-
-void GameModel::append(GameItemPtr game)
+QQmlListProperty<Model::Game> Platform::getGamesProp()
 {
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    games << game;
-    endInsertRows();
-}
-
-int GameModel::rowCount(const QModelIndex&) const {
-    return games.count();
-}
-
-QVariant GameModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid() || index.row() >= games.count()) {
-        Q_ASSERT(false);
-        return QVariant();
-    }
-
-    const GameItemPtr& game = games.at(index.row());
-    switch (role) {
-        case Roles::TitleRole:
-            return game->title;
-        case Roles::DescriptionRole:
-            return game->description;
-        case Roles::DeveloperRole:
-            return game->developer;
-        case Roles::PublisherRole:
-            return game->publisher;
-        case Roles::GenreRole:
-            return game->genre;
-        case Roles::AssetsRole:
-            return QVariant::fromValue(&game->assets);
-        default:
-            break;
-    }
-
-    Q_ASSERT(false);
-    return QVariant();
-}
-
-QHash<int, QByteArray> GameModel::roleNames() const {
-    static const QHash<int, QByteArray> roles = {
-        { Roles::TitleRole, "title" },
-        { Roles::DescriptionRole, "description" },
-        { Roles::DeveloperRole, "developer" },
-        { Roles::PublisherRole, "publisher" },
-        { Roles::GenreRole, "genre" },
-        { Roles::AssetsRole, "assets" },
-    };
-
-    return roles;
-}
-
-PlatformItem::PlatformItem(QObject* parent)
-    : QObject(parent)
-{}
-
-PlatformModel::PlatformModel(QObject* parent)
-    : QAbstractListModel(parent)
-{}
-
-void PlatformModel::append(PlatformItemPtr platform)
-{
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    platforms << platform;
-    endInsertRows();
-}
-
-int PlatformModel::rowCount(const QModelIndex&) const {
-    return platforms.count();
-}
-
-QVariant PlatformModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid() || index.row() >= platforms.count()) {
-        Q_ASSERT(false);
-        return QVariant();
-    }
-
-    const PlatformItemPtr& platform = platforms.at(index.row());
-    switch (role) {
-        case Roles::ShortNameRole:
-            return platform->short_name;
-        case Roles::LongNameRole:
-            return platform->long_name;
-        case Roles::GameModelRole:
-            return QVariant::fromValue<GameModel*>(&platform->game_model);
-        case Roles::GameCountRole:
-            return platform->game_model.rowCount();
-        default:
-            break;
-    }
-
-    Q_ASSERT(false);
-    return QVariant();
-}
-
-QHash<int, QByteArray> PlatformModel::roleNames() const {
-    static const QHash<int, QByteArray> roles = {
-        { Roles::ShortNameRole, "shortName" },
-        { Roles::LongNameRole, "longName" },
-        { Roles::GameModelRole, "gameModel" },
-        { Roles::GameCountRole, "gameCount" },
-    };
-
-    return roles;
+    return QQmlListProperty<Model::Game>(this, m_games);
 }
 
 } // namespace Model
