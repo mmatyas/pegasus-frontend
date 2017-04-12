@@ -26,7 +26,10 @@ Window {
             id: topbar
 
             platformModel: pegasus.platforms
-            onIndexChanged: appWindow.currentPlatform = platform
+            onIndexChanged: {
+                pegasus.currentPlatformIndex = index
+                appWindow.currentPlatform = platform
+            }
 
             z: 500
             width: parent.width
@@ -44,7 +47,10 @@ Window {
             id: gamegrid
 
             platformData: appWindow.currentPlatform
-            onIndexChanged: appWindow.currentGame = game
+            onIndexChanged:  {
+                pegasus.currentGameIndex = index
+                appWindow.currentGame = game
+            }
 
             z: 200
             width: parent.width * 0.65
