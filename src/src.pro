@@ -7,18 +7,22 @@ CONFIG += c++11
 
 SOURCES += \
     backend/main.cpp \
-    backend/Es2XmlReader.cpp \
+    backend/Api.cpp \
     backend/Model.cpp \
     backend/Utils.cpp \
     backend/PlatformList.cpp \
-    backend/Api.cpp
+    backend/Es2XmlReader.cpp \
+    backend/Es2GamelistReader.cpp \
+    backend/Es2Assets.cpp
 
 HEADERS += \
-    backend/Es2XmlReader.h \
-    backend/Utils.h \
+    backend/Api.h \
     backend/Model.h \
+    backend/Utils.h \
     backend/PlatformList.h \
-    backend/Api.h
+    backend/Es2XmlReader.h \
+    backend/Es2GamelistReader.h \
+    backend/Es2Assets.h
 
 RESOURCES += \
     qml.qrc \
