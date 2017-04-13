@@ -3,6 +3,8 @@
 #include "Es2XmlReader.h"
 
 #include <QDebug>
+#include <QFileInfo>
+#include <QRegularExpression>
 
 
 ApiObject::ApiObject(QObject* parent)
@@ -101,4 +103,38 @@ void ApiObject::setCurrentGameIndex(int idx)
     emit currentGameChanged();
 }
 
+void ApiObject::launchGame()
+{
+    if (!m_current_platform) {
+        qWarning() << tr("The current platform is undefined, you can't launch any games!");
+        return;
+    }
+    if (!m_current_game) {
+        qWarning() << tr("The current game is undefined, you can't launch it!");
+        return;
+    }
+
+    // Build the launch command
+
+    const QString rom_path_basename = QFileInfo(m_current_game->m_rom_path).completeBaseName();
+    QString rom_path_escaped = m_current_game->m_rom_path;
+#ifdef _WIN32
+    rom_path_escaped = '"' + rom_path_escaped + '"';
+#else
+    // based on the source code of Bash
+    static constexpr auto SPECIALCHARS = R"(([\t\n !"$&'()*,;<>?\[\b\]^`{|}#~:=]))";
+    rom_path_escaped.replace(QRegularExpression(SPECIALCHARS), R"(\\1)");
+#endif
+
+    QString launch_cmd = m_current_platform->m_launch_cmd;
+    launch_cmd
+        .replace("%ROM%", rom_path_escaped)
+        .replace("%ROM_RAW%", m_current_game->m_rom_path)
+        .replace("%BASENAME%", rom_path_basename);
+
+    // Run the launch command
+
+    // TODO: add a class to handle UI reload and game launch
+    qDebug() << launch_cmd;
+    emit gameLaunched();
 }

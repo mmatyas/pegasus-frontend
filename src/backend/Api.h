@@ -37,11 +37,14 @@ public:
     void setCurrentGameIndex(int);
     void resetGameIndex();
 
+    Q_INVOKABLE void launchGame();
+
 signals:
     void currentPlatformIndexChanged();
     void currentGameIndexChanged();
     void currentPlatformChanged();
     void currentGameChanged();
+    void gameLaunched();
 
 private:
     QList<Model::Platform*> m_platforms;

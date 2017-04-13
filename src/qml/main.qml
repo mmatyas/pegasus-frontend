@@ -17,6 +17,7 @@ Window {
 
         focus: true
         Keys.forwardTo: [topbar, gamegrid]
+        Keys.onReturnPressed: pegasus.launchGame();
 
         PlatformBar {
             id: topbar
