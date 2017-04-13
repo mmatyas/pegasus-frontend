@@ -1,5 +1,6 @@
 import QtQuick 2.6
 
+
 Item {
     property alias platformShortName: label.text
     property bool isOnTop: false

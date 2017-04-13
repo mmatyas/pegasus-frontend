@@ -1,8 +1,9 @@
 import QtQuick 2.0
 import QtMultimedia 5.8
 
+
 Item {
-    property var gameData
+    property var gameData: pegasus.currentGame
 
     onGameDataChanged: {
         videoPreview.playlist.clear();

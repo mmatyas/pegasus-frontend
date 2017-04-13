@@ -2,9 +2,7 @@ import QtQuick 2.0
 
 
 Rectangle {
-    property var platformModel
-
-    signal indexChanged(int index, var platform)
+    property var platformModel: pegasus.platforms
 
     color: "#333"
     height: 54
@@ -58,16 +56,14 @@ Rectangle {
             }
         }
 
-        onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel)
-        Component.onCompleted: indexChanged(currentIndex, currentItem.delegateModel)
+        onCurrentIndexChanged: pegasus.currentPlatformIndex = currentIndex
+        Component.onCompleted: pegasus.currentPlatformIndex = currentIndex
     }
 
     Component {
         id: platformCardDelegate
 
         PlatformCard {
-            property var delegateModel: model
-
             platformShortName: shortName
             isOnTop: PathView.isCurrentItem
 

@@ -4,10 +4,6 @@ import QtQuick.Window 2.2
 
 Window {
     id: appWindow
-
-    property var currentGame: null
-    property var currentPlatform: null
-
     visible: true
     width: 1280
     height: 720
@@ -24,13 +20,6 @@ Window {
 
         PlatformBar {
             id: topbar
-
-            platformModel: pegasus.platforms
-            onIndexChanged: {
-                pegasus.currentPlatformIndex = index
-                appWindow.currentPlatform = platform
-            }
-
             z: 500
             width: parent.width
         }
@@ -45,13 +34,6 @@ Window {
 
         GameGrid {
             id: gamegrid
-
-            platformData: appWindow.currentPlatform
-            onIndexChanged:  {
-                pegasus.currentGameIndex = index
-                appWindow.currentGame = game
-            }
-
             z: 200
             width: parent.width * 0.65
             anchors {
@@ -62,8 +44,6 @@ Window {
         }
 
         GamePreview {
-            gameData: appWindow.currentGame
-
             z: 400
             width: (parent.width * 0.35) - anchors.leftMargin - 40
             anchors {

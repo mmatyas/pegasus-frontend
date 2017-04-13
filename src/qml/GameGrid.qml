@@ -2,14 +2,12 @@ import QtQuick 2.6
 
 
 GridView {
-    property var platformData
+    property var platformData: pegasus.currentPlatform
     // TODO: make these customizable
     property real rowCount: 3.4
     property real columnCount: platformData
                                ? (platformData.shortName === "nes" ? 5 : 4)
                                : 1
-
-    signal indexChanged(int index, var game)
 
 
     cellWidth: width / columnCount
@@ -17,7 +15,7 @@ GridView {
     displayMarginBeginning: anchors.topMargin
 
     model: platformData ? platformData.games : 0
-    onCurrentIndexChanged: indexChanged(currentIndex, currentItem.delegateModel);
+    onCurrentIndexChanged: pegasus.currentGameIndex = currentIndex;
 
     highlight: Rectangle {
         color: "#0074da"
@@ -27,8 +25,6 @@ GridView {
     }
 
     delegate: Item {
-        property var delegateModel: model
-
         width: GridView.view.cellWidth
         height: GridView.view.cellHeight
 

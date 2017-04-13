@@ -3,15 +3,17 @@ import QtGraphicalEffects 1.0
 
 
 Item {
+    property var gameData: pegasus.currentGame
+
     Image {
         anchors.fill: parent
         horizontalAlignment: Image.AlignLeft
-        visible: currentGame
+        visible: gameData
 
         asynchronous: true
         opacity: 0.35
 
-        source: currentGame ? "file:" + currentGame.assets.screenshots[0] : ""
+        source: gameData ? "file:" + gameData.assets.screenshots[0] : ""
         sourceSize { width: 512; height: 512 }
         fillMode: Image.PreserveAspectFit
         smooth: false
