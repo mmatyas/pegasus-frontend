@@ -15,6 +15,8 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_game(nullptr)
 {
     Es2XmlReader::read(m_platforms); // TODO: check result
+    if (!m_platforms.isEmpty())
+        setCurrentPlatformIndex(0);
 }
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
