@@ -13,7 +13,8 @@ SOURCES += \
     backend/PlatformList.cpp \
     backend/Es2XmlReader.cpp \
     backend/Es2GamelistReader.cpp \
-    backend/Es2Assets.cpp
+    backend/Es2Assets.cpp \
+    backend/FrontendLayer.cpp
 
 HEADERS += \
     backend/Api.h \
@@ -22,7 +23,8 @@ HEADERS += \
     backend/PlatformList.h \
     backend/Es2XmlReader.h \
     backend/Es2GamelistReader.h \
-    backend/Es2Assets.h
+    backend/Es2Assets.h \
+    backend/FrontendLayer.h
 
 RESOURCES += \
     qml.qrc \

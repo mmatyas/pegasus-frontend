@@ -116,8 +116,11 @@ void ApiObject::launchGame()
         return;
     }
 
-    // Build the launch command
+    emit requestLaunch();
+}
 
+void ApiObject::onReadyToLaunch()
+{
     const QString rom_path_basename = QFileInfo(m_current_game->m_rom_path).completeBaseName();
     QString rom_path_escaped = m_current_game->m_rom_path;
 #ifdef _WIN32
@@ -134,9 +137,5 @@ void ApiObject::launchGame()
         .replace("%ROM_RAW%", m_current_game->m_rom_path)
         .replace("%BASENAME%", rom_path_basename);
 
-    // Run the launch command
-
-    // TODO: add a class to handle UI reload and game launch
-    qDebug() << launch_cmd;
-    emit gameLaunched();
+    emit executeCommand(this, launch_cmd);
 }

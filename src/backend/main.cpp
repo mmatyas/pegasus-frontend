@@ -1,7 +1,8 @@
 #include "Api.h"
+#include "FrontendLayer.h"
+#include "Model.h"
 
 #include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <QQmlContext>
 
 
@@ -13,11 +14,18 @@ int main(int argc, char *argv[])
     qmlRegisterType<Model::Game>("PegasusAPI", 0, 1, "Game");
     qmlRegisterType<Model::GameAssets>("PegasusAPI", 0, 1, "GameAssets");
 
-    ApiObject pegasus_api;
+    ApiObject api;
+    FrontendLayer frontend(&api);
 
-    QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("pegasus", &pegasus_api);
-    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    // the following communication is required because destroying the
+    // frontend stack when launching a game is not synchronous;
+    // see the relevant classes
+    QObject::connect(&api, &ApiObject::requestLaunch,
+                     &frontend, &FrontendLayer::onLaunchRequested);
+    QObject::connect(&frontend, &FrontendLayer::readyToLaunch,
+                     &api, &ApiObject::onReadyToLaunch);
+    QObject::connect(&api, &ApiObject::executeCommand,
+                     &frontend, &FrontendLayer::onExecuteCommand);
 
     return app.exec();
 }
