@@ -56,18 +56,22 @@ QVector<Model::Platform*> Systems::readSystemsFile()
     QVector<Model::Platform*> platforms;
 
     xml.setDevice(&systemscfg);
+
+    // read the root <systemList> element
     if (xml.readNextStartElement()) {
         if (xml.name() != "systemList")
             xml.raiseError(QObject::tr("`%1` does not start with a `<systemList>` node!"));
         else {
+            // read all <system> nodes
             while (xml.readNextStartElement()) {
-                if (xml.name() == "system") {
-                    Model::Platform* platform = readSystem();
-                    if (!platform->m_short_name.isEmpty())
-                        platforms.push_back(platform);
-                }
-                else
+                if (xml.name() != "system") {
                     xml.skipCurrentElement();
+                    continue;
+                }
+
+                Model::Platform* platform = readSystem();
+                if (!platform->m_short_name.isEmpty())
+                    platforms.push_back(platform);
             }
         }
     }
