@@ -21,12 +21,11 @@ Window {
 
         PlatformBar {
             id: topbar
-            z: 500
+            z: 300
             width: parent.width
         }
 
         BackgroundImage {
-            z: 100
             anchors {
                 top: topbar.bottom; bottom: parent.bottom
                 left: parent.left; right: parent.right
@@ -35,7 +34,7 @@ Window {
 
         GameGrid {
             id: gamegrid
-            z: 200
+            z: 100
             width: parent.width * 0.65
             anchors {
                 top: topbar.bottom; topMargin: 32
@@ -45,7 +44,7 @@ Window {
         }
 
         GamePreview {
-            z: 400
+            z: 200
             width: (parent.width * 0.35) - anchors.leftMargin - 40
             anchors {
                 top: topbar.bottom; topMargin: 32
