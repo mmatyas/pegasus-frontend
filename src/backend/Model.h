@@ -12,23 +12,39 @@ namespace Model {
 class GameAssets : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString boxFront MEMBER box_front CONSTANT)
-    Q_PROPERTY(QString logo MEMBER logo CONSTANT)
-    Q_PROPERTY(QString background MEMBER background CONSTANT)
+    Q_PROPERTY(QString boxFront MEMBER m_box_front CONSTANT)
+    Q_PROPERTY(QString boxBack MEMBER m_box_back CONSTANT)
+    Q_PROPERTY(QString boxSpine MEMBER m_box_spine CONSTANT)
+    Q_PROPERTY(QString box MEMBER m_box_full CONSTANT)
+    Q_PROPERTY(QString cartridge MEMBER m_cartridge CONSTANT)
+    Q_PROPERTY(QString logo MEMBER m_logo CONSTANT)
+    Q_PROPERTY(QString marquee MEMBER m_marquee CONSTANT)
+    Q_PROPERTY(QString bezel MEMBER m_bezel CONSTANT)
+    Q_PROPERTY(QString gridicon MEMBER m_gridicon CONSTANT)
+    Q_PROPERTY(QString flyers MEMBER m_flyer CONSTANT)
 
     // TODO: these could be optimized, see
     // https://doc.qt.io/qt-5/qtqml-cppintegration-data.html (Sequence Type to JavaScript Array)
-    Q_PROPERTY(QStringList screenshots MEMBER screenshot_list CONSTANT)
-    Q_PROPERTY(QStringList videos MEMBER video_list CONSTANT)
+    Q_PROPERTY(QStringList fanarts MEMBER m_fanarts CONSTANT)
+    Q_PROPERTY(QStringList screenshots MEMBER m_screenshots CONSTANT)
+    Q_PROPERTY(QStringList videos MEMBER m_videos CONSTANT)
 
 public:
     explicit GameAssets(QObject* parent = nullptr);
 
-    QString box_front;
-    QString logo;
-    QString background;
-    QStringList screenshot_list;
-    QStringList video_list;
+    QString m_box_front;
+    QString m_box_back;
+    QString m_box_spine;
+    QString m_box_full;
+    QString m_cartridge;
+    QString m_logo;
+    QString m_marquee;
+    QString m_bezel;
+    QString m_gridicon;
+    QString m_flyer;
+    QStringList m_fanarts;
+    QStringList m_screenshots;
+    QStringList m_videos;
 };
 
 
