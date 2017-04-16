@@ -29,7 +29,12 @@ QVector<QString> Es2Assets::possibleSuffixes(AssetType asset_type)
 
 QVector<QString> Es2Assets::possibleExtensions(AssetType asset_type)
 {
+#ifdef __arm__
+    // prefer opaque images on embedded systems
+    static const QVector<QString> image_exts = { ".jpg", ".png" };
+#else
     static const QVector<QString> image_exts = { ".png", ".jpg" };
+#endif
     static const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
 
     return (asset_type == AssetType::VIDEOS) ? video_exts : image_exts;
