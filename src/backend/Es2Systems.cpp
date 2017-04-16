@@ -59,8 +59,12 @@ QVector<Model::Platform*> Systems::readSystemsFile()
 
     // read the root <systemList> element
     if (xml.readNextStartElement()) {
-        if (xml.name() != "systemList")
-            xml.raiseError(QObject::tr("`%1` does not start with a `<systemList>` node!"));
+        if (xml.name() != "systemList") {
+            xml.raiseError(
+                QObject::tr("`%1` does not have a `<systemList>` root node!")
+                    .arg(systemscfg_path)
+            );
+        }
         else {
             // read all <system> nodes
             while (xml.readNextStartElement()) {
