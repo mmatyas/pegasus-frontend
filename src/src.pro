@@ -11,20 +11,20 @@ SOURCES += \
     backend/Model.cpp \
     backend/Utils.cpp \
     backend/PlatformList.cpp \
-    backend/Es2XmlReader.cpp \
     backend/Es2GamelistReader.cpp \
     backend/Es2Assets.cpp \
-    backend/FrontendLayer.cpp
+    backend/FrontendLayer.cpp \
+    backend/Es2Systems.cpp
 
 HEADERS += \
     backend/Api.h \
     backend/Model.h \
     backend/Utils.h \
     backend/PlatformList.h \
-    backend/Es2XmlReader.h \
     backend/Es2GamelistReader.h \
     backend/Es2Assets.h \
-    backend/FrontendLayer.h
+    backend/FrontendLayer.h \
+    backend/Es2Systems.h
 
 RESOURCES += \
     qml.qrc \

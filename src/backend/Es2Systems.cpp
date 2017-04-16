@@ -1,4 +1,4 @@
-#include "Es2XmlReader.h"
+#include "Es2Systems.h"
 
 #include "Es2GamelistReader.h"
 #include "Model.h"
@@ -8,9 +8,9 @@
 #include <QDebug>
 
 
-QXmlStreamReader Es2XmlReader::xml;
+QXmlStreamReader Es2Systems::xml;
 
-bool Es2XmlReader::read(QList<Model::Platform*>& platform_list)
+bool Es2Systems::read(QList<Model::Platform*>& platform_list)
 {
     QVector<Model::Platform*> platforms = readSystemsFile();
     if (xml.error()) {
@@ -37,7 +37,7 @@ bool Es2XmlReader::read(QList<Model::Platform*>& platform_list)
     return true;
 }
 
-QVector<Model::Platform*> Es2XmlReader::readSystemsFile()
+QVector<Model::Platform*> Es2Systems::readSystemsFile()
 {
     QString systemscfg_path = findSystemsCfg();
     if (systemscfg_path.isEmpty()) {
@@ -73,7 +73,7 @@ QVector<Model::Platform*> Es2XmlReader::readSystemsFile()
     return platforms;
 }
 
-QString Es2XmlReader::findSystemsCfg()
+QString Es2Systems::findSystemsCfg()
 {
     static const QString FOUND_MSG = "Found `%1`";
     static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
@@ -95,7 +95,7 @@ QString Es2XmlReader::findSystemsCfg()
     return QString();
 }
 
-Model::Platform* Es2XmlReader::readSystem()
+Model::Platform* Es2Systems::readSystem()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -115,19 +115,19 @@ Model::Platform* Es2XmlReader::readSystem()
     return platform;
 }
 
-void Es2XmlReader::parseSystemShortName(Model::Platform* platform) {
+void Es2Systems::parseSystemShortName(Model::Platform* platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "name");
     platform->m_short_name = xml.readElementText();
 }
 
-void Es2XmlReader::parseSystemRomDirPath(Model::Platform* platform) {
+void Es2Systems::parseSystemRomDirPath(Model::Platform* platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
     platform->m_rom_dir_path = xml.readElementText()
         .replace("\\", "/")
         .replace("~", QDir::homePath());
 }
 
-void Es2XmlReader::parseSystemRunCmd(Model::Platform* platform) {
+void Es2Systems::parseSystemRunCmd(Model::Platform* platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "command");
     platform->m_launch_cmd = xml.readElementText();
 }

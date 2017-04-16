@@ -1,6 +1,6 @@
 #include "Api.h"
 
-#include "Es2XmlReader.h"
+#include "Es2Systems.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -14,7 +14,7 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_platform(nullptr)
     , m_current_game(nullptr)
 {
-    Es2XmlReader::read(m_platforms); // TODO: check result
+    Es2Systems::read(m_platforms); // TODO: check result
     if (!m_platforms.isEmpty())
         setCurrentPlatformIndex(0);
 }
