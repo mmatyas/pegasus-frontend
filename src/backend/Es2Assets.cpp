@@ -5,8 +5,9 @@
 
 #include <QDir>
 
+namespace Es2 {
 
-QVector<QString> Es2Assets::possibleSuffixes(AssetType asset_type)
+QVector<QString> Assets::possibleSuffixes(AssetType asset_type)
 {
     static const QMap<AssetType, QVector<QString>> suffix_map = {
         { AssetType::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
@@ -27,7 +28,7 @@ QVector<QString> Es2Assets::possibleSuffixes(AssetType asset_type)
     return suffix_map.value(asset_type);
 }
 
-QVector<QString> Es2Assets::possibleExtensions(AssetType asset_type)
+QVector<QString> Assets::possibleExtensions(AssetType asset_type)
 {
 #ifdef __arm__
     // prefer opaque images on embedded systems
@@ -40,7 +41,7 @@ QVector<QString> Es2Assets::possibleExtensions(AssetType asset_type)
     return (asset_type == AssetType::VIDEOS) ? video_exts : image_exts;
 }
 
-QString Es2Assets::find(AssetType asset_type,
+QString Assets::find(AssetType asset_type,
                         const Model::Platform* platform,
                         const Model::Game* game)
 {
@@ -81,3 +82,5 @@ QString Es2Assets::find(AssetType asset_type,
 
     return QString();
 }
+
+} // namespace Es2

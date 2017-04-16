@@ -5,8 +5,10 @@
 namespace Model { class Platform; }
 
 
-/// Compatiility class for parsing ES2 game system definitions
-class Es2Systems {
+namespace Es2 {
+
+/// Compatibility class for parsing ES2 game system definitions
+class Systems {
 public:
     static bool read(QList<Model::Platform*>&);
 
@@ -20,3 +22,5 @@ private:
 
     static QXmlStreamReader xml;
 };
+
+} // namespace Es2

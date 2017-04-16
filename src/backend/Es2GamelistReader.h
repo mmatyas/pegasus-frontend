@@ -7,7 +7,10 @@ namespace Model { class Game; }
 namespace Model { class Platform; }
 
 
-class Es2GamelistReader {
+namespace Es2 {
+
+/// Compatibility class for parsing ES2 gamelists
+class Gamelist {
 public:
     static QVector<Model::Game*> read(Model::Platform*);
 
@@ -24,3 +27,5 @@ private:
 
     static QXmlStreamReader xml;
 };
+
+} // namespace Es2

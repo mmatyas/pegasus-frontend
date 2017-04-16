@@ -7,7 +7,10 @@ namespace Model { class Game; }
 namespace Model { class Platform; }
 
 
-class Es2Assets {
+namespace Es2 {
+
+/// Compatibility class for finding game assets in ES2 directories
+class Assets {
 public:
     enum class AssetType : unsigned char {
         BOX_FRONT,
@@ -30,3 +33,5 @@ private:
     static QVector<QString> possibleSuffixes(AssetType);
     static QVector<QString> possibleExtensions(AssetType);
 };
+
+} // namespace Es2

@@ -14,7 +14,7 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_platform(nullptr)
     , m_current_game(nullptr)
 {
-    Es2Systems::read(m_platforms); // TODO: check result
+    Es2::Systems::read(m_platforms); // TODO: check result
     if (!m_platforms.isEmpty())
         setCurrentPlatformIndex(0);
 }

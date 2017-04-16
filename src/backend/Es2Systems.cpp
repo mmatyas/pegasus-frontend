@@ -8,9 +8,11 @@
 #include <QDebug>
 
 
-QXmlStreamReader Es2Systems::xml;
+namespace Es2 {
 
-bool Es2Systems::read(QList<Model::Platform*>& platform_list)
+QXmlStreamReader Systems::xml;
+
+bool Systems::read(QList<Model::Platform*>& platform_list)
 {
     QVector<Model::Platform*> platforms = readSystemsFile();
     if (xml.error()) {
@@ -19,14 +21,14 @@ bool Es2Systems::read(QList<Model::Platform*>& platform_list)
     }
 
     for (auto& platform : platforms) {
-        QVector<Model::Game*> games = Es2GamelistReader::read(platform);
+        QVector<Model::Game*> games = Gamelist::read(platform);
         if (xml.error()) {
             qWarning().noquote() << xml.errorString();
             continue;
         }
 
         for (Model::Game* game : games) {
-            Es2GamelistReader::findGameAssets(platform, game);
+            Gamelist::findGameAssets(platform, game);
             platform->m_games.append(game);
         }
 
@@ -37,7 +39,7 @@ bool Es2Systems::read(QList<Model::Platform*>& platform_list)
     return true;
 }
 
-QVector<Model::Platform*> Es2Systems::readSystemsFile()
+QVector<Model::Platform*> Systems::readSystemsFile()
 {
     QString systemscfg_path = findSystemsCfg();
     if (systemscfg_path.isEmpty()) {
@@ -73,7 +75,7 @@ QVector<Model::Platform*> Es2Systems::readSystemsFile()
     return platforms;
 }
 
-QString Es2Systems::findSystemsCfg()
+QString Systems::findSystemsCfg()
 {
     static const QString FOUND_MSG = "Found `%1`";
     static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
@@ -95,7 +97,7 @@ QString Es2Systems::findSystemsCfg()
     return QString();
 }
 
-Model::Platform* Es2Systems::readSystem()
+Model::Platform* Systems::readSystem()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -115,19 +117,21 @@ Model::Platform* Es2Systems::readSystem()
     return platform;
 }
 
-void Es2Systems::parseSystemShortName(Model::Platform* platform) {
+void Systems::parseSystemShortName(Model::Platform* platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "name");
     platform->m_short_name = xml.readElementText();
 }
 
-void Es2Systems::parseSystemRomDirPath(Model::Platform* platform) {
+void Systems::parseSystemRomDirPath(Model::Platform* platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
     platform->m_rom_dir_path = xml.readElementText()
         .replace("\\", "/")
         .replace("~", QDir::homePath());
 }
 
-void Es2Systems::parseSystemRunCmd(Model::Platform* platform) {
+void Systems::parseSystemRunCmd(Model::Platform* platform) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "command");
     platform->m_launch_cmd = xml.readElementText();
 }
+
+} //namespace Es2

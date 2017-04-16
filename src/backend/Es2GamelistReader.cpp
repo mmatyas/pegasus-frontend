@@ -8,9 +8,11 @@
 #include <QDebug>
 
 
-QXmlStreamReader Es2GamelistReader::xml;
+namespace Es2 {
 
-QVector<Model::Game*> Es2GamelistReader::read(Model::Platform* platform)
+QXmlStreamReader Gamelist::xml;
+
+QVector<Model::Game*> Gamelist::read(Model::Platform* platform)
 {
     QString gamelist_path = findGamelist(platform);
     if (gamelist_path.isEmpty()) {
@@ -46,7 +48,7 @@ QVector<Model::Game*> Es2GamelistReader::read(Model::Platform* platform)
     return games;
 }
 
-QString Es2GamelistReader::findGamelist(const Model::Platform* platform)
+QString Gamelist::findGamelist(const Model::Platform* platform)
 {
     static constexpr auto FILENAME = "/gamelist.xml";
     static const QString FOUND_MSG = "Found `%1`";
@@ -74,7 +76,7 @@ QString Es2GamelistReader::findGamelist(const Model::Platform* platform)
     return QString();
 }
 
-Model::Game* Es2GamelistReader::readGame(Model::Platform* platform)
+Model::Game* Gamelist::readGame(Model::Platform* platform)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
@@ -96,7 +98,7 @@ Model::Game* Es2GamelistReader::readGame(Model::Platform* platform)
     return game;
 }
 
-void Es2GamelistReader::parseGamePath(Model::Game* game) {
+void Gamelist::parseGamePath(Model::Game* game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "path");
     game->m_rom_path = xml.readElementText();
 
@@ -107,31 +109,33 @@ void Es2GamelistReader::parseGamePath(Model::Game* game) {
     }
 }
 
-void Es2GamelistReader::parseGameName(Model::Game* game) {
+void Gamelist::parseGameName(Model::Game* game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "name");
     game->m_title = xml.readElementText();
 }
 
-void Es2GamelistReader::parseGameDescription(Model::Game* game) {
+void Gamelist::parseGameDescription(Model::Game* game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "desc");
     game->m_description = xml.readElementText();
 }
 
-void Es2GamelistReader::parseGameDeveloper(Model::Game* game) {
+void Gamelist::parseGameDeveloper(Model::Game* game) {
     Q_ASSERT(xml.isStartElement() && xml.name() == "developer");
     game->m_developer = xml.readElementText();
 }
 
-void Es2GamelistReader::findGameAssets(Model::Platform* platform, Model::Game* game)
+void Gamelist::findGameAssets(Model::Platform* platform, Model::Game* game)
 {
-    using AssetType = Es2Assets::AssetType;
+    using AssetType = Es2::Assets::AssetType;
 
     Model::GameAssets& assets = *game->m_assets;
 
-    assets.box_front = Es2Assets::find(AssetType::BOX_FRONT, platform, game);
-    assets.logo = Es2Assets::find(AssetType::LOGO, platform, game);
+    assets.box_front = Es2::Assets::find(AssetType::BOX_FRONT, platform, game);
+    assets.logo = Es2::Assets::find(AssetType::LOGO, platform, game);
 
     // TODO: support multiple
-    assets.screenshot_list << Es2Assets::find(AssetType::SCREENSHOTS, platform, game);
-    assets.video_list << Es2Assets::find(AssetType::VIDEOS, platform, game);
+    assets.screenshot_list << Es2::Assets::find(AssetType::SCREENSHOTS, platform, game);
+    assets.video_list << Es2::Assets::find(AssetType::VIDEOS, platform, game);
 }
+
+} // namespace Es2
