@@ -22,8 +22,8 @@ public:
         MARQUEE, // game logo with background
         BEZEL, // image around the game screen
         STEAMGRID,
+        FLYER,
         FANARTS,
-        FLYERS,
         SCREENSHOTS,
         VIDEOS,
     };

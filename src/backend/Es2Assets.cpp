@@ -20,7 +20,7 @@ QVector<QString> Assets::possibleSuffixes(AssetType asset_type)
         { AssetType::BEZEL, { "-bezel", "-screenmarquee", "-border" } },
         { AssetType::STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
         { AssetType::FANARTS, { "-fanart", "-art" } },
-        { AssetType::FLYERS, { "-flyer" } },
+        { AssetType::FLYER, { "-flyer" } },
         { AssetType::SCREENSHOTS, { "-screenshot" } },
         { AssetType::VIDEOS, { "-video" } },
     };
