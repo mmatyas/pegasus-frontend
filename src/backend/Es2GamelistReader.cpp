@@ -132,6 +132,6 @@ void Es2GamelistReader::findGameAssets(Model::Platform* platform, Model::Game* g
     assets.logo = Es2Assets::find(AssetType::LOGO, platform, game);
 
     // TODO: support multiple
-    assets.screenshot_list << Es2Assets::find(AssetType::SCREENSHOT, platform, game);
-    assets.video_list << Es2Assets::find(AssetType::VIDEO, platform, game);
+    assets.screenshot_list << Es2Assets::find(AssetType::SCREENSHOTS, platform, game);
+    assets.video_list << Es2Assets::find(AssetType::VIDEOS, platform, game);
 }

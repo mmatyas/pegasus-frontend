@@ -10,9 +10,17 @@ QVector<QString> Es2Assets::possibleSuffixes(AssetType asset_type)
 {
     static const QMap<AssetType, QVector<QString>> suffix_map = {
         { AssetType::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
-        { AssetType::LOGO, { "-logo" } },
-        { AssetType::SCREENSHOT, { "-screenshot" } },
-        { AssetType::VIDEO, { "-video" } },
+        { AssetType::BOX_BACK, { "-boxBack", "-box_back" } },
+        { AssetType::BOX_SPINE, { "-boxSpine", "-box_spine", "-boxSide", "-box_side" } },
+        { AssetType::BOX_FULL, { "-boxFull", "-box_full", "-box" } },
+        { AssetType::LOGO, { "-logo", "-wheel" } },
+        { AssetType::MARQUEE, { "-marquee" } },
+        { AssetType::BEZEL, { "-bezel", "-screenmarquee", "-border" } },
+        { AssetType::STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
+        { AssetType::FANARTS, { "-fanart", "-art" } },
+        { AssetType::FLYERS, { "-flyer" } },
+        { AssetType::SCREENSHOTS, { "-screenshot" } },
+        { AssetType::VIDEOS, { "-video" } },
     };
 
     Q_ASSERT(suffix_map.contains(asset_type));
@@ -24,17 +32,7 @@ QVector<QString> Es2Assets::possibleExtensions(AssetType asset_type)
     static const QVector<QString> image_exts = { ".png", ".jpg" };
     static const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
 
-    switch (asset_type) {
-        case AssetType::BOX_FRONT:
-        case AssetType::LOGO:
-        case AssetType::SCREENSHOT:
-            return image_exts;
-        case AssetType::VIDEO:
-            return video_exts;
-    }
-
-    Q_ASSERT(false);
-    return {};
+    return (asset_type == AssetType::VIDEOS) ? video_exts : image_exts;
 }
 
 QString Es2Assets::find(AssetType asset_type,
@@ -56,13 +54,14 @@ QString Es2Assets::find(AssetType asset_type,
 
     // in portable mode, the files are next to the roms under ./media/,
     // but for regular installations, it's under ./downloaded_images/
-    const QString subdir = "/downloaded_images/" + platform->m_short_name + "/" + game->m_rom_filename;
+    const QString es2_subdir = "/downloaded_images/" + platform->m_short_name + "/" + game->m_rom_filename;
     const QVector<QString> possible_base_paths = {
-        platform->m_rom_dir_path + "/media/" + game->m_rom_filename, // portable edition
-        platform->m_rom_dir_path + subdir,
-        QDir::homePath() + "/.config/emulationstation" + subdir,
-        QDir::homePath() + "/.emulationstation" + subdir,
-        "/etc/emulationstation" + subdir,
+        // portable paths
+        platform->m_rom_dir_path + "/media/" + game->m_rom_filename,
+        platform->m_rom_dir_path + es2_subdir,
+        QDir::homePath() + "/.config/emulationstation" + es2_subdir,
+        QDir::homePath() + "/.emulationstation" + es2_subdir,
+        "/etc/emulationstation" + es2_subdir,
     };
 
     // check every combination until there's a match
