@@ -59,13 +59,11 @@ QString Assets::find(AssetType asset_type,
     Q_ASSERT(!possible_suffixes.isEmpty());
     Q_ASSERT(!possible_exts.isEmpty());
 
-    // in portable mode, the files are next to the roms under ./media/,
-    // but for regular installations, it's under ./downloaded_images/
     const QString es2_subdir = "/downloaded_images/" + platform->m_short_name + "/" + game->m_rom_filename;
     const QVector<QString> possible_base_paths = {
         // portable paths
         platform->m_rom_dir_path + "/media/" + game->m_rom_filename,
-        platform->m_rom_dir_path + es2_subdir,
+        // installation paths
         QDir::homePath() + "/.config/emulationstation" + es2_subdir,
         QDir::homePath() + "/.emulationstation" + es2_subdir,
         "/etc/emulationstation" + es2_subdir,
