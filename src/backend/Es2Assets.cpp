@@ -14,6 +14,7 @@ QVector<QString> Assets::possibleSuffixes(AssetType asset_type)
         { AssetType::BOX_BACK, { "-boxBack", "-box_back" } },
         { AssetType::BOX_SPINE, { "-boxSpine", "-box_spine", "-boxSide", "-box_side" } },
         { AssetType::BOX_FULL, { "-boxFull", "-box_full", "-box" } },
+        { AssetType::CARTRIDGE, { "-cartridge", "-cart", "-disc" } },
         { AssetType::LOGO, { "-logo", "-wheel" } },
         { AssetType::MARQUEE, { "-marquee" } },
         { AssetType::BEZEL, { "-bezel", "-screenmarquee", "-border" } },

@@ -17,6 +17,7 @@ public:
         BOX_BACK,
         BOX_SPINE,
         BOX_FULL,
+        CARTRIDGE,
         LOGO, // just the game logo
         MARQUEE, // game logo with background
         BEZEL, // image around the game screen
