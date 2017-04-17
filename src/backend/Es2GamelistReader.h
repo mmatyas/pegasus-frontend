@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFile>
 #include <QString>
 #include <QXmlStreamReader>
 
@@ -12,19 +13,23 @@ namespace Es2 {
 /// Compatibility class for parsing ES2 gamelists
 class Gamelist {
 public:
-    static QVector<Model::Game*> read(Model::Platform*);
+    static void read(Model::Platform*);
 
     // TODO: make this smarter
-    static void findGameAssets(Model::Platform*, Model::Game*);
+    static void findGameAssets(const Model::Platform*, Model::Game*);
 
 private:
-    static QString findGamelist(const Model::Platform*);
-    static Model::Game* readGame(Model::Platform*);
-    static void parseGamePath(Model::Game*);
-    static void parseGameName(Model::Game*);
-    static void parseGameDescription(Model::Game*);
-    static void parseGameDeveloper(Model::Game*);
+    static void readGamelistFile(const Model::Platform*);
 
+    static QString findGamelistFile(const Model::Platform*);
+    static void openGamelistFile(QFile&);
+    static void parseGamelistFile(const Model::Platform*);
+
+    static QHash<QString, QString> readGameProperties();
+    static void handleGameTag(const Model::Platform*,
+                              QHash<QString, Model::Game*>&);
+
+    static QString xml_path;
     static QXmlStreamReader xml;
 };
 
