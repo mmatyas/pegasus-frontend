@@ -88,6 +88,7 @@ public:
     QString m_long_name;
     QString m_rom_dir_path;
     QString m_launch_cmd;
+    QStringList m_rom_filters;
 
     QList<Game*> m_games;
 };
