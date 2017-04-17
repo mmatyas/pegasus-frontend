@@ -11,7 +11,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Model::Platform>("PegasusAPI", 0, 1, "Platform");
-    qmlRegisterType<Model::Game>("PegasusAPI", 0, 1, "Game");
+    qmlRegisterUncreatableType<Model::Game>("PegasusAPI", 0, 1, "Game",
+        QObject::tr("You cannot create this type in QML.")); // TODO: make this change for the rest
     qmlRegisterType<Model::GameAssets>("PegasusAPI", 0, 1, "GameAssets");
 
     ApiObject api;

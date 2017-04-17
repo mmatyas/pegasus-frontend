@@ -58,10 +58,10 @@ class Game : public QObject {
     Q_PROPERTY(Model::GameAssets* assets MEMBER m_assets CONSTANT)
 
 public:
-    explicit Game(QObject* parent = nullptr);
+    explicit Game(const QString& path, QObject* parent = nullptr);
 
-    QString m_rom_path;
-    QString m_rom_basename;
+    const QString m_rom_path;
+    const QString m_rom_basename;
 
     QString m_title;
     QString m_description;

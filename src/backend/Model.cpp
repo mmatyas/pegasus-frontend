@@ -1,6 +1,7 @@
 #include "Model.h"
 
 #include <QDebug>
+#include <QFileInfo>
 
 
 namespace Model {
@@ -9,8 +10,11 @@ GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
 {}
 
-Game::Game(QObject* parent)
+Game::Game(const QString& path, QObject* parent)
     : QObject(parent)
+    , m_rom_path(path)
+    , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
+    , m_title(m_rom_basename)
     , m_assets(new GameAssets(this))
 {}
 
