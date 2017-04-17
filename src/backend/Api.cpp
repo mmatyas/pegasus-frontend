@@ -1,8 +1,10 @@
 #include "Api.h"
 
 #include "Es2Systems.h"
+#include "Es2GamelistReader.h"
 
 #include <QDebug>
+#include <QDirIterator>
 #include <QFileInfo>
 #include <QRegularExpression>
 
@@ -14,9 +16,86 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_platform(nullptr)
     , m_current_game(nullptr)
 {
-    Es2::Systems::read(m_platforms); // TODO: check result
+    findPlatforms();
+    for (Model::Platform* platform : m_platforms)
+        findPlatformGames(platform);
+
+    removeDamagedPlatforms();
+    removeEmptyPlatforms();
+
+    for (Model::Platform* platform : m_platforms) {
+        findMetadata(platform);
+
+        for (Model::Game* game : platform->m_games)
+            findGameAssets(platform, game);
+    }
+
     if (!m_platforms.isEmpty())
         setCurrentPlatformIndex(0);
+}
+
+void ApiObject::findPlatforms()
+{
+    // at the moment, we only use ES2's platform definitions
+    const QVector<Model::Platform*> es2_platforms = Es2::Systems::read();
+    for (auto& platform : es2_platforms)
+        m_platforms.append(platform);
+}
+
+void ApiObject::findPlatformGames(Model::Platform* platform)
+{
+    static const auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+
+    Q_ASSERT(platform);
+    Q_ASSERT(!platform->m_rom_dir_path.isEmpty());
+    Q_ASSERT(!platform->m_rom_filters.isEmpty()); // FIXME: handle incorrect filters
+
+    QDirIterator romdir_it(platform->m_rom_dir_path,
+                           platform->m_rom_filters,
+                           filters, flags);
+    while (romdir_it.hasNext())
+        platform->m_games.append(new Model::Game(romdir_it.next(), platform));
+}
+
+void ApiObject::removeDamagedPlatforms()
+{
+    // NOTE: if this turns out to be slow, STL iterators
+    // could be used here
+    QMutableListIterator<Model::Platform*> it(m_platforms);
+    while (it.hasNext()) {
+        Model::Platform* platform = it.next();
+        if (platform->m_launch_cmd.isEmpty()
+            || platform->m_short_name.isEmpty()
+            || platform->m_rom_dir_path.isEmpty()
+            || platform->m_rom_filters.isEmpty()) {
+            it.remove();
+        }
+    }
+}
+
+void ApiObject::removeEmptyPlatforms()
+{
+    // NOTE: if this turns out to be slow, STL iterators
+    // could be used here
+    QMutableListIterator<Model::Platform*> it(m_platforms);
+    while (it.hasNext()) {
+        if (it.next()->m_games.isEmpty())
+            it.remove();
+    }
+}
+
+void ApiObject::findMetadata(Model::Platform* platform)
+{
+    Q_ASSERT(platform);
+    Es2::Gamelist::read(platform);
+}
+
+void ApiObject::findGameAssets(const Model::Platform* platform, Model::Game* game)
+{
+    Q_ASSERT(platform);
+    Q_ASSERT(game);
+    Es2::Gamelist::findGameAssets(platform, game);
 }
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()

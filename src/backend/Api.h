@@ -58,4 +58,11 @@ private:
 
     Model::Platform* m_current_platform;
     Model::Game* m_current_game;
+
+    void findPlatforms();
+    void findPlatformGames(Model::Platform* platform);
+    void removeDamagedPlatforms();
+    void removeEmptyPlatforms();
+    void findMetadata(Model::Platform* platform);
+    void findGameAssets(const Model::Platform*, Model::Game*);
 };
