@@ -61,7 +61,7 @@ public:
     explicit Game(QObject* parent = nullptr);
 
     QString m_rom_path;
-    QString m_rom_filename;
+    QString m_rom_basename;
 
     QString m_title;
     QString m_description;

@@ -48,7 +48,7 @@ QString Assets::find(AssetType asset_type,
 {
     if (platform->m_short_name.isEmpty() ||
         platform->m_rom_dir_path.isEmpty() ||
-        game->m_rom_filename.isEmpty())
+        game->m_rom_basename.isEmpty())
         return QString();
 
     // check all possible [basedir] + [subdir] + [suffix] + [extension]
@@ -59,10 +59,10 @@ QString Assets::find(AssetType asset_type,
     Q_ASSERT(!possible_suffixes.isEmpty());
     Q_ASSERT(!possible_exts.isEmpty());
 
-    const QString es2_subdir = "/downloaded_images/" + platform->m_short_name + "/" + game->m_rom_filename;
+    const QString es2_subdir = "/downloaded_images/" + platform->m_short_name + "/" + game->m_rom_basename;
     const QVector<QString> possible_base_paths = {
         // portable paths
-        platform->m_rom_dir_path + "/media/" + game->m_rom_filename,
+        platform->m_rom_dir_path + "/media/" + game->m_rom_basename,
         // installation paths
         QDir::homePath() + "/.config/emulationstation" + es2_subdir,
         QDir::homePath() + "/.emulationstation" + es2_subdir,
