@@ -3,6 +3,7 @@
 #include "DataFinder.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QFileInfo>
 #include <QRegularExpression>
 
@@ -15,7 +16,10 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_game(nullptr)
 {
     // TODO: make this async
+    QElapsedTimer timer;
+    timer.start();
     DataFinder::find(m_platforms);
+    qInfo().noquote() << tr("Data files loaded in %1ms").arg(timer.elapsed());
 
     // TODO: and call this after it finishes, also add a Loader screen
     if (!m_platforms.isEmpty())
