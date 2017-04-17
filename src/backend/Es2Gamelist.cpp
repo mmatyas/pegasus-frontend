@@ -157,27 +157,4 @@ QHash<QString, QString> Gamelist::readGameProperties()
     return properties;
 }
 
-void Gamelist::findGameAssets(const Model::Platform* platform, Model::Game* game)
-{
-    using Asset = Es2::Assets::AssetType;
-
-    Model::GameAssets& assets = *game->m_assets;
-
-    assets.m_box_front = Es2::Assets::find(Asset::BOX_FRONT, platform, game);
-    assets.m_box_back = Es2::Assets::find(Asset::BOX_BACK, platform, game);
-    assets.m_box_spine = Es2::Assets::find(Asset::BOX_SPINE, platform, game);
-    assets.m_box_full = Es2::Assets::find(Asset::BOX_FULL, platform, game);
-    assets.m_cartridge = Es2::Assets::find(Asset::CARTRIDGE, platform, game);
-    assets.m_logo = Es2::Assets::find(Asset::LOGO, platform, game);
-    assets.m_marquee = Es2::Assets::find(Asset::MARQUEE, platform, game);
-    assets.m_bezel = Es2::Assets::find(Asset::BEZEL, platform, game);
-    assets.m_gridicon = Es2::Assets::find(Asset::STEAMGRID, platform, game);
-    assets.m_flyer = Es2::Assets::find(Asset::FLYER, platform, game);
-
-    // TODO: support multiple
-    assets.m_fanarts << Es2::Assets::find(Asset::FANARTS, platform, game);
-    assets.m_screenshots << Es2::Assets::find(Asset::SCREENSHOTS, platform, game);
-    assets.m_videos << Es2::Assets::find(Asset::VIDEOS, platform, game);
-}
-
 } // namespace Es2

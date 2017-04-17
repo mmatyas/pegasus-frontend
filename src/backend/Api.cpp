@@ -1,7 +1,8 @@
 #include "Api.h"
 
-#include "Es2Systems.h"
+#include "Es2Assets.h"
 #include "Es2Gamelist.h"
+#include "Es2Systems.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -95,7 +96,7 @@ void ApiObject::findGameAssets(const Model::Platform* platform, Model::Game* gam
 {
     Q_ASSERT(platform);
     Q_ASSERT(game);
-    Es2::Gamelist::findGameAssets(platform, game);
+    Es2::Assets::findAll(platform, game);
 }
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()

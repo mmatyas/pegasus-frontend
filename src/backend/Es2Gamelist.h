@@ -15,9 +15,6 @@ class Gamelist {
 public:
     static void read(Model::Platform*);
 
-    // TODO: make this smarter
-    static void findGameAssets(const Model::Platform*, Model::Game*);
-
 private:
     static void readGamelistFile(const Model::Platform*);
 

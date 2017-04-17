@@ -82,4 +82,29 @@ QString Assets::find(AssetType asset_type,
     return QString();
 }
 
+void Assets::findAll(const Model::Platform* platform, Model::Game* game)
+{
+    using Asset = AssetType;
+
+    Model::GameAssets& assets = *game->m_assets;
+
+    // TODO: this should be better as a map
+    // TODO: do not overwrite
+    assets.m_box_front = find(Asset::BOX_FRONT, platform, game);
+    assets.m_box_back = find(Asset::BOX_BACK, platform, game);
+    assets.m_box_spine = find(Asset::BOX_SPINE, platform, game);
+    assets.m_box_full = find(Asset::BOX_FULL, platform, game);
+    assets.m_cartridge = find(Asset::CARTRIDGE, platform, game);
+    assets.m_logo = find(Asset::LOGO, platform, game);
+    assets.m_marquee = find(Asset::MARQUEE, platform, game);
+    assets.m_bezel = find(Asset::BEZEL, platform, game);
+    assets.m_gridicon = find(Asset::STEAMGRID, platform, game);
+    assets.m_flyer = find(Asset::FLYER, platform, game);
+
+    // TODO: support multiple
+    assets.m_fanarts << find(Asset::FANARTS, platform, game);
+    assets.m_screenshots << find(Asset::SCREENSHOTS, platform, game);
+    assets.m_videos << find(Asset::VIDEOS, platform, game);
+}
+
 } // namespace Es2
