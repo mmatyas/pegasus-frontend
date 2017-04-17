@@ -1,4 +1,4 @@
-#include "Es2GamelistReader.h"
+#include "Es2Gamelist.h"
 
 #include "Es2Assets.h"
 #include "Model.h"

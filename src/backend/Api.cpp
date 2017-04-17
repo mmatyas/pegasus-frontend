@@ -1,7 +1,7 @@
 #include "Api.h"
 
 #include "Es2Systems.h"
-#include "Es2GamelistReader.h"
+#include "Es2Gamelist.h"
 
 #include <QDebug>
 #include <QDirIterator>

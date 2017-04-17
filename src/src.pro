@@ -11,9 +11,9 @@ SOURCES += \
     backend/Model.cpp \
     backend/Utils.cpp \
     backend/PlatformList.cpp \
-    backend/Es2GamelistReader.cpp \
-    backend/Es2Assets.cpp \
     backend/FrontendLayer.cpp \
+    backend/Es2Assets.cpp \
+    backend/Es2Gamelist.cpp \
     backend/Es2Systems.cpp
 
 HEADERS += \
@@ -21,9 +21,9 @@ HEADERS += \
     backend/Model.h \
     backend/Utils.h \
     backend/PlatformList.h \
-    backend/Es2GamelistReader.h \
-    backend/Es2Assets.h \
     backend/FrontendLayer.h \
+    backend/Es2Assets.h \
+    backend/Es2Gamelist.h \
     backend/Es2Systems.h
 
 RESOURCES += \

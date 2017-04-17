@@ -1,6 +1,6 @@
 #include "Es2Systems.h"
 
-#include "Es2GamelistReader.h"
+#include "Es2Gamelist.h"
 #include "Model.h"
 #include "Utils.h"
 
