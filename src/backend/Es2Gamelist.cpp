@@ -13,7 +13,7 @@ namespace Es2 {
 QString Gamelist::xml_path;
 QXmlStreamReader Gamelist::xml;
 
-void Gamelist::read(Model::Platform* platform)
+void Gamelist::read(const Model::Platform* platform)
 {
     readGamelistFile(platform);
     if (xml.error())

@@ -14,7 +14,8 @@ SOURCES += \
     backend/FrontendLayer.cpp \
     backend/Es2Assets.cpp \
     backend/Es2Gamelist.cpp \
-    backend/Es2Systems.cpp
+    backend/Es2Systems.cpp \
+    backend/DataFinder.cpp
 
 HEADERS += \
     backend/Api.h \
@@ -24,7 +25,8 @@ HEADERS += \
     backend/FrontendLayer.h \
     backend/Es2Assets.h \
     backend/Es2Gamelist.h \
-    backend/Es2Systems.h
+    backend/Es2Systems.h \
+    backend/DataFinder.h
 
 RESOURCES += \
     qml.qrc \

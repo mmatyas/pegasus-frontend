@@ -13,7 +13,7 @@ namespace Es2 {
 /// Compatibility class for parsing ES2 gamelists
 class Gamelist {
 public:
-    static void read(Model::Platform*);
+    static void read(const Model::Platform*);
 
 private:
     static void readGamelistFile(const Model::Platform*);
