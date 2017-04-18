@@ -3,8 +3,8 @@
 #include "Api.h"
 
 #include <QDebug>
-#include <QQmlContext>
 #include <QProcess>
+#include <QQmlContext>
 
 
 FrontendLayer::FrontendLayer(ApiObject* api)
@@ -24,8 +24,22 @@ void FrontendLayer::onLaunchRequested()
 
 void FrontendLayer::onExecuteCommand(ApiObject* api, QString cmd)
 {
-    qInfo() << tr("Executing command: %1").arg(cmd);
-    QProcess::execute(cmd);
+    qInfo() << tr("Executing command: `%1`").arg(cmd);
+
+    const int exitcode = QProcess::execute(cmd);
+    switch (exitcode) {
+        case -2:
+            qInfo().noquote() << tr("Could not run the launch command; either the invoked program "
+                                    "is missing, or you don't have the permission to run it.");
+            break;
+        case -1:
+            qInfo().noquote() << tr("The external program has crashed");
+            break;
+        default:
+            qInfo().noquote() << tr("The external program has finished with exit code %1")
+                                 .arg(exitcode);
+            break;
+    }
 
     rebuild(api);
     emit externalFinished();
