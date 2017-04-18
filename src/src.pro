@@ -33,7 +33,8 @@ RESOURCES += \
     ../assets/assets.qrc
 
 OTHER_FILES += \
-    qml/*.qml
+    qml/*.qml \
+    qml/themes/pegasus-grid/*.qml
 
 
 # The following define makes your compiler emit warnings if you use

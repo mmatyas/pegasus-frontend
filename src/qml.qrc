@@ -1,10 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
-        <file>qml/BackgroundImage.qml</file>
-        <file>qml/GameGrid.qml</file>
-        <file>qml/GamePreview.qml</file>
-        <file>qml/PlatformBar.qml</file>
-        <file>qml/PlatformCard.qml</file>
+        <file>qml/themes/pegasus-grid/BackgroundImage.qml</file>
+        <file>qml/themes/pegasus-grid/GameGrid.qml</file>
+        <file>qml/themes/pegasus-grid/GamePreview.qml</file>
+        <file>qml/themes/pegasus-grid/main.qml</file>
+        <file>qml/themes/pegasus-grid/PlatformBar.qml</file>
+        <file>qml/themes/pegasus-grid/PlatformCard.qml</file>
     </qresource>
 </RCC>
