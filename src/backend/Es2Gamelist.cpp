@@ -4,8 +4,9 @@
 #include "Model.h"
 #include "Utils.h"
 
-#include <QDir>
+#include <QDateTime>
 #include <QDebug>
+#include <QDir>
 
 
 namespace Es2 {
@@ -142,6 +143,14 @@ void Gamelist::handleGameTag(const Model::Platform& platform,
     target->m_genre = xml_props.value("genre");
     target->m_publisher = xml_props.value("publisher");
     target->m_title = xml_props.value("name");
+
+    const QDateTime release_date(QDateTime::fromString(xml_props.value("releasedate"), Qt::ISODate));
+    if (release_date.isValid()) {
+        const QDate date(release_date.date());
+        target->m_year = date.year();
+        target->m_month = date.month();
+        target->m_day = date.day();
+    }
 }
 
 QHash<QString, QString> Gamelist::readGameProperties()

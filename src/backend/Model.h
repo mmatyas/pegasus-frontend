@@ -55,6 +55,9 @@ class Game : public QObject {
     Q_PROPERTY(QString developer MEMBER m_developer CONSTANT)
     Q_PROPERTY(QString publisher MEMBER m_publisher CONSTANT)
     Q_PROPERTY(QString genre MEMBER m_genre CONSTANT)
+    Q_PROPERTY(int year MEMBER m_year CONSTANT)
+    Q_PROPERTY(int month MEMBER m_month CONSTANT)
+    Q_PROPERTY(int day MEMBER m_day CONSTANT)
     Q_PROPERTY(Model::GameAssets* assets MEMBER m_assets CONSTANT)
 
 public:
@@ -68,6 +71,10 @@ public:
     QString m_developer;
     QString m_publisher;
     QString m_genre;
+
+    int m_year;
+    int m_month;
+    int m_day;
 
     GameAssets* m_assets;
 };
