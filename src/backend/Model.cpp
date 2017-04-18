@@ -18,6 +18,7 @@ Game::Game(const QString& path, QObject* parent)
     , m_year(0)
     , m_month(0)
     , m_day(0)
+    , m_players(1)
     , m_assets(new GameAssets(this))
 {}
 

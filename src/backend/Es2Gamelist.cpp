@@ -151,6 +151,8 @@ void Gamelist::handleGameTag(const Model::Platform& platform,
         target->m_month = date.month();
         target->m_day = date.day();
     }
+
+    parseStoreInt(xml_props.value("players"), target->m_players);
 }
 
 QHash<QString, QString> Gamelist::readGameProperties()
