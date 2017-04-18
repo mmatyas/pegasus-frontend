@@ -28,8 +28,8 @@ public:
         VIDEOS,
     };
 
-    static void findAll(const Model::Platform* platform, Model::Game* game);
-    static QString find(AssetType, const Model::Platform*, const Model::Game*);
+    static void findAll(const Model::Platform& platform, Model::Game& game);
+    static QString find(AssetType, const Model::Platform&, const Model::Game&);
 
 private:
     static QVector<QString> possibleSuffixes(AssetType);

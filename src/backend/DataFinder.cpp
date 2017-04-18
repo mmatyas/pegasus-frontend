@@ -20,8 +20,8 @@ void DataFinder::find(QList<Model::Platform*>& model)
     removeEmptyPlatforms(model);
 
     for (const Model::Platform* platform : model) {
-        findGameMetadata(platform);
-        findGameAssets(platform);
+        findGameMetadata(*platform);
+        findGameAssets(*platform);
     }
 }
 
@@ -78,15 +78,15 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
     }
 }
 
-void DataFinder::findGameMetadata(const Model::Platform* platform)
+void DataFinder::findGameMetadata(const Model::Platform& platform)
 {
-    Q_ASSERT(platform);
     Es2::Gamelist::read(platform);
 }
 
-void DataFinder::findGameAssets(const Model::Platform* platform)
+void DataFinder::findGameAssets(const Model::Platform& platform)
 {
-    Q_ASSERT(platform);
-    for (Model::Game* game : platform->m_games)
-        Es2::Assets::findAll(platform, game);
+    for (Model::Game* game : platform.m_games) {
+        Q_ASSERT(game);
+        Es2::Assets::findAll(platform, *game);
+    }
 }

@@ -18,6 +18,6 @@ private:
     static void findPlatformGames(Model::Platform*);
     static void removeEmptyPlatforms(QList<Model::Platform*>&);
 
-    static void findGameMetadata(const Model::Platform*);
-    static void findGameAssets(const Model::Platform*);
+    static void findGameMetadata(const Model::Platform&);
+    static void findGameAssets(const Model::Platform&);
 };

@@ -42,14 +42,11 @@ QVector<QString> Assets::possibleExtensions(AssetType asset_type)
     return (asset_type == AssetType::VIDEOS) ? video_exts : image_exts;
 }
 
-QString Assets::find(AssetType asset_type,
-                        const Model::Platform* platform,
-                        const Model::Game* game)
+QString Assets::find(AssetType asset_type, const Model::Platform& platform, const Model::Game& game)
 {
-    if (platform->m_short_name.isEmpty() ||
-        platform->m_rom_dir_path.isEmpty() ||
-        game->m_rom_basename.isEmpty())
-        return QString();
+    Q_ASSERT(!platform.m_short_name.isEmpty());
+    Q_ASSERT(!platform.m_rom_dir_path.isEmpty());
+    Q_ASSERT(!game.m_rom_basename.isEmpty());
 
     // check all possible [basedir] + [subdir] + [suffix] + [extension]
     // combination when searching for an asset
@@ -59,10 +56,10 @@ QString Assets::find(AssetType asset_type,
     Q_ASSERT(!possible_suffixes.isEmpty());
     Q_ASSERT(!possible_exts.isEmpty());
 
-    const QString es2_subdir = "/downloaded_images/" + platform->m_short_name + "/" + game->m_rom_basename;
+    const QString es2_subdir = "/downloaded_images/" + platform.m_short_name + "/" + game.m_rom_basename;
     const QVector<QString> possible_base_paths = {
         // portable paths
-        platform->m_rom_dir_path + "/media/" + game->m_rom_basename,
+        platform.m_rom_dir_path + "/media/" + game.m_rom_basename,
         // installation paths
         QDir::homePath() + "/.config/emulationstation" + es2_subdir,
         QDir::homePath() + "/.emulationstation" + es2_subdir,
@@ -82,11 +79,12 @@ QString Assets::find(AssetType asset_type,
     return QString();
 }
 
-void Assets::findAll(const Model::Platform* platform, Model::Game* game)
+void Assets::findAll(const Model::Platform& platform, Model::Game& game)
 {
     using Asset = AssetType;
 
-    Model::GameAssets& assets = *game->m_assets;
+    Q_ASSERT(game.m_assets);
+    Model::GameAssets& assets = *game.m_assets;
 
     // TODO: this should be better as a map
     // TODO: do not overwrite

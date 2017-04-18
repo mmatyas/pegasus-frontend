@@ -13,14 +13,14 @@ namespace Es2 {
 QString Gamelist::xml_path;
 QXmlStreamReader Gamelist::xml;
 
-void Gamelist::read(const Model::Platform* platform)
+void Gamelist::read(const Model::Platform& platform)
 {
     readGamelistFile(platform);
     if (xml.error())
         qWarning().noquote() << xml.errorString();
 }
 
-void Gamelist::readGamelistFile(const Model::Platform* platform)
+void Gamelist::readGamelistFile(const Model::Platform& platform)
 {
     xml.clear();
     xml_path.clear();
@@ -28,7 +28,7 @@ void Gamelist::readGamelistFile(const Model::Platform* platform)
     xml_path = findGamelistFile(platform);
     if (xml_path.isEmpty()) {
         xml.raiseError(QObject::tr("ES2 gamelist for platform `%1` not found")
-                       .arg(platform->m_short_name));
+                       .arg(platform.m_short_name));
         return;
     }
 
@@ -40,22 +40,21 @@ void Gamelist::readGamelistFile(const Model::Platform* platform)
     parseGamelistFile(platform);
 }
 
-QString Gamelist::findGamelistFile(const Model::Platform* platform)
+QString Gamelist::findGamelistFile(const Model::Platform& platform)
 {
     static constexpr auto FILENAME = "/gamelist.xml";
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
     Q_ASSERT(xml_path.isEmpty());
-    Q_ASSERT(platform);
-    Q_ASSERT(!platform->m_short_name.isEmpty());
+    Q_ASSERT(!platform.m_short_name.isEmpty());
 
     // the suffix appended to installed locations
     const QString main_suffix = QStringLiteral("/gamelists/%1/%2")
-        .arg(platform->m_short_name)
+        .arg(platform.m_short_name)
         .arg(FILENAME);
 
     const QVector<QString> possible_paths = {
-        platform->m_rom_dir_path + FILENAME,
+        platform.m_rom_dir_path + FILENAME,
         QDir::homePath() + "/.config/emulationstation" + main_suffix,
         QDir::homePath() + "/.emulationstation" + main_suffix,
         "/etc/emulationstation" + main_suffix,
@@ -85,7 +84,7 @@ void Gamelist::openGamelistFile(QFile& xml_file)
     xml.setDevice(&xml_file);
 }
 
-void Gamelist::parseGamelistFile(const Model::Platform* platform)
+void Gamelist::parseGamelistFile(const Model::Platform& platform)
 {
     Q_ASSERT(xml.device() && !xml.atEnd());
 
@@ -93,7 +92,7 @@ void Gamelist::parseGamelistFile(const Model::Platform* platform)
     // To find matches between the real files and the ones in the gamelist,
     // their canonical path will be compared.
     QHash<QString, Model::Game*> game_by_path;
-    for (Model::Game* game : platform->m_games)
+    for (Model::Game* game : platform.m_games)
         game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
     // read the root <gameList> element
@@ -119,7 +118,7 @@ void Gamelist::parseGamelistFile(const Model::Platform* platform)
     }
 }
 
-void Gamelist::handleGameTag(const Model::Platform* platform,
+void Gamelist::handleGameTag(const Model::Platform& platform,
                              QHash<QString, Model::Game*>& game_by_path)
 {
     static constexpr auto PATH_TAG = "path";
@@ -130,7 +129,7 @@ void Gamelist::handleGameTag(const Model::Platform* platform,
     if (!xml_props.contains(PATH_TAG))
         return;
 
-    const QString path = platform->m_rom_dir_path + "/" + xml_props[PATH_TAG];
+    const QString path = platform.m_rom_dir_path + "/" + xml_props[PATH_TAG];
     const QString canonical_path = QFileInfo(path).canonicalFilePath();
 
     // every game should appear only once, so we can take it out of the map
