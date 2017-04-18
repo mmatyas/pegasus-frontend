@@ -153,6 +153,9 @@ void Gamelist::handleGameTag(const Model::Platform& platform,
     }
 
     parseStoreInt(xml_props.value("players"), target->m_players);
+
+    parseStoreInt(xml_props.value("playcount"), target->m_playcount);
+    target->m_lastplayed = QDateTime::fromString(xml_props.value("lastplayed"), Qt::ISODate);
 }
 
 QHash<QString, QString> Gamelist::readGameProperties()

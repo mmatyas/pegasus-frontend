@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDateTime>
 #include <QString>
 #include <QQmlListProperty>
 
@@ -59,6 +60,8 @@ class Game : public QObject {
     Q_PROPERTY(int month MEMBER m_month CONSTANT)
     Q_PROPERTY(int day MEMBER m_day CONSTANT)
     Q_PROPERTY(int players MEMBER m_players CONSTANT)
+    Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
+    Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
     Q_PROPERTY(Model::GameAssets* assets MEMBER m_assets CONSTANT)
 
 public:
@@ -78,6 +81,9 @@ public:
     int m_day;
 
     int m_players;
+
+    int m_playcount;
+    QDateTime m_lastplayed;
 
     GameAssets* m_assets;
 };
