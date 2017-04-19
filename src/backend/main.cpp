@@ -10,11 +10,12 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterUncreatableType<Model::Platform>("PegasusAPI", 0, 1, "Platform",
-        QObject::tr("You cannot create this type in QML."));
-    qmlRegisterUncreatableType<Model::Game>("PegasusAPI", 0, 1, "Game",
-        QObject::tr("You cannot create this type in QML.")); // TODO: make this change for the rest
-    qmlRegisterType<Model::GameAssets>("PegasusAPI", 0, 1, "GameAssets");
+    static constexpr auto API_URI = "Pegasus.Model";
+    const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
+    qmlRegisterUncreatableType<Model::Platform>(API_URI, 0, 2, "Platform", error_msg);
+    qmlRegisterUncreatableType<Model::Game>(API_URI, 0, 2, "Game", error_msg);
+    qmlRegisterUncreatableType<Model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
+
 
     ApiObject api;
     FrontendLayer frontend(&api);
