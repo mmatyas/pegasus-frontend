@@ -96,15 +96,17 @@ class Platform : public QObject {
     Q_PROPERTY(QQmlListProperty<Model::Game> games READ getGamesProp CONSTANT)
 
 public:
-    explicit Platform(QObject* parent = nullptr);
+    explicit Platform(const QString& name, const QString& rom_dir_path,
+                      const QStringList& rom_filters, const QString& launch_cmd,
+                      QObject* parent = nullptr);
 
     QQmlListProperty<Model::Game> getGamesProp();
 
-    QString m_short_name;
-    QString m_long_name;
-    QString m_rom_dir_path;
-    QString m_launch_cmd;
-    QStringList m_rom_filters;
+    const QString m_short_name;
+    const QString m_long_name;
+    const QString m_rom_dir_path;
+    const QStringList m_rom_filters;
+    const QString m_launch_cmd;
 
     QList<Game*> m_games;
 };

@@ -23,8 +23,14 @@ Game::Game(const QString& path, QObject* parent)
     , m_assets(new GameAssets(this))
 {}
 
-Platform::Platform(QObject* parent)
+Platform::Platform(const QString& name, const QString& rom_dir_path,
+                   const QStringList& rom_filters, const QString& launch_cmd,
+                   QObject* parent)
     : QObject(parent)
+    , m_short_name(name)
+    , m_rom_dir_path(rom_dir_path)
+    , m_rom_filters(rom_filters)
+    , m_launch_cmd(launch_cmd)
 {}
 
 QQmlListProperty<Model::Game> Platform::getGamesProp()

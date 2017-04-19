@@ -117,13 +117,11 @@ Model::Platform* Systems::parseSystemTag()
     processRomDir(xml_props["path"]);
 
     // construct the new platform
-    auto platform = new Model::Platform();
-    platform->m_short_name = xml_props["name"];
-    platform->m_rom_dir_path = xml_props["path"];
-    platform->m_rom_filters = parseFilters(xml_props["extension"]);
-    platform->m_launch_cmd = xml_props["command"];
-
-    return platform;
+    return new Model::Platform(
+        xml_props["name"],
+        xml_props["path"],
+        parseFilters(xml_props["extension"]),
+        xml_props["command"]);
 }
 
 void Systems::processRomDir(QString& path) {
