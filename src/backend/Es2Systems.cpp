@@ -11,36 +11,34 @@
 
 namespace Es2 {
 
-QString Systems::xml_path;
 QXmlStreamReader Systems::xml;
 
 QVector<Model::Platform*> Systems::read()
 {
-    QVector<Model::Platform*> platforms = readSystemsFile();
+    // reset
+    xml.clear();
+
+    // find the file
+    const QString xml_path = findSystemsFile();
+    if (xml_path.isEmpty()) {
+        qWarning().noquote() << QObject::tr("ES2 system config not found");
+        return {};
+    }
+
+    // open the file
+    QFile xml_file(xml_path);
+    if (!xml_file.open(QIODevice::ReadOnly)) {
+        qWarning().noquote() << QObject::tr("Could not open `%1`").arg(xml_path);
+        return {};
+    }
+
+    auto systems = parseSystemsFile(xml_file);
     if (xml.error()) {
         qWarning().noquote() << xml.errorString();
         return {};
     }
-    return platforms;
-}
 
-QVector<Model::Platform*> Systems::readSystemsFile()
-{
-    xml.clear();
-    xml_path.clear();
-
-    xml_path = findSystemsFile();
-    if (xml_path.isEmpty()) {
-        xml.raiseError(QObject::tr("ES2 system config not found"));
-        return {};
-    }
-
-    QFile xml_file(xml_path);
-    openSystemsFile(xml_file);
-    if (!xml.device())
-        return {};
-
-    return parseSystemsFile();
+    return systems;
 }
 
 QString Systems::findSystemsFile()
@@ -64,100 +62,82 @@ QString Systems::findSystemsFile()
     return QString();
 }
 
-void Systems::openSystemsFile(QFile& xml_file)
+QVector<Model::Platform*> Systems::parseSystemsFile(QFile& xml_file)
 {
-    Q_ASSERT(!xml.device());
-    Q_ASSERT(!xml_path.isEmpty());
-
-    if (!xml_file.open(QIODevice::ReadOnly)) {
-        xml.raiseError(QObject::tr("Could not open `%1`").arg(xml_path));
-        return;
-    }
-
     xml.setDevice(&xml_file);
-}
-
-QVector<Model::Platform*> Systems::parseSystemsFile()
-{
-    Q_ASSERT(xml.device() && !xml.atEnd());
-
-    QVector<Model::Platform*> platforms;
 
     // read the root <systemList> element
-    if (xml.readNextStartElement()) {
-        if (xml.name() != "systemList") {
-            xml.raiseError(QObject::tr("`%1` does not have a `<systemList>` root node!")
-                           .arg(xml_path));
-        }
-        else {
-            // read all <system> nodes
-            while (xml.readNextStartElement()) {
-                if (xml.name() != "system") {
-                    xml.skipCurrentElement();
-                    continue;
-                }
-
-                Model::Platform* platform = readSystemTag();
-                if (!platform->m_short_name.isEmpty())
-                    platforms.push_back(platform);
-            }
-        }
+    if (!xml.readNextStartElement()) {
+        xml.raiseError(QObject::tr("Could not parse `%1`").arg(xml_file.fileName()));
+        return {};
     }
-    else {
-        xml.raiseError(QObject::tr("Could not parse `%1`").arg(xml_path));
+    if (xml.name() != "systemList") {
+        xml.raiseError(QObject::tr("`%1` does not have a `<systemList>` root node!")
+                       .arg(xml_file.fileName()));
+        return {};
+    }
+
+    // read all <system> nodes
+    QVector<Model::Platform*> platforms;
+    while (xml.readNextStartElement()) {
+        if (xml.name() != "system") {
+            xml.skipCurrentElement();
+            continue;
+        }
+
+        Model::Platform* platform = parseSystemTag();
+        if (!platform->m_short_name.isEmpty())
+            platforms.push_back(platform);
     }
 
     return platforms;
 }
 
-Model::Platform* Systems::readSystemTag()
+Model::Platform* Systems::parseSystemTag()
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
-    Model::Platform* platform(new Model::Platform());
+    // read all XML fields into a key-value map
+    QHash<QString, QString> xml_props;
+    while (xml.readNextStartElement())
+        xml_props.insert(xml.name().toString(), xml.readElementText());
 
-    while (xml.readNextStartElement()) {
-        if (xml.name() == "name")
-            parseSystemShortName(platform);
-        else if (xml.name() == "path")
-            parseSystemRomDirPath(platform);
-        else if (xml.name() == "command")
-            parseSystemRunCmd(platform);
-        else if (xml.name() == "extension")
-            parseSystemExtensions(platform);
-        else
-            xml.skipCurrentElement();
+    // check if all required params are present
+    const auto required_params = {"path", "command", "name", "extension"};
+    for (const auto& param : required_params) {
+        if (xml_props[param].isEmpty()) {
+            qWarning().noquote()
+                << QObject::tr("Required parameter <%1> is missing or empty in a <system> node")
+                   .arg(param);
+            return nullptr;
+        }
     }
+
+    // do some post processing
+    processRomDir(xml_props["path"]);
+
+    // construct the new platform
+    auto platform = new Model::Platform();
+    platform->m_short_name = xml_props["name"];
+    platform->m_rom_dir_path = xml_props["path"];
+    platform->m_rom_filters = parseFilters(xml_props["extension"]);
+    platform->m_launch_cmd = xml_props["command"];
 
     return platform;
 }
 
-void Systems::parseSystemShortName(Model::Platform* platform) {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "name");
-    platform->m_short_name = xml.readElementText();
-}
-
-void Systems::parseSystemRomDirPath(Model::Platform* platform) {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "path");
-    platform->m_rom_dir_path = xml.readElementText()
-        .replace("\\", "/")
+void Systems::processRomDir(QString& path) {
+    path.replace("\\", "/")
         .replace("~", QDir::homePath());
 }
 
-void Systems::parseSystemRunCmd(Model::Platform* platform) {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "command");
-    platform->m_launch_cmd = xml.readElementText();
-}
-
-void Systems::parseSystemExtensions(Model::Platform* platform) {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "extension");
-
-    platform->m_rom_filters = xml.readElementText().split(" ", QString::SkipEmptyParts);
-    for (auto& filter : platform->m_rom_filters)
+QStringList Systems::parseFilters(const QString& str) {
+    auto filter_list = str.split(" ", QString::SkipEmptyParts);
+    for (auto& filter : filter_list)
         filter = filter.prepend("*").toLower();
 
     // remove duplicates
-    platform->m_rom_filters = platform->m_rom_filters.toSet().toList();
+    return filter_list.toSet().toList();
 }
 
 } // namespace Es2

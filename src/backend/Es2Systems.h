@@ -14,19 +14,13 @@ public:
     static QVector<Model::Platform*> read();
 
 private:
-    static QVector<Model::Platform*> readSystemsFile();
-
     static QString findSystemsFile();
-    static void openSystemsFile(QFile&);
-    static QVector<Model::Platform*> parseSystemsFile();
+    static QVector<Model::Platform*> parseSystemsFile(QFile&);
 
-    static Model::Platform* readSystemTag();
-    static void parseSystemShortName(Model::Platform*);
-    static void parseSystemRomDirPath(Model::Platform*);
-    static void parseSystemRunCmd(Model::Platform*);
-    static void parseSystemExtensions(Model::Platform*);
+    static Model::Platform* parseSystemTag();
+    static void processRomDir(QString&);
+    static QStringList parseFilters(const QString&);
 
-    static QString xml_path;
     static QXmlStreamReader xml;
 };
 
