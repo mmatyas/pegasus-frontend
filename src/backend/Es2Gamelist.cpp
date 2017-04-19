@@ -1,6 +1,5 @@
 #include "Es2Gamelist.h"
 
-#include "Es2Assets.h"
 #include "Model.h"
 #include "Utils.h"
 
@@ -11,48 +10,43 @@
 
 namespace Es2 {
 
-QString Gamelist::xml_path;
 QXmlStreamReader Gamelist::xml;
 
 void Gamelist::read(const Model::Platform& platform)
 {
-    readGamelistFile(platform);
+    // reset
+    xml.clear();
+
+    // find the file
+    const QString xml_path = findGamelistFile(platform);
+    if (xml_path.isEmpty()) {
+        qWarning().noquote() << QObject::tr("ES2 gamelist for platform `%1` not found")
+                                .arg(platform.m_short_name);
+        return;
+    }
+
+    // open the file
+    QFile xml_file(xml_path);
+    if (!xml_file.open(QIODevice::ReadOnly)) {
+        qWarning().noquote() << QObject::tr("Could not open `%1`").arg(xml_path);
+        return;
+    }
+
+    // parse the file
+    parseGamelistFile(xml_file, platform);
     if (xml.error())
         qWarning().noquote() << xml.errorString();
 }
 
-void Gamelist::readGamelistFile(const Model::Platform& platform)
-{
-    xml.clear();
-    xml_path.clear();
-
-    xml_path = findGamelistFile(platform);
-    if (xml_path.isEmpty()) {
-        xml.raiseError(QObject::tr("ES2 gamelist for platform `%1` not found")
-                       .arg(platform.m_short_name));
-        return;
-    }
-
-    QFile xml_file(xml_path);
-    openGamelistFile(xml_file);
-    if (!xml.device())
-        return;
-
-    parseGamelistFile(platform);
-}
-
 QString Gamelist::findGamelistFile(const Model::Platform& platform)
 {
+    Q_ASSERT(!platform.m_short_name.isEmpty());
+
     static constexpr auto FILENAME = "/gamelist.xml";
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-    Q_ASSERT(xml_path.isEmpty());
-    Q_ASSERT(!platform.m_short_name.isEmpty());
-
     // the suffix appended to installed locations
-    const QString main_suffix = QStringLiteral("/gamelists/%1/%2")
-        .arg(platform.m_short_name)
-        .arg(FILENAME);
+    const QString main_suffix = "/gamelists/" + platform.m_short_name + "/" + FILENAME;
 
     const QVector<QString> possible_paths = {
         platform.m_rom_dir_path + FILENAME,
@@ -63,7 +57,7 @@ QString Gamelist::findGamelistFile(const Model::Platform& platform)
 
     for (const auto& path : possible_paths) {
         if (validFile(path)) {
-            qInfo().noquote() << QStringLiteral("Found `%1`").arg(path);
+            qInfo().noquote() << QObject::tr("Found `%1`").arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -72,22 +66,12 @@ QString Gamelist::findGamelistFile(const Model::Platform& platform)
     return QString();
 }
 
-void Gamelist::openGamelistFile(QFile& xml_file)
+void Gamelist::parseGamelistFile(QFile& gamelist, const Model::Platform& platform)
 {
-    Q_ASSERT(!xml.device());
-    Q_ASSERT(!xml_path.isEmpty());
+    Q_ASSERT(gamelist.isOpen() && gamelist.isReadable());
+    Q_ASSERT(platform.m_games.count() > 0);
 
-    if (!xml_file.open(QIODevice::ReadOnly)) {
-        xml.raiseError(QObject::tr("Could not open `%1`").arg(xml_path));
-        return;
-    }
-
-    xml.setDevice(&xml_file);
-}
-
-void Gamelist::parseGamelistFile(const Model::Platform& platform)
-{
-    Q_ASSERT(xml.device() && !xml.atEnd());
+    xml.setDevice(&gamelist);
 
     // Build a path -> game map for quick access.
     // To find matches between the real files and the ones in the gamelist,
@@ -96,78 +80,71 @@ void Gamelist::parseGamelistFile(const Model::Platform& platform)
     for (Model::Game* game : platform.m_games)
         game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
-    // read the root <gameList> element
-    if (xml.readNextStartElement()) {
-        if (xml.name() != "gameList") {
-            xml.raiseError(QObject::tr("`%1` does not have a `<gameList>` root node!")
-                           .arg(xml_path));
-        }
-        else {
-            // read all <game> nodes
-            while (xml.readNextStartElement()) {
-                if (xml.name() != "game") {
-                    xml.skipCurrentElement();
-                    continue;
-                }
 
-                handleGameTag(platform, game_by_path);
-            }
-        }
+    // find the root <gameList> element
+    if (!xml.readNextStartElement()) {
+        xml.raiseError(QObject::tr("Could not parse `%1`").arg(gamelist.fileName()));
+        return;
     }
-    else {
-        xml.raiseError(QObject::tr("Could not parse `%1`").arg(xml_path));
+    if (xml.name() != "gameList") {
+        xml.raiseError(QObject::tr("`%1` does not have a `<gameList>` root node!")
+                       .arg(gamelist.fileName()));
+        return;
+    }
+
+    // read all <game> nodes
+    while (xml.readNextStartElement()) {
+        if (xml.name() != "game") {
+            xml.skipCurrentElement();
+            continue;
+        }
+
+        parseGameTag(platform, game_by_path);
     }
 }
 
-void Gamelist::handleGameTag(const Model::Platform& platform,
-                             QHash<QString, Model::Game*>& game_by_path)
+void Gamelist::parseGameTag(const Model::Platform& platform,
+                            QHash<QString, Model::Game*>& game_by_path)
 {
-    static constexpr auto PATH_TAG = "path";
-
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
-    QHash<QString, QString> xml_props = readGameProperties();
+    static constexpr auto PATH_TAG = "path";
+
+    // read all XML fields into a key-value map
+    QHash<QString, QString> xml_props;
+    while (xml.readNextStartElement())
+        xml_props.insert(xml.name().toString(), xml.readElementText());
     if (!xml_props.contains(PATH_TAG))
         return;
 
+    // find the matching game
+    // NOTE: every game should appear only once, so we can take() it out of the map
     const QString path = platform.m_rom_dir_path + "/" + xml_props[PATH_TAG];
     const QString canonical_path = QFileInfo(path).canonicalFilePath();
-
-    // every game should appear only once, so we can take it out of the map
-    Model::Game* target = game_by_path.take(canonical_path);
-    if (!target)
+    Model::Game* game = game_by_path.take(canonical_path);
+    if (!game)
         return;
 
-    target->m_description = xml_props.value("desc");
-    target->m_developer = xml_props.value("developer");
-    target->m_genre = xml_props.value("genre");
-    target->m_publisher = xml_props.value("publisher");
-    target->m_title = xml_props.value("name");
+    // apply the previously read values
+
+    game->m_description = xml_props.value("desc");
+    game->m_developer = xml_props.value("developer");
+    game->m_genre = xml_props.value("genre");
+    game->m_publisher = xml_props.value("publisher");
+    game->m_title = xml_props.value("name");
+
+    parseStoreInt(xml_props.value("players"), game->m_players);
+    parseStoreInt(xml_props.value("playcount"), game->m_playcount);
+
+    game->m_lastplayed = QDateTime::fromString(xml_props.value("lastplayed"), Qt::ISODate);
 
     const QDateTime release_date(QDateTime::fromString(xml_props.value("releasedate"), Qt::ISODate));
     if (release_date.isValid()) {
         const QDate date(release_date.date());
-        target->m_year = date.year();
-        target->m_month = date.month();
-        target->m_day = date.day();
+        game->m_year = date.year();
+        game->m_month = date.month();
+        game->m_day = date.day();
     }
-
-    parseStoreInt(xml_props.value("players"), target->m_players);
-
-    parseStoreInt(xml_props.value("playcount"), target->m_playcount);
-    target->m_lastplayed = QDateTime::fromString(xml_props.value("lastplayed"), Qt::ISODate);
-}
-
-QHash<QString, QString> Gamelist::readGameProperties()
-{
-    Q_ASSERT(xml.isStartElement() && xml.name() == "game");
-
-    QHash<QString, QString> properties;
-
-    while (xml.readNextStartElement())
-        properties.insert(xml.name().toString(), xml.readElementText());
-
-    return properties;
 }
 
 } // namespace Es2
