@@ -13,7 +13,6 @@ void DataFinder::find(QList<Model::Platform*>& model)
     Q_ASSERT(model.isEmpty());
 
     findPlatforms(model);
-    removeIncompletePlatforms(model);
 
     for (Model::Platform* platform : model)
         findPlatformGames(platform);
@@ -33,22 +32,6 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
     const QVector<Model::Platform*> es2_platforms = Es2::Systems::read();
     for (auto& platform : es2_platforms)
         model.append(platform);
-}
-
-void DataFinder::removeIncompletePlatforms(QList<Model::Platform*>& platforms)
-{
-    // NOTE: if this turns out to be slow, STL iterators
-    // could be used here
-    QMutableListIterator<Model::Platform*> it(platforms);
-    while (it.hasNext()) {
-        Model::Platform* platform = it.next();
-        if (platform->m_launch_cmd.isEmpty()
-            || platform->m_short_name.isEmpty()
-            || platform->m_rom_dir_path.isEmpty()
-            || platform->m_rom_filters.isEmpty()) {
-            it.remove();
-        }
-    }
 }
 
 void DataFinder::findPlatformGames(Model::Platform* platform)
