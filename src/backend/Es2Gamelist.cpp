@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QStringBuilder>
 
 
 namespace Es2 {
@@ -43,21 +44,34 @@ QString Gamelist::findGamelistFile(const Model::Platform& platform)
     Q_ASSERT(!platform.m_short_name.isEmpty());
 
     static constexpr auto FILENAME = "/gamelist.xml";
+    static const auto FOUND_MSG = QObject::tr("Found `%1`");
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-    // the suffix appended to installed locations
-    const QString main_suffix = "/gamelists/" + platform.m_short_name + "/" + FILENAME;
 
-    const QVector<QString> possible_paths = {
-        platform.m_rom_dir_path + FILENAME,
-        QDir::homePath() + "/.config/emulationstation" + main_suffix,
-        QDir::homePath() + "/.emulationstation" + main_suffix,
-        "/etc/emulationstation" + main_suffix,
+    // check portable paths
+
+    const QString portable_path = platform.m_rom_dir_path % FILENAME;
+    if (validFile(portable_path)) {
+        qInfo().noquote() << FOUND_MSG.arg(portable_path);
+        return portable_path;
+    }
+    // qDebug() << FALLBACK_MSG.arg(path);
+
+
+    // check ES2-specific paths
+
+    static const QVector<QString> es2_root_paths = {
+        QDir::homePath() % "/.config/emulationstation/gamelists/",
+        QDir::homePath() % "/.emulationstation/gamelists/",
+        "/etc/emulationstation/gamelists/",
     };
 
-    for (const auto& path : possible_paths) {
+    const QString es2_subpath = platform.m_short_name % FILENAME;
+
+    for (const auto& root_path : es2_root_paths) {
+        const QString path = root_path % es2_subpath;
         if (validFile(path)) {
-            qInfo().noquote() << QObject::tr("Found `%1`").arg(path);
+            qInfo().noquote() << FOUND_MSG.arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -108,7 +122,7 @@ void Gamelist::parseGameTag(const Model::Platform& platform,
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
-    static constexpr auto PATH_TAG = "path";
+    static const QString PATH_TAG = "path";
 
     // read all XML fields into a key-value map
     QHash<QString, QString> xml_props;
