@@ -1,6 +1,6 @@
 #include "DataFinder.h"
 
-#include "Es2Assets.h"
+#include "Es2AssetFinder.h"
 #include "Es2Gamelist.h"
 #include "Es2Systems.h"
 #include "Model.h"
@@ -87,6 +87,6 @@ void DataFinder::findGameAssets(const Model::Platform& platform)
 {
     for (Model::Game* game : platform.m_games) {
         Q_ASSERT(game);
-        Es2::Assets::findAll(platform, *game);
+        Es2::AssetFinder::findAll(platform, *game);
     }
 }

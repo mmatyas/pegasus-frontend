@@ -12,10 +12,11 @@ SOURCES += \
     backend/Utils.cpp \
     backend/PlatformList.cpp \
     backend/FrontendLayer.cpp \
-    backend/Es2Assets.cpp \
     backend/Es2Gamelist.cpp \
     backend/Es2Systems.cpp \
-    backend/DataFinder.cpp
+    backend/DataFinder.cpp \
+    backend/Assets.cpp \
+    backend/Es2AssetFinder.cpp
 
 HEADERS += \
     backend/Api.h \
@@ -23,10 +24,11 @@ HEADERS += \
     backend/Utils.h \
     backend/PlatformList.h \
     backend/FrontendLayer.h \
-    backend/Es2Assets.h \
     backend/Es2Gamelist.h \
     backend/Es2Systems.h \
-    backend/DataFinder.h
+    backend/DataFinder.h \
+    backend/Assets.h \
+    backend/Es2AssetFinder.h
 
 RESOURCES += \
     qml.qrc \
