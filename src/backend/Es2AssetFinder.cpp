@@ -4,6 +4,8 @@
 #include "Utils.h"
 
 #include <QDir>
+#include <QStringBuilder>
+
 
 namespace Es2 {
 
@@ -17,24 +19,38 @@ QString AssetFinder::find(Assets::Type asset_type, const Model::Platform& platfo
     // combination when searching for an asset
 
     const auto& possible_suffixes = Assets::suffixes[asset_type];
-    const auto& possible_exts = Assets::extensions(asset_type);
+    const auto& possible_fileexts = Assets::extensions(asset_type);
 
-    const QString es2_subdir = "/downloaded_images/" + platform.m_short_name + "/" + game.m_rom_basename;
-    const QVector<QString> possible_base_paths = {
-        // portable paths
-        platform.m_rom_dir_path + "/media/" + game.m_rom_basename,
-        // installation paths
-        QDir::homePath() + "/.config/emulationstation" + es2_subdir,
-        QDir::homePath() + "/.emulationstation" + es2_subdir,
-        "/etc/emulationstation" + es2_subdir,
+    // check portable paths
+    // TODO: move this out of ES2
+    for (const auto& suffix : possible_suffixes) {
+        for (const auto& ext : possible_fileexts) {
+            static const QLatin1String media_subdir("/media/");
+            const QString path = platform.m_rom_dir_path
+                                 % media_subdir
+                                 % game.m_rom_basename
+                                 % suffix + ext;
+            if (validFile(path))
+                return path;
+        }
+    }
+
+    // check ES2-specific paths
+
+    static const QVector<QString> es2_root_paths = {
+        QDir::homePath() % "/.config/emulationstation/downloaded_images/",
+        QDir::homePath() % "/.emulationstation/downloaded_images/",
+        "/etc/emulationstation/downloaded_images/",
     };
 
-    // check every combination until there's a match
-    for (const auto& base_path : possible_base_paths) {
-        for (const auto& asset_suffix : possible_suffixes) {
-            for (const auto& ext : possible_exts) {
-                if (validFile(base_path + asset_suffix + ext))
-                    return base_path + asset_suffix + ext;
+    const QString es2_subpath = platform.m_short_name % "/" % game.m_rom_basename;
+
+    for (const auto& root_path : es2_root_paths) {
+        for (const auto& suffix : possible_suffixes) {
+            for (const auto& ext : possible_fileexts) {
+                const QString path = root_path % es2_subpath % suffix % ext;
+                if (validFile(path))
+                    return path;
             }
         }
     }
