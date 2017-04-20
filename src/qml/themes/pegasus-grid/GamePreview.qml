@@ -75,6 +75,7 @@ Item {
             visible: playlist.itemCount
 
             fillMode: VideoOutput.PreserveAspectFit
+            autoPlay: true
             playlist: Playlist {
                 playbackMode: Playlist.Loop
             }
