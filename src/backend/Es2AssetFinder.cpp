@@ -23,9 +23,9 @@ QString AssetFinder::find(Assets::Type asset_type, const Model::Platform& platfo
 
     // check portable paths
     // TODO: move this out of ES2
+    static const QLatin1String media_subdir("/media/");
     for (const auto& suffix : possible_suffixes) {
         for (const auto& ext : possible_fileexts) {
-            static const QLatin1String media_subdir("/media/");
             const QString path = platform.m_rom_dir_path
                                  % media_subdir
                                  % game.m_rom_basename
