@@ -17,7 +17,7 @@ const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
     { Assets::Type::VIDEOS, { "-video" } },
 };
 
-#ifdef __arm__
+#ifdef Q_PROCESSOR_ARM
 // prefer opaque images on embedded systems
 const QVector<QString> Assets::image_exts = { ".jpg", ".png" };
 #else
