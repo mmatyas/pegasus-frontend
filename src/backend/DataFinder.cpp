@@ -47,9 +47,9 @@ void DataFinder::findPlatformGames(Model::Platform* platform)
     QDir rom_dir(platform->m_rom_dir_path);
     rom_dir.setNameFilters(platform->m_rom_filters);
     rom_dir.setFilter(filters);
-    const auto paths = rom_dir.entryList();
-    for (const auto& path : paths)
-        platform->m_games.append(new Model::Game(path, platform));
+    const auto files = rom_dir.entryInfoList();
+    for (const auto& file : files)
+        platform->m_games.append(new Model::Game(file.canonicalFilePath(), platform));
 }
 
 void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
