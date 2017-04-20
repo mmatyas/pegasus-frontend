@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Layouts 1.3
 import QtMultimedia 5.8
 
 
@@ -16,25 +17,25 @@ Item {
         }
     }
 
-    Column {
-        width: parent.width
-        height: parent.height
-        spacing: 16
+    visible: gameData
 
-        visible: gameData
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 16
 
         Image {
             // logo
-            width: parent.width
-            height: width * 0.4
+            Layout.fillWidth: true
+            Layout.preferredHeight: parent.width * 0.4
 
             source: gameData ? (gameData.assets.logo ? "file:" + gameData.assets.logo : "") : ""
             sourceSize { width: 512; height: 192 }
             fillMode: Image.PreserveAspectFit
         }
+
         Text {
             // title
-            width: parent.width
+            Layout.fillWidth: true
 
             color: "#eee"
             text: gameData ? gameData.title : ""
@@ -47,31 +48,38 @@ Item {
                 family: "Roboto"
             }
         }
+
         Text {
             // description
-            width: parent.width
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             color: "#eee"
             text: gameData ? gameData.description : ""
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignJustify
             elide: Text.ElideRight
-            maximumLineCount: 5
             font {
                 pixelSize: 16
                 family: "Roboto"
             }
         }
+
         Video {
             id: videoPreview
 
-            width: parent.width
-            height: width * 0.75
-            fillMode: VideoOutput.PreserveAspectFit
+            Layout.fillWidth: true
+            Layout.preferredHeight: parent.width * 0.75
+            Layout.bottomMargin: 4
 
+            visible: playlist.itemCount
+
+            fillMode: VideoOutput.PreserveAspectFit
             playlist: Playlist {
                 playbackMode: Playlist.Loop
             }
         }
     }
+
+
 }
