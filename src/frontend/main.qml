@@ -16,6 +16,6 @@ Window {
         anchors.fill: parent
         focus: true
 
-        source: "themes/pegasus-grid/main.qml"
+        source: "/themes/pegasus-grid/theme.qml"
     }
 }
