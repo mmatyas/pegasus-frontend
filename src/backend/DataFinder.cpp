@@ -37,19 +37,20 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
 void DataFinder::findPlatformGames(Model::Platform* platform)
 {
     static const auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     Q_ASSERT(platform);
     Q_ASSERT(!platform->m_rom_dir_path.isEmpty());
-    Q_ASSERT(!platform->m_rom_filters.isEmpty()); // TODO: handle incorrect filters
+    Q_ASSERT(!platform->m_rom_filters.isEmpty());
 
+    // TODO: handle incorrect filters
     // TODO: add proper subdirectory support
 
-    QDir rom_dir(platform->m_rom_dir_path);
-    rom_dir.setNameFilters(platform->m_rom_filters);
-    rom_dir.setFilter(filters);
-    const auto files = rom_dir.entryInfoList();
-    for (const auto& file : files)
-        platform->m_games.append(new Model::Game(file.canonicalFilePath(), platform));
+    QDirIterator romdir_it(platform->m_rom_dir_path,
+                           platform->m_rom_filters,
+                           filters, flags);
+    while (romdir_it.hasNext())
+        platform->m_games.append(new Model::Game(romdir_it.next(), platform));
 }
 
 void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
