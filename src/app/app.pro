@@ -3,7 +3,7 @@ TEMPLATE = app
 TARGET = pegasus
 
 QT += qml
-CONFIG += c++11
+CONFIG += c++11 warn_on exceptions_off rtti_off
 
 SOURCES += main.cpp
 
