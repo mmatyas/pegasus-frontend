@@ -2,7 +2,7 @@ TEMPLATE = app
 
 TARGET = pegasus
 
-QT += qml quick xml
+QT += qml
 CONFIG += c++11
 
 SOURCES += main.cpp

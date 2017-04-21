@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-QT += qml quick xml
+QT += qml
 CONFIG += c++11 staticlib
 
 SOURCES += \
