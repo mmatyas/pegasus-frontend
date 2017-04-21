@@ -12,7 +12,11 @@ RESOURCES += \
     ../themes/themes.qrc \
     ../../assets/assets.qrc
 
-DEFINES += QT_DEPRECATED_WARNINGS
+
+DEFINES *= \
+    QT_DEPRECATED_WARNINGS \
+    QT_RESTRICTED_CAST_FROM_ASCII \
+    QT_NO_CAST_TO_ASCII
 
 
 # Deployment

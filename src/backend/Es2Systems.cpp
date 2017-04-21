@@ -103,7 +103,8 @@ Model::Platform* Systems::parseSystemTag()
         xml_props.insert(xml.name().toString(), xml.readElementText());
 
     // check if all required params are present
-    const auto required_params = {"path", "command", "name", "extension"};
+    const QVector<QString> required_params = {"path", "command", "name", "extension"};
+
     for (const auto& param : required_params) {
         if (xml_props[param].isEmpty()) {
             qWarning().noquote()

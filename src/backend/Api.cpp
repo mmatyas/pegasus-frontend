@@ -134,8 +134,9 @@ void ApiObject::onReadyToLaunch()
     rom_path_escaped = '"' + rom_path_escaped + '"';
 #else
     // based on the source code of Bash
-    static constexpr auto SPECIALCHARS = R"(([\t\n !"$&'()*,;<>?\[\b\]^`{|}#~:=]))";
-    rom_path_escaped.replace(QRegularExpression(SPECIALCHARS), R"(\\1)");
+    static const QString SPECCHARS = R"(([\t\n !"$&'()*,;<>?\[\b\]^`{|}#~:=]))";
+    static const QRegularExpression SPECCHARS_REGEX(SPECCHARS);
+    rom_path_escaped.replace(SPECCHARS_REGEX, R"(\\1)");
 #endif
 
     QString launch_cmd = m_current_platform->m_launch_cmd;
