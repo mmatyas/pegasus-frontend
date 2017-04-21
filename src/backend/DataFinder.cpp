@@ -51,6 +51,16 @@ void DataFinder::findPlatformGames(Model::Platform* platform)
                            filters, flags);
     while (romdir_it.hasNext())
         platform->m_games.append(new Model::Game(romdir_it.next(), platform));
+
+    // QDir supports ordering, but doesn't support symlinks or subdirectories
+    // without additional checks and recursion.
+    // QDirIterator supports subdirs and symlinks, but doesn't do sorting.
+    // Sorting manually should be faster than evaluating an `if dir` branch in a loop.
+    std::sort(platform->m_games.begin(), platform->m_games.end(),
+        [](const Model::Game* a, const Model::Game* b) {
+            return QString::localeAwareCompare(a->m_rom_basename, b->m_rom_basename) < 0;
+        }
+    );
 }
 
 void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
