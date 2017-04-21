@@ -92,7 +92,7 @@ void Gamelist::parseGamelistFile(QFile& gamelist, const Model::Platform& platfor
     // their canonical path will be compared.
     QHash<QString, Model::Game*> game_by_path;
     for (Model::Game* game : platform.m_games)
-        game_by_path.insert(game->m_rom_path, game);
+        game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
 
     // find the root <gameList> element
