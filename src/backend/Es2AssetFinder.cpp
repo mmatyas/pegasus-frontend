@@ -14,6 +14,7 @@ QString AssetFinder::find(Assets::Type asset_type, const Model::Platform& platfo
     Q_ASSERT(!platform.m_short_name.isEmpty());
     Q_ASSERT(!platform.m_rom_dir_path.isEmpty());
     Q_ASSERT(!game.m_rom_basename.isEmpty());
+    Q_ASSERT(Assets::suffixes.contains(asset_type));
 
     // check all possible [basedir] + [subdir] + [suffix] + [extension]
     // combination when searching for an asset
