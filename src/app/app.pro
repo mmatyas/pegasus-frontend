@@ -28,6 +28,11 @@ unix {
     # isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
 
     target.path = $${INSTALLDIR}
+
+    defined(USE_LOCAL_LIBDIR, var) {
+        QMAKE_LFLAGS_RPATH =
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/lib\'" -Wl,-rpath-link,$$[QT_INSTALL_LIBS]
+    }
 }
 
 !isEmpty(target.path): INSTALLS += target
