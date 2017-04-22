@@ -65,21 +65,29 @@ Item {
             }
         }
 
-        Video {
-            id: videoPreview
+        Rectangle {
+            color: "#000"
+            border { color: "#444"; width: 1 }
 
             Layout.fillWidth: true
             Layout.preferredHeight: parent.width * 0.75
             Layout.bottomMargin: 4
 
-            visible: playlist.itemCount
+            visible: videoPreview.playlist.itemCount
 
-            fillMode: VideoOutput.PreserveAspectFit
-            autoPlay: true
-            playlist: Playlist {
-                playbackMode: Playlist.Loop
+            Video {
+                id: videoPreview
+
+                anchors { fill: parent; margins: 1 }
+                fillMode: VideoOutput.PreserveAspectFit
+
+                autoPlay: true
+                playlist: Playlist {
+                    playbackMode: Playlist.Loop
+                }
             }
         }
+
     }
 
 
