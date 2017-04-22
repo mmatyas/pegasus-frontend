@@ -60,5 +60,6 @@
         <file>platform_logo/wonderswancolor.svg</file>
         <file>platform_logo/zmachine.svg</file>
         <file>platform_logo/zxspectrum.svg</file>
+        <file>fonts/loading.ttf</file>
     </qresource>
 </RCC>
