@@ -21,7 +21,15 @@ DEFINES *= \
 
 # Deployment
 
-target.path = /tmp/$${TARGET}/bin
+unix {
+    # installation is portale by default
+    isEmpty(INSTALLDIR): INSTALLDIR = /opt/pegasus-frontend
+    isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
+    # isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
+
+    target.path = $${INSTALLDIR}
+}
+
 !isEmpty(target.path): INSTALLS += target
 
 
