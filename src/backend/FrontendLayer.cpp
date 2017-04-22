@@ -51,6 +51,7 @@ void FrontendLayer::rebuild(ApiObject* api)
     Q_ASSERT(!engine);
 
     engine = new QQmlApplicationEngine();
+    engine->addImportPath("qml");
     engine->rootContext()->setContextProperty(QStringLiteral("pegasus"), api);
     engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 }

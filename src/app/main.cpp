@@ -8,7 +8,9 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::addLibraryPath("lib");
     QGuiApplication app(argc, argv);
+
 
     static constexpr auto API_URI = "Pegasus.Model";
     const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
