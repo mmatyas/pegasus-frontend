@@ -6,6 +6,7 @@
 #include <QElapsedTimer>
 #include <QFileInfo>
 #include <QRegularExpression>
+#include <QtConcurrent/QtConcurrent>
 
 
 ApiObject::ApiObject(QObject* parent)
@@ -14,16 +15,31 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_game_idx(-1)
     , m_current_platform(nullptr)
     , m_current_game(nullptr)
+    , m_init_in_progress(true)
 {
-    // TODO: make this async
-    QElapsedTimer timer;
-    timer.start();
-    DataFinder::find(m_platforms);
-    qInfo().noquote() << tr("Data files loaded in %1ms").arg(timer.elapsed());
+    QFuture<void> future = QtConcurrent::run([this]{
+        QElapsedTimer timer;
+        timer.start();
 
-    // TODO: and call this after it finishes, also add a Loader screen
+        DataFinder::find(this->m_platforms);
+
+        this->m_loading_time_ms = timer.elapsed();
+    });
+
+    m_loading_watcher.setFuture(future);
+    connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
+            this, &ApiObject::onLoadingFinished);
+}
+
+void ApiObject::onLoadingFinished()
+{
+    qInfo().noquote() << tr("Data files loaded in %1ms").arg(m_loading_time_ms);
+
     if (!m_platforms.isEmpty())
         setCurrentPlatformIndex(0);
+
+    m_init_in_progress = false;
+    emit initComplete();
 }
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()

@@ -2,6 +2,7 @@
 
 #include "Model.h"
 
+#include <QFutureWatcher>
 #include <QObject>
 #include <QQmlListProperty>
 
@@ -23,6 +24,11 @@ class ApiObject : public QObject {
                NOTIFY currentPlatformChanged)
     Q_PROPERTY(Model::Game* currentGame MEMBER m_current_game
                NOTIFY currentGameChanged)
+
+    // TODO: move this under api.meta
+    // TODO: maybe a state field?
+    Q_PROPERTY(bool isInitializing MEMBER m_init_in_progress
+               NOTIFY initComplete)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -48,7 +54,10 @@ signals:
     void requestLaunch();
     void executeCommand(ApiObject*, QString);
 
+    void initComplete();
+
 public slots:
+    void onLoadingFinished();
     void onReadyToLaunch();
 
 private:
@@ -65,4 +74,8 @@ private:
     void removeEmptyPlatforms();
     void findMetadata(Model::Platform* platform);
     void findGameAssets(const Model::Platform*, Model::Game*);
+
+    QFutureWatcher<void> m_loading_watcher;
+    qint64 m_loading_time_ms;
+    bool m_init_in_progress;
 };

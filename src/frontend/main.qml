@@ -27,7 +27,7 @@ Window {
         color: "#222"
         anchors.fill: parent
 
-        visible: theme_wrapper.status != Loader.Ready
+        visible: (theme_wrapper.status != Loader.Ready) || pegasus.isInitializing
 
         Text {
             text: "PEGASUS"
