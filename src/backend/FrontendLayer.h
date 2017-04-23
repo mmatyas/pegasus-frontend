@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QProcess>
 #include <QQmlApplicationEngine>
 
 class ApiObject;
@@ -27,8 +28,13 @@ public slots:
     void onLaunchRequested(); ///< start tearing down the frontend layer
     void onExecuteCommand(ApiObject*, QString); ///< start an external process
 
+    void onProcessStarted();
+    void onProcessFailed(QProcess::ProcessError);
+    void onProcessFinished(int, QProcess::ExitStatus);
+
 private:
     QPointer<QQmlApplicationEngine> engine;
+    QPointer<QProcess> process;
 
     void rebuild(ApiObject*);
 };
