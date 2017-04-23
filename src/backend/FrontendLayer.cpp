@@ -24,7 +24,7 @@ void FrontendLayer::onLaunchRequested()
 
 void FrontendLayer::onExecuteCommand(ApiObject* api, QString cmd)
 {
-    qInfo() << tr("Executing command: `%1`").arg(cmd);
+    qInfo().noquote() << tr("Executing command: `%1`").arg(cmd);
 
     const int exitcode = QProcess::execute(cmd);
     switch (exitcode) {
