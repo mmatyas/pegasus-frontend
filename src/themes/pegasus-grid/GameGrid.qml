@@ -29,6 +29,7 @@ GridView {
         height: GridView.view.cellHeight
 
         Image {
+            id: boxFront
             width: parent.GridView.isCurrentItem ? parent.width - 8 : parent.width - 16
             height: parent.GridView.isCurrentItem ? parent.height - 8 : parent.height - 16
             anchors.centerIn: parent
@@ -42,6 +43,20 @@ GridView {
 
             Behavior on width { PropertyAnimation { duration: 150 } }
             Behavior on height { PropertyAnimation { duration: 150 } }
+        }
+
+        Image {
+            anchors.centerIn: parent
+
+            visible: boxFront.status === Image.Loading
+            source: "/common/loading-spinner.png"
+
+            RotationAnimator on rotation {
+                loops: Animator.Infinite;
+                from: 0;
+                to: 360;
+                duration: 500
+            }
         }
 
         Text {

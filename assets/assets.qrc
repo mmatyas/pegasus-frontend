@@ -61,5 +61,6 @@
         <file>platform_logo/zmachine.svg</file>
         <file>platform_logo/zxspectrum.svg</file>
         <file>fonts/loading.ttf</file>
+        <file>common/loading-spinner.png</file>
     </qresource>
 </RCC>
