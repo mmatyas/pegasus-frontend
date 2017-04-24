@@ -21,7 +21,7 @@ Item {
     GameGrid {
         id: gamegrid
         z: 100
-        width: parent.width * 0.65
+        width: (parent.width * 0.65) - rpx(32)
         anchors {
             top: topbar.bottom; topMargin: rpx(32)
             right: parent.right
