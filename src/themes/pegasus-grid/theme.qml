@@ -23,7 +23,7 @@ Item {
         z: 100
         width: parent.width * 0.65
         anchors {
-            top: topbar.bottom; topMargin: 32
+            top: topbar.bottom; topMargin: rpx(32)
             right: parent.right
             bottom: parent.bottom
         }
@@ -31,10 +31,10 @@ Item {
 
     GamePreview {
         z: 200
-        width: (parent.width * 0.35) - anchors.leftMargin - 40
+        width: (parent.width * 0.35) - anchors.leftMargin - rpx(40)
         anchors {
-            top: topbar.bottom; topMargin: 32
-            left: parent.left; leftMargin: 10
+            top: topbar.bottom; topMargin: rpx(32)
+            left: parent.left; leftMargin: rpx(10)
             bottom: parent.bottom
         }
     }

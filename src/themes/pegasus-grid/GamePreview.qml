@@ -21,7 +21,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 16
+        spacing: rpx(16)
 
         Image {
             // logo
@@ -44,7 +44,7 @@ Item {
             horizontalAlignment: Text.AlignJustify
             font {
                 bold: true
-                pixelSize: 24
+                pixelSize: rpx(24)
                 capitalization: Font.SmallCaps
                 family: "Roboto"
             }
@@ -61,7 +61,7 @@ Item {
             horizontalAlignment: Text.AlignJustify
             elide: Text.ElideRight
             font {
-                pixelSize: 16
+                pixelSize: rpx(16)
                 family: "Roboto"
             }
         }
@@ -72,7 +72,7 @@ Item {
 
             Layout.fillWidth: true
             Layout.preferredHeight: parent.width * 0.75
-            Layout.bottomMargin: 4
+            Layout.bottomMargin: rpx(4)
 
             visible: videoPreview.playlist.itemCount
 

@@ -5,7 +5,7 @@ Rectangle {
     property var platformModel: pegasus.platforms
 
     color: "#333"
-    height: 54
+    height: rpx(54)
 
     Keys.forwardTo: platformPath
 
@@ -15,21 +15,21 @@ Rectangle {
         delegate: platformCardDelegate
 
         path: Path {
-            startX: -400
-            startY: 36
+            startX: rpx(-400)
+            startY: rpx(36)
 
             PathAttribute { name: "itemZ"; value: 201 }
-            PathLine { x: parent.width * 0.2; y: 36 }
+            PathLine { x: parent.width * 0.2; y: rpx(36) }
 
             PathPercent { value: 0.04 }
             PathAttribute { name: "itemZ"; value: 200 }
-            PathLine { x: parent.width * 0.23; y: 18 }
+            PathLine { x: parent.width * 0.23; y: rpx(18) }
 
             PathPercent { value: 0.08 }
-            PathLine { x: parent.width * 0.7; y: 18 }
+            PathLine { x: parent.width * 0.7; y: rpx(18) }
 
             PathPercent { value: 1 }
-            PathAttribute { name: "itemZ"; value: 5 }
+            PathAttribute { name: "itemZ"; value: rpx(5) }
         }
 
         pathItemCount: 20
@@ -70,7 +70,7 @@ Rectangle {
 
             z: PathView.itemZ
             width: parent.parent.width * 0.5
-            height: 72
+            height: rpx(72)
         }
     }
 }

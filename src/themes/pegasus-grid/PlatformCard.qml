@@ -23,7 +23,7 @@ Item {
         anchors {
             verticalCenter: parent.top
             horizontalCenter: main.right
-            horizontalCenterOffset: -27
+            horizontalCenterOffset: rpx(-27)
         }
 
         Text {
@@ -34,13 +34,13 @@ Item {
             anchors {
                 left: parent.left
                 bottom: parent.bottom
-                leftMargin: 8
-                bottomMargin: 4
+                leftMargin: rpx(8)
+                bottomMargin: rpx(4)
             }
             font {
                 bold: true
                 capitalization: Font.AllUppercase
-                pixelSize: 16
+                pixelSize: rpx(16)
                 family: "Roboto Condensed"
             }
         }
@@ -48,7 +48,7 @@ Item {
         Rectangle {
             color: "#faa"
             width: parent.width
-            height: 2
+            height: rpx(2)
             anchors.top: parent.bottom
             anchors.left: parent.left
         }
@@ -66,9 +66,9 @@ Item {
         height: parent.height - 12
         anchors {
             bottom: parent.bottom
-            bottomMargin: 6
+            bottomMargin: rpx(6)
             horizontalCenter: parent.horizontalCenter
-            horizontalCenterOffset: -32
+            horizontalCenterOffset: rpx(-32)
         }
     }
 }

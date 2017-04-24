@@ -30,8 +30,8 @@ GridView {
 
         Image {
             id: boxFront
-            width: parent.GridView.isCurrentItem ? parent.width - 8 : parent.width - 16
-            height: parent.GridView.isCurrentItem ? parent.height - 8 : parent.height - 16
+            width: parent.GridView.isCurrentItem ? parent.width - rpx(8) : parent.width - rpx(16)
+            height: parent.GridView.isCurrentItem ? parent.height - rpx(8) : parent.height - rpx(16)
             anchors.centerIn: parent
 
             asynchronous: true
@@ -60,7 +60,7 @@ GridView {
         }
 
         Text {
-            width: parent.width - 64
+            width: parent.width - rpx(64)
             anchors.centerIn: parent
 
             visible: !model.assets.boxFront
@@ -70,7 +70,7 @@ GridView {
             horizontalAlignment: Text.AlignHCenter
             color: "#eee"
             font {
-                pixelSize: 16
+                pixelSize: rpx(16)
                 family: "Roboto"
             }
         }
