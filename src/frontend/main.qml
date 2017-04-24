@@ -16,6 +16,7 @@ Window {
         return winScale * value;
     }
 
+    // register custom global fonts here
     FontLoader { id: font_loading; source: "/fonts/loading.ttf" }
 
 
@@ -29,6 +30,7 @@ Window {
         source: "/themes/pegasus-grid/theme.qml"
     }
 
+    // loading screen
     Rectangle {
         color: "#222"
         anchors.fill: parent
@@ -39,13 +41,13 @@ Window {
             text: "PEGASUS"
             color: "#333"
             font {
-                pointSize: 192
+                pixelSize: rpx(280)
                 family: font_loading.name
             }
             anchors {
                 bottom: parent.bottom
                 left: parent.left
-                leftMargin: 40
+                leftMargin: rpx(56)
             }
         }
     }
