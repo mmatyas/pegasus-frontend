@@ -1,7 +1,6 @@
 import QtQuick 2.0
 
 Item {
-    focus: true
     Keys.forwardTo: [topbar, gamegrid]
     Keys.onReturnPressed: pegasus.launchGame();
 

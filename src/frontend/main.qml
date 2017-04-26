@@ -21,21 +21,29 @@ Window {
 
 
     // wrapper to receive keyboard events
-    Loader {
-        id: theme_wrapper
-        anchors.fill: parent
+    Item {
         focus: true
-        asynchronous: true
+        anchors.fill: parent
 
-        source: "/themes/pegasus-grid/theme.qml"
+        Keys.onEscapePressed: Qt.quit()
+        Keys.forwardTo: theme_loader.item
+
+        Loader {
+            id: theme_loader
+            anchors.fill: parent
+
+            source: "/themes/pegasus-grid/theme.qml"
+            asynchronous: true
+        }
     }
+
 
     // loading screen
     Rectangle {
         color: "#222"
         anchors.fill: parent
 
-        visible: (theme_wrapper.status != Loader.Ready) || pegasus.isInitializing
+        visible: (theme_loader.status != Loader.Ready) || pegasus.isInitializing
 
         Text {
             text: "PEGASUS"
