@@ -11,7 +11,8 @@
 class ApiObject : public QObject {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<Model::Platform> platforms
-               READ getPlatformsProp CONSTANT)
+               READ getPlatformsProp
+               NOTIFY platformModelChanged)
     Q_PROPERTY(int currentPlatformIndex
                READ currentPlatformIndex WRITE setCurrentPlatformIndex
                RESET resetPlatformIndex
@@ -46,6 +47,7 @@ public:
     Q_INVOKABLE void launchGame();
 
 signals:
+    void platformModelChanged();
     void currentPlatformIndexChanged();
     void currentGameIndexChanged();
     void currentPlatformChanged();

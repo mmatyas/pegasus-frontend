@@ -33,6 +33,7 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::onLoadingFinished()
 {
+    emit platformModelChanged();
     qInfo().noquote() << tr("Data files loaded in %1ms").arg(m_loading_time_ms);
 
     if (!m_platforms.isEmpty())
