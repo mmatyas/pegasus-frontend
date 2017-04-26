@@ -46,7 +46,6 @@ QString Systems::findSystemsFile()
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
     const QVector<QString> possible_paths = {
-        QDir::homePath() + "/.config/emulationstation/es_systems.cfg",
         QDir::homePath() + "/.emulationstation/es_systems.cfg",
         "/etc/emulationstation/es_systems.cfg",
     };

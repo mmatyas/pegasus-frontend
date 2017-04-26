@@ -61,7 +61,6 @@ QString Gamelist::findGamelistFile(const Model::Platform& platform)
     // check ES2-specific paths
 
     static const QVector<QString> es2_root_paths = {
-        QDir::homePath() % "/.config/emulationstation/gamelists/",
         QDir::homePath() % "/.emulationstation/gamelists/",
         "/etc/emulationstation/gamelists/",
     };

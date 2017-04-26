@@ -39,9 +39,7 @@ QString AssetFinder::find(Assets::Type asset_type, const Model::Platform& platfo
     // check ES2-specific paths
 
     static const QVector<QString> es2_root_paths = {
-        QDir::homePath() % "/.config/emulationstation/downloaded_images/",
-        QDir::homePath() % "/.emulationstation/downloaded_images/",
-        "/etc/emulationstation/downloaded_images/",
+        QDir::homePath() % "/.emulationstation/downloaded_images/"
     };
 
     const QString es2_subpath = platform.m_short_name % "/" % game.m_rom_basename;
