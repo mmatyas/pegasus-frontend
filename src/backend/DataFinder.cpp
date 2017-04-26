@@ -8,9 +8,9 @@
 #include <QDirIterator>
 
 
-void DataFinder::find(QList<Model::Platform*>& model)
+QList<Model::Platform*> DataFinder::find()
 {
-    Q_ASSERT(model.isEmpty());
+    QList<Model::Platform*> model;
 
     findPlatforms(model);
 
@@ -22,6 +22,8 @@ void DataFinder::find(QList<Model::Platform*>& model)
         findGameMetadata(*platform);
         findGameAssets(*platform);
     }
+
+    return model;
 }
 
 void DataFinder::findPlatforms(QList<Model::Platform*>& model)

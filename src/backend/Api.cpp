@@ -21,7 +21,7 @@ ApiObject::ApiObject(QObject* parent)
         QElapsedTimer timer;
         timer.start();
 
-        DataFinder::find(this->m_platforms);
+        this->m_platforms = DataFinder::find();
 
         this->m_loading_time_ms = timer.elapsed();
     });

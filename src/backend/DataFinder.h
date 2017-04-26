@@ -9,7 +9,7 @@ namespace Model { class Platform; }
 // TODO: make this a QObject with progress signals
 class DataFinder {
 public:
-    static void find(QList<Model::Platform*>&);
+    static QList<Model::Platform*> find();
 
 private:
     static void findPlatforms(QList<Model::Platform*>&);
