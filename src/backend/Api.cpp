@@ -145,16 +145,16 @@ void ApiObject::launchGame()
 
 void ApiObject::onReadyToLaunch()
 {
+    // TODO: ES2 uses POSIX `system()`, but we don't; rewrite this function
+
     const QString rom_path_basename = QFileInfo(m_current_game->m_rom_path).completeBaseName();
+
     QString rom_path_escaped = m_current_game->m_rom_path;
-#ifdef _WIN32
-    rom_path_escaped = '"' + rom_path_escaped + '"';
-#else
-    // based on the source code of Bash
-    static const QString SPECCHARS = R"(([\t\n !"$&'()*,;<>?\[\b\]^`{|}#~:=]))";
-    static const QRegularExpression SPECCHARS_REGEX(SPECCHARS);
-    rom_path_escaped.replace(SPECCHARS_REGEX, R"(\\1)");
-#endif
+    // QProcess: Literal quotes are represented by triple quotes
+    rom_path_escaped.replace('"', "\"\"\"");
+    // QProcess: Arguments containing spaces must be quoted
+    if (rom_path_escaped.contains(' '))
+        rom_path_escaped.prepend('"').append('"');
 
     QString launch_cmd = m_current_platform->m_launch_cmd;
     launch_cmd
