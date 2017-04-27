@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QRegularExpression>
 
 
 ProcessLauncher::ProcessLauncher(QObject* parent)
@@ -25,22 +26,40 @@ void ProcessLauncher::launchGame(const Model::Platform* platform, const Model::G
 
 QString ProcessLauncher::createLaunchCommand(const Model::Platform* platform, const Model::Game* game)
 {
-    // TODO: ES2 uses POSIX `system()`, but we don't; rewrite this function
+    enum class ParamType : unsigned char {
+        PATH,
+        BASENAME,
+    };
 
-    const QString rom_path_basename = QFileInfo(game->m_rom_path).completeBaseName();
+    QMap<ParamType, QString> params = {
+        { ParamType::PATH, game->m_rom_path },
+        { ParamType::BASENAME, QFileInfo(game->m_rom_path).completeBaseName() },
+    };
 
-    QString rom_path_escaped = game->m_rom_path;
-    // QProcess: Literal quotes are represented by triple quotes
-    rom_path_escaped.replace('"', "\"\"\"");
-    // QProcess: Arguments containing spaces must be quoted
-    if (rom_path_escaped.contains(' '))
-        rom_path_escaped.prepend('"').append('"');
+    // Prepare the parameters for QProcess
+    const QRegularExpression WHITESPACE_REGEX("\\s");
+    for (auto& param : params) {
+        // QProcess: Literal quotes are represented by triple quotes
+        param.replace('"', "\"\"\"");
+        // QProcess: Arguments containing spaces must be quoted
+        if (param.contains(WHITESPACE_REGEX))
+            param.prepend('"').append('"');
 
+        qDebug().noquote() << param;
+    }
+
+    // replace known keywords
     QString launch_cmd = platform->m_launch_cmd;
+    // first, replace manually quoted elements in the command string
     launch_cmd
-        .replace("%ROM%", rom_path_escaped)
-        .replace("%ROM_RAW%", game->m_rom_path)
-        .replace("%BASENAME%", rom_path_basename);
+        .replace("\"%ROM%\"", params.value(ParamType::PATH))
+        .replace("\"%ROM_RAW%\"", params.value(ParamType::PATH))
+        .replace("\"%BASENAME%\"", params.value(ParamType::BASENAME));
+    // then replace the unquoted forms
+    launch_cmd
+        .replace("%ROM%", params.value(ParamType::PATH))
+        .replace("%ROM_RAW%", params.value(ParamType::PATH))
+        .replace("%BASENAME%", params.value(ParamType::BASENAME));
 
     return launch_cmd;
 }
