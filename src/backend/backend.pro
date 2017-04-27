@@ -12,7 +12,6 @@ SOURCES += \
     Es2Systems.cpp \
     FrontendLayer.cpp \
     Model.cpp \
-    PlatformList.cpp \
     Utils.cpp \
     ProcessLauncher.cpp
 
@@ -21,7 +20,6 @@ HEADERS += \
     Assets.h \
     DataFinder.h \
     Model.h \
-    PlatformList.h \
     FrontendLayer.h \
     Es2AssetFinder.h \
     Es2Gamelist.h \
