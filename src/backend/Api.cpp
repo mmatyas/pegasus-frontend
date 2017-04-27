@@ -140,27 +140,20 @@ void ApiObject::launchGame()
         return;
     }
 
-    emit requestLaunch();
+    emit prepareLaunch();
 }
 
 void ApiObject::onReadyToLaunch()
 {
-    // TODO: ES2 uses POSIX `system()`, but we don't; rewrite this function
+    Q_ASSERT(m_current_platform);
+    Q_ASSERT(m_current_game);
 
-    const QString rom_path_basename = QFileInfo(m_current_game->m_rom_path).completeBaseName();
+    emit executeLaunch(m_current_platform, m_current_game);
+}
 
-    QString rom_path_escaped = m_current_game->m_rom_path;
-    // QProcess: Literal quotes are represented by triple quotes
-    rom_path_escaped.replace('"', "\"\"\"");
-    // QProcess: Arguments containing spaces must be quoted
-    if (rom_path_escaped.contains(' '))
-        rom_path_escaped.prepend('"').append('"');
+void ApiObject::onGameFinished()
+{
+    // TODO: this is where play count could be increased
 
-    QString launch_cmd = m_current_platform->m_launch_cmd;
-    launch_cmd
-        .replace("%ROM%", rom_path_escaped)
-        .replace("%ROM_RAW%", m_current_game->m_rom_path)
-        .replace("%BASENAME%", rom_path_basename);
-
-    emit executeCommand(this, launch_cmd);
+    emit restoreAfterGame(this);
 }

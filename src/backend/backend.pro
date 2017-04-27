@@ -13,7 +13,8 @@ SOURCES += \
     FrontendLayer.cpp \
     Model.cpp \
     PlatformList.cpp \
-    Utils.cpp
+    Utils.cpp \
+    ProcessLauncher.cpp
 
 HEADERS += \
     Api.h \
@@ -25,7 +26,8 @@ HEADERS += \
     Es2AssetFinder.h \
     Es2Gamelist.h \
     Es2Systems.h \
-    Utils.h
+    Utils.h \
+    ProcessLauncher.h
 
 
 DEFINES *= \

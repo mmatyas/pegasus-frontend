@@ -1,6 +1,7 @@
 #include "Api.h"
 #include "FrontendLayer.h"
 #include "Model.h"
+#include "ProcessLauncher.h"
 
 #include <QGuiApplication>
 #include <QQmlContext>
@@ -21,16 +22,26 @@ int main(int argc, char *argv[])
 
     ApiObject api;
     FrontendLayer frontend(&api);
+    ProcessLauncher launcher;
 
-    // the following communication is required because destroying the
-    // frontend stack when launching a game is not synchronous;
+    // the following communication is required because process handling
+    // and destroying/rebuilding the frontend stack are asynchronous tasks;
     // see the relevant classes
-    QObject::connect(&api, &ApiObject::requestLaunch,
-                     &frontend, &FrontendLayer::onLaunchRequested);
-    QObject::connect(&frontend, &FrontendLayer::readyToLaunch,
+
+    QObject::connect(&api, &ApiObject::prepareLaunch,
+                     &frontend, &FrontendLayer::teardown);
+
+    QObject::connect(&frontend, &FrontendLayer::teardownComplete,
                      &api, &ApiObject::onReadyToLaunch);
-    QObject::connect(&api, &ApiObject::executeCommand,
-                     &frontend, &FrontendLayer::onExecuteCommand);
+
+    QObject::connect(&api, &ApiObject::executeLaunch,
+                     &launcher, &ProcessLauncher::launchGame);
+
+    QObject::connect(&launcher, &ProcessLauncher::processFinished,
+                     &api, &ApiObject::onGameFinished);
+
+    QObject::connect(&api, &ApiObject::restoreAfterGame,
+                     &frontend, &FrontendLayer::rebuild);
 
     return app.exec();
 }

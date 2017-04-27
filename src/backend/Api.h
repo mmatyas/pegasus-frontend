@@ -53,14 +53,16 @@ signals:
     void currentPlatformChanged();
     void currentGameChanged();
 
-    void requestLaunch();
-    void executeCommand(ApiObject*, QString);
+    void prepareLaunch();
+    void executeLaunch(const Model::Platform*, const Model::Game*);
+    void restoreAfterGame(ApiObject*);
 
     void initComplete();
 
 public slots:
     void onLoadingFinished();
     void onReadyToLaunch();
+    void onGameFinished();
 
 private:
     QList<Model::Platform*> m_platforms;

@@ -2,39 +2,32 @@
 
 #include <QObject>
 #include <QPointer>
-#include <QProcess>
 #include <QQmlApplicationEngine>
 
-class ApiObject;
 
-
-/// This class manages the dynamic reload of the frontend layer
+/// Manages the dynamic reload of the frontend layer
 ///
-/// When we launch a game, the frontend stack will be teared
-/// down to save resources. This happens asyncronously
-/// (see QObject destructor). When it's done, the API will be
-/// notified, and it will send the actual command to execute.
+/// When we launch a game, the frontend stack will be teared down to save
+/// resources. However, this happens asyncronously (see QObject destructor).
+/// When it's done, the relevant signal will be triggered. After the actual
+/// execution is finished, the frontend layer can be rebuilt again.
+///
+/// Some funtions require a pointer to the API object, to connect and make
+/// it accessible to the frontend.
 class FrontendLayer : public QObject {
     Q_OBJECT
 
 public:
-    explicit FrontendLayer(ApiObject*);
-
-signals:
-    void readyToLaunch(); ///< finished tearing down the frontend layer
-    void externalFinished(); ///< the external process has finished
+    explicit FrontendLayer(QObject* api, QObject* parent = nullptr);
 
 public slots:
-    void onLaunchRequested(); ///< start tearing down the frontend layer
-    void onExecuteCommand(ApiObject*, QString); ///< start an external process
+    void rebuild(QObject* api);
+    void teardown();
 
-    void onProcessStarted();
-    void onProcessFailed(QProcess::ProcessError);
-    void onProcessFinished(int, QProcess::ExitStatus);
+signals:
+    void rebuildComplete();
+    void teardownComplete();
 
 private:
     QPointer<QQmlApplicationEngine> engine;
-    QPointer<QProcess> process;
-
-    void rebuild(ApiObject*);
 };
