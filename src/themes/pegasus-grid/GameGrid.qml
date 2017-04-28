@@ -32,18 +32,24 @@ GridView {
         color: "#0074da"
         width: cellWidth
         height: cellHeight
-        scale: 1.05
+        scale: 1.20
+        z: 2
     }
+
+    highlightMoveDuration: 0
 
     delegate: Item {
         width: GridView.view.cellWidth
         height: GridView.view.cellHeight
 
+        scale: GridView.isCurrentItem ? 1.20 : 1.0
+        z: GridView.isCurrentItem ? 3 : 1
+
+        Behavior on scale { PropertyAnimation { duration: 150 } }
+
         Image {
             id: boxFront
-            width: parent.GridView.isCurrentItem ? parent.width - rpx(8) : parent.width - rpx(16)
-            height: parent.GridView.isCurrentItem ? parent.height - rpx(8) : parent.height - rpx(16)
-            anchors.centerIn: parent
+            anchors { fill: parent; margins: rpx(5) }
 
             asynchronous: true
             visible: model.assets.boxFront
@@ -58,9 +64,6 @@ GridView {
                 if (img_ratio < cell_ratio)
                     grid_root.cellHeight = grid_root.cellWidth * img_ratio;
             }
-
-            Behavior on width { PropertyAnimation { duration: 150 } }
-            Behavior on height { PropertyAnimation { duration: 150 } }
         }
 
         Image {
