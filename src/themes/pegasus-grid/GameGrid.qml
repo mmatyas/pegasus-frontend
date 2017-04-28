@@ -4,7 +4,7 @@ import QtQuick 2.6
 GridView {
     property var platformData: pegasus.currentPlatform
     // TODO: make these customizable
-    property real rowCount: 3.4
+    property real rowCount: 3.8
     property real columnCount: platformData
                                ? (platformData.shortName === "nes" ? 5 : 4)
                                : 1

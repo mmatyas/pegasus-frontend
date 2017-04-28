@@ -20,20 +20,20 @@ Item {
     GameGrid {
         id: gamegrid
         z: 100
-        width: (parent.width * 0.65) - rpx(32)
+        width: (parent.width * 0.6) - rpx(32)
         anchors {
             top: topbar.bottom; topMargin: rpx(32)
-            right: parent.right
+            right: parent.right; rightMargin: rpx(6)
             bottom: parent.bottom
         }
     }
 
     GamePreview {
         z: 200
-        width: (parent.width * 0.35) - anchors.leftMargin - rpx(40)
+        width: (parent.width * 0.35) - anchors.leftMargin
         anchors {
             top: topbar.bottom; topMargin: rpx(32)
-            left: parent.left; leftMargin: rpx(10)
+            left: parent.left; leftMargin: rpx(16)
             bottom: parent.bottom
         }
     }
