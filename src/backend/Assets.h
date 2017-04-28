@@ -4,6 +4,7 @@
 #include <QVector>
 
 
+/// Definitions of supported asset types and file formats
 class Assets {
 public:
     enum class Type : unsigned char {

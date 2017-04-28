@@ -8,6 +8,8 @@
 
 
 /// Launches and manages external processes
+///
+/// Launches external processes and detects their success or failure.
 class ProcessLauncher : public QObject {
     Q_OBJECT
 

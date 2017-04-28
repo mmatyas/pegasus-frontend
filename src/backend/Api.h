@@ -7,9 +7,13 @@
 #include <QQmlListProperty>
 
 
-/// A wrapper class for QML that contains every public property of the backend
+/// Provides data access for QML
+///
+/// Provides an API for the frontend layer, to allow accessing every public
+/// property of the backend from QML.
 class ApiObject : public QObject {
     Q_OBJECT
+
     Q_PROPERTY(QQmlListProperty<Model::Platform> platforms
                READ getPlatformsProp
                NOTIFY platformModelChanged)
@@ -34,7 +38,9 @@ class ApiObject : public QObject {
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
-    QQmlListProperty<Model::Platform> getPlatformsProp();
+    QQmlListProperty<Model::Platform> getPlatformsProp() {
+        return QQmlListProperty<Model::Platform>(this, m_platforms);
+    }
 
     int currentPlatformIndex() const { return m_current_platform_idx; }
     void setCurrentPlatformIndex(int);
@@ -47,38 +53,37 @@ public:
     Q_INVOKABLE void launchGame();
 
 signals:
+    // initialization (loading the data files)
+    void initComplete();
+
+    // the main data structures
     void platformModelChanged();
     void currentPlatformIndexChanged();
     void currentGameIndexChanged();
     void currentPlatformChanged();
     void currentGameChanged();
 
+    // game launching
     void prepareLaunch();
     void executeLaunch(const Model::Platform*, const Model::Game*);
     void restoreAfterGame(ApiObject*);
 
-    void initComplete();
-
 public slots:
+    // game launch communication
     void onLoadingFinished();
     void onReadyToLaunch();
     void onGameFinished();
 
 private:
     QList<Model::Platform*> m_platforms;
+
     int m_current_platform_idx;
     int m_current_game_idx;
-
     Model::Platform* m_current_platform;
     Model::Game* m_current_game;
 
-    void findPlatforms();
-    void findPlatformGames(Model::Platform* platform);
-    void removeDamagedPlatforms();
-    void removeEmptyPlatforms();
-    void findMetadata(Model::Platform* platform);
-    void findGameAssets(const Model::Platform*, Model::Game*);
-
+    // initialization
+    // TODO: move these to some kind of subclass
     QFutureWatcher<void> m_loading_watcher;
     qint64 m_loading_time_ms;
     bool m_init_in_progress;

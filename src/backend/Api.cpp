@@ -43,11 +43,6 @@ void ApiObject::onLoadingFinished()
     emit initComplete();
 }
 
-QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
-{
-    return QQmlListProperty<Model::Platform>(this, m_platforms);
-}
-
 void ApiObject::resetPlatformIndex()
 {
     // these values are always in pair

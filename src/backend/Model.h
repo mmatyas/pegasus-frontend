@@ -13,6 +13,7 @@ namespace Model {
 class GameAssets : public QObject {
     Q_OBJECT
 
+    // TODO: a Map would be better
     Q_PROPERTY(QString boxFront MEMBER m_box_front CONSTANT)
     Q_PROPERTY(QString boxBack MEMBER m_box_back CONSTANT)
     Q_PROPERTY(QString boxSpine MEMBER m_box_spine CONSTANT)
