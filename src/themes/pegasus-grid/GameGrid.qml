@@ -2,20 +2,31 @@ import QtQuick 2.6
 
 
 GridView {
+    id: grid_root
+
     property var platformData: pegasus.currentPlatform
     // TODO: make these customizable
-    property real rowCount: 3.8
     property real columnCount: platformData
                                ? (platformData.shortName === "nes" ? 5 : 4)
                                : 1
 
-
-    cellWidth: width / columnCount
-    cellHeight: height / rowCount
-    displayMarginBeginning: anchors.topMargin
-
     model: platformData ? platformData.games : 0
     onCurrentIndexChanged: pegasus.currentGameIndex = currentIndex;
+
+    cellWidth: width / columnCount
+
+    // Because the images are loaded asynchronously, we don't know the row heights,
+    // and we don't want to hardcode per-platform settings either. As such, we have
+    // to update cellHeight when an image gets loaded, by trying to fit the image
+    // first by width, then adjusting cellHeight based on the images w/h ratio.
+
+    // this is the max allowed height
+    cellHeight: cellWidth * 2
+    // on platform change, reset the height to avoid getting smaller and smaller
+    onModelChanged: cellHeight = cellWidth * 2
+
+
+    displayMarginBeginning: anchors.topMargin
 
     highlight: Rectangle {
         color: "#0074da"
@@ -40,6 +51,13 @@ GridView {
             source: model.assets.boxFront ? "file:" + model.assets.boxFront : ""
             sourceSize { width: 256; height: 256 }
             fillMode: Image.PreserveAspectFit
+
+            onStatusChanged: if (status === Image.Ready) {
+                var img_ratio = paintedHeight / paintedWidth;
+                var cell_ratio = grid_root.cellHeight / grid_root.cellWidth;
+                if (img_ratio < cell_ratio)
+                    grid_root.cellHeight = grid_root.cellWidth * img_ratio;
+            }
 
             Behavior on width { PropertyAnimation { duration: 150 } }
             Behavior on height { PropertyAnimation { duration: 150 } }
