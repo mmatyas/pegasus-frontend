@@ -6,18 +6,14 @@
 
 #include <QDebug>
 #include <QDir>
-#include <QDirIterator>
+#include <QFile>
+#include <QXmlStreamReader>
 
 
 namespace Es2 {
 
-QXmlStreamReader Systems::xml;
-
 QVector<Model::Platform*> Systems::read()
 {
-    // reset
-    xml.clear();
-
     // find the file
     const QString xml_path = findSystemsFile();
     if (xml_path.isEmpty()) {
@@ -32,7 +28,8 @@ QVector<Model::Platform*> Systems::read()
         return {};
     }
 
-    auto systems = parseSystemsFile(xml_file);
+    QXmlStreamReader xml(&xml_file);
+    auto systems = parseSystemsFile(xml);
     if (xml.error()) {
         qWarning().noquote() << xml.errorString();
         return {};
@@ -61,18 +58,17 @@ QString Systems::findSystemsFile()
     return QString();
 }
 
-QVector<Model::Platform*> Systems::parseSystemsFile(QFile& xml_file)
+QVector<Model::Platform*> Systems::parseSystemsFile(QXmlStreamReader& xml)
 {
-    xml.setDevice(&xml_file);
-
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
-        xml.raiseError(QObject::tr("Could not parse `%1`").arg(xml_file.fileName()));
+        xml.raiseError(QObject::tr("Could not parse `%1`")
+                       .arg(static_cast<QFile*>(xml.device())->fileName()));
         return {};
     }
     if (xml.name() != "systemList") {
         xml.raiseError(QObject::tr("`%1` does not have a `<systemList>` root node!")
-                       .arg(xml_file.fileName()));
+                       .arg(static_cast<QFile*>(xml.device())->fileName()));
         return {};
     }
 
@@ -84,7 +80,7 @@ QVector<Model::Platform*> Systems::parseSystemsFile(QFile& xml_file)
             continue;
         }
 
-        Model::Platform* platform = parseSystemTag();
+        Model::Platform* platform = parseSystemTag(xml);
         if (!platform->m_short_name.isEmpty())
             platforms.push_back(platform);
     }
@@ -92,7 +88,7 @@ QVector<Model::Platform*> Systems::parseSystemsFile(QFile& xml_file)
     return platforms;
 }
 
-Model::Platform* Systems::parseSystemTag()
+Model::Platform* Systems::parseSystemTag(QXmlStreamReader& xml)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 

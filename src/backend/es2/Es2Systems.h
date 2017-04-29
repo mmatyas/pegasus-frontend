@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QFile>
-#include <QXmlStreamReader>
+#include <QString>
 
+class QXmlStreamReader;
 namespace Model { class Platform; }
 
 
@@ -15,13 +15,11 @@ public:
 
 private:
     static QString findSystemsFile();
-    static QVector<Model::Platform*> parseSystemsFile(QFile&);
+    static QVector<Model::Platform*> parseSystemsFile(QXmlStreamReader&);
 
-    static Model::Platform* parseSystemTag();
+    static Model::Platform* parseSystemTag(QXmlStreamReader&);
     static void processRomDir(QString&);
     static QStringList parseFilters(const QString&);
-
-    static QXmlStreamReader xml;
 };
 
 } // namespace Es2

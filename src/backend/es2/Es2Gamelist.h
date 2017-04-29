@@ -1,9 +1,8 @@
 #pragma once
 
-#include <QFile>
 #include <QString>
-#include <QXmlStreamReader>
 
+class QXmlStreamReader;
 namespace Model { class Game; }
 namespace Model { class Platform; }
 
@@ -17,12 +16,12 @@ public:
 
 private:
     static QString findGamelistFile(const Model::Platform&);
-    static void parseGamelistFile(QFile&, const Model::Platform&);
+    static void parseGamelistFile(QXmlStreamReader&, const Model::Platform&);
 
     static QHash<QString, QString> readGameProperties();
-    static void parseGameTag(const Model::Platform&, QHash<QString, Model::Game*>&);
-
-    static QXmlStreamReader xml;
+    static void parseGameTag(QXmlStreamReader&,
+                             const Model::Platform&,
+                             QHash<QString, Model::Game*>&);
 };
 
 } // namespace Es2

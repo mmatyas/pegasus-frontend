@@ -6,18 +6,15 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QFile>
 #include <QStringBuilder>
+#include <QXmlStreamReader>
 
 
 namespace Es2 {
 
-QXmlStreamReader Gamelist::xml;
-
 void Gamelist::read(const Model::Platform& platform)
 {
-    // reset
-    xml.clear();
-
     // find the file
     const QString xml_path = findGamelistFile(platform);
     if (xml_path.isEmpty()) {
@@ -34,7 +31,8 @@ void Gamelist::read(const Model::Platform& platform)
     }
 
     // parse the file
-    parseGamelistFile(xml_file, platform);
+    QXmlStreamReader xml(&xml_file);
+    parseGamelistFile(xml, platform);
     if (xml.error())
         qWarning().noquote() << xml.errorString();
 }
@@ -79,12 +77,9 @@ QString Gamelist::findGamelistFile(const Model::Platform& platform)
     return QString();
 }
 
-void Gamelist::parseGamelistFile(QFile& gamelist, const Model::Platform& platform)
+void Gamelist::parseGamelistFile(QXmlStreamReader& xml, const Model::Platform& platform)
 {
-    Q_ASSERT(gamelist.isOpen() && gamelist.isReadable());
     Q_ASSERT(platform.m_games.count() > 0);
-
-    xml.setDevice(&gamelist);
 
     // Build a path -> game map for quick access.
     // To find matches between the real files and the ones in the gamelist,
@@ -96,12 +91,13 @@ void Gamelist::parseGamelistFile(QFile& gamelist, const Model::Platform& platfor
 
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
-        xml.raiseError(QObject::tr("Could not parse `%1`").arg(gamelist.fileName()));
+        xml.raiseError(QObject::tr("Could not parse `%1`")
+                       .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
     if (xml.name() != "gameList") {
         xml.raiseError(QObject::tr("`%1` does not have a `<gameList>` root node!")
-                       .arg(gamelist.fileName()));
+                       .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
 
@@ -112,11 +108,12 @@ void Gamelist::parseGamelistFile(QFile& gamelist, const Model::Platform& platfor
             continue;
         }
 
-        parseGameTag(platform, game_by_path);
+        parseGameTag(xml, platform, game_by_path);
     }
 }
 
-void Gamelist::parseGameTag(const Model::Platform& platform,
+void Gamelist::parseGameTag(QXmlStreamReader& xml,
+                            const Model::Platform& platform,
                             QHash<QString, Model::Game*>& game_by_path)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
