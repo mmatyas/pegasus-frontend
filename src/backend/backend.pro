@@ -7,13 +7,13 @@ SOURCES += \
     Api.cpp \
     Assets.cpp \
     DataFinder.cpp \
-    Es2AssetFinder.cpp \
-    Es2Gamelist.cpp \
-    Es2Systems.cpp \
     FrontendLayer.cpp \
     Model.cpp \
+    ProcessLauncher.cpp \
     Utils.cpp \
-    ProcessLauncher.cpp
+    es2/Es2AssetFinder.cpp \
+    es2/Es2Gamelist.cpp \
+    es2/Es2Systems.cpp
 
 HEADERS += \
     Api.h \
@@ -21,11 +21,11 @@ HEADERS += \
     DataFinder.h \
     Model.h \
     FrontendLayer.h \
-    Es2AssetFinder.h \
-    Es2Gamelist.h \
-    Es2Systems.h \
+    ProcessLauncher.h \
     Utils.h \
-    ProcessLauncher.h
+    es2/Es2AssetFinder.h \
+    es2/Es2Gamelist.h \
+    es2/Es2Systems.h
 
 
 DEFINES *= \

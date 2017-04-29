@@ -1,8 +1,8 @@
 #include "DataFinder.h"
 
-#include "Es2AssetFinder.h"
-#include "Es2Gamelist.h"
-#include "Es2Systems.h"
+#include "es2/Es2AssetFinder.h"
+#include "es2/Es2Gamelist.h"
+#include "es2/Es2Systems.h"
 #include "Model.h"
 
 #include <QDirIterator>
