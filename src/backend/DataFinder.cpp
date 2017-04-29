@@ -1,11 +1,13 @@
 #include "DataFinder.h"
 
+#include "Model.h"
+#include "Utils.h"
 #include "es2/Es2AssetFinder.h"
 #include "es2/Es2Gamelist.h"
 #include "es2/Es2Systems.h"
-#include "Model.h"
 
 #include <QDirIterator>
+#include <QStringBuilder>
 
 
 QList<Model::Platform*> DataFinder::find()
@@ -83,8 +85,79 @@ void DataFinder::findGameMetadata(const Model::Platform& platform)
 
 void DataFinder::findGameAssets(const Model::Platform& platform)
 {
-    for (Model::Game* game : platform.m_games) {
-        Q_ASSERT(game);
-        Es2::AssetFinder::findAll(platform, *game);
+    using Type = Assets::Type;
+
+    for (Model::Game* game_ptr : platform.m_games) {
+        Q_ASSERT(game_ptr);
+        Q_ASSERT(game_ptr->m_assets);
+
+        Model::Game& game = *game_ptr;
+        Model::GameAssets& assets = *game.m_assets;
+
+        // TODO: this should be better as a map
+        // TODO: do not overwrite
+        assets.m_box_front = findAsset(Type::BOX_FRONT, platform, game);
+        assets.m_box_back = findAsset(Type::BOX_BACK, platform, game);
+        assets.m_box_spine = findAsset(Type::BOX_SPINE, platform, game);
+        assets.m_box_full = findAsset(Type::BOX_FULL, platform, game);
+        assets.m_cartridge = findAsset(Type::CARTRIDGE, platform, game);
+        assets.m_logo = findAsset(Type::LOGO, platform, game);
+        assets.m_marquee = findAsset(Type::MARQUEE, platform, game);
+        assets.m_bezel = findAsset(Type::BEZEL, platform, game);
+        assets.m_gridicon = findAsset(Type::STEAMGRID, platform, game);
+        assets.m_flyer = findAsset(Type::FLYER, platform, game);
+
+        // TODO: support multiple
+        assets.m_fanarts << findAsset(Type::FANARTS, platform, game);
+        assets.m_screenshots << findAsset(Type::SCREENSHOTS, platform, game);
+        assets.m_videos << findAsset(Type::VIDEOS, platform, game);
     }
+}
+
+QString DataFinder::findAsset(Assets::Type asset_type,
+                              const Model::Platform& platform,
+                              const Model::Game& game)
+{
+    QString path = findPortableAsset(asset_type, platform, game);
+    if (!path.isEmpty())
+        return path;
+
+    // if the asset was not found in the portable paths,
+    // check the compatibility modules
+    path = Es2::AssetFinder::findAsset(asset_type, platform, game);
+    if (!path.isEmpty())
+        return path;
+
+    return QString::null;
+}
+
+QString DataFinder::findPortableAsset(Assets::Type asset_type,
+                                      const Model::Platform& platform,
+                                      const Model::Game& game)
+{
+    Q_ASSERT(!platform.m_rom_dir_path.isEmpty());
+    Q_ASSERT(!game.m_rom_basename.isEmpty());
+    Q_ASSERT(Assets::suffixes.contains(asset_type));
+
+    // check all possible [basedir] + [subdir] + [suffix] + [extension]
+    // combination when searching for an asset
+
+    const auto& possible_suffixes = Assets::suffixes[asset_type];
+    const auto& possible_fileexts = Assets::extensions(asset_type);
+
+    // check portable paths
+    static const QLatin1String media_subdir("/media/");
+    const QString common_subpath = platform.m_rom_dir_path
+                                 % media_subdir
+                                 % game.m_rom_basename;
+
+    for (const auto& suffix : possible_suffixes) {
+        for (const auto& ext : possible_fileexts) {
+            const QString path = common_subpath % suffix % ext;
+            if (validFile(path))
+                return path;
+        }
+    }
+
+    return QString::null;
 }

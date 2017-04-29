@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Assets.h"
+
 #include <QList>
 
 namespace Model { class Game; }
@@ -18,4 +20,11 @@ private:
 
     static void findGameMetadata(const Model::Platform&);
     static void findGameAssets(const Model::Platform&);
+
+    static QString findAsset(Assets::Type asset_type,
+                             const Model::Platform& platform,
+                             const Model::Game& game);
+    static QString findPortableAsset(Assets::Type asset_type,
+                                     const Model::Platform& platform,
+                                     const Model::Game& game);
 };
