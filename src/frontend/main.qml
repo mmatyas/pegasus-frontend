@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
+import QtGamepad 1.0
 
 
 Window {
@@ -18,6 +19,28 @@ Window {
 
     // register custom global fonts here
     FontLoader { id: font_loading; source: "/fonts/loading.ttf" }
+
+    // enable gamepad support
+    Gamepad {
+        id: gamepad1
+        deviceId: GamepadManager.connectedGamepads.length > 0
+                  ? GamepadManager.connectedGamepads[0]
+                  : -1
+    }
+    Connections {
+        target: GamepadManager
+        onGamepadConnected: gamepad1.deviceId = deviceId
+    }
+    GamepadKeyNavigation {
+        id: gamepadKeyNav
+        gamepad: gamepad1
+        active: true
+        buttonAKey: Qt.Key_Return
+        buttonL1Key: Qt.Key_A
+        buttonL2Key: Qt.Key_A
+        buttonR1Key: Qt.Key_D
+        buttonR2Key: Qt.Key_D
+    }
 
 
     // wrapper to receive keyboard events
