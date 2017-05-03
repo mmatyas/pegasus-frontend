@@ -12,3 +12,9 @@
 
 **Features you'd expect:** Gamepad support and config. Multiple aspect ratio support. Portable mode support. Live theme reload. Visible system informations. A clock in the corner.
 
+
+### License
+
+Pegasus Frontend is available under GPLv3 license. You can find the details in the [LICENSE](LICENSE.md) file.
+
+All trademarks, service marks, trade names, trade dress, product names and logos are property of their respective owners. All company, product and service names used in this product are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.
