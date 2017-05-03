@@ -1,0 +1,31 @@
+version: 0.0.{build}
+
+pull_requests:
+  do_not_increment_build_number: true
+
+os: Visual Studio 2015
+
+platform:
+  - x86
+
+environment:
+  matrix:
+    - flavor: mingw
+      QTDIR: C:\Qt\5.8\mingw53_32
+
+    - flavor: msvc
+      QTDIR: C:\Qt\5.8\msvc2015
+
+init:
+  - if %flavor%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
+  - set PATH=%QTDIR%\bin;%PATH%
+
+before_build:
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+
+build_script:
+  - md build
+  - cd build
+  - qmake ..
+  - if %flavor%==msvc (nmake /NOLOGO) else (mingw32-make)
+  - if %flavor%==msvc (nmake /NOLOGO install) else (mingw32-make install)
