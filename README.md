@@ -1,5 +1,7 @@
 # Pegasus Frontend
 
+A cross platform, customizable graphical frontend for launching emulators and managing your game collection.
+
 ![screenshot](etc/promo/screenshot_alpha1.jpg)
 
 ### Features
