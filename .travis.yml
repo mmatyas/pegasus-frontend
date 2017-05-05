@@ -1,0 +1,40 @@
+language: cpp
+
+sudo: required
+dist: trusty
+services:
+  - docker
+
+env:
+  global:
+  - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
+  matrix:
+  - TARGET=x11 CROSS=0
+  - TARGET=rpi1 CROSS=1
+  - TARGET=rpi2 CROSS=1
+
+before_install:
+  - pushd /tmp
+  - mkdir build
+  - mkdir tools
+  - wget ${TOOLS_URL}/qt58-${TARGET}.tgz
+  - if [[ "$CROSS" == "1" ]]; then wget ${TOOLS_URL}/rpi-toolchain.tgz; fi
+  - if [[ "$CROSS" == "1" ]]; then wget ${TOOLS_URL}/rpi-sysroot.tgz; fi
+  - for f in *.tgz; do tar xzf ${f} -C ./tools; done
+  - if [[ "$CROSS" == "1" ]]; then mv ./tools/rpi-sysroot ./tools/opt/; fi
+  - popd
+
+script:
+  - docker build -t pegasus-ci ./etc/ci
+  - docker run
+      --env TARGET=${TARGET}
+      --env CROSS=${CROSS}
+      --volume /tmp/tools/opt:/opt:ro
+      --volume "$PWD:/src:ro"
+      --volume "/tmp/build:/build"
+      pegasus-ci
+      /bin/bash -c "
+        /opt/qt58-${TARGET}_hosttools/bin/qmake INSTALLDIR=/tmp/pegasus /src &&
+        make &&
+        make install
+      "
