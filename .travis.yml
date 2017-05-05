@@ -25,7 +25,11 @@ before_install:
   - popd
 
 script:
-  - docker build -t pegasus-ci ./etc/ci
+  - if [[ "$TARGET" == "x11" ]]; then
+      docker build -t pegasus-ci ./etc/ci/x11;
+    else
+      docker build -t pegasus-ci ./etc/ci/arm;
+    fi
   - docker run
       --env TARGET=${TARGET}
       --env CROSS=${CROSS}
