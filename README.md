@@ -23,6 +23,36 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 **Features you'd expect:** Gamepad support and config. Multiple aspect ratio support. Portable mode support. Live theme reload. Visible system informations. A clock in the corner.
 
 
+## Installation
+
+At the moment, this project is still in alpha, so there are no official releases yet. However, you can already build the program from source.
+
+### Building from source
+
+**Dependencies**
+
+- Qt 5.8
+- C++11 compatible compiler
+
+
+**Building**
+
+You can use any Qt-compatible IDEs, eg. Qt Creator to build the project, or you can manually invoke
+
+```sh
+qmake  # qmake [params] [project path], see below
+make
+make install  # optional
+```
+
+**QMake parameters**
+
+Additional parameters are available for QMake:
+
+- `INSTALLDIR`: where to `make install` the program. Defaults to `/opt/pegasus-frontend`. (Unix only)
+- `INSTALL_BINDIR`: where to `make install` the program runtime binary. Defaults to `INSTALLDIR`. (Unix only)
+
+
 ## License
 
 Pegasus Frontend is available under GPLv3 license. You can find the details in the [LICENSE](LICENSE.md) file.
