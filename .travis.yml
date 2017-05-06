@@ -24,21 +24,22 @@ before_install:
   - if [[ "$CROSS" == "1" ]]; then mv ./tools/rpi-sysroot ./tools/opt/; fi
   - popd
 
-script:
+before_script:
   - if [[ "$TARGET" == "x11" ]]; then
       docker build -t pegasus-ci ./etc/ci/x11;
     else
       docker build -t pegasus-ci ./etc/ci/arm;
     fi
-  - docker run
-      --env TARGET=${TARGET}
-      --env CROSS=${CROSS}
+  - export DOCKER_CMD='docker run
       --volume /tmp/tools/opt:/opt:ro
-      --volume "$PWD:/src:ro"
-      --volume "/tmp/build:/build"
-      pegasus-ci
-      /bin/bash -c "
-        /opt/qt58-${TARGET}_hosttools/bin/qmake INSTALLDIR=/tmp/pegasus /src &&
-        make &&
-        make install
-      "
+      --volume '$PWD':/src:ro
+      --volume /tmp/build:/build
+      pegasus-ci'
+
+script:
+  - ${DOCKER_CMD}
+      /opt/qt58-${TARGET}_hosttools/bin/qmake
+      INSTALLDIR=/tmp/pegasus
+      /src
+  - ${DOCKER_CMD} make
+  - ${DOCKER_CMD} make install
