@@ -12,7 +12,7 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 
 
-### Features
+## Features
 
 **Open source and cross platform:** runs on Linux, Windows, Mac, all Raspberries, Odroids and possibly on other devices. Hardware accelerated and works with or without X11. It may even run on phones and tablets too.
 
@@ -23,7 +23,7 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 **Features you'd expect:** Gamepad support and config. Multiple aspect ratio support. Portable mode support. Live theme reload. Visible system informations. A clock in the corner.
 
 
-### License
+## License
 
 Pegasus Frontend is available under GPLv3 license. You can find the details in the [LICENSE](LICENSE.md) file.
 
