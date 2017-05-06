@@ -42,9 +42,10 @@ before_script:
 
 script:
   - if [[ "$TARGET" == "x11" ]]; then
-      ${DOCKER_CMD}
+      ${DOCKER_CMD} /bin/bash -c '
         LD_LIBRARY_PATH=/opt/qt58-x11/lib/
-        find /src -name \*.qml -exec /opt/qt58-x11/bin/qmllint {} \; ;
+        find /src -name *.qml -exec /opt/qt58-x11/bin/qmllint {} \;
+      ';
     fi
   - ${DOCKER_CMD}
       /opt/qt58-${TARGET}_hosttools/bin/qmake
