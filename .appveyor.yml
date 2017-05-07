@@ -33,3 +33,6 @@ build_script:
   - qmake ..
   - if %flavor%==msvc (nmake /NOLOGO) else (mingw32-make)
   - if %flavor%==msvc (nmake /NOLOGO install) else (mingw32-make install)
+
+artifacts:
+  - path: build\src\app\release\pegasus.exe

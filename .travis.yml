@@ -19,8 +19,7 @@ env:
 
 before_install:
   - pushd /tmp
-  - mkdir build
-  - mkdir tools
+  - mkdir deploy build tools
   - wget ${TOOLS_URL}/qt58-${TARGET}.tgz
   - if [[ "$CROSS" == "1" ]]; then wget ${TOOLS_URL}/rpi-toolchain.tgz; fi
   - if [[ "$CROSS" == "1" ]]; then wget ${TOOLS_URL}/rpi-sysroot.tgz; fi
@@ -38,6 +37,7 @@ before_script:
       --volume /tmp/tools/opt:/opt:ro
       --volume '$PWD':/src:ro
       --volume /tmp/build:/build
+      --volume /tmp/deploy:/deploy
       pegasus-ci'
 
 script:
@@ -49,7 +49,8 @@ script:
     fi
   - ${DOCKER_CMD}
       /opt/qt58-${TARGET}_hosttools/bin/qmake
-      INSTALLDIR=/tmp/pegasus
+      INSTALLDIR=/deploy
       /src
   - ${DOCKER_CMD} make
   - ${DOCKER_CMD} make install
+  - curl --upload-file /tmp/deploy/pegasus https://transfer.sh/pegasus-${TARGET}
