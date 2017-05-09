@@ -6,6 +6,7 @@ build
 
 # except these
 !.gitignore
+!.qmake.conf
 !.travis.yml
 !.appveyor.yml
 

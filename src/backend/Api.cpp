@@ -34,6 +34,7 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_game(nullptr)
     , m_loading_time_ms(0)
     , m_init_in_progress(true)
+    , m_git_revision(GIT_REVISION)
 {
     QFuture<void> future = QtConcurrent::run([this]{
         QElapsedTimer timer;

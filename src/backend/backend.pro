@@ -32,3 +32,14 @@ DEFINES *= \
     QT_DEPRECATED_WARNINGS \
     QT_RESTRICTED_CAST_FROM_ASCII \
     QT_NO_CAST_TO_ASCII
+
+
+# Git version
+
+GIT_REVISION = $$system(git \
+    --git-dir $${TOP_SRCDIR}/.git \
+    --work-tree $${TOP_SRCDIR} \
+    describe \
+    --always --tags --dirty)
+
+DEFINES += GIT_REVISION=\\\"$$GIT_REVISION\\\"

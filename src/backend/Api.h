@@ -51,6 +51,7 @@ class ApiObject : public QObject {
     // TODO: maybe a state field?
     Q_PROPERTY(bool isInitializing MEMBER m_init_in_progress
                NOTIFY initComplete)
+    Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -104,4 +105,7 @@ private:
     QFutureWatcher<void> m_loading_watcher;
     qint64 m_loading_time_ms;
     bool m_init_in_progress;
+
+    // meta
+    const QString m_git_revision;
 };
