@@ -60,30 +60,34 @@ Window {
     }
 
 
-    // wrapper to receive keyboard events
-    Item {
-        focus: true
+    FocusScope {
+        focus: !loadingScreen.visible
         anchors.fill: parent
 
-        Keys.onEscapePressed: Qt.quit()
-        Keys.forwardTo: theme_loader.item
+        Keys.onEscapePressed: mainMenu.focus = true
 
         Loader {
-            id: theme_loader
+            id: themeContent
             anchors.fill: parent
+            focus: true
 
             source: "/themes/pegasus-grid/theme.qml"
             asynchronous: true
         }
+
+        MainMenu {
+            id: mainMenu
+            anchors.fill: parent
+        }
     }
 
 
-    // loading screen
     Rectangle {
+        id: loadingScreen
         color: "#222"
         anchors.fill: parent
 
-        visible: (theme_loader.status != Loader.Ready) || pegasus.meta.isLoading
+        visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
 
         Text {
             text: "PEGASUS"

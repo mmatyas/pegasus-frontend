@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/frontend">
         <file>main.qml</file>
+        <file>MainMenu.qml</file>
     </qresource>
 </RCC>
