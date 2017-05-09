@@ -32,6 +32,7 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_game_idx(-1)
     , m_current_platform(nullptr)
     , m_current_game(nullptr)
+    , m_loading_time_ms(0)
     , m_init_in_progress(true)
 {
     QFuture<void> future = QtConcurrent::run([this]{
