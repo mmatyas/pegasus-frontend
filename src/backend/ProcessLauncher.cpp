@@ -149,6 +149,7 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
         case QProcess::CrashExit:
             qInfo().noquote() << tr("The external program has crashed on exit, with exit code %2")
                                  .arg(exitcode);
+            break;
         default:
             // If you reach this branch, there was an API change in Qt
             Q_UNREACHABLE();
