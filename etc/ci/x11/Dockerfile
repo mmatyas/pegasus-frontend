@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     g++ \
+    git \
     libgl1-mesa-dev \
     libpng-dev \
     libjpeg-dev \
