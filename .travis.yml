@@ -6,47 +6,31 @@ dist: bionic
 branches:
   only:
     - master
+    - coverity_scan
 
 env:
   global:
     - QT_VER=5.15.1
+    - TARGET=x11-static
+    - secure: "ezcEiSIaD/K6sSJGeGU4/L9xdljKbD0GPu80OaxBgu4mJvLWg3+yHIhNdfJ0pxkGms7Dj5XK20kxr4NRREyo9nh4mXjwoFCt4TiqWMLK9POpQJwihJRdaTn6dmBQXUOKk0Qi6GnfZjDSAYLDLr/KR21o+M6fhd6H/lfOWzFCcHrF6SlV7M3wIaUjbucqUGCgYmDczBANhvTxUXOeHiclGNZSBfDZ9rHRtl9CUPJfw+enpdeG4Bjf0ypgCkKvETHT5yQgsNc11V2fRYquKum+ERAMMspB7jKNTe8Ce901asqEkVbcjlbbqKX2OnhgKrjRpNrePd5rlan5VAdOERj1xpLxtqQ6vEUZwfCCDUk8u1l6Q6l5EZTEJX7YmE3jt19oCWjt5DPOp1jhGOi9CRgNblSkL1uKFq3f82jHw6RFUFRrG6NHVwPld5iKjgbVtgx62Oj7HCVj+0eiX8RS1YXoK4M9yMOtWQHsM28Wsri/4d+mLqHF/Ebzxc28GI4rbQnfHOSmVf87qZQT917aPrPhHjfZWEmljhYACxA8kDq25Oq3FYymsKtdPw5eOUhH4aNHB2x5CrAeYGpYb+Wnbzzkgm9LQ7K8ICvy1pIcexNlesK1/mIkyb7YtUs6g3rqytN3V7ovkuA8WU5JEENPUVJRMT4rshKhQ5RRDLRjns+2otw="
 
 git:
   depth: 175
 
+install:
+  - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+  - ./.travis/install.sh
+  - export PATH="/opt/${QT_VER}_${TARGET}_hosttools/bin:$PATH"
+script:
+  - true
 
-install: .travis/install.sh
-script: .travis/script.sh
-deploy:
-  - provider: pages
-    github-token: $GITHUB_TOKEN
-    local-dir: dist
-    repo: mmatyas/pegasus-deploy-staging
-    target-branch: continuous-$TARGET
-    skip-cleanup: true
-
-jobs:
-  include:
-  - env: TARGET=x11-static
-
-  # Collect and deploy artifacts
-  - stage: release
-    install: skip
-    script: .travis/release.sh
-    deploy:
-      - provider: bintray
-        file: "$TRAVIS_BUILD_DIR/.travis/bintray_deb.json"
-        user: "mmatyas"
-        key:
-          secure: grK+TcvmcnfEyFbBs7kTh6S/awFPQLzNROW5pwYcVc664NP4GxEFd+tl3CqkIuUv1n8HR/x/VWqIc7se12HQx41FnSYqJeArNPI7+gTHHyoR2AtcHptUR1BJUfemlrRhkjbd6dwfdwaeRDt3B1aIy9D0EG8gDgmt6tMIK390AFptwhbvarVZq2nlAnMJ3/DMWIzDXn2Kx6xErQji5LFCOmfFnOCw00z1uDpmTrO6QnfdwlORowVfhoT9SYdPtSQksYyi5Lzjeu0UmxIQtlGisqmiqPOdMb9ted0aNRhfHPYO2Dim+hOwBk+N9GO7AgHDjInkADOwtPxE7qcm5prLO0kV5Jc1ykWB4WWlBDQilggpwm2PbJbsf4zT6Dc7yRzAuarvlFkY8l8zvd4giyMzGCulMWHespglTF8YQDD6B6n78+ePeUqgq0beN/vQP5kAMIJbpXXnPrX9gHS3upO2F9HTQY1WLq+Aq0aub/9ZhEOkGMxzWdWl9u/CsoH2dySDyiyfOuhJuXyEGcfL4jL3yA8JPrZ18ApsEx3CJnnAvdJgy//0tkD5ajucEJVcsfQ5DW/HxfAT6APMMxkqvBiwxkipiUG52klXfwPfxw9oz6ZLC53HwF9MjxowOJnAf4MLbd3/H9AK7CPODPKt/n1ybVzEa3Awl9p2R/niNzaAYQA=
-        skip_cleanup: true
-
-  # Coverage testing
-  - stage: test
-    name: Coverage
-    env: TARGET=x11-static RUN_COV=1
-    script: .travis/script.sh
-    deploy: null
-
-services:
-  - xvfb
+addons:
+  coverity_scan:
+    project:
+      name: mmatyas/pegasus-frontend
+      version: 1.0
+      description: Build submitted via Travis CI
+    notification_email: mmatyas@inf.u-szeged.hu
+    build_command_prepend: qmake
+    build_command: make
+    branch_pattern: coverity_scan
