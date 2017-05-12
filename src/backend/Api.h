@@ -18,6 +18,7 @@
 #pragma once
 
 #include "Model.h"
+#include "api_parts/ApiMeta.h"
 
 #include <QFutureWatcher>
 #include <QObject>
@@ -47,11 +48,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(Model::Game* currentGame MEMBER m_current_game
                NOTIFY currentGameChanged)
 
-    // TODO: move this under api.meta
-    // TODO: maybe a state field?
-    Q_PROPERTY(bool isInitializing MEMBER m_init_in_progress
-               NOTIFY initComplete)
-    Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
+    Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -70,10 +67,9 @@ public:
 
     Q_INVOKABLE void launchGame();
 
-signals:
-    // initialization (loading the data files)
-    void initComplete();
+    ApiParts::Meta* meta() { return &m_meta; }
 
+signals:
     // the main data structures
     void platformModelChanged();
     void currentPlatformIndexChanged();
@@ -100,12 +96,8 @@ private:
     Model::Platform* m_current_platform;
     Model::Game* m_current_game;
 
-    // initialization
-    // TODO: move these to some kind of subclass
-    QFutureWatcher<void> m_loading_watcher;
-    qint64 m_loading_time_ms;
-    bool m_init_in_progress;
+    ApiParts::Meta m_meta;
 
-    // meta
-    const QString m_git_revision;
+    // initialization
+    QFutureWatcher<void> m_loading_watcher;
 };

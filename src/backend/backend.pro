@@ -13,7 +13,8 @@ SOURCES += \
     Utils.cpp \
     es2/Es2AssetFinder.cpp \
     es2/Es2Gamelist.cpp \
-    es2/Es2Systems.cpp
+    es2/Es2Systems.cpp \
+    api_parts/ApiMeta.cpp
 
 HEADERS += \
     Api.h \
@@ -25,7 +26,8 @@ HEADERS += \
     Utils.h \
     es2/Es2AssetFinder.h \
     es2/Es2Gamelist.h \
-    es2/Es2Systems.h
+    es2/Es2Systems.h \
+    api_parts/ApiMeta.h
 
 
 DEFINES *= \

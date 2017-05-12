@@ -32,9 +32,6 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_game_idx(-1)
     , m_current_platform(nullptr)
     , m_current_game(nullptr)
-    , m_loading_time_ms(0)
-    , m_init_in_progress(true)
-    , m_git_revision(GIT_REVISION)
 {
     QFuture<void> future = QtConcurrent::run([this]{
         QElapsedTimer timer;
@@ -42,7 +39,7 @@ ApiObject::ApiObject(QObject* parent)
 
         this->m_platforms = DataFinder::find();
 
-        this->m_loading_time_ms = timer.elapsed();
+        this->m_meta.setElapsedLoadingTime(timer.elapsed());
     });
 
     m_loading_watcher.setFuture(future);
@@ -53,13 +50,11 @@ ApiObject::ApiObject(QObject* parent)
 void ApiObject::onLoadingFinished()
 {
     emit platformModelChanged();
-    qInfo().noquote() << tr("Data files loaded in %1ms").arg(m_loading_time_ms);
 
     if (!m_platforms.isEmpty())
         setCurrentPlatformIndex(0);
 
-    m_init_in_progress = false;
-    emit initComplete();
+    m_meta.onApiLoadingFinished();
 }
 
 void ApiObject::resetPlatformIndex()

@@ -83,7 +83,7 @@ Window {
         color: "#222"
         anchors.fill: parent
 
-        visible: (theme_loader.status != Loader.Ready) || pegasus.isInitializing
+        visible: (theme_loader.status != Loader.Ready) || pegasus.meta.isLoading
 
         Text {
             text: "PEGASUS"
