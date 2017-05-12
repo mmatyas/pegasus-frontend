@@ -130,6 +130,7 @@ FocusScope {
                     focus: true
                     KeyNavigation.down: mbQuitReboot
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()
+                    Keys.onReturnPressed: pegasus.system.shutdown()
                 }
                 SecondaryMenuItem {
                     id: mbQuitReboot
@@ -138,6 +139,7 @@ FocusScope {
                     KeyNavigation.up: mbQuitShutdown
                     KeyNavigation.down: mbQuitExit
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()
+                    Keys.onReturnPressed: pegasus.system.reboot()
                 }
                 SecondaryMenuItem {
                     id: mbQuitExit
