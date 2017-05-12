@@ -19,6 +19,7 @@
 
 #include "Model.h"
 #include "api_parts/ApiMeta.h"
+#include "api_parts/ApiSystem.h"
 
 #include <QFutureWatcher>
 #include <QObject>
@@ -49,6 +50,7 @@ class ApiObject : public QObject {
                NOTIFY currentGameChanged)
 
     Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
+    Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -68,6 +70,7 @@ public:
     Q_INVOKABLE void launchGame();
 
     ApiParts::Meta* meta() { return &m_meta; }
+    ApiParts::System* system() { return &m_system; }
 
 signals:
     // the main data structures
@@ -97,6 +100,7 @@ private:
     Model::Game* m_current_game;
 
     ApiParts::Meta m_meta;
+    ApiParts::System m_system;
 
     // initialization
     QFutureWatcher<void> m_loading_watcher;
