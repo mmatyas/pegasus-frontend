@@ -10,3 +10,6 @@ SUBDIRS += \
 
 OTHER_FILES += \
     assets/*
+
+
+message("Git revision: '$${GIT_REVISION}'")

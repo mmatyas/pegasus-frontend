@@ -20,6 +20,7 @@
 #include "Model.h"
 #include "ProcessLauncher.h"
 
+#include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QQmlContext>
 
@@ -28,6 +29,16 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::addLibraryPath("lib");
     QGuiApplication app(argc, argv);
+    app.setApplicationName("pegasus-frontend");
+    app.setApplicationVersion(GIT_REVISION);
+
+    QCommandLineParser argparser;
+    argparser.setApplicationDescription("\n" + QObject::tr(
+        "A cross platform, customizable graphical frontend for launching emulators\n"
+        "and managing your game collection."));
+    argparser.addHelpOption();
+    argparser.addVersionOption();
+    argparser.process(app);
 
 
     static constexpr auto API_URI = "Pegasus.Model";
