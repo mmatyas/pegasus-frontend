@@ -20,7 +20,10 @@ import QtQuick 2.8
 
 
 FocusScope {
-    Keys.onEscapePressed: themeContent.focus = true
+    Keys.onEscapePressed: {
+        themeContent.enabled = true
+        themeContent.focus = true
+    }
 
 
     Rectangle {

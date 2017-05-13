@@ -64,7 +64,10 @@ Window {
         focus: !loadingScreen.visible
         anchors.fill: parent
 
-        Keys.onEscapePressed: mainMenu.focus = true
+        Keys.onEscapePressed: {
+            themeContent.enabled = false
+            mainMenu.focus = true
+        }
 
         Loader {
             id: themeContent
