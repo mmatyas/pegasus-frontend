@@ -37,6 +37,22 @@ FocusScope {
         visible: opacity > 0
     }
 
+    Text {
+        id: revision
+        text: pegasus.meta.gitRevision
+        color: "#eee"
+        font {
+            pixelSize: rpx(12)
+            family: "monospace"
+        }
+        anchors {
+            left: parent.left
+            bottom: parent.bottom
+            margins: rpx(10)
+        }
+        visible: false
+    }
+
     Rectangle {
         id: menuPanel
         color: "#333"
@@ -138,6 +154,7 @@ FocusScope {
     states: State {
         name: "menuOpen"; when: activeFocus
         PropertyChanges { target: shade; opacity: 0.75 }
+        PropertyChanges { target: revision; visible: true }
         PropertyChanges { target: menuPanel; x: parent.width - width }
     }
 
