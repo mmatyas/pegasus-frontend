@@ -25,9 +25,13 @@ Rectangle {
     property int textSizePx
     property alias text: itemLabel.text
 
+    signal activated()
+
     width: parent.width
     height: textSizePx * 2
-    color: selected ? activeColor : inactiveColor
+    color: selected || mouseArea.containsMouse ? activeColor : inactiveColor
+
+    Keys.onReturnPressed: activated()
 
     Text {
         id: itemLabel
@@ -41,5 +45,12 @@ Rectangle {
             pixelSize: textSizePx
             family: "Roboto Condensed"
         }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        onClicked: parent.activated()
     }
 }

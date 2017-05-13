@@ -104,10 +104,13 @@ FocusScope {
             PrimaryMenuItem {
                 id: mbQuit
                 text: qsTr("Quit")
+                onActivated: {
+                    if (quitSubmenu.focus) mbQuit.forceActiveFocus()
+                    else quitSubmenu.forceActiveFocus()
+                }
                 selected: focus || quitSubmenu.visible
 
                 KeyNavigation.up: mbControls
-                Keys.onReturnPressed: quitSubmenu.forceActiveFocus()
             }
         }
 
@@ -129,28 +132,28 @@ FocusScope {
                 SecondaryMenuItem {
                     id: mbQuitShutdown
                     text: qsTr("Shutdown")
+                    onActivated: pegasus.system.shutdown()
 
                     focus: true
                     KeyNavigation.down: mbQuitReboot
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()
-                    Keys.onReturnPressed: pegasus.system.shutdown()
                 }
                 SecondaryMenuItem {
                     id: mbQuitReboot
                     text: qsTr("Reboot")
+                    onActivated: pegasus.system.reboot()
 
                     KeyNavigation.up: mbQuitShutdown
                     KeyNavigation.down: mbQuitExit
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()
-                    Keys.onReturnPressed: pegasus.system.reboot()
                 }
                 SecondaryMenuItem {
                     id: mbQuitExit
                     text: qsTr("Exit Pegasus")
+                    onActivated: Qt.quit()
 
                     KeyNavigation.up: mbQuitReboot
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()
-                    Keys.onReturnPressed: Qt.quit()
                 }
             }
         }
