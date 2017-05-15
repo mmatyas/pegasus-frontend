@@ -27,18 +27,14 @@ before_install:
   - if [[ "$CROSS" == "1" ]]; then mv ./tools/rpi-sysroot ./tools/opt/; fi
   - popd
 
-before_script:
-  - if [[ "$TARGET" == "x11" ]]; then
-      docker build -t pegasus-ci ./etc/ci/x11;
-    else
-      docker build -t pegasus-ci ./etc/ci/arm;
-    fi
+install:
+  - docker pull mmatyas/pegasus-ci
   - export DOCKER_CMD='docker run
       --volume /tmp/tools/opt:/opt:ro
       --volume '$PWD':/src:ro
       --volume /tmp/build:/build
       --volume /tmp/deploy:/deploy
-      pegasus-ci'
+      mmatyas/pegasus-ci'
 
 script:
   - if [[ "$TARGET" == "x11" ]]; then
