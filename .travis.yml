@@ -50,3 +50,18 @@ script:
   - ${DOCKER_CMD} make
   - ${DOCKER_CMD} make install
   - curl --upload-file /tmp/deploy/pegasus https://transfer.sh/pegasus-${TARGET}
+
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+      env: null
+      before_install:
+        - brew update
+      install:
+        - brew install qt5
+        - brew link --force qt5
+        - qmake -v
+      script:
+        - qmake
+        - make
