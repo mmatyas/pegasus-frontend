@@ -167,6 +167,6 @@ FocusScope {
     }
 
     transitions: Transition {
-        NumberAnimation { properties: "opacity,x"; duration: 300; easing.type: Easing.InOutCubic }
+        NumberAnimation { properties: "opacity,x"; duration: 300; easing.type: Easing.OutCubic }
     }
 }
