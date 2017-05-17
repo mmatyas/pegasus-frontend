@@ -60,14 +60,22 @@ Window {
     }
 
 
+    function toggleMenu() {
+        if (themeContent.focus) {
+            themeContent.enabled = false;
+            mainMenu.focus = true;
+        }
+        else {
+            themeContent.enabled = true;
+            themeContent.focus = true;
+        }
+    }
+
     FocusScope {
         focus: !loadingScreen.visible
         anchors.fill: parent
 
-        Keys.onEscapePressed: {
-            themeContent.enabled = false
-            mainMenu.focus = true
-        }
+        Keys.onEscapePressed: toggleMenu()
 
         Loader {
             id: themeContent
@@ -81,6 +89,12 @@ Window {
         MainMenu {
             id: mainMenu
             anchors.fill: parent
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: toggleMenu()
         }
     }
 

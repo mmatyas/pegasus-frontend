@@ -20,11 +20,7 @@ import QtQuick 2.8
 
 
 FocusScope {
-    Keys.onEscapePressed: {
-        themeContent.enabled = true
-        themeContent.focus = true
-    }
-
+    Keys.onEscapePressed: toggleMenu()
 
     Rectangle {
         id: shade
@@ -38,6 +34,11 @@ FocusScope {
         color: "black"
         opacity: 0
         visible: opacity > 0
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: toggleMenu()
+        }
     }
 
     Text {
