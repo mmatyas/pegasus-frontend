@@ -34,6 +34,8 @@ FocusScope {
         opacity: 0
         visible: opacity > 0
 
+        Behavior on opacity { NumberAnimation { duration: 300 } }
+
         MouseArea {
             anchors.fill: parent
             onClicked: toggleMenu()
@@ -58,16 +60,22 @@ FocusScope {
 
     MainMenuPanel {
         id: menuPanel
+        focus: true
+        anchors.left: parent.right
     }
 
     states: State {
         name: "menuOpen"; when: activeFocus
         PropertyChanges { target: shade; opacity: 0.75 }
         PropertyChanges { target: revision; visible: true }
-        PropertyChanges { target: menuPanel; x: parent.width - width }
+        AnchorChanges {
+            target: menuPanel;
+            anchors.right: parent.right;
+            anchors.left: undefined
+        }
     }
 
     transitions: Transition {
-        NumberAnimation { properties: "opacity,x"; duration: 300; easing.type: Easing.OutCubic }
+        AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
     }
 }

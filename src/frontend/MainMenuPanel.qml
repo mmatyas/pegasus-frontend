@@ -22,7 +22,6 @@ FocusScope {
     width: rpx(420)
     height: parent.height
     visible: x < parent.width
-    x: parent.width
 
     Rectangle {
         color: "#333"
