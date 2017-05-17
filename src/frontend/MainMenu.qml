@@ -65,70 +65,47 @@ FocusScope {
         visible: x < parent.width
         x: parent.width
 
-        property int bottomPadding: rpx(30)
+        PrimaryMenuItem {
+            id: mbSettings
+            text: qsTr("Settings")
+            selected: focus
 
-
-        Column {
-            width: parent.width
-            z: 200
-            anchors {
-                bottom: parent.bottom
-                bottomMargin: {
-                    if (quitSubmenu.focus) return quitSubmenu.height + parent.bottomPadding;
-                    return parent.bottomPadding;
-                }
-            }
-
-            Behavior on anchors.bottomMargin {
-                PropertyAnimation {
-                    id: slideAnim
-                    duration: 150
-                }
-            }
-
-            PrimaryMenuItem {
-                id: mbSettings
-                text: qsTr("Settings")
-                selected: focus
-
-                focus: true
-                KeyNavigation.down: mbControls
-            }
-            PrimaryMenuItem {
-                id: mbControls
-                text: qsTr("Controls")
-                selected: focus
-
-                KeyNavigation.up: mbSettings
-                KeyNavigation.down: mbQuit
-            }
-            PrimaryMenuItem {
-                id: mbQuit
-                text: qsTr("Quit")
-                onActivated: {
-                    if (quitSubmenu.focus) mbQuit.forceActiveFocus()
-                    else quitSubmenu.forceActiveFocus()
-                }
-                selected: focus || quitSubmenu.visible
-
-                KeyNavigation.up: mbControls
-            }
+            focus: true
+            KeyNavigation.down: mbControls
+            Keys.onSpacePressed: quitSubmenu.visible = !quitSubmenu.visible
+            anchors.bottom: mbControls.top
         }
+        PrimaryMenuItem {
+            id: mbControls
+            text: qsTr("Controls")
+            selected: focus
 
+            KeyNavigation.up: mbSettings
+            KeyNavigation.down: mbQuit
+            anchors.bottom: mbQuit.top
+        }
+        PrimaryMenuItem {
+            id: mbQuit
+            text: qsTr("Quit")
+            onActivated: {
+                if (quitSubmenu.focus) mbQuit.forceActiveFocus()
+                else quitSubmenu.forceActiveFocus()
+            }
+            selected: focus || quitSubmenu.visible
+
+            KeyNavigation.up: mbControls
+            anchors.bottom: menuFooter.top
+        }
         FocusScope {
             id: quitSubmenu
             width: parent.width
             height: quitSubmenuColumn.height
-            visible: focus || (mbQuit.focus && slideAnim.running)
-            anchors {
-                bottom: parent.bottom
-                bottomMargin: parent.bottomPadding
-            }
+            visible: focus || (mbQuit.focus && subMenuAnim.running)
+            anchors.bottom: menuFooter.top
 
             Column {
                 id: quitSubmenuColumn
                 width: parent.width
-                z: 100
 
                 SecondaryMenuItem {
                     id: mbQuitShutdown
@@ -157,6 +134,22 @@ FocusScope {
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()
                 }
             }
+        }
+        Item {
+            id: menuFooter
+            width: parent.width
+            height: rpx(30)
+            anchors.bottom: parent.bottom
+        }
+
+        states: State {
+            name: "quitOpen"; when: quitSubmenu.focus
+            AnchorChanges { target: mbQuit; anchors.bottom: quitSubmenu.top }
+        }
+
+        transitions: Transition {
+            id: subMenuAnim
+            AnchorAnimation { duration: 150 }
         }
     }
 
