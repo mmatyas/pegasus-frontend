@@ -17,6 +17,7 @@
 
 import "menuitems"
 import QtQuick 2.8
+import QtGamepad 1.0
 
 FocusScope {
     width: rpx(420)
@@ -27,6 +28,12 @@ FocusScope {
         color: "#333"
         anchors.fill: parent
 
+        Item {
+            id: menuHeader
+            width: parent.width
+            height: rpx(30)
+            anchors.top: parent.top
+        }
         PrimaryMenuItem {
             id: mbSettings
             text: qsTr("Settings")
@@ -39,12 +46,43 @@ FocusScope {
         PrimaryMenuItem {
             id: mbControls
             text: qsTr("Controls")
-            selected: focus
+            onActivated: {
+                if (gamepadSubmenu.focus) mbControls.forceActiveFocus()
+                else gamepadSubmenu.forceActiveFocus()
+            }
+            selected: focus || gamepadSubmenu.visible
 
             KeyNavigation.up: mbSettings
             KeyNavigation.down: mbQuit
             anchors.bottom: mbQuit.top
         }
+        Rectangle {
+            color: "#222"
+            width: parent.width
+            anchors { top: mbControls.bottom; bottom: mbQuit.top }
+
+            ListView {
+                id: gamepadSubmenu
+
+                // FIXME: it seems Qt 5.8 can't list the connected gamepads...
+                // model: GamepadManager.connectedGamepads
+                model: GamepadManager.connectedGamepads.length
+                visible: focus || (mbControls.focus && submenuAnim.running)
+                anchors.fill: parent
+
+                delegate: SecondaryMenuItem {
+                    // FIXME: see above...
+                    // text: modelData
+                    // FIXME: it seems Qt 5.8 doesn't even know the name of the gamepad...
+                    // text: GamepadManager.connectedGamepads.length > index
+                    //       ? GamepadManager.connectedGamepads[index]
+                    //       : "empty"
+                    text: "Gamepad #" + (index + 1)
+                    Keys.onEscapePressed: mbControls.forceActiveFocus()
+                }
+            }
+        }
+
         PrimaryMenuItem {
             id: mbQuit
             text: qsTr("Quit")
@@ -61,7 +99,7 @@ FocusScope {
             id: quitSubmenu
             width: parent.width
             height: quitSubmenuColumn.height
-            visible: focus || (mbQuit.focus && subMenuAnim.running)
+            visible: focus || (mbQuit.focus && submenuAnim.running)
             anchors.bottom: menuFooter.top
 
             Column {
@@ -103,13 +141,28 @@ FocusScope {
             anchors.bottom: parent.bottom
         }
 
-        states: State {
-            name: "quitOpen"; when: quitSubmenu.focus
-            AnchorChanges { target: mbQuit; anchors.bottom: quitSubmenu.top }
-        }
+        states: [
+            State {
+                name: "quitOpen"; when: quitSubmenu.focus
+                AnchorChanges { target: mbQuit; anchors.bottom: quitSubmenu.top }
+            },
+            State {
+                name: "gamepadOpen"; when: gamepadSubmenu.focus
+                AnchorChanges {
+                    target: mbSettings
+                    anchors.top: menuHeader.bottom
+                    anchors.bottom: undefined
+                }
+                AnchorChanges {
+                    target: mbControls
+                    anchors.top: mbSettings.bottom
+                    anchors.bottom: undefined
+                }
+            }
+        ]
 
         transitions: Transition {
-            id: subMenuAnim
+            id: submenuAnim
             AnchorAnimation { duration: 150 }
         }
     }
