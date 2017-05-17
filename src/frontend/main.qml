@@ -53,6 +53,7 @@ Window {
         gamepad: gamepad1
         active: true
         buttonAKey: Qt.Key_Return
+        buttonBKey: Qt.Key_Escape
         buttonL1Key: Qt.Key_A
         buttonL2Key: Qt.Key_A
         buttonR1Key: Qt.Key_D
