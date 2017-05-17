@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/frontend">
         <file>main.qml</file>
-        <file>MainMenu.qml</file>
+        <file>MainMenuOverlay.qml</file>
         <file>menuitems/PrimaryMenuItem.qml</file>
         <file>menuitems/SecondaryMenuItem.qml</file>
         <file>menuitems/GenericMenuItem.qml</file>

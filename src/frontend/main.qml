@@ -87,7 +87,7 @@ Window {
             asynchronous: true
         }
 
-        MainMenu {
+        MainMenuOverlay {
             id: mainMenu
             anchors.fill: parent
         }
