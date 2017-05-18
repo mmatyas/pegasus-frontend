@@ -21,6 +21,8 @@ import QtQuick 2.8
 FocusScope {
     Keys.onEscapePressed: toggleMenu()
 
+    onFocusChanged: activeFocus ? state = "menuOpen" : state = ""
+
     Rectangle {
         id: shade
         anchors {
@@ -62,20 +64,51 @@ FocusScope {
         id: menuPanel
         focus: true
         anchors.left: parent.right
+
+        onGamepadOpened: parent.state = "gamepadPanelOpen";
+        onGamepadClosed: parent.state = "menuOpen";
     }
 
-    states: State {
-        name: "menuOpen"; when: activeFocus
-        PropertyChanges { target: shade; opacity: 0.75 }
-        PropertyChanges { target: revision; visible: true }
-        AnchorChanges {
-            target: menuPanel;
-            anchors.right: parent.right;
-            anchors.left: undefined
+    GamepadConfigPanel {
+        id: gamepadConfigPanel
+        anchors.left: menuPanel.right
+    }
+
+    states: [
+        State {
+            name: "menuOpen"
+            PropertyChanges { target: shade; opacity: 0.75 }
+            PropertyChanges { target: revision; visible: true }
+            AnchorChanges {
+                target: menuPanel;
+                anchors.left: undefined
+                anchors.right: parent.right;
+            }
+        },
+        State {
+            name: "gamepadPanelOpen"
+            // TODO: optimize
+            PropertyChanges { target: shade; opacity: 0.75 }
+            PropertyChanges { target: revision; visible: false }
+            AnchorChanges {
+                target: menuPanel;
+                anchors.left: parent.left;
+                anchors.right: undefined
+            }
         }
-    }
+    ]
 
-    transitions: Transition {
-        AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
-    }
+    transitions: [
+        Transition {
+            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
+        },
+        Transition {
+            from: "menuOpen"; to: "gamepadPanelOpen"
+            AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
+        },
+        Transition {
+            from: "gamepadPanelOpen"; to: "menuOpen"
+            AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
+        }
+    ]
 }

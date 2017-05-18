@@ -20,9 +20,13 @@ import QtQuick 2.8
 import QtGamepad 1.0
 
 FocusScope {
-    width: rpx(420)
+    id: root
+    width: rpx(360)
     height: parent.height
     visible: x < parent.width
+
+    signal gamepadOpened(int deviceIndex)
+    signal gamepadClosed()
 
     Rectangle {
         color: "#333"
@@ -64,6 +68,12 @@ FocusScope {
             ListView {
                 id: gamepadSubmenu
 
+                // FIXME: the gamepad layout panel should only show when there are
+                // connected gamepads. When that gets implemented, some of the checks
+                // here could be removed.
+                onFocusChanged: activeFocus ? root.gamepadOpened(0) : root.gamepadClosed()
+                Keys.onEscapePressed: mbControls.forceActiveFocus()
+
                 // FIXME: it seems Qt 5.8 can't list the connected gamepads...
                 // model: GamepadManager.connectedGamepads
                 model: GamepadManager.connectedGamepads.length
@@ -78,6 +88,7 @@ FocusScope {
                     //       ? GamepadManager.connectedGamepads[index]
                     //       : "empty"
                     text: "Gamepad #" + (index + 1)
+                    Keys.onReturnPressed: root.gamepadOpened(index)
                     Keys.onEscapePressed: mbControls.forceActiveFocus()
                 }
             }
