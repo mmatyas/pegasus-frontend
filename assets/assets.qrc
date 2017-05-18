@@ -62,5 +62,19 @@
         <file>platform_logo/zxspectrum.svg</file>
         <file>fonts/loading.ttf</file>
         <file>common/loading-spinner.png</file>
+        <file>gamepad/a.svg</file>
+        <file>gamepad/b.svg</file>
+        <file>gamepad/base.svg</file>
+        <file>gamepad/dpad.svg</file>
+        <file>gamepad/guide.svg</file>
+        <file>gamepad/left_shoulder.svg</file>
+        <file>gamepad/left_trigger.svg</file>
+        <file>gamepad/right_shoulder.svg</file>
+        <file>gamepad/right_trigger.svg</file>
+        <file>gamepad/select.svg</file>
+        <file>gamepad/start.svg</file>
+        <file>gamepad/stick.svg</file>
+        <file>gamepad/x.svg</file>
+        <file>gamepad/y.svg</file>
     </qresource>
 </RCC>
