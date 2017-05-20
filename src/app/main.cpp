@@ -27,7 +27,9 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::addLibraryPath("lib/plugins");
     QCoreApplication::addLibraryPath("lib");
+
     QGuiApplication app(argc, argv);
     app.setApplicationName("pegasus-frontend");
     app.setApplicationVersion(GIT_REVISION);
