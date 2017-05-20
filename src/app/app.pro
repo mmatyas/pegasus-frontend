@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-TARGET = pegasus
+TARGET = pegasus-fe
 
 QT += qml
 CONFIG += c++11 warn_on exceptions_off rtti_off
