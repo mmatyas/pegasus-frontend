@@ -33,6 +33,13 @@ build_script:
   - qmake ..
   - if %flavor%==msvc (nmake /NOLOGO) else (mingw32-make)
   - if %flavor%==msvc (nmake /NOLOGO install) else (mingw32-make install)
+  - windeployqt
+      --release
+      --qmldir ..
+      --no-translations
+      --no-opengl-sw
+      C:\pegasus-frontend
+  - 7z a pegasus_ci.zip C:\pegasus-frontend
 
 artifacts:
-  - path: build\src\app\release\pegasus.exe
+  - path: build\pegasus_ci.zip
