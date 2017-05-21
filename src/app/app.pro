@@ -44,6 +44,14 @@ unix {
 
     INSTALLS += icons desktop
 }
+win32 {
+    # installation should always be portable (one-dir) on windows
+    isEmpty(INSTALLDIR): INSTALLDIR = C:/pegasus-frontend
+    isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
+    isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
+
+    target.path = $${INSTALL_BINDIR}
+}
 
 !isEmpty(target.path): INSTALLS += target
 
