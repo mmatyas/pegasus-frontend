@@ -23,10 +23,10 @@ DEFINES *= \
 # Deployment
 
 unix {
-    # installation is portale by default
+    # installation is portable by default
     isEmpty(INSTALLDIR): INSTALLDIR = /opt/pegasus-frontend
     isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
-    # isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
+    isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
     isEmpty(INSTALL_ICONDIR): INSTALL_ICONDIR = $${INSTALLDIR}
     isEmpty(INSTALL_DESKTOPDIR): INSTALL_DESKTOPDIR = $${INSTALLDIR}
 
