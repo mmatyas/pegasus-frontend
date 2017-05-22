@@ -27,8 +27,22 @@ unix {
     isEmpty(INSTALLDIR): INSTALLDIR = /opt/pegasus-frontend
     isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
     # isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
+    isEmpty(INSTALL_ICONDIR): INSTALL_ICONDIR = $${INSTALLDIR}
+    isEmpty(INSTALL_DESKTOPDIR): INSTALL_DESKTOPDIR = $${INSTALLDIR}
 
-    target.path = $${INSTALLDIR}
+    target.path = $${INSTALL_BINDIR}
+
+    icons.path = $${INSTALL_ICONDIR}
+    icons.extra = $${QMAKE_COPY} $$quote($${TOP_SRCDIR}/assets/icon.png) pegasus-frontend.png
+    icons.files = pegasus-frontend.png
+
+    desktop_file.input = $${TOP_SRCDIR}/etc/linux/pegasus-frontend.desktop.in
+    desktop_file.output = $${OUT_PWD}/pegasus-frontend.desktop
+    QMAKE_SUBSTITUTES += desktop_file
+    desktop.path = $${INSTALL_DESKTOPDIR}
+    desktop.files += $$desktop_file.output
+
+    INSTALLS += icons desktop
 }
 
 !isEmpty(target.path): INSTALLS += target
