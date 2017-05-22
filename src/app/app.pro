@@ -23,7 +23,7 @@ DEFINES *= \
 
 # Deployment
 
-unix {
+unix:!macx {
     # installation is portable by default
     isEmpty(INSTALLDIR): INSTALLDIR = /opt/pegasus-frontend
     isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
