@@ -49,7 +49,9 @@ script:
       /src
   - ${DOCKER_CMD} make
   - ${DOCKER_CMD} make install
-  - curl --upload-file /tmp/deploy/pegasus https://transfer.sh/pegasus-${TARGET}
+
+after_success:
+  - curl --upload-file /tmp/deploy/pegasus-fe https://transfer.sh/pegasus-ci_${TARGET}
 
 matrix:
   include:
