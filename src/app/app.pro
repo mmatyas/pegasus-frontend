@@ -34,8 +34,10 @@ unix:!macx {
     target.path = $${INSTALL_BINDIR}
 
     icons.path = $${INSTALL_ICONDIR}
-    icons.extra = $${QMAKE_COPY} $$quote($${TOP_SRCDIR}/assets/icon.png) pegasus-frontend.png
     icons.files = pegasus-frontend.png
+    icons.extra = $${QMAKE_COPY} \
+        $$quote($${TOP_SRCDIR}/assets/icon.png) \
+        $$quote($${INSTALL_ICONDIR}/pegasus-frontend.png)
 
     desktop_file.input = $${TOP_SRCDIR}/etc/linux/pegasus-frontend.desktop.in
     desktop_file.output = $${OUT_PWD}/pegasus-frontend.desktop
