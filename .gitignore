@@ -1,5 +1,5 @@
 # ignore build dir
-build
+build*
 
 # ignore all dotfiles
 .*
