@@ -48,7 +48,7 @@ make install  # optional
 
 Additional parameters are available for QMake:
 
-- `INSTALLDIR`: where to `make install` the program. Defaults to `/opt/pegasus-frontend`. (Unix only)
+- `INSTALLDIR`: where to `make install` the program. Defaults to `/opt/pegasus-frontend` or `C:\pegasus-frontend`.
 
 **For more details**, see the [wiki page](https://github.com/mmatyas/pegasus-frontend/wiki/Building).
 
