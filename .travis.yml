@@ -67,3 +67,5 @@ matrix:
       script:
         - qmake
         - make
+      after_success:
+        - true
