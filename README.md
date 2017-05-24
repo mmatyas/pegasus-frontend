@@ -31,9 +31,8 @@ At the moment, this project is still in alpha, so there are no official releases
 
 **Dependencies**
 
-- Qt 5.8
 - C++11 compatible compiler
-
+- Qt 5.8
 
 **Building**
 
@@ -50,7 +49,8 @@ make install  # optional
 Additional parameters are available for QMake:
 
 - `INSTALLDIR`: where to `make install` the program. Defaults to `/opt/pegasus-frontend`. (Unix only)
-- `INSTALL_BINDIR`: where to `make install` the program runtime binary. Defaults to `INSTALLDIR`. (Unix only)
+
+**For more details**, see the [wiki page](https://github.com/mmatyas/pegasus-frontend/wiki/Building).
 
 
 ## License
