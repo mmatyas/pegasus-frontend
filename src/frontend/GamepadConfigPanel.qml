@@ -107,6 +107,10 @@ FocusScope {
 
                 fillMode: Image.PreserveAspectFit
                 source: "/gamepad/base.svg"
+                sourceSize {
+                    width: 512
+                    height: 512
+                }
             }
             Item {
                 width: padSelect.width + padGuide.width + padStart.width + 10

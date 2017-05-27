@@ -27,5 +27,9 @@ Item {
         id: pieceImage
         width: parent.width
         fillMode: Image.PreserveAspectFit
+        sourceSize {
+            width: 64
+            height: 64
+        }
     }
 }
