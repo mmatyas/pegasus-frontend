@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="17.216mm" width="17.216mm" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 60.999999 60.999998">
-	<g transform="translate(105.5 -521.86)" stroke="#333" fill="none">
+	<g transform="translate(105.5 -521.86)" stroke="#aaa" fill="none">
 		<circle stroke-width=".49999" cy="552.36" cx="-75" r="30"/>
 		<path stroke-linejoin="round" d="m-75 522.36a30 30 0 0 0 -10 1.75v18.25h-18.246a30 30 0 0 0 -1.7539 10 30 30 0 0 0 1.75 10h18.25v18.246a30 30 0 0 0 10 1.7539 30 30 0 0 0 10 -1.748v-18.252h18.246a30 30 0 0 0 1.7539 -10 30 30 0 0 0 -1.75 -10h-18.25v-18.246a30 30 0 0 0 -10 -1.76z" stroke-width=".99997"/>
 		<g stroke-linejoin="round" stroke-linecap="round" stroke-width=".24999">

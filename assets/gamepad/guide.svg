@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="15.804mm" width="20.038mm" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 70.999997 55.999999" xmlns:dc="http://purl.org/dc/elements/1.1/">
-	<g stroke="#333" transform="translate(-315.93 -255.79)" fill="none">
+	<g stroke="#aaa" transform="translate(-315.93 -255.79)" fill="none">
 		<ellipse stroke-linejoin="round" cx="351.43" rx="35" ry="27.5" cy="283.79" stroke-linecap="round" stroke-width="2"/>
 		<g transform="translate(.62003 -1.0678)">
-			<path id="path4267" stroke-linejoin="round" d="m339.89 284.86h21.831" stroke="#333" stroke-linecap="round" stroke-width="2.0001" fill="none"/>
+			<path id="path4267" stroke-linejoin="round" d="m339.89 284.86h21.831" stroke="#aaa" stroke-linecap="round" stroke-width="2.0001" fill="none"/>
 			<use xlink:href="#path4267" transform="translate(0 -9.1356)" height="100%" width="100%" y="0" x="0"/>
 			<use xlink:href="#path4267" transform="translate(0 9.1356)" height="100%" width="100%" y="0" x="0"/>
 		</g>

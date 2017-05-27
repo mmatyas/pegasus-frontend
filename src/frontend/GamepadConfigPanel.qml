@@ -17,7 +17,6 @@
 
 import QtQuick 2.8
 import QtGamepad 1.0
-import QtGraphicalEffects 1.0
 
 FocusScope {
     property bool hasGamepads: GamepadManager.connectedGamepads.length > 0
@@ -236,12 +235,6 @@ FocusScope {
                 xPercent: gamepad.axisRightX
                 yPercent: gamepad.axisRightY
             }
-        }
-
-        ColorOverlay {
-            anchors.fill: padContainer
-            source: padContainer
-            color: "#ffaaaaaa"
         }
     }
 

@@ -2,8 +2,8 @@
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="14.676mm" width="14.676mm" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 51.999999 51.999999">
 	<g transform="translate(-339.71 -383.51)">
 		<g transform="translate(-132.13 237.28)">
-			<path fill="#333" d="m496.12 186.08v-11.12q-2.76-4.28-5.2-8.44t-4.6-8.16h4.56q1.52 3.28 3.4 6.68 1.88 3.36 3.88 6.48 1.96-3.12 3.84-6.48 1.88-3.4 3.44-6.68h4.32q-2.16 4-4.6 8.16-2.44 4.12-5.16 8.36v11.2h-3.88z"/>
-			<circle stroke-linejoin="round" cx="497.84" stroke-linecap="round" stroke="#333" cy="172.22" r="25" stroke-width="2" fill="none"/>
+			<path fill="#aaa" d="m496.12 186.08v-11.12q-2.76-4.28-5.2-8.44t-4.6-8.16h4.56q1.52 3.28 3.4 6.68 1.88 3.36 3.88 6.48 1.96-3.12 3.84-6.48 1.88-3.4 3.44-6.68h4.32q-2.16 4-4.6 8.16-2.44 4.12-5.16 8.36v11.2h-3.88z"/>
+			<circle stroke-linejoin="round" cx="497.84" stroke-linecap="round" stroke="#aaa" cy="172.22" r="25" stroke-width="2" fill="none"/>
 		</g>
 	</g>
 </svg>
