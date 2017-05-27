@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="7.3378mm" width="13.562mm" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 48.053569 25.999998">
 	<g transform="translate(-373.43 -287.93)">
-		<g stroke-linejoin="round" transform="translate(0 .0000015920)" stroke="#000" stroke-linecap="round" fill="none">
+		<g stroke-linejoin="round" transform="translate(0 .0000015920)" stroke="#333" stroke-linecap="round" fill="none">
 			<path d="m410.98 288.43s10 0 10 10v5s0 10-10 10h-37.054v-25z" stroke-width="2"/>
 			<path d="m389.78 293.54 15.347 7.4199-15.347 7.3717z"/>
 		</g>
