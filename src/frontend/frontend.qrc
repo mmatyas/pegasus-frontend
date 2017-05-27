@@ -10,5 +10,6 @@
         <file>GamepadName.qml</file>
         <file>GamepadPiece.qml</file>
         <file>GamepadDpad.qml</file>
+        <file>GamepadStick.qml</file>
     </qresource>
 </RCC>

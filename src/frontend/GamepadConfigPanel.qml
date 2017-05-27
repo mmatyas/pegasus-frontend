@@ -117,7 +117,7 @@ FocusScope {
                 height: padGuide.height
                 anchors {
                     verticalCenter: padBase.verticalCenter
-                    verticalCenterOffset: -rpx(25)
+                    verticalCenterOffset: rpx(-15)
                     horizontalCenter: padBase.horizontalCenter
                 }
                 GamepadPiece {
@@ -209,6 +209,32 @@ FocusScope {
                     anchors.fill: parent
                     gamepad: gamepad
                 }
+            }
+            GamepadStick {
+                id: padLeftStick
+                width: rpx(110)
+                anchors {
+                    top: padBase.verticalCenter
+                    topMargin: rpx(30)
+                    right: padBase.horizontalCenter
+                    rightMargin: rpx(15)
+                }
+                active: gamepad.buttonL3
+                xPercent: gamepad.axisLeftX
+                yPercent: gamepad.axisLeftY
+            }
+            GamepadStick {
+                id: padRightStick
+                width: padLeftStick.width
+                anchors {
+                    top: padBase.verticalCenter
+                    topMargin: padLeftStick.anchors.topMargin
+                    left: padBase.horizontalCenter
+                    leftMargin: padLeftStick.anchors.rightMargin
+                }
+                active: gamepad.buttonR3
+                xPercent: gamepad.axisRightX
+                yPercent: gamepad.axisRightY
             }
         }
 
