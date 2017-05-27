@@ -146,6 +146,47 @@ FocusScope {
                     active: gamepad.buttonStart
                 }
             }
+            Item {
+                width: padA.width * 3
+                height: width
+                anchors {
+                    verticalCenter: padBase.verticalCenter
+                    left: padBase.horizontalCenter
+                    leftMargin: rpx(100)
+                }
+                GamepadPiece {
+                    id: padA
+                    width: rpx(40)
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "/gamepad/a.svg"
+                    active: gamepad.buttonA
+                }
+                GamepadPiece {
+                    id: padB
+                    width: padA.width
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    source: "/gamepad/b.svg"
+                    active: gamepad.buttonB
+                }
+                GamepadPiece {
+                    id: padX
+                    width: padA.width
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    source: "/gamepad/x.svg"
+                    active: gamepad.buttonX
+                }
+                GamepadPiece {
+                    id: padY
+                    width: padA.width
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "/gamepad/y.svg"
+                    active: gamepad.buttonY
+                }
+            }
         }
 
         ColorOverlay {
