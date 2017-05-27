@@ -9,5 +9,6 @@
         <file>GamepadConfigPanel.qml</file>
         <file>GamepadName.qml</file>
         <file>GamepadPiece.qml</file>
+        <file>GamepadDpad.qml</file>
     </qresource>
 </RCC>

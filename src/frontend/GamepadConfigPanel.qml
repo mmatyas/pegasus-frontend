@@ -151,12 +151,14 @@ FocusScope {
                 }
             }
             Item {
+                id: padABXYArea
                 width: padA.width * 3
                 height: width
                 anchors {
                     verticalCenter: padBase.verticalCenter
+                    verticalCenterOffset: rpx(-12)
                     left: padBase.horizontalCenter
-                    leftMargin: rpx(100)
+                    leftMargin: rpx(107)
                 }
                 GamepadPiece {
                     id: padA
@@ -189,6 +191,23 @@ FocusScope {
                     anchors.horizontalCenter: parent.horizontalCenter
                     source: "/gamepad/y.svg"
                     active: gamepad.buttonY
+                }
+            }
+            Item {
+                id: padDpadArea
+                width: padABXYArea.width * 0.95
+                height: width
+                anchors {
+                    verticalCenter: padBase.verticalCenter
+                    verticalCenterOffset: padABXYArea.anchors.verticalCenterOffset
+                    right: padBase.horizontalCenter
+                    rightMargin: padABXYArea.anchors.leftMargin
+                }
+
+                GamepadDpad {
+                    id: padDpad
+                    anchors.fill: parent
+                    gamepad: gamepad
                 }
             }
         }
