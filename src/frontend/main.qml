@@ -91,12 +91,6 @@ Window {
             id: mainMenu
             anchors.fill: parent
         }
-
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.RightButton
-            onClicked: toggleMenu()
-        }
     }
 
 

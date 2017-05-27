@@ -25,8 +25,8 @@ FocusScope {
     height: parent.height
     visible: x < parent.width
 
-    signal gamepadOpened(int deviceIndex)
-    signal gamepadClosed()
+    signal showGamepadScreen()
+
 
     Rectangle {
         color: "#333"
@@ -50,50 +50,13 @@ FocusScope {
         PrimaryMenuItem {
             id: mbControls
             text: qsTr("Controls")
-            onActivated: {
-                if (gamepadSubmenu.focus) mbControls.forceActiveFocus()
-                else gamepadSubmenu.forceActiveFocus()
-            }
-            selected: focus || gamepadSubmenu.visible
+            onActivated: root.showGamepadScreen()
+            selected: focus
 
             KeyNavigation.up: mbSettings
             KeyNavigation.down: mbQuit
             anchors.bottom: mbQuit.top
         }
-        Rectangle {
-            color: "#222"
-            width: parent.width
-            anchors { top: mbControls.bottom; bottom: mbQuit.top }
-
-            ListView {
-                id: gamepadSubmenu
-
-                // FIXME: the gamepad layout panel should only show when there are
-                // connected gamepads. When that gets implemented, some of the checks
-                // here could be removed.
-                onFocusChanged: activeFocus ? root.gamepadOpened(0) : root.gamepadClosed()
-                Keys.onEscapePressed: mbControls.forceActiveFocus()
-
-                // FIXME: it seems Qt 5.8 can't list the connected gamepads...
-                // model: GamepadManager.connectedGamepads
-                model: GamepadManager.connectedGamepads.length
-                visible: focus || (mbControls.focus && submenuAnim.running)
-                anchors.fill: parent
-
-                delegate: SecondaryMenuItem {
-                    // FIXME: see above...
-                    // text: modelData
-                    // FIXME: it seems Qt 5.8 doesn't even know the name of the gamepad...
-                    // text: GamepadManager.connectedGamepads.length > index
-                    //       ? GamepadManager.connectedGamepads[index]
-                    //       : "empty"
-                    text: "Gamepad #" + (index + 1)
-                    Keys.onReturnPressed: root.gamepadOpened(index)
-                    Keys.onEscapePressed: mbControls.forceActiveFocus()
-                }
-            }
-        }
-
         PrimaryMenuItem {
             id: mbQuit
             text: qsTr("Quit")
@@ -156,19 +119,6 @@ FocusScope {
             State {
                 name: "quitOpen"; when: quitSubmenu.focus
                 AnchorChanges { target: mbQuit; anchors.bottom: quitSubmenu.top }
-            },
-            State {
-                name: "gamepadOpen"; when: gamepadSubmenu.focus
-                AnchorChanges {
-                    target: mbSettings
-                    anchors.top: menuHeader.bottom
-                    anchors.bottom: undefined
-                }
-                AnchorChanges {
-                    target: mbControls
-                    anchors.top: mbSettings.bottom
-                    anchors.bottom: undefined
-                }
             }
         ]
 

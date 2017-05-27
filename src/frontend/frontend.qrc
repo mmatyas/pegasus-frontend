@@ -7,5 +7,6 @@
         <file>menuitems/GenericMenuItem.qml</file>
         <file>MainMenuPanel.qml</file>
         <file>GamepadConfigPanel.qml</file>
+        <file>GamepadName.qml</file>
     </qresource>
 </RCC>

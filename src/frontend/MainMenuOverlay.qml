@@ -17,11 +17,22 @@
 
 import QtQuick 2.8
 
-
 FocusScope {
-    Keys.onEscapePressed: toggleMenu()
+    function stepBack() {
+        if (state == "menuOpen" || state == "")
+            toggleMenu();
+        else if (state == "gamepadPanelOpen")
+            state = "menuOpen";
+    }
 
+    Keys.onEscapePressed: stepBack()
     onFocusChanged: activeFocus ? state = "menuOpen" : state = ""
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: stepBack()
+    }
 
     Rectangle {
         id: shade
@@ -65,13 +76,14 @@ FocusScope {
         focus: true
         anchors.left: parent.right
 
-        onGamepadOpened: parent.state = "gamepadPanelOpen";
-        onGamepadClosed: parent.state = "menuOpen";
+        onShowGamepadScreen: parent.state = "gamepadPanelOpen"
     }
 
     GamepadConfigPanel {
         id: gamepadConfigPanel
         anchors.left: menuPanel.right
+
+        onScreenClosed: parent.state = "menuOpen"
     }
 
     states: [
@@ -79,6 +91,7 @@ FocusScope {
             name: "menuOpen"
             PropertyChanges { target: shade; opacity: 0.75 }
             PropertyChanges { target: revision; visible: true }
+            PropertyChanges { target: menuPanel; focus: true }
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
@@ -90,10 +103,11 @@ FocusScope {
             // TODO: optimize
             PropertyChanges { target: shade; opacity: 0.75 }
             PropertyChanges { target: revision; visible: false }
+            PropertyChanges { target: gamepadConfigPanel; focus: true }
             AnchorChanges {
                 target: menuPanel;
-                anchors.left: parent.left;
-                anchors.right: undefined
+                anchors.left: undefined
+                anchors.right: parent.left
             }
         }
     ]
