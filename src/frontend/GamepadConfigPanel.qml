@@ -17,6 +17,7 @@
 
 import QtQuick 2.8
 import QtGamepad 1.0
+import QtGraphicalEffects 1.0
 
 FocusScope {
     property bool hasGamepads: GamepadManager.connectedGamepads.length > 0
@@ -29,6 +30,11 @@ FocusScope {
 
     Keys.onEscapePressed: screenClosed()
 
+
+    Gamepad {
+        id: gamepad
+        deviceId: -1
+    }
 
     Rectangle {
         id: deviceSelect
@@ -60,6 +66,11 @@ FocusScope {
             // model: GamepadManager.connectedGamepads
             model: GamepadManager.connectedGamepads.length
 
+            onCurrentIndexChanged: {
+                gamepad.deviceId = GamepadManager.connectedGamepads.length > currentIndex
+                                 ? GamepadManager.connectedGamepads[currentIndex] : -1
+            }
+
             delegate: Item {
                 width: ListView.view.width
                 height: ListView.view.height
@@ -83,6 +94,65 @@ FocusScope {
         }
 
         KeyNavigation.up: deviceSelect
+
+        Item {
+            id: padContainer
+            anchors.fill: parent
+
+            Image {
+                id: padBase
+                width: parent.width
+                height: rpx(320)
+                anchors.centerIn: parent
+
+                fillMode: Image.PreserveAspectFit
+                source: "/gamepad/base.svg"
+            }
+            Item {
+                width: padSelect.width + padGuide.width + padStart.width + 10
+                height: padGuide.height
+                anchors {
+                    verticalCenter: padBase.verticalCenter
+                    verticalCenterOffset: -rpx(25)
+                    horizontalCenter: padBase.horizontalCenter
+                }
+                GamepadPiece {
+                    id: padSelect
+                    width: rpx(38)
+                    anchors {
+                        left: parent.left
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    source: "/gamepad/select.svg"
+                    active: gamepad.buttonSelect
+                }
+                GamepadPiece {
+                    id: padStart
+                    width: rpx(38)
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    source: "/gamepad/start.svg"
+                    active: gamepad.buttonStart
+                }
+                GamepadPiece {
+                    id: padGuide
+                    width: rpx(50)
+                    anchors.centerIn: parent
+                    source: "/gamepad/guide.svg"
+                    active: gamepad.buttonStart
+                }
+            }
+        }
+
+        ColorOverlay {
+            anchors.fill: padContainer
+            source: padContainer
+            color: "#ffaaaaaa"
+        }
     }
 
     MouseArea {

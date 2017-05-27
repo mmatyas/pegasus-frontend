@@ -8,5 +8,6 @@
         <file>MainMenuPanel.qml</file>
         <file>GamepadConfigPanel.qml</file>
         <file>GamepadName.qml</file>
+        <file>GamepadPiece.qml</file>
     </qresource>
 </RCC>
