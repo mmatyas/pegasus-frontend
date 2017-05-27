@@ -24,10 +24,16 @@ Item {
 
     height: width
 
-    onActiveChanged: console.log("activated")
+    Rectangle {
+        width: parent.width * 0.64
+        height: width
+        anchors.centerIn: parent
+        radius: width * 0.4
+        color: "#222"
+        border { width: 1.5; color: "#aaa" }
+    }
 
     Image {
-        id: pieceImage
         width: parent.width * 0.7
         anchors {
             centerIn: parent
