@@ -16,5 +16,7 @@
         <file>GamepadConfigField.qml</file>
         <file>GamepadConfigDpad.qml</file>
         <file>GamepadConfigABXY.qml</file>
+        <file>GamepadConfigLeftStick.qml</file>
+        <file>GamepadConfigRightStick.qml</file>
     </qresource>
 </RCC>

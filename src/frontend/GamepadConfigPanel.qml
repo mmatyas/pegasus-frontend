@@ -106,7 +106,23 @@ FocusScope {
             }
 
             onExitUp: deviceSelect.forceActiveFocus()
+            onExitDown: configLeftStick.forceActiveFocus()
             KeyNavigation.right: configABXY
+        }
+
+        GamepadConfigLeftStick {
+            id: configLeftStick
+            gamepad: gamepad
+            anchors {
+                right: parent.horizontalCenter
+                rightMargin: configDpad.anchors.rightMargin
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: rpx(170)
+            }
+
+            onExitUp: configDpad.forceActiveFocus()
+            onExitDown: configABXY.forceActiveFocus()
+            KeyNavigation.right: configRightStick
         }
 
         GamepadConfigABXY {
@@ -119,6 +135,20 @@ FocusScope {
             }
 
             onExitUp: deviceSelect.forceActiveFocus()
+        }
+
+        GamepadConfigRightStick {
+            id: configRightStick
+            gamepad: gamepad
+            anchors {
+                left: parent.horizontalCenter
+                leftMargin: configLeftStick.anchors.rightMargin
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: configLeftStick.anchors.verticalCenterOffset
+            }
+
+            onExitUp: configABXY.forceActiveFocus()
+            onExitDown: configLeftStick.forceActiveFocus()
         }
 
         GamepadLayoutPreview {
