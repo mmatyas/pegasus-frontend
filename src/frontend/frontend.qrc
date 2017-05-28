@@ -12,5 +12,6 @@
         <file>GamepadDpad.qml</file>
         <file>GamepadStick.qml</file>
         <file>GamepadDpadHighlight.qml</file>
+        <file>GamepadLayoutPreview.qml</file>
     </qresource>
 </RCC>
