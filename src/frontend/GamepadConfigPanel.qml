@@ -29,6 +29,7 @@ FocusScope {
 
     Keys.onEscapePressed: screenClosed()
 
+
     Gamepad {
         id: gamepad
         deviceId: -1
@@ -42,7 +43,7 @@ FocusScope {
         anchors.top: parent.top
 
         focus: true
-        KeyNavigation.down: layoutArea
+        Keys.onDownPressed: layoutArea.forceActiveFocus()
         Keys.forwardTo: [gamepadList]
 
         GamepadName {
@@ -82,16 +83,29 @@ FocusScope {
         }
     }
 
-    Rectangle {
+    FocusScope {
         id: layoutArea
-        color: "#222"
         width: parent.width
         anchors {
             top: deviceSelect.bottom
             bottom: parent.bottom
         }
 
-        KeyNavigation.up: deviceSelect
+        Rectangle {
+            color: "#222"
+            anchors.fill: parent
+        }
+
+        GamepadConfigDpad {
+            focus: true
+            gamepad: gamepad
+            anchors {
+                right: parent.horizontalCenter; rightMargin: rpx(400)
+                verticalCenter: parent.verticalCenter
+            }
+
+            onExitUp: deviceSelect.forceActiveFocus()
+        }
 
         GamepadLayoutPreview {
             gamepad: gamepad
