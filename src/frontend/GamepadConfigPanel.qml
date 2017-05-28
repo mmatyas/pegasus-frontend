@@ -97,10 +97,24 @@ FocusScope {
         }
 
         GamepadConfigDpad {
+            id: configDpad
             focus: true
             gamepad: gamepad
             anchors {
                 right: parent.horizontalCenter; rightMargin: rpx(400)
+                verticalCenter: parent.verticalCenter
+            }
+
+            onExitUp: deviceSelect.forceActiveFocus()
+            KeyNavigation.right: configABXY
+        }
+
+        GamepadConfigABXY {
+            id: configABXY
+            gamepad: gamepad
+            anchors {
+                left: parent.horizontalCenter
+                leftMargin: configDpad.anchors.rightMargin
                 verticalCenter: parent.verticalCenter
             }
 

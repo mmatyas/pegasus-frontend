@@ -15,5 +15,6 @@
         <file>GamepadLayoutPreview.qml</file>
         <file>GamepadConfigField.qml</file>
         <file>GamepadConfigDpad.qml</file>
+        <file>GamepadConfigABXY.qml</file>
     </qresource>
 </RCC>

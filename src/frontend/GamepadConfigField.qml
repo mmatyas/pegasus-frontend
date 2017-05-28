@@ -19,6 +19,7 @@ import QtQuick 2.8
 
 Rectangle {
     property alias text: label.text
+    property bool textAlignRight: false
 
     width: rpx(140)
     height: label.font.pixelSize * 1.5
@@ -33,7 +34,9 @@ Rectangle {
         }
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left; leftMargin: rpx(5)
+            left: textAlignRight ? undefined : parent.left
+            right: textAlignRight ? parent.right : undefined
+            leftMargin: rpx(5); rightMargin: rpx(5)
         }
     }
 }
