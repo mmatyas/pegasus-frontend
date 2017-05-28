@@ -19,10 +19,13 @@ import QtQuick 2.8
 
 FocusScope {
     function stepBack() {
-        if (state == "menuOpen" || state == "")
+        if (state == "menuOpen" || state == "") {
             toggleMenu();
-        else if (state == "gamepadPanelOpen")
+        }
+        else if (state == "gamepadPanelOpen") {
             state = "menuOpen";
+            menuPanel.focus = true;
+        }
     }
 
     Keys.onEscapePressed: stepBack()
@@ -76,14 +79,17 @@ FocusScope {
         focus: true
         anchors.left: parent.right
 
-        onShowGamepadScreen: parent.state = "gamepadPanelOpen"
+        onShowGamepadScreen: {
+            parent.state = "gamepadPanelOpen"
+            gamepadConfigPanel.focus = true;
+        }
     }
 
     GamepadConfigPanel {
         id: gamepadConfigPanel
         anchors.left: menuPanel.right
 
-        onScreenClosed: parent.state = "menuOpen"
+        onScreenClosed: stepBack()
     }
 
     states: [
@@ -91,7 +97,6 @@ FocusScope {
             name: "menuOpen"
             PropertyChanges { target: shade; opacity: 0.75 }
             PropertyChanges { target: revision; visible: true }
-            PropertyChanges { target: menuPanel; focus: true }
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
@@ -103,7 +108,6 @@ FocusScope {
             // TODO: optimize
             PropertyChanges { target: shade; opacity: 0.75 }
             PropertyChanges { target: revision; visible: false }
-            PropertyChanges { target: gamepadConfigPanel; focus: true }
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
