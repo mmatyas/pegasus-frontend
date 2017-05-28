@@ -22,6 +22,7 @@ GamepadPiece {
     property Gamepad gamepad
 
     Image {
+        z: 100
         anchors.fill: parent
 
         fillMode: Image.PreserveAspectFit
@@ -30,5 +31,26 @@ GamepadPiece {
             width: 128
             height: 128
         }
+    }
+
+    GamepadDpadHighlight {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        visible: gamepad.buttonLeft
+    }
+    GamepadDpadHighlight {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        visible: gamepad.buttonRight
+    }
+    GamepadDpadHighlight {
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: gamepad.buttonUp
+    }
+    GamepadDpadHighlight {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: gamepad.buttonDown
     }
 }
