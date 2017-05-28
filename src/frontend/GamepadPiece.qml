@@ -25,11 +25,20 @@ Item {
 
     Image {
         id: pieceImage
+        z: 100
         width: parent.width
         fillMode: Image.PreserveAspectFit
         sourceSize {
             width: 64
             height: 64
         }
+    }
+
+    Rectangle {
+        id: highlight
+        color: "#3cc"
+        anchors.fill: parent
+        radius: width * 0.5
+        visible: active
     }
 }

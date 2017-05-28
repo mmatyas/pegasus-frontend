@@ -29,7 +29,6 @@ FocusScope {
 
     Keys.onEscapePressed: screenClosed()
 
-
     Gamepad {
         id: gamepad
         deviceId: -1
