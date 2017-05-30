@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "gamepad"
 import QtQuick 2.8
 
 FocusScope {
