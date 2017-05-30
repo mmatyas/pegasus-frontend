@@ -43,8 +43,8 @@ FocusScope {
         anchors.top: parent.top
 
         focus: true
-        Keys.onDownPressed: layoutArea.forceActiveFocus()
         Keys.forwardTo: [gamepadList]
+        KeyNavigation.down: configL1
 
         GamepadName {
             visible: !hasGamepads
@@ -113,7 +113,6 @@ FocusScope {
                 id: configL1
                 text: qsTr("shoulder")
 
-                Keys.onUpPressed: deviceSelect.forceActiveFocus()
                 KeyNavigation.right: configR1
                 KeyNavigation.down: configL2
             }
@@ -209,7 +208,7 @@ FocusScope {
                 id: configR1
                 text: qsTr("shoulder")
 
-                Keys.onUpPressed: deviceSelect.forceActiveFocus()
+                KeyNavigation.up: deviceSelect
                 KeyNavigation.down: configR2
             }
             GamepadConfigField {
