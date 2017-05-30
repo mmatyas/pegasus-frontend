@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "preview" as GamepadPreview
 import QtQuick 2.8
 import QtGamepad 1.0
 
@@ -282,7 +283,7 @@ FocusScope {
             }
         }
 
-        GamepadLayoutPreview {
+        GamepadPreview.Container {
             gamepad: gamepad
         }
     }

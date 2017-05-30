@@ -18,7 +18,7 @@
 import QtQuick 2.8
 import QtGamepad 1.0
 
-GamepadPiece {
+Item {
     property Gamepad gamepad
 
     Image {
@@ -33,22 +33,22 @@ GamepadPiece {
         }
     }
 
-    GamepadDpadHighlight {
+    DpadHighlight {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         visible: gamepad.buttonLeft
     }
-    GamepadDpadHighlight {
+    DpadHighlight {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         visible: gamepad.buttonRight
     }
-    GamepadDpadHighlight {
+    DpadHighlight {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         visible: gamepad.buttonUp
     }
-    GamepadDpadHighlight {
+    DpadHighlight {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         visible: gamepad.buttonDown

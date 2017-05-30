@@ -46,7 +46,7 @@ Item {
             verticalCenterOffset: rpx(-15)
             horizontalCenter: padBase.horizontalCenter
         }
-        GamepadPiece {
+        PadButton {
             id: padSelect
             width: rpx(38)
             anchors {
@@ -57,7 +57,7 @@ Item {
             source: "/gamepad/select.svg"
             active: gamepad.buttonSelect
         }
-        GamepadPiece {
+        PadButton {
             id: padStart
             width: rpx(38)
             anchors {
@@ -68,7 +68,7 @@ Item {
             source: "/gamepad/start.svg"
             active: gamepad.buttonStart
         }
-        GamepadPiece {
+        PadButton {
             id: padGuide
             width: rpx(50)
             anchors.centerIn: parent
@@ -86,7 +86,7 @@ Item {
             left: padBase.horizontalCenter
             leftMargin: rpx(107)
         }
-        GamepadPiece {
+        PadButton {
             id: padA
             width: rpx(40)
             anchors.bottom: parent.bottom
@@ -94,7 +94,7 @@ Item {
             source: "/gamepad/a.svg"
             active: gamepad.buttonA
         }
-        GamepadPiece {
+        PadButton {
             id: padB
             width: padA.width
             anchors.right: parent.right
@@ -102,7 +102,7 @@ Item {
             source: "/gamepad/b.svg"
             active: gamepad.buttonB
         }
-        GamepadPiece {
+        PadButton {
             id: padX
             width: padA.width
             anchors.left: parent.left
@@ -110,7 +110,7 @@ Item {
             source: "/gamepad/x.svg"
             active: gamepad.buttonX
         }
-        GamepadPiece {
+        PadButton {
             id: padY
             width: padA.width
             anchors.top: parent.top
@@ -119,7 +119,7 @@ Item {
             active: gamepad.buttonY
         }
     }
-    Item {
+    Dpad {
         id: padDpadArea
         width: padABXYArea.width * 0.95
         height: width
@@ -129,14 +129,9 @@ Item {
             right: padBase.horizontalCenter
             rightMargin: padABXYArea.anchors.leftMargin
         }
-
-        GamepadDpad {
-            id: padDpad
-            anchors.fill: parent
-            gamepad: padContainer.gamepad
-        }
+        gamepad: parent.gamepad
     }
-    GamepadStick {
+    Stick {
         id: padLeftStick
         width: rpx(110)
         anchors {
@@ -149,7 +144,7 @@ Item {
         xPercent: gamepad.axisLeftX
         yPercent: gamepad.axisLeftY
     }
-    GamepadStick {
+    Stick {
         id: padRightStick
         width: padLeftStick.width
         anchors {

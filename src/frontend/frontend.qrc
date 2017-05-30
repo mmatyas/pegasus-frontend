@@ -10,10 +10,10 @@
         <file>gamepad/ConfigField.qml</file>
         <file>gamepad/ConfigGroup.qml</file>
         <file>gamepad/GamepadName.qml</file>
-        <file>gamepad/GamepadPiece.qml</file>
-        <file>gamepad/GamepadDpad.qml</file>
-        <file>gamepad/GamepadStick.qml</file>
-        <file>gamepad/GamepadDpadHighlight.qml</file>
-        <file>gamepad/GamepadLayoutPreview.qml</file>
+        <file>gamepad/preview/PadButton.qml</file>
+        <file>gamepad/preview/Dpad.qml</file>
+        <file>gamepad/preview/DpadHighlight.qml</file>
+        <file>gamepad/preview/Stick.qml</file>
+        <file>gamepad/preview/Container.qml</file>
     </qresource>
 </RCC>
