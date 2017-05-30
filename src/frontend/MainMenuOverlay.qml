@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "gamepad"
+import "gamepad" as GamepadConfig
 import QtQuick 2.8
 
 FocusScope {
@@ -86,7 +86,7 @@ FocusScope {
         }
     }
 
-    GamepadConfigPanel {
+    GamepadConfig.ConfigScreen {
         id: gamepadConfigPanel
         anchors.left: menuPanel.right
 

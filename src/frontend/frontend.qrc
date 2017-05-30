@@ -6,14 +6,14 @@
         <file>menuitems/SecondaryMenuItem.qml</file>
         <file>menuitems/GenericMenuItem.qml</file>
         <file>MainMenuPanel.qml</file>
-        <file>gamepad/GamepadConfigPanel.qml</file>
+        <file>gamepad/ConfigScreen.qml</file>
+        <file>gamepad/ConfigField.qml</file>
+        <file>gamepad/ConfigGroup.qml</file>
         <file>gamepad/GamepadName.qml</file>
         <file>gamepad/GamepadPiece.qml</file>
         <file>gamepad/GamepadDpad.qml</file>
         <file>gamepad/GamepadStick.qml</file>
         <file>gamepad/GamepadDpadHighlight.qml</file>
         <file>gamepad/GamepadLayoutPreview.qml</file>
-        <file>gamepad/GamepadConfigField.qml</file>
-        <file>gamepad/GamepadConfigGroup.qml</file>
     </qresource>
 </RCC>

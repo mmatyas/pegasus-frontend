@@ -99,7 +99,7 @@ FocusScope {
             anchors.fill: parent
         }
 
-        GamepadConfigGroup {
+        ConfigGroup {
             groupName: qsTr("left back")
             anchors {
                 left: parent.horizontalCenter
@@ -108,7 +108,7 @@ FocusScope {
                 verticalCenterOffset: -parent.verticalSpacing
             }
 
-            GamepadConfigField {
+            ConfigField {
                 focus: true
                 id: configL1
                 text: qsTr("shoulder")
@@ -116,7 +116,7 @@ FocusScope {
                 KeyNavigation.right: configR1
                 KeyNavigation.down: configL2
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configL2
                 text: qsTr("trigger")
 
@@ -125,7 +125,7 @@ FocusScope {
             }
         }
 
-        GamepadConfigGroup {
+        ConfigGroup {
             groupName: qsTr("dpad")
             anchors {
                 left: parent.horizontalCenter
@@ -133,28 +133,28 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
             }
 
-            GamepadConfigField {
+            ConfigField {
                 id: configDpadUp
                 text: qsTr("up")
 
                 KeyNavigation.right: configA
                 KeyNavigation.down: configDpadLeft
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configDpadLeft
                 text: qsTr("left")
 
                 KeyNavigation.right: configB
                 KeyNavigation.down: configDpadRight
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configDpadRight
                 text: qsTr("right")
 
                 KeyNavigation.right: configX
                 KeyNavigation.down: configDpadDown
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configDpadDown
                 text: qsTr("down")
 
@@ -163,7 +163,7 @@ FocusScope {
             }
         }
 
-        GamepadConfigGroup {
+        ConfigGroup {
             groupName: qsTr("left stick")
             anchors {
                 left: parent.horizontalCenter
@@ -172,21 +172,21 @@ FocusScope {
                 verticalCenterOffset: parent.verticalSpacing
             }
 
-            GamepadConfigField {
+            ConfigField {
                 id: configLeftStickX
                 text: qsTr("x axis")
 
                 KeyNavigation.right: configRightStickX
                 KeyNavigation.down: configLeftStickY
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configLeftStickY
                 text: qsTr("y axis")
 
                 KeyNavigation.right: configRightStickY
                 KeyNavigation.down: configL3
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configL3
                 text: qsTr("press")
 
@@ -194,7 +194,7 @@ FocusScope {
             }
         }
 
-        GamepadConfigGroup {
+        ConfigGroup {
             groupName: qsTr("right back")
             alignRight: true
             anchors {
@@ -204,14 +204,14 @@ FocusScope {
                 verticalCenterOffset: -parent.verticalSpacing
             }
 
-            GamepadConfigField {
+            ConfigField {
                 id: configR1
                 text: qsTr("shoulder")
 
                 KeyNavigation.up: deviceSelect
                 KeyNavigation.down: configR2
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configR2
                 text: qsTr("trigger")
 
@@ -219,7 +219,7 @@ FocusScope {
             }
         }
 
-        GamepadConfigGroup {
+        ConfigGroup {
             groupName: qsTr("abxy")
             alignRight: true
             anchors {
@@ -228,25 +228,25 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
             }
 
-            GamepadConfigField {
+            ConfigField {
                 id: configA
                 text: "a"
 
                 KeyNavigation.down: configB
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configB
                 text: "b"
 
                 KeyNavigation.down: configX
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configX
                 text: "x"
 
                 KeyNavigation.down: configY
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configY
                 text: "y"
 
@@ -254,7 +254,7 @@ FocusScope {
             }
         }
 
-        GamepadConfigGroup {
+        ConfigGroup {
             groupName: qsTr("right stick")
             alignRight: true
             anchors {
@@ -264,19 +264,19 @@ FocusScope {
                 verticalCenterOffset: parent.verticalSpacing
             }
 
-            GamepadConfigField {
+            ConfigField {
                 id: configRightStickX
                 text: qsTr("x axis")
 
                 KeyNavigation.down: configRightStickY
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configRightStickY
                 text: qsTr("y axis")
 
                 KeyNavigation.down: configR3
             }
-            GamepadConfigField {
+            ConfigField {
                 id: configR3
                 text: qsTr("press")
             }
