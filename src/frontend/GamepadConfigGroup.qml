@@ -17,32 +17,29 @@
 
 import QtQuick 2.8
 
-Rectangle {
-    property alias text: label.text
-    property bool alignRight: parent.alignRight
+Column {
+    property string groupName
+    property bool alignRight: false
 
-    width: rpx(140)
-    height: label.font.pixelSize * 1.5
-    color: "#333"
+    spacing: rpx(1)
 
-    anchors {
-        left: alignRight ? undefined : parent.left
-        right: alignRight ? parent.right : undefined
-        margins: (Positioner.index - 1) * rpx(3)
-    }
+    Rectangle {
+        color: "#444"
+        width: label.width + rpx(10)
+        height: rpx(20)
+        anchors.right: alignRight ? parent.right : undefined
 
-    Text {
-        id: label
-        color: parent.activeFocus ? "#3cc" : "#eee"
-        font {
-            family: "Roboto"
-            pixelSize: rpx(18)
-        }
-        anchors {
-            verticalCenter: parent.verticalCenter
-            left: alignRight ? undefined : parent.left
-            right: alignRight ? parent.right : undefined
-            leftMargin: rpx(5); rightMargin: rpx(5)
+        Text {
+            id: label
+            text: groupName
+            color: "#eee"
+            font {
+                family: "Roboto"
+                pixelSize: parent.height
+                capitalization: Font.SmallCaps
+            }
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
         }
     }
 }

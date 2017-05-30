@@ -14,11 +14,6 @@
         <file>GamepadDpadHighlight.qml</file>
         <file>GamepadLayoutPreview.qml</file>
         <file>GamepadConfigField.qml</file>
-        <file>GamepadConfigDpad.qml</file>
-        <file>GamepadConfigABXY.qml</file>
-        <file>GamepadConfigLeftStick.qml</file>
-        <file>GamepadConfigRightStick.qml</file>
-        <file>GamepadConfigLeftBack.qml</file>
-        <file>GamepadConfigRightBack.qml</file>
+        <file>GamepadConfigGroup.qml</file>
     </qresource>
 </RCC>

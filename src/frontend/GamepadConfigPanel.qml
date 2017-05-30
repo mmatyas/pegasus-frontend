@@ -91,95 +91,196 @@ FocusScope {
             bottom: parent.bottom
         }
 
+        property int horizontalOffset: rpx(-560)
+        property int verticalSpacing: rpx(170)
+
         Rectangle {
             color: "#222"
             anchors.fill: parent
         }
 
-        GamepadConfigLeftBack {
-            id: configLeftBack
-            focus: true
-            gamepad: gamepad
+        GamepadConfigGroup {
+            groupName: qsTr("left back")
+            anchors {
+                left: parent.horizontalCenter
+                leftMargin: parent.horizontalOffset
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: -parent.verticalSpacing
+            }
+
+            GamepadConfigField {
+                focus: true
+                id: configL1
+                text: qsTr("shoulder")
+
+                Keys.onUpPressed: deviceSelect.forceActiveFocus()
+                KeyNavigation.right: configR1
+                KeyNavigation.down: configL2
+            }
+            GamepadConfigField {
+                id: configL2
+                text: qsTr("trigger")
+
+                KeyNavigation.right: configR2
+                KeyNavigation.down: configDpadUp
+            }
+        }
+
+        GamepadConfigGroup {
+            groupName: qsTr("dpad")
+            anchors {
+                left: parent.horizontalCenter
+                leftMargin: parent.horizontalOffset
+                verticalCenter: parent.verticalCenter
+            }
+
+            GamepadConfigField {
+                id: configDpadUp
+                text: qsTr("up")
+
+                KeyNavigation.right: configA
+                KeyNavigation.down: configDpadLeft
+            }
+            GamepadConfigField {
+                id: configDpadLeft
+                text: qsTr("left")
+
+                KeyNavigation.right: configB
+                KeyNavigation.down: configDpadRight
+            }
+            GamepadConfigField {
+                id: configDpadRight
+                text: qsTr("right")
+
+                KeyNavigation.right: configX
+                KeyNavigation.down: configDpadDown
+            }
+            GamepadConfigField {
+                id: configDpadDown
+                text: qsTr("down")
+
+                KeyNavigation.right: configY
+                KeyNavigation.down: configLeftStickX
+            }
+        }
+
+        GamepadConfigGroup {
+            groupName: qsTr("left stick")
+            anchors {
+                left: parent.horizontalCenter
+                leftMargin: parent.horizontalOffset
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: parent.verticalSpacing
+            }
+
+            GamepadConfigField {
+                id: configLeftStickX
+                text: qsTr("x axis")
+
+                KeyNavigation.right: configRightStickX
+                KeyNavigation.down: configLeftStickY
+            }
+            GamepadConfigField {
+                id: configLeftStickY
+                text: qsTr("y axis")
+
+                KeyNavigation.right: configRightStickY
+                KeyNavigation.down: configL3
+            }
+            GamepadConfigField {
+                id: configL3
+                text: qsTr("press")
+
+                KeyNavigation.right: configR3
+            }
+        }
+
+        GamepadConfigGroup {
+            groupName: qsTr("right back")
+            alignRight: true
             anchors {
                 right: parent.horizontalCenter
-                rightMargin: configDpad.anchors.rightMargin
+                rightMargin: parent.horizontalOffset
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: rpx(-170)
+                verticalCenterOffset: -parent.verticalSpacing
             }
 
-            onExitUp: deviceSelect.forceActiveFocus()
-            onExitDown: configDpad.forceActiveFocus()
-            KeyNavigation.right: configRightBack
-        }
+            GamepadConfigField {
+                id: configR1
+                text: qsTr("shoulder")
 
-        GamepadConfigDpad {
-            id: configDpad
-            gamepad: gamepad
-            anchors {
-                right: parent.horizontalCenter; rightMargin: rpx(410)
-                verticalCenter: parent.verticalCenter
+                Keys.onUpPressed: deviceSelect.forceActiveFocus()
+                KeyNavigation.down: configR2
             }
+            GamepadConfigField {
+                id: configR2
+                text: qsTr("trigger")
 
-            onExitUp: configLeftBack.forceActiveFocus()
-            onExitDown: configLeftStick.forceActiveFocus()
-            KeyNavigation.right: configABXY
+                KeyNavigation.down: configA
+            }
         }
 
-        GamepadConfigLeftStick {
-            id: configLeftStick
-            gamepad: gamepad
+        GamepadConfigGroup {
+            groupName: qsTr("abxy")
+            alignRight: true
             anchors {
                 right: parent.horizontalCenter
-                rightMargin: configDpad.anchors.rightMargin
+                rightMargin: parent.horizontalOffset
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: rpx(170)
             }
 
-            onExitUp: configDpad.forceActiveFocus()
-            onExitDown: configLeftBack.forceActiveFocus()
-            KeyNavigation.right: configRightStick
+            GamepadConfigField {
+                id: configA
+                text: "a"
+
+                KeyNavigation.down: configB
+            }
+            GamepadConfigField {
+                id: configB
+                text: "b"
+
+                KeyNavigation.down: configX
+            }
+            GamepadConfigField {
+                id: configX
+                text: "x"
+
+                KeyNavigation.down: configY
+            }
+            GamepadConfigField {
+                id: configY
+                text: "y"
+
+                KeyNavigation.down: configRightStickX
+            }
         }
 
-        GamepadConfigRightBack {
-            id: configRightBack
-            focus: true
-            gamepad: gamepad
+        GamepadConfigGroup {
+            groupName: qsTr("right stick")
+            alignRight: true
             anchors {
-                left: parent.horizontalCenter
-                leftMargin: configLeftBack.anchors.rightMargin
+                right: parent.horizontalCenter
+                rightMargin: parent.horizontalOffset
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: configLeftBack.anchors.verticalCenterOffset
+                verticalCenterOffset: parent.verticalSpacing
             }
 
-            onExitUp: deviceSelect.forceActiveFocus()
-            onExitDown: configABXY.forceActiveFocus()
-        }
+            GamepadConfigField {
+                id: configRightStickX
+                text: qsTr("x axis")
 
-        GamepadConfigABXY {
-            id: configABXY
-            gamepad: gamepad
-            anchors {
-                left: parent.horizontalCenter
-                leftMargin: configDpad.anchors.rightMargin
-                verticalCenter: parent.verticalCenter
+                KeyNavigation.down: configRightStickY
             }
+            GamepadConfigField {
+                id: configRightStickY
+                text: qsTr("y axis")
 
-            onExitUp: configRightBack.forceActiveFocus()
-            onExitDown: configRightStick.forceActiveFocus()
-        }
-
-        GamepadConfigRightStick {
-            id: configRightStick
-            gamepad: gamepad
-            anchors {
-                left: parent.horizontalCenter
-                leftMargin: configLeftStick.anchors.rightMargin
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: configLeftStick.anchors.verticalCenterOffset
+                KeyNavigation.down: configR3
             }
-
-            onExitUp: configABXY.forceActiveFocus()
-            onExitDown: configRightBack.forceActiveFocus()
+            GamepadConfigField {
+                id: configR3
+                text: qsTr("press")
+            }
         }
 
         GamepadLayoutPreview {
