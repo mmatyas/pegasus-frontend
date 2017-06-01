@@ -73,7 +73,7 @@ Item {
             width: rpx(50)
             anchors.centerIn: parent
             source: "/gamepad/guide.svg"
-            active: gamepad.buttonStart
+            active: gamepad.buttonGuide
         }
     }
     Item {
