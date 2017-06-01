@@ -43,7 +43,7 @@ Item {
         height: padGuide.height
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: rpx(-15)
+            verticalCenterOffset: rpx(-20)
             horizontalCenter: padBase.horizontalCenter
         }
         PadButton {
@@ -82,13 +82,13 @@ Item {
         height: width
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: rpx(-12)
+            verticalCenterOffset: rpx(-15)
             left: padBase.horizontalCenter
-            leftMargin: rpx(107)
+            leftMargin: rpx(112)
         }
         PadButton {
             id: padA
-            width: rpx(40)
+            width: rpx(38)
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             source: "/gamepad/a.svg"
@@ -136,9 +136,9 @@ Item {
         width: rpx(110)
         anchors {
             top: padBase.verticalCenter
-            topMargin: rpx(30)
+            topMargin: rpx(22)
             right: padBase.horizontalCenter
-            rightMargin: rpx(15)
+            rightMargin: rpx(18)
         }
         active: gamepad.buttonL3
         xPercent: gamepad.axisLeftX
