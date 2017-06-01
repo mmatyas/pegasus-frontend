@@ -29,7 +29,7 @@ FocusScope {
         }
     }
 
-    Keys.onEscapePressed: stepBack()
+    Keys.onEscapePressed: if (!event.isAutoRepeat) stepBack()
     onFocusChanged: activeFocus ? state = "menuOpen" : state = ""
 
     MouseArea {
