@@ -32,23 +32,36 @@ FocusScope {
     property real escapeStartTime: 0
     property real escapeProgress: 0
 
+    Timer {
+        id: escapeTimer
+        interval: 50
+        repeat: true
+        onTriggered: {
+            var currentTime = new Date().getTime();
+            escapeProgress = (currentTime - escapeStartTime) / escapeDelay;
+
+            if (escapeProgress > 1.0) {
+                stopEscapeTimer();
+                screenClosed();
+            }
+        }
+    }
+
+    function stopEscapeTimer() {
+        escapeTimer.stop();
+        escapeStartTime = 0;
+        escapeProgress = 0;
+    }
+
     Keys.onEscapePressed: {
-        var currentTime = new Date().getTime();
-
-        if (escapeStartTime < 0.1)
-            escapeStartTime = currentTime;
-
-        escapeProgress = (currentTime - escapeStartTime) / escapeDelay;
-        if (escapeProgress >= 1.0) {
-            escapeStartTime = 0;
-            escapeProgress = 0;
-            screenClosed();
+        if (!event.isAutoRepeat) {
+            escapeStartTime = new Date().getTime();
+            escapeTimer.start();
         }
     }
     Keys.onReleased: {
         if (event.key === Qt.Key_Escape && !event.isAutoRepeat) {
-            escapeStartTime = 0;
-            escapeProgress = 0;
+            stopEscapeTimer();
         }
     }
 
@@ -346,7 +359,8 @@ FocusScope {
                 ctx.beginPath();
                 ctx.fillStyle = "#eee";
                 ctx.moveTo(center, center);
-                ctx.arc(center, center, center, startAngle, startAngle + Math.PI * 2 * progress, false);
+                ctx.arc(center, center, center,
+                        startAngle, startAngle + Math.PI * 2 * progress, false);
                 ctx.fill();
             }
         }
@@ -364,7 +378,7 @@ FocusScope {
                 right: label.left
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: rpx(1)
-                margins: rpx(8)
+                margins: rpx(10)
             }
 
             Text {
