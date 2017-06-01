@@ -28,7 +28,29 @@ FocusScope {
     height: parent.height
     visible: x < parent.width
 
-    Keys.onEscapePressed: screenClosed()
+    property real escapeDelay: 2000
+    property real escapeStartTime: 0
+    property real escapeProgress: 0
+
+    Keys.onEscapePressed: {
+        var currentTime = new Date().getTime();
+
+        if (escapeStartTime < 0.1)
+            escapeStartTime = currentTime;
+
+        escapeProgress = (currentTime - escapeStartTime) / escapeDelay;
+        if (escapeProgress >= 1.0) {
+            escapeStartTime = 0;
+            escapeProgress = 0;
+            screenClosed();
+        }
+    }
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Escape && !event.isAutoRepeat) {
+            escapeStartTime = 0;
+            escapeProgress = 0;
+        }
+    }
 
 
     Gamepad {
@@ -84,21 +106,25 @@ FocusScope {
         }
     }
 
+    Rectangle {
+        width: parent.width
+        color: "#222"
+        anchors {
+            top: deviceSelect.bottom
+            bottom: parent.bottom
+        }
+    }
+
     FocusScope {
         id: layoutArea
         width: parent.width
         anchors {
             top: deviceSelect.bottom
-            bottom: parent.bottom
+            bottom: footer.top; bottomMargin: rpx(10)
         }
 
         property int horizontalOffset: rpx(-560)
         property int verticalSpacing: rpx(170)
-
-        Rectangle {
-            color: "#222"
-            anchors.fill: parent
-        }
 
         ConfigGroup {
             groupName: qsTr("left back")
@@ -285,6 +311,89 @@ FocusScope {
 
         GamepadPreview.Container {
             gamepad: gamepad
+        }
+    }
+
+    Item {
+        id: footer
+        width: parent.width
+        height: rpx(50)
+        anchors.bottom: parent.bottom
+
+        Rectangle {
+            width: parent.width * 0.97
+            height: rpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Canvas {
+            width: backButtonIcon.width + rpx(4)
+            height: width
+            anchors.centerIn: backButtonIcon
+
+            property real progress: escapeProgress
+            onProgressChanged: requestPaint()
+
+            onPaint: {
+                var ctx = getContext('2d');
+                ctx.clearRect(0, 0, width, height);
+
+                var center = width / 2;
+                var startAngle = -Math.PI / 2
+
+                ctx.beginPath();
+                ctx.fillStyle = "#eee";
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, center, startAngle, startAngle + Math.PI * 2 * progress, false);
+                ctx.fill();
+            }
+        }
+
+        // TODO: replace this with an SVG icon
+        Rectangle {
+            id: backButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: rpx(1) }
+            color: "transparent"
+
+            anchors {
+                right: label.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: rpx(1)
+                margins: rpx(8)
+            }
+
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: "Roboto"
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: label
+            text: qsTr("hold down to quit")
+            verticalAlignment: Text.AlignTop
+
+            color: "#777"
+            font {
+                family: "Roboto"
+                pixelSize: rpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: rpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 
