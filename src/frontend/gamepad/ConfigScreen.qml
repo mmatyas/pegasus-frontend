@@ -28,6 +28,18 @@ FocusScope {
     height: parent.height
     visible: x < parent.width
 
+    property ConfigField recordingField: null
+    function recordConfig(configField) {
+        // turn off the previously recording field
+        if (recordingField !== null && configField !== recordingField)
+            recordingField.recording = false;
+
+        // turn on the currently recording one
+        recordingField = configField
+        if (recordingField !== null)
+            recordingField.recording = true;
+    }
+
     property real escapeDelay: 2000
     property real escapeStartTime: 0
     property real escapeProgress: 0
@@ -69,6 +81,14 @@ FocusScope {
     Gamepad {
         id: gamepad
         deviceId: -1
+        // onDeviceIdChanged:  TODO
+    }
+
+    Connections {
+        target: GamepadManager
+        onButtonConfigured: recordConfig(null);
+        onAxisConfigured: recordConfig(null);
+        onConfigurationCanceled: recordConfig(null);
     }
 
     Rectangle {
@@ -158,6 +178,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l1"
 
+                pressed: gamepad.buttonL1
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL1);
+                }
+
                 KeyNavigation.right: configR1
                 KeyNavigation.down: configL2
             }
@@ -166,6 +192,12 @@ FocusScope {
                 text: qsTr("trigger")
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l2"
+
+                pressed: gamepad.buttonL2
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL2);
+                }
 
                 KeyNavigation.right: configR2
                 KeyNavigation.down: configDpadUp
@@ -186,6 +218,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpup"
 
+                pressed: gamepad.buttonUp
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonUp);
+                }
+
                 KeyNavigation.right: configA
                 KeyNavigation.down: configDpadLeft
             }
@@ -194,6 +232,12 @@ FocusScope {
                 text: qsTr("left")
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpleft"
+
+                pressed: gamepad.buttonLeft
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonLeft);
+                }
 
                 KeyNavigation.right: configB
                 KeyNavigation.down: configDpadRight
@@ -204,6 +248,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpright"
 
+                pressed: gamepad.buttonRight
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonRight);
+                }
+
                 KeyNavigation.right: configX
                 KeyNavigation.down: configDpadDown
             }
@@ -212,6 +262,12 @@ FocusScope {
                 text: qsTr("down")
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpdown"
+
+                pressed: gamepad.buttonDown
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonDown);
+                }
 
                 KeyNavigation.right: configY
                 KeyNavigation.down: configLeftStickX
@@ -233,6 +289,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "lx"
 
+                pressed: gamepad.axisLeftX
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftX);
+                }
+
                 KeyNavigation.right: configRightStickX
                 KeyNavigation.down: configLeftStickY
             }
@@ -242,6 +304,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ly"
 
+                pressed: gamepad.axisLeftY
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftY);
+                }
+
                 KeyNavigation.right: configRightStickY
                 KeyNavigation.down: configL3
             }
@@ -250,6 +318,12 @@ FocusScope {
                 text: qsTr("press")
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l3"
+
+                pressed: gamepad.buttonL3
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL3);
+                }
 
                 KeyNavigation.right: configR3
             }
@@ -271,6 +345,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r1"
 
+                pressed: gamepad.buttonR1
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR1);
+                }
+
                 KeyNavigation.up: deviceSelect
                 KeyNavigation.down: configR2
             }
@@ -279,6 +359,12 @@ FocusScope {
                 text: qsTr("trigger")
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r2"
+
+                pressed: gamepad.buttonR2
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR2);
+                }
 
                 KeyNavigation.down: configA
             }
@@ -299,6 +385,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "a"
 
+                pressed: gamepad.buttonA
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonA);
+                }
+
                 KeyNavigation.down: configB
             }
             ConfigField {
@@ -306,6 +398,12 @@ FocusScope {
                 text: "b"
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "b"
+
+                pressed: gamepad.buttonB
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonB);
+                }
 
                 KeyNavigation.down: configX
             }
@@ -315,6 +413,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "x"
 
+                pressed: gamepad.buttonX
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonX);
+                }
+
                 KeyNavigation.down: configY
             }
             ConfigField {
@@ -322,6 +426,12 @@ FocusScope {
                 text: "y"
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "y"
+
+                pressed: gamepad.buttonY
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonY);
+                }
 
                 KeyNavigation.down: configRightStickX
             }
@@ -343,6 +453,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "rx"
 
+                pressed: gamepad.axisRightX
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightX);
+                }
+
                 KeyNavigation.down: configRightStickY
             }
             ConfigField {
@@ -351,6 +467,12 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ry"
 
+                pressed: gamepad.axisRightY
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightY);
+                }
+
                 KeyNavigation.down: configR3
             }
             ConfigField {
@@ -358,6 +480,12 @@ FocusScope {
                 text: qsTr("press")
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r3"
+
+                pressed: gamepad.buttonR3
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR3);
+                }
             }
         }
 
