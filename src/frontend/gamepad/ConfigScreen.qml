@@ -184,7 +184,7 @@ FocusScope {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL1);
                 }
 
-                KeyNavigation.right: configR1
+                KeyNavigation.right: configSelect
                 KeyNavigation.down: configL2
             }
             ConfigField {
@@ -199,7 +199,7 @@ FocusScope {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL2);
                 }
 
-                KeyNavigation.right: configR2
+                KeyNavigation.right: configSelect
                 KeyNavigation.down: configDpadUp
             }
         }
@@ -353,6 +353,7 @@ FocusScope {
 
                 KeyNavigation.up: deviceSelect
                 KeyNavigation.down: configR2
+                KeyNavigation.left: configStart
             }
             ConfigField {
                 id: configR2
@@ -367,6 +368,7 @@ FocusScope {
                 }
 
                 KeyNavigation.down: configA
+                KeyNavigation.left: configStart
             }
         }
 
@@ -486,6 +488,66 @@ FocusScope {
                     recordConfig(this);
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR3);
                 }
+            }
+        }
+
+        ConfigGroup {
+            groupName: qsTr("center")
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: rpx(-200)
+            }
+
+            property bool alignRight: false
+
+            ConfigField {
+                id: configSelect
+                text: qsTr("select")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "select"
+
+                pressed: gamepad.buttonSelect
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId,
+                                                   GamepadManager.ButtonSelect);
+                }
+
+                KeyNavigation.up: deviceSelect
+                KeyNavigation.right: configGuide
+            }
+            ConfigField {
+                id: configGuide
+                text: qsTr("guide")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "guide"
+
+                pressed: gamepad.buttonGuide
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId,
+                                                   GamepadManager.ButtonGuide);
+                }
+
+                KeyNavigation.up: deviceSelect
+                KeyNavigation.right: configStart
+            }
+            ConfigField {
+                id: configStart
+                text: qsTr("start")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "start"
+
+                pressed: gamepad.buttonStart
+                Keys.onReturnPressed: {
+                    recordConfig(this);
+                    GamepadManager.configureButton(gamepad.deviceId,
+                                                   GamepadManager.ButtonStart);
+                }
+
+                KeyNavigation.up: deviceSelect
+                KeyNavigation.right: configR1
             }
         }
 
