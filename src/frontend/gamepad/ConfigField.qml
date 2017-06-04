@@ -20,10 +20,13 @@ import QtQuick 2.8
 Rectangle {
     property alias text: label.text
     property bool alignRight: parent.alignRight
+    property bool pressed: false
+    property bool recording: false
 
+    enabled: !recording
     width: rpx(140)
     height: label.font.pixelSize * 1.5
-    color: "#333"
+    color: recording ? "#c33" : (pressed ? "#3c3" : "#333")
 
     anchors {
         left: alignRight ? undefined : parent.left
@@ -33,7 +36,7 @@ Rectangle {
 
     Text {
         id: label
-        color: parent.activeFocus ? "#3cc" : "#eee"
+        color: (parent.activeFocus && !pressed) ? "#3cc" : "#eee"
         font {
             family: "Roboto"
             pixelSize: rpx(18)
