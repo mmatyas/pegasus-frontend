@@ -39,6 +39,60 @@ Item {
             height: 512
         }
     }
+
+    PadTrigger {
+        id: padL2
+        width: rpx(50)
+        anchors {
+            bottom: padBase.verticalCenter
+            bottomMargin: rpx(113)
+            right: padBase.horizontalCenter
+            rightMargin: rpx(131)
+        }
+
+        shortName: "l2"
+        pressed: gamepad.buttonL2
+    }
+    PadShoulder {
+        id: padL1
+        width: rpx(110)
+        anchors {
+            bottom: padBase.verticalCenter
+            bottomMargin: rpx(84)
+            right: padBase.horizontalCenter
+            rightMargin: rpx(110)
+        }
+
+        shortName: "l1"
+        pressed: gamepad.buttonL1
+    }
+    PadTrigger {
+        id: padR2
+        width: padL2.width
+        anchors {
+            bottom: padBase.verticalCenter
+            bottomMargin: padL2.anchors.bottomMargin
+            left: padBase.horizontalCenter
+            leftMargin: padL2.anchors.rightMargin
+        }
+
+        shortName: "r2"
+        pressed: gamepad.buttonR2
+    }
+    PadShoulder {
+        id: padR1
+        width: padL1.width
+        anchors {
+            bottom: padBase.verticalCenter
+            bottomMargin: padL1.anchors.bottomMargin
+            left: padBase.horizontalCenter
+            leftMargin: padL1.anchors.rightMargin
+        }
+
+        shortName: "r1"
+        pressed: gamepad.buttonR1
+    }
+
     Item {
         width: padSelect.width + padGuide.width + padStart.width + 10
         height: padGuide.height
@@ -133,6 +187,7 @@ Item {
         }
         gamepad: parent.gamepad
     }
+
     Stick {
         id: padLeftStick
         width: rpx(110)

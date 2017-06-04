@@ -67,10 +67,10 @@
         <file>gamepad/base.svg</file>
         <file>gamepad/dpad.svg</file>
         <file>gamepad/guide.svg</file>
-        <file>gamepad/left_shoulder.svg</file>
-        <file>gamepad/left_trigger.svg</file>
-        <file>gamepad/right_shoulder.svg</file>
-        <file>gamepad/right_trigger.svg</file>
+        <file>gamepad/l1.svg</file>
+        <file>gamepad/l2.svg</file>
+        <file>gamepad/r1.svg</file>
+        <file>gamepad/r2.svg</file>
         <file>gamepad/select.svg</file>
         <file>gamepad/start.svg</file>
         <file>gamepad/stick.svg</file>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="14.807mm" width="32.637mm" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 115.64342 52.465089">
 	<g transform="translate(-290.75 -448.99)">
-		<path stroke-linejoin="round" d="m402.61 482.17s3.967-10.889 2.4268-24.204c0 0-4.4675-2.2701-6.1857-7.3321 0 0-65.193-6.0726-96.269 18.948 0 0-11.179 10.662-10.826 30.869 0 0 44.604-35.03 110.85-18.28z" stroke="#aaa" stroke-linecap="round" stroke-width="2" fill="none"/>
+		<path stroke-linejoin="round" d="m294.53 482.17s-3.967-10.889-2.4268-24.204c0 0 4.4675-2.2701 6.1857-7.3321 0 0 65.193-6.0726 96.269 18.948 0 0 11.179 10.662 10.826 30.869 0 0-44.604-35.03-110.85-18.28z" stroke="#aaa" stroke-linecap="round" stroke-width="2" fill="#222"/>
 	</g>
 </svg>

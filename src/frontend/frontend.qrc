@@ -15,5 +15,7 @@
         <file>gamepad/preview/DpadHighlight.qml</file>
         <file>gamepad/preview/Stick.qml</file>
         <file>gamepad/preview/Container.qml</file>
+        <file>gamepad/preview/PadTrigger.qml</file>
+        <file>gamepad/preview/PadShoulder.qml</file>
     </qresource>
 </RCC>
