@@ -139,6 +139,9 @@ FocusScope {
         property int horizontalOffset: rpx(-560)
         property int verticalSpacing: rpx(170)
 
+        onActiveFocusChanged:
+            if (!activeFocus) padPreview.currentButton = ""
+
         ConfigGroup {
             groupName: qsTr("left back")
             anchors {
@@ -152,6 +155,8 @@ FocusScope {
                 focus: true
                 id: configL1
                 text: qsTr("shoulder")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "l1"
 
                 KeyNavigation.right: configR1
                 KeyNavigation.down: configL2
@@ -159,6 +164,8 @@ FocusScope {
             ConfigField {
                 id: configL2
                 text: qsTr("trigger")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "l2"
 
                 KeyNavigation.right: configR2
                 KeyNavigation.down: configDpadUp
@@ -176,6 +183,8 @@ FocusScope {
             ConfigField {
                 id: configDpadUp
                 text: qsTr("up")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "dpup"
 
                 KeyNavigation.right: configA
                 KeyNavigation.down: configDpadLeft
@@ -183,6 +192,8 @@ FocusScope {
             ConfigField {
                 id: configDpadLeft
                 text: qsTr("left")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "dpleft"
 
                 KeyNavigation.right: configB
                 KeyNavigation.down: configDpadRight
@@ -190,6 +201,8 @@ FocusScope {
             ConfigField {
                 id: configDpadRight
                 text: qsTr("right")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "dpright"
 
                 KeyNavigation.right: configX
                 KeyNavigation.down: configDpadDown
@@ -197,6 +210,8 @@ FocusScope {
             ConfigField {
                 id: configDpadDown
                 text: qsTr("down")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "dpdown"
 
                 KeyNavigation.right: configY
                 KeyNavigation.down: configLeftStickX
@@ -215,6 +230,8 @@ FocusScope {
             ConfigField {
                 id: configLeftStickX
                 text: qsTr("x axis")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "lx"
 
                 KeyNavigation.right: configRightStickX
                 KeyNavigation.down: configLeftStickY
@@ -222,6 +239,8 @@ FocusScope {
             ConfigField {
                 id: configLeftStickY
                 text: qsTr("y axis")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "ly"
 
                 KeyNavigation.right: configRightStickY
                 KeyNavigation.down: configL3
@@ -229,6 +248,8 @@ FocusScope {
             ConfigField {
                 id: configL3
                 text: qsTr("press")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "l3"
 
                 KeyNavigation.right: configR3
             }
@@ -247,6 +268,8 @@ FocusScope {
             ConfigField {
                 id: configR1
                 text: qsTr("shoulder")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "r1"
 
                 KeyNavigation.up: deviceSelect
                 KeyNavigation.down: configR2
@@ -254,6 +277,8 @@ FocusScope {
             ConfigField {
                 id: configR2
                 text: qsTr("trigger")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "r2"
 
                 KeyNavigation.down: configA
             }
@@ -271,24 +296,32 @@ FocusScope {
             ConfigField {
                 id: configA
                 text: "a"
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "a"
 
                 KeyNavigation.down: configB
             }
             ConfigField {
                 id: configB
                 text: "b"
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "b"
 
                 KeyNavigation.down: configX
             }
             ConfigField {
                 id: configX
                 text: "x"
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "x"
 
                 KeyNavigation.down: configY
             }
             ConfigField {
                 id: configY
                 text: "y"
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "y"
 
                 KeyNavigation.down: configRightStickX
             }
@@ -307,22 +340,29 @@ FocusScope {
             ConfigField {
                 id: configRightStickX
                 text: qsTr("x axis")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "rx"
 
                 KeyNavigation.down: configRightStickY
             }
             ConfigField {
                 id: configRightStickY
                 text: qsTr("y axis")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "ry"
 
                 KeyNavigation.down: configR3
             }
             ConfigField {
                 id: configR3
                 text: qsTr("press")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "r3"
             }
         }
 
         GamepadPreview.Container {
+            id: padPreview
             gamepad: gamepad
         }
     }

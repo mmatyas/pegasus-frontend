@@ -18,8 +18,8 @@
 import QtQuick 2.8
 
 Item {
-    property bool active: false
-    property alias source: pieceImage.source
+    property string shortName
+    property bool pressed: false
 
     height: pieceImage.height
 
@@ -27,7 +27,9 @@ Item {
         id: pieceImage
         z: 100
         width: parent.width
+
         fillMode: Image.PreserveAspectFit
+        source: "/gamepad/" + shortName + ".svg"
         sourceSize {
             width: 64
             height: 64
@@ -36,9 +38,11 @@ Item {
 
     Rectangle {
         id: highlight
-        color: "#3cc"
+        color: pressed ? "#3c3": "#3cc"
         anchors.fill: parent
         radius: width * 0.5
-        visible: active
+
+        // FIXME: this is not really nice, but makes the code shorter
+        visible: padContainer.currentButton === shortName
     }
 }

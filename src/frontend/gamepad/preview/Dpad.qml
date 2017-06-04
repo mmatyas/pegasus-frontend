@@ -36,21 +36,29 @@ Item {
     DpadHighlight {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        visible: gamepad.buttonLeft
+
+        highlighted: padContainer.currentButton === "dpleft"
+        pressed: gamepad.buttonLeft
     }
     DpadHighlight {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        visible: gamepad.buttonRight
+
+        highlighted: padContainer.currentButton === "dpright"
+        pressed: gamepad.buttonRight
     }
     DpadHighlight {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        visible: gamepad.buttonUp
+
+        highlighted: padContainer.currentButton === "dpup"
+        pressed: gamepad.buttonUp
     }
     DpadHighlight {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        visible: gamepad.buttonDown
+
+        highlighted: padContainer.currentButton === "dpdown"
+        pressed: gamepad.buttonDown
     }
 }

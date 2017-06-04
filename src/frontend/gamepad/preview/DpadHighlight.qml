@@ -18,9 +18,14 @@
 import QtQuick 2.8
 
 Rectangle {
-    color: "#3cc"
+    property bool highlighted: false
+    property bool pressed: false
+
     width: parent.width * 0.3
     height: width
-    radius: width * 0.2
     anchors.margins: 4
+
+    color: pressed ? "#3c3": "#3cc"
+    radius: width * 0.2
+    visible: highlighted || pressed
 }

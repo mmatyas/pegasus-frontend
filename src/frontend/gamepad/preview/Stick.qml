@@ -18,19 +18,22 @@
 import QtQuick 2.8
 
 Item {
-    property bool active: false
+    property string side
+    property bool pressed: false
     property real xPercent: 0.0
     property real yPercent: 0.0
 
     height: width
 
     Rectangle {
+        // basement
         width: parent.width * 0.64
         height: width
         anchors.centerIn: parent
-        radius: width * 0.5
+
         color: "#222"
         border { width: 1.5; color: "#aaa" }
+        radius: width * 0.5
     }
 
     Image {
@@ -60,5 +63,35 @@ Item {
                 angle: yPercent * 35
             }
         ]
+    }
+
+    Rectangle {
+        // L3/R3 highlight
+        width: parent.width * 0.4
+        height: width
+        anchors.centerIn: parent
+
+        color: pressed ? "#3c3": "#3cc"
+        radius: width * 0.5
+
+        visible: padContainer.currentButton === (side + "3")
+    }
+    Rectangle {
+        id: highlightX
+        width: parent.width * 0.9
+        height: rpx(2)
+        anchors.centerIn: parent
+
+        color: "#3cc"
+        visible: padContainer.currentButton === (side + "x")
+    }
+    Rectangle {
+        // highlightY
+        width: highlightX.height
+        height: highlightX.width
+        anchors.centerIn: parent
+
+        color: highlightX.color
+        visible: padContainer.currentButton === (side + "y")
     }
 }

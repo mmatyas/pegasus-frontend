@@ -23,6 +23,7 @@ Item {
     anchors.fill: parent
 
     property Gamepad gamepad
+    property string currentButton: ""
 
 
     Image {
@@ -49,33 +50,31 @@ Item {
         PadButton {
             id: padSelect
             width: rpx(38)
-            anchors {
-                left: parent.left
-                verticalCenter: parent.verticalCenter
-            }
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
 
-            source: "/gamepad/select.svg"
-            active: gamepad.buttonSelect
+            shortName: "select"
+            pressed: gamepad.buttonSelect
         }
         PadButton {
             id: padStart
             width: rpx(38)
-            anchors {
-                right: parent.right
-                verticalCenter: parent.verticalCenter
-            }
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
 
-            source: "/gamepad/start.svg"
-            active: gamepad.buttonStart
+            shortName: "start"
+            pressed: gamepad.buttonStart
         }
         PadButton {
             id: padGuide
             width: rpx(50)
             anchors.centerIn: parent
-            source: "/gamepad/guide.svg"
-            active: gamepad.buttonGuide
+
+            shortName: "guide"
+            pressed: gamepad.buttonGuide
         }
     }
+
     Item {
         id: padABXYArea
         width: padA.width * 3
@@ -91,32 +90,35 @@ Item {
             width: rpx(38)
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            source: "/gamepad/a.svg"
-            active: gamepad.buttonA
+
+            shortName: "a"
+            pressed: gamepad.buttonA
         }
         PadButton {
             id: padB
             width: padA.width
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            source: "/gamepad/b.svg"
-            active: gamepad.buttonB
+
+            shortName: "b"
+            pressed: gamepad.buttonB
         }
         PadButton {
             id: padX
             width: padA.width
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            source: "/gamepad/x.svg"
-            active: gamepad.buttonX
+
+            shortName: "x"
+            pressed: gamepad.buttonX
         }
         PadButton {
             id: padY
             width: padA.width
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            source: "/gamepad/y.svg"
-            active: gamepad.buttonY
+            shortName: "y"
+            pressed: gamepad.buttonY
         }
     }
     Dpad {
@@ -140,7 +142,9 @@ Item {
             right: padBase.horizontalCenter
             rightMargin: rpx(18)
         }
-        active: gamepad.buttonL3
+
+        side: "l"
+        pressed: gamepad.buttonL3
         xPercent: gamepad.axisLeftX
         yPercent: gamepad.axisLeftY
     }
@@ -153,7 +157,8 @@ Item {
             left: padBase.horizontalCenter
             leftMargin: padLeftStick.anchors.rightMargin
         }
-        active: gamepad.buttonR3
+        side: "r"
+        pressed: gamepad.buttonR3
         xPercent: gamepad.axisRightX
         yPercent: gamepad.axisRightY
     }
