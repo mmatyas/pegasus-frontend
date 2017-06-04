@@ -23,7 +23,6 @@ Rectangle {
     property bool pressed: false
     property bool recording: false
 
-    enabled: !recording
     width: rpx(140)
     height: label.font.pixelSize * 1.5
     color: recording ? "#c33" : (pressed ? "#3c3" : "#333")

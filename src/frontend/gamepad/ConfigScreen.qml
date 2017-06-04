@@ -86,9 +86,9 @@ FocusScope {
 
     Connections {
         target: GamepadManager
-        onButtonConfigured: recordConfig(null);
-        onAxisConfigured: recordConfig(null);
-        onConfigurationCanceled: recordConfig(null);
+        onButtonConfigured: recordConfig(null)
+        onAxisConfigured: recordConfig(null)
+        onConfigurationCanceled: recordConfig(null)
     }
 
     Rectangle {
@@ -179,8 +179,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "l1"
 
                 pressed: gamepad.buttonL1
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL1);
                 }
 
@@ -194,8 +194,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "l2"
 
                 pressed: gamepad.buttonL2
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL2);
                 }
 
@@ -219,8 +219,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpup"
 
                 pressed: gamepad.buttonUp
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonUp);
                 }
 
@@ -234,8 +234,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpleft"
 
                 pressed: gamepad.buttonLeft
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonLeft);
                 }
 
@@ -249,8 +249,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpright"
 
                 pressed: gamepad.buttonRight
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonRight);
                 }
 
@@ -264,8 +264,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpdown"
 
                 pressed: gamepad.buttonDown
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonDown);
                 }
 
@@ -290,8 +290,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "lx"
 
                 pressed: gamepad.axisLeftX
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftX);
                 }
 
@@ -305,8 +305,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "ly"
 
                 pressed: gamepad.axisLeftY
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftY);
                 }
 
@@ -320,8 +320,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "l3"
 
                 pressed: gamepad.buttonL3
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL3);
                 }
 
@@ -346,8 +346,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "r1"
 
                 pressed: gamepad.buttonR1
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR1);
                 }
 
@@ -362,8 +362,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "r2"
 
                 pressed: gamepad.buttonR2
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR2);
                 }
 
@@ -388,8 +388,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "a"
 
                 pressed: gamepad.buttonA
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonA);
                 }
 
@@ -402,8 +402,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "b"
 
                 pressed: gamepad.buttonB
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonB);
                 }
 
@@ -416,8 +416,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "x"
 
                 pressed: gamepad.buttonX
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonX);
                 }
 
@@ -430,8 +430,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "y"
 
                 pressed: gamepad.buttonY
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonY);
                 }
 
@@ -456,8 +456,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "rx"
 
                 pressed: gamepad.axisRightX
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightX);
                 }
 
@@ -470,8 +470,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "ry"
 
                 pressed: gamepad.axisRightY
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightY);
                 }
 
@@ -484,8 +484,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "r3"
 
                 pressed: gamepad.buttonR3
-                Keys.onReturnPressed: {
-                    recordConfig(this);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR3);
                 }
             }
@@ -508,10 +508,9 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "select"
 
                 pressed: gamepad.buttonSelect
-                Keys.onReturnPressed: {
-                    recordConfig(this);
-                    GamepadManager.configureButton(gamepad.deviceId,
-                                                   GamepadManager.ButtonSelect);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonSelect);
                 }
 
                 KeyNavigation.up: deviceSelect
@@ -524,10 +523,9 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "guide"
 
                 pressed: gamepad.buttonGuide
-                Keys.onReturnPressed: {
-                    recordConfig(this);
-                    GamepadManager.configureButton(gamepad.deviceId,
-                                                   GamepadManager.ButtonGuide);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonGuide);
                 }
 
                 KeyNavigation.up: deviceSelect
@@ -540,10 +538,9 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "start"
 
                 pressed: gamepad.buttonStart
-                Keys.onReturnPressed: {
-                    recordConfig(this);
-                    GamepadManager.configureButton(gamepad.deviceId,
-                                                   GamepadManager.ButtonStart);
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonStart);
                 }
 
                 KeyNavigation.up: deviceSelect
