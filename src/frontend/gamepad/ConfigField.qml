@@ -35,7 +35,11 @@ Rectangle {
 
     Text {
         id: label
-        color: (parent.activeFocus && !pressed) ? "#3cc" : "#eee"
+        color: {
+            if (recording || pressed) return "#eee";
+            if (parent.activeFocus) return "#3cc"
+            return "#eee";
+        }
         font {
             family: "Roboto"
             pixelSize: rpx(18)
