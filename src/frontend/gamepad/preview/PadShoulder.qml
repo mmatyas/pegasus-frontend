@@ -46,6 +46,6 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
         radius: width * 0.5
-        visible: padContainer.currentButton === shortName
+        visible: pressed || padContainer.currentButton === shortName
     }
 }

@@ -43,6 +43,6 @@ Item {
         radius: width * 0.5
 
         // FIXME: this is not really nice, but makes the code shorter
-        visible: padContainer.currentButton === shortName
+        visible: pressed || padContainer.currentButton === shortName
     }
 }

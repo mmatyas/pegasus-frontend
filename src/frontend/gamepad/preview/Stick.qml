@@ -74,7 +74,7 @@ Item {
         color: pressed ? "#3c3": "#3cc"
         radius: width * 0.5
 
-        visible: padContainer.currentButton === (side + "3")
+        visible: pressed || padContainer.currentButton === (side + "3")
     }
     Rectangle {
         id: highlightX
