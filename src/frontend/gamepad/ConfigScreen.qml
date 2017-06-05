@@ -153,7 +153,7 @@ FocusScope {
         width: parent.width
         anchors {
             top: deviceSelect.bottom
-            bottom: footer.top; bottomMargin: rpx(10)
+            bottom: footer.top
         }
 
         property int horizontalOffset: rpx(-560)

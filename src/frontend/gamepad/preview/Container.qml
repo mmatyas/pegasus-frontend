@@ -20,7 +20,10 @@ import QtGamepad 1.0
 
 Item {
     id: padContainer
-    anchors.fill: parent
+    width: parent.width
+    height: padBase.height
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenterOffset: rpx(45)
 
     property Gamepad gamepad
     property string currentButton: ""
