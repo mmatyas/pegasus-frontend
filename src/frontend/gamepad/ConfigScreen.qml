@@ -199,7 +199,7 @@ FocusScope {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL2);
                 }
 
-                KeyNavigation.right: configSelect
+                KeyNavigation.right: configR2
                 KeyNavigation.down: configDpadUp
             }
         }
@@ -351,9 +351,7 @@ FocusScope {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR1);
                 }
 
-                KeyNavigation.up: deviceSelect
                 KeyNavigation.down: configR2
-                KeyNavigation.left: configStart
             }
             ConfigField {
                 id: configR2
@@ -368,7 +366,6 @@ FocusScope {
                 }
 
                 KeyNavigation.down: configA
-                KeyNavigation.left: configStart
             }
         }
 
@@ -520,6 +517,7 @@ FocusScope {
                     }
 
                     KeyNavigation.up: deviceSelect
+                    KeyNavigation.down: configL1
                     KeyNavigation.right: configGuide
                 }
                 ConfigField {
@@ -550,6 +548,7 @@ FocusScope {
                     }
 
                     KeyNavigation.up: deviceSelect
+                    KeyNavigation.down: configR1
                     KeyNavigation.right: configR1
                 }
             }
