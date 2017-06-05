@@ -38,7 +38,7 @@ Item {
 
     Rectangle {
         id: highlight
-        color: pressed ? "#3c3": "#3cc"
+        color: pressed ? "#393": "#3cc"
         anchors.fill: parent
         radius: width * 0.5
 

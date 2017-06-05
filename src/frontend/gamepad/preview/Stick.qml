@@ -71,7 +71,7 @@ Item {
         height: width
         anchors.centerIn: parent
 
-        color: pressed ? "#3c3": "#3cc"
+        color: pressed ? "#393": "#3cc"
         radius: width * 0.5
 
         visible: pressed || padContainer.currentButton === (side + "3")

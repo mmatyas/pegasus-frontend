@@ -25,7 +25,7 @@ Rectangle {
     height: width
     anchors.margins: 4
 
-    color: pressed ? "#3c3": "#3cc"
+    color: pressed ? "#393": "#3cc"
     radius: width * 0.2
     visible: highlighted || pressed
 }
