@@ -225,6 +225,21 @@ FocusScope {
                 }
 
                 KeyNavigation.right: configA
+                KeyNavigation.down: configDpadDown
+            }
+            ConfigField {
+                id: configDpadDown
+                text: qsTr("down")
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "dpdown"
+
+                pressed: gamepad.buttonDown
+                Keys.onReturnPressed: recordConfig(this)
+                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonDown);
+                }
+
+                KeyNavigation.right: configB
                 KeyNavigation.down: configDpadLeft
             }
             ConfigField {
@@ -239,7 +254,7 @@ FocusScope {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonLeft);
                 }
 
-                KeyNavigation.right: configB
+                KeyNavigation.right: configX
                 KeyNavigation.down: configDpadRight
             }
             ConfigField {
@@ -252,21 +267,6 @@ FocusScope {
                 Keys.onReturnPressed: recordConfig(this)
                 Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonRight);
-                }
-
-                KeyNavigation.right: configX
-                KeyNavigation.down: configDpadDown
-            }
-            ConfigField {
-                id: configDpadDown
-                text: qsTr("down")
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "dpdown"
-
-                pressed: gamepad.buttonDown
-                Keys.onReturnPressed: recordConfig(this)
-                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonDown);
                 }
 
                 KeyNavigation.right: configY
