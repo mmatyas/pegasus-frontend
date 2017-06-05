@@ -25,7 +25,12 @@ Rectangle {
 
     width: rpx(140)
     height: label.font.pixelSize * 1.5
-    color: recording ? "#c33" : (pressed ? "#3c3" : "#333")
+    color: {
+        if (recording) return "#c33";
+        if (pressed) return "#353";
+        if (activeFocus) return "#3aa"
+        return "#333";
+    }
 
     anchors {
         left: alignRight ? undefined : parent.left
@@ -35,11 +40,7 @@ Rectangle {
 
     Text {
         id: label
-        color: {
-            if (recording || pressed) return "#eee";
-            if (parent.activeFocus) return "#3cc"
-            return "#eee";
-        }
+        color: "#eee"
         font {
             family: "Roboto"
             pixelSize: rpx(18)
