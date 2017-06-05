@@ -289,7 +289,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "lx"
 
-                pressed: gamepad.axisLeftX
+                pressed: Math.abs(gamepad.axisLeftX) > 0.05
                 Keys.onReturnPressed: recordConfig(this)
                 Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftX);
@@ -304,7 +304,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ly"
 
-                pressed: gamepad.axisLeftY
+                pressed: Math.abs(gamepad.axisLeftY) > 0.05
                 Keys.onReturnPressed: recordConfig(this)
                 Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftY);
@@ -452,7 +452,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "rx"
 
-                pressed: gamepad.axisRightX
+                pressed: Math.abs(gamepad.axisRightX) > 0.05
                 Keys.onReturnPressed: recordConfig(this)
                 Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightX);
@@ -466,7 +466,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ry"
 
-                pressed: gamepad.axisRightY
+                pressed: Math.abs(gamepad.axisRightY) > 0.05
                 Keys.onReturnPressed: recordConfig(this)
                 Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
                     GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightY);
