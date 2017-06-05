@@ -19,7 +19,6 @@ import QtQuick 2.8
 
 Rectangle {
     property alias text: label.text
-    property bool alignRight: parent.alignRight
     property bool pressed: false
     property bool recording: false
 
@@ -33,8 +32,8 @@ Rectangle {
     }
 
     anchors {
-        left: alignRight ? undefined : parent.left
-        right: alignRight ? parent.right : undefined
+        left: parent.alignment === Text.AlignLeft ? parent.left : undefined
+        right: parent.alignment === Text.AlignRight ? parent.right : undefined
         margins: (Positioner.index - 1) * rpx(3)
     }
 
@@ -45,11 +44,12 @@ Rectangle {
             family: "Roboto"
             pixelSize: rpx(18)
         }
+        horizontalAlignment: parent.parent.alignment
         anchors {
+            left: parent.left
+            right: parent.right
             verticalCenter: parent.verticalCenter
-            left: alignRight ? undefined : parent.left
-            right: alignRight ? parent.right : undefined
-            leftMargin: rpx(5); rightMargin: rpx(5)
+            margins: rpx(5)
         }
     }
 }

@@ -17,14 +17,22 @@
 
 import QtQuick 2.8
 
-Column {
-    property alias label: groupLabel.text
-    property int alignment: Text.AlignLeft
+Rectangle {
+    property alias text: label.text
 
-    spacing: rpx(1)
+    color: "#444"
+    width: label.width + rpx(10)
+    height: rpx(20)
 
-    ConfigGroupLabel {
-        id: groupLabel
-        anchors.right: alignment === Text.AlignRight ? parent.right : undefined
+    Text {
+        id: label
+        color: "#eee"
+        font {
+            family: "Roboto"
+            pixelSize: parent.height
+            capitalization: Font.SmallCaps
+        }
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
     }
 }

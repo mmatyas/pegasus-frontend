@@ -163,7 +163,7 @@ FocusScope {
             if (!activeFocus) padPreview.currentButton = ""
 
         ConfigGroup {
-            groupName: qsTr("left back")
+            label: qsTr("left back")
             anchors {
                 left: parent.horizontalCenter
                 leftMargin: parent.horizontalOffset
@@ -205,7 +205,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            groupName: qsTr("dpad")
+            label: qsTr("dpad")
             anchors {
                 left: parent.horizontalCenter
                 leftMargin: parent.horizontalOffset
@@ -275,7 +275,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            groupName: qsTr("left stick")
+            label: qsTr("left stick")
             anchors {
                 left: parent.horizontalCenter
                 leftMargin: parent.horizontalOffset
@@ -330,8 +330,8 @@ FocusScope {
         }
 
         ConfigGroup {
-            groupName: qsTr("right back")
-            alignRight: true
+            label: qsTr("right back")
+            alignment: Text.AlignRight
             anchors {
                 right: parent.horizontalCenter
                 rightMargin: parent.horizontalOffset
@@ -373,8 +373,8 @@ FocusScope {
         }
 
         ConfigGroup {
-            groupName: qsTr("abxy")
-            alignRight: true
+            label: qsTr("abxy")
+            alignment: Text.AlignRight
             anchors {
                 right: parent.horizontalCenter
                 rightMargin: parent.horizontalOffset
@@ -440,8 +440,8 @@ FocusScope {
         }
 
         ConfigGroup {
-            groupName: qsTr("right stick")
-            alignRight: true
+            label: qsTr("right stick")
+            alignment: Text.AlignRight
             anchors {
                 right: parent.horizontalCenter
                 rightMargin: parent.horizontalOffset
@@ -491,61 +491,70 @@ FocusScope {
             }
         }
 
-        ConfigGroup {
-            groupName: qsTr("center")
+        Column {
+            spacing: rpx(1)
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: rpx(-200)
+                verticalCenterOffset: rpx(-220)
             }
 
-            property bool alignRight: false
+            ConfigGroupLabel {
+                text: qsTr("center")
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            Row {
+                spacing: rpx(1)
+                property int alignment: Text.AlignHCenter
 
-            ConfigField {
-                id: configSelect
-                text: qsTr("select")
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "select"
+                ConfigField {
+                    id: configSelect
+                    text: qsTr("select")
+                    onActiveFocusChanged:
+                        if (activeFocus) padPreview.currentButton = "select"
 
-                pressed: gamepad.buttonSelect
-                Keys.onReturnPressed: recordConfig(this)
-                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonSelect);
+                    pressed: gamepad.buttonSelect
+                    Keys.onReturnPressed: recordConfig(this)
+                    Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                        GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonSelect);
+                    }
+
+                    KeyNavigation.up: deviceSelect
+                    KeyNavigation.right: configGuide
                 }
+                ConfigField {
+                    id: configGuide
+                    text: qsTr("guide")
+                    onActiveFocusChanged:
+                        if (activeFocus) padPreview.currentButton = "guide"
 
-                KeyNavigation.up: deviceSelect
-                KeyNavigation.right: configGuide
-            }
-            ConfigField {
-                id: configGuide
-                text: qsTr("guide")
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "guide"
+                    pressed: gamepad.buttonGuide
+                    Keys.onReturnPressed: recordConfig(this)
+                    Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                        GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonGuide);
+                    }
 
-                pressed: gamepad.buttonGuide
-                Keys.onReturnPressed: recordConfig(this)
-                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonGuide);
+                    KeyNavigation.up: deviceSelect
+                    KeyNavigation.right: configStart
                 }
+                ConfigField {
+                    id: configStart
+                    text: qsTr("start")
+                    onActiveFocusChanged:
+                        if (activeFocus) padPreview.currentButton = "start"
 
-                KeyNavigation.up: deviceSelect
-                KeyNavigation.right: configStart
-            }
-            ConfigField {
-                id: configStart
-                text: qsTr("start")
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "start"
+                    pressed: gamepad.buttonStart
+                    Keys.onReturnPressed: recordConfig(this)
+                    Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
+                        GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonStart);
+                    }
 
-                pressed: gamepad.buttonStart
-                Keys.onReturnPressed: recordConfig(this)
-                Keys.onReleased: if (event.key === Qt.Key_Return && !event.isAutoRepeat) {
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonStart);
+                    KeyNavigation.up: deviceSelect
+                    KeyNavigation.right: configR1
                 }
-
-                KeyNavigation.up: deviceSelect
-                KeyNavigation.right: configR1
             }
+
+
         }
 
         GamepadPreview.Container {
