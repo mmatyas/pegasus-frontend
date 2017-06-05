@@ -40,7 +40,7 @@ FocusScope {
             recordingField.recording = true;
     }
 
-    property real escapeDelay: 2000
+    property real escapeDelay: 1500
     property real escapeStartTime: 0
     property real escapeProgress: 0
 
