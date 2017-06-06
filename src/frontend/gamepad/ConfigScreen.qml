@@ -132,7 +132,7 @@ FocusScope {
 
                 GamepadName {
                     // FIXME: it seems Qt 5.8 doesn't know the name of the gamepad
-                    text: "Gamepad name here #" + (index + 1)
+                    text: "Gamepad #" + (index + 1)
                     highlighted: deviceSelect.focus
                 }
             }
