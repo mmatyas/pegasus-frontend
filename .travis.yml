@@ -2,8 +2,6 @@ language: cpp
 
 sudo: required
 dist: trusty
-services:
-  - docker
 
 branches:
   only:
@@ -13,45 +11,49 @@ env:
   global:
   - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
   matrix:
-  - TARGET=x11 CROSS=0
-  - TARGET=rpi1 CROSS=1
-  - TARGET=rpi2 CROSS=1
+  - TARGET=x11-static
+  - TARGET=rpi1-static CROSS=1
+  - TARGET=rpi2-static CROSS=1
 
 before_install:
   - pushd /tmp
-  - mkdir deploy build tools
-  - wget ${TOOLS_URL}/qt58-${TARGET}.tgz
-  - if [[ "$CROSS" == "1" ]]; then wget ${TOOLS_URL}/rpi-toolchain.tgz; fi
-  - if [[ "$CROSS" == "1" ]]; then wget ${TOOLS_URL}/rpi-sysroot.tgz; fi
-  - for f in *.tgz; do tar xzf ${f} -C ./tools; done
-  - if [[ "$CROSS" == "1" ]]; then mv ./tools/rpi-sysroot ./tools/opt/; fi
+  - wget ${TOOLS_URL}/qt59_${TARGET}.tgz
+  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-toolchain.tgz; fi
+  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-sysroot.tgz; fi
+  - for f in *.tgz; do sudo tar xzf ${f} -C /; done
+  - if [[ -n "$CROSS" ]]; then sudo mv /rpi-sysroot /opt/; fi
+  - if [[ "$TARGET" == "x11-static" ]]; then
+      sudo ln -s qt59_${TARGET} /opt/qt59_${TARGET}_hosttools;
+      sudo apt-get -qq update &&
+      sudo apt-get install -y
+        libasound-dev
+        libgstreamer-plugins-base1.0-dev
+        libpulse-dev
+        libsdl2-dev
+        libudev-dev
+        libxi-dev
+      ;
+    fi
+  - sudo mkdir /opt/pegasus-frontend
+  - sudo chown travis:travis /opt/pegasus-frontend
   - popd
 
-install:
-  - docker pull mmatyas/pegasus-ci
-  - export DOCKER_CMD='docker run
-      --volume /tmp/tools/opt:/opt:ro
-      --volume '$PWD':/src:ro
-      --volume /tmp/build:/build
-      --volume /tmp/deploy:/deploy
-      mmatyas/pegasus-ci'
-
 script:
-  - if [[ "$TARGET" == "x11" ]]; then
-      ${DOCKER_CMD} /bin/bash -c '
-        LD_LIBRARY_PATH=/opt/qt58-x11/lib/
-        find /src -name *.qml -exec /opt/qt58-x11/bin/qmllint {} \;
-      ';
+  - if [[ $TARGET == x11* ]]; then
+      find -name *.qml -exec /opt/qt59_${TARGET}/bin/qmllint {} \; ;
     fi
-  - ${DOCKER_CMD}
-      /opt/qt58-${TARGET}_hosttools/bin/qmake
-      INSTALLDIR=/deploy
-      /src
-  - ${DOCKER_CMD} make
-  - ${DOCKER_CMD} make install
+  - if [[ $TARGET == *static ]]; then
+      ln -s ../frontend src/app/qml-frontend;
+      ln -s ../themes/pegasus-grid src/app/qml-theme;
+    fi
+  - /opt/qt59_${TARGET}_hosttools/bin/qmake
+  - make
+  - make install
 
 after_success:
-  - curl --upload-file /tmp/deploy/pegasus-fe https://transfer.sh/pegasus-ci_${TARGET}
+  - curl --upload-file
+      /opt/pegasus-frontend/pegasus-fe
+      https://transfer.sh/pegasus-ci_${TARGET}
 
 matrix:
   include:
