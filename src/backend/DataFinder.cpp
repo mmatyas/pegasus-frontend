@@ -145,7 +145,7 @@ QString DataFinder::findAsset(Assets::Type asset_type,
     if (!path.isEmpty())
         return path;
 
-    return QString::null;
+    return QString();
 }
 
 QString DataFinder::findPortableAsset(Assets::Type asset_type,
@@ -176,5 +176,5 @@ QString DataFinder::findPortableAsset(Assets::Type asset_type,
         }
     }
 
-    return QString::null;
+    return QString();
 }

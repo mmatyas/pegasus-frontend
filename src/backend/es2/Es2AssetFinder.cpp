@@ -55,7 +55,7 @@ QString AssetFinder::findAsset(Assets::Type asset_type,
         }
     }
 
-    return QString::null;
+    return QString();
 }
 
 } // namespace Es2
