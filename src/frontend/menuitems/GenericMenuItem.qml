@@ -43,7 +43,7 @@ Rectangle {
         font {
             bold: true
             pixelSize: textSizePx
-            family: "Roboto Condensed"
+            family: uiFontCondensed.name
         }
     }
 

@@ -33,8 +33,9 @@ Window {
         return winScale * value;
     }
 
-    // register custom global fonts here
-    // FontLoader { id: font_...; source: "/fonts/..." }
+    // register custom global fonts
+    FontLoader { id: uiFont; source: "/fonts/Roboto.ttf" }
+    FontLoader { id: uiFontCondensed; source: "/fonts/RobotoCondensed.ttf" }
 
     // enable gamepad support
     Gamepad {

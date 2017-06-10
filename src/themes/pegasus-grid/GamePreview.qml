@@ -62,7 +62,7 @@ Item {
                 bold: true
                 pixelSize: rpx(24)
                 capitalization: Font.SmallCaps
-                family: "Roboto"
+                family: uiFont.name
             }
         }
 
@@ -78,7 +78,7 @@ Item {
             elide: Text.ElideRight
             font {
                 pixelSize: rpx(16)
-                family: "Roboto"
+                family: uiFont.name
             }
         }
 

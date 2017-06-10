@@ -57,7 +57,7 @@ Item {
                 bold: true
                 capitalization: Font.AllUppercase
                 pixelSize: rpx(16)
-                family: "Roboto Condensed"
+                family: uiFontCondensed.name
             }
         }
 

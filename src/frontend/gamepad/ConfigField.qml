@@ -41,7 +41,7 @@ Rectangle {
         id: label
         color: "#eee"
         font {
-            family: "Roboto"
+            family: uiFont.name
             pixelSize: rpx(18)
         }
         horizontalAlignment: parent.parent.alignment

@@ -28,7 +28,7 @@ Rectangle {
         id: label
         color: "#eee"
         font {
-            family: "Roboto"
+            family: uiFont.name
             pixelSize: parent.height
             capitalization: Font.SmallCaps
         }

@@ -620,7 +620,7 @@ FocusScope {
                 text: "B"
                 color: "#777"
                 font {
-                    family: "Roboto"
+                    family: uiFont.name
                     pixelSize: parent.height * 0.7
                 }
                 anchors.centerIn: parent
@@ -634,7 +634,7 @@ FocusScope {
 
             color: "#777"
             font {
-                family: "Roboto"
+                family: uiFont.name
                 pixelSize: rpx(22)
                 capitalization: Font.SmallCaps
             }

@@ -27,6 +27,6 @@ Text {
     }
     font {
         pixelSize: rpx(30)
-        family: "Roboto"
+        family: uiFont.name
     }
 }

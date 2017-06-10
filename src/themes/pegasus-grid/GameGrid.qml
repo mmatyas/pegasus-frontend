@@ -108,7 +108,7 @@ GridView {
             color: "#eee"
             font {
                 pixelSize: rpx(16)
-                family: "Roboto"
+                family: uiFont.name
             }
         }
 

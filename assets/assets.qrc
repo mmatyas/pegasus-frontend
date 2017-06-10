@@ -76,5 +76,7 @@
         <file>gamepad/x.svg</file>
         <file>gamepad/y.svg</file>
         <file>loading.svg</file>
+        <file>fonts/Roboto.ttf</file>
+        <file>fonts/RobotoCondensed.ttf</file>
     </qresource>
 </RCC>
