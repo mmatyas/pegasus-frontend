@@ -2,8 +2,8 @@ TEMPLATE = app
 
 TARGET = pegasus-fe
 
-QT += qml
-QTPLUGIN += qsvg
+QT += qml quick multimedia gamepad svg
+
 CONFIG += c++11 warn_on exceptions_off rtti_off
 
 SOURCES += main.cpp
@@ -12,7 +12,6 @@ RESOURCES += \
     ../frontend/frontend.qrc \
     ../themes/themes.qrc \
     ../../assets/assets.qrc
-
 
 DEFINES *= \
     QT_DEPRECATED_WARNINGS \
