@@ -15,10 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.8
-
 
 Item {
     property var gameData: pegasus.currentGame
