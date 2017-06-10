@@ -34,7 +34,7 @@ Window {
     }
 
     // register custom global fonts here
-    FontLoader { id: font_loading; source: "/fonts/loading.ttf" }
+    // FontLoader { id: font_...; source: "/fonts/..." }
 
     // enable gamepad support
     Gamepad {
@@ -100,17 +100,12 @@ Window {
 
         visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
 
-        Text {
-            text: "PEGASUS"
-            color: "#333"
-            font {
-                pixelSize: rpx(280)
-                family: font_loading.name
-            }
+        Image {
+            source: "/loading.svg"
+            sourceSize.height: 220
             anchors {
-                bottom: parent.bottom
-                left: parent.left
-                leftMargin: rpx(56)
+                bottom: parent.bottom; bottomMargin: rpx(20)
+                left: parent.left; leftMargin: rpx(40)
             }
         }
     }

@@ -60,7 +60,6 @@
         <file>platform_logo/wonderswancolor.svg</file>
         <file>platform_logo/zmachine.svg</file>
         <file>platform_logo/zxspectrum.svg</file>
-        <file>fonts/loading.ttf</file>
         <file>common/loading-spinner.png</file>
         <file>gamepad/a.svg</file>
         <file>gamepad/b.svg</file>
@@ -76,5 +75,6 @@
         <file>gamepad/stick.svg</file>
         <file>gamepad/x.svg</file>
         <file>gamepad/y.svg</file>
+        <file>loading.svg</file>
     </qresource>
 </RCC>
