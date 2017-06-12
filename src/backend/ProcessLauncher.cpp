@@ -22,6 +22,8 @@
 #include <QRegularExpression>
 
 
+static const auto SEPARATOR = "----------------------------------------";
+
 ProcessLauncher::ProcessLauncher(QObject* parent)
     : QObject(parent)
     , process(nullptr)
@@ -29,11 +31,8 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
 
 void ProcessLauncher::launchGame(const Model::Platform* platform, const Model::Game* game)
 {
-    static const auto SEPARATOR = "----------------------------------------";
-
     const QString launch_cmd = createLaunchCommand(platform, game);
 
-    qInfo().noquote() << SEPARATOR;
     qInfo().noquote() << tr("Executing command: `%1`").arg(launch_cmd);
 
     runProcess(launch_cmd);
@@ -61,8 +60,6 @@ QString ProcessLauncher::createLaunchCommand(const Model::Platform* platform, co
         // QProcess: Arguments containing spaces must be quoted
         if (param.contains(WHITESPACE_REGEX))
             param.prepend('"').append('"');
-
-        qDebug().noquote() << param;
     }
 
     // replace known keywords
@@ -106,6 +103,7 @@ void ProcessLauncher::onProcessStarted()
 {
     Q_ASSERT(process);
     qInfo().noquote() << tr("Process %1 started").arg(process->processId());
+    qInfo().noquote() << SEPARATOR;
 }
 
 void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
@@ -142,6 +140,8 @@ void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
 {
     Q_ASSERT(process);
+    qInfo().noquote() << SEPARATOR;
+
     switch (exitstatus) {
         case QProcess::NormalExit:
             qInfo().noquote() << tr("The external program has finished cleanly, with exit code %2")
