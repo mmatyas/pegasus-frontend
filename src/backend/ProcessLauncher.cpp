@@ -94,7 +94,7 @@ void ProcessLauncher::runProcess(const QString& command)
     process->start(command, QProcess::ReadOnly);
 
     // wait
-    process->waitForFinished();
+    process->waitForFinished(-1);
     process->terminate(); // TODO: `terminate` is probably unnecessary
     process->deleteLater();
 }
