@@ -18,6 +18,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.8
+import "qrc:/qmlutils" as PegasusUtils
 
 Item {
     property var gameData: pegasus.currentGame
@@ -37,48 +38,54 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: rpx(16)
+        spacing: rpx(8)
 
-        Image {
-            // logo
-            Layout.fillWidth: true
-            Layout.preferredHeight: parent.width * 0.4
-
-            asynchronous: true
-            source: gameData ? (gameData.assets.logo ? "file:" + gameData.assets.logo : "") : ""
-            sourceSize { width: 512; height: 192 }
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Text {
-            // title
-            Layout.fillWidth: true
-
-            color: "#eee"
-            text: gameData ? gameData.title : ""
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignJustify
-            font {
-                bold: true
-                pixelSize: rpx(24)
-                capitalization: Font.SmallCaps
-                family: uiFont.name
-            }
-        }
-
-        Text {
-            // description
+        PegasusUtils.AutoScroll {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            color: "#eee"
-            text: gameData ? gameData.description : ""
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignJustify
-            elide: Text.ElideRight
-            font {
-                pixelSize: rpx(16)
-                family: uiFont.name
+            Column {
+                width: parent.width
+                spacing: rpx(16)
+
+                Image {
+                    // logo
+                    width: parent.width
+                    height: parent.width * 0.4
+
+                    asynchronous: true
+                    source: gameData ? (gameData.assets.logo ? "file:" + gameData.assets.logo : "") : ""
+                    sourceSize { width: 512; height: 192 }
+                    fillMode: Image.PreserveAspectFit
+                }
+
+                Text {
+                    // title
+                    color: "#eee"
+                    text: gameData ? gameData.title : ""
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignJustify
+                    font {
+                        bold: true
+                        pixelSize: rpx(24)
+                        capitalization: Font.SmallCaps
+                        family: uiFont.name
+                    }
+                }
+
+                Text {
+                    // description
+                    color: "#eee"
+                    text: gameData ? gameData.description : ""
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignJustify
+                    font {
+                        pixelSize: rpx(16)
+                        family: uiFont.name
+                    }
+                }
             }
         }
 
@@ -104,8 +111,5 @@ Item {
                 }
             }
         }
-
     }
-
-
 }

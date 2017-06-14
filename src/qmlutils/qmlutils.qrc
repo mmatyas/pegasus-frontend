@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/qmlutils">
+        <file>AutoScroll.qml</file>
+    </qresource>
+</RCC>

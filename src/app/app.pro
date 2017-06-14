@@ -9,6 +9,7 @@ CONFIG += c++11 warn_on exceptions_off rtti_off
 SOURCES += main.cpp
 
 RESOURCES += \
+    ../qmlutils/qmlutils.qrc \
     ../frontend/frontend.qrc \
     ../themes/themes.qrc \
     ../../assets/assets.qrc
