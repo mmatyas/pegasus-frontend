@@ -89,4 +89,15 @@ Rectangle {
             height: rpx(72)
         }
     }
+
+    MouseArea {
+        anchors.fill: parent
+        onWheel: {
+            wheel.accepted = true;
+            if (wheel.angleDelta.x > 0 || wheel.angleDelta.y > 0)
+                platformPath.incrementCurrentIndex();
+            else
+                platformPath.decrementCurrentIndex();
+        }
+    }
 }
