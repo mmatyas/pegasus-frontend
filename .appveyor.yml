@@ -15,10 +15,10 @@ branches:
 environment:
   matrix:
     - flavor: mingw
-      QTDIR: C:\Qt\5.8\mingw53_32
+      QTDIR: C:\Qt\5.9\mingw53_32
 
     - flavor: msvc
-      QTDIR: C:\Qt\5.8\msvc2015
+      QTDIR: C:\Qt\5.9\msvc2015
 
 init:
   - if %flavor%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
