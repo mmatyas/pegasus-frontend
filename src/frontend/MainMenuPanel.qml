@@ -26,6 +26,7 @@ FocusScope {
     visible: x < parent.width
 
     signal showGamepadScreen()
+    signal showSettingsScreen()
 
 
     Rectangle {
@@ -41,6 +42,7 @@ FocusScope {
         PrimaryMenuItem {
             id: mbSettings
             text: qsTr("Settings")
+            onActivated: root.showSettingsScreen()
             selected: focus
 
             focus: true

@@ -18,5 +18,6 @@
         <file>gamepad/preview/PadTrigger.qml</file>
         <file>gamepad/preview/PadShoulder.qml</file>
         <file>gamepad/ConfigGroupLabel.qml</file>
+        <file>settings/SettingsPanel.qml</file>
     </qresource>
 </RCC>

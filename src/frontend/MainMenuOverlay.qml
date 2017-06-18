@@ -16,17 +16,24 @@
 
 
 import "gamepad" as GamepadConfig
+import "settings"
 import QtQuick 2.8
 
 FocusScope {
+    // TODO: optimize
     function stepBack() {
         if (state == "menuOpen" || state == "") {
             toggleMenu();
         }
-        else if (state == "gamepadPanelOpen") {
+        else {
             state = "menuOpen";
             menuPanel.focus = true;
         }
+    }
+
+    function closeAllSubpanels() {
+        gamepadPanel.visible = false;
+        settingsPanel.visible = false;
     }
 
     Keys.onEscapePressed: if (!event.isAutoRepeat) stepBack()
@@ -81,22 +88,42 @@ FocusScope {
         anchors.left: parent.right
 
         onShowGamepadScreen: {
-            parent.state = "gamepadPanelOpen"
-            gamepadConfigPanel.focus = true;
+            parent.state = "submenuFullscreen"
+            gamepadPanel.focus = true;
+
+            closeAllSubpanels();
+            gamepadPanel.visible = true;
+        }
+        onShowSettingsScreen: {
+            parent.state = "submenuFill"
+            settingsPanel.focus = true;
+
+            closeAllSubpanels();
+            settingsPanel.visible = true;
         }
     }
 
     GamepadConfig.ConfigScreen {
-        id: gamepadConfigPanel
+        id: gamepadPanel
+        visible: false
         anchors.left: menuPanel.right
-
+        onScreenClosed: stepBack()
+    }
+    SettingsPanel {
+        id: settingsPanel
+        width: parent.width - menuPanel.width
+        visible: false
+        anchors.left: menuPanel.right
         onScreenClosed: stepBack()
     }
 
     states: [
         State {
-            name: "menuOpen"
+            name: "_panelOpen"
             PropertyChanges { target: shade; opacity: 0.75 }
+        },
+        State {
+            name: "menuOpen"; extend: "_panelOpen"
             PropertyChanges { target: revision; visible: true }
             AnchorChanges {
                 target: menuPanel;
@@ -105,29 +132,38 @@ FocusScope {
             }
         },
         State {
-            name: "gamepadPanelOpen"
-            // TODO: optimize
-            PropertyChanges { target: shade; opacity: 0.75 }
-            PropertyChanges { target: revision; visible: false }
+            name: "submenuFullscreen"; extend: "_panelOpen"
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
                 anchors.right: parent.left
             }
+        },
+        State {
+            name: "submenuFill"; extend: "_panelOpen"
+            AnchorChanges {
+                target: menuPanel;
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
         }
     ]
 
+    // TODO: optimize
     transitions: [
         Transition {
             AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
         },
+        // TODO: reversible?
         Transition {
-            from: "menuOpen"; to: "gamepadPanelOpen"
+            from: "menuOpen"; to: "submenuFullscreen,submenuFill"
             AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
         },
         Transition {
-            from: "gamepadPanelOpen"; to: "menuOpen"
+            from: "submenuFullscreen,submenuFill"; to: "menuOpen"
             AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
+
+            onRunningChanged: if (!running) closeAllSubpanels()
         }
     ]
 }
