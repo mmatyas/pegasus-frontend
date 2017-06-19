@@ -19,6 +19,7 @@
 
 #include "Model.h"
 #include "api_parts/ApiMeta.h"
+#include "api_parts/ApiSettings.h"
 #include "api_parts/ApiSystem.h"
 
 #include <QFutureWatcher>
@@ -51,6 +52,7 @@ class ApiObject : public QObject {
 
     Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
+    Q_PROPERTY(ApiParts::Settings* settings READ settings CONSTANT)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -71,6 +73,7 @@ public:
 
     ApiParts::Meta* meta() { return &m_meta; }
     ApiParts::System* system() { return &m_system; }
+    ApiParts::Settings* settings() { return &m_settings; }
 
 signals:
     // the main data structures
@@ -101,6 +104,7 @@ private:
 
     ApiParts::Meta m_meta;
     ApiParts::System m_system;
+    ApiParts::Settings m_settings;
 
     // initialization
     QFutureWatcher<void> m_loading_watcher;

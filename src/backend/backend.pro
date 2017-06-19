@@ -15,7 +15,8 @@ SOURCES += \
     es2/Es2Gamelist.cpp \
     es2/Es2Systems.cpp \
     api_parts/ApiMeta.cpp \
-    api_parts/ApiSystem.cpp
+    api_parts/ApiSystem.cpp \
+    api_parts/ApiSettings.cpp
 
 HEADERS += \
     Api.h \
@@ -29,7 +30,8 @@ HEADERS += \
     es2/Es2Gamelist.h \
     es2/Es2Systems.h \
     api_parts/ApiMeta.h \
-    api_parts/ApiSystem.h
+    api_parts/ApiSystem.h \
+    api_parts/ApiSettings.h
 
 
 DEFINES *= \
