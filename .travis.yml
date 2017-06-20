@@ -51,9 +51,13 @@ script:
   - make install
 
 after_success:
+  - export SUFFIX=$(git describe --always --tags --dirty)_${TARGET}
+  - zip pegasus-fe_${SUFFIX}.zip /opt/pegasus-frontend/*
   - curl --upload-file
-      /opt/pegasus-frontend/pegasus-fe
+      pegasus-fe_${SUFFIX}.zip
       https://transfer.sh/pegasus-ci_${TARGET}
+  - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
+  - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
 
 matrix:
   include:
