@@ -51,7 +51,7 @@ script:
   - make install
 
 after_success:
-  - export SUFFIX=$(git describe --always --tags --dirty)_${TARGET}
+  - export SUFFIX=$(date +%s)_${TARGET}
   - zip -j pegasus-fe_${SUFFIX}.zip /opt/pegasus-frontend/pegasus-fe
   - curl --upload-file
       pegasus-fe_${SUFFIX}.zip
