@@ -41,7 +41,7 @@ void Settings::setLanguage(const QString& bcp47tag)
 
 void Settings::loadLanguage(const QString& bcp47tag)
 {
-    m_translator.load("pegasus_" + bcp47tag, QDir::currentPath() + "/lang", "-");
+    m_translator.load("pegasus_" + bcp47tag, ":/lang", "-");
 }
 
 } // namespace ApiParts

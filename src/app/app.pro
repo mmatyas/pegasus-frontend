@@ -12,7 +12,8 @@ RESOURCES += \
     ../qmlutils/qmlutils.qrc \
     ../frontend/frontend.qrc \
     ../themes/themes.qrc \
-    ../../assets/assets.qrc
+    ../../assets/assets.qrc \
+    ../../lang/translations.qrc
 
 DEFINES *= \
     QT_DEPRECATED_WARNINGS \
