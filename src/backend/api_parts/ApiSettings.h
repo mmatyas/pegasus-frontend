@@ -18,10 +18,27 @@
 #pragma once
 
 #include <QObject>
+#include <QQmlListProperty>
 #include <QTranslator>
 
 
 namespace ApiParts {
+
+class Language : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(QString tag MEMBER m_bcp47tag CONSTANT)
+    Q_PROPERTY(QString name MEMBER m_name CONSTANT)
+
+public:
+    explicit Language(const QString bcp47tag, const QString name,
+                      QObject* parent = nullptr);
+
+private:
+    const QString m_bcp47tag;
+    const QString m_name;
+};
+
 
 class Settings : public QObject {
     Q_OBJECT
@@ -29,12 +46,16 @@ class Settings : public QObject {
     Q_PROPERTY(QString language
                READ language WRITE setLanguage
                NOTIFY languageChanged)
+    Q_PROPERTY(QQmlListProperty<ApiParts::Language> allLanguages
+               READ getTranslationsProp CONSTANT)
 
 public:
     explicit Settings(QObject* parent = nullptr);
 
     QString language() const { return m_language; }
     void setLanguage(const QString& bcp47tag);
+
+    QQmlListProperty<ApiParts::Language> getTranslationsProp();
 
 signals:
     void languageChanged();
@@ -44,6 +65,7 @@ private:
 
     QString m_language;
     QTranslator m_translator;
+    QList<Language*> m_translations;
 };
 
 } // namespace ApiParts
