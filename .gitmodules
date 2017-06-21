@@ -1,3 +1,4 @@
 [submodule "lang"]
 	path = lang
 	url = https://github.com/mmatyas/pegasus-frontend-translations.git
+	branch = master
