@@ -34,6 +34,9 @@ public:
     explicit Language(const QString bcp47tag, const QString name,
                       QObject* parent = nullptr);
 
+    const QString tag() const { return m_bcp47tag; }
+    const QString name() const { return m_name; }
+
 private:
     const QString m_bcp47tag;
     const QString m_name;
@@ -43,8 +46,8 @@ private:
 class Settings : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString language
-               READ language WRITE setLanguage
+    Q_PROPERTY(int languageIndex
+               READ languageIndex WRITE setLanguageIndex
                NOTIFY languageChanged)
     Q_PROPERTY(QQmlListProperty<ApiParts::Language> allLanguages
                READ getTranslationsProp CONSTANT)
@@ -52,8 +55,8 @@ class Settings : public QObject {
 public:
     explicit Settings(QObject* parent = nullptr);
 
-    QString language() const { return m_language; }
-    void setLanguage(const QString& bcp47tag);
+    int languageIndex() const { return m_language_idx; }
+    void setLanguageIndex(int idx);
 
     QQmlListProperty<ApiParts::Language> getTranslationsProp();
 
@@ -63,8 +66,8 @@ signals:
 private:
     void loadLanguage(const QString& bcp47tag);
 
-    QString m_language;
     QTranslator m_translator;
+    int m_language_idx;
     QList<Language*> m_translations;
 };
 

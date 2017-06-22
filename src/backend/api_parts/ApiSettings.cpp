@@ -31,22 +31,46 @@ Language::Language(const QString bcp47tag, const QString name, QObject* parent)
 Settings::Settings(QObject* parent)
     : QObject(parent)
     , m_translator(this)
+    , m_language_idx(0)
 {
     m_translations.append(new Language("en", "English", this));
+    m_language_idx = m_translations.length() - 1; // default language is english
     m_translations.append(new Language("hu", "Magyar", this));
     m_translations.append(new Language("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
 
-    loadLanguage(QLocale().bcp47Name());
+    // TODO: check if there's a stored value in the config file
+
+    // try to find the system default language
+    const QString system_lang_tag = QLocale().bcp47Name();
+    for (int i = 0; i < m_translations.length(); i++) {
+        if (m_translations[i]->tag() == system_lang_tag) {
+            qDebug().noquote() << tr("Found translation for `%1`").arg(system_lang_tag);
+            m_language_idx = i;
+            break;
+        }
+    }
+
+    Q_ASSERT(m_language_idx >= 0 && m_language_idx < m_translations.length());
+    loadLanguage(m_translations.at(m_language_idx)->tag());
     qApp->installTranslator(&m_translator);
 }
 
-void Settings::setLanguage(const QString& bcp47tag)
+void Settings::setLanguageIndex(int idx)
 {
-    if (bcp47tag != m_language) {
-        m_language = bcp47tag;
-        loadLanguage(bcp47tag);
-        emit languageChanged(); // TODO: check load results
+    if (idx == m_language_idx)
+        return;
+
+    const bool valid_idx = (0 <= idx && idx < m_translations.length());
+    if (!valid_idx) {
+        qWarning() << tr("Invalid language index #%1").arg(idx);
+        return;
     }
+
+    m_language_idx = idx;
+    loadLanguage(m_translations.at(idx)->tag());
+    emit languageChanged();
+
+    // TODO: save to config
 }
 
 void Settings::loadLanguage(const QString& bcp47tag)
