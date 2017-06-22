@@ -28,4 +28,20 @@ FocusScope {
         anchors.fill: parent
         color: "#222"
     }
+
+    Column {
+        anchors {
+            fill: parent
+            margins: rpx(40)
+            leftMargin: rpx(120)
+        }
+
+        HorizontalSelector {
+            focus: true
+            label: qsTr("Language")
+            model: pegasus.settings.allLanguages
+            index: pegasus.settings.languageIndex
+            onIndexChanged: pegasus.settings.languageIndex = index
+        }
+    }
 }
