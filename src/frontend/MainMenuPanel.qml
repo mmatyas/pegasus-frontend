@@ -41,7 +41,7 @@ FocusScope {
         }
         PrimaryMenuItem {
             id: mbSettings
-            text: qsTr("Settings")
+            text: qsTr("Settings") + pegasus.tr
             onActivated: root.showSettingsScreen()
             selected: focus
 
@@ -51,7 +51,7 @@ FocusScope {
         }
         PrimaryMenuItem {
             id: mbControls
-            text: qsTr("Controls")
+            text: qsTr("Controls") + pegasus.tr
             onActivated: root.showGamepadScreen()
             selected: focus
 
@@ -61,7 +61,7 @@ FocusScope {
         }
         PrimaryMenuItem {
             id: mbQuit
-            text: qsTr("Quit")
+            text: qsTr("Quit") + pegasus.tr
             onActivated: {
                 if (quitSubmenu.focus) mbQuit.forceActiveFocus()
                 else quitSubmenu.forceActiveFocus()
@@ -84,7 +84,7 @@ FocusScope {
 
                 SecondaryMenuItem {
                     id: mbQuitShutdown
-                    text: qsTr("Shutdown")
+                    text: qsTr("Shutdown") + pegasus.tr
                     onActivated: pegasus.system.shutdown()
 
                     focus: true
@@ -93,7 +93,7 @@ FocusScope {
                 }
                 SecondaryMenuItem {
                     id: mbQuitReboot
-                    text: qsTr("Reboot")
+                    text: qsTr("Reboot") + pegasus.tr
                     onActivated: pegasus.system.reboot()
 
                     KeyNavigation.up: mbQuitShutdown
@@ -102,7 +102,7 @@ FocusScope {
                 }
                 SecondaryMenuItem {
                     id: mbQuitExit
-                    text: qsTr("Exit Pegasus")
+                    text: qsTr("Exit Pegasus") + pegasus.tr
                     onActivated: Qt.quit()
 
                     KeyNavigation.up: mbQuitReboot

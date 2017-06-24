@@ -104,7 +104,7 @@ FocusScope {
         GamepadName {
             visible: !hasGamepads
             highlighted: deviceSelect.focus
-            text: qsTr("No gamepads connected")
+            text: qsTr("No gamepads connected") + pegasus.tr
         }
 
         ListView {
@@ -162,7 +162,7 @@ FocusScope {
             if (!activeFocus) padPreview.currentButton = ""
 
         ConfigGroup {
-            label: qsTr("left back")
+            label: qsTr("left back") + pegasus.tr
             anchors {
                 left: parent.horizontalCenter
                 leftMargin: parent.horizontalOffset
@@ -173,7 +173,7 @@ FocusScope {
             ConfigField {
                 focus: true
                 id: configL1
-                text: qsTr("shoulder")
+                text: qsTr("shoulder") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l1"
 
@@ -188,7 +188,7 @@ FocusScope {
             }
             ConfigField {
                 id: configL2
-                text: qsTr("trigger")
+                text: qsTr("trigger") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l2"
 
@@ -204,7 +204,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            label: qsTr("dpad")
+            label: qsTr("dpad") + pegasus.tr
             anchors {
                 left: parent.horizontalCenter
                 leftMargin: parent.horizontalOffset
@@ -213,7 +213,7 @@ FocusScope {
 
             ConfigField {
                 id: configDpadUp
-                text: qsTr("up")
+                text: qsTr("up") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpup"
 
@@ -228,7 +228,7 @@ FocusScope {
             }
             ConfigField {
                 id: configDpadDown
-                text: qsTr("down")
+                text: qsTr("down") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpdown"
 
@@ -243,7 +243,7 @@ FocusScope {
             }
             ConfigField {
                 id: configDpadLeft
-                text: qsTr("left")
+                text: qsTr("left") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpleft"
 
@@ -258,7 +258,7 @@ FocusScope {
             }
             ConfigField {
                 id: configDpadRight
-                text: qsTr("right")
+                text: qsTr("right") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "dpright"
 
@@ -274,7 +274,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            label: qsTr("left stick")
+            label: qsTr("left stick") + pegasus.tr
             anchors {
                 left: parent.horizontalCenter
                 leftMargin: parent.horizontalOffset
@@ -284,7 +284,7 @@ FocusScope {
 
             ConfigField {
                 id: configLeftStickX
-                text: qsTr("x axis")
+                text: qsTr("x axis") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "lx"
 
@@ -299,7 +299,7 @@ FocusScope {
             }
             ConfigField {
                 id: configLeftStickY
-                text: qsTr("y axis")
+                text: qsTr("y axis") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ly"
 
@@ -314,7 +314,7 @@ FocusScope {
             }
             ConfigField {
                 id: configL3
-                text: qsTr("press")
+                text: qsTr("press") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l3"
 
@@ -329,7 +329,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            label: qsTr("right back")
+            label: qsTr("right back") + pegasus.tr
             alignment: Text.AlignRight
             anchors {
                 right: parent.horizontalCenter
@@ -340,7 +340,7 @@ FocusScope {
 
             ConfigField {
                 id: configR1
-                text: qsTr("shoulder")
+                text: qsTr("shoulder") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r1"
 
@@ -354,7 +354,7 @@ FocusScope {
             }
             ConfigField {
                 id: configR2
-                text: qsTr("trigger")
+                text: qsTr("trigger") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r2"
 
@@ -369,7 +369,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            label: qsTr("abxy")
+            label: qsTr("abxy") + pegasus.tr
             alignment: Text.AlignRight
             anchors {
                 right: parent.horizontalCenter
@@ -436,7 +436,7 @@ FocusScope {
         }
 
         ConfigGroup {
-            label: qsTr("right stick")
+            label: qsTr("right stick") + pegasus.tr
             alignment: Text.AlignRight
             anchors {
                 right: parent.horizontalCenter
@@ -447,7 +447,7 @@ FocusScope {
 
             ConfigField {
                 id: configRightStickX
-                text: qsTr("x axis")
+                text: qsTr("x axis") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "rx"
 
@@ -461,7 +461,7 @@ FocusScope {
             }
             ConfigField {
                 id: configRightStickY
-                text: qsTr("y axis")
+                text: qsTr("y axis") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ry"
 
@@ -475,7 +475,7 @@ FocusScope {
             }
             ConfigField {
                 id: configR3
-                text: qsTr("press")
+                text: qsTr("press") + pegasus.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r3"
 
@@ -496,7 +496,7 @@ FocusScope {
             }
 
             ConfigGroupLabel {
-                text: qsTr("center")
+                text: qsTr("center") + pegasus.tr
                 anchors.horizontalCenter: parent.horizontalCenter
             }
             Row {
@@ -505,7 +505,7 @@ FocusScope {
 
                 ConfigField {
                     id: configSelect
-                    text: qsTr("select")
+                    text: qsTr("select") + pegasus.tr
                     onActiveFocusChanged:
                         if (activeFocus) padPreview.currentButton = "select"
 
@@ -521,7 +521,7 @@ FocusScope {
                 }
                 ConfigField {
                     id: configGuide
-                    text: qsTr("guide")
+                    text: qsTr("guide") + pegasus.tr
                     onActiveFocusChanged:
                         if (activeFocus) padPreview.currentButton = "guide"
 
@@ -536,7 +536,7 @@ FocusScope {
                 }
                 ConfigField {
                     id: configStart
-                    text: qsTr("start")
+                    text: qsTr("start") + pegasus.tr
                     onActiveFocusChanged:
                         if (activeFocus) padPreview.currentButton = "start"
 
@@ -628,7 +628,7 @@ FocusScope {
 
         Text {
             id: label
-            text: qsTr("hold down to quit")
+            text: qsTr("hold down to quit") + pegasus.tr
             verticalAlignment: Text.AlignTop
 
             color: "#777"

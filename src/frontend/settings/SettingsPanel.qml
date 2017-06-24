@@ -38,7 +38,7 @@ FocusScope {
 
         HorizontalSelector {
             focus: true
-            label: qsTr("Language")
+            label: qsTr("Language") + pegasus.tr
             model: pegasus.settings.allLanguages
             index: pegasus.settings.languageIndex
             onIndexChanged: pegasus.settings.languageIndex = index

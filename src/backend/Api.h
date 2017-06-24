@@ -50,9 +50,14 @@ class ApiObject : public QObject {
     Q_PROPERTY(Model::Game* currentGame MEMBER m_current_game
                NOTIFY currentGameChanged)
 
+    // subcomponents
     Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
     Q_PROPERTY(ApiParts::Settings* settings READ settings CONSTANT)
+
+    // internal properties
+    Q_PROPERTY(QString tr READ emptyString
+               NOTIFY languageChanged)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -75,6 +80,9 @@ public:
     ApiParts::System* system() { return &m_system; }
     ApiParts::Settings* settings() { return &m_settings; }
 
+    // used to trigger re-rendering of texts on locale change
+    QString emptyString() const { return QString(); }
+
 signals:
     // the main data structures
     void platformModelChanged();
@@ -87,6 +95,9 @@ signals:
     void prepareLaunch();
     void executeLaunch(const Model::Platform*, const Model::Game*);
     void restoreAfterGame(ApiObject*);
+
+    // internal
+    void languageChanged();
 
 public slots:
     // game launch communication

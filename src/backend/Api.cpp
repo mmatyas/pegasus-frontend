@@ -45,6 +45,10 @@ ApiObject::ApiObject(QObject* parent)
     m_loading_watcher.setFuture(future);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
             this, &ApiObject::onLoadingFinished);
+
+    // subcomponent signals
+    connect(&m_settings, &ApiParts::Settings::languageChanged,
+            this, &ApiObject::languageChanged);
 }
 
 void ApiObject::onLoadingFinished()
