@@ -34,6 +34,15 @@ At the moment, this project is still in alpha, so there are no official releases
 - C++11 compatible compiler
 - Qt 5.8
 
+**Downloading the source**
+
+The project uses Git submodules. If you cloned the repository recursively, they are automatically cloned as well. If you did not, you can do it manually like this:
+
+```sh
+# call this after every repo update
+git submodule update --init
+```
+
 **Building**
 
 You can use any Qt-compatible IDEs, eg. Qt Creator to build the project, or you can manually invoke
