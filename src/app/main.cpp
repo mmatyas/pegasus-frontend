@@ -23,6 +23,7 @@
 #include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QQmlContext>
+#include <QSettings>
 
 
 int main(int argc, char *argv[])
@@ -33,6 +34,9 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setApplicationName("pegasus-frontend");
     app.setApplicationVersion(GIT_REVISION);
+    app.setOrganizationName("pegasus-frontend");
+    app.setOrganizationDomain("pegasus-frontend.org");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
 
     QCommandLineParser argparser;
     argparser.setApplicationDescription("\n" + QObject::tr(

@@ -20,6 +20,8 @@
 #include <QtGui>
 
 
+static const char SETTINGSKEY_LOCALE[] = "locale";
+
 namespace ApiParts {
 
 Language::Language(const QString bcp47tag, const QString name, QObject* parent)
@@ -34,22 +36,28 @@ Settings::Settings(QObject* parent)
     , m_language_idx(0)
 {
     m_translations.append(new Language("en", "English", this));
-    m_language_idx = m_translations.length() - 1; // default language is english
+    m_language_idx = m_translations.length() - 1; // fallback language is english
     m_translations.append(new Language("hu", "Magyar", this));
     m_translations.append(new Language("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
 
-    // TODO: check if there's a stored value in the config file
+    // if there is a saved language setting, use that
+    // if not, use the system language
+    const QString requested_tag = [](){
+        QVariant entry = QSettings().value(SETTINGSKEY_LOCALE);
+        return entry.isNull() ? QLocale().bcp47Name() : entry.toString();
+    }();
 
-    // try to find the system default language
-    const QString system_lang_tag = QLocale().bcp47Name();
+    // try to find the saved/system language
+    // or fall back to english
     for (int i = 0; i < m_translations.length(); i++) {
-        if (m_translations[i]->tag() == system_lang_tag) {
-            qDebug().noquote() << tr("Found translation for `%1`").arg(system_lang_tag);
+        if (m_translations[i]->tag() == requested_tag) {
+            qDebug().noquote() << tr("Found translation for `%1`").arg(requested_tag);
             m_language_idx = i;
             break;
         }
     }
 
+    // load
     Q_ASSERT(m_language_idx >= 0 && m_language_idx < m_translations.length());
     loadLanguage(m_translations.at(m_language_idx)->tag());
     qApp->installTranslator(&m_translator);
@@ -57,6 +65,7 @@ Settings::Settings(QObject* parent)
 
 void Settings::setLanguageIndex(int idx)
 {
+    // verify
     if (idx == m_language_idx)
         return;
 
@@ -66,11 +75,14 @@ void Settings::setLanguageIndex(int idx)
         return;
     }
 
+    // load
     m_language_idx = idx;
     loadLanguage(m_translations.at(idx)->tag());
-    emit languageChanged();
 
-    // TODO: save to config
+    // remember
+    QSettings().setValue(SETTINGSKEY_LOCALE, m_translations.at(idx)->tag());
+
+    emit languageChanged();
 }
 
 void Settings::loadLanguage(const QString& bcp47tag)
