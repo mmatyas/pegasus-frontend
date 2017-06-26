@@ -26,6 +26,7 @@ init:
 
 before_build:
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+  - git submodule update --init
 
 build_script:
   - md build
