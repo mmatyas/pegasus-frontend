@@ -48,7 +48,8 @@ git submodule update --init
 You can use any Qt-compatible IDEs, eg. Qt Creator to build the project, or you can manually invoke
 
 ```sh
-qmake  # qmake [params] [project path], see below
+mkdir build && cd build
+qmake ..  # qmake [params] [project path], see below
 make
 make install  # optional
 ```
