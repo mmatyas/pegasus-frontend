@@ -46,7 +46,8 @@ script:
       ln -s ../frontend src/app/qml-frontend;
       ln -s ../themes/pegasus-grid src/app/qml-theme;
     fi
-  - /opt/qt59_${TARGET}_hosttools/bin/qmake
+  - mkdir build && cd build
+  - /opt/qt59_${TARGET}_hosttools/bin/qmake ..
   - make
   - make install
 
@@ -71,7 +72,8 @@ matrix:
         - brew link --force qt5
         - qmake -v
       script:
-        - qmake
+        - mkdir build && cd build
+        - qmake ..
         - make
       after_success:
         - true
