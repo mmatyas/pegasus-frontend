@@ -32,7 +32,13 @@ At the moment, this project is still in alpha, so there are no official releases
 **Dependencies**
 
 - C++11 compatible compiler
-- Qt 5.8
+- Qt 5.7 or later (5.9 recommended), with the following modules:
+    - QML and QtQuick2
+    - Multimedia
+    - SVG
+    - Gamepad
+
+For more information, please see the detailed [build guide](https://github.com/mmatyas/pegasus-frontend/wiki/Building).
 
 **Downloading the source**
 
