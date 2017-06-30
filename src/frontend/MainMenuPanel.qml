@@ -103,7 +103,7 @@ FocusScope {
                 SecondaryMenuItem {
                     id: mbQuitExit
                     text: qsTr("Exit Pegasus") + pegasus.tr
-                    onActivated: Qt.quit()
+                    onActivated: pegasus.system.quit()
 
                     KeyNavigation.up: mbQuitReboot
                     Keys.onEscapePressed: mbQuit.forceActiveFocus()

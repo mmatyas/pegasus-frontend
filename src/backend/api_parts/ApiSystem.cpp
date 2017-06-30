@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QProcess>
+#include <QCoreApplication>
 #include <QStandardPaths>
 
 
@@ -69,6 +70,14 @@ void System::runScripts(const QVector<QString>& paths) const
                              .arg(paths.length()).arg(paths.at(i));
         QProcess::execute(paths.at(i));
     }
+}
+
+void System::quit() const
+{
+    runScripts(findScripts("quit"));
+
+    qInfo().noquote() << tr("Closing Pegasus, goodbye!");
+    QCoreApplication::quit();
 }
 
 // NOTE: on Linux distros using systemd-logind, local users can

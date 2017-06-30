@@ -30,6 +30,7 @@ class System : public QObject {
 public:
     explicit System(QObject* parent = nullptr);
 
+    Q_INVOKABLE void quit() const;
     Q_INVOKABLE void reboot() const;
     Q_INVOKABLE void shutdown() const;
 
