@@ -18,6 +18,8 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
+#include <QVector>
 
 
 namespace ApiParts {
@@ -30,6 +32,9 @@ public:
 
     Q_INVOKABLE void reboot() const;
     Q_INVOKABLE void shutdown() const;
+
+    QVector<QString> findScripts(const QString& dirname) const;
+    void runScripts(const QVector<QString>& paths) const;
 };
 
 } // namespace ApiParts
