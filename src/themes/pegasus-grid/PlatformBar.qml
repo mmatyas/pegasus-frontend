@@ -72,6 +72,7 @@ Rectangle {
             }
         }
 
+        Component.onCompleted: currentIndex = pegasus.currentPlatformIndex
         onCurrentIndexChanged: pegasus.currentPlatformIndex = currentIndex
     }
 
