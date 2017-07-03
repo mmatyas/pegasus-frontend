@@ -33,11 +33,11 @@ QList<Model::Platform*> DataFinder::find()
 
     findPlatforms(model);
 
-    for (Model::Platform* platform : model)
+    for (Model::Platform* platform : qAsConst(model))
         findPlatformGames(platform);
     removeEmptyPlatforms(model);
 
-    for (const Model::Platform* platform : model) {
+    for (const Model::Platform* platform : qAsConst(model)) {
         findGameMetadata(*platform);
         findGameAssets(*platform);
     }
@@ -104,7 +104,7 @@ void DataFinder::findGameAssets(const Model::Platform& platform)
 {
     using Type = Assets::Type;
 
-    for (Model::Game* game_ptr : platform.m_games) {
+    for (Model::Game* game_ptr : qAsConst(platform.m_games)) {
         Q_ASSERT(game_ptr);
         Q_ASSERT(game_ptr->m_assets);
 

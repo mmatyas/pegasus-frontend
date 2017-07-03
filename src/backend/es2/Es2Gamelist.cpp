@@ -102,7 +102,7 @@ void Gamelist::parseGamelistFile(QXmlStreamReader& xml, const Model::Platform& p
     // To find matches between the real files and the ones in the gamelist,
     // their canonical path will be compared.
     QHash<QString, Model::Game*> game_by_path;
-    for (Model::Game* game : platform.m_games)
+    for (Model::Game* game : qAsConst(platform.m_games))
         game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
 
