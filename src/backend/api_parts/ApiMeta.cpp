@@ -22,7 +22,7 @@
 
 namespace ApiParts {
 
-Meta::Meta(QObject *parent)
+Meta::Meta(QObject* parent)
     : QObject(parent)
     , m_git_revision(GIT_REVISION)
     , m_loading(true)

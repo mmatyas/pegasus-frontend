@@ -24,7 +24,7 @@ static const char SETTINGSKEY_LOCALE[] = "locale";
 
 namespace ApiParts {
 
-Language::Language(const QString bcp47tag, const QString name, QObject* parent)
+Language::Language(QString bcp47tag, QString name, QObject* parent)
     : QObject(parent)
     , m_bcp47tag(bcp47tag)
     , m_name(name)

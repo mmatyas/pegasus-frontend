@@ -31,7 +31,7 @@ class Language : public QObject {
     Q_PROPERTY(QString name MEMBER m_name CONSTANT)
 
 public:
-    explicit Language(const QString bcp47tag, const QString name,
+    explicit Language(QString bcp47tag, QString name,
                       QObject* parent = nullptr);
 
     const QString tag() const { return m_bcp47tag; }

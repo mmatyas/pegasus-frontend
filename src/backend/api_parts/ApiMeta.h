@@ -29,7 +29,7 @@ class Meta : public QObject {
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
 
 public:
-    explicit Meta(QObject* parent = 0);
+    explicit Meta(QObject* parent = nullptr);
 
     bool isLoading() const { return m_loading; }
 

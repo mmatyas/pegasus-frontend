@@ -23,7 +23,7 @@
 
 namespace ApiParts {
 
-System::System(QObject *parent)
+System::System(QObject* parent)
     : QObject(parent)
 {
 }
