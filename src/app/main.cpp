@@ -19,12 +19,17 @@
 #include "FrontendLayer.h"
 #include "Model.h"
 #include "ProcessLauncher.h"
+#include "QuitStatus.h"
+#include "ScriptRunner.h"
+#include "SystemCommands.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QQmlContext>
 #include <QSettings>
 
+
+void runQuitScripts();
 
 int main(int argc, char *argv[])
 {
@@ -78,5 +83,42 @@ int main(int argc, char *argv[])
     QObject::connect(&api, &ApiObject::restoreAfterGame,
                      &frontend, &FrontendLayer::rebuild);
 
+
+    // run the quit/reboot/shutdown scripts on exit;
+    // on some platforms, app.exec() may not return so aboutToQuit()
+    // is used for calling these methods
+    QObject::connect(&app, &QCoreApplication::aboutToQuit,
+                     runQuitScripts);
+
     return app.exec();
+}
+
+void runQuitScripts()
+{
+    using ScriptEvent = ScriptRunner::EventType;
+
+    ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
+    switch (QuitStatus::status) {
+        case QuitStatus::Type::REBOOT:
+            ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
+            break;
+        case QuitStatus::Type::SHUTDOWN:
+            ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
+            break;
+        default:
+            break;
+    }
+
+    qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
+
+    switch (QuitStatus::status) {
+        case QuitStatus::Type::REBOOT:
+            SystemCommands::reboot();
+            break;
+        case QuitStatus::Type::SHUTDOWN:
+            SystemCommands::shutdown();
+            break;
+        default:
+            break;
+    }
 }

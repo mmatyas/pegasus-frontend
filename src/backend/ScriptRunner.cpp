@@ -29,23 +29,24 @@ const QMap<ScriptRunner::EventType, QString> ScriptRunner::script_dirs = {
     { ScriptRunner::EventType::SHUTDOWN, "shutdown" },
 };
 
-void ScriptRunner::findAndRunSripts(const QVector<ScriptRunner::EventType>& events)
-{
-    QVector<QString> scripts;
-
-    for (const auto& event : events) {
-        Q_ASSERT(script_dirs.contains(event));
-        scripts += findScripts(script_dirs.value(event));
-    }
-
-    runScripts(scripts);
-}
-
-void ScriptRunner::findAndRunSripts(ScriptRunner::EventType event)
+void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
 {
     Q_ASSERT(script_dirs.contains(event));
 
-    runScripts(findScripts(script_dirs.value(event)));
+    const auto scripts = findScripts(event);
+    const auto dirname = script_dirs.value(event);
+
+    if (scripts.count() > 0) {
+        qInfo().noquote() << QObject::tr("Running `%1` scripts...").arg(dirname);
+        runScripts(scripts);
+    }
+}
+
+QVector<QString> ScriptRunner::findScripts(ScriptRunner::EventType event)
+{
+    Q_ASSERT(script_dirs.contains(event));
+
+    return findScripts(script_dirs.value(event));
 }
 
 QVector<QString> ScriptRunner::findScripts(const QString& dirname)
@@ -77,10 +78,12 @@ QVector<QString> ScriptRunner::findScripts(const QString& dirname)
 
 void ScriptRunner::runScripts(const QVector<QString>& paths)
 {
+    if (paths.length() <= 0)
+        return;
+
     static const auto SCRIPTSTART_MSG = QObject::tr("[%1/%2] %3");
     const int num_field_width = QString::number(paths.length()).length();
 
-    qInfo().noquote() << QObject::tr("Running scripts...");
     for (int i = 0; i < paths.length(); i++) {
         qInfo().noquote() << SCRIPTSTART_MSG
                              .arg(i + 1, num_field_width)

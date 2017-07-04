@@ -17,27 +17,11 @@
 
 #pragma once
 
-#include <QMap>
-#include <QString>
-#include <QVector>
 
-
-/// A utility class for finding and running external scripts
-class ScriptRunner {
+/// Contains the implementation of platform-specific system calls,
+/// such as reboot or shutdown
+class SystemCommands {
 public:
-    enum class EventType : unsigned char {
-        QUIT,
-        REBOOT,
-        SHUTDOWN,
-    };
-
-    static void findAndRunScripts(EventType);
-
-    static QVector<QString> findScripts(const QString& dirname);
-    static QVector<QString> findScripts(EventType);
-
-    static void runScripts(const QVector<QString>& paths);
-
-private:
-    static const QMap<EventType, QString> script_dirs;
+    static void reboot();
+    static void shutdown();
 };

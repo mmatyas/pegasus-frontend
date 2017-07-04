@@ -15,41 +15,34 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ApiSystem.h"
-#include "ScriptRunner.h"
-#include "QuitStatus.h"
+#include "SystemCommands.h"
 
 #include <QDebug>
-#include <QCoreApplication>
 #include <QProcess>
 
-
-namespace ApiParts {
-
-System::System(QObject* parent)
-    : QObject(parent)
-{
-}
-
-void System::quit() const
-{
-    QCoreApplication::quit();
-}
 
 // NOTE: on Linux distros using systemd-logind, local users can
 // reboot and shutdown the system without root privileges. Also
 // see https://wiki.archlinux.org/index.php/Allow_users_to_shutdown
 
-void System::reboot() const
+void SystemCommands::reboot()
 {
-    QuitStatus::status = QuitStatus::Type::REBOOT;
-    QCoreApplication::quit();
+    qInfo().noquote() << QObject::tr("Rebooting...");
+
+#ifdef Q_OS_WIN32
+    QProcess::startDetached("shutdown -r -t 0");
+#else
+    QProcess::startDetached("reboot");
+#endif
 }
 
-void System::shutdown() const
+void SystemCommands::shutdown()
 {
-    QuitStatus::status = QuitStatus::Type::SHUTDOWN;
-    QCoreApplication::quit();
-}
+    qInfo().noquote() << QObject::tr("Shutting down...");
 
-} // namespace ApiParts
+#ifdef Q_OS_WIN32
+    QProcess::startDetached("shutdown -s -t 0");
+#else
+    QProcess::startDetached("poweroff");
+#endif
+}

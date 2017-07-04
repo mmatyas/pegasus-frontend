@@ -17,27 +17,16 @@
 
 #pragma once
 
-#include <QMap>
-#include <QString>
-#include <QVector>
 
-
-/// A utility class for finding and running external scripts
-class ScriptRunner {
+/// This is a static class that stores what should Pegasus
+/// do after the main loop ends
+struct QuitStatus {
 public:
-    enum class EventType : unsigned char {
+    enum class Type : unsigned char {
         QUIT,
         REBOOT,
         SHUTDOWN,
     };
 
-    static void findAndRunScripts(EventType);
-
-    static QVector<QString> findScripts(const QString& dirname);
-    static QVector<QString> findScripts(EventType);
-
-    static void runScripts(const QVector<QString>& paths);
-
-private:
-    static const QMap<EventType, QString> script_dirs;
+    static Type status;
 };
