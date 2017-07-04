@@ -16,12 +16,11 @@
 
 
 #include "ApiSystem.h"
+#include "ScriptRunner.h"
 
 #include <QDebug>
-#include <QDirIterator>
-#include <QProcess>
 #include <QCoreApplication>
-#include <QStandardPaths>
+#include <QProcess>
 
 
 namespace ApiParts {
@@ -31,50 +30,9 @@ System::System(QObject* parent)
 {
 }
 
-QVector<QString> System::findScripts(const QString& dirname) const
-{
-    static const auto filters = QDir::Files | QDir::Readable/* | QDir::Executable*/ | QDir::NoDotAndDotDot;
-    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
-
-    Q_ASSERT(!dirname.isEmpty());
-
-    QVector<QString> scripts;
-
-    auto search_paths = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
-    for (auto& path : search_paths) {
-        path += "/scripts/" + dirname;
-        // do not add the organization name to the search path
-        path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
-
-        QVector<QString> local_scripts;
-        QDirIterator scripdir(path, filters, flags);
-        while (scripdir.hasNext())
-            local_scripts.append(scripdir.next());
-
-        std::sort(local_scripts.begin(), local_scripts.end());
-        scripts.append(local_scripts);
-    }
-
-    return scripts;
-}
-
-void System::runScripts(const QVector<QString>& paths) const
-{
-    static const auto SCRIPTSTART_MSG = tr("[%1/%2] %3");
-    const int num_field_width = QString::number(paths.length()).length();
-
-    qInfo().noquote() << tr("Running scripts...");
-    for (int i = 0; i < paths.length(); i++) {
-        qInfo().noquote() << SCRIPTSTART_MSG
-                             .arg(i + 1, num_field_width)
-                             .arg(paths.length()).arg(paths.at(i));
-        QProcess::execute(paths.at(i));
-    }
-}
-
 void System::quit() const
 {
-    runScripts(findScripts("quit"));
+    ScriptRunner::findAndRunSripts(ScriptRunner::EventType::QUIT);
 
     qInfo().noquote() << tr("Closing Pegasus, goodbye!");
     QCoreApplication::quit();
@@ -86,10 +44,10 @@ void System::quit() const
 
 void System::reboot() const
 {
-    QVector<QString> scripts;
-    scripts += findScripts("quit");
-    scripts += findScripts("reboot");
-    runScripts(scripts);
+    ScriptRunner::findAndRunSripts({
+        ScriptRunner::EventType::QUIT,
+        ScriptRunner::EventType::REBOOT
+    });
 
 
     qInfo().noquote() << tr("Rebooting...");
@@ -102,10 +60,10 @@ void System::reboot() const
 
 void System::shutdown() const
 {
-    QVector<QString> scripts;
-    scripts += findScripts("quit");
-    scripts += findScripts("shutdown");
-    runScripts(scripts);
+    ScriptRunner::findAndRunSripts({
+        ScriptRunner::EventType::QUIT,
+        ScriptRunner::EventType::SHUTDOWN
+    });
 
 
     qInfo().noquote() << tr("Shutting down...");

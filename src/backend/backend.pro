@@ -10,6 +10,7 @@ SOURCES += \
     FrontendLayer.cpp \
     Model.cpp \
     ProcessLauncher.cpp \
+    ScriptRunner.cpp \
     Utils.cpp \
     es2/Es2AssetFinder.cpp \
     es2/Es2Gamelist.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     Model.h \
     FrontendLayer.h \
     ProcessLauncher.h \
+    ScriptRunner.h \
     Utils.h \
     es2/Es2AssetFinder.h \
     es2/Es2Gamelist.h \

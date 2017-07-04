@@ -17,22 +17,25 @@
 
 #pragma once
 
-#include <QObject>
+#include <QMap>
 #include <QString>
 #include <QVector>
 
 
-namespace ApiParts {
-
-class System : public QObject {
-    Q_OBJECT
-
+class ScriptRunner {
 public:
-    explicit System(QObject* parent = nullptr);
+    enum class EventType : unsigned char {
+        QUIT,
+        REBOOT,
+        SHUTDOWN,
+    };
 
-    Q_INVOKABLE void quit() const;
-    Q_INVOKABLE void reboot() const;
-    Q_INVOKABLE void shutdown() const;
+    static void findAndRunSripts(const QVector<EventType>&);
+    static void findAndRunSripts(EventType);
+
+    static QVector<QString> findScripts(const QString& dirname);
+    static void runScripts(const QVector<QString>& paths);
+
+private:
+    static const QMap<EventType, QString> script_dirs;
 };
-
-} // namespace ApiParts
