@@ -29,6 +29,8 @@ public:
         QUIT,
         REBOOT,
         SHUTDOWN,
+        CONFIG_CHANGED,
+        CONTROLS_CHANGED,
     };
 
     static void findAndRunScripts(EventType);

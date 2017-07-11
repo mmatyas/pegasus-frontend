@@ -24,11 +24,13 @@
 #include "SystemCommands.h"
 
 #include <QCommandLineParser>
+#include <QGamepadManager>
 #include <QGuiApplication>
 #include <QQmlContext>
 #include <QSettings>
 
 
+void runGamepadConfigScripts();
 void runQuitScripts();
 
 int main(int argc, char *argv[])
@@ -84,6 +86,13 @@ int main(int argc, char *argv[])
                      &frontend, &FrontendLayer::rebuild);
 
 
+    // run the gamepad configuration change scripts
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured,
+                     runGamepadConfigScripts);
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured,
+                     runGamepadConfigScripts);
+
+
     // run the quit/reboot/shutdown scripts on exit;
     // on some platforms, app.exec() may not return so aboutToQuit()
     // is used for calling these methods
@@ -91,6 +100,14 @@ int main(int argc, char *argv[])
                      runQuitScripts);
 
     return app.exec();
+}
+
+void runGamepadConfigScripts()
+{
+    using ScriptEvent = ScriptRunner::EventType;
+
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
 }
 
 void runQuitScripts()
