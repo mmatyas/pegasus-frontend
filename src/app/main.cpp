@@ -75,9 +75,12 @@ int main(int argc, char *argv[])
 void handleCommandLineArgs(QGuiApplication& app)
 {
     QCommandLineParser argparser;
+
+    //: try to make this less than 80 characters per line
     argparser.setApplicationDescription("\n" + QObject::tr(
         "A cross platform, customizable graphical frontend for launching emulators\n"
         "and managing your game collection."));
+
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app);
