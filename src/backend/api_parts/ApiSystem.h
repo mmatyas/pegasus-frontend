@@ -24,6 +24,8 @@
 
 namespace ApiParts {
 
+
+/// Provides a set of system calls for the frontend
 class System : public QObject {
     Q_OBJECT
 

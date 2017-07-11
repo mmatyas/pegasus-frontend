@@ -24,6 +24,7 @@
 
 namespace ApiParts {
 
+/// An utility class to contain language informations
 class Language : public QObject {
     Q_OBJECT
 
@@ -42,10 +43,11 @@ private:
     const QString m_name;
 };
 
-
+/// Provides a settings interface for the frontend layer
 class Settings : public QObject {
     Q_OBJECT
 
+    // multilanguage support
     Q_PROPERTY(int languageIndex
                READ languageIndex WRITE setLanguageIndex
                NOTIFY languageChanged)
@@ -55,21 +57,23 @@ class Settings : public QObject {
 public:
     explicit Settings(QObject* parent = nullptr);
 
+    // multilanguage support
     int languageIndex() const { return m_language_idx; }
     void setLanguageIndex(int idx);
-
     QQmlListProperty<ApiParts::Language> getTranslationsProp();
 
 signals:
     void languageChanged();
 
 private:
+    // multilanguage support
     void loadLanguage(const QString& bcp47tag);
 
     QTranslator m_translator;
     int m_language_idx;
     QList<Language*> m_translations;
 
+    // internal
     void callScripts() const;
 };
 

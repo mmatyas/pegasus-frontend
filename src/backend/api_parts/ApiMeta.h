@@ -22,6 +22,7 @@
 
 namespace ApiParts {
 
+/// Provides information about the program for the frontend layer
 class Meta : public QObject {
     Q_OBJECT
 
