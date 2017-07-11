@@ -28,6 +28,7 @@ const QMap<ScriptRunner::EventType, QString> ScriptRunner::script_dirs = {
     { ScriptRunner::EventType::REBOOT, "reboot" },
     { ScriptRunner::EventType::SHUTDOWN, "shutdown" },
     { ScriptRunner::EventType::CONFIG_CHANGED, "config-changed" },
+    { ScriptRunner::EventType::SETTINGS_CHANGED, "settings-changed" },
     { ScriptRunner::EventType::CONTROLS_CHANGED, "controls-changed" },
 };
 

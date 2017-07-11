@@ -17,6 +17,8 @@
 
 #include "ApiSettings.h"
 
+#include "ScriptRunner.h"
+
 #include <QtGui>
 
 
@@ -82,6 +84,7 @@ void Settings::setLanguageIndex(int idx)
     // remember
     QSettings().setValue(SETTINGSKEY_LOCALE, m_translations.at(idx)->tag());
 
+    callScripts();
     emit languageChanged();
 }
 
@@ -93,6 +96,14 @@ void Settings::loadLanguage(const QString& bcp47tag)
 QQmlListProperty<ApiParts::Language> Settings::getTranslationsProp()
 {
     return QQmlListProperty<ApiParts::Language>(this, m_translations);
+}
+
+void Settings::callScripts() const
+{
+    using ScriptEvent = ScriptRunner::EventType;
+
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
 } // namespace ApiParts

@@ -69,6 +69,8 @@ private:
     QTranslator m_translator;
     int m_language_idx;
     QList<Language*> m_translations;
+
+    void callScripts() const;
 };
 
 } // namespace ApiParts

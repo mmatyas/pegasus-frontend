@@ -30,6 +30,7 @@ public:
         REBOOT,
         SHUTDOWN,
         CONFIG_CHANGED,
+        SETTINGS_CHANGED,
         CONTROLS_CHANGED,
     };
 
