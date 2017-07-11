@@ -30,8 +30,12 @@
 #include <QSettings>
 
 
-void runGamepadConfigScripts();
-void runQuitScripts();
+void handleCommandLineArgs(QGuiApplication&);
+void registerAPIClasses();
+void setupAsyncGameLaunch(ApiObject&, FrontendLayer&, ProcessLauncher&);
+void setupControlsChangeScripts();
+void setupQuitScripts(QGuiApplication&);
+
 
 int main(int argc, char *argv[])
 {
@@ -43,8 +47,33 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(GIT_REVISION);
     app.setOrganizationName("pegasus-frontend");
     app.setOrganizationDomain("pegasus-frontend.org");
+
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
+    handleCommandLineArgs(app);
+
+
+    // this should come before the ApiObject constructor,
+    // as it may produce language change signals
+    registerAPIClasses();
+
+    // the main parts of the backend
+    // frontend <-> api <-> launcher
+    ApiObject api;
+    FrontendLayer frontend(&api);
+    ProcessLauncher launcher;
+
+    setupAsyncGameLaunch(api, frontend, launcher);
+
+
+    setupControlsChangeScripts();
+    setupQuitScripts(app);
+
+    return app.exec();
+}
+
+void handleCommandLineArgs(QGuiApplication& app)
+{
     QCommandLineParser argparser;
     argparser.setApplicationDescription("\n" + QObject::tr(
         "A cross platform, customizable graphical frontend for launching emulators\n"
@@ -52,20 +81,22 @@ int main(int argc, char *argv[])
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app);
+}
 
-
+void registerAPIClasses()
+{
     static constexpr auto API_URI = "Pegasus.Model";
+
     const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
+
     qmlRegisterUncreatableType<Model::Platform>(API_URI, 0, 2, "Platform", error_msg);
     qmlRegisterUncreatableType<Model::Game>(API_URI, 0, 2, "Game", error_msg);
     qmlRegisterUncreatableType<Model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
     qmlRegisterUncreatableType<ApiParts::Language>(API_URI, 0, 3, "Language", error_msg);
+}
 
-
-    ApiObject api;
-    FrontendLayer frontend(&api);
-    ProcessLauncher launcher;
-
+void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)
+{
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
     // see the relevant classes
@@ -84,58 +115,59 @@ int main(int argc, char *argv[])
 
     QObject::connect(&api, &ApiObject::restoreAfterGame,
                      &frontend, &FrontendLayer::rebuild);
+}
+
+void setupControlsChangeScripts()
+{
+    const auto callback = [](){
+        using ScriptEvent = ScriptRunner::EventType;
+
+        ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+        ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
+    };
 
 
-    // run the gamepad configuration change scripts
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured,
-                     runGamepadConfigScripts);
+                     callback);
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured,
-                     runGamepadConfigScripts);
+                     callback);
+}
+
+void setupQuitScripts(QGuiApplication& app)
+{
+    const auto callback = [](){
+        using ScriptEvent = ScriptRunner::EventType;
+
+        ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
+        switch (QuitStatus::status) {
+            case QuitStatus::Type::REBOOT:
+                ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
+                break;
+            case QuitStatus::Type::SHUTDOWN:
+                ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
+                break;
+            default:
+                break;
+        }
+
+        qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
+
+        switch (QuitStatus::status) {
+            case QuitStatus::Type::REBOOT:
+                SystemCommands::reboot();
+                break;
+            case QuitStatus::Type::SHUTDOWN:
+                SystemCommands::shutdown();
+                break;
+            default:
+                break;
+        }
+    };
 
 
     // run the quit/reboot/shutdown scripts on exit;
     // on some platforms, app.exec() may not return so aboutToQuit()
     // is used for calling these methods
     QObject::connect(&app, &QCoreApplication::aboutToQuit,
-                     runQuitScripts);
-
-    return app.exec();
-}
-
-void runGamepadConfigScripts()
-{
-    using ScriptEvent = ScriptRunner::EventType;
-
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
-}
-
-void runQuitScripts()
-{
-    using ScriptEvent = ScriptRunner::EventType;
-
-    ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
-    switch (QuitStatus::status) {
-        case QuitStatus::Type::REBOOT:
-            ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
-            break;
-        case QuitStatus::Type::SHUTDOWN:
-            ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
-            break;
-        default:
-            break;
-    }
-
-    qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
-
-    switch (QuitStatus::status) {
-        case QuitStatus::Type::REBOOT:
-            SystemCommands::reboot();
-            break;
-        case QuitStatus::Type::SHUTDOWN:
-            SystemCommands::shutdown();
-            break;
-        default:
-            break;
-    }
+                     callback);
 }
