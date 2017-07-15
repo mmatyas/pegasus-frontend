@@ -11,6 +11,8 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 [![Codacy status](https://api.codacy.com/project/badge/Grade/716566e918a64b0fb20959c02779bbd2)](https://www.codacy.com/app/mmatyas/pegasus-frontend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mmatyas/pegasus-frontend&amp;utm_campaign=Badge_Grade)
 [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.md)
 
+- [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
+- [Latest automatic builds](https://github.com/mmatyas/pegasus-frontend/releases/tag/continuous)
 
 ## Features
 
