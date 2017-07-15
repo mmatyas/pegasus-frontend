@@ -12,7 +12,8 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.md)
 
 - [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
-- [Latest automatic builds](https://github.com/mmatyas/pegasus-frontend/releases/tag/continuous)
+- [Latest automatic builds for Linux (incl. Raspberry Pi)][gh ci builds]
+- [Latest automatic build for Windows][appveyor mingw build]
 
 ## Features
 
@@ -27,7 +28,7 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 
 ## Installation
 
-At the moment, this project is still in alpha, so there are no official releases yet. However, you can already build the program from source.
+At the moment, this project is still in alpha. You can find the current unstable releases and the latest automatic builds [here][gh ci builds] (for Linux) or [here][appveyor mingw build] (for Windows). You can also build the program manually from its source code.
 
 ### Building from source
 
@@ -76,3 +77,8 @@ Additional parameters are available for QMake:
 Pegasus Frontend is available under GPLv3 license. You can find the details in the [LICENSE](LICENSE.md) file.
 
 All trademarks, service marks, trade names, trade dress, product names and logos are property of their respective owners. All company, product and service names used in this product are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.
+
+
+
+[gh ci builds]: https://github.com/mmatyas/pegasus-frontend/releases/tag/continuous
+[appveyor mingw build]: https://ci.appveyor.com/api/projects/mmatyas/pegasus-frontend/artifacts/build/pegasus_ci.zip?job=Environment%3A%20flavor%3Dmingw%2C%20QTDIR%3DC%3A%5CQt%5C5.9%5Cmingw53_32
