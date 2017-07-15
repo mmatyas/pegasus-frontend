@@ -54,7 +54,10 @@ script:
 
 after_success:
   - export SUFFIX=$(git describe --always)_${TARGET}
-  - zip -j pegasus-fe_${SUFFIX}.zip /opt/pegasus-frontend/pegasus-fe
+  - zip -j pegasus-fe_${SUFFIX}.zip
+      /opt/pegasus-frontend/pegasus-fe
+      ../README.md
+      ../LICENSE.md
   - curl --upload-file
       pegasus-fe_${SUFFIX}.zip
       https://transfer.sh/pegasus-ci_${TARGET}

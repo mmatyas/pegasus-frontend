@@ -40,6 +40,8 @@ build_script:
       --no-translations
       --no-opengl-sw
       C:\pegasus-frontend
+  - copy ..\README.md C:\pegasus-frontend
+  - copy ..\LICENSE.md C:\pegasus-frontend
   - 7z a pegasus_ci.zip C:\pegasus-frontend
 
 artifacts:
