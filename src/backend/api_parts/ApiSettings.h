@@ -54,6 +54,12 @@ class Settings : public QObject {
     Q_PROPERTY(QQmlListProperty<ApiParts::Language> allLanguages
                READ getTranslationsProp CONSTANT)
 
+    // theme support
+    /*Q_PROPERTY(int themeIndex
+               READ themeIndex WRITE setThemeIndex
+               NOTIFY themeChanged)
+    Q_PROPERTY(QStringList allThemes MEMBER m_theme_qmls CONSTANT)*/
+
 public:
     explicit Settings(QObject* parent = nullptr);
 
@@ -62,16 +68,28 @@ public:
     void setLanguageIndex(int idx);
     QQmlListProperty<ApiParts::Language> getTranslationsProp();
 
+    // theme support
+    /*int themeIndex() const { return m_theme_idx; }
+    void setThemeIndex(int idx);*/
+
 signals:
     void languageChanged();
+    //void themeChanged();
 
 private:
     // multilanguage support
+    void initLanguages();
     void loadLanguage(const QString& bcp47tag);
 
     QTranslator m_translator;
-    int m_language_idx;
     QList<Language*> m_translations;
+    int m_language_idx;
+
+    // theme support
+    void initThemes();
+
+    QStringList m_theme_qmls;
+    int m_theme_idx;
 
     // internal
     void callScripts() const;

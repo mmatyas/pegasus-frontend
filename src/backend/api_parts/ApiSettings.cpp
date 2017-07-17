@@ -18,11 +18,13 @@
 #include "ApiSettings.h"
 
 #include "ScriptRunner.h"
+#include "Utils.h"
 
 #include <QtGui>
 
 
 static const char SETTINGSKEY_LOCALE[] = "locale";
+static const char SETTINGSKEY_THEME[] = "theme";
 
 namespace ApiParts {
 
@@ -36,6 +38,12 @@ Settings::Settings(QObject* parent)
     : QObject(parent)
     , m_translator(this)
     , m_language_idx(0)
+{
+    initLanguages();
+    initThemes();
+}
+
+void Settings::initLanguages()
 {
     m_translations.append(new Language("en", "English", this));
     m_language_idx = m_translations.length() - 1; // fallback language is english
@@ -96,6 +104,54 @@ void Settings::loadLanguage(const QString& bcp47tag)
 QQmlListProperty<ApiParts::Language> Settings::getTranslationsProp()
 {
     return QQmlListProperty<ApiParts::Language>(this, m_translations);
+}
+
+void Settings::initThemes()
+{
+    static const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+
+    QStringList found_theme_paths;
+
+    QStringList search_paths;
+    search_paths << QCoreApplication::applicationDirPath();
+    search_paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
+    search_paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+
+    for (auto& path : search_paths) {
+        path += "/themes/";
+        // do not add the organization name to the search path
+        path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
+
+        QStringList local_themes;
+
+        QDirIterator themedir(path, filters, flags);
+        while (themedir.hasNext()) {
+            const auto basedir = themedir.next();
+            const auto metaini_path = basedir + "metadata.ini";
+            const auto mainqml_path = basedir + "main.qml";
+
+            if (!validFile(metaini_path)) {
+                qWarning().noquote()
+                    << tr("Warning: no `metadata.ini` file found in `%1`, theme skipped")
+                       .arg(basedir);
+                continue;
+            }
+            if (!validFile(mainqml_path)) {
+                qWarning().noquote()
+                    << tr("Warning: no `main.qml` file found in `%1`, theme skipped")
+                       .arg(basedir);
+                continue;
+            }
+
+            local_themes.append(basedir);
+        }
+
+        local_themes.sort();
+        found_theme_paths.append(local_themes);
+    }
+
+    qInfo() << search_paths;
 }
 
 void Settings::callScripts() const
