@@ -60,7 +60,7 @@ after_success:
       ../LICENSE.md
   - curl --upload-file
       pegasus-fe_${SUFFIX}.zip
-      https://transfer.sh/pegasus-ci_${TARGET}
+      https://transfer.sh/pegasus-fe_${SUFFIX}.zip
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
 
