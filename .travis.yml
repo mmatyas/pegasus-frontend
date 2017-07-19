@@ -10,7 +10,7 @@ branches:
 env:
   global:
   - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-  - QT_VER=qt591
+  - QT_VER=qt59
   matrix:
   - TARGET=x11-static
   - TARGET=rpi1-static CROSS=1
