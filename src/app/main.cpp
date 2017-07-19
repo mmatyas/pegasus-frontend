@@ -24,12 +24,15 @@
 #include "SystemCommands.h"
 
 #include <QCommandLineParser>
+#include <QFile>
 #include <QGamepadManager>
 #include <QGuiApplication>
 #include <QQmlContext>
 #include <QSettings>
+#include <QStandardPaths>
 
 
+void handleLogMsg(QtMsgType, const QMessageLogContext&, const QString&);
 void handleCommandLineArgs(QGuiApplication&);
 void registerAPIClasses();
 void setupAsyncGameLaunch(ApiObject&, FrontendLayer&, ProcessLauncher&);
@@ -39,6 +42,8 @@ void setupQuitScripts(QGuiApplication&);
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(handleLogMsg);
+
     QCoreApplication::addLibraryPath("lib/plugins");
     QCoreApplication::addLibraryPath("lib");
 
@@ -70,6 +75,40 @@ int main(int argc, char *argv[])
     setupQuitScripts(app);
 
     return app.exec();
+}
+
+void handleLogMsg(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+    // open the output channels: stdout and a file log
+
+    static QTextStream stream_stdout(stdout);
+
+    static QFile logfile([](){
+        Q_ASSERT(QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation).length() > 0);
+
+        auto path = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation).first();
+        path += "/lastrun.log";
+        path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
+
+        return path;
+    }());
+    static QTextStream stream_logfile([](){
+        // the logfile must be available and opened only once;
+        // to avoid creating a global or yet another init function,
+        // it is handled in this lambda, which will only run once
+        Q_ASSERT(!logfile.isOpen());
+        logfile.resize(0); // clear previous contents
+        logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+
+        return &logfile;
+    }());
+
+
+    // handle the message
+    const QString formattedMsg = qFormatLogMessage(type, context, msg);
+    const QByteArray localMsg = formattedMsg.toLocal8Bit();
+    stream_stdout << localMsg << endl;
+    stream_logfile << localMsg << endl;
 }
 
 void handleCommandLineArgs(QGuiApplication& app)
