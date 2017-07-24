@@ -6,5 +6,6 @@
         <file>pegasus-grid/GamePreview.qml</file>
         <file>pegasus-grid/PlatformBar.qml</file>
         <file>pegasus-grid/PlatformCard.qml</file>
+        <file>pegasus-grid/theme.ini</file>
     </qresource>
 </RCC>
