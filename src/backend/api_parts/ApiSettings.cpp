@@ -143,6 +143,10 @@ void Settings::initThemes()
 
     QStringList search_paths;
     search_paths << QCoreApplication::applicationDirPath();
+#ifdef INSTALL_DATADIR
+    if (validFile(INSTALL_DATADIR))
+        search_paths << QString(INSTALL_DATADIR);
+#endif
     search_paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
     search_paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 
