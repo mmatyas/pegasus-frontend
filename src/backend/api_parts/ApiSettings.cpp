@@ -56,7 +56,8 @@ int Theme::compare(const Theme& other) const
 Settings::Settings(QObject* parent)
     : QObject(parent)
     , m_translator(this)
-    , m_language_idx(0)
+    , m_language_idx(-1)
+    , m_theme_idx(-1)
 {
     initLanguages();
     initThemes();
@@ -205,6 +206,26 @@ void Settings::initThemes()
     for (const auto& theme : m_themes) {
         qInfo().noquote() << tr("Found theme: %1 (`%2`)").arg(theme->name()).arg(theme->dir());
     }
+
+
+    // if there is a saved theme setting, use that
+    // if not, use the default grid theme
+    const QString requested_theme = [](){
+        QVariant entry = QSettings().value(SETTINGSKEY_THEME);
+        return entry.isNull() ? ":/themes/pegasus-grid/" : entry.toString();
+    }();
+
+    // find the selected theme
+    // this must always succeed; there's a fallback built-in theme after all
+    for (int i = 0; i < m_themes.length(); i++) {
+        if (m_themes[i]->dir() == requested_theme) {
+            qInfo().noquote() << tr("Theme set to '%1'").arg(m_themes[i]->name());
+            m_theme_idx = i;
+            break;
+        }
+    }
+
+    Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
 }
 
 void Settings::callScripts() const
