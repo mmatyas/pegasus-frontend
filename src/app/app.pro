@@ -63,13 +63,6 @@ QMAKE_EXTRA_COMPILERS += locales_qrc
 # Deployment
 
 unix:!macx {
-    # installation is portable by default
-    isEmpty(INSTALLDIR): INSTALLDIR = /opt/pegasus-frontend
-    isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
-    isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
-    isEmpty(INSTALL_ICONDIR): INSTALL_ICONDIR = $${INSTALLDIR}
-    isEmpty(INSTALL_DESKTOPDIR): INSTALL_DESKTOPDIR = $${INSTALLDIR}
-
     target.path = $${INSTALL_BINDIR}
 
     icons.path = $${INSTALL_ICONDIR}
@@ -87,11 +80,6 @@ unix:!macx {
     INSTALLS += icons desktop
 }
 win32 {
-    # installation should always be portable (one-dir) on windows
-    isEmpty(INSTALLDIR): INSTALLDIR = C:/pegasus-frontend
-    isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
-    isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
-
     target.path = $${INSTALL_BINDIR}
 }
 

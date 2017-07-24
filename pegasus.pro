@@ -6,6 +6,7 @@ lessThan(QT_MINOR_VERSION, 9) {
     warning("Qt 5.9 is recommended for the best performance")
 }
 
+
 TEMPLATE = subdirs
 
 SUBDIRS += \
@@ -15,4 +16,4 @@ OTHER_FILES += \
     assets/*
 
 
-message("Git revision: '$${GIT_REVISION}'")
+include($${TOP_SRCDIR}/src/print_config.pri)
