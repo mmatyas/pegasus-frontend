@@ -20,7 +20,6 @@
 #include <QObject>
 #include <QQmlListProperty>
 #include <QTranslator>
-#include <QVector>
 
 
 namespace ApiParts {
@@ -48,6 +47,8 @@ private:
 /// An utility class to contain theme informations
 class Theme : public QObject {
     Q_OBJECT
+
+    Q_PROPERTY(QString qmlPath MEMBER m_root_qml CONSTANT)
 
     Q_PROPERTY(QString name MEMBER m_name CONSTANT)
     Q_PROPERTY(QString author MEMBER m_author CONSTANT)
@@ -94,10 +95,14 @@ class Settings : public QObject {
                READ getTranslationsProp CONSTANT)
 
     // theme support
-    /*Q_PROPERTY(int themeIndex
+    Q_PROPERTY(ApiParts::Theme* currentTheme
+               READ currentTheme
+               NOTIFY themeChanged)
+    Q_PROPERTY(int themeIndex
                READ themeIndex WRITE setThemeIndex
                NOTIFY themeChanged)
-    Q_PROPERTY(QStringList allThemes MEMBER m_theme_qmls CONSTANT)*/
+    Q_PROPERTY(QQmlListProperty<ApiParts::Theme> allThemes
+               READ getThemesProp CONSTANT)
 
 public:
     explicit Settings(QObject* parent = nullptr);
@@ -108,12 +113,14 @@ public:
     QQmlListProperty<ApiParts::Language> getTranslationsProp();
 
     // theme support
-    /*int themeIndex() const { return m_theme_idx; }
-    void setThemeIndex(int idx);*/
+    Theme* currentTheme() const { return m_themes.at(m_theme_idx); }
+    int themeIndex() const { return m_theme_idx; }
+    void setThemeIndex(int idx);
+    QQmlListProperty<ApiParts::Theme> getThemesProp();
 
 signals:
     void languageChanged();
-    //void themeChanged();
+    void themeChanged();
 
 private:
     // multilanguage support
@@ -127,7 +134,7 @@ private:
     // theme support
     void initThemes();
 
-    QVector<Theme*> m_themes;
+    QList<Theme*> m_themes;
     int m_theme_idx;
 
     // internal

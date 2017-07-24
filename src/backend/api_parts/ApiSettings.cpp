@@ -40,7 +40,7 @@ Theme::Theme(QString root_dir, QString root_qml,
              QObject* parent)
     : QObject(parent)
     , m_root_dir(root_dir)
-    , m_root_qml(root_qml)
+    , m_root_qml(root_qml.startsWith(":") ? "qrc" + root_qml : "file:" + root_qml)
     , m_name(name)
     , m_author(author)
     , m_version(version)
@@ -226,6 +226,33 @@ void Settings::initThemes()
     }
 
     Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
+}
+
+void Settings::setThemeIndex(int idx)
+{
+    // verify
+    if (idx == m_theme_idx)
+        return;
+
+    const bool valid_idx = (0 <= idx && idx < m_themes.length());
+    if (!valid_idx) {
+        qWarning() << tr("Invalid theme index #%1").arg(idx);
+        return;
+    }
+
+    // set
+    m_theme_idx = idx;
+
+    // remember
+    QSettings().setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
+
+    callScripts();
+    emit themeChanged();
+}
+
+QQmlListProperty<ApiParts::Theme> Settings::getThemesProp()
+{
+    return QQmlListProperty<ApiParts::Theme>(this, m_themes);
 }
 
 void Settings::callScripts() const

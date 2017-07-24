@@ -83,7 +83,7 @@ Window {
             anchors.fill: parent
             focus: true
 
-            source: "/themes/pegasus-grid/theme.qml"
+            source: pegasus.settings.currentTheme.qmlPath
             asynchronous: true
         }
 
