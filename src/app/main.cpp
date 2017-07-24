@@ -135,6 +135,7 @@ void registerAPIClasses()
     qmlRegisterUncreatableType<Model::Game>(API_URI, 0, 2, "Game", error_msg);
     qmlRegisterUncreatableType<Model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
     qmlRegisterUncreatableType<ApiParts::Language>(API_URI, 0, 3, "Language", error_msg);
+    qmlRegisterUncreatableType<ApiParts::Theme>(API_URI, 0, 4, "Theme", error_msg);
 }
 
 void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)

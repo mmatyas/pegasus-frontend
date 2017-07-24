@@ -35,6 +35,7 @@ FocusScope {
             margins: rpx(40)
             leftMargin: rpx(120)
         }
+        spacing: rpx(20)
 
         HorizontalSelector {
             focus: true
@@ -42,6 +43,15 @@ FocusScope {
             model: pegasus.settings.allLanguages
             index: pegasus.settings.languageIndex
             onIndexChanged: pegasus.settings.languageIndex = index
+
+            KeyNavigation.down: setTheme
+        }
+        HorizontalSelector {
+            id: setTheme
+            label: qsTr("Theme") + pegasus.tr
+            model: pegasus.settings.allThemes
+            index: pegasus.settings.themeIndex
+            onIndexChanged: pegasus.settings.themeIndex = index
         }
     }
 }
