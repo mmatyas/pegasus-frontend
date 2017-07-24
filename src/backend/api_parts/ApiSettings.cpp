@@ -142,6 +142,7 @@ void Settings::initThemes()
     const QString INIKEY_DESC = "description";
 
     QStringList search_paths;
+    search_paths << ":";
     search_paths << QCoreApplication::applicationDirPath();
 #ifdef INSTALL_DATADIR
     if (validFile(INSTALL_DATADIR))
@@ -150,22 +151,30 @@ void Settings::initThemes()
     search_paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
     search_paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 
+    // because the theme files can be in a QRC, we can't use the
+    // `validFile` function, which uses POSIX `stat` on Unix
+    const auto fileExists = [](const QString& path) -> bool {
+        QFileInfo file(path);
+        return file.exists() && file.isFile();
+    };
+
     for (auto& path : search_paths) {
         path += "/themes/";
         // do not add the organization name to the search path
         path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
 
         QDirIterator themedir(path, filters, flags);
+
         while (themedir.hasNext()) {
             const auto basedir = themedir.next() + '/';
             const auto ini_path = basedir + ini_filename;
             const auto qml_path = basedir + qml_filename;
 
-            if (!validFile(ini_path)) {
+            if (!fileExists(ini_path)) {
                 qWarning().noquote() << warn_missingfile.arg(ini_filename).arg(basedir);
                 continue;
             }
-            if (!validFile(qml_path)) {
+            if (!fileExists(qml_path)) {
                 qWarning().noquote() << warn_missingfile.arg(qml_filename).arg(basedir);
                 continue;
             }
