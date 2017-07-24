@@ -34,6 +34,25 @@ Language::Language(QString bcp47tag, QString name, QObject* parent)
     , m_name(name)
 {}
 
+Theme::Theme(QString root_dir, QString root_qml,
+             QString name, QString author, QString version,
+             QString summary, QString description,
+             QObject* parent)
+    : QObject(parent)
+    , m_root_dir(root_dir)
+    , m_root_qml(root_qml)
+    , m_name(name)
+    , m_author(author)
+    , m_version(version)
+    , m_summary(summary)
+    , m_description(description)
+{}
+
+int Theme::compare(const Theme& other) const
+{
+    return QString::localeAwareCompare(m_name, other.m_name);
+}
+
 Settings::Settings(QObject* parent)
     : QObject(parent)
     , m_translator(this)
@@ -108,10 +127,19 @@ QQmlListProperty<ApiParts::Language> Settings::getTranslationsProp()
 
 void Settings::initThemes()
 {
-    static const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
-    QStringList found_theme_paths;
+    const QString ini_filename = "theme.ini";
+    const QString qml_filename = "theme.qml";
+    const QString warn_missingfile = tr("Warning: no `%1` file found in `%2`, theme skipped");
+    const QString warn_missingentry = tr("Warning: there is no `%1` entry in `%2`, theme skipped");
+
+    const QString INIKEY_NAME = "name";
+    const QString INIKEY_AUTHOR = "author";
+    const QString INIKEY_VERSION = "version";
+    const QString INIKEY_SUMMARY = "summary";
+    const QString INIKEY_DESC = "description";
 
     QStringList search_paths;
     search_paths << QCoreApplication::applicationDirPath();
@@ -123,35 +151,47 @@ void Settings::initThemes()
         // do not add the organization name to the search path
         path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
 
-        QStringList local_themes;
-
         QDirIterator themedir(path, filters, flags);
         while (themedir.hasNext()) {
-            const auto basedir = themedir.next();
-            const auto metaini_path = basedir + "metadata.ini";
-            const auto mainqml_path = basedir + "main.qml";
+            const auto basedir = themedir.next() + '/';
+            const auto ini_path = basedir + ini_filename;
+            const auto qml_path = basedir + qml_filename;
 
-            if (!validFile(metaini_path)) {
-                qWarning().noquote()
-                    << tr("Warning: no `metadata.ini` file found in `%1`, theme skipped")
-                       .arg(basedir);
+            if (!validFile(ini_path)) {
+                qWarning().noquote() << warn_missingfile.arg(ini_filename).arg(basedir);
                 continue;
             }
-            if (!validFile(mainqml_path)) {
-                qWarning().noquote()
-                    << tr("Warning: no `main.qml` file found in `%1`, theme skipped")
-                       .arg(basedir);
+            if (!validFile(qml_path)) {
+                qWarning().noquote() << warn_missingfile.arg(qml_filename).arg(basedir);
                 continue;
             }
 
-            local_themes.append(basedir);
+            const QSettings metadata(ini_path, QSettings::IniFormat);
+            if (!metadata.contains(INIKEY_NAME)) {
+                qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME).arg(ini_filename);
+                continue;
+            }
+
+            m_themes.append(new Theme(
+                basedir, qml_path,
+                metadata.value(INIKEY_NAME).toString(),
+                metadata.value(INIKEY_AUTHOR).toString(),
+                metadata.value(INIKEY_VERSION).toString(),
+                metadata.value(INIKEY_SUMMARY).toString(),
+                metadata.value(INIKEY_DESC).toString()
+            ));
         }
-
-        local_themes.sort();
-        found_theme_paths.append(local_themes);
     }
 
-    qInfo() << search_paths;
+    std::sort(m_themes.begin(), m_themes.end(),
+        [](const Theme* a, const Theme* b) {
+            return a->compare(*b) < 0;
+        }
+    );
+
+    for (const auto& theme : m_themes) {
+        qInfo().noquote() << tr("Found theme: %1 (`%2`)").arg(theme->name()).arg(theme->dir());
+    }
 }
 
 void Settings::callScripts() const

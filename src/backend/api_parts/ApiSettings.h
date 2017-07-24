@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QQmlListProperty>
 #include <QTranslator>
+#include <QVector>
 
 
 namespace ApiParts {
@@ -42,6 +43,44 @@ private:
     const QString m_bcp47tag;
     const QString m_name;
 };
+
+
+/// An utility class to contain theme informations
+class Theme : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(QString name MEMBER m_name CONSTANT)
+    Q_PROPERTY(QString author MEMBER m_author CONSTANT)
+    Q_PROPERTY(QString version MEMBER m_version CONSTANT)
+    Q_PROPERTY(QString summary MEMBER m_summary CONSTANT)
+    Q_PROPERTY(QString description MEMBER m_description CONSTANT)
+
+public:
+    explicit Theme(QString root_dir,
+                   QString root_qml,
+                   QString name,
+                   QString author = QString(),
+                   QString version = QString(),
+                   QString summary = QString(),
+                   QString description = QString(),
+                   QObject* parent = nullptr);
+
+    const QString& dir() const { return m_root_dir; }
+    const QString& name() const { return m_name; }
+
+    int compare(const Theme& other) const;
+
+private:
+    const QString m_root_dir;
+    const QString m_root_qml;
+
+    const QString m_name;
+    const QString m_author;
+    const QString m_version;
+    const QString m_summary;
+    const QString m_description;
+};
+
 
 /// Provides a settings interface for the frontend layer
 class Settings : public QObject {
@@ -88,7 +127,7 @@ private:
     // theme support
     void initThemes();
 
-    QStringList m_theme_qmls;
+    QVector<Theme*> m_themes;
     int m_theme_idx;
 
     // internal
