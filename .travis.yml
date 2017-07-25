@@ -16,6 +16,9 @@ env:
   - TARGET=rpi1-static CROSS=1
   - TARGET=rpi2-static CROSS=1
 
+git:
+  depth: 100
+
 before_install:
   - pushd /tmp
   - wget ${TOOLS_URL}/${QT_VER}_${TARGET}.tgz
