@@ -37,7 +37,9 @@ HEADERS += \
     es2/Es2Systems.h \
     api_parts/ApiMeta.h \
     api_parts/ApiSystem.h \
-    api_parts/ApiSettings.h
+    api_parts/ApiSettings.h \
+    model_providers/MetadataProvider.h \
+    model_providers/PlatformListProvider.h
 
 
 DEFINES *= \
