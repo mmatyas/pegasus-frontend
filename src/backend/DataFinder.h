@@ -32,7 +32,7 @@ public:
 
 private:
     static void findPlatforms(QList<Model::Platform*>&);
-    static void findPlatformGames(Model::Platform*);
+    static void findGamesByExt(Model::Platform&);
     static void removeEmptyPlatforms(QList<Model::Platform*>&);
 
     static void findGameMetadata(const Model::Platform&);

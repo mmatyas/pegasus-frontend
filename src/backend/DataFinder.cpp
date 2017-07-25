@@ -20,7 +20,7 @@
 #include "Model.h"
 #include "Utils.h"
 #include "es2/Es2AssetFinder.h"
-#include "es2/Es2Gamelist.h"
+#include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
 
 #include <QDirIterator>
@@ -36,8 +36,10 @@ QList<Model::Platform*> DataFinder::find()
     findPlatforms(model);
     // TODO: mergeDuplicatePlatforms(model);
 
-    for (Model::Platform* platform : qAsConst(model))
-        findPlatformGames(platform);
+    for (Model::Platform* platform : qAsConst(model)) {
+        Q_ASSERT(platform);
+        findGamesByExt(*platform);
+    }
 
     removeEmptyPlatforms(model);
 
@@ -61,29 +63,25 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
         model.append(provider->find());
 }
 
-void DataFinder::findPlatformGames(Model::Platform* platform)
+void DataFinder::findGamesByExt(Model::Platform& platform)
 {
-    static const auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
-
-    Q_ASSERT(platform);
-    Q_ASSERT(!platform->m_rom_dir_path.isEmpty());
-    Q_ASSERT(!platform->m_rom_filters.isEmpty());
+    static constexpr auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static constexpr auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     // TODO: handle incorrect filters
     // TODO: add proper subdirectory support
 
-    QDirIterator romdir_it(platform->m_rom_dir_path,
-                           platform->m_rom_filters,
+    QDirIterator romdir_it(platform.m_rom_dir_path,
+                           platform.m_rom_filters,
                            filters, flags);
     while (romdir_it.hasNext())
-        platform->m_games.append(new Model::Game(romdir_it.next(), platform));
+        platform.m_games.append(new Model::Game(romdir_it.next(), &platform));
 
     // QDir supports ordering, but doesn't support symlinks or subdirectories
     // without additional checks and recursion.
     // QDirIterator supports subdirs and symlinks, but doesn't do sorting.
     // Sorting manually should be faster than evaluating an `if dir` branch in a loop.
-    std::sort(platform->m_games.begin(), platform->m_games.end(),
+    std::sort(platform.m_games.begin(), platform.m_games.end(),
         [](const Model::Game* a, const Model::Game* b) {
             return QString::localeAwareCompare(a->m_rom_basename, b->m_rom_basename) < 0;
         }
@@ -103,7 +101,11 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
 
 void DataFinder::findGameMetadata(const Model::Platform& platform)
 {
-    Es2::Gamelist::read(platform);
+    QVector<model_providers::MetadataProvider*> providers;
+    providers.push_back(new model_providers::Es2Metadata());
+
+    for (auto& provider : providers)
+        provider->fill(platform);
 }
 
 void DataFinder::findGameAssets(const Model::Platform& platform)
