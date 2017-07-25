@@ -16,10 +16,10 @@ SOURCES += \
     Utils.cpp \
     es2/Es2AssetFinder.cpp \
     es2/Es2Gamelist.cpp \
-    es2/Es2Systems.cpp \
     api_parts/ApiMeta.cpp \
     api_parts/ApiSystem.cpp \
-    api_parts/ApiSettings.cpp
+    api_parts/ApiSettings.cpp \
+    model_providers/Es2PlatformList.cpp
 
 HEADERS += \
     Api.h \
@@ -34,12 +34,12 @@ HEADERS += \
     Utils.h \
     es2/Es2AssetFinder.h \
     es2/Es2Gamelist.h \
-    es2/Es2Systems.h \
     api_parts/ApiMeta.h \
     api_parts/ApiSystem.h \
     api_parts/ApiSettings.h \
     model_providers/MetadataProvider.h \
-    model_providers/PlatformListProvider.h
+    model_providers/PlatformListProvider.h \
+    model_providers/Es2PlatformList.h
 
 
 DEFINES *= \

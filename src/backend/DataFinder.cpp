@@ -21,7 +21,7 @@
 #include "Utils.h"
 #include "es2/Es2AssetFinder.h"
 #include "es2/Es2Gamelist.h"
-#include "es2/Es2Systems.h"
+#include "model_providers/Es2PlatformList.h"
 
 #include <QDirIterator>
 #include <QStringBuilder>
@@ -29,17 +29,22 @@
 
 QList<Model::Platform*> DataFinder::find()
 {
+    // TODO: map-reduce algorithms might be usable here
+
     QList<Model::Platform*> model;
 
     findPlatforms(model);
+    // TODO: mergeDuplicatePlatforms(model);
 
     for (Model::Platform* platform : qAsConst(model))
         findPlatformGames(platform);
+
     removeEmptyPlatforms(model);
 
     for (const Model::Platform* platform : qAsConst(model)) {
         findGameMetadata(*platform);
         findGameAssets(*platform);
+        // TODO: merge duplicates?
     }
 
     return model;
@@ -49,10 +54,11 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
 {
     Q_ASSERT(model.isEmpty());
 
-    // at the moment, we only use ES2's platform definitions
-    const QVector<Model::Platform*> es2_platforms = Es2::Systems::read();
-    for (auto& platform : es2_platforms)
-        model.append(platform);
+    QVector<model_providers::PlatformListProvider*> providers;
+    providers.push_back(new model_providers::Es2PlatformList());
+
+    for (auto& provider : providers)
+        model.append(provider->find());
 }
 
 void DataFinder::findPlatformGames(Model::Platform* platform)

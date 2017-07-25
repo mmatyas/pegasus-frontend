@@ -15,58 +15,68 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Es2Systems.h"
+#include "Es2PlatformList.h"
 
-#include "Es2Gamelist.h"
 #include "Model.h"
 #include "Utils.h"
 
 #include <QDebug>
 #include <QDir>
-#include <QFile>
+#include <QStringBuilder>
 #include <QXmlStreamReader>
 
+static constexpr auto MSG_PREFIX = "ES2: ";
 
-namespace Es2 {
 
-QVector<Model::Platform*> Systems::read()
+namespace model_providers {
+
+Es2PlatformList::Es2PlatformList()
+    : required_system_props{"path", "command", "name", "extension"}
 {
-    // find the file
+}
+
+QList<Model::Platform*> Es2PlatformList::find()
+{
+    // find the systems file
     const QString xml_path = findSystemsFile();
     if (xml_path.isEmpty()) {
-        qWarning().noquote() << QObject::tr("ES2 system config not found");
+        qWarning().noquote() << MSG_PREFIX << QObject::tr("system config file not found");
         return {};
     }
 
-    // open the file
+    // open the systems file
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << QObject::tr("Could not open `%1`").arg(xml_path);
+        qWarning().noquote() << MSG_PREFIX << QObject::tr("could not open `%1`").arg(xml_path);
         return {};
     }
 
     QXmlStreamReader xml(&xml_file);
     auto systems = parseSystemsFile(xml);
     if (xml.error()) {
-        qWarning().noquote() << xml.errorString();
+        qWarning().noquote() << MSG_PREFIX << xml.errorString();
         return {};
+    }
+    if (systems.empty()) {
+        qWarning().noquote() << MSG_PREFIX << QObject::tr("no systems found in `%1`").arg(xml_path);
     }
 
     return systems;
 }
 
-QString Systems::findSystemsFile()
+QString Es2PlatformList::findSystemsFile()
 {
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
+    // TODO: add $HOME support on Windows
     const QVector<QString> possible_paths = {
-        QDir::homePath() + "/.emulationstation/es_systems.cfg",
+        QDir::homePath() % "/.emulationstation/es_systems.cfg",
         "/etc/emulationstation/es_systems.cfg",
     };
 
     for (const auto& path : possible_paths) {
         if (validFile(path)) {
-            qInfo().noquote() << QStringLiteral("Found `%1`").arg(path);
+            qInfo().noquote() << MSG_PREFIX << QObject::tr("found `%1`").arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -75,11 +85,11 @@ QString Systems::findSystemsFile()
     return QString();
 }
 
-QVector<Model::Platform*> Systems::parseSystemsFile(QXmlStreamReader& xml)
+QList<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
-        xml.raiseError(QObject::tr("Could not parse `%1`")
+        xml.raiseError(QObject::tr("could not parse `%1`")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return {};
     }
@@ -90,22 +100,22 @@ QVector<Model::Platform*> Systems::parseSystemsFile(QXmlStreamReader& xml)
     }
 
     // read all <system> nodes
-    QVector<Model::Platform*> platforms;
+    QList<Model::Platform*> platforms;
     while (xml.readNextStartElement()) {
         if (xml.name() != "system") {
             xml.skipCurrentElement();
             continue;
         }
 
-        Model::Platform* platform = parseSystemTag(xml);
-        if (!platform->m_short_name.isEmpty())
+        Model::Platform* platform = parseSystemEntry(xml);
+        if (platform && !platform->m_short_name.isEmpty())
             platforms.push_back(platform);
     }
 
     return platforms;
 }
 
-Model::Platform* Systems::parseSystemTag(QXmlStreamReader& xml)
+Model::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -115,19 +125,22 @@ Model::Platform* Systems::parseSystemTag(QXmlStreamReader& xml)
         xml_props.insert(xml.name().toString(), xml.readElementText());
 
     // check if all required params are present
-    const QVector<QString> required_params = {"path", "command", "name", "extension"};
-
-    for (const auto& param : required_params) {
+    for (const auto& param : required_system_props) {
         if (xml_props[param].isEmpty()) {
             qWarning().noquote()
-                << QObject::tr("Required parameter <%1> is missing or empty in a <system> node")
+                << MSG_PREFIX
+                << QObject::tr("the `<system>` node in `%1` that ends at line #%2 has no `<%3>` parameter")
+                   .arg(static_cast<QFile*>(xml.device())->fileName())
+                   .arg(xml.lineNumber())
                    .arg(param);
             return nullptr;
         }
     }
 
-    // do some post processing
-    processRomDir(xml_props["path"]);
+    // do some path formatting
+    xml_props["path"]
+        .replace("\\", "/")
+        .replace("~", QDir::homePath());
 
     // construct the new platform
     return new Model::Platform(
@@ -137,12 +150,7 @@ Model::Platform* Systems::parseSystemTag(QXmlStreamReader& xml)
         xml_props["command"]);
 }
 
-void Systems::processRomDir(QString& path) {
-    path.replace("\\", "/")
-        .replace("~", QDir::homePath());
-}
-
-QStringList Systems::parseFilters(const QString& str) {
+QStringList Es2PlatformList::parseFilters(const QString& str) {
     auto filter_list = str.split(" ", QString::SkipEmptyParts);
     for (auto& filter : filter_list)
         filter = filter.prepend("*").toLower();
@@ -151,4 +159,4 @@ QStringList Systems::parseFilters(const QString& str) {
     return filter_list.toSet().toList();
 }
 
-} // namespace Es2
+} // namespace model_providers
