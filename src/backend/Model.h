@@ -83,7 +83,7 @@ class Game : public QObject {
     Q_PROPERTY(Model::GameAssets* assets MEMBER m_assets CONSTANT)
 
 public:
-    explicit Game(const QString& path, QObject* parent = nullptr);
+    explicit Game(QString path, QObject* parent = nullptr);
 
     const QString m_rom_path;
     const QString m_rom_basename;
@@ -114,8 +114,8 @@ class Platform : public QObject {
     Q_PROPERTY(QQmlListProperty<Model::Game> games READ getGamesProp CONSTANT)
 
 public:
-    explicit Platform(const QString& name, const QString& rom_dir_path,
-                      const QStringList& rom_filters, const QString& launch_cmd,
+    explicit Platform(QString name, QString rom_dir_path,
+                      QStringList rom_filters, QString launch_cmd,
                       QObject* parent = nullptr);
 
     QQmlListProperty<Model::Game> getGamesProp();

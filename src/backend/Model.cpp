@@ -27,7 +27,7 @@ GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
 {}
 
-Game::Game(const QString& path, QObject* parent)
+Game::Game(QString path, QObject* parent)
     : QObject(parent)
     , m_rom_path(path)
     , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
@@ -40,15 +40,20 @@ Game::Game(const QString& path, QObject* parent)
     , m_assets(new GameAssets(this))
 {}
 
-Platform::Platform(const QString& name, const QString& rom_dir_path,
-                   const QStringList& rom_filters, const QString& launch_cmd,
+Platform::Platform(QString name, QString rom_dir_path,
+                   QStringList rom_filters, QString launch_cmd,
                    QObject* parent)
     : QObject(parent)
     , m_short_name(name)
     , m_rom_dir_path(rom_dir_path)
     , m_rom_filters(rom_filters)
     , m_launch_cmd(launch_cmd)
-{}
+{
+    Q_ASSERT(!m_short_name.isEmpty());
+    Q_ASSERT(!m_rom_dir_path.isEmpty());
+    Q_ASSERT(!m_rom_filters.isEmpty());
+    Q_ASSERT(!m_launch_cmd.isEmpty());
+}
 
 QQmlListProperty<Model::Game> Platform::getGamesProp()
 {
