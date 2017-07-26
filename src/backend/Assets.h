@@ -40,15 +40,17 @@ public:
         VIDEOS,
     };
 
+    static const QVector<Assets::Type> singleTypes;
+    static const QVector<Assets::Type> multiTypes;
     static const QHash<Type, QVector<QString>> suffixes;
 
-    static const QVector<QString>& extensions(const Type& key) {
-        return key == Type::VIDEOS ? video_exts : image_exts;
+    static const QVector<QString>& extensions(Type key) {
+        return key == Type::VIDEOS ? m_video_exts : m_image_exts;
     }
 
 private:
-    static const QVector<QString> image_exts;
-    static const QVector<QString> video_exts;
+    static const QVector<QString> m_image_exts;
+    static const QVector<QString> m_video_exts;
 };
 
 inline uint qHash(const Assets::Type& key, uint seed) {

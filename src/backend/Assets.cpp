@@ -18,6 +18,24 @@
 #include "Assets.h"
 
 
+const QVector<Assets::Type> Assets::singleTypes = {
+    Assets::Type::BOX_FRONT,
+    Assets::Type::BOX_BACK,
+    Assets::Type::BOX_SPINE,
+    Assets::Type::BOX_FULL,
+    Assets::Type::CARTRIDGE,
+    Assets::Type::LOGO,
+    Assets::Type::MARQUEE,
+    Assets::Type::BEZEL,
+    Assets::Type::STEAMGRID,
+    Assets::Type::FLYER,
+};
+const QVector<Assets::Type> Assets::multiTypes = {
+    Assets::Type::FANARTS,
+    Assets::Type::SCREENSHOTS,
+    Assets::Type::VIDEOS,
+};
+
 const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
     { Assets::Type::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
     { Assets::Type::BOX_BACK, { "-boxBack", "-box_back" } },
@@ -36,9 +54,9 @@ const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
 
 #ifdef Q_PROCESSOR_ARM
 // prefer opaque images on embedded systems
-const QVector<QString> Assets::image_exts = { ".jpg", ".png" };
+const QVector<QString> Assets::m_image_exts = { ".jpg", ".png" };
 #else
-const QVector<QString> Assets::image_exts = { ".png", ".jpg" };
+const QVector<QString> Assets::m_image_exts = { ".png", ".jpg" };
 #endif
 
-const QVector<QString> Assets::video_exts = { ".webm", ".mp4", ".avi" };
+const QVector<QString> Assets::m_video_exts = { ".webm", ".mp4", ".avi" };
