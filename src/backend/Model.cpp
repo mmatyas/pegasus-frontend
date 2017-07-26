@@ -27,6 +27,18 @@ GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
 {}
 
+void GameAssets::setSingle(Assets::Type key, QString value)
+{
+    Q_ASSERT(Assets::singleTypes.contains(key));
+    m_single_assets[key] = value;
+}
+
+void GameAssets::appendMulti(Assets::Type key, QString value)
+{
+    Q_ASSERT(Assets::multiTypes.contains(key));
+    m_multi_assets[key].append(value);
+}
+
 Game::Game(QString path, QObject* parent)
     : QObject(parent)
     , m_rom_path(path)

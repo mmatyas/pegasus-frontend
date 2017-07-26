@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "Assets.h"
+
 #include <QDateTime>
 #include <QString>
 #include <QQmlListProperty>
@@ -30,40 +32,49 @@ namespace Model {
 class GameAssets : public QObject {
     Q_OBJECT
 
-    // TODO: a Map would be better
-    Q_PROPERTY(QString boxFront MEMBER m_box_front CONSTANT)
-    Q_PROPERTY(QString boxBack MEMBER m_box_back CONSTANT)
-    Q_PROPERTY(QString boxSpine MEMBER m_box_spine CONSTANT)
-    Q_PROPERTY(QString box MEMBER m_box_full CONSTANT)
-    Q_PROPERTY(QString cartridge MEMBER m_cartridge CONSTANT)
-    Q_PROPERTY(QString logo MEMBER m_logo CONSTANT)
-    Q_PROPERTY(QString marquee MEMBER m_marquee CONSTANT)
-    Q_PROPERTY(QString bezel MEMBER m_bezel CONSTANT)
-    Q_PROPERTY(QString gridicon MEMBER m_gridicon CONSTANT)
-    Q_PROPERTY(QString flyers MEMBER m_flyer CONSTANT)
+    // NOTE: by manually listing the properties (instead of eg. a Map),
+    //       it is also possible to refer the same data by a different name
+    Q_PROPERTY(QString boxFront READ boxFront CONSTANT)
+    Q_PROPERTY(QString boxBack READ boxBack CONSTANT)
+    Q_PROPERTY(QString boxSpine READ boxSpine CONSTANT)
+    Q_PROPERTY(QString boxFull READ boxFull CONSTANT)
+    Q_PROPERTY(QString box READ boxFull CONSTANT)
+    Q_PROPERTY(QString cartridge READ cartridge CONSTANT)
+    Q_PROPERTY(QString logo READ logo CONSTANT)
+    Q_PROPERTY(QString marquee READ marquee CONSTANT)
+    Q_PROPERTY(QString bezel READ bezel CONSTANT)
+    Q_PROPERTY(QString gridicon READ gridicon CONSTANT)
+    Q_PROPERTY(QString flyer READ flyer CONSTANT)
 
     // TODO: these could be optimized, see
     // https://doc.qt.io/qt-5/qtqml-cppintegration-data.html (Sequence Type to JavaScript Array)
-    Q_PROPERTY(QStringList fanarts MEMBER m_fanarts CONSTANT)
-    Q_PROPERTY(QStringList screenshots MEMBER m_screenshots CONSTANT)
-    Q_PROPERTY(QStringList videos MEMBER m_videos CONSTANT)
+    Q_PROPERTY(QStringList fanarts READ fanarts CONSTANT)
+    Q_PROPERTY(QStringList screenshots READ screenshots CONSTANT)
+    Q_PROPERTY(QStringList videos READ videos CONSTANT)
 
 public:
     explicit GameAssets(QObject* parent = nullptr);
 
-    QString m_box_front;
-    QString m_box_back;
-    QString m_box_spine;
-    QString m_box_full;
-    QString m_cartridge;
-    QString m_logo;
-    QString m_marquee;
-    QString m_bezel;
-    QString m_gridicon;
-    QString m_flyer;
-    QStringList m_fanarts;
-    QStringList m_screenshots;
-    QStringList m_videos;
+    QHash<Assets::Type, QString> m_single_assets;
+    QHash<Assets::Type, QStringList> m_multi_assets;
+
+    void setSingle(Assets::Type, QString);
+    void appendMulti(Assets::Type, QString);
+
+    QString boxFront() const { return m_single_assets[Assets::Type::BOX_FRONT]; }
+    QString boxBack() const { return m_single_assets[Assets::Type::BOX_BACK]; }
+    QString boxSpine() const { return m_single_assets[Assets::Type::BOX_SPINE]; }
+    QString boxFull() const { return m_single_assets[Assets::Type::BOX_FULL]; }
+    QString cartridge() const { return m_single_assets[Assets::Type::CARTRIDGE]; }
+    QString logo() const { return m_single_assets[Assets::Type::LOGO]; }
+    QString marquee() const { return m_single_assets[Assets::Type::MARQUEE]; }
+    QString bezel() const { return m_single_assets[Assets::Type::BEZEL]; }
+    QString flyer() const { return m_single_assets[Assets::Type::FLYER]; }
+    QString gridicon() const { return m_single_assets[Assets::Type::STEAMGRID]; }
+
+    QStringList fanarts() const { return m_multi_assets[Assets::Type::FANARTS]; }
+    QStringList screenshots() const { return m_multi_assets[Assets::Type::SCREENSHOTS]; }
+    QStringList videos() const { return m_multi_assets[Assets::Type::VIDEOS]; }
 };
 
 
