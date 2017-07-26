@@ -14,7 +14,6 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
-    es2/Es2AssetFinder.cpp \
     api_parts/ApiMeta.cpp \
     api_parts/ApiSystem.cpp \
     api_parts/ApiSettings.cpp \
@@ -33,7 +32,6 @@ HEADERS += \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
-    es2/Es2AssetFinder.h \
     api_parts/ApiMeta.h \
     api_parts/ApiSystem.h \
     api_parts/ApiSettings.h \
