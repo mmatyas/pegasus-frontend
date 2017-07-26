@@ -18,13 +18,11 @@
 #include "DataFinder.h"
 
 #include "Model.h"
-#include "Utils.h"
-#include "es2/Es2AssetFinder.h"
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
+#include "model_providers/PegasusAssets.h"
 
 #include <QDirIterator>
-#include <QStringBuilder>
 
 
 QList<Model::Platform*> DataFinder::find()
@@ -44,8 +42,8 @@ QList<Model::Platform*> DataFinder::find()
     removeEmptyPlatforms(model);
 
     for (const Model::Platform* platform : qAsConst(model)) {
-        findGameMetadata(*platform);
-        findGameAssets(*platform);
+        findPortableAssets(*platform);
+        runMetadataProviders(*platform);
         // TODO: merge duplicates?
     }
 
@@ -99,90 +97,36 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
     }
 }
 
-void DataFinder::findGameMetadata(const Model::Platform& platform)
+void DataFinder::findPortableAssets(const Model::Platform& platform)
 {
-    QVector<model_providers::MetadataProvider*> providers;
-    providers.push_back(new model_providers::Es2Metadata());
+    // See `runMetadataProviders` about how to implement multiple providers.
+    // You'll also need to make a new abstract base class and un-static-ify
+    // PegasusAssets.
+    model_providers::PegasusAssets provider;
 
-    for (auto& provider : providers)
-        provider->fill(platform);
-}
-
-void DataFinder::findGameAssets(const Model::Platform& platform)
-{
-    using Type = Assets::Type;
-
+    // TODO: this could be parallelized
     for (Model::Game* game_ptr : qAsConst(platform.m_games)) {
         Q_ASSERT(game_ptr);
         Q_ASSERT(game_ptr->m_assets);
 
-        Model::Game& game = *game_ptr;
-        Model::GameAssets& assets = *game.m_assets;
+        const Model::Game& game = *game_ptr;
 
-        // TODO: this should be better as a map
-        // TODO: do not overwrite
-        assets.m_box_front = findAsset(Type::BOX_FRONT, platform, game);
-        assets.m_box_back = findAsset(Type::BOX_BACK, platform, game);
-        assets.m_box_spine = findAsset(Type::BOX_SPINE, platform, game);
-        assets.m_box_full = findAsset(Type::BOX_FULL, platform, game);
-        assets.m_cartridge = findAsset(Type::CARTRIDGE, platform, game);
-        assets.m_logo = findAsset(Type::LOGO, platform, game);
-        assets.m_marquee = findAsset(Type::MARQUEE, platform, game);
-        assets.m_bezel = findAsset(Type::BEZEL, platform, game);
-        assets.m_gridicon = findAsset(Type::STEAMGRID, platform, game);
-        assets.m_flyer = findAsset(Type::FLYER, platform, game);
-
-        // TODO: support multiple
-        assets.m_fanarts << findAsset(Type::FANARTS, platform, game);
-        assets.m_screenshots << findAsset(Type::SCREENSHOTS, platform, game);
-        assets.m_videos << findAsset(Type::VIDEOS, platform, game);
+        provider.fill(platform, game);
     }
 }
 
-QString DataFinder::findAsset(Assets::Type asset_type,
-                              const Model::Platform& platform,
-                              const Model::Game& game)
+void DataFinder::runMetadataProviders(const Model::Platform& platform)
 {
-    QString path = findPortableAsset(asset_type, platform, game);
-    if (!path.isEmpty())
-        return path;
+    // At the moment there's only ES2 for metadata so I've just simply
+    // created it as a regular object.
+    // If you'd like to add more than one provider, use them like this:
+    //
+    // QVector<model_providers::MetadataProvider*> providers;
+    // providers.push_back(new model_providers::Es2Metadata());
+    //
+    // for (auto& provider : providers)
+    //     provider->fill(platform);
 
-    // if the asset was not found in the portable paths,
-    // check the compatibility modules
-    path = Es2::AssetFinder::findAsset(asset_type, platform, game);
-    if (!path.isEmpty())
-        return path;
-
-    return QString();
-}
-
-QString DataFinder::findPortableAsset(Assets::Type asset_type,
-                                      const Model::Platform& platform,
-                                      const Model::Game& game)
-{
-    Q_ASSERT(!platform.m_rom_dir_path.isEmpty());
-    Q_ASSERT(!game.m_rom_basename.isEmpty());
-    Q_ASSERT(Assets::suffixes.contains(asset_type));
-
-    // check all possible [basedir] + [subdir] + [suffix] + [extension]
-    // combination when searching for an asset
-
-    const auto& possible_suffixes = Assets::suffixes[asset_type];
-    const auto& possible_fileexts = Assets::extensions(asset_type);
-
-    // check portable paths
-    static const QLatin1String media_subdir("/media/");
-    const QString common_subpath = platform.m_rom_dir_path
-                                 % media_subdir
-                                 % game.m_rom_basename;
-
-    for (const auto& suffix : possible_suffixes) {
-        for (const auto& ext : possible_fileexts) {
-            const QString path = common_subpath % suffix % ext;
-            if (validFile(path))
-                return path;
-        }
-    }
-
-    return QString();
+    model_providers::Es2Metadata provider;
+    provider.fill(platform);
 }

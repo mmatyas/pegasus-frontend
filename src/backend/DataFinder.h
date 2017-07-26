@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "Assets.h"
-
 #include <QList>
 
 namespace Model { class Game; }
@@ -35,13 +33,6 @@ private:
     static void findGamesByExt(Model::Platform&);
     static void removeEmptyPlatforms(QList<Model::Platform*>&);
 
-    static void findGameMetadata(const Model::Platform&);
-    static void findGameAssets(const Model::Platform&);
-
-    static QString findAsset(Assets::Type asset_type,
-                             const Model::Platform& platform,
-                             const Model::Game& game);
-    static QString findPortableAsset(Assets::Type asset_type,
-                                     const Model::Platform& platform,
-                                     const Model::Game& game);
+    static void findPortableAssets(const Model::Platform&);
+    static void runMetadataProviders(const Model::Platform&);
 };

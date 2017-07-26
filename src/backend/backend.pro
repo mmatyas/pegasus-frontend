@@ -19,7 +19,8 @@ SOURCES += \
     api_parts/ApiSystem.cpp \
     api_parts/ApiSettings.cpp \
     model_providers/Es2Metadata.cpp \
-    model_providers/Es2PlatformList.cpp
+    model_providers/Es2PlatformList.cpp \
+    model_providers/PegasusAssets.cpp
 
 HEADERS += \
     Api.h \
@@ -39,7 +40,8 @@ HEADERS += \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
     model_providers/Es2Metadata.h \
-    model_providers/Es2PlatformList.h
+    model_providers/Es2PlatformList.h \
+    model_providers/PegasusAssets.h
 
 
 DEFINES *= \
