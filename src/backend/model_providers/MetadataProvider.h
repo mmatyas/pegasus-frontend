@@ -31,7 +31,9 @@ public:
     virtual ~MetadataProvider() {}
 
     /// You get a Platform, which already has its list of games found,
-    /// but they may miss some or all of their metadata. Fill them!
+    /// but they may miss some or all of their metadata (including assets).
+    /// Fill the metadata fields and find the missing assets!
+    ///
     /// NOTE: while the Platform itself is const, the data pointed by
     ///       the Game pointers is not!
     virtual void fill(const Model::Platform&) = 0;

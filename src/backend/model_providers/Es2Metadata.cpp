@@ -156,30 +156,64 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
 
 void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>& xml_props)
 {
+    // this function will run quite often; let's cache some variables
+    static const QString KEY_NAME("name");
+    static const QString KEY_DESC("desc");
+    static const QString KEY_DEVELOPER("developer");
+    static const QString KEY_GENRE("genre");
+    static const QString KEY_PUBLISHER("publisher");
+    static const QString KEY_PLAYERS("players");
+    static const QString KEY_PLAYCOUNT("playcount");
+    static const QString KEY_LASTPLAYED("playcount");
+    static const QString KEY_RELEASE("releasedate");
+    static const QString KEY_IMAGE("image");
+    static const QString KEY_VIDEO("video");
+    static const QString KEY_MARQUEE("marquee");
+
     // apply the previously read values
 
     // first, the simple strings
-    game.m_description = xml_props.value("desc");
-    game.m_developer = xml_props.value("developer");
-    game.m_genre = xml_props.value("genre");
-    game.m_publisher = xml_props.value("publisher");
-    game.m_title = xml_props.value("name");
+    game.m_title = xml_props.value(KEY_NAME);
+    game.m_description = xml_props.value(KEY_DESC);
+    game.m_developer = xml_props.value(KEY_DEVELOPER);
+    game.m_genre = xml_props.value(KEY_GENRE);
+    game.m_publisher = xml_props.value(KEY_PUBLISHER);
 
     // then the numbers
-    parseStoreInt(xml_props.value("players"), game.m_players);
-    parseStoreInt(xml_props.value("playcount"), game.m_playcount);
+    parseStoreInt(xml_props.value(KEY_PLAYERS), game.m_players);
+    parseStoreInt(xml_props.value(KEY_PLAYCOUNT), game.m_playcount);
 
     // then dates
 
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
-    game.m_lastplayed = QDateTime::fromString(xml_props.value("lastplayed"), Qt::ISODate);
+    game.m_lastplayed = QDateTime::fromString(xml_props.value(KEY_LASTPLAYED), Qt::ISODate);
 
-    const QDateTime release_date(QDateTime::fromString(xml_props.value("releasedate"), Qt::ISODate));
+    const QDateTime release_date(QDateTime::fromString(xml_props.value(KEY_RELEASE), Qt::ISODate));
     if (release_date.isValid()) {
         const QDate date(release_date.date());
         game.m_year = date.year();
         game.m_month = date.month();
         game.m_day = date.day();
+    }
+
+    // and also see if we can set the assets
+
+    Model::GameAssets& assets = *game.m_assets;
+
+    if (assets.boxFront().isEmpty()) {
+        const QString prop_value = xml_props.value(KEY_IMAGE);
+        if (!prop_value.isEmpty() && validFile(prop_value))
+            assets.setSingle(Assets::Type::BOX_FRONT, prop_value);
+    }
+    if (assets.marquee().isEmpty()) {
+        const QString prop_value = xml_props.value(KEY_MARQUEE);
+        if (!prop_value.isEmpty() && validFile(prop_value))
+            assets.setSingle(Assets::Type::MARQUEE, prop_value);
+    }
+    {
+        const QString prop_value = xml_props.value(KEY_VIDEO);
+        if (!prop_value.isEmpty() && validFile(prop_value))
+            assets.appendMulti(Assets::Type::VIDEOS, prop_value);
     }
 }
 
