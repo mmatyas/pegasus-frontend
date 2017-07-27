@@ -19,6 +19,9 @@
 
 #include "PlatformListProvider.h"
 
+#include <QString>
+#include <QVector>
+
 class QXmlStreamReader;
 
 
