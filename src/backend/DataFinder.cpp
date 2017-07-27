@@ -63,8 +63,8 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
 
 void DataFinder::findGamesByExt(Model::Platform& platform)
 {
-    static constexpr auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static constexpr auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    static const auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     // TODO: handle incorrect filters
     // TODO: add proper subdirectory support
