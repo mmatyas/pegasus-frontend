@@ -171,6 +171,8 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
     static const QString KEY_VIDEO("video");
     static const QString KEY_MARQUEE("marquee");
 
+    static const QString DATEFORMAT("yyyyMMdd'T'HHmmss");
+
     // apply the previously read values
 
     // first, the simple strings
@@ -190,9 +192,9 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
     // then dates
 
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
-    game.m_lastplayed = QDateTime::fromString(xml_props.value(KEY_LASTPLAYED), Qt::ISODate);
+    game.m_lastplayed = QDateTime::fromString(xml_props.value(KEY_LASTPLAYED), DATEFORMAT);
 
-    const QDateTime release_date(QDateTime::fromString(xml_props.value(KEY_RELEASE), Qt::ISODate));
+    const QDateTime release_date(QDateTime::fromString(xml_props.value(KEY_RELEASE), DATEFORMAT));
     if (release_date.isValid()) {
         const QDate date(release_date.date());
         game.m_year = date.year();
