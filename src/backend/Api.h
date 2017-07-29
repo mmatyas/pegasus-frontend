@@ -41,13 +41,12 @@ class ApiObject : public QObject {
                READ currentPlatformIndex WRITE setCurrentPlatformIndex
                RESET resetPlatformIndex
                NOTIFY currentPlatformIndexChanged)
-    Q_PROPERTY(int currentGameIndex
-               READ currentGameIndex WRITE setCurrentGameIndex
-               RESET resetGameIndex
-               NOTIFY currentGameIndexChanged)
     Q_PROPERTY(Model::Platform* currentPlatform MEMBER m_current_platform
                NOTIFY currentPlatformChanged)
-    Q_PROPERTY(Model::Game* currentGame MEMBER m_current_game
+
+    // shortcut for currentPlatform.currentGame
+    Q_PROPERTY(Model::Game* currentGame
+               READ currentGame
                NOTIFY currentGameChanged)
 
     // subcomponents
@@ -70,9 +69,11 @@ public:
     void setCurrentPlatformIndex(int);
     void resetPlatformIndex();
 
-    int currentGameIndex() const { return m_current_game_idx; }
-    void setCurrentGameIndex(int);
-    void resetGameIndex();
+    Model::Game* currentGame() const {
+        return m_current_platform
+            ? m_current_platform->m_current_game
+            : nullptr;
+    }
 
     Q_INVOKABLE void launchGame();
 
@@ -87,7 +88,6 @@ signals:
     // the main data structures
     void platformModelChanged();
     void currentPlatformIndexChanged();
-    void currentGameIndexChanged();
     void currentPlatformChanged();
     void currentGameChanged();
 
@@ -109,9 +109,9 @@ private:
     QList<Model::Platform*> m_platforms;
 
     int m_current_platform_idx;
-    int m_current_game_idx;
     Model::Platform* m_current_platform;
-    Model::Game* m_current_game;
+
+    void onPlatformGameChanged(int platformIndex);
 
     ApiParts::Meta m_meta;
     ApiParts::System m_system;

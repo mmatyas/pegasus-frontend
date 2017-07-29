@@ -27,7 +27,7 @@ GridView {
                                : 1
 
     model: platformData ? platformData.games : 0
-    onCurrentIndexChanged: pegasus.currentGameIndex = currentIndex;
+    onCurrentIndexChanged: pegasus.currentPlatform.currentGameIndex = currentIndex;
 
     cellWidth: width / columnCount
 

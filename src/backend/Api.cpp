@@ -29,9 +29,7 @@
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
     , m_current_platform_idx(-1)
-    , m_current_game_idx(-1)
     , m_current_platform(nullptr)
-    , m_current_game(nullptr)
 {
     QFuture<void> future = QtConcurrent::run([this]{
         QElapsedTimer timer;
@@ -53,6 +51,14 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::onLoadingFinished()
 {
+    for (int i = 0; i < m_platforms.length(); i++) {
+        Model::Platform* platform = m_platforms.at(i);
+        Q_ASSERT(platform);
+
+        connect(platform, &Model::Platform::currentGameChanged,
+                [this, i](){ ApiObject::onPlatformGameChanged(i); });
+    }
+
     emit platformModelChanged();
 
     if (!m_platforms.isEmpty())
@@ -72,19 +78,8 @@ void ApiObject::resetPlatformIndex()
     m_current_platform = nullptr;
     emit currentPlatformChanged();
 
-    resetGameIndex();
-}
-
-void ApiObject::resetGameIndex()
-{
-    // these values are always in pair
-    Q_ASSERT((m_current_game_idx == -1) == (m_current_game == nullptr));
-    if (!m_current_game) // already reset
-        return;
-
-    m_current_game_idx = -1;
-    m_current_game = nullptr;
-    emit currentGameChanged();
+    for (Model::Platform* platform : qAsConst(m_platforms))
+        platform->resetGameIndex();
 }
 
 void ApiObject::setCurrentPlatformIndex(int idx)
@@ -108,37 +103,12 @@ void ApiObject::setCurrentPlatformIndex(int idx)
     Q_ASSERT(m_current_platform);
     emit currentPlatformChanged();
 
-    if (m_platforms.at(idx)->m_games.isEmpty())
-        resetGameIndex();
+    Model::Platform& platform_ref = *m_current_platform;
+    if (platform_ref.m_games.isEmpty())
+        platform_ref.resetGameIndex();
     else
-        setCurrentGameIndex(0);
-}
+        platform_ref.setCurrentGameIndex(0);
 
-void ApiObject::setCurrentGameIndex(int idx)
-{
-    if (idx == -1) {
-        resetGameIndex();
-        return;
-    }
-
-    if (!m_current_platform) {
-        qWarning() << tr("Could not set game index, the current platform is undefined!");
-        return;
-    }
-
-    const bool valid_idx = (0 <= idx || idx < m_current_platform->m_games.count());
-    if (!valid_idx) {
-        qWarning() << tr("Invalid game index #%1").arg(idx);
-        return;
-    }
-
-    Model::Game* new_game = m_current_platform->m_games.at(idx);
-    if (m_current_game == new_game)
-        return;
-
-    m_current_game_idx = idx;
-    m_current_game = new_game;
-    Q_ASSERT(m_current_game);
     emit currentGameChanged();
 }
 
@@ -148,7 +118,7 @@ void ApiObject::launchGame()
         qWarning() << tr("The current platform is undefined, you can't launch any games!");
         return;
     }
-    if (!m_current_game) {
+    if (!m_current_platform->m_current_game) {
         qWarning() << tr("The current game is undefined, you can't launch it!");
         return;
     }
@@ -159,9 +129,9 @@ void ApiObject::launchGame()
 void ApiObject::onReadyToLaunch()
 {
     Q_ASSERT(m_current_platform);
-    Q_ASSERT(m_current_game);
+    Q_ASSERT(m_current_platform->m_current_game);
 
-    emit executeLaunch(m_current_platform, m_current_game);
+    emit executeLaunch(m_current_platform, m_current_platform->m_current_game);
 }
 
 void ApiObject::onGameFinished()
@@ -169,4 +139,10 @@ void ApiObject::onGameFinished()
     // TODO: this is where play count could be increased
 
     emit restoreAfterGame(this);
+}
+
+void ApiObject::onPlatformGameChanged(int platformIndex)
+{
+    if (platformIndex == m_current_platform_idx)
+        emit currentGameChanged();
 }

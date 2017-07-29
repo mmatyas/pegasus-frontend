@@ -122,12 +122,23 @@ class Platform : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString shortName MEMBER m_short_name CONSTANT)
     Q_PROPERTY(QString longName MEMBER m_long_name CONSTANT)
+
+    Q_PROPERTY(int currentGameIndex
+               READ currentGameIndex WRITE setCurrentGameIndex
+               RESET resetGameIndex
+               NOTIFY currentGameIndexChanged)
+    Q_PROPERTY(Model::Game* currentGame MEMBER m_current_game
+               NOTIFY currentGameChanged)
     Q_PROPERTY(QQmlListProperty<Model::Game> games READ getGamesProp CONSTANT)
 
 public:
     explicit Platform(QString name, QString rom_dir_path,
                       QStringList rom_filters, QString launch_cmd,
                       QObject* parent = nullptr);
+
+    int currentGameIndex() const { return m_current_game_idx; }
+    void setCurrentGameIndex(int);
+    void resetGameIndex();
 
     QQmlListProperty<Model::Game> getGamesProp();
 
@@ -138,6 +149,13 @@ public:
     const QString m_launch_cmd;
 
     QList<Game*> m_games;
+
+    int m_current_game_idx;
+    Model::Game* m_current_game;
+
+signals:
+    void currentGameIndexChanged();
+    void currentGameChanged();
 };
 
 } // namespace Model

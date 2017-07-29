@@ -60,11 +60,48 @@ Platform::Platform(QString name, QString rom_dir_path,
     , m_rom_dir_path(rom_dir_path)
     , m_rom_filters(rom_filters)
     , m_launch_cmd(launch_cmd)
+    , m_current_game_idx(-1)
+    , m_current_game(nullptr)
 {
     Q_ASSERT(!m_short_name.isEmpty());
     Q_ASSERT(!m_rom_dir_path.isEmpty());
     Q_ASSERT(!m_rom_filters.isEmpty());
     Q_ASSERT(!m_launch_cmd.isEmpty());
+}
+
+void Platform::setCurrentGameIndex(int idx)
+{
+    if (idx == -1) {
+        resetGameIndex();
+        return;
+    }
+
+    const bool valid_idx = (0 <= idx || idx < m_games.count());
+    if (!valid_idx) {
+        qWarning() << tr("Invalid game index #%1").arg(idx);
+        return;
+    }
+
+    Model::Game* new_game = m_games.at(idx);
+    if (m_current_game == new_game)
+        return;
+
+    m_current_game_idx = idx;
+    m_current_game = new_game;
+    Q_ASSERT(m_current_game);
+    emit currentGameChanged();
+}
+
+void Platform::resetGameIndex()
+{
+    // these values are always in pair
+    Q_ASSERT((m_current_game_idx == -1) == (m_current_game == nullptr));
+    if (!m_current_game) // already reset
+        return;
+
+    m_current_game_idx = -1;
+    m_current_game = nullptr;
+    emit currentGameChanged();
 }
 
 QQmlListProperty<Model::Game> Platform::getGamesProp()
