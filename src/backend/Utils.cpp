@@ -38,9 +38,16 @@ bool validFile(const QString& path) {
 #endif
 }
 
-void parseStoreInt(const QString &str, int &val) {
+void parseStoreInt(const QString& str, int& val) {
     bool success = false;
     const int parsed_val = str.toInt(&success);
+    if (success)
+        val = parsed_val;
+}
+
+void parseStoreFloat(const QString& str, float& val) {
+    bool success = false;
+    const float parsed_val = str.toFloat(&success);
     if (success)
         val = parsed_val;
 }

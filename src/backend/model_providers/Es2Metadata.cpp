@@ -163,6 +163,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
     static const QString KEY_GENRE("genre");
     static const QString KEY_PUBLISHER("publisher");
     static const QString KEY_PLAYERS("players");
+    static const QString KEY_RATING("rating");
     static const QString KEY_PLAYCOUNT("playcount");
     static const QString KEY_LASTPLAYED("playcount");
     static const QString KEY_RELEASE("releasedate");
@@ -182,6 +183,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
     // then the numbers
     parseStoreInt(xml_props.value(KEY_PLAYERS), game.m_players);
     parseStoreInt(xml_props.value(KEY_PLAYCOUNT), game.m_playcount);
+    parseStoreFloat(xml_props.value(KEY_RATING), game.m_rating);
 
     // then dates
 
