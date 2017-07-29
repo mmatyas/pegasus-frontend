@@ -185,6 +185,8 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
     parseStoreInt(xml_props.value(KEY_PLAYCOUNT), game.m_playcount);
     parseStoreFloat(xml_props.value(KEY_RATING), game.m_rating);
 
+    game.m_rating = qBound(0.f, game.m_rating, 1.f);
+
     // then dates
 
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
