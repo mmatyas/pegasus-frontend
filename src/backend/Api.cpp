@@ -57,6 +57,12 @@ void ApiObject::onLoadingFinished()
 
         connect(platform, &Model::Platform::currentGameChanged,
                 [this, i](){ ApiObject::onPlatformGameChanged(i); });
+
+
+        // set the initial game indices
+        Model::Platform& platform_ref = *platform;
+        if (!platform_ref.m_games.isEmpty())
+            platform_ref.setCurrentGameIndex(0);
     }
 
     emit platformModelChanged();
@@ -101,14 +107,8 @@ void ApiObject::setCurrentPlatformIndex(int idx)
     m_current_platform_idx = idx;
     m_current_platform = m_platforms.at(idx);
     Q_ASSERT(m_current_platform);
+
     emit currentPlatformChanged();
-
-    Model::Platform& platform_ref = *m_current_platform;
-    if (platform_ref.m_games.isEmpty())
-        platform_ref.resetGameIndex();
-    else
-        platform_ref.setCurrentGameIndex(0);
-
     emit currentGameChanged();
 }
 
