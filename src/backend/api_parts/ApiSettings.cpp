@@ -211,8 +211,20 @@ void Settings::initThemes()
     // if there is a saved theme setting, use that
     // if not, use the default grid theme
     const QString requested_theme = [](){
-        QVariant entry = QSettings().value(SETTINGSKEY_THEME);
-        return entry.isNull() ? ":/themes/pegasus-grid/" : entry.toString();
+        const QString default_theme(":/themes/pegasus-grid/");
+
+        // `entry` will be an empty string if there is no such value in the file
+        QString entry = QSettings().value(SETTINGSKEY_THEME).toString();
+        if (entry.isEmpty())
+            return default_theme;
+
+        if (!validFile(entry % "theme.ini") || !validFile(entry % "theme.qml")) {
+            qWarning().noquote() << tr("Theme path `%1` doesn't seem to be a valid theme")
+                                    .arg(entry);
+            return default_theme;
+        }
+
+        return entry;
     }();
 
     // find the selected theme
