@@ -29,6 +29,7 @@ const QVector<Assets::Type> Assets::singleTypes = {
     Assets::Type::BEZEL,
     Assets::Type::STEAMGRID,
     Assets::Type::FLYER,
+    Assets::Type::MUSIC,
 };
 const QVector<Assets::Type> Assets::multiTypes = {
     Assets::Type::FANARTS,
@@ -46,8 +47,10 @@ const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
     { Assets::Type::MARQUEE, { "-marquee" } },
     { Assets::Type::BEZEL, { "-bezel", "-screenmarquee", "-border" } },
     { Assets::Type::STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
-    { Assets::Type::FANARTS, { "-fanart", "-art" } },
     { Assets::Type::FLYER, { "-flyer" } },
+    { Assets::Type::MUSIC, { "-music", "" } },
+    // multi
+    { Assets::Type::FANARTS, { "-fanart", "-art" } },
     { Assets::Type::SCREENSHOTS, { "-screenshot" } },
     { Assets::Type::VIDEOS, { "-video" } },
 };
@@ -60,3 +63,16 @@ const QVector<QString> Assets::m_image_exts = { ".png", ".jpg" };
 #endif
 
 const QVector<QString> Assets::m_video_exts = { ".webm", ".mp4", ".avi" };
+const QVector<QString> Assets::m_audio_exts = { ".mp3", ".ogg", ".wav" };
+
+const QVector<QString>& Assets::extensions(Type key)
+{
+   switch (key) {
+       case Type::VIDEOS:
+           return m_video_exts;
+       case Type::MUSIC:
+           return m_audio_exts;
+       default:
+           return m_image_exts;
+   }
+}

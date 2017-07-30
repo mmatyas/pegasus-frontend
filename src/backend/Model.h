@@ -45,6 +45,7 @@ class GameAssets : public QObject {
     Q_PROPERTY(QString bezel READ bezel CONSTANT)
     Q_PROPERTY(QString gridicon READ gridicon CONSTANT)
     Q_PROPERTY(QString flyer READ flyer CONSTANT)
+    Q_PROPERTY(QString music READ music CONSTANT)
 
     // TODO: these could be optimized, see
     // https://doc.qt.io/qt-5/qtqml-cppintegration-data.html (Sequence Type to JavaScript Array)
@@ -69,8 +70,9 @@ public:
     QString logo() const { return m_single_assets[Assets::Type::LOGO]; }
     QString marquee() const { return m_single_assets[Assets::Type::MARQUEE]; }
     QString bezel() const { return m_single_assets[Assets::Type::BEZEL]; }
-    QString flyer() const { return m_single_assets[Assets::Type::FLYER]; }
     QString gridicon() const { return m_single_assets[Assets::Type::STEAMGRID]; }
+    QString flyer() const { return m_single_assets[Assets::Type::FLYER]; }
+    QString music() const { return m_single_assets[Assets::Type::MUSIC]; }
 
     QStringList fanarts() const { return m_multi_assets[Assets::Type::FANARTS]; }
     QStringList screenshots() const { return m_multi_assets[Assets::Type::SCREENSHOTS]; }
