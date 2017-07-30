@@ -60,9 +60,9 @@ void ApiObject::onLoadingFinished()
 
 
         // set the initial game indices
-        Model::Platform& platform_ref = *platform;
-        if (!platform_ref.m_games.isEmpty())
-            platform_ref.setCurrentGameIndex(0);
+        // empty platforms should have been removed previously
+        Q_ASSERT(platform->m_games.length() > 0);
+        platform->setCurrentGameIndex(0);
     }
 
     emit platformModelChanged();
