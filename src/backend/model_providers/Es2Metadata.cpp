@@ -165,7 +165,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
     static const QString KEY_PLAYERS("players");
     static const QString KEY_RATING("rating");
     static const QString KEY_PLAYCOUNT("playcount");
-    static const QString KEY_LASTPLAYED("playcount");
+    static const QString KEY_LASTPLAYED("lastplayed");
     static const QString KEY_RELEASE("releasedate");
     static const QString KEY_IMAGE("image");
     static const QString KEY_VIDEO("video");
