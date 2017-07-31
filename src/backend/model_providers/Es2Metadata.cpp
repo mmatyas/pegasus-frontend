@@ -22,6 +22,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QRegularExpression>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 
@@ -151,10 +152,11 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
     if (!game)
         return;
 
-    applyMetadata(*game, xml_props);
+    applyMetadata(*game, platform, xml_props);
 }
 
-void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>& xml_props)
+void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platform,
+                                const QHash<QString, QString>& xml_props)
 {
     // this function will run quite often; let's cache some variables
     static const QString KEY_NAME("name");
@@ -206,21 +208,35 @@ void Es2Metadata::applyMetadata(Model::Game& game, const QHash<QString, QString>
 
     Model::GameAssets& assets = *game.m_assets;
 
+    const QString rom_dir_prefix = platform.m_rom_dir_path % '/';
+
     if (assets.boxFront().isEmpty()) {
-        const QString prop_value = xml_props.value(KEY_IMAGE);
-        if (!prop_value.isEmpty() && validFile(prop_value))
-            assets.setSingle(Assets::Type::BOX_FRONT, prop_value);
+        QString path = xml_props.value(KEY_IMAGE);
+        convertToAbsolutePath(path, rom_dir_prefix);
+        if (!path.isEmpty() && validFile(path))
+            assets.setSingle(Assets::Type::BOX_FRONT, path);
     }
     if (assets.marquee().isEmpty()) {
-        const QString prop_value = xml_props.value(KEY_MARQUEE);
-        if (!prop_value.isEmpty() && validFile(prop_value))
-            assets.setSingle(Assets::Type::MARQUEE, prop_value);
+        QString path = xml_props.value(KEY_MARQUEE);
+        convertToAbsolutePath(path, rom_dir_prefix);
+        if (!path.isEmpty() && validFile(path))
+            assets.setSingle(Assets::Type::MARQUEE, path);
     }
     {
-        const QString prop_value = xml_props.value(KEY_VIDEO);
-        if (!prop_value.isEmpty() && validFile(prop_value))
-            assets.appendMulti(Assets::Type::VIDEOS, prop_value);
+        QString path = xml_props.value(KEY_VIDEO);
+        convertToAbsolutePath(path, rom_dir_prefix);
+        if (!path.isEmpty() && validFile(path))
+            assets.appendMulti(Assets::Type::VIDEOS, path);
     }
+}
+
+void Es2Metadata::convertToAbsolutePath(QString& path, const QString& root_dir_prefix)
+{
+    static const QRegularExpression HOMESTART("^~");
+
+    path.replace(HOMESTART, QDir::homePath());
+    if (path.startsWith('.'))
+        path.prepend(root_dir_prefix);
 }
 
 } // namespace model_providers

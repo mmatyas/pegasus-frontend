@@ -42,7 +42,11 @@ private:
                         QHash<QString, Model::Game*>&);
 
     /// fills a game with metadata
-    void applyMetadata(Model::Game&, const QHash<QString, QString>&);
+    void applyMetadata(Model::Game&, const Model::Platform&, const QHash<QString, QString>&);
+
+    /// replaces leading `~` with the home dir and makes paths starting
+    /// with dot(s) be relative to a root dir
+    void convertToAbsolutePath(QString& path, const QString& root_dir_prefix);
 };
 
 } // namespace model_providers
