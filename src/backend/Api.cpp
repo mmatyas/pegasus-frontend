@@ -51,6 +51,9 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::onLoadingFinished()
 {
+    // FIXME: `int` will be likely too short, but `tr()` can't handle `long`s
+    int game_count = 0;
+
     for (int i = 0; i < m_platforms.length(); i++) {
         Model::Platform* platform = m_platforms.at(i);
         Q_ASSERT(platform);
@@ -61,9 +64,12 @@ void ApiObject::onLoadingFinished()
 
         // set the initial game indices
         // empty platforms should have been removed previously
-        Q_ASSERT(platform->m_games.length() > 0);
+        Q_ASSERT(!platform->m_games.isEmpty());
         platform->setCurrentGameIndex(0);
+
+        game_count += platform->m_games.count();
     }
+    qInfo().noquote() << tr("%n games found", "", game_count);
 
     emit platformModelChanged();
 
