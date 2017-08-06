@@ -129,7 +129,7 @@ QQmlListProperty<ApiParts::Language> Settings::getTranslationsProp()
 void Settings::initThemes()
 {
     const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    const auto flags = QDirIterator::FollowSymlinks;
 
     const QString ini_filename = "theme.ini";
     const QString qml_filename = "theme.qml";
