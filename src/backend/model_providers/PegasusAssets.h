@@ -30,9 +30,6 @@ public:
     static void fill(const Model::Platform&, const Model::Game&);
 
 private:
-    static QString findFirst(Assets::Type, const QString&);
-    static QStringList findAll(Assets::Type, const QString&);
-
     static const QHash<Assets::Type, QVector<QString>> suffixes;
 };
 

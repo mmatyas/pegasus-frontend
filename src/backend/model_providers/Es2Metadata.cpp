@@ -228,6 +228,22 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
         if (!path.isEmpty() && validFile(path))
             assets.appendMulti(Assets::Type::VIDEOS, path);
     }
+
+    // search for assets in ~/.emulationstation/downloaded_images
+
+    const QString path_base = QDir::homePath()
+                              % QStringLiteral("/.emulationstation/downloaded_images/")
+                              % platform.m_short_name % '/'
+                              % game.m_rom_basename;
+
+    for (auto asset_type : Assets::singleTypes) {
+        if (assets.m_single_assets[asset_type].isEmpty()) {
+            assets.m_single_assets[asset_type] = Assets::findFirst(asset_type, path_base);
+        }
+    }
+    for (auto asset_type : Assets::multiTypes) {
+        assets.m_multi_assets[asset_type].append(Assets::findAll(asset_type, path_base));
+    }
 }
 
 void Es2Metadata::convertToAbsolutePath(QString& path, const QString& root_dir_prefix)

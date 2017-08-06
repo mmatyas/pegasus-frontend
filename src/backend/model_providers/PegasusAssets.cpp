@@ -20,7 +20,6 @@
 #include "Model.h"
 #include "Utils.h"
 
-#include <QDir>
 #include <QStringBuilder>
 
 
@@ -47,45 +46,11 @@ void PegasusAssets::fill(const Model::Platform& platform, const Model::Game& gam
         // so we don't have to do expensi if checks here
         Q_ASSERT(assets_ref.m_single_assets[asset_type].isEmpty());
 
-        assets_ref.m_single_assets[asset_type] = findFirst(asset_type, path_base);
+        assets_ref.m_single_assets[asset_type] = Assets::findFirst(asset_type, path_base);
     }
     for (auto asset_type : Assets::multiTypes) {
-        assets_ref.m_multi_assets[asset_type].append(findAll(asset_type, path_base));
+        assets_ref.m_multi_assets[asset_type].append(Assets::findAll(asset_type, path_base));
     }
-}
-
-QString PegasusAssets::findFirst(Assets::Type asset_type, const QString& path_base)
-{
-    const auto& possible_suffixes = Assets::suffixes[asset_type];
-    const auto& possible_fileexts = Assets::extensions(asset_type);
-
-    for (const auto& suffix : possible_suffixes) {
-        for (const auto& ext : possible_fileexts) {
-            const QString path = path_base % suffix % ext;
-            if (validFile(path))
-                return path;
-        }
-    }
-
-    return QString();
-}
-
-QStringList PegasusAssets::findAll(Assets::Type asset_type, const QString& path_base)
-{
-    const auto& possible_suffixes = Assets::suffixes[asset_type];
-    const auto& possible_fileexts = Assets::extensions(asset_type);
-
-    QStringList results;
-
-    for (const auto& suffix : possible_suffixes) {
-        for (const auto& ext : possible_fileexts) {
-            const QString path = path_base % suffix % ext;
-            if (validFile(path))
-                results.append(path);
-        }
-    }
-
-    return results;
 }
 
 } // namespace model_providers

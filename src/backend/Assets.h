@@ -47,6 +47,9 @@ public:
 
     static const QVector<QString>& extensions(Type key);
 
+    static QString findFirst(Assets::Type, const QString& path_base);
+    static QStringList findAll(Assets::Type, const QString& path_base);
+
 private:
     static const QVector<QString> m_image_exts;
     static const QVector<QString> m_video_exts;

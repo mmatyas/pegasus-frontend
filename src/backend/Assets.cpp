@@ -17,6 +17,10 @@
 
 #include "Assets.h"
 
+#include "Utils.h"
+
+#include <QStringBuilder>
+
 
 const QVector<Assets::Type> Assets::singleTypes = {
     Assets::Type::BOX_FRONT,
@@ -75,4 +79,38 @@ const QVector<QString>& Assets::extensions(Type key)
        default:
            return m_image_exts;
    }
+}
+
+QString Assets::findFirst(Assets::Type asset_type, const QString& path_base)
+{
+    const auto& possible_suffixes = Assets::suffixes[asset_type];
+    const auto& possible_fileexts = Assets::extensions(asset_type);
+
+    for (const auto& suffix : possible_suffixes) {
+        for (const auto& ext : possible_fileexts) {
+            const QString path = path_base % suffix % ext;
+            if (validFile(path))
+                return path;
+        }
+    }
+
+    return QString();
+}
+
+QStringList Assets::findAll(Assets::Type asset_type, const QString& path_base)
+{
+    const auto& possible_suffixes = Assets::suffixes[asset_type];
+    const auto& possible_fileexts = Assets::extensions(asset_type);
+
+    QStringList results;
+
+    for (const auto& suffix : possible_suffixes) {
+        for (const auto& ext : possible_fileexts) {
+            const QString path = path_base % suffix % ext;
+            if (validFile(path))
+                results.append(path);
+        }
+    }
+
+    return results;
 }
