@@ -3,6 +3,7 @@ TEMPLATE = lib
 QT += qml
 CONFIG += c++11 staticlib warn_on exceptions_off rtti_off
 
+
 SOURCES += \
     Api.cpp \
     Assets.cpp \
@@ -41,6 +42,8 @@ HEADERS += \
     model_providers/Es2PlatformList.h \
     model_providers/PegasusAssets.h
 
+
+include($${TOP_SRCDIR}/src/deployment_vars.pri)
 
 DEFINES *= \
     QT_DEPRECATED_WARNINGS \

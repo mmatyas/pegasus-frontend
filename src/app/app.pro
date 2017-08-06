@@ -3,7 +3,6 @@ TEMPLATE = app
 TARGET = pegasus-fe
 
 QT += qml quick multimedia gamepad svg
-
 CONFIG += c++11 warn_on exceptions_off rtti_off
 
 SOURCES += main.cpp
@@ -61,6 +60,8 @@ QMAKE_EXTRA_COMPILERS += locales_qrc
 
 
 # Deployment
+
+include($${TOP_SRCDIR}/src/deployment_vars.pri)
 
 unix:!macx {
     target.path = $${INSTALL_BINDIR}

@@ -16,4 +16,5 @@ OTHER_FILES += \
     assets/*
 
 
+include($${PWD}/src/deployment_vars.pri)
 include($${TOP_SRCDIR}/src/print_config.pri)
