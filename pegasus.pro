@@ -15,6 +15,11 @@ SUBDIRS += \
 OTHER_FILES += \
     assets/*
 
+qtHaveModule(testlib) {
+    SUBDIRS += tests
+    tests.depends = src
+}
+
 
 include($${PWD}/src/deployment_vars.pri)
 include($${TOP_SRCDIR}/src/print_config.pri)
