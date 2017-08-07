@@ -71,7 +71,7 @@ public:
 
     Model::Game* currentGame() const {
         return m_current_platform
-            ? m_current_platform->m_current_game
+            ? m_current_platform->currentGame()
             : nullptr;
     }
 

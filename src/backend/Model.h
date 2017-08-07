@@ -131,7 +131,8 @@ class Platform : public QObject {
                READ currentGameIndex WRITE setCurrentGameIndex
                RESET resetGameIndex
                NOTIFY currentGameIndexChanged)
-    Q_PROPERTY(Model::Game* currentGame MEMBER m_current_game
+    Q_PROPERTY(Model::Game* currentGame
+               READ currentGame
                NOTIFY currentGameChanged)
     Q_PROPERTY(QQmlListProperty<Model::Game> games READ getGamesProp CONSTANT)
 
@@ -144,6 +145,8 @@ public:
     void setCurrentGameIndex(int);
     void resetGameIndex();
 
+    Model::Game* currentGame() const { return m_current_game; }
+
     QQmlListProperty<Model::Game> getGamesProp();
 
     const QString m_short_name;
@@ -154,12 +157,13 @@ public:
 
     QList<Game*> m_games;
 
-    int m_current_game_idx;
-    Model::Game* m_current_game;
-
 signals:
     void currentGameIndexChanged();
     void currentGameChanged();
+
+private:
+    int m_current_game_idx;
+    Model::Game* m_current_game;
 };
 
 } // namespace Model

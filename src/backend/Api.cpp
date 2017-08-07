@@ -124,7 +124,7 @@ void ApiObject::launchGame()
         qWarning() << tr("The current platform is undefined, you can't launch any games!");
         return;
     }
-    if (!m_current_platform->m_current_game) {
+    if (!m_current_platform->currentGame()) {
         qWarning() << tr("The current game is undefined, you can't launch it!");
         return;
     }
@@ -135,9 +135,9 @@ void ApiObject::launchGame()
 void ApiObject::onReadyToLaunch()
 {
     Q_ASSERT(m_current_platform);
-    Q_ASSERT(m_current_platform->m_current_game);
+    Q_ASSERT(m_current_platform->currentGame());
 
-    emit executeLaunch(m_current_platform, m_current_platform->m_current_game);
+    emit executeLaunch(m_current_platform, m_current_platform->currentGame());
 }
 
 void ApiObject::onGameFinished()
