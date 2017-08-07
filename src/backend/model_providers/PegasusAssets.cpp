@@ -34,7 +34,7 @@ void PegasusAssets::fill(const Model::Platform& platform, const Model::Game& gam
                               % game.m_rom_basename;
 
     // check if the media dir exists
-    if (!validFile(platform.m_rom_dir_path % MEDIA_SUBDIR))
+    if (!validPath(platform.m_rom_dir_path % MEDIA_SUBDIR))
         return;
 
     // shortcut for the assets member

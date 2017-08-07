@@ -21,7 +21,7 @@ class QString;
 
 
 /// Returns true if the path is an existing regular file
-bool validFile(const QString& path);
+bool validPath(const QString& path);
 
 /// If the string can be converted to an integer,
 /// it will be saved to the provided field

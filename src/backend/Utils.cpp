@@ -26,7 +26,7 @@
 #endif
 
 
-bool validFile(const QString& path) {
+bool validPath(const QString& path) {
 #ifdef Q_OS_UNIX
     // fast posix check for unix systems
     static struct ::stat buffer;
@@ -34,7 +34,7 @@ bool validFile(const QString& path) {
 #else
     // default Qt fallback
     QFileInfo file(path);
-    return file.exists() && file.isFile();
+    return file.exists() && (file.isFile() || file.isDir());
 #endif
 }
 

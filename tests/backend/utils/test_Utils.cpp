@@ -31,8 +31,8 @@ private slots:
     void loadFloat_data();
     void loadFloat();
 
-    void validFile_data();
-    void validFile();
+    void validPath_data();
+    void validPath();
 };
 
 void test_Utils::loadInt_data()
@@ -95,7 +95,7 @@ void test_Utils::loadFloat()
     QCOMPARE(data, value);
 }
 
-void test_Utils::validFile_data()
+void test_Utils::validPath_data()
 {
     QTest::addColumn<QString>("path");
     QTest::addColumn<bool>("result");
@@ -107,12 +107,12 @@ void test_Utils::validFile_data()
     QTest::newRow("not existing path") << QString(tmpnam(nullptr)) << false;
 }
 
-void test_Utils::validFile()
+void test_Utils::validPath()
 {
     QFETCH(QString, path);
     QFETCH(bool, result);
 
-    QCOMPARE(::validFile(path), result);
+    QCOMPARE(::validPath(path), result);
 }
 
 QTEST_MAIN(test_Utils)

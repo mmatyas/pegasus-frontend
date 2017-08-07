@@ -75,7 +75,7 @@ QString Es2PlatformList::findSystemsFile()
     };
 
     for (const auto& path : possible_paths) {
-        if (validFile(path)) {
+        if (validPath(path)) {
             qInfo().noquote() << MSG_PREFIX << QObject::tr("found `%1`").arg(path);
             return path;
         }

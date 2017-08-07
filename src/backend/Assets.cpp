@@ -89,7 +89,7 @@ QString Assets::findFirst(Assets::Type asset_type, const QString& path_base)
     for (const auto& suffix : possible_suffixes) {
         for (const auto& ext : possible_fileexts) {
             const QString path = path_base % suffix % ext;
-            if (validFile(path))
+            if (validPath(path))
                 return path;
         }
     }
@@ -107,7 +107,7 @@ QStringList Assets::findAll(Assets::Type asset_type, const QString& path_base)
     for (const auto& suffix : possible_suffixes) {
         for (const auto& ext : possible_fileexts) {
             const QString path = path_base % suffix % ext;
-            if (validFile(path))
+            if (validPath(path))
                 results.append(path);
         }
     }

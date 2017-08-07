@@ -146,7 +146,7 @@ void Settings::initThemes()
     search_paths << ":";
     search_paths << QCoreApplication::applicationDirPath();
 #ifdef INSTALL_DATADIR
-    if (validFile(INSTALL_DATADIR))
+    if (validPath(INSTALL_DATADIR))
         search_paths << QString(INSTALL_DATADIR);
 #endif
     search_paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
@@ -218,7 +218,7 @@ void Settings::initThemes()
         if (entry.isEmpty())
             return default_theme;
 
-        if (!validFile(entry % "theme.ini") || !validFile(entry % "theme.qml")) {
+        if (!validPath(entry % "theme.ini") || !validPath(entry % "theme.qml")) {
             qWarning().noquote() << tr("Theme path `%1` doesn't seem to be a valid theme")
                                     .arg(entry);
             return default_theme;
