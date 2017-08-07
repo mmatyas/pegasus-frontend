@@ -32,6 +32,9 @@ private slots:
 
     void platformChangeIndex_data();
     void platformChangeIndex();
+
+    void assetsSetSingle();
+    void assetsAppendMulti();
 };
 
 void test_Model::platformNullGame()
@@ -128,6 +131,25 @@ void test_Model::platformChangeIndex()
     QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
     QCOMPARE(index_triggered.count(), triggered ? 2 : 1);
     QCOMPARE(game_triggered.count(), triggered ? 2 : 1);
+}
+
+void test_Model::assetsSetSingle()
+{
+    Model::GameAssets assets;
+    QCOMPARE(assets.boxFront(), QString());
+
+    assets.setSingle(Assets::Type::BOX_FRONT, "dummy");
+    QCOMPARE(assets.boxFront(), QStringLiteral("dummy"));
+}
+
+void test_Model::assetsAppendMulti()
+{
+    Model::GameAssets assets;
+    QCOMPARE(assets.videos().count(), 0);
+
+    assets.appendMulti(Assets::Type::VIDEOS, "dummy");
+    QCOMPARE(assets.videos().count(), 1);
+    QCOMPARE(assets.videos().first(), QStringLiteral("dummy"));
 }
 
 
