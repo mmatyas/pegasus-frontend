@@ -41,7 +41,9 @@ void test_Model::platformNullGame()
 {
     Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
 
-    QCOMPARE(platform.currentGame(), nullptr);
+    // for some reason, using simply nullptr causes a build error (Qt 5.7)
+
+    QCOMPARE(platform.currentGame(), static_cast<Model::Game*>(nullptr));
     QCOMPARE(platform.currentGameIndex(), -1);
 }
 
