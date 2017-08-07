@@ -27,6 +27,9 @@ class test_Utils : public QObject
 private slots:
     void loadInt_data();
     void loadInt();
+
+    void loadFloat_data();
+    void loadFloat();
 };
 
 void test_Utils::loadInt_data()
@@ -57,6 +60,34 @@ void test_Utils::loadInt()
     QFETCH(int, value);
 
     parseStoreInt(string, data);
+
+    QCOMPARE(data, value);
+}
+
+void test_Utils::loadFloat_data()
+{
+    QTest::addColumn<QString>("string");
+    QTest::addColumn<float>("value");
+
+    // similarly as for int
+
+    QTest::newRow("empty") << "" << 0.f;
+    QTest::newRow("positive integer") << "12345" << 12345.f;
+    QTest::newRow("negative integer") << "-12345" << -12345.f;
+    QTest::newRow("positive float") << "123.45" << 123.45f;
+    QTest::newRow("negative float") << "-123.45" << -123.45f;
+    QTest::newRow("text") << "abc" << 0.f;
+    QTest::newRow("text with numbers") << "abc123def" << 0.f;
+}
+
+void test_Utils::loadFloat()
+{
+    float data = 0;
+
+    QFETCH(QString, string);
+    QFETCH(float, value);
+
+    parseStoreFloat(string, data);
 
     QCOMPARE(data, value);
 }
