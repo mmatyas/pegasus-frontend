@@ -77,7 +77,7 @@ void Platform::setCurrentGameIndex(int idx)
         return;
     }
 
-    const bool valid_idx = (0 <= idx || idx < m_games.count());
+    const bool valid_idx = (0 <= idx && idx < m_games.count());
     if (!valid_idx) {
         qWarning() << tr("Invalid game index #%1").arg(idx);
         return;
