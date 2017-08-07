@@ -18,8 +18,9 @@ OTHER_FILES += \
 qtHaveModule(testlib) {
     SUBDIRS += tests
     tests.depends = src
+    tests.CONFIG = no_default_install
 }
 
 
-include($${PWD}/src/deployment_vars.pri)
+include($${TOP_SRCDIR}/src/deployment_vars.pri)
 include($${TOP_SRCDIR}/src/print_config.pri)
