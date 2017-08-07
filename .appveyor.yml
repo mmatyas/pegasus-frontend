@@ -33,6 +33,7 @@ build_script:
   - cd build
   - qmake ..
   - if %flavor%==msvc (nmake /NOLOGO) else (mingw32-make)
+  - if %flavor%==msvc (nmake /NOLOGO check) else (mingw32-make check)
   - if %flavor%==msvc (nmake /NOLOGO install) else (mingw32-make install)
 
   - windeployqt

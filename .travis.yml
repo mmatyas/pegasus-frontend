@@ -82,11 +82,11 @@ matrix:
       script:
         - mkdir build && cd build
         - qmake ..
-        - make
+        - make check
       after_success:
         - true
     # Qt 5.7.1 (for Debian Stretch/Ubuntu Zesty)
-    - env: null
+    - env: QT_QPA_PLATFORM=minimal
       before_install:
         - sudo add-apt-repository -y ppa:beineri/opt-qt571-trusty
         - sudo apt-get update
@@ -104,6 +104,6 @@ matrix:
       script:
         - mkdir build && cd build
         - qmake ..
-        - make
+        - make check
       after_success:
         - true
