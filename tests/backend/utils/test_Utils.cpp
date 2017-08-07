@@ -30,6 +30,9 @@ private slots:
 
     void loadFloat_data();
     void loadFloat();
+
+    void validFile_data();
+    void validFile();
 };
 
 void test_Utils::loadInt_data()
@@ -92,6 +95,25 @@ void test_Utils::loadFloat()
     QCOMPARE(data, value);
 }
 
+void test_Utils::validFile_data()
+{
+    QTest::addColumn<QString>("path");
+    QTest::addColumn<bool>("result");
+
+    QTest::newRow("null path") << QString() << false;
+    QTest::newRow("empty path") << "" << false;
+    QTest::newRow("app path") << QCoreApplication::applicationFilePath() << true;
+    QTest::newRow("app dir path") << QCoreApplication::applicationDirPath() << true;
+    QTest::newRow("not existing path") << QString(tmpnam(nullptr)) << false;
+}
+
+void test_Utils::validFile()
+{
+    QFETCH(QString, path);
+    QFETCH(bool, result);
+
+    QCOMPARE(::validFile(path), result);
+}
 
 QTEST_MAIN(test_Utils)
 #include "test_Utils.moc"
