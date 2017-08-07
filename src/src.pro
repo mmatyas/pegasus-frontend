@@ -5,6 +5,7 @@ SUBDIRS += \
     backend
 
 OTHER_FILES += \
+    *.pri \
     frontend/*.qml \
     frontend/menuitems/*.qml \
     frontend/gamepad/*.qml \
