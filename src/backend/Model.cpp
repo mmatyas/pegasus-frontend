@@ -90,6 +90,8 @@ void Platform::setCurrentGameIndex(int idx)
     m_current_game_idx = idx;
     m_current_game = new_game;
     Q_ASSERT(m_current_game);
+
+    emit currentGameIndexChanged();
     emit currentGameChanged();
 }
 
@@ -102,6 +104,8 @@ void Platform::resetGameIndex()
 
     m_current_game_idx = -1;
     m_current_game = nullptr;
+
+    emit currentGameIndexChanged();
     emit currentGameChanged();
 }
 
