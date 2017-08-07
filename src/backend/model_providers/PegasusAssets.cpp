@@ -38,18 +38,18 @@ void PegasusAssets::fill(const Model::Platform& platform, const Model::Game& gam
         return;
 
     // shortcut for the assets member
-    Q_ASSERT(game.m_assets);
-    Model::GameAssets& assets_ref = *game.m_assets;
+    Q_ASSERT(game.assets());
+    Model::GameAssets& assets = *game.assets();
 
     for (auto asset_type : Assets::singleTypes) {
         // the portable asset search is always the first,
         // so we don't have to do expensi if checks here
-        Q_ASSERT(assets_ref.m_single_assets[asset_type].isEmpty());
+        Q_ASSERT(assets.m_single_assets[asset_type].isEmpty());
 
-        assets_ref.m_single_assets[asset_type] = Assets::findFirst(asset_type, path_base);
+        assets.m_single_assets[asset_type] = Assets::findFirst(asset_type, path_base);
     }
     for (auto asset_type : Assets::multiTypes) {
-        assets_ref.m_multi_assets[asset_type].append(Assets::findAll(asset_type, path_base));
+        assets.m_multi_assets[asset_type].append(Assets::findAll(asset_type, path_base));
     }
 }
 

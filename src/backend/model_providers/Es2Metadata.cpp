@@ -206,7 +206,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
 
     // and also see if we can set the assets
 
-    Model::GameAssets& assets = *game.m_assets;
+    Model::GameAssets& assets = *game.assets();
 
     const QString rom_dir_prefix = platform.m_rom_dir_path % '/';
 

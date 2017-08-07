@@ -107,7 +107,7 @@ void DataFinder::findPortableAssets(const Model::Platform& platform)
     // TODO: this could be parallelized
     for (Model::Game* game_ptr : qAsConst(platform.m_games)) {
         Q_ASSERT(game_ptr);
-        Q_ASSERT(game_ptr->m_assets);
+        Q_ASSERT(game_ptr->assets());
 
         const Model::Game& game = *game_ptr;
 

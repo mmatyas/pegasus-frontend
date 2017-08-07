@@ -94,7 +94,7 @@ class Game : public QObject {
     Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
     Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
-    Q_PROPERTY(Model::GameAssets* assets MEMBER m_assets CONSTANT)
+    Q_PROPERTY(Model::GameAssets* assets READ assets CONSTANT)
 
 public:
     explicit Game(QString path, QObject* parent = nullptr);
@@ -118,6 +118,9 @@ public:
     int m_playcount;
     QDateTime m_lastplayed;
 
+    GameAssets* assets() const { return m_assets; }
+
+private:
     GameAssets* m_assets;
 };
 
