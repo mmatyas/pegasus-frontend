@@ -21,7 +21,7 @@
 #include "Utils.h"
 
 #include <QDebug>
-#include <QDir>
+#include <QFile>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 
@@ -68,9 +68,8 @@ QString Es2PlatformList::findSystemsFile()
 {
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-    // TODO: add $HOME support on Windows
     const QVector<QString> possible_paths = {
-        QDir::homePath() % "/.emulationstation/es_systems.cfg",
+        homePath() % "/.emulationstation/es_systems.cfg",
         "/etc/emulationstation/es_systems.cfg",
     };
 
@@ -140,7 +139,7 @@ Model::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
     // do some path formatting
     xml_props["path"]
         .replace("\\", "/")
-        .replace("~", QDir::homePath());
+        .replace("~", homePath());
 
     // construct the new platform
     return new Model::Platform(

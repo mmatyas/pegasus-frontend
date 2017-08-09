@@ -33,6 +33,8 @@ private slots:
 
     void validPath_data();
     void validPath();
+
+    void homePath();
 };
 
 void test_Utils::loadInt_data()
@@ -113,6 +115,17 @@ void test_Utils::validPath()
     QFETCH(bool, result);
 
     QCOMPARE(::validPath(path), result);
+}
+
+void test_Utils::homePath()
+{
+    const QString HOME_ENV_KEY = QStringLiteral("PEGASUS_HOME");
+    auto env = QProcessEnvironment::systemEnvironment();
+
+    if (!env.contains(HOME_ENV_KEY))
+        QWARN("Set the env var `PEGASUS_HOME` to test this function");
+    else
+        QCOMPARE(::homePath(), env.value(HOME_ENV_KEY));
 }
 
 QTEST_MAIN(test_Utils)

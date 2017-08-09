@@ -17,7 +17,9 @@
 
 #include "Utils.h"
 
+#include <QDir>
 #include <QFileInfo>
+#include <QProcessEnvironment>
 #include <QString>
 #include <QVector>
 
@@ -50,4 +52,22 @@ void parseStoreFloat(const QString& str, float& val) {
     const float parsed_val = str.toFloat(&success);
     if (success)
         val = parsed_val;
+}
+
+QString homePath()
+{
+    static const QString home_path = [](){
+        const auto env = QProcessEnvironment::systemEnvironment();
+
+#ifdef Q_OS_WIN32
+        // allow overriding the home directory on Windows:
+        // QDir::homePath() checks the env vars last on this platform,
+        // but we want it to be the first
+        return env.value("PEGASUS_HOME", env.value("HOME", QDir::homePath()));
+#else
+        // on other platforms, QDir::homePath() returns $HOME first
+        return env.value("PEGASUS_HOME", QDir::homePath());
+#endif
+    }();
+    return home_path;
 }

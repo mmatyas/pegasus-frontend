@@ -21,7 +21,7 @@
 #include "Utils.h"
 
 #include <QDebug>
-#include <QDir>
+#include <QFileInfo>
 #include <QRegularExpression>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
@@ -69,7 +69,7 @@ QString Es2Metadata::findGamelistFile(const Model::Platform& platform)
 
     const QVector<QString> possible_dirs = {
         platform.m_rom_dir_path,
-        QDir::homePath() % "/.emulationstation/gamelists/" % platform.m_short_name,
+        homePath() % "/.emulationstation/gamelists/" % platform.m_short_name,
         "/etc/emulationstation/gamelists/" % platform.m_short_name,
     };
 
@@ -231,7 +231,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
 
     // search for assets in ~/.emulationstation/downloaded_images
 
-    const QString path_base = QDir::homePath()
+    const QString path_base = homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/")
                               % platform.m_short_name % '/'
                               % game.m_rom_basename;
@@ -250,7 +250,7 @@ void Es2Metadata::convertToAbsolutePath(QString& path, const QString& root_dir_p
 {
     static const QRegularExpression HOMESTART("^~");
 
-    path.replace(HOMESTART, QDir::homePath());
+    path.replace(HOMESTART, homePath());
     if (path.startsWith('.'))
         path.prepend(root_dir_prefix);
 }

@@ -30,3 +30,7 @@ void parseStoreInt(const QString& str, int& val);
 /// If the string can be converted to a `float` value,
 /// it will be saved to the provided field
 void parseStoreFloat(const QString& str, float& val);
+
+/// Returns $PEGASUS_HOME if defined, or $HOME if defined,
+/// otherwise QDir::homePath().
+QString homePath();
