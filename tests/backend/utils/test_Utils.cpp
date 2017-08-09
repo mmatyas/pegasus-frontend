@@ -106,7 +106,7 @@ void test_Utils::validPath_data()
     QTest::newRow("empty path") << "" << false;
     QTest::newRow("app path") << QCoreApplication::applicationFilePath() << true;
     QTest::newRow("app dir path") << QCoreApplication::applicationDirPath() << true;
-    QTest::newRow("not existing path") << QString(tmpnam(nullptr)) << false;
+    QTest::newRow("not existing path") << "nonexistent" << false;
 }
 
 void test_Utils::validPath()
