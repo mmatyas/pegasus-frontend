@@ -23,6 +23,7 @@ environment:
 init:
   - if %flavor%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
   - set PATH=%QTDIR%\bin;%PATH%
+  - set PEGASUS_HOME=C:\hello\world
 
 before_build:
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
