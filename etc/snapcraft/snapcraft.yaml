@@ -1,0 +1,27 @@
+name: pegasus-frontend
+version: 'alpha3'
+summary: Cross platform, customizable graphical frontend for launching emulators
+description: |
+  Pegasus is a graphical frontend for managing your retro game
+  collection, making them accessible from one central location.
+  You can set it up to show all kinds of metadata information,
+  box arts, screenshots or even video trailers. With its advanced
+  theming support, you can completely and freely change the look
+  and feel of the whole application.
+grade: devel
+confinement: devmode
+
+apps:
+  pegasus-frontend:
+    command: pegasus-fe
+    plugs:
+      - home
+      - opengl
+      - pulseaudio
+      - shutdown
+      - x11
+
+parts:
+  runtime:
+    plugin: dump
+    source: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha3/pegasus-fe_alpha3_x11-static.zip
