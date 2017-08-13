@@ -24,12 +24,14 @@
 #include "SystemCommands.h"
 
 #include <QCommandLineParser>
+#include <QDir>
 #include <QFile>
 #include <QGamepadManager>
 #include <QGuiApplication>
 #include <QQmlContext>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QRegularExpression>
 
 
 void handleLogMsg(QtMsgType, const QMessageLogContext&, const QString&);
@@ -80,16 +82,22 @@ int main(int argc, char *argv[])
 void handleLogMsg(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     // open the output channels: stdout and a file log
+    // TODO: maybe just move these to the file scope
 
     static QTextStream stream_stdout(stdout);
 
     static QFile logfile([](){
+        using regex = QRegularExpression;
         Q_ASSERT(QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation).length() > 0);
 
         auto path = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation).first();
-        path += "/lastrun.log";
-        path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
+        path = path.replace(regex("/pegasus-frontend/pegasus-frontend$"), "/pegasus-frontend");
+        if (!QDir().mkpath(path)) {
+            stream_stdout << QObject::tr("Warning: `%1` does not exists, and could not create it."
+                                         " File logging won't work.").arg(path) << endl;
+        }
 
+        path += "/lastrun.log";
         return path;
     }());
     static QTextStream stream_logfile([](){
@@ -97,6 +105,7 @@ void handleLogMsg(QtMsgType type, const QMessageLogContext& context, const QStri
         // to avoid creating a global or yet another init function,
         // it is handled in this lambda, which will only run once
         Q_ASSERT(!logfile.isOpen());
+        // FIXME: these may fail
         logfile.resize(0); // clear previous contents
         logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 
