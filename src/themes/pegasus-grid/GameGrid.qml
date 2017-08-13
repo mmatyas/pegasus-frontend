@@ -22,9 +22,10 @@ GridView {
 
     property var platformData: pegasus.currentPlatform
     // TODO: make these customizable
+    property var tallPlatforms: ["nes"]
     property real columnCount: platformData
-                               ? (platformData.shortName === "nes" ? 5 : 4)
-                               : 1
+        ? (tallPlatforms.indexOf(platformData.shortName) < 0 ? 4 : 5)
+        : 1
 
     model: platformData ? platformData.games : 0
     onCurrentIndexChanged: pegasus.currentPlatform.currentGameIndex = currentIndex;
@@ -54,67 +55,19 @@ GridView {
 
     highlightMoveDuration: 0
 
-    delegate: Item {
+    delegate: GameGridItem {
         width: GridView.view.cellWidth
         height: GridView.view.cellHeight
+        selected: GridView.isCurrentItem
 
-        scale: GridView.isCurrentItem ? 1.20 : 1.0
-        z: GridView.isCurrentItem ? 3 : 1
+        game: modelData
 
-        Behavior on scale { PropertyAnimation { duration: 150 } }
-
-        Image {
-            id: boxFront
-            anchors { fill: parent; margins: rpx(5) }
-
-            asynchronous: true
-            visible: model.assets.boxFront
-
-            source: model.assets.boxFront ? "file:" + model.assets.boxFront : ""
-            sourceSize { width: 256; height: 256 }
-            fillMode: Image.PreserveAspectFit
-
-            onStatusChanged: if (status === Image.Ready) {
-                var img_ratio = paintedHeight / paintedWidth;
-                var cell_ratio = grid_root.cellHeight / grid_root.cellWidth;
-                if (img_ratio < cell_ratio)
-                    grid_root.cellHeight = grid_root.cellWidth * img_ratio;
-            }
-        }
-
-        Image {
-            anchors.centerIn: parent
-
-            visible: boxFront.status === Image.Loading
-            source: "/common/loading-spinner.png"
-
-            RotationAnimator on rotation {
-                loops: Animator.Infinite;
-                from: 0;
-                to: 360;
-                duration: 500
-            }
-        }
-
-        Text {
-            width: parent.width - rpx(64)
-            anchors.centerIn: parent
-
-            visible: !model.assets.boxFront
-
-            text: model.title
-            wrapMode: Text.Wrap
-            horizontalAlignment: Text.AlignHCenter
-            color: "#eee"
-            font {
-                pixelSize: rpx(16)
-                family: uiFont.name
-            }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: parent.GridView.view.currentIndex = index
+        onClicked: GridView.view.currentIndex = index
+        onImageLoaded: {
+            var img_ratio = imgHeight / imgWidth;
+            var cell_ratio = grid_root.cellHeight / grid_root.cellWidth;
+            if (img_ratio < cell_ratio)
+                grid_root.cellHeight = grid_root.cellWidth * img_ratio;
         }
     }
 }

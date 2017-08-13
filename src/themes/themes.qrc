@@ -7,5 +7,6 @@
         <file>pegasus-grid/PlatformBar.qml</file>
         <file>pegasus-grid/PlatformCard.qml</file>
         <file>pegasus-grid/theme.ini</file>
+        <file>pegasus-grid/GameGridItem.qml</file>
     </qresource>
 </RCC>
