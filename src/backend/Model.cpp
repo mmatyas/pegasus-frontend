@@ -76,6 +76,9 @@ Platform::Platform(QString name, QString rom_dir_path,
 
 void Platform::setCurrentGameIndex(int idx)
 {
+    if (idx == m_current_game_idx)
+        return;
+
     if (idx == -1) {
         resetGameIndex();
         return;
