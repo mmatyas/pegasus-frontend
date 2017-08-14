@@ -91,8 +91,9 @@ class Game : public QObject {
     Q_PROPERTY(int month MEMBER m_month CONSTANT)
     Q_PROPERTY(int day MEMBER m_day CONSTANT)
     Q_PROPERTY(int players MEMBER m_players CONSTANT)
-    Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
+    Q_PROPERTY(bool favorite MEMBER m_favorite CONSTANT)
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
+    Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
     Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
     Q_PROPERTY(Model::GameAssets* assets READ assets CONSTANT)
 
@@ -109,6 +110,7 @@ public:
     QString m_genre;
 
     int m_players;
+    bool m_favorite;
     float m_rating;
 
     int m_year;
