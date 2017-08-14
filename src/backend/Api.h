@@ -18,6 +18,7 @@
 #pragma once
 
 #include "Model.h"
+#include "api_parts/ApiFilters.h"
 #include "api_parts/ApiMeta.h"
 #include "api_parts/ApiSettings.h"
 #include "api_parts/ApiSystem.h"
@@ -50,9 +51,10 @@ class ApiObject : public QObject {
                NOTIFY currentGameChanged)
 
     // subcomponents
+    Q_PROPERTY(ApiParts::Filters* filters READ filters CONSTANT)
     Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
-    Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
     Q_PROPERTY(ApiParts::Settings* settings READ settings CONSTANT)
+    Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
 
     // internal properties
     Q_PROPERTY(QString tr READ emptyString
@@ -77,9 +79,10 @@ public:
 
     Q_INVOKABLE void launchGame();
 
+    ApiParts::Filters* filters() { return &m_filters; }
     ApiParts::Meta* meta() { return &m_meta; }
-    ApiParts::System* system() { return &m_system; }
     ApiParts::Settings* settings() { return &m_settings; }
+    ApiParts::System* system() { return &m_system; }
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
@@ -105,6 +108,9 @@ public slots:
     void onReadyToLaunch();
     void onGameFinished();
 
+private slots:
+    void onFiltersChanged();
+
 private:
     QList<Model::Platform*> m_platforms;
 
@@ -113,9 +119,11 @@ private:
 
     void onPlatformGameChanged(int platformIndex);
 
+    // components
     ApiParts::Meta m_meta;
     ApiParts::System m_system;
     ApiParts::Settings m_settings;
+    ApiParts::Filters m_filters;
 
     // initialization
     QFutureWatcher<void> m_loading_watcher;

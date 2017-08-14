@@ -15,9 +15,10 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
+    api_parts/ApiFilters.cpp \
     api_parts/ApiMeta.cpp \
-    api_parts/ApiSystem.cpp \
     api_parts/ApiSettings.cpp \
+    api_parts/ApiSystem.cpp \
     model_providers/Es2Metadata.cpp \
     model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp
@@ -33,9 +34,10 @@ HEADERS += \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
+    api_parts/ApiFilters.h \
     api_parts/ApiMeta.h \
-    api_parts/ApiSystem.h \
     api_parts/ApiSettings.h \
+    api_parts/ApiSystem.h \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
     model_providers/Es2Metadata.h \

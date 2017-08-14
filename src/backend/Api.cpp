@@ -151,3 +151,9 @@ void ApiObject::onPlatformGameChanged(int platformIndex)
     if (platformIndex == m_current_platform_idx)
         emit currentGameChanged();
 }
+
+void ApiObject::onFiltersChanged()
+{
+    // for (Model::Platform* const platform : qAsConst(m_platforms))
+    //     platform->applyGameFilters(m_filters);
+}
