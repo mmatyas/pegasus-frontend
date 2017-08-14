@@ -64,13 +64,8 @@ void ApiObject::onLoadingFinished()
         connect(platform_ptr, &Model::Platform::currentGameChanged,
                 [this, i](){ ApiObject::onPlatformGameChanged(i); });
 
-
-        // set the initial game indices
-        // empty platforms should have been removed previously
         Model::Platform& platform = *platform_ptr;
-        Q_ASSERT(!platform.games().isEmpty());
-        platform.setCurrentGameIndex(0);
-
+        platform.lockGameList();
         game_count += platform.games().count();
     }
     qInfo().noquote() << tr("%n games found", "", game_count);

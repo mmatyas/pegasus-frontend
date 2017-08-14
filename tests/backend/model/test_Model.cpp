@@ -51,11 +51,12 @@ void test_Model::platformSetIndex_data()
 {
     QTest::addColumn<int>("index");
     QTest::addColumn<bool>("game_valid");
+    QTest::addColumn<bool>("triggered");
 
-    QTest::newRow("undefined (-1)") << -1 << false;
-    QTest::newRow("valid (0)") << 0 << true;
-    QTest::newRow("out of range (pos)") << 999 << false;
-    QTest::newRow("out of range (neg)") << -999 << false;
+    QTest::newRow("undefined (-1)") << -1 << false << true;
+    QTest::newRow("valid (0)") << 0 << true << false;
+    QTest::newRow("out of range (pos)") << 999 << true << false;
+    QTest::newRow("out of range (neg)") << -999 << true << false;
 }
 
 void test_Model::platformSetIndex()
@@ -69,11 +70,18 @@ void test_Model::platformSetIndex()
     QVERIFY(game_triggered.isValid());
 
     platform.addGame("dummy");
+    platform.lockGameList();
+
+    QVERIFY(platform.currentGame() != nullptr);
+    QVERIFY(platform.currentGameIndex() == 0);
+    QVERIFY(index_triggered.count() == 1);
+    QVERIFY(game_triggered.count() == 1);
 
     // test
 
     QFETCH(int, index);
     QFETCH(bool, game_valid);
+    QFETCH(bool, triggered);
 
     if (index != -1 && index != 0)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index #-?[0-9]+"));
@@ -82,8 +90,8 @@ void test_Model::platformSetIndex()
 
     QCOMPARE(platform.currentGame(), game_valid ? platform.games().last() : nullptr);
     QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
-    QCOMPARE(index_triggered.count(), game_valid ? 1 : 0);
-    QCOMPARE(game_triggered.count(), game_valid ? 1 : 0);
+    QCOMPARE(index_triggered.count(), triggered ? 2 : 1);
+    QCOMPARE(game_triggered.count(), triggered ? 2 : 1);
 }
 
 void test_Model::platformChangeIndex_data()
@@ -109,8 +117,8 @@ void test_Model::platformChangeIndex()
     QVERIFY(game_triggered.isValid());
 
     platform.addGame("dummy");
+    platform.lockGameList();
 
-    platform.setCurrentGameIndex(0);
     QVERIFY(platform.currentGame() != nullptr);
     QVERIFY(platform.currentGameIndex() == 0);
     QVERIFY(index_triggered.count() == 1);

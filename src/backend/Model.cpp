@@ -67,6 +67,9 @@ Platform::Platform(QString name, QString rom_dir_path,
     , m_launch_cmd(launch_cmd)
     , m_current_game_idx(-1)
     , m_current_game(nullptr)
+#ifdef QT_DEBUG
+    , m_gamelist_locked(false)
+#endif
 {
     Q_ASSERT(!m_short_name.isEmpty());
     Q_ASSERT(!m_rom_dir_path.isEmpty());
@@ -84,13 +87,13 @@ void Platform::setCurrentGameIndex(int idx)
         return;
     }
 
-    const bool valid_idx = (0 <= idx && idx < m_all_games.count());
+    const bool valid_idx = (0 <= idx && idx < m_filtered_games.count());
     if (!valid_idx) {
         qWarning() << tr("Invalid game index #%1").arg(idx);
         return;
     }
 
-    Model::Game* new_game = m_all_games.at(idx);
+    Model::Game* new_game = m_filtered_games.at(idx);
     if (m_current_game == new_game)
         return;
 
@@ -116,13 +119,21 @@ void Platform::resetGameIndex()
     emit currentGameChanged();
 }
 
-QQmlListProperty<Model::Game> Platform::getGamesProp()
+QQmlListProperty<Model::Game> Platform::getFilteredGamesProp()
+{
+    return QQmlListProperty<Model::Game>(this, m_filtered_games);
+}
+
+QQmlListProperty<Model::Game> Platform::getAllGamesProp()
 {
     return QQmlListProperty<Model::Game>(this, m_all_games);
 }
 
 void Platform::addGame(QString path)
 {
+#ifdef QT_DEBUG
+    Q_ASSERT(!m_gamelist_locked);
+#endif
     m_all_games.append(new Model::Game(path, this));
 }
 
@@ -133,6 +144,26 @@ void Platform::sortGames()
             return QString::localeAwareCompare(a->m_rom_basename, b->m_rom_basename) < 0;
         }
     );
+}
+
+void Platform::lockGameList()
+{
+#ifdef QT_DEBUG
+    Q_ASSERT(!m_gamelist_locked);
+    m_gamelist_locked = true;
+#endif
+
+    clearFilters();
+}
+
+void Platform::clearFilters()
+{
+    m_filtered_games = m_all_games;
+    emit gameFilterChanged();
+
+    // TODO: remember position before reset
+    if (!m_filtered_games.isEmpty())
+        setCurrentGameIndex(0);
 }
 
 } // namespace Model

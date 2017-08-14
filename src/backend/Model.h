@@ -139,7 +139,11 @@ class Platform : public QObject {
     Q_PROPERTY(Model::Game* currentGame
                READ currentGame
                NOTIFY currentGameChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Game> games READ getGamesProp CONSTANT)
+    Q_PROPERTY(QQmlListProperty<Model::Game> games
+               READ getFilteredGamesProp
+               NOTIFY gameFilterChanged)
+    Q_PROPERTY(QQmlListProperty<Model::Game> allGames
+               READ getAllGamesProp CONSTANT)
 
 public:
     explicit Platform(QString name, QString rom_dir_path,
@@ -153,10 +157,14 @@ public:
     const QList<Game*>& games() const { return m_all_games; }
     void addGame(QString path);
     void sortGames();
+    void lockGameList();
 
     Model::Game* currentGame() const { return m_current_game; }
 
-    QQmlListProperty<Model::Game> getGamesProp();
+    QQmlListProperty<Model::Game> getFilteredGamesProp();
+    QQmlListProperty<Model::Game> getAllGamesProp();
+
+    void clearFilters();
 
     const QString m_short_name;
     const QString m_long_name;
@@ -167,12 +175,18 @@ public:
 signals:
     void currentGameIndexChanged();
     void currentGameChanged();
+    void gameFilterChanged();
 
 private:
     int m_current_game_idx;
     Model::Game* m_current_game;
 
     QList<Game*> m_all_games;
+    QList<Game*> m_filtered_games;
+
+#ifdef QT_DEBUG
+    bool m_gamelist_locked;
+#endif
 };
 
 } // namespace Model
