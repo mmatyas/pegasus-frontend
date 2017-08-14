@@ -36,8 +36,11 @@ ApiObject::ApiObject(QObject* parent)
         timer.start();
 
         this->m_platforms = DataFinder::find();
-
         this->m_meta.setElapsedLoadingTime(timer.elapsed());
+
+        // set the correct thread for the QObjects
+        for (Model::Platform* platform : qAsConst(m_platforms))
+            platform->moveToThread(this->thread());
     });
 
     m_loading_watcher.setFuture(future);
