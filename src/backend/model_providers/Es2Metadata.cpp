@@ -172,6 +172,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
     static const QString KEY_IMAGE("image");
     static const QString KEY_VIDEO("video");
     static const QString KEY_MARQUEE("marquee");
+    static const QString KEY_FAVORITE("favorite");
 
     static const QString DATEFORMAT("yyyyMMdd'T'HHmmss");
 
@@ -190,6 +191,14 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
     parseStoreFloat(xml_props.value(KEY_RATING), game.m_rating);
 
     game.m_rating = qBound(0.f, game.m_rating, 1.f);
+
+    // then the bools
+    const QString& favorite_val = xml_props.value(KEY_FAVORITE);
+    if (favorite_val.compare(QLatin1String("yes"), Qt::CaseInsensitive) == 0
+        || favorite_val.compare(QLatin1String("true"), Qt::CaseInsensitive) == 0
+        || favorite_val.compare(QLatin1String("1")) == 0) {
+        game.m_favorite = true;
+    }
 
     // then dates
 
