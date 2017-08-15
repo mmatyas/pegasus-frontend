@@ -26,14 +26,14 @@ namespace ApiParts {
 class Filters : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString name MEMBER m_name NOTIFY filtersChanged)
+    Q_PROPERTY(QString title MEMBER m_title NOTIFY filtersChanged)
     Q_PROPERTY(int playerCount MEMBER m_player_count NOTIFY filtersChanged)
     Q_PROPERTY(bool favorite MEMBER m_favorite NOTIFY filtersChanged)
 
 public:
     explicit Filters(QObject* parent = nullptr);
 
-    QString m_name;
+    QString m_title;
     bool m_favorite;
     int m_player_count;
 
