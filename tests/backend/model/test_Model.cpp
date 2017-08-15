@@ -139,7 +139,7 @@ void test_Model::assetsSetSingle()
     QCOMPARE(assets.boxFront(), QString());
 
     assets.setSingle(Assets::Type::BOX_FRONT, "dummy");
-    QCOMPARE(assets.boxFront(), QStringLiteral("dummy"));
+    QCOMPARE(assets.boxFront(), QLatin1String("dummy"));
 }
 
 void test_Model::assetsAppendMulti()
@@ -149,7 +149,7 @@ void test_Model::assetsAppendMulti()
 
     assets.appendMulti(Assets::Type::VIDEOS, "dummy");
     QCOMPARE(assets.videos().count(), 1);
-    QCOMPARE(assets.videos().first(), QStringLiteral("dummy"));
+    QCOMPARE(assets.videos().first(), QLatin1String("dummy"));
 }
 
 
