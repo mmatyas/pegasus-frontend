@@ -23,6 +23,8 @@
 #include <QString>
 #include <QQmlListProperty>
 
+namespace ApiParts { class Filters; }
+
 
 // NOTE: `QQmlListProperty` requires including the namespace in
 // the template parameter! See QTBUG-15459.
@@ -166,6 +168,7 @@ public:
     QQmlListProperty<Model::Game> getAllGamesProp();
 
     void clearFilters();
+    void applyFilters(const ApiParts::Filters&);
 
     const QString m_short_name;
     const QString m_long_name;

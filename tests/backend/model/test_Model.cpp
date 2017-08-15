@@ -18,6 +18,7 @@
 #include <QtTest/QtTest>
 
 #include "Model.h"
+#include "api_parts/ApiFilters.h"
 
 
 class test_Model : public QObject
@@ -35,6 +36,9 @@ private slots:
 
     void platformAppendGame();
     void platformSortGames();
+
+    void platformApplyFilters_data();
+    void platformApplyFilters();
 
     void assetsSetSingle();
     void assetsAppendMulti();
@@ -169,6 +173,71 @@ void test_Model::platformSortGames()
 
     QCOMPARE(platform.games().first()->m_rom_path, QLatin1String("aaa"));
     QCOMPARE(platform.games().last()->m_rom_path, QLatin1String("bbb"));
+}
+
+void test_Model::platformApplyFilters_data()
+{
+    QTest::addColumn<QString>("title");
+    QTest::addColumn<bool>("favorite");
+    QTest::addColumn<int>("player_cnt");
+    QTest::addColumn<int>("matching_games_cnt");
+
+    QTest::newRow("empty") << QString("") << false << 1 << 5;
+    QTest::newRow("full title") << "My Game" << false << 1 << 1;
+    QTest::newRow("partial title") << "Game" << false << 1 << 2;
+    QTest::newRow("favorite") << "" << true << 1 << 2;
+    QTest::newRow("multiplayer") << "" << false << 2 << 1;
+    QTest::newRow("title + favorite") << "Game" << true << 1 << 1;
+    QTest::newRow("title + favorite + 2P") << "Game" << true << 2 << 0;
+}
+
+void test_Model::platformApplyFilters()
+{
+    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    QSignalSpy triggered(&platform, &Model::Platform::gameFilterChanged);
+    QVERIFY(triggered.isValid());
+
+    platform.addGame("file1");
+        platform.allGames().last()->m_title = "not-fav, 1P";
+        platform.allGames().last()->m_favorite = false;
+        platform.allGames().last()->m_players = 1;
+    platform.addGame("file2");
+        platform.allGames().last()->m_title = "not-fav, 2P";
+        platform.allGames().last()->m_favorite = false;
+        platform.allGames().last()->m_players = 2;
+    platform.addGame("file3");
+        platform.allGames().last()->m_title = "fav, 1P";
+        platform.allGames().last()->m_favorite = true;
+        platform.allGames().last()->m_players = 1;
+    platform.addGame("file4");
+        platform.allGames().last()->m_title = "My Game";
+        platform.allGames().last()->m_favorite = false;
+        platform.allGames().last()->m_players = 1;
+    platform.addGame("file5");
+        platform.allGames().last()->m_title = "Another Game";
+        platform.allGames().last()->m_favorite = true;
+        platform.allGames().last()->m_players = 1;
+
+    QVERIFY(triggered.count() == 0);
+    platform.lockGameList();
+
+    QVERIFY(platform.games().count() == 5);
+    QVERIFY(triggered.count() == 1);
+
+    QFETCH(QString, title);
+    QFETCH(bool, favorite);
+    QFETCH(int, player_cnt);
+    QFETCH(int, matching_games_cnt);
+
+    ApiParts::Filters filters;
+        filters.m_title = title;
+        filters.m_favorite = favorite;
+        filters.m_player_count = player_cnt;
+
+    platform.applyFilters(filters);
+
+    QCOMPARE(platform.games().count(), matching_games_cnt);
+    QCOMPARE(triggered.count(), 2);
 }
 
 void test_Model::assetsSetSingle()

@@ -154,6 +154,8 @@ void ApiObject::onPlatformGameChanged(int platformIndex)
 
 void ApiObject::onFiltersChanged()
 {
-    // for (Model::Platform* const platform : qAsConst(m_platforms))
-    //     platform->applyGameFilters(m_filters);
+    // TODO: use QtConcurrent::blockingMap here
+
+    for (Model::Platform* const platform : qAsConst(m_platforms))
+        platform->applyFilters(m_filters);
 }
