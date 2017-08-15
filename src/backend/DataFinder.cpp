@@ -94,7 +94,7 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
     // could be used here
     QMutableListIterator<Model::Platform*> it(platforms);
     while (it.hasNext()) {
-        if (it.next()->games().isEmpty())
+        if (it.next()->allGames().isEmpty())
             it.remove();
     }
 }
@@ -107,7 +107,7 @@ void DataFinder::findPortableAssets(const Model::Platform& platform)
     model_providers::PegasusAssets provider;
 
     // TODO: this could be parallelized
-    for (Model::Game* game_ptr : qAsConst(platform.games())) {
+    for (Model::Game* game_ptr : qAsConst(platform.allGames())) {
         Q_ASSERT(game_ptr);
         Q_ASSERT(game_ptr->assets());
 

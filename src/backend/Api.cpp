@@ -66,7 +66,7 @@ void ApiObject::onLoadingFinished()
 
         Model::Platform& platform = *platform_ptr;
         platform.lockGameList();
-        game_count += platform.games().count();
+        game_count += platform.allGames().count();
     }
     qInfo().noquote() << tr("%n games found", "", game_count);
 

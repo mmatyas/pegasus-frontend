@@ -154,7 +154,8 @@ public:
     void setCurrentGameIndex(int);
     void resetGameIndex();
 
-    const QList<Game*>& games() const { return m_all_games; }
+    const QList<Game*>& games() const { return m_filtered_games; }
+    const QList<Game*>& allGames() const { return m_all_games; }
     void addGame(QString path);
     void sortGames();
     void lockGameList();
