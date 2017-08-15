@@ -33,6 +33,9 @@ private slots:
     void platformChangeIndex_data();
     void platformChangeIndex();
 
+    void platformAppendGame();
+    void platformSortGames();
+
     void assetsSetSingle();
     void assetsAppendMulti();
 };
@@ -139,6 +142,33 @@ void test_Model::platformChangeIndex()
     QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
     QCOMPARE(index_triggered.count(), triggered ? 2 : 1);
     QCOMPARE(game_triggered.count(), triggered ? 2 : 1);
+}
+
+void test_Model::platformAppendGame()
+{
+    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    QVERIFY(platform.games().isEmpty());
+
+    platform.addGame("a");
+    platform.addGame("b");
+    platform.addGame("c");
+    platform.lockGameList();
+
+    QCOMPARE(platform.games().count(), 3);
+}
+
+void test_Model::platformSortGames()
+{
+    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    QVERIFY(platform.games().isEmpty());
+
+    platform.addGame("bbb");
+    platform.addGame("aaa");
+    platform.sortGames();
+    platform.lockGameList();
+
+    QCOMPARE(platform.games().first()->m_rom_path, QLatin1String("aaa"));
+    QCOMPARE(platform.games().last()->m_rom_path, QLatin1String("bbb"));
 }
 
 void test_Model::assetsSetSingle()
