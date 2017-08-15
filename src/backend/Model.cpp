@@ -52,7 +52,10 @@ Game::Game(QString path, QObject* parent)
     , m_day(0)
     , m_playcount(0)
     , m_assets(new GameAssets(this))
-{}
+{
+    Q_ASSERT(!path.isEmpty());
+    Q_ASSERT(m_assets);
+}
 
 Platform::Platform(QString name, QString rom_dir_path,
                    QStringList rom_filters, QString launch_cmd,
