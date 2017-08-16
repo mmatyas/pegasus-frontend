@@ -177,7 +177,7 @@ void Platform::applyFilters(const ApiParts::Filters& filters)
     for (Model::Game* const game_ptr : qAsConst(m_all_games)) {
         const Game& game = *game_ptr;
 
-        if (game.m_title.contains(filters.m_title)
+        if (game.m_title.contains(filters.m_title, Qt::CaseInsensitive)
             && game.m_players >= filters.m_player_count
             && (!filters.m_favorite || game.m_favorite)) {
             m_filtered_games.append(game_ptr);
