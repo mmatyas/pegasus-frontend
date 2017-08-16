@@ -50,6 +50,8 @@ ApiObject::ApiObject(QObject* parent)
     // subcomponent signals
     connect(&m_settings, &ApiParts::Settings::languageChanged,
             this, &ApiObject::languageChanged);
+    connect(&m_filters, &ApiParts::Filters::filtersChanged,
+            this, &ApiObject::onFiltersChanged);
 }
 
 void ApiObject::onLoadingFinished()
@@ -154,6 +156,7 @@ void ApiObject::onPlatformGameChanged(int platformIndex)
 
 void ApiObject::onFiltersChanged()
 {
+    qDebug() << "filters changed";
     // TODO: use QtConcurrent::blockingMap here
 
     for (Model::Platform* const platform : qAsConst(m_platforms))
