@@ -16,44 +16,114 @@
 
 
 import QtQuick 2.8
+import "filter_panel"
+
 
 FocusScope {
     focus: true
 
-    Keys.forwardTo: [topbar, gamegrid]
-    Keys.onReturnPressed: pegasus.launchGame();
-
-    PlatformBar {
-        id: topbar
-        z: 300
-        width: parent.width
+    Keys.onReleased: if (event.key === Qt.Key_Control && !event.isAutoRepeat) {
+        if (filter.focus)
+            content.focus = true
+        else
+            filter.focus = true
     }
 
-    BackgroundImage {
-        anchors {
-            top: topbar.bottom; bottom: parent.bottom
-            left: parent.left; right: parent.right
+    Item {
+        id: content
+
+        focus: true
+        Keys.forwardTo: [topbar, gamegrid]
+        Keys.onReturnPressed: pegasus.launchGame();
+
+        anchors.fill: parent
+
+        PlatformBar {
+            id: topbar
+            z: 300
+            width: parent.width
+        }
+
+        BackgroundImage {
+            anchors {
+                top: topbar.bottom; bottom: parent.bottom
+                left: parent.left; right: parent.right
+            }
+        }
+
+        GameGrid {
+            id: gamegrid
+            z: 100
+            width: (parent.width * 0.6) - rpx(32)
+            anchors {
+                top: topbar.bottom; topMargin: rpx(32)
+                right: parent.right; rightMargin: rpx(6)
+                bottom: parent.bottom
+            }
+        }
+
+        GamePreview {
+            z: 200
+            width: (parent.width * 0.35) - anchors.leftMargin
+            anchors {
+                top: topbar.bottom; topMargin: rpx(32)
+                left: parent.left; leftMargin: rpx(16)
+                bottom: parent.bottom
+            }
         }
     }
 
-    GameGrid {
-        id: gamegrid
-        z: 100
-        width: (parent.width * 0.6) - rpx(32)
-        anchors {
-            top: topbar.bottom; topMargin: rpx(32)
-            right: parent.right; rightMargin: rpx(6)
-            bottom: parent.bottom
+    FocusScope {
+        id: filter
+        anchors.fill: parent
+
+        Rectangle {
+            id: filterShade
+            anchors.fill: parent
+            color: "black"
+            opacity: 0
+
+            Behavior on opacity { NumberAnimation { duration: 500 } }
+        }
+
+        FilterPanel {
+            id: filterPanel
+            z: 400
+            focus: true
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.left
+            visible: false
         }
     }
 
-    GamePreview {
-        z: 200
-        width: (parent.width * 0.35) - anchors.leftMargin
-        anchors {
-            top: topbar.bottom; topMargin: rpx(32)
-            left: parent.left; leftMargin: rpx(16)
-            bottom: parent.bottom
+    states: [
+        State {
+            name: "filtersOpen"; when: filter.focus
+            PropertyChanges { target: filterShade; opacity: 0.2 }
+            AnchorChanges {
+                target: filterPanel
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
         }
-    }
+    ]
+
+    transitions: [
+        Transition {
+            to: "filtersOpen"
+            onRunningChanged: {
+                if (running)
+                    filterPanel.visible = true;
+            }
+            AnchorAnimation { duration: 500; easing.type: Easing.OutCubic }
+        },
+        Transition {
+            from: "filtersOpen"
+            onRunningChanged: {
+                if (!running)
+                    filterPanel.visible = false;
+            }
+            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
+        }
+    ]
 }
