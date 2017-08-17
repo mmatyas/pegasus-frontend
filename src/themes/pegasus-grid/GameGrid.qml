@@ -21,26 +21,39 @@ GridView {
     id: grid_root
 
     property var platformData: pegasus.currentPlatform
-    // TODO: make these customizable
-    property var tallPlatforms: ["nes"]
-    property real columnCount: platformData
-        ? (tallPlatforms.indexOf(platformData.shortName) < 0 ? 4 : 5)
-        : 1
 
     model: platformData ? platformData.games : 0
+    onModelChanged: firstImageLoaded = false
     onCurrentIndexChanged: pegasus.currentPlatform.currentGameIndex = currentIndex;
 
+    // For better visibility, box arts should be displayed in five columns if
+    // the boxes are "tall", and four if they are "wide". There are two issues:
+    //
+    //   1. We don't want to hardcode the column count per platforms, so we need
+    // a way to decide it in runtime. The problem is, because the images are
+    // loaded asynchronously and individually, we don't know their dimensions!
+    // Also technically images can have arbitrary sizes, that is, mixed tall and
+    // wide images. As a workaround/heuristic, the first loaded image is used as
+    // a base for further calculations.
+    //
+    //   2. GridView is too stupid to automatically set the cell dimensions,
+    // we have to do it manually. Loop bindings and such also have to be avoided.
+
+    property real columnCount: (cellHeightRatio > 1.2) ? 5 : 4
+
+    property bool firstImageLoaded: false
+    property real cellHeightRatio: 1
+
+    function calcHeightRatio(imageW, imageH) {
+        cellHeightRatio = 1;
+
+        if (imageW > 0 && imageH > 0)
+            cellHeightRatio = imageH / imageW;
+    }
+
+
     cellWidth: width / columnCount
-
-    // Because the images are loaded asynchronously, we don't know the row heights,
-    // and we don't want to hardcode per-platform settings either. As such, we have
-    // to update cellHeight when an image gets loaded, by trying to fit the image
-    // first by width, then adjusting cellHeight based on the images w/h ratio.
-
-    // this is the max allowed height
-    cellHeight: cellWidth * 2
-    // on platform change, reset the height to avoid getting smaller and smaller
-    onModelChanged: cellHeight = cellWidth * 2
+    cellHeight: cellWidth * cellHeightRatio;
 
 
     displayMarginBeginning: anchors.topMargin
@@ -57,17 +70,19 @@ GridView {
 
     delegate: GameGridItem {
         width: GridView.view.cellWidth
-        height: GridView.view.cellHeight
         selected: GridView.isCurrentItem
 
         game: modelData
 
         onClicked: GridView.view.currentIndex = index
+
         onImageLoaded: {
-            var img_ratio = imgHeight / imgWidth;
-            var cell_ratio = grid_root.cellHeight / grid_root.cellWidth;
-            if (img_ratio < cell_ratio)
-                grid_root.cellHeight = grid_root.cellWidth * img_ratio;
+            // NOTE: because images are loaded asynchronously,
+            // firstImageLoaded may appear false multiple times!
+            if (!firstImageLoaded) {
+                firstImageLoaded = true;
+                calcHeightRatio(imageWidth, imageHeight);
+            }
         }
     }
 }

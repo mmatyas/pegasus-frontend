@@ -25,11 +25,19 @@ Item {
     property bool selected: false
     property Game game
 
+    property alias imageWidth: boxFront.paintedWidth
+    property alias imageHeight: boxFront.paintedHeight
+    property real imageHeightRatio: 1
+
+
+    height: width * imageHeightRatio
+
     signal clicked()
     signal imageLoaded(int imgWidth, int imgHeight)
 
     scale: selected ? 1.20 : 1.0
     z: selected ? 3 : 1
+
 
     Behavior on scale { PropertyAnimation { duration: 150 } }
 
@@ -45,6 +53,7 @@ Item {
         fillMode: Image.PreserveAspectFit
 
         onStatusChanged: if (status === Image.Ready) {
+            imageHeightRatio = paintedHeight / paintedWidth;
             root.imageLoaded(paintedWidth, paintedHeight);
         }
     }
