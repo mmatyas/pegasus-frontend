@@ -74,6 +74,17 @@ FocusScope {
 
             checked: pegasus.filters.favorite
             onCheckedChanged: pegasus.filters.favorite = checked
+
+            KeyNavigation.down: itemMultiplayer
+        }
+
+        CheckBox {
+            id: itemMultiplayer
+            text: qsTr("Multiplayer")
+            fontSize: content.normalTextSize
+
+            checked: pegasus.filters.playerCount > 1
+            onCheckedChanged: pegasus.filters.playerCount = (checked ? 2 : 1)
         }
     }
 }
