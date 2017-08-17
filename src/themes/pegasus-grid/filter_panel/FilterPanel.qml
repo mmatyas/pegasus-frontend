@@ -64,6 +64,16 @@ FocusScope {
             onTextChanged: pegasus.filters.title = text
 
             focus: true
+            KeyNavigation.down: itemFavorites
+        }
+
+        CheckBox {
+            id: itemFavorites
+            text: qsTr("Favorites")
+            fontSize: content.normalTextSize
+
+            checked: pegasus.filters.favorite
+            onCheckedChanged: pegasus.filters.favorite = checked
         }
     }
 }
