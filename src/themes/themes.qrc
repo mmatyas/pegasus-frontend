@@ -8,6 +8,8 @@
         <file>pegasus-grid/PlatformCard.qml</file>
         <file>pegasus-grid/theme.ini</file>
         <file>pegasus-grid/GameGridItem.qml</file>
+        <file>pegasus-grid/filter_panel/CheckBox.qml</file>
         <file>pegasus-grid/filter_panel/FilterPanel.qml</file>
+        <file>pegasus-grid/filter_panel/TextLine.qml</file>
     </qresource>
 </RCC>

@@ -54,5 +54,16 @@ FocusScope {
             }
             height: font.pixelSize * 1.5
         }
+
+        TextLine {
+            id: itemTitle
+            placeholder: qsTr("title")
+            fontSize: content.normalTextSize
+            width: rpx(200)
+
+            onTextChanged: pegasus.filters.title = text
+
+            focus: true
+        }
     }
 }
