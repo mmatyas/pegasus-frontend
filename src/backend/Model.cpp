@@ -191,6 +191,12 @@ void Platform::applyFilters(const ApiParts::Filters& filters)
 
     m_filtered_games = filtered_games;
     emit filteredGamesChanged();
+
+    // TODO: remember position before reset
+    if (!m_filtered_games.isEmpty())
+        setCurrentGameIndex(0);
+    else
+        resetGameIndex();
 }
 
 } // namespace Model

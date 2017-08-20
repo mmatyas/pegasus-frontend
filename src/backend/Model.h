@@ -152,6 +152,7 @@ public:
                       QStringList rom_filters, QString launch_cmd,
                       QObject* parent = nullptr);
 
+    Model::Game* currentGame() const { return m_current_game; }
     int currentGameIndex() const { return m_current_game_idx; }
     void setCurrentGameIndex(int);
     void resetGameIndex();
@@ -161,8 +162,6 @@ public:
     void addGame(QString path);
     void sortGames();
     void lockGameList();
-
-    Model::Game* currentGame() const { return m_current_game; }
 
     QQmlListProperty<Model::Game> getFilteredGamesProp();
     QQmlListProperty<Model::Game> getAllGamesProp();
