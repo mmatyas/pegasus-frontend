@@ -166,6 +166,8 @@ void Platform::clearFilters()
     // TODO: remember position before reset
     if (!m_filtered_games.isEmpty())
         setCurrentGameIndex(0);
+    else
+        resetGameIndex();
 }
 
 void Platform::applyFilters(const ApiParts::Filters& filters)
