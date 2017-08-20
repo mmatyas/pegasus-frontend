@@ -194,7 +194,7 @@ void test_Model::platformApplyFilters_data()
 void test_Model::platformApplyFilters()
 {
     Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
-    QSignalSpy triggered(&platform, &Model::Platform::gameFilterChanged);
+    QSignalSpy triggered(&platform, &Model::Platform::filteredGamesChanged);
     QVERIFY(triggered.isValid());
 
     platform.addGame("file1");

@@ -161,7 +161,7 @@ void Platform::lockGameList()
 void Platform::clearFilters()
 {
     m_filtered_games = m_all_games;
-    emit gameFilterChanged();
+    emit filteredGamesChanged();
 
     // TODO: remember position before reset
     if (!m_filtered_games.isEmpty())
@@ -188,7 +188,7 @@ void Platform::applyFilters(const ApiParts::Filters& filters)
         return;
 
     m_filtered_games = filtered_games;
-    emit gameFilterChanged();
+    emit filteredGamesChanged();
 }
 
 } // namespace Model

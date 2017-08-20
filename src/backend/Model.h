@@ -143,7 +143,7 @@ class Platform : public QObject {
                NOTIFY currentGameChanged)
     Q_PROPERTY(QQmlListProperty<Model::Game> games
                READ getFilteredGamesProp
-               NOTIFY gameFilterChanged)
+               NOTIFY filteredGamesChanged)
     Q_PROPERTY(QQmlListProperty<Model::Game> allGames
                READ getAllGamesProp CONSTANT)
 
@@ -179,7 +179,7 @@ public:
 signals:
     void currentGameIndexChanged();
     void currentGameChanged();
-    void gameFilterChanged();
+    void filteredGamesChanged();
 
 private:
     int m_current_game_idx;
