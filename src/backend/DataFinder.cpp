@@ -41,9 +41,10 @@ QList<Model::Platform*> DataFinder::find()
 
     removeEmptyPlatforms(model);
 
-    for (const Model::Platform* platform : qAsConst(model)) {
-        findPortableAssets(*platform);
-        runMetadataProviders(*platform);
+    for (Model::Platform* const platform_ptr : qAsConst(model)) {
+        Model::Platform& platform = *platform_ptr;
+        findPortableAssets(platform);
+        runMetadataProviders(platform);
         // TODO: merge duplicates?
     }
 
@@ -54,11 +55,16 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
 {
     Q_ASSERT(model.isEmpty());
 
-    QVector<model_providers::PlatformListProvider*> providers;
-    providers.push_back(new model_providers::Es2PlatformList());
+    // If you'd like to add more than one provider, use them like this:
+    //
+    // QVector<model_providers::PlatformListProvider*> providers;
+    // providers.push_back(new model_providers::Es2PlatformList());
+    //
+    // for (auto& provider : providers)
+    //     model.append(provider->find());
 
-    for (auto& provider : providers)
-        model.append(provider->find());
+    model_providers::Es2PlatformList provider;
+    model.append(provider.find());
 }
 
 void DataFinder::findGamesByExt(Model::Platform& platform)
@@ -73,17 +79,13 @@ void DataFinder::findGamesByExt(Model::Platform& platform)
                            platform.m_rom_filters,
                            filters, flags);
     while (romdir_it.hasNext())
-        platform.m_games.append(new Model::Game(romdir_it.next(), &platform));
+        platform.addGame(romdir_it.next());
 
     // QDir supports ordering, but doesn't support symlinks or subdirectories
     // without additional checks and recursion.
     // QDirIterator supports subdirs and symlinks, but doesn't do sorting.
     // Sorting manually should be faster than evaluating an `if dir` branch in a loop.
-    std::sort(platform.m_games.begin(), platform.m_games.end(),
-        [](const Model::Game* a, const Model::Game* b) {
-            return QString::localeAwareCompare(a->m_rom_basename, b->m_rom_basename) < 0;
-        }
-    );
+    platform.sortGames();
 }
 
 void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
@@ -92,7 +94,7 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
     // could be used here
     QMutableListIterator<Model::Platform*> it(platforms);
     while (it.hasNext()) {
-        if (it.next()->m_games.isEmpty())
+        if (it.next()->games().isEmpty())
             it.remove();
     }
 }
@@ -105,7 +107,7 @@ void DataFinder::findPortableAssets(const Model::Platform& platform)
     model_providers::PegasusAssets provider;
 
     // TODO: this could be parallelized
-    for (Model::Game* game_ptr : qAsConst(platform.m_games)) {
+    for (Model::Game* game_ptr : qAsConst(platform.games())) {
         Q_ASSERT(game_ptr);
         Q_ASSERT(game_ptr->assets());
 

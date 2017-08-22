@@ -50,7 +50,7 @@ void test_Model::platformNullGame()
 void test_Model::platformSetIndex_data()
 {
     QTest::addColumn<int>("index");
-    QTest::addColumn<bool>("valid");
+    QTest::addColumn<bool>("game_valid");
 
     QTest::newRow("undefined (-1)") << -1 << false;
     QTest::newRow("valid (0)") << 0 << true;
@@ -68,23 +68,22 @@ void test_Model::platformSetIndex()
     QVERIFY(index_triggered.isValid());
     QVERIFY(game_triggered.isValid());
 
-    Model::Game* game = new Model::Game("dummy", &platform);
-    platform.m_games.append(game);
+    platform.addGame("dummy");
 
     // test
 
     QFETCH(int, index);
-    QFETCH(bool, valid);
+    QFETCH(bool, game_valid);
 
     if (index != -1 && index != 0)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index #-?[0-9]+"));
 
     platform.setCurrentGameIndex(index);
 
-    QCOMPARE(platform.currentGame(), valid ? game : nullptr);
-    QCOMPARE(platform.currentGameIndex(), valid ? 0 : -1);
-    QCOMPARE(index_triggered.count(), valid ? 1 : 0);
-    QCOMPARE(game_triggered.count(), valid ? 1 : 0);
+    QCOMPARE(platform.currentGame(), game_valid ? platform.games().last() : nullptr);
+    QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
+    QCOMPARE(index_triggered.count(), game_valid ? 1 : 0);
+    QCOMPARE(game_triggered.count(), game_valid ? 1 : 0);
 }
 
 void test_Model::platformChangeIndex_data()
@@ -109,8 +108,7 @@ void test_Model::platformChangeIndex()
     QVERIFY(index_triggered.isValid());
     QVERIFY(game_triggered.isValid());
 
-    Model::Game* game = new Model::Game("dummy", &platform);
-    platform.m_games.append(game);
+    platform.addGame("dummy");
 
     platform.setCurrentGameIndex(0);
     QVERIFY(platform.currentGame() != nullptr);
@@ -129,7 +127,7 @@ void test_Model::platformChangeIndex()
 
     platform.setCurrentGameIndex(index);
 
-    QCOMPARE(platform.currentGame(), game_valid ? game : nullptr);
+    QCOMPARE(platform.currentGame(), game_valid ? platform.games().last() : nullptr);
     QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
     QCOMPARE(index_triggered.count(), triggered ? 2 : 1);
     QCOMPARE(game_triggered.count(), triggered ? 2 : 1);

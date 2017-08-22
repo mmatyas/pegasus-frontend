@@ -150,6 +150,10 @@ public:
     void setCurrentGameIndex(int);
     void resetGameIndex();
 
+    const QList<Game*>& games() const { return m_all_games; }
+    void addGame(QString path);
+    void sortGames();
+
     Model::Game* currentGame() const { return m_current_game; }
 
     QQmlListProperty<Model::Game> getGamesProp();
@@ -160,8 +164,6 @@ public:
     const QStringList m_rom_filters;
     const QString m_launch_cmd;
 
-    QList<Game*> m_games;
-
 signals:
     void currentGameIndexChanged();
     void currentGameChanged();
@@ -169,6 +171,8 @@ signals:
 private:
     int m_current_game_idx;
     Model::Game* m_current_game;
+
+    QList<Game*> m_all_games;
 };
 
 } // namespace Model

@@ -78,13 +78,13 @@ void Platform::setCurrentGameIndex(int idx)
         return;
     }
 
-    const bool valid_idx = (0 <= idx && idx < m_games.count());
+    const bool valid_idx = (0 <= idx && idx < m_all_games.count());
     if (!valid_idx) {
         qWarning() << tr("Invalid game index #%1").arg(idx);
         return;
     }
 
-    Model::Game* new_game = m_games.at(idx);
+    Model::Game* new_game = m_all_games.at(idx);
     if (m_current_game == new_game)
         return;
 
@@ -112,7 +112,21 @@ void Platform::resetGameIndex()
 
 QQmlListProperty<Model::Game> Platform::getGamesProp()
 {
-    return QQmlListProperty<Model::Game>(this, m_games);
+    return QQmlListProperty<Model::Game>(this, m_all_games);
+}
+
+void Platform::addGame(QString path)
+{
+    m_all_games.append(new Model::Game(path, this));
+}
+
+void Platform::sortGames()
+{
+    std::sort(m_all_games.begin(), m_all_games.end(),
+        [](const Model::Game* a, const Model::Game* b) {
+            return QString::localeAwareCompare(a->m_rom_basename, b->m_rom_basename) < 0;
+        }
+    );
 }
 
 } // namespace Model
