@@ -35,6 +35,7 @@
 class ApiObject : public QObject {
     Q_OBJECT
 
+    // platform-related properties
     Q_PROPERTY(QQmlListProperty<Model::Platform> platforms
                READ getPlatformsProp
                NOTIFY platformModelChanged)
@@ -42,9 +43,9 @@ class ApiObject : public QObject {
                READ currentPlatformIndex WRITE setCurrentPlatformIndex
                RESET resetPlatformIndex
                NOTIFY currentPlatformIndexChanged)
-    Q_PROPERTY(Model::Platform* currentPlatform MEMBER m_current_platform
+    Q_PROPERTY(Model::Platform* currentPlatform
+               READ currentPlatform
                NOTIFY currentPlatformChanged)
-
     // shortcut for currentPlatform.currentGame
     Q_PROPERTY(Model::Game* currentGame
                READ currentGame
@@ -57,38 +58,34 @@ class ApiObject : public QObject {
     Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
 
     // internal properties
-    Q_PROPERTY(QString tr READ emptyString
-               NOTIFY languageChanged)
+    Q_PROPERTY(QString tr READ emptyString NOTIFY languageChanged)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
-    QQmlListProperty<Model::Platform> getPlatformsProp() {
-        return QQmlListProperty<Model::Platform>(this, m_platforms);
-    }
+    // platform-related properties
 
+    QQmlListProperty<Model::Platform> getPlatformsProp();
     int currentPlatformIndex() const { return m_current_platform_idx; }
     void setCurrentPlatformIndex(int);
     void resetPlatformIndex();
 
+    Model::Platform* currentPlatform() const { return m_current_platform; }
     Model::Game* currentGame() const {
-        return m_current_platform
-            ? m_current_platform->currentGame()
-            : nullptr;
+        return currentPlatform() ? currentPlatform()->currentGame() : nullptr;
     }
 
+    // game launching
     Q_INVOKABLE void launchGame();
 
+    // subcomponents
     ApiParts::Filters* filters() { return &m_filters; }
     ApiParts::Meta* meta() { return &m_meta; }
     ApiParts::Settings* settings() { return &m_settings; }
     ApiParts::System* system() { return &m_system; }
 
-    // used to trigger re-rendering of texts on locale change
-    QString emptyString() const { return QString(); }
-
 signals:
-    // the main data structures
+    // platform-related properties
     void platformModelChanged();
     void currentPlatformIndexChanged();
     void currentPlatformChanged();
@@ -99,25 +96,26 @@ signals:
     void executeLaunch(const Model::Platform*, const Model::Game*);
     void restoreAfterGame(ApiObject*);
 
-    // internal
+    // triggers translation update
     void languageChanged();
 
 public slots:
     // game launch communication
-    void onLoadingFinished();
     void onReadyToLaunch();
     void onGameFinished();
 
 private slots:
+    // internal communication
+    void onLoadingFinished();
     void onFiltersChanged();
+    void onPlatformGameChanged(int platformIndex);
 
 private:
     QList<Model::Platform*> m_platforms;
 
+    // platform-related properties
     int m_current_platform_idx;
     Model::Platform* m_current_platform;
-
-    void onPlatformGameChanged(int platformIndex);
 
     // components
     ApiParts::Meta m_meta;
@@ -127,4 +125,7 @@ private:
 
     // initialization
     QFutureWatcher<void> m_loading_watcher;
+
+    // used to trigger re-rendering of texts on locale change
+    QString emptyString() const { return QString(); }
 };

@@ -31,6 +31,7 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_platform_idx(-1)
     , m_current_platform(nullptr)
 {
+    // launch the game search on a parallel thread
     QFuture<void> future = QtConcurrent::run([this]{
         QElapsedTimer timer;
         timer.start();
@@ -39,13 +40,14 @@ ApiObject::ApiObject(QObject* parent)
         this->m_meta.setElapsedLoadingTime(timer.elapsed());
 
         // set the correct thread for the QObjects
-        for (Model::Platform* platform : qAsConst(m_platforms))
+        for (Model::Platform* const platform : qAsConst(m_platforms))
             platform->moveToThread(this->thread());
     });
 
     m_loading_watcher.setFuture(future);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
             this, &ApiObject::onLoadingFinished);
+
 
     // subcomponent signals
     connect(&m_settings, &ApiParts::Settings::languageChanged,
@@ -56,11 +58,12 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::onLoadingFinished()
 {
-    // FIXME: `int` will be likely too short, but `tr()` can't handle `long`s
-    int game_count = 0;
+    // NOTE: `tr` (see below) uses `int`; assuming we have
+    //       less than 2 million games, it will be enough
+    int32_t game_count = 0;
 
     for (int i = 0; i < m_platforms.length(); i++) {
-        Model::Platform* platform_ptr = m_platforms.at(i);
+        Model::Platform* const platform_ptr = m_platforms.at(i);
         Q_ASSERT(platform_ptr);
 
         connect(platform_ptr, &Model::Platform::currentGameChanged,
@@ -80,6 +83,11 @@ void ApiObject::onLoadingFinished()
     m_meta.onApiLoadingFinished();
 }
 
+QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
+{
+   return QQmlListProperty<Model::Platform>(this, m_platforms);
+}
+
 void ApiObject::resetPlatformIndex()
 {
     // these values are always in pair
@@ -91,6 +99,7 @@ void ApiObject::resetPlatformIndex()
     m_current_platform = nullptr;
     emit currentPlatformChanged();
 
+    // TODO: this is unnecessary
     for (Model::Platform* platform : qAsConst(m_platforms))
         platform->resetGameIndex();
 }
@@ -100,6 +109,7 @@ void ApiObject::setCurrentPlatformIndex(int idx)
     if (idx == m_current_platform_idx)
         return;
 
+    // TODO: drop -1 support
     if (idx == -1) {
         resetPlatformIndex();
         return;
@@ -121,11 +131,11 @@ void ApiObject::setCurrentPlatformIndex(int idx)
 
 void ApiObject::launchGame()
 {
-    if (!m_current_platform) {
+    if (!currentPlatform()) {
         qWarning() << tr("The current platform is undefined, you can't launch any games!");
         return;
     }
-    if (!m_current_platform->currentGame()) {
+    if (!currentGame()) {
         qWarning() << tr("The current game is undefined, you can't launch it!");
         return;
     }
@@ -135,16 +145,14 @@ void ApiObject::launchGame()
 
 void ApiObject::onReadyToLaunch()
 {
-    Q_ASSERT(m_current_platform);
-    Q_ASSERT(m_current_platform->currentGame());
-
-    emit executeLaunch(m_current_platform, m_current_platform->currentGame());
+    Q_ASSERT(currentPlatform());
+    Q_ASSERT(currentGame());
+    emit executeLaunch(currentPlatform(), currentGame());
 }
 
 void ApiObject::onGameFinished()
 {
     // TODO: this is where play count could be increased
-
     emit restoreAfterGame(this);
 }
 
@@ -156,9 +164,7 @@ void ApiObject::onPlatformGameChanged(int platformIndex)
 
 void ApiObject::onFiltersChanged()
 {
-    qDebug() << "filters changed";
     // TODO: use QtConcurrent::blockingMap here
-
     for (Model::Platform* const platform : qAsConst(m_platforms))
         platform->applyFilters(m_filters);
 }
