@@ -31,9 +31,6 @@ private slots:
     void platformSetIndex_data();
     void platformSetIndex();
 
-    void platformChangeIndex_data();
-    void platformChangeIndex();
-
     void platformAppendGame();
     void platformSortGames();
 
@@ -42,6 +39,9 @@ private slots:
 
     void assetsSetSingle();
     void assetsAppendMulti();
+
+private:
+    void prepareTestPlatform(Model::Platform&, QSignalSpy&, QSignalSpy&);
 };
 
 void test_Model::platformNullGame()
@@ -54,16 +54,38 @@ void test_Model::platformNullGame()
     QCOMPARE(platform.currentGameIndex(), -1);
 }
 
+void test_Model::prepareTestPlatform(Model::Platform& platform,
+                                     QSignalSpy& spy_idx, QSignalSpy& spy_game)
+{
+    // add two games, then lock the list;
+    // after the lock, the platform should point to the first game
+    // and trigger only once
+
+    QVERIFY(spy_idx.isValid());
+    QVERIFY(spy_game.isValid());
+
+    platform.addGame("dummy0");
+    platform.addGame("dummy1");
+    platform.lockGameList();
+
+    QVERIFY(platform.games().count() == 2);
+    QVERIFY(platform.currentGame() != nullptr);
+    QVERIFY(platform.currentGame() == platform.games().first());
+    QVERIFY(platform.currentGameIndex() == 0);
+    QVERIFY(spy_idx.count() == 1);
+    QVERIFY(spy_game.count() == 1);
+}
+
 void test_Model::platformSetIndex_data()
 {
     QTest::addColumn<int>("index");
-    QTest::addColumn<bool>("game_valid");
-    QTest::addColumn<bool>("triggered");
+    QTest::addColumn<bool>("game_change_triggered");
 
-    QTest::newRow("undefined (-1)") << -1 << false << true;
-    QTest::newRow("valid (0)") << 0 << true << false;
-    QTest::newRow("out of range (pos)") << 999 << true << false;
-    QTest::newRow("out of range (neg)") << -999 << true << false;
+    QTest::newRow("undefined (-1)") << -1 << true;
+    QTest::newRow("first/same (0)") << 0 << false;
+    QTest::newRow("second/different (1)") << 1 << true;
+    QTest::newRow("out of range (pos)") << 999 << false;
+    QTest::newRow("out of range (neg)") << -999 << false;
 }
 
 void test_Model::platformSetIndex()
@@ -73,79 +95,32 @@ void test_Model::platformSetIndex()
     Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
     QSignalSpy index_triggered(&platform, &Model::Platform::currentGameIndexChanged);
     QSignalSpy game_triggered(&platform, &Model::Platform::currentGameChanged);
-    QVERIFY(index_triggered.isValid());
-    QVERIFY(game_triggered.isValid());
 
-    platform.addGame("dummy");
-    platform.lockGameList();
-
-    QVERIFY(platform.currentGame() != nullptr);
-    QVERIFY(platform.currentGameIndex() == 0);
-    QVERIFY(index_triggered.count() == 1);
-    QVERIFY(game_triggered.count() == 1);
+    prepareTestPlatform(platform, index_triggered, game_triggered);
 
     // test
 
     QFETCH(int, index);
-    QFETCH(bool, game_valid);
-    QFETCH(bool, triggered);
+    QFETCH(bool, game_change_triggered);
 
-    if (index != -1 && index != 0)
+    if (index < -1 || index > platform.games().count())
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index #-?[0-9]+"));
 
     platform.setCurrentGameIndex(index);
 
-    QCOMPARE(platform.currentGame(), game_valid ? platform.games().last() : nullptr);
-    QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
-    QCOMPARE(index_triggered.count(), triggered ? 2 : 1);
-    QCOMPARE(game_triggered.count(), triggered ? 2 : 1);
-}
+    if (index == -1) {
+        // -1 makes it undefined
+        QCOMPARE(platform.currentGame(), nullptr);
+        QCOMPARE(platform.currentGameIndex(), -1);
+    }
+    else {
+        int expected_idx = game_change_triggered ? index : 0;
 
-void test_Model::platformChangeIndex_data()
-{
-    QTest::addColumn<int>("index");
-    QTest::addColumn<bool>("game_valid");
-    QTest::addColumn<bool>("triggered");
-
-    QTest::newRow("same") << 0 << true << false;
-    QTest::newRow("reset") << -1 << false << true;
-    QTest::newRow("out of range (pos)") << 999 << true << false;
-    QTest::newRow("out of range (neg)") << -999 << true << false;
-}
-
-void test_Model::platformChangeIndex()
-{
-    // prepare
-
-    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
-    QSignalSpy index_triggered(&platform, &Model::Platform::currentGameIndexChanged);
-    QSignalSpy game_triggered(&platform, &Model::Platform::currentGameChanged);
-    QVERIFY(index_triggered.isValid());
-    QVERIFY(game_triggered.isValid());
-
-    platform.addGame("dummy");
-    platform.lockGameList();
-
-    QVERIFY(platform.currentGame() != nullptr);
-    QVERIFY(platform.currentGameIndex() == 0);
-    QVERIFY(index_triggered.count() == 1);
-    QVERIFY(game_triggered.count() == 1);
-
-    // test
-
-    QFETCH(int, index);
-    QFETCH(bool, game_valid);
-    QFETCH(bool, triggered);
-
-    if (index != -1 && index != 0)
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index #-?[0-9]+"));
-
-    platform.setCurrentGameIndex(index);
-
-    QCOMPARE(platform.currentGame(), game_valid ? platform.games().last() : nullptr);
-    QCOMPARE(platform.currentGameIndex(), game_valid ? 0 : -1);
-    QCOMPARE(index_triggered.count(), triggered ? 2 : 1);
-    QCOMPARE(game_triggered.count(), triggered ? 2 : 1);
+        QCOMPARE(platform.currentGame(), platform.games().at(expected_idx));
+        QCOMPARE(platform.currentGameIndex(), expected_idx);
+    }
+    QCOMPARE(index_triggered.count(), game_change_triggered ? 2 : 1);
+    QCOMPARE(game_triggered.count(), game_change_triggered ? 2 : 1);
 }
 
 void test_Model::platformAppendGame()
