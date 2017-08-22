@@ -81,30 +81,27 @@ Platform::Platform(QString name, QString rom_dir_path,
 
 void Platform::setCurrentGameIndex(int idx)
 {
-    if (idx == m_current_game_idx)
-        return;
+    if (idx != m_current_game_idx) {
+        if (idx == -1) {
+            resetGameIndex();
+            return;
+        }
 
-    if (idx == -1) {
-        resetGameIndex();
-        return;
-    }
+        const bool valid_idx = (0 <= idx && idx < m_filtered_games.count());
+        if (!valid_idx) {
+            qWarning() << tr("Invalid game index #%1").arg(idx);
+            return;
+        }
 
-    const bool valid_idx = (0 <= idx && idx < m_filtered_games.count());
-    if (!valid_idx) {
-        qWarning() << tr("Invalid game index #%1").arg(idx);
-        return;
+        m_current_game_idx = idx;
+        emit currentGameIndexChanged();
     }
 
     Model::Game* new_game = m_filtered_games.at(idx);
-    if (m_current_game == new_game)
-        return;
-
-    m_current_game_idx = idx;
-    m_current_game = new_game;
-    Q_ASSERT(m_current_game);
-
-    emit currentGameIndexChanged();
-    emit currentGameChanged();
+    if (m_current_game != new_game) {
+        m_current_game = new_game;
+        emit currentGameChanged();
+    }
 }
 
 void Platform::resetGameIndex()
