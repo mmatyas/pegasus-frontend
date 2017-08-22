@@ -197,6 +197,7 @@ void test_Model::platformApplyFilters()
     platform.lockGameList();
 
     QVERIFY(platform.games().count() == 5);
+    QVERIFY(platform.games().count() == platform.allGames().count());
     QVERIFY(triggered.count() == 1);
 
     QFETCH(QString, title);
@@ -212,7 +213,13 @@ void test_Model::platformApplyFilters()
     platform.applyFilters(filters);
 
     QCOMPARE(platform.games().count(), matching_games_cnt);
-    QCOMPARE(triggered.count(), 2);
+
+    // if the filter didn't change the list of games,
+    // there should be no new trigger
+    if (matching_games_cnt == platform.allGames().count())
+        QCOMPARE(triggered.count(), 1);
+    else
+        QCOMPARE(triggered.count(), 2);
 }
 
 void test_Model::assetsSetSingle()
