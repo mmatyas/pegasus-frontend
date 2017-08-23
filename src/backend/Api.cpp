@@ -98,18 +98,20 @@ void ApiObject::resetPlatformIndex()
     m_current_platform_idx = -1;
     m_current_platform = nullptr;
     emit currentPlatformChanged();
-
-    // TODO: this is unnecessary
-    for (Model::Platform* platform : qAsConst(m_platforms))
-        platform->resetGameIndex();
 }
 
+// NOTES:
+//  - Changing the index to a valid value causes changing the current platform
+//    and the current game as well. The list of platforms is fixed, so the index
+//    and the platform pointer are always change in pair.
+//  - Setting the index to -1 shall make the platform pointer null. The platform
+//    themselves should not change.
+//  - Setting the index to out of range values should not change anything.
 void ApiObject::setCurrentPlatformIndex(int idx)
 {
     if (idx == m_current_platform_idx)
         return;
 
-    // TODO: drop -1 support
     if (idx == -1) {
         resetPlatformIndex();
         return;
