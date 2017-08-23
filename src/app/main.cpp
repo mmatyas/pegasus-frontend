@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
     // the main parts of the backend
     // frontend <-> api <-> launcher
     ApiObject api;
+    api.startLoading();
     FrontendLayer frontend(&api);
     ProcessLauncher launcher;
 

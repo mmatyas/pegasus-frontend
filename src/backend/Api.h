@@ -63,6 +63,8 @@ class ApiObject : public QObject {
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
+    void startLoading();
+
     // platform-related properties
 
     QQmlListProperty<Model::Platform> getPlatformsProp();

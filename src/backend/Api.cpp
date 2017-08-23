@@ -31,6 +31,17 @@ ApiObject::ApiObject(QObject* parent)
     , m_current_platform_idx(-1)
     , m_current_platform(nullptr)
 {
+    // subcomponent signals
+    connect(&m_settings, &ApiParts::Settings::languageChanged,
+            this, &ApiObject::languageChanged);
+    connect(&m_filters, &ApiParts::Filters::filtersChanged,
+            this, &ApiObject::onFiltersChanged);
+}
+
+void ApiObject::startLoading()
+{
+    // TODO: would it be possible to move this function out of the Api code?
+
     // launch the game search on a parallel thread
     QFuture<void> future = QtConcurrent::run([this]{
         QElapsedTimer timer;
@@ -47,13 +58,6 @@ ApiObject::ApiObject(QObject* parent)
     m_loading_watcher.setFuture(future);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
             this, &ApiObject::onLoadingFinished);
-
-
-    // subcomponent signals
-    connect(&m_settings, &ApiParts::Settings::languageChanged,
-            this, &ApiObject::languageChanged);
-    connect(&m_filters, &ApiParts::Filters::filtersChanged,
-            this, &ApiObject::onFiltersChanged);
 }
 
 void ApiObject::onLoadingFinished()
