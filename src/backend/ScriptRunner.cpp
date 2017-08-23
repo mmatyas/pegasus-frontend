@@ -30,6 +30,8 @@ const QMap<ScriptRunner::EventType, QString> ScriptRunner::script_dirs = {
     { ScriptRunner::EventType::CONFIG_CHANGED, "config-changed" },
     { ScriptRunner::EventType::SETTINGS_CHANGED, "settings-changed" },
     { ScriptRunner::EventType::CONTROLS_CHANGED, "controls-changed" },
+    { ScriptRunner::EventType::PROCESS_STARTED, "game-start" },
+    { ScriptRunner::EventType::PROCESS_FINISHED, "game-stop" },
 };
 
 void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)

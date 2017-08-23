@@ -17,6 +17,8 @@
 
 #include "ProcessLauncher.h"
 
+#include "ScriptRunner.h"
+
 #include <QDebug>
 #include <QFileInfo>
 #include <QRegularExpression>
@@ -35,7 +37,9 @@ void ProcessLauncher::launchGame(const Model::Platform* platform, const Model::G
 
     qInfo().noquote() << tr("Executing command: `%1`").arg(launch_cmd);
 
+    beforeRun();
     runProcess(launch_cmd);
+    afterRun();
 
     emit processFinished();
 }
@@ -156,4 +160,18 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
             Q_UNREACHABLE();
             break;
     }
+}
+
+void ProcessLauncher::beforeRun()
+{
+    // call the relevant scripts
+    using ScriptEvent = ScriptRunner::EventType;
+    ScriptRunner::findAndRunScripts(ScriptEvent::PROCESS_STARTED);
+}
+
+void ProcessLauncher::afterRun()
+{
+    // call the relevant scripts
+    using ScriptEvent = ScriptRunner::EventType;
+    ScriptRunner::findAndRunScripts(ScriptEvent::PROCESS_FINISHED);
 }

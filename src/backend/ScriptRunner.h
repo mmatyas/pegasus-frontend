@@ -32,6 +32,8 @@ public:
         CONFIG_CHANGED,
         SETTINGS_CHANGED,
         CONTROLS_CHANGED,
+        PROCESS_STARTED,
+        PROCESS_FINISHED,
     };
 
     static void findAndRunScripts(EventType);

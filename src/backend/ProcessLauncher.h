@@ -49,4 +49,7 @@ private:
 
     QString createLaunchCommand(const Model::Platform*, const Model::Game*);
     void runProcess(const QString&);
+
+    void beforeRun();
+    void afterRun();
 };
