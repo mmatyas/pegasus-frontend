@@ -69,7 +69,7 @@ void test_Model::prepareTestPlatform(Model::Platform& platform,
     platform.lockGameList();
 
     QVERIFY(platform.games().count() == 2);
-    QVERIFY(platform.currentGame() != nullptr);
+    QVERIFY(platform.currentGame() != static_cast<Model::Game*>(nullptr));
     QVERIFY(platform.currentGame() == platform.games().first());
     QVERIFY(platform.currentGameIndex() == 0);
     QVERIFY(spy_idx.count() == 1);
@@ -110,7 +110,7 @@ void test_Model::platformSetIndex()
 
     if (index == -1) {
         // -1 makes it undefined
-        QCOMPARE(platform.currentGame(), nullptr);
+        QCOMPARE(platform.currentGame(), static_cast<Model::Game*>(nullptr));
         QCOMPARE(platform.currentGameIndex(), -1);
     }
     else {
