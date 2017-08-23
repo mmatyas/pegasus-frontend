@@ -81,7 +81,7 @@ void Settings::initLanguages()
     // or fall back to english
     for (int i = 0; i < m_translations.length(); i++) {
         if (m_translations[i]->tag() == requested_tag) {
-            qDebug().noquote() << tr("Found translation for `%1`").arg(requested_tag);
+            qInfo().noquote() << tr("Found translation for `%1`").arg(requested_tag);
             m_language_idx = i;
             break;
         }
