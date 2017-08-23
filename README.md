@@ -30,9 +30,16 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 
 At the moment, this project is still in alpha. You can find the current unstable releases and the latest automatic builds [here][gh ci builds] (for Linux) or [here][appveyor mingw build] (for Windows). You can also build the program manually from its source code.
 
+### Runtime dependencies
+
+While the releases try to include most required dependencies, on some platforms you might need to install additional packages.
+
+- Linux: a distro not older than Ubuntu 14.04 or Debian Wheezy is recommended. The dependencies are Fontconfig and GStreamer 1.x (`fontconfig gstreamer1.0-alsa gstreamer1.0-libav gstreamer1.0-plugins-good`).
+- Windows: all dependencies included, should work on anything between Windows 7 and 10
+
 ### Building from source
 
-**Dependencies**
+**Build dependencies**
 
 - C++11 compatible compiler
 - Qt 5.7 or later (5.9 recommended), with the following modules:
