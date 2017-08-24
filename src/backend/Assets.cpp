@@ -56,7 +56,7 @@ const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
     // multi
     { Assets::Type::FANARTS, { "-fanart", "-art" } },
     { Assets::Type::SCREENSHOTS, { "-screenshot" } },
-    { Assets::Type::VIDEOS, { "-video" } },
+    { Assets::Type::VIDEOS, { "-video", "" } },
 };
 
 #ifdef Q_PROCESSOR_ARM
