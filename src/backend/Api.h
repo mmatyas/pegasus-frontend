@@ -20,10 +20,10 @@
 #include "Model.h"
 #include "api_parts/ApiFilters.h"
 #include "api_parts/ApiMeta.h"
+#include "api_parts/ApiPlatforms.h"
 #include "api_parts/ApiSettings.h"
 #include "api_parts/ApiSystem.h"
 
-#include <QFutureWatcher>
 #include <QObject>
 #include <QQmlListProperty>
 
@@ -63,16 +63,16 @@ class ApiObject : public QObject {
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
-    void startLoading();
+    void startScanning() { m_platforms.startScanning(); }
 
     // platform-related properties
 
     QQmlListProperty<Model::Platform> getPlatformsProp();
-    int currentPlatformIndex() const { return m_current_platform_idx; }
-    void setCurrentPlatformIndex(int);
-    void resetPlatformIndex();
+    int currentPlatformIndex() const { return m_platforms.currentIndex(); }
+    void setCurrentPlatformIndex(int idx) { m_platforms.setIndex(idx); }
+    void resetPlatformIndex() { m_platforms.resetIndex(); }
 
-    Model::Platform* currentPlatform() const { return m_current_platform; }
+    Model::Platform* currentPlatform() const { return m_platforms.currentPlatform(); }
     Model::Game* currentGame() const {
         return currentPlatform() ? currentPlatform()->currentGame() : nullptr;
     }
@@ -108,25 +108,14 @@ public slots:
 
 private slots:
     // internal communication
-    void onLoadingFinished();
-    void onFiltersChanged();
-    void onPlatformGameChanged(int platformIndex);
+    void onScanCompleted();
 
 private:
-    QList<Model::Platform*> m_platforms;
-
-    // platform-related properties
-    int m_current_platform_idx;
-    Model::Platform* m_current_platform;
-
-    // components
     ApiParts::Meta m_meta;
+    ApiParts::Platforms m_platforms;
     ApiParts::System m_system;
     ApiParts::Settings m_settings;
     ApiParts::Filters m_filters;
-
-    // initialization
-    QFutureWatcher<void> m_loading_watcher;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

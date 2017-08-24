@@ -21,7 +21,8 @@ SOURCES += \
     api_parts/ApiSystem.cpp \
     model_providers/Es2Metadata.cpp \
     model_providers/Es2PlatformList.cpp \
-    model_providers/PegasusAssets.cpp
+    model_providers/PegasusAssets.cpp \
+    api_parts/ApiPlatforms.cpp
 
 HEADERS += \
     Api.h \
@@ -42,7 +43,8 @@ HEADERS += \
     model_providers/PlatformListProvider.h \
     model_providers/Es2Metadata.h \
     model_providers/Es2PlatformList.h \
-    model_providers/PegasusAssets.h
+    model_providers/PegasusAssets.h \
+    api_parts/ApiPlatforms.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

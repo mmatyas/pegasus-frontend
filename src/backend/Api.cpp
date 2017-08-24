@@ -17,122 +17,36 @@
 
 #include "Api.h"
 
-#include "DataFinder.h"
-
-#include <QDebug>
-#include <QElapsedTimer>
-#include <QFileInfo>
-#include <QRegularExpression>
-#include <QtConcurrent/QtConcurrent>
-
 
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
-    , m_current_platform_idx(-1)
-    , m_current_platform(nullptr)
 {
-    // subcomponent signals
     connect(&m_settings, &ApiParts::Settings::languageChanged,
             this, &ApiObject::languageChanged);
     connect(&m_filters, &ApiParts::Filters::filtersChanged,
-            this, &ApiObject::onFiltersChanged);
+            [this]{ m_platforms.onFiltersChanged(m_filters); });
+
+    connect(&m_platforms, &ApiParts::Platforms::modelChanged,
+            this, &ApiObject::platformModelChanged);
+    connect(&m_platforms, &ApiParts::Platforms::indexChanged,
+            this, &ApiObject::currentPlatformIndexChanged);
+    connect(&m_platforms, &ApiParts::Platforms::platformChanged,
+            this, &ApiObject::currentPlatformChanged);
+    connect(&m_platforms, &ApiParts::Platforms::platformGameChanged,
+            this, &ApiObject::currentGameChanged);
+    connect(&m_platforms, &ApiParts::Platforms::scanCompleted,
+            this, &ApiObject::onScanCompleted);
 }
 
-void ApiObject::startLoading()
+void ApiObject::onScanCompleted()
 {
-    // TODO: would it be possible to move this function out of the Api code?
-
-    // launch the game search on a parallel thread
-    QFuture<void> future = QtConcurrent::run([this]{
-        QElapsedTimer timer;
-        timer.start();
-
-        this->m_platforms = DataFinder::find();
-        this->m_meta.setElapsedLoadingTime(timer.elapsed());
-
-        // set the correct thread for the QObjects
-        for (Model::Platform* const platform : qAsConst(m_platforms))
-            platform->moveToThread(this->thread());
-    });
-
-    m_loading_watcher.setFuture(future);
-    connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            this, &ApiObject::onLoadingFinished);
-}
-
-void ApiObject::onLoadingFinished()
-{
-    // NOTE: `tr` (see below) uses `int`; assuming we have
-    //       less than 2 million games, it will be enough
-    int32_t game_count = 0;
-
-    for (int i = 0; i < m_platforms.length(); i++) {
-        Model::Platform* const platform_ptr = m_platforms.at(i);
-        Q_ASSERT(platform_ptr);
-
-        connect(platform_ptr, &Model::Platform::currentGameChanged,
-                [this, i](){ ApiObject::onPlatformGameChanged(i); });
-
-        Model::Platform& platform = *platform_ptr;
-        platform.lockGameList();
-        game_count += platform.allGames().count();
-    }
-    qInfo().noquote() << tr("%n games found", "", game_count);
-
-    emit platformModelChanged();
-
-    if (!m_platforms.isEmpty())
-        setCurrentPlatformIndex(0);
-
+    m_meta.setElapsedLoadingTime(m_platforms.scanDuration());
     m_meta.onApiLoadingFinished();
 }
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
 {
-   return QQmlListProperty<Model::Platform>(this, m_platforms);
-}
-
-void ApiObject::resetPlatformIndex()
-{
-    // these values are always in pair
-    Q_ASSERT((m_current_platform_idx == -1) == (m_current_platform == nullptr));
-    if (!m_current_platform) // already reset
-        return;
-
-    m_current_platform_idx = -1;
-    m_current_platform = nullptr;
-    emit currentPlatformChanged();
-}
-
-// NOTES:
-//  - Changing the index to a valid value causes changing the current platform
-//    and the current game as well. The list of platforms is fixed, so the index
-//    and the platform pointer are always change in pair.
-//  - Setting the index to -1 shall make the platform pointer null. The platform
-//    themselves should not change.
-//  - Setting the index to out of range values should not change anything.
-void ApiObject::setCurrentPlatformIndex(int idx)
-{
-    if (idx == m_current_platform_idx)
-        return;
-
-    if (idx == -1) {
-        resetPlatformIndex();
-        return;
-    }
-
-    const bool valid_idx = (0 <= idx || idx < m_platforms.count());
-    if (!valid_idx) {
-        qWarning() << tr("Invalid platform index #%1").arg(idx);
-        return;
-    }
-
-    m_current_platform_idx = idx;
-    m_current_platform = m_platforms.at(idx);
-    Q_ASSERT(m_current_platform);
-
-    emit currentPlatformChanged();
-    emit currentGameChanged();
+    return QQmlListProperty<Model::Platform>(this, m_platforms.allPlatforms());
 }
 
 void ApiObject::launchGame()
@@ -160,17 +74,4 @@ void ApiObject::onGameFinished()
 {
     // TODO: this is where play count could be increased
     emit restoreAfterGame(this);
-}
-
-void ApiObject::onPlatformGameChanged(int platformIndex)
-{
-    if (platformIndex == m_current_platform_idx)
-        emit currentGameChanged();
-}
-
-void ApiObject::onFiltersChanged()
-{
-    // TODO: use QtConcurrent::blockingMap here
-    for (Model::Platform* const platform : qAsConst(m_platforms))
-        platform->applyFilters(m_filters);
 }
