@@ -5,7 +5,8 @@ TARGET = pegasus-fe
 QT += qml quick multimedia gamepad svg
 CONFIG += c++11 warn_on exceptions_off rtti_off
 
-SOURCES += main.cpp
+SOURCES += main.cpp setup.cpp
+HEADERS += setup.h
 
 RESOURCES += \
     lang/translations.qrc \

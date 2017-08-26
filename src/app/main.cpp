@@ -15,37 +15,26 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+#include "setup.h"
+
 #include "Api.h"
 #include "FrontendLayer.h"
-#include "Model.h"
 #include "ProcessLauncher.h"
-#include "QuitStatus.h"
-#include "ScriptRunner.h"
-#include "SystemCommands.h"
 
 #include <QCommandLineParser>
-#include <QDir>
-#include <QFile>
-#include <QGamepadManager>
 #include <QGuiApplication>
-#include <QQmlContext>
 #include <QSettings>
-#include <QStandardPaths>
-#include <QRegularExpression>
 
 
 void handleLogMsg(QtMsgType, const QMessageLogContext&, const QString&);
 void handleCommandLineArgs(QGuiApplication&);
-void registerAPIClasses();
-void setupAsyncGameLaunch(ApiObject&, FrontendLayer&, ProcessLauncher&);
-void setupControlsChangeScripts();
-void setupQuitScripts(QGuiApplication&);
 
+// using std::list because QTextStream is not copyable,
+// and neither Qt not std::vector can be used in this case
+std::list<QTextStream> log_streams;
 
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(handleLogMsg);
-
     QCoreApplication::addLibraryPath("lib/plugins");
     QCoreApplication::addLibraryPath("lib");
 
@@ -54,8 +43,10 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(GIT_REVISION);
     app.setOrganizationName("pegasus-frontend");
     app.setOrganizationDomain("pegasus-frontend.org");
-
     QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    setupLogStreams(log_streams);
+    qInstallMessageHandler(handleLogMsg);
 
     handleCommandLineArgs(app);
 
@@ -70,55 +61,12 @@ int main(int argc, char *argv[])
     api.startScanning();
     FrontendLayer frontend(&api);
     ProcessLauncher launcher;
-
     setupAsyncGameLaunch(api, frontend, launcher);
 
-
     setupControlsChangeScripts();
-    setupQuitScripts(app);
+    setupQuitScripts();
 
     return app.exec();
-}
-
-void handleLogMsg(QtMsgType type, const QMessageLogContext& context, const QString& msg)
-{
-    // open the output channels: stdout and a file log
-    // TODO: maybe just move these to the file scope
-
-    static QTextStream stream_stdout(stdout);
-
-    static QFile logfile([](){
-        using regex = QRegularExpression;
-        Q_ASSERT(QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation).length() > 0);
-
-        auto path = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation).first();
-        path = path.replace(regex("/pegasus-frontend/pegasus-frontend$"), "/pegasus-frontend");
-        if (!QDir().mkpath(path)) {
-            stream_stdout << QObject::tr("Warning: `%1` does not exists, and could not create it."
-                                         " File logging won't work.").arg(path) << endl;
-        }
-
-        path += "/lastrun.log";
-        return path;
-    }());
-    static QTextStream stream_logfile([](){
-        // the logfile must be available and opened only once;
-        // to avoid creating a global or yet another init function,
-        // it is handled in this lambda, which will only run once
-        Q_ASSERT(!logfile.isOpen());
-        // FIXME: these may fail
-        logfile.resize(0); // clear previous contents
-        logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-
-        return &logfile;
-    }());
-
-
-    // handle the message
-    const QString formattedMsg = qFormatLogMessage(type, context, msg);
-    const QByteArray localMsg = formattedMsg.toLocal8Bit();
-    stream_stdout << localMsg << endl;
-    stream_logfile << localMsg << endl;
 }
 
 void handleCommandLineArgs(QGuiApplication& app)
@@ -135,92 +83,10 @@ void handleCommandLineArgs(QGuiApplication& app)
     argparser.process(app);
 }
 
-void registerAPIClasses()
+void handleLogMsg(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-    static constexpr auto API_URI = "Pegasus.Model";
-
-    const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
-
-    qmlRegisterUncreatableType<Model::Platform>(API_URI, 0, 2, "Platform", error_msg);
-    qmlRegisterUncreatableType<Model::Game>(API_URI, 0, 2, "Game", error_msg);
-    qmlRegisterUncreatableType<Model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
-    qmlRegisterUncreatableType<ApiParts::Language>(API_URI, 0, 3, "Language", error_msg);
-    qmlRegisterUncreatableType<ApiParts::Theme>(API_URI, 0, 4, "Theme", error_msg);
-}
-
-void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)
-{
-    // the following communication is required because process handling
-    // and destroying/rebuilding the frontend stack are asynchronous tasks;
-    // see the relevant classes
-
-    QObject::connect(&api, &ApiObject::prepareLaunch,
-                     &frontend, &FrontendLayer::teardown);
-
-    QObject::connect(&frontend, &FrontendLayer::teardownComplete,
-                     &api, &ApiObject::onReadyToLaunch);
-
-    QObject::connect(&api, &ApiObject::executeLaunch,
-                     &launcher, &ProcessLauncher::launchGame);
-
-    QObject::connect(&launcher, &ProcessLauncher::processFinished,
-                     &api, &ApiObject::onGameFinished);
-
-    QObject::connect(&api, &ApiObject::restoreAfterGame,
-                     &frontend, &FrontendLayer::rebuild);
-}
-
-void setupControlsChangeScripts()
-{
-    const auto callback = [](){
-        using ScriptEvent = ScriptRunner::EventType;
-
-        ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-        ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
-    };
-
-
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured,
-                     callback);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured,
-                     callback);
-}
-
-void setupQuitScripts(QGuiApplication& app)
-{
-    const auto callback = [](){
-        using ScriptEvent = ScriptRunner::EventType;
-
-        ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
-        switch (QuitStatus::status) {
-            case QuitStatus::Type::REBOOT:
-                ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
-                break;
-            case QuitStatus::Type::SHUTDOWN:
-                ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
-                break;
-            default:
-                break;
-        }
-
-        qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
-
-        switch (QuitStatus::status) {
-            case QuitStatus::Type::REBOOT:
-                SystemCommands::reboot();
-                break;
-            case QuitStatus::Type::SHUTDOWN:
-                SystemCommands::shutdown();
-                break;
-            default:
-                break;
-        }
-    };
-
-
-    // run the quit/reboot/shutdown scripts on exit;
-    // on some platforms, app.exec() may not return so aboutToQuit()
-    // is used for calling these methods
-    QObject::connect(&app, &QCoreApplication::aboutToQuit,
-                     callback);
+    // forward the message to all registered output streams
+    const QByteArray preparedMsg = qFormatLogMessage(type, context, msg).toLocal8Bit();
+    for (auto& stream : log_streams)
+        stream << preparedMsg << endl;
 }
