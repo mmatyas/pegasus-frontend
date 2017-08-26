@@ -20,10 +20,9 @@
 #include <QQmlContext>
 
 
-FrontendLayer::FrontendLayer(QObject* api, QObject* parent)
+FrontendLayer::FrontendLayer(QObject* parent)
     : QObject(parent)
 {
-    rebuild(api);
 }
 
 void FrontendLayer::rebuild(QObject* api)

@@ -35,9 +35,8 @@ class FrontendLayer : public QObject {
     Q_OBJECT
 
 public:
-    explicit FrontendLayer(QObject* api, QObject* parent = nullptr);
+    explicit FrontendLayer(QObject* parent = nullptr);
 
-public slots:
     void rebuild(QObject* api);
     void teardown();
 

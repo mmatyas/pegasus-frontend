@@ -58,10 +58,12 @@ int main(int argc, char *argv[])
     // the main parts of the backend
     // frontend <-> api <-> launcher
     ApiObject api;
-    api.startScanning();
-    FrontendLayer frontend(&api);
+    FrontendLayer frontend;
     ProcessLauncher launcher;
     setupAsyncGameLaunch(api, frontend, launcher);
+
+    api.startScanning();
+    frontend.rebuild(&api);
 
     setupControlsChangeScripts();
     setupQuitScripts();
