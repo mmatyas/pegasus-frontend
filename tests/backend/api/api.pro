@@ -5,6 +5,7 @@ QT += qml testlib
 CONFIG += c++11 warn_on exceptions_off
 
 SOURCES = test_Api.cpp
+DEFINES *= $${COMMON_DEFINES}
 
 RESOURCES += \
     $${TOP_SRCDIR}/src/themes/themes.qrc

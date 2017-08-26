@@ -15,11 +15,7 @@ RESOURCES += \
     ../themes/themes.qrc \
     $${TOP_SRCDIR}/assets/assets.qrc
 
-DEFINES *= \
-    QT_DEPRECATED_WARNINGS \
-    QT_RESTRICTED_CAST_FROM_ASCII \
-    QT_NO_CAST_TO_ASCII \
-    GIT_REVISION=\\\"$$GIT_REVISION\\\"
+DEFINES *= $${COMMON_DEFINES}
 
 
 # Linking

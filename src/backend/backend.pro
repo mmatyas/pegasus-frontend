@@ -49,8 +49,5 @@ HEADERS += \
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
 
 DEFINES *= \
-    QT_DEPRECATED_WARNINGS \
-    QT_RESTRICTED_CAST_FROM_ASCII \
-    QT_NO_CAST_TO_ASCII \
-    GIT_REVISION=\\\"$$GIT_REVISION\\\" \
+    $${COMMON_DEFINES} \
     INSTALL_DATADIR=\\\"$${INSTALL_DATADIR}\\\"
