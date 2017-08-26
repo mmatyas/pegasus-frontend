@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "AppCloseType.h"
 #include "Model.h"
 #include "api_parts/ApiFilters.h"
 #include "api_parts/ApiMeta.h"
@@ -100,6 +101,9 @@ signals:
 
     // triggers translation update
     void languageChanged();
+
+    // quit/reboot/shutdown
+    void appCloseRequested(AppCloseType);
 
 public slots:
     // game launch communication

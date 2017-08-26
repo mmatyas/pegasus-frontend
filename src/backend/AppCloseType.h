@@ -18,15 +18,10 @@
 #pragma once
 
 
-/// This is a static class that stores what should Pegasus
+/// This enum tells what should Pegasus
 /// do after the main loop ends
-struct QuitStatus {
-public:
-    enum class Type : unsigned char {
-        QUIT,
-        REBOOT,
-        SHUTDOWN,
-    };
-
-    static Type status;
+enum AppCloseType : unsigned char {
+    QUIT,
+    REBOOT,
+    SHUTDOWN,
 };

@@ -29,4 +29,4 @@ void setupLogStreams(std::list<QTextStream>&);
 void registerAPIClasses();
 void setupAsyncGameLaunch(ApiObject&, FrontendLayer&, ProcessLauncher&);
 void setupControlsChangeScripts();
-void setupQuitScripts();
+void setupAppCloseScripts(ApiObject&);

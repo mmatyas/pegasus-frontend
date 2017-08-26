@@ -17,9 +17,9 @@
 
 #pragma once
 
+#include "AppCloseType.h"
+
 #include <QObject>
-#include <QString>
-#include <QVector>
 
 
 namespace ApiParts {
@@ -32,9 +32,12 @@ class System : public QObject {
 public:
     explicit System(QObject* parent = nullptr);
 
-    Q_INVOKABLE void quit() const;
-    Q_INVOKABLE void reboot() const;
-    Q_INVOKABLE void shutdown() const;
+    Q_INVOKABLE void quit();
+    Q_INVOKABLE void reboot();
+    Q_INVOKABLE void shutdown();
+
+signals:
+    void appCloseRequested(AppCloseType);
 };
 
 } // namespace ApiParts

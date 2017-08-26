@@ -18,10 +18,10 @@
 #include "setup.h"
 
 #include "Api.h"
+#include "AppCloseType.h"
 #include "FrontendLayer.h"
 #include "Model.h"
 #include "ProcessLauncher.h"
-#include "QuitStatus.h"
 #include "ScriptRunner.h"
 #include "SystemCommands.h"
 
@@ -107,39 +107,36 @@ void setupControlsChangeScripts()
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, callback);
 }
 
-void setupQuitScripts()
+void setupAppCloseScripts(ApiObject& api)
 {
-    const auto callback = [](){
+    const auto callback = [](AppCloseType type){
         using ScriptEvent = ScriptRunner::EventType;
 
         ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
-        switch (QuitStatus::status) {
-            case QuitStatus::Type::REBOOT:
+        switch (type) {
+            case AppCloseType::REBOOT:
                 ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
                 break;
-            case QuitStatus::Type::SHUTDOWN:
+            case AppCloseType::SHUTDOWN:
                 ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
                 break;
-            default:
-                break;
+            default: break;
         }
 
         qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
 
-        switch (QuitStatus::status) {
-            case QuitStatus::Type::REBOOT:
+        QCoreApplication::quit();
+        switch (type) {
+            case AppCloseType::REBOOT:
                 SystemCommands::reboot();
                 break;
-            case QuitStatus::Type::SHUTDOWN:
+            case AppCloseType::SHUTDOWN:
                 SystemCommands::shutdown();
                 break;
-            default:
-                break;
+            default: break;
         }
     };
 
-    // run the quit/reboot/shutdown scripts on exit;
-    // on some platforms, app.exec() may not return so aboutToQuit()
-    // is used for calling these methods
-    QObject::connect(qGuiApp, &QCoreApplication::aboutToQuit, callback);
+    // do the connection
+    QObject::connect(&api, &ApiObject::appCloseRequested, callback);
 }

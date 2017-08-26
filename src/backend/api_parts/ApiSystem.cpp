@@ -16,12 +16,6 @@
 
 
 #include "ApiSystem.h"
-#include "ScriptRunner.h"
-#include "QuitStatus.h"
-
-#include <QDebug>
-#include <QCoreApplication>
-#include <QProcess>
 
 
 namespace ApiParts {
@@ -31,25 +25,23 @@ System::System(QObject* parent)
 {
 }
 
-void System::quit() const
+void System::quit()
 {
-    QCoreApplication::quit();
+    emit appCloseRequested(AppCloseType::QUIT);
 }
 
 // NOTE: on Linux distros using systemd-logind, local users can
 // reboot and shutdown the system without root privileges. Also
 // see https://wiki.archlinux.org/index.php/Allow_users_to_shutdown
 
-void System::reboot() const
+void System::reboot()
 {
-    QuitStatus::status = QuitStatus::Type::REBOOT;
-    QCoreApplication::quit();
+    emit appCloseRequested(AppCloseType::REBOOT);
 }
 
-void System::shutdown() const
+void System::shutdown()
 {
-    QuitStatus::status = QuitStatus::Type::SHUTDOWN;
-    QCoreApplication::quit();
+    emit appCloseRequested(AppCloseType::SHUTDOWN);
 }
 
 } // namespace ApiParts

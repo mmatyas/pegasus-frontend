@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     frontend.rebuild(&api);
 
     setupControlsChangeScripts();
-    setupQuitScripts();
+    setupAppCloseScripts(api);
 
     return app.exec();
 }

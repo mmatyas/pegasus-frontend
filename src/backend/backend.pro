@@ -11,7 +11,6 @@ SOURCES += \
     FrontendLayer.cpp \
     Model.cpp \
     ProcessLauncher.cpp \
-    QuitStatus.cpp \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
@@ -31,7 +30,6 @@ HEADERS += \
     Model.h \
     FrontendLayer.h \
     ProcessLauncher.h \
-    QuitStatus.h \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
@@ -44,7 +42,8 @@ HEADERS += \
     model_providers/Es2Metadata.h \
     model_providers/Es2PlatformList.h \
     model_providers/PegasusAssets.h \
-    api_parts/ApiPlatforms.h
+    api_parts/ApiPlatforms.h \
+    AppCloseType.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
