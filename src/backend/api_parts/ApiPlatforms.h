@@ -47,7 +47,7 @@ signals:
     void indexChanged();
     void platformChanged();
     void platformGameChanged();
-    void scanCompleted();
+    void scanCompleted(qint64 elapsedTime);
 
 public slots:
     void onFiltersChanged(ApiParts::Filters&);

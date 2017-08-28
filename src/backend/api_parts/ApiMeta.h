@@ -26,25 +26,31 @@ namespace ApiParts {
 class Meta : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingComplete)
+    Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
+    Q_PROPERTY(bool isScanning READ isScanning NOTIFY scanningChanged)
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
 
 public:
     explicit Meta(QObject* parent = nullptr);
 
     bool isLoading() const { return m_loading; }
+    bool isScanning() const { return m_scanning; }
 
-    void setElapsedLoadingTime(qint64);
-    void onApiLoadingFinished();
+public slots:
+    void onScanStarted();
+    void onScanCompleted(qint64 elapsedTime);
+    void onLoadingCompleted();
 
 signals:
-    void loadingComplete();
+    void loadingChanged();
+    void scanningChanged();
 
 private:
-    const QString m_git_revision;
+    static const QString m_git_revision;
 
     bool m_loading;
-    qint64 m_loading_time_ms;
+    bool m_scanning;
+    qint64 m_scanning_time_ms;
 };
 
 } // namespace ApiParts

@@ -40,10 +40,16 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::onScanCompleted);
 }
 
+void ApiObject::startScanning()
+{
+    m_meta.onScanStarted();
+    m_platforms.startScanning();
+}
+
 void ApiObject::onScanCompleted()
 {
-    m_meta.setElapsedLoadingTime(m_platforms.scanDuration());
-    m_meta.onApiLoadingFinished();
+    m_meta.onScanCompleted(m_platforms.scanDuration());
+    m_meta.onLoadingCompleted();
 }
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()

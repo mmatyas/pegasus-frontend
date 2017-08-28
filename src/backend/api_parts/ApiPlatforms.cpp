@@ -70,7 +70,7 @@ void Platforms::onScanResultsAvailable()
     }
     qInfo().noquote() << tr("%n games found", "", game_count);
 
-    emit scanCompleted();
+    emit scanCompleted(scanDuration());
     emit modelChanged();
 
     if (!m_platforms.isEmpty())

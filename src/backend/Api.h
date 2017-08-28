@@ -64,7 +64,7 @@ class ApiObject : public QObject {
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
-    void startScanning() { m_platforms.startScanning(); }
+    void startScanning();
 
     // platform-related properties
 

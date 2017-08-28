@@ -22,24 +22,31 @@
 
 namespace ApiParts {
 
+const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
+
 Meta::Meta(QObject* parent)
     : QObject(parent)
-    , m_git_revision(GIT_REVISION)
-    , m_loading(true)
-    , m_loading_time_ms(0)
+    , m_loading(false)
+    , m_scanning(true)
+    , m_scanning_time_ms(0)
 {
 }
 
-void Meta::setElapsedLoadingTime(qint64 ms)
+void Meta::onScanStarted()
 {
-    m_loading_time_ms = ms;
-    qInfo().noquote() << tr("Data files loaded in %1ms").arg(ms);
+    m_scanning = true;
 }
 
-void Meta::onApiLoadingFinished()
+void Meta::onScanCompleted(qint64 elapsedTime)
+{
+    m_scanning_time_ms = elapsedTime;
+    m_scanning = false;
+    qInfo().noquote() << tr("Data files loaded in %1ms").arg(elapsedTime);
+}
+
+void Meta::onLoadingCompleted()
 {
     m_loading = false;
-    emit loadingComplete();
 }
 
 } // namespace ApiParts
