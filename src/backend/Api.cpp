@@ -21,8 +21,8 @@
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
 {
-    connect(&m_settings, &ApiParts::Settings::languageChanged,
-            this, &ApiObject::languageChanged);
+    connect(&m_settings, &ApiParts::Settings::localeChanged,
+            this, &ApiObject::localeChanged);
     connect(&m_system, &ApiParts::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
     connect(&m_filters, &ApiParts::Filters::filtersChanged,

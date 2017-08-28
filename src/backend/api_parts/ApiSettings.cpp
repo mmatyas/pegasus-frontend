@@ -32,19 +32,19 @@ namespace ApiParts {
 Settings::Settings(QObject* parent)
     : QObject(parent)
     , m_translator(this)
-    , m_language_idx(-1)
+    , m_locale_idx(-1)
     , m_theme_idx(-1)
 {
-    initLanguages();
+    initLocales();
     initThemes();
 }
 
-void Settings::initLanguages()
+void Settings::initLocales()
 {
-    m_translations.append(new Model::Language("en", "English", this));
-    m_language_idx = m_translations.length() - 1; // fallback language is english
-    m_translations.append(new Model::Language("hu", "Magyar", this));
-    m_translations.append(new Model::Language("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
+    m_locales.append(new Model::Locale("en", "English", this));
+    m_locale_idx = m_locales.length() - 1; // fallback language is english
+    m_locales.append(new Model::Locale("hu", "Magyar", this));
+    m_locales.append(new Model::Locale("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
 
     // if there is a saved language setting, use that
     // if not, use the system language
@@ -55,51 +55,51 @@ void Settings::initLanguages()
 
     // try to find the saved/system language
     // or fall back to english
-    for (int i = 0; i < m_translations.length(); i++) {
-        if (m_translations[i]->tag() == requested_tag) {
+    for (int i = 0; i < m_locales.length(); i++) {
+        if (m_locales[i]->tag() == requested_tag) {
             qInfo().noquote() << tr("Found translation for `%1`").arg(requested_tag);
-            m_language_idx = i;
+            m_locale_idx = i;
             break;
         }
     }
 
     // load
-    Q_ASSERT(m_language_idx >= 0 && m_language_idx < m_translations.length());
-    loadLanguage(m_translations.at(m_language_idx)->tag());
+    Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
+    loadLocale(m_locales.at(m_locale_idx)->tag());
     qApp->installTranslator(&m_translator);
 }
 
-void Settings::setLanguageIndex(int idx)
+void Settings::setLocaleIndex(int idx)
 {
     // verify
-    if (idx == m_language_idx)
+    if (idx == m_locale_idx)
         return;
 
-    const bool valid_idx = (0 <= idx && idx < m_translations.length());
+    const bool valid_idx = (0 <= idx && idx < m_locales.length());
     if (!valid_idx) {
         qWarning() << tr("Invalid language index #%1").arg(idx);
         return;
     }
 
     // load
-    m_language_idx = idx;
-    loadLanguage(m_translations.at(idx)->tag());
+    m_locale_idx = idx;
+    loadLocale(m_locales.at(idx)->tag());
 
     // remember
-    QSettings().setValue(SETTINGSKEY_LOCALE, m_translations.at(idx)->tag());
+    QSettings().setValue(SETTINGSKEY_LOCALE, m_locales.at(idx)->tag());
 
     callScripts();
-    emit languageChanged();
+    emit localeChanged();
 }
 
-void Settings::loadLanguage(const QString& bcp47tag)
+void Settings::loadLocale(const QString& bcp47tag)
 {
     m_translator.load("pegasus_" + bcp47tag, ":/lang", "-");
 }
 
-QQmlListProperty<Model::Language> Settings::getTranslationsProp()
+QQmlListProperty<Model::Locale> Settings::getLocalesProp()
 {
-    return QQmlListProperty<Model::Language>(this, m_translations);
+    return QQmlListProperty<Model::Locale>(this, m_locales);
 }
 
 void Settings::initThemes()

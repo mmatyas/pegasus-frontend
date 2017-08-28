@@ -59,7 +59,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
 
     // internal properties
-    Q_PROPERTY(QString tr READ emptyString NOTIFY languageChanged)
+    Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
@@ -100,7 +100,7 @@ signals:
     void restoreAfterGame(ApiObject*);
 
     // triggers translation update
-    void languageChanged();
+    void localeChanged();
 
     // quit/reboot/shutdown
     void appCloseRequested(AppCloseType);

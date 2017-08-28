@@ -22,8 +22,8 @@ SOURCES += \
     model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp \
     api_parts/ApiPlatforms.cpp \
-    model/Language.cpp \
-    model/ThemeEntry.cpp
+    model/ThemeEntry.cpp \
+    model/Locale.cpp
 
 HEADERS += \
     Api.h \
@@ -46,8 +46,8 @@ HEADERS += \
     model_providers/PegasusAssets.h \
     api_parts/ApiPlatforms.h \
     AppCloseType.h \
-    model/Language.h \
-    model/ThemeEntry.h
+    model/ThemeEntry.h \
+    model/Locale.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

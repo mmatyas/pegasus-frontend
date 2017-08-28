@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "model/Language.h"
+#include "model/Locale.h"
 #include "model/ThemeEntry.h"
 
 #include <QObject>
@@ -32,11 +32,14 @@ class Settings : public QObject {
     Q_OBJECT
 
     // multilanguage support
-    Q_PROPERTY(int languageIndex
-               READ languageIndex WRITE setLanguageIndex
-               NOTIFY languageChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Language> allLanguages
-               READ getTranslationsProp CONSTANT)
+    Q_PROPERTY(Model::Locale* currentLocale
+               READ currentLocale
+               NOTIFY localeChanged)
+    Q_PROPERTY(int localeIndex
+               READ localeIndex WRITE setLocaleIndex
+               NOTIFY localeChanged)
+    Q_PROPERTY(QQmlListProperty<Model::Locale> allLocales
+               READ getLocalesProp CONSTANT)
 
     // theme support
     Q_PROPERTY(Model::Theme* currentTheme
@@ -52,28 +55,29 @@ public:
     explicit Settings(QObject* parent = nullptr);
 
     // multilanguage support
-    int languageIndex() const { return m_language_idx; }
-    void setLanguageIndex(int idx);
-    QQmlListProperty<Model::Language> getTranslationsProp();
+    Model::Locale* currentLocale() const { return m_locales.at(localeIndex()); }
+    int localeIndex() const { return m_locale_idx; }
+    void setLocaleIndex(int idx);
+    QQmlListProperty<Model::Locale> getLocalesProp();
 
     // theme support
-    Model::Theme* currentTheme() const { return m_themes.at(m_theme_idx); }
+    Model::Theme* currentTheme() const { return m_themes.at(themeIndex()); }
     int themeIndex() const { return m_theme_idx; }
     void setThemeIndex(int idx);
     QQmlListProperty<Model::Theme> getThemesProp();
 
 signals:
-    void languageChanged();
+    void localeChanged();
     void themeChanged();
 
 private:
     // multilanguage support
-    void initLanguages();
-    void loadLanguage(const QString& bcp47tag);
+    void initLocales();
+    void loadLocale(const QString& bcp47tag);
 
     QTranslator m_translator;
-    QList<Model::Language*> m_translations;
-    int m_language_idx;
+    QList<Model::Locale*> m_locales;
+    int m_locale_idx;
 
     // theme support
     void initThemes();

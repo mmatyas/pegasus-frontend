@@ -15,15 +15,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Language.h"
+#pragma once
+
+#include <QObject>
+#include <QString>
 
 
 namespace Model {
 
-Language::Language(QString bcp47tag, QString name, QObject* parent)
-    : QObject(parent)
-    , m_bcp47tag(bcp47tag)
-    , m_name(name)
-{}
+/// An utility class to contain language informations
+class Locale : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(QString tag MEMBER m_bcp47tag CONSTANT)
+    Q_PROPERTY(QString name MEMBER m_name CONSTANT)
+
+public:
+    explicit Locale(QString bcp47tag, QString name, QObject* parent = nullptr);
+
+    const QString tag() const { return m_bcp47tag; }
+    const QString name() const { return m_name; }
+
+private:
+    const QString m_bcp47tag;
+    const QString m_name;
+};
 
 } // namespace Model
