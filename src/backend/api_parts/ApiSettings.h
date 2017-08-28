@@ -17,71 +17,15 @@
 
 #pragma once
 
+#include "model/Language.h"
+#include "model/ThemeEntry.h"
+
 #include <QObject>
 #include <QQmlListProperty>
 #include <QTranslator>
 
 
 namespace ApiParts {
-
-/// An utility class to contain language informations
-class Language : public QObject {
-    Q_OBJECT
-
-    Q_PROPERTY(QString tag MEMBER m_bcp47tag CONSTANT)
-    Q_PROPERTY(QString name MEMBER m_name CONSTANT)
-
-public:
-    explicit Language(QString bcp47tag, QString name,
-                      QObject* parent = nullptr);
-
-    const QString tag() const { return m_bcp47tag; }
-    const QString name() const { return m_name; }
-
-private:
-    const QString m_bcp47tag;
-    const QString m_name;
-};
-
-
-/// An utility class to contain theme informations
-class Theme : public QObject {
-    Q_OBJECT
-
-    Q_PROPERTY(QString qmlPath MEMBER m_root_qml CONSTANT)
-
-    Q_PROPERTY(QString name MEMBER m_name CONSTANT)
-    Q_PROPERTY(QString author MEMBER m_author CONSTANT)
-    Q_PROPERTY(QString version MEMBER m_version CONSTANT)
-    Q_PROPERTY(QString summary MEMBER m_summary CONSTANT)
-    Q_PROPERTY(QString description MEMBER m_description CONSTANT)
-
-public:
-    explicit Theme(QString root_dir,
-                   QString root_qml,
-                   QString name,
-                   QString author = QString(),
-                   QString version = QString(),
-                   QString summary = QString(),
-                   QString description = QString(),
-                   QObject* parent = nullptr);
-
-    const QString& dir() const { return m_root_dir; }
-    const QString& name() const { return m_name; }
-
-    int compare(const Theme& other) const;
-
-private:
-    const QString m_root_dir;
-    const QString m_root_qml;
-
-    const QString m_name;
-    const QString m_author;
-    const QString m_version;
-    const QString m_summary;
-    const QString m_description;
-};
-
 
 /// Provides a settings interface for the frontend layer
 class Settings : public QObject {
@@ -91,17 +35,17 @@ class Settings : public QObject {
     Q_PROPERTY(int languageIndex
                READ languageIndex WRITE setLanguageIndex
                NOTIFY languageChanged)
-    Q_PROPERTY(QQmlListProperty<ApiParts::Language> allLanguages
+    Q_PROPERTY(QQmlListProperty<Model::Language> allLanguages
                READ getTranslationsProp CONSTANT)
 
     // theme support
-    Q_PROPERTY(ApiParts::Theme* currentTheme
+    Q_PROPERTY(Model::Theme* currentTheme
                READ currentTheme
                NOTIFY themeChanged)
     Q_PROPERTY(int themeIndex
                READ themeIndex WRITE setThemeIndex
                NOTIFY themeChanged)
-    Q_PROPERTY(QQmlListProperty<ApiParts::Theme> allThemes
+    Q_PROPERTY(QQmlListProperty<Model::Theme> allThemes
                READ getThemesProp CONSTANT)
 
 public:
@@ -110,13 +54,13 @@ public:
     // multilanguage support
     int languageIndex() const { return m_language_idx; }
     void setLanguageIndex(int idx);
-    QQmlListProperty<ApiParts::Language> getTranslationsProp();
+    QQmlListProperty<Model::Language> getTranslationsProp();
 
     // theme support
-    Theme* currentTheme() const { return m_themes.at(m_theme_idx); }
+    Model::Theme* currentTheme() const { return m_themes.at(m_theme_idx); }
     int themeIndex() const { return m_theme_idx; }
     void setThemeIndex(int idx);
-    QQmlListProperty<ApiParts::Theme> getThemesProp();
+    QQmlListProperty<Model::Theme> getThemesProp();
 
 signals:
     void languageChanged();
@@ -128,13 +72,13 @@ private:
     void loadLanguage(const QString& bcp47tag);
 
     QTranslator m_translator;
-    QList<Language*> m_translations;
+    QList<Model::Language*> m_translations;
     int m_language_idx;
 
     // theme support
     void initThemes();
 
-    QList<Theme*> m_themes;
+    QList<Model::Theme*> m_themes;
     int m_theme_idx;
 
     // internal

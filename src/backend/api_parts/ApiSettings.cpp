@@ -23,35 +23,11 @@
 #include <QtGui>
 
 
-static const char SETTINGSKEY_LOCALE[] = "locale";
-static const char SETTINGSKEY_THEME[] = "theme";
+static const QLatin1String SETTINGSKEY_LOCALE("locale");
+static const QLatin1String SETTINGSKEY_THEME("theme");
+
 
 namespace ApiParts {
-
-Language::Language(QString bcp47tag, QString name, QObject* parent)
-    : QObject(parent)
-    , m_bcp47tag(bcp47tag)
-    , m_name(name)
-{}
-
-Theme::Theme(QString root_dir, QString root_qml,
-             QString name, QString author, QString version,
-             QString summary, QString description,
-             QObject* parent)
-    : QObject(parent)
-    , m_root_dir(root_dir)
-    , m_root_qml(root_qml.startsWith(":") ? "qrc" + root_qml : "file:" + root_qml)
-    , m_name(name)
-    , m_author(author)
-    , m_version(version)
-    , m_summary(summary)
-    , m_description(description)
-{}
-
-int Theme::compare(const Theme& other) const
-{
-    return QString::localeAwareCompare(m_name, other.m_name);
-}
 
 Settings::Settings(QObject* parent)
     : QObject(parent)
@@ -65,10 +41,10 @@ Settings::Settings(QObject* parent)
 
 void Settings::initLanguages()
 {
-    m_translations.append(new Language("en", "English", this));
+    m_translations.append(new Model::Language("en", "English", this));
     m_language_idx = m_translations.length() - 1; // fallback language is english
-    m_translations.append(new Language("hu", "Magyar", this));
-    m_translations.append(new Language("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
+    m_translations.append(new Model::Language("hu", "Magyar", this));
+    m_translations.append(new Model::Language("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
 
     // if there is a saved language setting, use that
     // if not, use the system language
@@ -121,9 +97,9 @@ void Settings::loadLanguage(const QString& bcp47tag)
     m_translator.load("pegasus_" + bcp47tag, ":/lang", "-");
 }
 
-QQmlListProperty<ApiParts::Language> Settings::getTranslationsProp()
+QQmlListProperty<Model::Language> Settings::getTranslationsProp()
 {
-    return QQmlListProperty<ApiParts::Language>(this, m_translations);
+    return QQmlListProperty<Model::Language>(this, m_translations);
 }
 
 void Settings::initThemes()
@@ -186,7 +162,7 @@ void Settings::initThemes()
                 continue;
             }
 
-            m_themes.append(new Theme(
+            m_themes.append(new Model::Theme(
                 basedir, qml_path,
                 metadata.value(INIKEY_NAME).toString(),
                 metadata.value(INIKEY_AUTHOR).toString(),
@@ -198,7 +174,7 @@ void Settings::initThemes()
     }
 
     std::sort(m_themes.begin(), m_themes.end(),
-        [](const Theme* a, const Theme* b) {
+        [](const Model::Theme* a, const Model::Theme* b) {
             return a->compare(*b) < 0;
         }
     );
@@ -262,9 +238,9 @@ void Settings::setThemeIndex(int idx)
     emit themeChanged();
 }
 
-QQmlListProperty<ApiParts::Theme> Settings::getThemesProp()
+QQmlListProperty<Model::Theme> Settings::getThemesProp()
 {
-    return QQmlListProperty<ApiParts::Theme>(this, m_themes);
+    return QQmlListProperty<Model::Theme>(this, m_themes);
 }
 
 void Settings::callScripts() const
