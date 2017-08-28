@@ -41,10 +41,32 @@ Settings::Settings(QObject* parent)
 
 void Settings::initLocales()
 {
-    m_locales.append(new Model::Locale("en", "English", this));
-    m_locale_idx = m_locales.length() - 1; // fallback language is english
-    m_locales.append(new Model::Locale("hu", "Magyar", this));
-    m_locales.append(new Model::Locale("hu-Hung", u8"\u202E𐳢𐳛𐳮𐳁𐳤", this));
+    const int QM_PREFIX_LEN = 8; // length of "pegasus_"
+    const int QM_SUFFIX_LEN = 3; // length of ".qm"
+    const QString DEFAULT_TAG("en-DK");
+    const QString DEFAULT_FILENAME("pegasus_en-DK.qm");
+
+    // find the available languages
+    QStringList qm_files = QDir(":/lang").entryList(QStringList("*.qm"));
+    qm_files.append(DEFAULT_FILENAME); // default placeholder
+    qm_files.sort();
+
+    QStringList locale_tags;
+
+    for (const QString& filename : qAsConst(qm_files)) {
+        const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
+        Q_ASSERT(locale_tag_len > 0);
+
+        const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
+        const QLocale locale(locale_tag);
+
+        locale_tags.append(locale_tag);
+        m_locales.append(new Model::Locale(locale_tag, locale.nativeLanguageName(), this));
+    }
+
+    // default to English
+    Q_ASSERT(locale_tags.contains(DEFAULT_TAG));
+    m_locale_idx = locale_tags.indexOf(DEFAULT_TAG);
 
     // if there is a saved language setting, use that
     // if not, use the system language
@@ -53,14 +75,10 @@ void Settings::initLocales()
         return entry.isNull() ? QLocale().bcp47Name() : entry.toString();
     }();
 
-    // try to find the saved/system language
-    // or fall back to english
-    for (int i = 0; i < m_locales.length(); i++) {
-        if (m_locales[i]->tag() == requested_tag) {
-            qInfo().noquote() << tr("Found translation for `%1`").arg(requested_tag);
-            m_locale_idx = i;
-            break;
-        }
+    const int requested_tag_idx = locale_tags.indexOf(requested_tag);
+    if (requested_tag_idx >= 0) {
+        qInfo().noquote() << tr("Found translation for `%1`").arg(requested_tag);
+        m_locale_idx = requested_tag_idx;
     }
 
     // load
