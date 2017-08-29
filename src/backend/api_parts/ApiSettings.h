@@ -72,14 +72,18 @@ signals:
 
 private:
     // multilanguage support
-    void initLocales();
-    void loadLocale(const QString& bcp47tag);
 
     QTranslator m_translator;
     QList<Model::Locale*> m_locales;
     int m_locale_idx;
 
+    void findAvailableLocales();
+    void findPreferredLocale();
+    void loadSelectedLocale();
+    int indexOfLocale(const QString& tag) const;
+
     // theme support
+
     void initThemes();
 
     QList<Model::Theme*> m_themes;
