@@ -64,43 +64,55 @@ private:
 };
 
 
-/// Provides a settings interface for the frontend layer
-class Settings : public QObject {
+class ThemeSettings : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(ApiParts::LocaleSettings* locales READ localesPtr CONSTANT)
-
-    // theme support
-    Q_PROPERTY(Model::Theme* currentTheme
-               READ currentTheme
+    Q_PROPERTY(Model::Theme* current
+               READ current
                NOTIFY themeChanged)
-    Q_PROPERTY(int themeIndex
-               READ themeIndex WRITE setThemeIndex
+    Q_PROPERTY(int index
+               READ index WRITE setIndex
                NOTIFY themeChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Theme> allThemes
-               READ getThemesProp CONSTANT)
+    Q_PROPERTY(QQmlListProperty<Model::Theme> all
+               READ getListProp CONSTANT)
 
 public:
-    explicit Settings(QObject* parent = nullptr);
+    explicit ThemeSettings(QObject* parent);
 
-    LocaleSettings* localesPtr() { return &m_locales; }
-
-    // theme support
-    Model::Theme* currentTheme() const { return m_themes.at(themeIndex()); }
-    int themeIndex() const { return m_theme_idx; }
-    void setThemeIndex(int idx);
-    QQmlListProperty<Model::Theme> getThemesProp();
+    Model::Theme* current() const { return m_themes.at(index()); }
+    int index() const { return m_theme_idx; }
+    void setIndex(int idx);
+    QQmlListProperty<Model::Theme> getListProp();
 
 signals:
     void themeChanged();
 
 private:
-    LocaleSettings m_locales;
-
-    // theme support
-    void initThemes();
     QList<Model::Theme*> m_themes;
     int m_theme_idx;
+
+    void selectPreferredTheme();
+    void printChangeMsg() const;
+    int indexOfTheme(const QString& tag) const;
+};
+
+
+/// Provides a settings interface for the frontend layer
+class Settings : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(ApiParts::LocaleSettings* locales READ localesPtr CONSTANT)
+    Q_PROPERTY(ApiParts::ThemeSettings* themes READ themesPtr CONSTANT)
+
+public:
+    explicit Settings(QObject* parent = nullptr);
+
+    LocaleSettings* localesPtr() { return &m_locales; }
+    ThemeSettings* themesPtr() { return &m_themes; }
+
+private:
+    LocaleSettings m_locales;
+    ThemeSettings m_themes;
 };
 
 } // namespace ApiParts

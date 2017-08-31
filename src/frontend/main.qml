@@ -84,7 +84,7 @@ Window {
             anchors.fill: parent
             focus: true
 
-            source: pegasus.settings.currentTheme.qmlPath
+            source: pegasus.settings.themes.current.qmlPath
             asynchronous: true
         }
 

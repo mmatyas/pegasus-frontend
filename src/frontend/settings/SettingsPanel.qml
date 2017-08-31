@@ -49,9 +49,9 @@ FocusScope {
         HorizontalSelector {
             id: setTheme
             label: qsTr("Theme") + pegasus.tr
-            model: pegasus.settings.allThemes
-            index: pegasus.settings.themeIndex
-            onIndexChanged: pegasus.settings.themeIndex = index
+            model: pegasus.settings.themes.all
+            index: pegasus.settings.themes.index
+            onIndexChanged: pegasus.settings.themes.index = index
         }
     }
 }
