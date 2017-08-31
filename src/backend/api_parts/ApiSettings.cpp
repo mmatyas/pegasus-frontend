@@ -23,8 +23,20 @@
 #include <QtGui>
 
 
-static const QLatin1String SETTINGSKEY_LOCALE("locale");
-static const QLatin1String SETTINGSKEY_THEME("theme");
+namespace {
+
+const QLatin1String SETTINGSKEY_LOCALE("locale");
+const QLatin1String SETTINGSKEY_THEME("theme");
+
+void callScripts()
+{
+    using ScriptEvent = ScriptRunner::EventType;
+
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
+}
+
+} // namespace
 
 
 namespace ApiParts {
@@ -270,14 +282,6 @@ void Settings::setThemeIndex(int idx)
 QQmlListProperty<Model::Theme> Settings::getThemesProp()
 {
     return QQmlListProperty<Model::Theme>(this, m_themes);
-}
-
-void Settings::callScripts() const
-{
-    using ScriptEvent = ScriptRunner::EventType;
-
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
 } // namespace ApiParts

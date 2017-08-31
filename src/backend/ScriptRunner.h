@@ -42,7 +42,4 @@ public:
     static QVector<QString> findScripts(EventType);
 
     static void runScripts(const QVector<QString>& paths);
-
-private:
-    static const QMap<EventType, QString> script_dirs;
 };

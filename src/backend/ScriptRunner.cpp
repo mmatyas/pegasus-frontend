@@ -23,7 +23,8 @@
 #include <QStandardPaths>
 
 
-const QMap<ScriptRunner::EventType, QString> ScriptRunner::script_dirs = {
+namespace {
+const QMap<ScriptRunner::EventType, QString> script_dirs = {
     { ScriptRunner::EventType::QUIT, "quit" },
     { ScriptRunner::EventType::REBOOT, "reboot" },
     { ScriptRunner::EventType::SHUTDOWN, "shutdown" },
@@ -33,6 +34,7 @@ const QMap<ScriptRunner::EventType, QString> ScriptRunner::script_dirs = {
     { ScriptRunner::EventType::PROCESS_STARTED, "game-start" },
     { ScriptRunner::EventType::PROCESS_FINISHED, "game-end" },
 };
+} // namespace
 
 void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
 {

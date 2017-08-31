@@ -88,9 +88,6 @@ private:
 
     QList<Model::Theme*> m_themes;
     int m_theme_idx;
-
-    // internal
-    void callScripts() const;
 };
 
 } // namespace ApiParts

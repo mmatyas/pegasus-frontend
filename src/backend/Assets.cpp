@@ -59,25 +59,29 @@ const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
     { Assets::Type::VIDEOS, { "-video", "" } },
 };
 
+namespace {
+
 #ifdef Q_PROCESSOR_ARM
 // prefer opaque images on embedded systems
-const QVector<QString> Assets::m_image_exts = { ".jpg", ".png" };
+const QVector<QString> image_exts = { ".jpg", ".png" };
 #else
-const QVector<QString> Assets::m_image_exts = { ".png", ".jpg" };
+const QVector<QString> image_exts = { ".png", ".jpg" };
 #endif
 
-const QVector<QString> Assets::m_video_exts = { ".webm", ".mp4", ".avi" };
-const QVector<QString> Assets::m_audio_exts = { ".mp3", ".ogg", ".wav" };
+const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
+const QVector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
 
-const QVector<QString>& Assets::extensions(Type key)
+} // namespace
+
+const QVector<QString>& Assets::extensions(AssetType key)
 {
    switch (key) {
        case Type::VIDEOS:
-           return m_video_exts;
+           return video_exts;
        case Type::MUSIC:
-           return m_audio_exts;
+           return audio_exts;
        default:
-           return m_image_exts;
+           return image_exts;
    }
 }
 

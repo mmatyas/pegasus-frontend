@@ -28,9 +28,6 @@ namespace model_providers {
 class PegasusAssets {
 public:
     static void fill(const Model::Platform&, const Model::Game&);
-
-private:
-    static const QHash<Assets::Type, QVector<QString>> suffixes;
 };
 
 } // namespace model_providers
