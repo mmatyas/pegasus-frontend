@@ -100,21 +100,22 @@ void LocaleSettings::selectPreferredLocale()
     // this method should be called after all translations have been found
     Q_ASSERT(!m_locales.isEmpty());
 
-    // default to English
-    m_locale_idx = indexOfLocale(DEFAULT_LOCALE_TAG);
-    Q_ASSERT(m_locale_idx >= 0);
 
-    // if there is a saved language setting, use that; if not, use the system language
-    const QVariant config_value = QSettings().value(SETTINGSKEY_LOCALE);
-    const QString requested_tag = config_value.isNull()
-                                  ? QLocale().bcp47Name() // system default
-                                  : config_value.toString();
+    // A. Try to use the saved config value
+    const QString requested_tag = QSettings().value(SETTINGSKEY_LOCALE).toString();
+    if (!requested_tag.isEmpty())
+        m_locale_idx = indexOfLocale(requested_tag);
 
-    int requested_tag_idx = indexOfLocale(requested_tag);
-    if (requested_tag_idx >= 0) {
-        qInfo().noquote() << QObject::tr("Found translation for `%1`").arg(requested_tag);
-        m_locale_idx = requested_tag_idx;
-    }
+    // B. Try to use the system default language
+    if (m_locale_idx < 0)
+        m_locale_idx = indexOfLocale(QLocale().bcp47Name());
+
+    // C. Fall back to the default
+    if (m_locale_idx < 0)
+        m_locale_idx = indexOfLocale(DEFAULT_LOCALE_TAG);
+
+
+    Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
 }
 
 void LocaleSettings::setIndex(int idx)
