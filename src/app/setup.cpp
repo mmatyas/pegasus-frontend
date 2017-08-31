@@ -20,10 +20,10 @@
 #include "Api.h"
 #include "AppCloseType.h"
 #include "FrontendLayer.h"
-#include "Model.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
 #include "SystemCommands.h"
+#include "model/Platform.h"
 
 #include <QDir>
 #include <QFile>

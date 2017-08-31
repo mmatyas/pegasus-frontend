@@ -17,8 +17,8 @@
 
 #include <QtTest/QtTest>
 
-#include "Model.h"
 #include "api_parts/ApiFilters.h"
+#include "model/Platform.h"
 
 
 class test_Model : public QObject

@@ -18,6 +18,7 @@
 #include "ProcessLauncher.h"
 
 #include "ScriptRunner.h"
+#include "model/Platform.h"
 
 #include <QDebug>
 #include <QFileInfo>

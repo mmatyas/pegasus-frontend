@@ -17,11 +17,12 @@
 
 #pragma once
 
-#include "Model.h"
-
 #include <QObject>
 #include <QPointer>
 #include <QProcess>
+
+namespace Model { class Game; }
+namespace Model { class Platform; }
 
 
 /// Launches and manages external processes

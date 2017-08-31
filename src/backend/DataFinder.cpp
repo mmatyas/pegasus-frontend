@@ -17,7 +17,7 @@
 
 #include "DataFinder.h"
 
-#include "Model.h"
+#include "model/Platform.h"
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
 #include "model_providers/PegasusAssets.h"

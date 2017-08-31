@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "Model.h"
+#include "model/Platform.h"
 
 #include <QObject>
 #include <QFutureWatcher>

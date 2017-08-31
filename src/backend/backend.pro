@@ -9,7 +9,6 @@ SOURCES += \
     Assets.cpp \
     DataFinder.cpp \
     FrontendLayer.cpp \
-    Model.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     SystemCommands.cpp \
@@ -23,13 +22,14 @@ SOURCES += \
     model_providers/PegasusAssets.cpp \
     api_parts/ApiPlatforms.cpp \
     model/ThemeEntry.cpp \
-    model/Locale.cpp
+    model/Locale.cpp \
+    model/Platform.cpp \
+    model/Game.cpp
 
 HEADERS += \
     Api.h \
     Assets.h \
     DataFinder.h \
-    Model.h \
     FrontendLayer.h \
     ProcessLauncher.h \
     ScriptRunner.h \
@@ -47,7 +47,9 @@ HEADERS += \
     api_parts/ApiPlatforms.h \
     AppCloseType.h \
     model/ThemeEntry.h \
-    model/Locale.h
+    model/Locale.h \
+    model/Platform.h \
+    model/Game.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

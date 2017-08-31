@@ -15,49 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Model.h"
+#include "Platform.h"
 
 #include "api_parts/ApiFilters.h"
 
 #include <QDebug>
-#include <QFileInfo>
+//#include <QFileInfo>
 
 
 namespace Model {
-
-GameAssets::GameAssets(QObject* parent)
-    : QObject(parent)
-{}
-
-void GameAssets::setSingle(AssetType key, QString value)
-{
-    Q_ASSERT(Assets::singleTypes.contains(key));
-    m_single_assets[key] = value;
-}
-
-void GameAssets::appendMulti(AssetType key, QString value)
-{
-    Q_ASSERT(Assets::multiTypes.contains(key));
-    m_multi_assets[key].append(value);
-}
-
-Game::Game(QString path, QObject* parent)
-    : QObject(parent)
-    , m_rom_path(path)
-    , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
-    , m_title(m_rom_basename)
-    , m_players(1)
-    , m_favorite(false)
-    , m_rating(0)
-    , m_year(0)
-    , m_month(0)
-    , m_day(0)
-    , m_playcount(0)
-    , m_assets(new GameAssets(this))
-{
-    Q_ASSERT(!path.isEmpty());
-    Q_ASSERT(m_assets);
-}
 
 Platform::Platform(QString name, QString rom_dir_path,
                    QStringList rom_filters, QString launch_cmd,

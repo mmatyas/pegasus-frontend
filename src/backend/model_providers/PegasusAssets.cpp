@@ -17,8 +17,8 @@
 
 #include "PegasusAssets.h"
 
-#include "Model.h"
 #include "Utils.h"
+#include "model/Platform.h"
 
 #include <QStringBuilder>
 

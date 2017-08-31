@@ -17,8 +17,8 @@
 
 #include "Es2Metadata.h"
 
-#include "Model.h"
 #include "Utils.h"
+#include "model/Platform.h"
 
 #include <QDebug>
 #include <QFileInfo>

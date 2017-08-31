@@ -18,12 +18,12 @@
 #pragma once
 
 #include "AppCloseType.h"
-#include "Model.h"
 #include "api_parts/ApiFilters.h"
 #include "api_parts/ApiMeta.h"
 #include "api_parts/ApiPlatforms.h"
 #include "api_parts/ApiSettings.h"
 #include "api_parts/ApiSystem.h"
+#include "model/Platform.h"
 
 #include <QObject>
 #include <QQmlListProperty>
