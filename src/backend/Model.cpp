@@ -29,13 +29,13 @@ GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
 {}
 
-void GameAssets::setSingle(Assets::Type key, QString value)
+void GameAssets::setSingle(AssetType key, QString value)
 {
     Q_ASSERT(Assets::singleTypes.contains(key));
     m_single_assets[key] = value;
 }
 
-void GameAssets::appendMulti(Assets::Type key, QString value)
+void GameAssets::appendMulti(AssetType key, QString value)
 {
     Q_ASSERT(Assets::multiTypes.contains(key));
     m_multi_assets[key].append(value);

@@ -21,44 +21,39 @@
 #include <QVector>
 
 
+enum class AssetType : unsigned char {
+    BOX_FRONT,
+    BOX_BACK,
+    BOX_SPINE,
+    BOX_FULL,
+    CARTRIDGE,
+    LOGO, // just the game logo
+    MARQUEE, // game logo with background
+    BEZEL, // image around the game screen
+    STEAMGRID,
+    FLYER,
+    FANARTS,
+    SCREENSHOTS,
+    VIDEOS,
+    MUSIC,
+};
+
 /// Definitions of supported asset types and file formats
 class Assets {
 public:
-    enum class Type : unsigned char {
-        BOX_FRONT,
-        BOX_BACK,
-        BOX_SPINE,
-        BOX_FULL,
-        CARTRIDGE,
-        LOGO, // just the game logo
-        MARQUEE, // game logo with background
-        BEZEL, // image around the game screen
-        STEAMGRID,
-        FLYER,
-        FANARTS,
-        SCREENSHOTS,
-        VIDEOS,
-        MUSIC,
-    };
+    static const QVector<AssetType> singleTypes;
+    static const QVector<AssetType> multiTypes;
+    static const QHash<AssetType, QVector<QString>> suffixes;
 
-    static const QVector<Assets::Type> singleTypes;
-    static const QVector<Assets::Type> multiTypes;
-    static const QHash<Type, QVector<QString>> suffixes;
+    static const QVector<QString>& extensions(AssetType key);
 
-    static const QVector<QString>& extensions(Type key);
-
-    static QString findFirst(Assets::Type, const QString& path_base);
-    static QStringList findAll(Assets::Type, const QString& path_base);
-
-private:
-    static const QVector<QString> m_image_exts;
-    static const QVector<QString> m_video_exts;
-    static const QVector<QString> m_audio_exts;
+    static QString findFirst(AssetType, const QString& path_base);
+    static QStringList findAll(AssetType, const QString& path_base);
 };
 
-inline uint qHash(const Assets::Type& key, uint seed) {
+inline uint qHash(const AssetType& key, uint seed) {
     return ::qHash(static_cast<unsigned char>(key), seed);
 }
-inline uint qHash(const Assets::Type& key) {
+inline uint qHash(const AssetType& key) {
     return ::qHash(static_cast<unsigned char>(key));
 }

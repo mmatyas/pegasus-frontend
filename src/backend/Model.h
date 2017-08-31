@@ -58,27 +58,27 @@ class GameAssets : public QObject {
 public:
     explicit GameAssets(QObject* parent = nullptr);
 
-    QHash<Assets::Type, QString> m_single_assets;
-    QHash<Assets::Type, QStringList> m_multi_assets;
+    QHash<AssetType, QString> m_single_assets;
+    QHash<AssetType, QStringList> m_multi_assets;
 
-    void setSingle(Assets::Type, QString);
-    void appendMulti(Assets::Type, QString);
+    void setSingle(AssetType, QString);
+    void appendMulti(AssetType, QString);
 
-    QString boxFront() const { return m_single_assets[Assets::Type::BOX_FRONT]; }
-    QString boxBack() const { return m_single_assets[Assets::Type::BOX_BACK]; }
-    QString boxSpine() const { return m_single_assets[Assets::Type::BOX_SPINE]; }
-    QString boxFull() const { return m_single_assets[Assets::Type::BOX_FULL]; }
-    QString cartridge() const { return m_single_assets[Assets::Type::CARTRIDGE]; }
-    QString logo() const { return m_single_assets[Assets::Type::LOGO]; }
-    QString marquee() const { return m_single_assets[Assets::Type::MARQUEE]; }
-    QString bezel() const { return m_single_assets[Assets::Type::BEZEL]; }
-    QString gridicon() const { return m_single_assets[Assets::Type::STEAMGRID]; }
-    QString flyer() const { return m_single_assets[Assets::Type::FLYER]; }
-    QString music() const { return m_single_assets[Assets::Type::MUSIC]; }
+    QString boxFront() const { return m_single_assets[AssetType::BOX_FRONT]; }
+    QString boxBack() const { return m_single_assets[AssetType::BOX_BACK]; }
+    QString boxSpine() const { return m_single_assets[AssetType::BOX_SPINE]; }
+    QString boxFull() const { return m_single_assets[AssetType::BOX_FULL]; }
+    QString cartridge() const { return m_single_assets[AssetType::CARTRIDGE]; }
+    QString logo() const { return m_single_assets[AssetType::LOGO]; }
+    QString marquee() const { return m_single_assets[AssetType::MARQUEE]; }
+    QString bezel() const { return m_single_assets[AssetType::BEZEL]; }
+    QString gridicon() const { return m_single_assets[AssetType::STEAMGRID]; }
+    QString flyer() const { return m_single_assets[AssetType::FLYER]; }
+    QString music() const { return m_single_assets[AssetType::MUSIC]; }
 
-    QStringList fanarts() const { return m_multi_assets[Assets::Type::FANARTS]; }
-    QStringList screenshots() const { return m_multi_assets[Assets::Type::SCREENSHOTS]; }
-    QStringList videos() const { return m_multi_assets[Assets::Type::VIDEOS]; }
+    QStringList fanarts() const { return m_multi_assets[AssetType::FANARTS]; }
+    QStringList screenshots() const { return m_multi_assets[AssetType::SCREENSHOTS]; }
+    QStringList videos() const { return m_multi_assets[AssetType::VIDEOS]; }
 };
 
 

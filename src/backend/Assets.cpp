@@ -22,41 +22,41 @@
 #include <QStringBuilder>
 
 
-const QVector<Assets::Type> Assets::singleTypes = {
-    Assets::Type::BOX_FRONT,
-    Assets::Type::BOX_BACK,
-    Assets::Type::BOX_SPINE,
-    Assets::Type::BOX_FULL,
-    Assets::Type::CARTRIDGE,
-    Assets::Type::LOGO,
-    Assets::Type::MARQUEE,
-    Assets::Type::BEZEL,
-    Assets::Type::STEAMGRID,
-    Assets::Type::FLYER,
-    Assets::Type::MUSIC,
+const QVector<AssetType> Assets::singleTypes = {
+    AssetType::BOX_FRONT,
+    AssetType::BOX_BACK,
+    AssetType::BOX_SPINE,
+    AssetType::BOX_FULL,
+    AssetType::CARTRIDGE,
+    AssetType::LOGO,
+    AssetType::MARQUEE,
+    AssetType::BEZEL,
+    AssetType::STEAMGRID,
+    AssetType::FLYER,
+    AssetType::MUSIC,
 };
-const QVector<Assets::Type> Assets::multiTypes = {
-    Assets::Type::FANARTS,
-    Assets::Type::SCREENSHOTS,
-    Assets::Type::VIDEOS,
+const QVector<AssetType> Assets::multiTypes = {
+    AssetType::FANARTS,
+    AssetType::SCREENSHOTS,
+    AssetType::VIDEOS,
 };
 
-const QHash<Assets::Type, QVector<QString>> Assets::suffixes = {
-    { Assets::Type::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
-    { Assets::Type::BOX_BACK, { "-boxBack", "-box_back" } },
-    { Assets::Type::BOX_SPINE, { "-boxSpine", "-box_spine", "-boxSide", "-box_side" } },
-    { Assets::Type::BOX_FULL, { "-boxFull", "-box_full", "-box" } },
-    { Assets::Type::CARTRIDGE, { "-cartridge", "-cart", "-disc" } },
-    { Assets::Type::LOGO, { "-logo", "-wheel" } },
-    { Assets::Type::MARQUEE, { "-marquee" } },
-    { Assets::Type::BEZEL, { "-bezel", "-screenmarquee", "-border" } },
-    { Assets::Type::STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
-    { Assets::Type::FLYER, { "-flyer" } },
-    { Assets::Type::MUSIC, { "-music", "" } },
+const QHash<AssetType, QVector<QString>> Assets::suffixes = {
+    { AssetType::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
+    { AssetType::BOX_BACK, { "-boxBack", "-box_back" } },
+    { AssetType::BOX_SPINE, { "-boxSpine", "-box_spine", "-boxSide", "-box_side" } },
+    { AssetType::BOX_FULL, { "-boxFull", "-box_full", "-box" } },
+    { AssetType::CARTRIDGE, { "-cartridge", "-cart", "-disc" } },
+    { AssetType::LOGO, { "-logo", "-wheel" } },
+    { AssetType::MARQUEE, { "-marquee" } },
+    { AssetType::BEZEL, { "-bezel", "-screenmarquee", "-border" } },
+    { AssetType::STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
+    { AssetType::FLYER, { "-flyer" } },
+    { AssetType::MUSIC, { "-music", "" } },
     // multi
-    { Assets::Type::FANARTS, { "-fanart", "-art" } },
-    { Assets::Type::SCREENSHOTS, { "-screenshot" } },
-    { Assets::Type::VIDEOS, { "-video", "" } },
+    { AssetType::FANARTS, { "-fanart", "-art" } },
+    { AssetType::SCREENSHOTS, { "-screenshot" } },
+    { AssetType::VIDEOS, { "-video", "" } },
 };
 
 namespace {
@@ -76,16 +76,16 @@ const QVector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
 const QVector<QString>& Assets::extensions(AssetType key)
 {
    switch (key) {
-       case Type::VIDEOS:
+       case AssetType::VIDEOS:
            return video_exts;
-       case Type::MUSIC:
+       case AssetType::MUSIC:
            return audio_exts;
        default:
            return image_exts;
    }
 }
 
-QString Assets::findFirst(Assets::Type asset_type, const QString& path_base)
+QString Assets::findFirst(AssetType asset_type, const QString& path_base)
 {
     const auto& possible_suffixes = Assets::suffixes[asset_type];
     const auto& possible_fileexts = Assets::extensions(asset_type);
@@ -101,7 +101,7 @@ QString Assets::findFirst(Assets::Type asset_type, const QString& path_base)
     return QString();
 }
 
-QStringList Assets::findAll(Assets::Type asset_type, const QString& path_base)
+QStringList Assets::findAll(AssetType asset_type, const QString& path_base)
 {
     const auto& possible_suffixes = Assets::suffixes[asset_type];
     const auto& possible_fileexts = Assets::extensions(asset_type);

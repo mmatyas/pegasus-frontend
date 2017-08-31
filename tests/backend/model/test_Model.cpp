@@ -227,7 +227,7 @@ void test_Model::assetsSetSingle()
     Model::GameAssets assets;
     QCOMPARE(assets.boxFront(), QString());
 
-    assets.setSingle(Assets::Type::BOX_FRONT, "dummy");
+    assets.setSingle(AssetType::BOX_FRONT, "dummy");
     QCOMPARE(assets.boxFront(), QLatin1String("dummy"));
 }
 
@@ -236,7 +236,7 @@ void test_Model::assetsAppendMulti()
     Model::GameAssets assets;
     QCOMPARE(assets.videos().count(), 0);
 
-    assets.appendMulti(Assets::Type::VIDEOS, "dummy");
+    assets.appendMulti(AssetType::VIDEOS, "dummy");
     QCOMPARE(assets.videos().count(), 1);
     QCOMPARE(assets.videos().first(), QLatin1String("dummy"));
 }

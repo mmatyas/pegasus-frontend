@@ -223,19 +223,19 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
         QString path = xml_props.value(KEY_IMAGE);
         convertToAbsolutePath(path, rom_dir_prefix);
         if (!path.isEmpty() && validPath(path))
-            assets.setSingle(Assets::Type::BOX_FRONT, path);
+            assets.setSingle(AssetType::BOX_FRONT, path);
     }
     if (assets.marquee().isEmpty()) {
         QString path = xml_props.value(KEY_MARQUEE);
         convertToAbsolutePath(path, rom_dir_prefix);
         if (!path.isEmpty() && validPath(path))
-            assets.setSingle(Assets::Type::MARQUEE, path);
+            assets.setSingle(AssetType::MARQUEE, path);
     }
     {
         QString path = xml_props.value(KEY_VIDEO);
         convertToAbsolutePath(path, rom_dir_prefix);
         if (!path.isEmpty() && validPath(path))
-            assets.appendMulti(Assets::Type::VIDEOS, path);
+            assets.appendMulti(AssetType::VIDEOS, path);
     }
 
     // search for assets in ~/.emulationstation/downloaded_images
