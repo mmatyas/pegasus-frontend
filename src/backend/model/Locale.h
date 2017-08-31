@@ -27,11 +27,11 @@ namespace Model {
 class Locale : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString tag MEMBER m_bcp47tag CONSTANT)
-    Q_PROPERTY(QString name MEMBER m_name CONSTANT)
+    Q_PROPERTY(QString tag READ tag CONSTANT)
+    Q_PROPERTY(QString name READ name CONSTANT)
 
 public:
-    explicit Locale(QString bcp47tag, QString name, QObject* parent = nullptr);
+    explicit Locale(QString bcp47tag, QObject* parent = nullptr);
 
     const QString tag() const { return m_bcp47tag; }
     const QString name() const { return m_name; }

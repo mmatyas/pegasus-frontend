@@ -27,6 +27,7 @@ namespace {
 
 const QLatin1String SETTINGSKEY_LOCALE("locale");
 const QLatin1String SETTINGSKEY_THEME("theme");
+const QLatin1String DEFAULT_LOCALE_TAG("en-DK");
 
 void callScripts()
 {
@@ -36,71 +37,55 @@ void callScripts()
     ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
-} // namespace
-
-
-namespace ApiParts {
-
-Settings::Settings(QObject* parent)
-    : QObject(parent)
-    , m_translator(this)
-    , m_locale_idx(-1)
-    , m_theme_idx(-1)
-{
-    findAvailableLocales();
-    findPreferredLocale();
-    loadSelectedLocale();
-    qApp->installTranslator(&m_translator);
-
-    initThemes();
-}
-
-void Settings::findAvailableLocales()
+QList<Model::Locale*> findAvailableLocales()
 {
     const int QM_PREFIX_LEN = 8; // length of "pegasus_"
     const int QM_SUFFIX_LEN = 3; // length of ".qm"
-    const QString DEFAULT_TAG("en-DK");
-    const QString DEFAULT_FILENAME("pegasus_en-DK.qm");
+    const QString DEFAULT_FILENAME("pegasus_" + DEFAULT_LOCALE_TAG + ".qm");
 
     // find the available languages
     QStringList qm_files = QDir(":/lang").entryList(QStringList("*.qm"));
     qm_files.append(DEFAULT_FILENAME); // default placeholder
     qm_files.sort();
 
+    QList<Model::Locale*> output;
     for (const QString& filename : qAsConst(qm_files)) {
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
         Q_ASSERT(locale_tag_len > 0);
 
         const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
-        const QLocale locale(locale_tag);
-
-        m_locales.append(new Model::Locale(locale_tag, locale.nativeLanguageName(), this));
+        output.append(new Model::Locale(locale_tag));
     }
-
-    // default to English
-    m_locale_idx = indexOfLocale(DEFAULT_TAG);
-    Q_ASSERT(m_locale_idx >= 0);
+    return output;
 }
 
-void Settings::findPreferredLocale()
+} // namespace
+
+
+namespace ApiParts {
+
+//
+// Locales
+//
+
+LocaleSettings::LocaleSettings(QObject* parent)
+    : QObject(parent)
+    , m_locales(findAvailableLocales())
+    , m_locale_idx(-1)
+    , m_translator(this)
 {
-    // this method should be called after all translations have been found
-    Q_ASSERT(!m_locales.isEmpty());
-
-    // if there is a saved language setting, use that; if not, use the system language
-    const QVariant config_value = QSettings().value(SETTINGSKEY_LOCALE);
-    const QString requested_tag = config_value.isNull()
-                                  ? QLocale().bcp47Name() // system default
-                                  : config_value.toString();
-
-    int requested_tag_idx = indexOfLocale(requested_tag);
-    if (requested_tag_idx >= 0) {
-        qInfo().noquote() << tr("Found translation for `%1`").arg(requested_tag);
-        m_locale_idx = requested_tag_idx;
+    for (Model::Locale* locale : qAsConst(m_locales)) {
+        locale->setParent(this);
+        qInfo().noquote() << tr("Found locale '%1' (`%2`)").arg(locale->name(), locale->tag());
     }
+
+    selectPreferredLocale();
+    loadSelectedLocale();
+
+    qApp->installTranslator(&m_translator);
 }
 
-int Settings::indexOfLocale(const QString& tag) const
+int LocaleSettings::indexOfLocale(const QString& tag) const
 {
     for (int idx = 0; idx < m_locales.count(); idx++) {
         if (m_locales.at(idx)->tag() == tag)
@@ -110,7 +95,29 @@ int Settings::indexOfLocale(const QString& tag) const
     return -1;
 }
 
-void Settings::setLocaleIndex(int idx)
+void LocaleSettings::selectPreferredLocale()
+{
+    // this method should be called after all translations have been found
+    Q_ASSERT(!m_locales.isEmpty());
+
+    // default to English
+    m_locale_idx = indexOfLocale(DEFAULT_LOCALE_TAG);
+    Q_ASSERT(m_locale_idx >= 0);
+
+    // if there is a saved language setting, use that; if not, use the system language
+    const QVariant config_value = QSettings().value(SETTINGSKEY_LOCALE);
+    const QString requested_tag = config_value.isNull()
+                                  ? QLocale().bcp47Name() // system default
+                                  : config_value.toString();
+
+    int requested_tag_idx = indexOfLocale(requested_tag);
+    if (requested_tag_idx >= 0) {
+        qInfo().noquote() << QObject::tr("Found translation for `%1`").arg(requested_tag);
+        m_locale_idx = requested_tag_idx;
+    }
+}
+
+void LocaleSettings::setIndex(int idx)
 {
     // verify
     if (idx == m_locale_idx)
@@ -118,7 +125,7 @@ void Settings::setLocaleIndex(int idx)
 
     const bool valid_idx = (0 <= idx && idx < m_locales.length());
     if (!valid_idx) {
-        qWarning() << tr("Invalid language index #%1").arg(idx);
+        qWarning() << QObject::tr("Invalid locale index #%1").arg(idx);
         return;
     }
 
@@ -127,20 +134,35 @@ void Settings::setLocaleIndex(int idx)
     loadSelectedLocale();
 
     // remember
-    QSettings().setValue(SETTINGSKEY_LOCALE, currentLocale()->tag());
+    QSettings().setValue(SETTINGSKEY_LOCALE, current()->tag());
 
     callScripts();
     emit localeChanged();
 }
 
-void Settings::loadSelectedLocale()
+void LocaleSettings::loadSelectedLocale()
 {
-    m_translator.load("pegasus_" + currentLocale()->tag(), ":/lang", "-");
+    m_translator.load("pegasus_" + current()->tag(), ":/lang", "-");
+
+    qInfo().noquote() << QObject::tr("Locale set to '%1' (`%2`)")
+                         .arg(current()->name(), current()->tag());
 }
 
-QQmlListProperty<Model::Locale> Settings::getLocalesProp()
+QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
 {
     return QQmlListProperty<Model::Locale>(this, m_locales);
+}
+
+//
+// Settings
+//
+
+Settings::Settings(QObject* parent)
+    : QObject(parent)
+    , m_locales(this)
+    , m_theme_idx(-1)
+{
+    initThemes();
 }
 
 void Settings::initThemes()

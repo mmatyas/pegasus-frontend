@@ -17,13 +17,15 @@
 
 #include "Locale.h"
 
+#include <QLocale>
+
 
 namespace Model {
 
-Locale::Locale(QString bcp47tag, QString name, QObject* parent)
+Locale::Locale(QString bcp47tag, QObject* parent)
     : QObject(parent)
     , m_bcp47tag(bcp47tag)
-    , m_name(name)
+    , m_name(QLocale(m_bcp47tag).nativeLanguageName())
 {}
 
 } // namespace Model

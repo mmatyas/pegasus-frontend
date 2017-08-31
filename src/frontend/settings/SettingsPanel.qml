@@ -40,9 +40,9 @@ FocusScope {
         HorizontalSelector {
             focus: true
             label: qsTr("Language") + pegasus.tr
-            model: pegasus.settings.allLocales
-            index: pegasus.settings.localeIndex
-            onIndexChanged: pegasus.settings.localeIndex = index
+            model: pegasus.settings.locales.all
+            index: pegasus.settings.locales.index
+            onIndexChanged: pegasus.settings.locales.index = index
 
             KeyNavigation.down: setTheme
         }

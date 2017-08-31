@@ -27,19 +27,48 @@
 
 namespace ApiParts {
 
+/// Provides access to the list of available locales
+class LocaleSettings : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(Model::Locale* current
+               READ current
+               NOTIFY localeChanged)
+    Q_PROPERTY(int index
+               READ index WRITE setIndex
+               NOTIFY localeChanged)
+    Q_PROPERTY(QQmlListProperty<Model::Locale> all
+               READ getListProp CONSTANT)
+
+public:
+    explicit LocaleSettings(QObject* parent = nullptr);
+
+    Model::Locale* current() const { return m_locales.at(index()); }
+    int index() const { return m_locale_idx; }
+    void setIndex(int idx);
+
+    QQmlListProperty<Model::Locale> getListProp();
+
+signals:
+    void localeChanged();
+
+private:
+    QList<Model::Locale*> m_locales;
+    int m_locale_idx;
+
+    QTranslator m_translator;
+
+    void selectPreferredLocale();
+    void loadSelectedLocale();
+    int indexOfLocale(const QString& tag) const;
+};
+
+
 /// Provides a settings interface for the frontend layer
 class Settings : public QObject {
     Q_OBJECT
 
-    // multilanguage support
-    Q_PROPERTY(Model::Locale* currentLocale
-               READ currentLocale
-               NOTIFY localeChanged)
-    Q_PROPERTY(int localeIndex
-               READ localeIndex WRITE setLocaleIndex
-               NOTIFY localeChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Locale> allLocales
-               READ getLocalesProp CONSTANT)
+    Q_PROPERTY(ApiParts::LocaleSettings* locales READ localesPtr CONSTANT)
 
     // theme support
     Q_PROPERTY(Model::Theme* currentTheme
@@ -54,11 +83,7 @@ class Settings : public QObject {
 public:
     explicit Settings(QObject* parent = nullptr);
 
-    // multilanguage support
-    Model::Locale* currentLocale() const { return m_locales.at(localeIndex()); }
-    int localeIndex() const { return m_locale_idx; }
-    void setLocaleIndex(int idx);
-    QQmlListProperty<Model::Locale> getLocalesProp();
+    LocaleSettings* localesPtr() { return &m_locales; }
 
     // theme support
     Model::Theme* currentTheme() const { return m_themes.at(themeIndex()); }
@@ -67,25 +92,13 @@ public:
     QQmlListProperty<Model::Theme> getThemesProp();
 
 signals:
-    void localeChanged();
     void themeChanged();
 
 private:
-    // multilanguage support
-
-    QTranslator m_translator;
-    QList<Model::Locale*> m_locales;
-    int m_locale_idx;
-
-    void findAvailableLocales();
-    void findPreferredLocale();
-    void loadSelectedLocale();
-    int indexOfLocale(const QString& tag) const;
+    LocaleSettings m_locales;
 
     // theme support
-
     void initThemes();
-
     QList<Model::Theme*> m_themes;
     int m_theme_idx;
 };
