@@ -18,16 +18,17 @@
 #include "ApiSettings.h"
 
 #include "ScriptRunner.h"
-#include "Utils.h"
+#include "model_providers/AppFiles.h"
 
-#include <QtGui>
+#include <QDebug>
+#include <QCoreApplication>
+#include <QSettings>
 
 
 namespace {
 
 const QLatin1String SETTINGSKEY_LOCALE("locale");
 const QLatin1String SETTINGSKEY_THEME("theme");
-const QLatin1String DEFAULT_LOCALE_TAG("en-DK");
 
 void callScripts()
 {
@@ -35,119 +36,6 @@ void callScripts()
 
     ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
-}
-
-QList<Model::Locale*> findAvailableLocales()
-{
-    const int QM_PREFIX_LEN = 8; // length of "pegasus_"
-    const int QM_SUFFIX_LEN = 3; // length of ".qm"
-    const QString DEFAULT_FILENAME("pegasus_" + DEFAULT_LOCALE_TAG + ".qm");
-
-    // find the available languages
-    QStringList qm_files = QDir(":/lang").entryList(QStringList("*.qm"));
-    qm_files.append(DEFAULT_FILENAME); // default placeholder
-    qm_files.sort();
-
-    QList<Model::Locale*> output;
-    for (const QString& filename : qAsConst(qm_files)) {
-        const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
-        Q_ASSERT(locale_tag_len > 0);
-
-        const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
-        output.append(new Model::Locale(locale_tag));
-    }
-    return output;
-}
-
-QStringList themeDirectories()
-{
-    QStringList theme_dirs;
-    theme_dirs << ":";
-    theme_dirs << QCoreApplication::applicationDirPath();
-#ifdef INSTALL_DATADIR
-    if (validPath(INSTALL_DATADIR))
-        theme_dirs << QString(INSTALL_DATADIR);
-#endif
-    theme_dirs << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
-    theme_dirs << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-
-    for (QString& path : theme_dirs) {
-        path += "/themes/";
-        // do not add the organization name to the search path
-        path.replace(QLatin1String("/pegasus-frontend/pegasus-frontend/"),
-                     QLatin1String("/pegasus-frontend/"));
-    }
-
-    return theme_dirs;
-}
-
-// because the theme files may be embedded,
-// we can't use platform-specific shortcuts
-bool fileExists(const QString& path)
-{
-    QFileInfo file(path);
-    return file.exists() && file.isFile();
-};
-
-QList<Model::Theme*> findAvailableThemes()
-{
-    const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    const auto flags = QDirIterator::FollowSymlinks;
-
-    const QString ini_filename("theme.ini");
-    const QString qml_filename("theme.qml");
-    const QString warn_missingfile = QObject::tr("Warning: no `%1` file found in `%2`, theme skipped");
-    const QString warn_missingentry = QObject::tr("Warning: there is no `%1` entry in `%2`, theme skipped");
-
-    const QString INIKEY_NAME("name");
-    const QString INIKEY_AUTHOR("author");
-    const QString INIKEY_VERSION("version");
-    const QString INIKEY_SUMMARY("summary");
-    const QString INIKEY_DESC("description");
-
-    QList<Model::Theme*> output;
-
-    QStringList search_paths = themeDirectories();
-    for (auto& path : search_paths) {
-        QDirIterator themedir(path, filters, flags);
-        while (themedir.hasNext()) {
-            const auto basedir = themedir.next() + '/';
-            const auto ini_path = basedir + ini_filename;
-            const auto qml_path = basedir + qml_filename;
-
-            if (!fileExists(ini_path)) {
-                qWarning().noquote() << warn_missingfile.arg(ini_filename).arg(basedir);
-                continue;
-            }
-            if (!fileExists(qml_path)) {
-                qWarning().noquote() << warn_missingfile.arg(qml_filename).arg(basedir);
-                continue;
-            }
-
-            const QSettings metadata(ini_path, QSettings::IniFormat);
-            if (!metadata.contains(INIKEY_NAME)) {
-                qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME).arg(ini_filename);
-                continue;
-            }
-
-            output.append(new Model::Theme(
-                basedir, qml_path,
-                metadata.value(INIKEY_NAME).toString(),
-                metadata.value(INIKEY_AUTHOR).toString(),
-                metadata.value(INIKEY_VERSION).toString(),
-                metadata.value(INIKEY_SUMMARY).toString(),
-                metadata.value(INIKEY_DESC).toString()
-            ));
-        }
-    }
-
-    std::sort(output.begin(), output.end(),
-        [](const Model::Theme* a, const Model::Theme* b) {
-            return a->compare(*b) < 0;
-        }
-    );
-
-    return output;
 }
 
 } // namespace
@@ -161,7 +49,7 @@ namespace ApiParts {
 
 LocaleSettings::LocaleSettings(QObject* parent)
     : QObject(parent)
-    , m_locales(findAvailableLocales())
+    , m_locales(model_providers::AppFiles::findAvailableLocales())
     , m_locale_idx(-1)
     , m_translator(this)
 {
@@ -190,6 +78,7 @@ void LocaleSettings::selectPreferredLocale()
 {
     // this method should be called after all translations have been found
     Q_ASSERT(!m_locales.isEmpty());
+    using model_providers::AppFiles;
 
 
     // A. Try to use the saved config value
@@ -203,7 +92,7 @@ void LocaleSettings::selectPreferredLocale()
 
     // C. Fall back to the default
     if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(DEFAULT_LOCALE_TAG);
+        m_locale_idx = indexOfLocale(AppFiles::DEFAULT_LOCALE_TAG);
 
 
     Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
@@ -251,7 +140,7 @@ QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
 
 ThemeSettings::ThemeSettings(QObject* parent)
     : QObject(parent)
-    , m_themes(findAvailableThemes())
+    , m_themes(model_providers::AppFiles::findAvailableThemes())
     , m_theme_idx(-1)
 {
     for (Model::Theme* theme : qAsConst(m_themes)) {

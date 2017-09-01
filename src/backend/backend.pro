@@ -24,7 +24,8 @@ SOURCES += \
     model/ThemeEntry.cpp \
     model/Locale.cpp \
     model/Platform.cpp \
-    model/Game.cpp
+    model/Game.cpp \
+    model_providers/AppFiles.cpp
 
 HEADERS += \
     Api.h \
@@ -49,7 +50,8 @@ HEADERS += \
     model/ThemeEntry.h \
     model/Locale.h \
     model/Platform.h \
-    model/Game.h
+    model/Game.h \
+    model_providers/AppFiles.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
