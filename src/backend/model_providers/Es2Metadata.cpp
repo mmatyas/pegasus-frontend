@@ -26,14 +26,11 @@
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 
-static constexpr auto MSG_PREFIX = "ES2: ";
+
+static constexpr auto MSG_PREFIX = "ES2:";
 
 
 namespace model_providers {
-
-Es2Metadata::Es2Metadata()
-{
-}
 
 void Es2Metadata::fill(const Model::Platform& platform)
 {

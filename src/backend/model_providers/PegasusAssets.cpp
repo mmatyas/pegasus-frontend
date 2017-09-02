@@ -25,9 +25,17 @@
 
 namespace model_providers {
 
-void PegasusAssets::fill(const Model::Platform& platform, const Model::Game& game)
+void PegasusAssets::fill(const Model::Platform& platform)
 {
-    static constexpr auto MEDIA_SUBDIR = "/media/";
+    for (Model::Game* const game_ptr : qAsConst(platform.allGames())) {
+        Q_ASSERT(game_ptr);
+        fillOne(platform, *game_ptr);
+    }
+}
+
+void PegasusAssets::fillOne(const Model::Platform& platform, const Model::Game& game)
+{
+    constexpr auto MEDIA_SUBDIR = "/media/";
 
     const QString path_base = platform.m_rom_dir_path
                               % MEDIA_SUBDIR

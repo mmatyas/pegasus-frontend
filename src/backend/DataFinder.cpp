@@ -24,36 +24,39 @@
 
 #include <QDirIterator>
 
+#include <memory>
+
 
 QList<Model::Platform*> DataFinder::find()
 {
     // TODO: map-reduce algorithms might be usable here
-
-    QList<Model::Platform*> model;
-
-    findPlatforms(model);
     // TODO: mergeDuplicatePlatforms(model);
 
-    for (Model::Platform* platform : qAsConst(model)) {
-        Q_ASSERT(platform);
-        findGamesByExt(*platform);
+    QList<Model::Platform*> model = runPlatformListProviders();
+
+    for (Model::Platform* const platform_ptr : qAsConst(model)) {
+        Q_ASSERT(platform_ptr);
+        Model::Platform& platform = *platform_ptr;
+
+        findGamesByExt(platform);
     }
 
     removeEmptyPlatforms(model);
 
     for (Model::Platform* const platform_ptr : qAsConst(model)) {
+        Q_ASSERT(platform_ptr);
         Model::Platform& platform = *platform_ptr;
-        findPortableAssets(platform);
+
         runMetadataProviders(platform);
-        // TODO: merge duplicates?
+        platform.sortGames();
     }
 
     return model;
 }
 
-void DataFinder::findPlatforms(QList<Model::Platform*>& model)
+QList<Model::Platform*> DataFinder::runPlatformListProviders()
 {
-    Q_ASSERT(model.isEmpty());
+    QList<Model::Platform*> model;
 
     // If you'd like to add more than one provider, use them like this:
     //
@@ -65,10 +68,14 @@ void DataFinder::findPlatforms(QList<Model::Platform*>& model)
 
     model_providers::Es2PlatformList provider;
     model.append(provider.find());
+
+    return model;
 }
 
 void DataFinder::findGamesByExt(Model::Platform& platform)
 {
+    // TODO: handle empty rom filter list
+
     static const auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
@@ -80,12 +87,6 @@ void DataFinder::findGamesByExt(Model::Platform& platform)
                            filters, flags);
     while (romdir_it.hasNext())
         platform.addGame(romdir_it.next());
-
-    // QDir supports ordering, but doesn't support symlinks or subdirectories
-    // without additional checks and recursion.
-    // QDirIterator supports subdirs and symlinks, but doesn't do sorting.
-    // Sorting manually should be faster than evaluating an `if dir` branch in a loop.
-    platform.sortGames();
 }
 
 void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
@@ -99,36 +100,17 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
     }
 }
 
-void DataFinder::findPortableAssets(const Model::Platform& platform)
-{
-    // See `runMetadataProviders` about how to implement multiple providers.
-    // You'll also need to make a new abstract base class and un-static-ify
-    // PegasusAssets.
-    model_providers::PegasusAssets provider;
-
-    // TODO: this could be parallelized
-    for (Model::Game* game_ptr : qAsConst(platform.allGames())) {
-        Q_ASSERT(game_ptr);
-        Q_ASSERT(game_ptr->assets());
-
-        const Model::Game& game = *game_ptr;
-
-        provider.fill(platform, game);
-    }
-}
-
 void DataFinder::runMetadataProviders(const Model::Platform& platform)
 {
-    // At the moment there's only ES2 for metadata so I've just simply
-    // created it as a regular object.
-    // If you'd like to add more than one provider, use them like this:
-    //
-    // QVector<model_providers::MetadataProvider*> providers;
-    // providers.push_back(new model_providers::Es2Metadata());
-    //
-    // for (auto& provider : providers)
-    //     provider->fill(platform);
+    // NOTE: Qt containers have some troubles with move semantics
+    // TODO: do not recreate the providers for each platform every time
 
-    model_providers::Es2Metadata provider;
-    provider.fill(platform);
+    using ProviderPtr = std::unique_ptr<model_providers::MetadataProvider>;
+    std::vector<ProviderPtr> providers;
+
+    providers.emplace_back(new model_providers::PegasusAssets());
+    providers.emplace_back(new model_providers::Es2Metadata());
+
+    for (auto& provider : qAsConst(providers))
+        provider->fill(platform);
 }

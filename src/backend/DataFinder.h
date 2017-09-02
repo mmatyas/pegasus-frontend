@@ -29,10 +29,8 @@ public:
     static QList<Model::Platform*> find();
 
 private:
-    static void findPlatforms(QList<Model::Platform*>&);
+    static QList<Model::Platform*> runPlatformListProviders();
     static void findGamesByExt(Model::Platform&);
     static void removeEmptyPlatforms(QList<Model::Platform*>&);
-
-    static void findPortableAssets(const Model::Platform&);
     static void runMetadataProviders(const Model::Platform&);
 };

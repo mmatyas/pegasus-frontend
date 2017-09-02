@@ -26,8 +26,6 @@ namespace model_providers {
 
 class Es2Metadata : public MetadataProvider {
 public:
-    Es2Metadata();
-
     void fill(const Model::Platform&) final;
 
 private:

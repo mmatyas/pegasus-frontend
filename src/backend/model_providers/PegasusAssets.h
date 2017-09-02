@@ -17,17 +17,17 @@
 
 #pragma once
 
-#include "Assets.h"
-
-namespace Model { class Game; }
-namespace Model { class Platform; }
+#include "MetadataProvider.h"
 
 
 namespace model_providers {
 
-class PegasusAssets {
+class PegasusAssets : public MetadataProvider {
 public:
-    static void fill(const Model::Platform&, const Model::Game&);
+    void fill(const Model::Platform&) final;
+
+private:
+    void fillOne(const Model::Platform&, const Model::Game&);
 };
 
 } // namespace model_providers
