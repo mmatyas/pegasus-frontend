@@ -34,7 +34,6 @@ before_install:
         libasound-dev
         libgstreamer-plugins-base1.0-dev
         libpulse-dev
-        libsdl2-dev
         libudev-dev
         libxi-dev
       ;
