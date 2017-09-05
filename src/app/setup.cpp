@@ -20,6 +20,7 @@
 #include "Api.h"
 #include "AppCloseType.h"
 #include "FrontendLayer.h"
+#include "GamepadAxisNavigation.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
 #include "SystemCommands.h"
@@ -63,6 +64,7 @@ void setupLogStreams(std::list<QTextStream>& streams)
 void setupGamepadNavigation()
 {
     static QGamepadKeyNavigation padkeynav;
+    static GamepadAxisNavigation padaxisnav;
 
     padkeynav.setButtonAKey(Qt::Key_Return);
     padkeynav.setButtonBKey(Qt::Key_Escape);
@@ -71,6 +73,9 @@ void setupGamepadNavigation()
     padkeynav.setButtonL2Key(Qt::Key_A);
     padkeynav.setButtonR1Key(Qt::Key_D);
     padkeynav.setButtonR2Key(Qt::Key_D);
+
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
+                     &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
 }
 
 void registerAPIClasses()
