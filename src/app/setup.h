@@ -22,10 +22,12 @@
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;
+
 class QTextStream;
 
 
 void setupLogStreams(std::list<QTextStream>&);
+void setupGamepadNavigation();
 void registerAPIClasses();
 void setupAsyncGameLaunch(ApiObject&, FrontendLayer&, ProcessLauncher&);
 void setupControlsChangeScripts();

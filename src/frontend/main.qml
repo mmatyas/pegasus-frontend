@@ -37,30 +37,6 @@ Window {
     FontLoader { id: uiFont; source: "/fonts/Roboto.ttf" }
     FontLoader { id: uiFontCondensed; source: "/fonts/RobotoCondensed.ttf" }
 
-    // enable gamepad support
-    Gamepad {
-        id: gamepad1
-        deviceId: GamepadManager.connectedGamepads.length > 0
-                  ? GamepadManager.connectedGamepads[0]
-                  : -1
-    }
-    Connections {
-        target: GamepadManager
-        onGamepadConnected: gamepad1.deviceId = deviceId
-    }
-    GamepadKeyNavigation {
-        id: gamepadKeyNav
-        gamepad: gamepad1
-        active: true
-        buttonAKey: Qt.Key_Return
-        buttonBKey: Qt.Key_Escape
-        buttonXKey: Qt.Key_Control
-        buttonL1Key: Qt.Key_A
-        buttonL2Key: Qt.Key_A
-        buttonR1Key: Qt.Key_D
-        buttonR2Key: Qt.Key_D
-    }
-
 
     function toggleMenu() {
         if (themeContent.focus) {

@@ -27,6 +27,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QGamepadKeyNavigation>
 #include <QGamepadManager>
 #include <QGuiApplication>
 #include <QQmlContext>
@@ -57,6 +58,19 @@ void setupLogStreams(std::list<QTextStream>& streams)
     log_file.open(QIODevice::WriteOnly | QIODevice::Text);
 
     streams.emplace_back(&log_file);
+}
+
+void setupGamepadNavigation()
+{
+    static QGamepadKeyNavigation padkeynav;
+
+    padkeynav.setButtonAKey(Qt::Key_Return);
+    padkeynav.setButtonBKey(Qt::Key_Escape);
+    padkeynav.setButtonXKey(Qt::Key_Control);
+    padkeynav.setButtonL1Key(Qt::Key_A);
+    padkeynav.setButtonL2Key(Qt::Key_A);
+    padkeynav.setButtonR1Key(Qt::Key_D);
+    padkeynav.setButtonR2Key(Qt::Key_D);
 }
 
 void registerAPIClasses()

@@ -49,8 +49,7 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(handleLogMsg);
 
     handleCommandLineArgs(app);
-
-
+    setupGamepadNavigation();
     // this should come before the ApiObject constructor,
     // as it may produce language change signals
     registerAPIClasses();
