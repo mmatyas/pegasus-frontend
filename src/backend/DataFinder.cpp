@@ -95,8 +95,10 @@ void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
     // could be used here
     QMutableListIterator<Model::Platform*> it(platforms);
     while (it.hasNext()) {
-        if (it.next()->allGames().isEmpty())
+        if (it.next()->allGames().isEmpty()) {
+            delete it.value();
             it.remove();
+        }
     }
 }
 

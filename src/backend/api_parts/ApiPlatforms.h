@@ -30,6 +30,7 @@ class Platforms : public QObject {
 
 public:
     explicit Platforms(QObject* parent = nullptr);
+    ~Platforms();
 
     int currentIndex() const { return m_current_platform_idx; }
     Model::Platform* currentPlatform() const { return m_current_platform; }

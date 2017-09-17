@@ -107,8 +107,12 @@ QList<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
         }
 
         Model::Platform* platform = parseSystemEntry(xml);
-        if (platform && !platform->m_short_name.isEmpty())
-            platforms.push_back(platform);
+        if (platform) {
+            if (!platform->m_short_name.isEmpty())
+                platforms.push_back(platform);
+            else
+                delete platform;
+        }
     }
 
     return platforms;

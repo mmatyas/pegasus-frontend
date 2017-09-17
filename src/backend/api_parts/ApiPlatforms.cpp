@@ -31,6 +31,12 @@ Platforms::Platforms(QObject* parent)
 {
 }
 
+Platforms::~Platforms()
+{
+    for (auto& platform : qAsConst(m_platforms))
+        delete platform;
+}
+
 void Platforms::startScanning()
 {
     // launch the game search on a parallel thread
