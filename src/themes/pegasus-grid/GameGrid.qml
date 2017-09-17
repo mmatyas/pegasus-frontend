@@ -24,7 +24,10 @@ GridView {
 
     model: platformData ? platformData.games : 0
     onModelChanged: firstImageLoaded = false
-    onCurrentIndexChanged: pegasus.currentPlatform.currentGameIndex = currentIndex;
+
+    currentIndex: platformData.currentGameIndex
+    onCurrentIndexChanged: platformData.currentGameIndex = currentIndex
+    Component.onCompleted: positionViewAtIndex(currentIndex, PathView.Center)
 
     // For better visibility, box arts should be displayed in five columns if
     // the boxes are "tall", and four if they are "wide". There are two issues:
