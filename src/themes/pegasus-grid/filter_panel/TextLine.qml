@@ -23,7 +23,9 @@ FocusScope {
 
     property int fontSize
     property alias text: textInput.text
+    property alias textColor: textInput.color
     property alias placeholder: placeholder.text
+    property alias placeholderColor: placeholder.color
 
     height: fontSize * 1.7
     clip: true

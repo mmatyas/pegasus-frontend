@@ -22,6 +22,7 @@ Row {
 
     property alias fontSize: label.font.pixelSize
     property alias text: label.text
+    property alias textColor: label.color
 
     property bool checked: false
 
@@ -39,7 +40,7 @@ Row {
 
         Text {
             text: root.checked ? "\xd7" : ""
-            color: "#eee"
+            color: textColor
             font {
                 bold: true
                 pixelSize: parent.height

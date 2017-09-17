@@ -20,6 +20,11 @@ import QtGraphicalEffects 1.0
 
 
 FocusScope {
+    id: root
+
+    property alias panelColor: panel.color
+    property color textColor: "#eee"
+
     width: content.width
     height: content.height
 
@@ -46,7 +51,7 @@ FocusScope {
 
         Text {
             text: qsTr("Filters")
-            color: "#fff"
+            color: root.textColor
             font {
                 bold: true
                 pixelSize: rpx(26)
@@ -57,11 +62,14 @@ FocusScope {
 
         TextLine {
             id: itemTitle
-            placeholder: qsTr("title")
-            fontSize: content.normalTextSize
-            width: rpx(200)
 
+            placeholder: qsTr("title")
+            placeholderColor: "#bbb" // FIXME
+            textColor: root.textColor
+            fontSize: content.normalTextSize
             onTextChanged: pegasus.filters.title = text
+
+            width: rpx(200)
 
             focus: true
             KeyNavigation.down: itemFavorites
@@ -69,7 +77,9 @@ FocusScope {
 
         CheckBox {
             id: itemFavorites
+
             text: qsTr("Favorites")
+            textColor: root.textColor
             fontSize: content.normalTextSize
 
             checked: pegasus.filters.favorite
@@ -80,7 +90,9 @@ FocusScope {
 
         CheckBox {
             id: itemMultiplayer
+
             text: qsTr("Multiplayer")
+            textColor: root.textColor
             fontSize: content.normalTextSize
 
             checked: pegasus.filters.playerCount > 1
