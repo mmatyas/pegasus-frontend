@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/frontend">
         <file>main.qml</file>
+        <file>DialogOkCancel.qml</file>
         <file>MainMenuOverlay.qml</file>
         <file>MainMenuPanel.qml</file>
         <file>SplashScreen.qml</file>
