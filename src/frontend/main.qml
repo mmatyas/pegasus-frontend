@@ -50,7 +50,7 @@ Window {
     }
 
     FocusScope {
-        focus: !loadingScreen.visible
+        focus: !splashScreen.visible
         anchors.fill: parent
 
         Keys.onEscapePressed: toggleMenu()
@@ -70,21 +70,8 @@ Window {
         }
     }
 
-
-    Rectangle {
-        id: loadingScreen
-        color: "#222"
-        anchors.fill: parent
-
+    SplashScreen {
+        id: splashScreen
         visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
-
-        Image {
-            source: "/loading.svg"
-            sourceSize.height: 220
-            anchors {
-                bottom: parent.bottom; bottomMargin: rpx(20)
-                left: parent.left; leftMargin: rpx(40)
-            }
-        }
     }
 }

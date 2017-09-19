@@ -2,10 +2,11 @@
     <qresource prefix="/frontend">
         <file>main.qml</file>
         <file>MainMenuOverlay.qml</file>
+        <file>MainMenuPanel.qml</file>
+        <file>SplashScreen.qml</file>
         <file>menuitems/PrimaryMenuItem.qml</file>
         <file>menuitems/SecondaryMenuItem.qml</file>
         <file>menuitems/GenericMenuItem.qml</file>
-        <file>MainMenuPanel.qml</file>
         <file>gamepad/ConfigScreen.qml</file>
         <file>gamepad/ConfigField.qml</file>
         <file>gamepad/ConfigGroup.qml</file>
