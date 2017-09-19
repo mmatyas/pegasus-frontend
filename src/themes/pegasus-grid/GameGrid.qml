@@ -25,7 +25,7 @@ GridView {
     model: platformData ? platformData.games : 0
     onModelChanged: firstImageLoaded = false
 
-    currentIndex: platformData.currentGameIndex
+    currentIndex: pegasus.currentPlatform.currentGameIndex
     onCurrentIndexChanged: platformData.currentGameIndex = currentIndex
     Component.onCompleted: positionViewAtIndex(currentIndex, PathView.Center)
 
