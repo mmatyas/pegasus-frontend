@@ -178,17 +178,61 @@ FocusScope {
         }
     ]
 
+
+    // fancy easing curves, a la material design
+    readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
+    readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
+    readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
+
     transitions: [
+        // main panel
         Transition {
-            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
+            from: ""; to: "menuOpen"
+            AnchorAnimation {
+                duration: 225
+                easing { type: Easing.Bezier; bezierCurve: bezierDecelerate }
+            }
         },
         Transition {
-            from: "menuOpen"; to: "settings,gamepad"
-            AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
+            from: "menuOpen"; to: ""
+            AnchorAnimation {
+                duration: 200
+                easing { type: Easing.Bezier; bezierCurve: bezierSharp }
+            }
+        },
+
+        // non-fullscreen panels (shorter animations)
+        Transition {
+            from: "menuOpen"; to: "settings"
+            AnchorAnimation {
+                duration: 425
+                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
+            }
         },
         Transition {
-            from: "settings,gamepad"; to: "menuOpen"
-            AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
+            from: "settings"; to: "menuOpen"
+            AnchorAnimation {
+                duration: 425
+                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
+            }
+
+            onRunningChanged: if (!running) hideAllSubpanels()
+        },
+
+        // full-screen panels (longer animations)
+        Transition {
+            from: "menuOpen"; to: "gamepad"
+            AnchorAnimation {
+                duration: 500
+                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
+            }
+        },
+        Transition {
+            from: "gamepad"; to: "menuOpen"
+            AnchorAnimation {
+                duration: 500
+                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
+            }
 
             onRunningChanged: if (!running) hideAllSubpanels()
         }
