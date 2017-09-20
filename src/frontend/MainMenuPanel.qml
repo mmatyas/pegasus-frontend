@@ -17,13 +17,14 @@
 
 import "menuitems"
 import QtQuick 2.8
-import QtGamepad 1.0
+
 
 FocusScope {
     id: root
-    width: rpx(360)
+
+    width: rpx(350)
     height: parent.height
-    visible: x < parent.width
+    visible: x < parent.width && 0 < x + width
 
     signal showGamepadScreen()
     signal showSettingsScreen()

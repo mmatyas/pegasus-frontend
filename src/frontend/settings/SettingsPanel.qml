@@ -21,6 +21,7 @@ FocusScope {
     signal screenClosed()
 
     height: parent.height
+    visible: false
 
     Keys.onEscapePressed: screenClosed()
 

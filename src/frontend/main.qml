@@ -38,27 +38,20 @@ Window {
     FontLoader { id: uiFontCondensed; source: "/fonts/RobotoCondensed.ttf" }
 
 
-    function toggleMenu() {
-        if (themeContent.focus) {
-            themeContent.enabled = false;
-            mainMenu.focus = true;
-        }
-        else {
-            themeContent.enabled = true;
-            themeContent.focus = true;
-        }
-    }
-
+    // the main content
     FocusScope {
-        focus: !splashScreen.visible
+        id: content
         anchors.fill: parent
-
-        Keys.onEscapePressed: toggleMenu()
 
         Loader {
             id: themeContent
             anchors.fill: parent
+
             focus: true
+            Keys.onEscapePressed: {
+                themeContent.enabled = false;
+                mainMenu.focus = true;
+            }
 
             source: pegasus.settings.themes.current.qmlPath
             asynchronous: true
@@ -66,12 +59,17 @@ Window {
 
         MainMenuOverlay {
             id: mainMenu
-            anchors.fill: parent
+
+            onClose: {
+                themeContent.enabled = true;
+                themeContent.focus = true;
+            }
         }
     }
 
     SplashScreen {
         id: splashScreen
         visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
+        onVisibleChanged: content.focus = true
     }
 }

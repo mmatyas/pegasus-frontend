@@ -26,6 +26,7 @@ FocusScope {
 
     width: parent.width
     height: parent.height
+    visible: false
 
     property ConfigField recordingField: null
     function recordConfig(configField) {

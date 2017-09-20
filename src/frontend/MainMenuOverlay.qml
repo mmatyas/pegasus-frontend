@@ -19,32 +19,48 @@ import "gamepad" as GamepadConfig
 import "settings"
 import QtQuick 2.8
 
+
 FocusScope {
-    // TODO: optimize
+    id: root
+
+    signal close()
+
+    anchors.fill: parent
+    visible: shade.opacity > 0
+
+    Keys.onEscapePressed: if (!event.isAutoRepeat) stepBack()
+    onFocusChanged: state = activeFocus ? "menuOpen" : ""
+
+
+    // return to the main menu from a panel, or close the overlay
     function stepBack() {
         if (state == "menuOpen" || state == "") {
-            toggleMenu();
+            close();
+            return;
         }
-        else {
-            state = "menuOpen";
-            menuPanel.focus = true;
-        }
+
+        state = "menuOpen";
+        menuPanel.enabled = true;
+        menuPanel.focus = true;
     }
 
-    function closeAllSubpanels() {
+    // panel visibility is handled manually in order to
+    // 1. control their visibility during transitions, and
+    // 2. make sure only one of them is visible at a time (ie. no overlap)
+    function hideAllSubpanels() {
         gamepadPanel.visible = false;
         settingsPanel.visible = false;
     }
 
-    Keys.onEscapePressed: if (!event.isAutoRepeat) stepBack()
-    onFocusChanged: activeFocus ? state = "menuOpen" : state = ""
 
+    // capture right mouse button
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: stepBack()
+        onClicked: root.stepBack()
     }
 
+    // background
     Rectangle {
         id: shade
         anchors {
@@ -56,30 +72,29 @@ FocusScope {
 
         color: "black"
         opacity: 0
-        visible: opacity > 0
+        visible: opacity > 0 && width > 0
 
         Behavior on opacity { NumberAnimation { duration: 300 } }
 
+        Text {
+            id: revision
+            text: pegasus.meta.gitRevision
+            color: "#eee"
+            font {
+                pixelSize: rpx(12)
+                family: "monospace"
+            }
+            anchors {
+                left: parent.left
+                bottom: parent.bottom
+                margins: rpx(10)
+            }
+        }
+
         MouseArea {
             anchors.fill: parent
-            onClicked: toggleMenu()
+            onClicked: root.stepBack()
         }
-    }
-
-    Text {
-        id: revision
-        text: pegasus.meta.gitRevision
-        color: "#eee"
-        font {
-            pixelSize: rpx(12)
-            family: "monospace"
-        }
-        anchors {
-            left: parent.left
-            bottom: parent.bottom
-            margins: rpx(10)
-        }
-        visible: false
     }
 
     MainMenuPanel {
@@ -87,43 +102,40 @@ FocusScope {
         focus: true
         anchors.left: parent.right
 
-        onShowGamepadScreen: {
-            parent.state = "submenuFullscreen"
-            gamepadPanel.focus = true;
-
-            closeAllSubpanels();
-            gamepadPanel.visible = true;
-        }
         onShowSettingsScreen: {
-            parent.state = "submenuFill"
-            settingsPanel.focus = true;
-
-            closeAllSubpanels();
+            parent.state = "settings";
             settingsPanel.visible = true;
         }
+        onShowGamepadScreen: {
+            parent.state = "gamepad";
+            gamepadPanel.visible = true;
+        }
+    }
+
+    SettingsPanel {
+        id: settingsPanel
+        anchors.left: menuPanel.right
+        width: parent.width - menuPanel.width
+
+        onScreenClosed: stepBack()
     }
 
     GamepadConfig.ConfigScreen {
         id: gamepadPanel
-        visible: false
         anchors.left: menuPanel.right
-        onScreenClosed: stepBack()
-    }
-    SettingsPanel {
-        id: settingsPanel
-        width: parent.width - menuPanel.width
-        visible: false
-        anchors.left: menuPanel.right
+
         onScreenClosed: stepBack()
     }
 
+
     states: [
         State {
-            name: "_panelOpen"
+            // the shade should be visible in every state
+            name: "_overlayOpen"
             PropertyChanges { target: shade; opacity: 0.75 }
         },
         State {
-            name: "menuOpen"; extend: "_panelOpen"
+            name: "menuOpen"; extend: "_overlayOpen"
             PropertyChanges { target: revision; visible: true }
             AnchorChanges {
                 target: menuPanel;
@@ -132,7 +144,24 @@ FocusScope {
             }
         },
         State {
-            name: "submenuFullscreen"; extend: "_panelOpen"
+            // the main menu panel should not receive input
+            // while any of the subpanel is open
+            name: "_submenuOpen"; extend: "_overlayOpen"
+            PropertyChanges {
+                target: menuPanel
+                enabled: false
+            }
+        },
+        State {
+            name: "_submenuWithPanel"; extend: "_submenuOpen"
+            AnchorChanges {
+                target: menuPanel;
+                anchors.left: parent.left
+                anchors.right: undefined
+            }
+        },
+        State {
+            name: "_submenuWithoutPanel"; extend: "_submenuOpen"
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
@@ -140,30 +169,28 @@ FocusScope {
             }
         },
         State {
-            name: "submenuFill"; extend: "_panelOpen"
-            AnchorChanges {
-                target: menuPanel;
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
+            name: "settings"; extend: "_submenuWithPanel"
+            PropertyChanges { target: settingsPanel; focus: true }
+        },
+        State {
+            name: "gamepad"; extend: "_submenuWithoutPanel"
+            PropertyChanges { target: gamepadPanel; focus: true }
         }
     ]
 
-    // TODO: optimize
     transitions: [
         Transition {
             AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
         },
-        // TODO: reversible?
         Transition {
-            from: "menuOpen"; to: "submenuFullscreen,submenuFill"
+            from: "menuOpen"; to: "settings,gamepad"
             AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
         },
         Transition {
-            from: "submenuFullscreen,submenuFill"; to: "menuOpen"
+            from: "settings,gamepad"; to: "menuOpen"
             AnchorAnimation { duration: 600; easing.type: Easing.OutCubic }
 
-            onRunningChanged: if (!running) closeAllSubpanels()
+            onRunningChanged: if (!running) hideAllSubpanels()
         }
     ]
 }
