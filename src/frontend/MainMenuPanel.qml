@@ -29,6 +29,9 @@ FocusScope {
     signal showGamepadScreen()
     signal showSettingsScreen()
 
+    signal requestShutdown()
+    signal requestReboot()
+
 
     Rectangle {
         color: "#333"
@@ -86,7 +89,7 @@ FocusScope {
                 SecondaryMenuItem {
                     id: mbQuitShutdown
                     text: qsTr("Shutdown") + pegasus.tr
-                    onActivated: pegasus.system.shutdown()
+                    onActivated: requestShutdown()
 
                     focus: true
                     KeyNavigation.down: mbQuitReboot
@@ -95,7 +98,7 @@ FocusScope {
                 SecondaryMenuItem {
                     id: mbQuitReboot
                     text: qsTr("Reboot") + pegasus.tr
-                    onActivated: pegasus.system.reboot()
+                    onActivated: requestReboot()
 
                     KeyNavigation.up: mbQuitShutdown
                     KeyNavigation.down: mbQuitExit

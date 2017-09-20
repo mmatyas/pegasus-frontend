@@ -24,6 +24,8 @@ FocusScope {
     id: root
 
     signal close()
+    signal requestShutdown()
+    signal requestReboot()
 
     anchors.fill: parent
     visible: shade.opacity > 0
@@ -110,6 +112,9 @@ FocusScope {
             parent.state = "gamepad";
             gamepadPanel.visible = true;
         }
+
+        onRequestShutdown: root.requestShutdown()
+        onRequestReboot: root.requestReboot()
     }
 
     SettingsPanel {

@@ -64,6 +64,14 @@ Window {
                 themeContent.enabled = true;
                 themeContent.focus = true;
             }
+            onRequestShutdown: {
+                content.enabled = false;
+                shutdownDialog.focus = true;
+            }
+            onRequestReboot: {
+                content.enabled = false;
+                rebootDialog.focus = true;
+            }
         }
     }
 
@@ -71,5 +79,33 @@ Window {
         id: splashScreen
         visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
         onVisibleChanged: content.focus = true
+    }
+
+    DialogOkCancel {
+        id: shutdownDialog
+
+        title: qsTr("Shutdown") + pegasus.tr
+        message: qsTr("The system will shut down. Are you sure?") + pegasus.tr
+        symbol: "\u23FB"
+
+        onAccept: pegasus.system.shutdown()
+        onCancel: {
+            content.enabled = true;
+            content.focus = true;
+        }
+    }
+
+    DialogOkCancel {
+        id: rebootDialog
+
+        title: qsTr("Reboot") + pegasus.tr
+        message: qsTr("The system will reboot. Are you sure?") + pegasus.tr
+        symbol: "\u21BB"
+
+        onAccept: pegasus.system.reboot()
+        onCancel: {
+            content.enabled = true;
+            content.focus = true;
+        }
     }
 }
