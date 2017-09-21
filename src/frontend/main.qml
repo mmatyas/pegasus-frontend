@@ -55,6 +55,17 @@ Window {
 
             source: pegasus.settings.themes.current.qmlPath
             asynchronous: true
+
+            onSourceChanged: themeError.visible = false
+            onStatusChanged: {
+                if (status == Loader.Error)
+                    themeError.visible = true;
+            }
+        }
+
+        ThemeErrorMessage {
+            id: themeError
+            visible: false
         }
 
         MainMenuOverlay {
@@ -78,7 +89,10 @@ Window {
     SplashScreen {
         id: splashScreen
 
-        visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
+        visible: themeContent.status == Loader.Ready ||
+            themeContent.status == Loader.Loading ||
+            pegasus.meta.isLoading
+
         onVisibleChanged: {
             visible = false; // break binding
             content.focus = true;
