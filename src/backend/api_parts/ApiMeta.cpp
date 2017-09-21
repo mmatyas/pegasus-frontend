@@ -18,6 +18,8 @@
 #include "ApiMeta.h"
 
 #include <QDebug>
+#include <QRegularExpression>
+#include <QStandardPaths>
 
 
 namespace ApiParts {
@@ -30,6 +32,13 @@ Meta::Meta(QObject* parent)
     , m_scanning(true)
     , m_scanning_time_ms(0)
 {
+    using regex = QRegularExpression;
+    using qsp = QStandardPaths;
+
+    Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
+    m_log_path = qsp::standardLocations(qsp::AppConfigLocation).first();
+    m_log_path = m_log_path.replace(regex("(/pegasus-frontend){2}$"), "/pegasus-frontend");
+    m_log_path += "/lastrun.log";
 }
 
 void Meta::onScanStarted()

@@ -29,6 +29,7 @@ class Meta : public QObject {
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
     Q_PROPERTY(bool isScanning READ isScanning NOTIFY scanningChanged)
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
+    Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
 
 public:
     explicit Meta(QObject* parent = nullptr);
@@ -47,6 +48,7 @@ signals:
 
 private:
     static const QString m_git_revision;
+    QString m_log_path;
 
     bool m_loading;
     bool m_scanning;
