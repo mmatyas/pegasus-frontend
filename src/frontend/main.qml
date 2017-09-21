@@ -77,8 +77,12 @@ Window {
 
     SplashScreen {
         id: splashScreen
+
         visible: (themeContent.status != Loader.Ready) || pegasus.meta.isLoading
-        onVisibleChanged: content.focus = true
+        onVisibleChanged: {
+            visible = false; // break binding
+            content.focus = true;
+        }
     }
 
     DialogOkCancel {
