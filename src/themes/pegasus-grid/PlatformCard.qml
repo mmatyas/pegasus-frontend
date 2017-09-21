@@ -22,7 +22,6 @@ Item {
     property bool isOnTop: false
 
     clip: true
-    antialiasing: true
 
     Rectangle {
         id: main
@@ -67,6 +66,7 @@ Item {
             height: rpx(2)
             anchors.top: parent.bottom
             anchors.left: parent.left
+            antialiasing: true
         }
     }
 
