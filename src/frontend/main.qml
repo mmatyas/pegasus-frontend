@@ -94,13 +94,16 @@ Window {
     SplashScreen {
         id: splashScreen
 
-        visible: themeContent.status == Loader.Ready ||
-            themeContent.status == Loader.Loading ||
-            pegasus.meta.isLoading
+        property bool loading: themeContent.status === Loader.Loading || pegasus.meta.isLoading
 
-        onVisibleChanged: {
-            visible = false; // break binding
-            content.focus = true;
+        onLoadingChanged: {
+            if (!loading) {
+                // break bindings
+                loading = false;
+                visible = false;
+                enabled = false;
+                content.focus = true;
+            }
         }
     }
 
