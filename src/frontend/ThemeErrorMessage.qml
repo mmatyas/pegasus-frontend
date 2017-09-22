@@ -18,8 +18,9 @@
 import QtQuick 2.7
 
 
-Column {
-    id: themeError
+Rectangle {
+    anchors.fill: parent
+    color: "#000"
 
     readonly property int bodyTextSize: rpx(18)
 
@@ -27,68 +28,71 @@ Column {
     readonly property color bodyColor: "#ccc"
     readonly property color instructionColor: "#fb5"
 
-    spacing: bodyTextSize * 1.25
 
-    anchors {
-        left: parent.left; leftMargin: rpx(50)
-        right: parent.horizontalCenter
-        verticalCenter: parent.verticalCenter
-    }
+    Column {
+        spacing: bodyTextSize * 1.5
 
-    Text {
-        text: qsTr("Theme loading failed :(") + pegasus.tr
-
-        width: parent.width
-        wrapMode: Text.WordWrap
-        horizontalAlignment: Text.AlignJustify
-
-        color: headerColor
-        font {
-            bold: true
-            pixelSize: rpx(50)
-            family: uiFont.name
+        anchors {
+            left: parent.left; leftMargin: rpx(50)
+            right: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
         }
-    }
 
-    Text {
-        text: qsTr("Pegasus couldn't load the selected theme (%1), because it"
-            + " contains errors. This may happen when you try to load an outdated"
-            + " theme, or when there's a bug in its code.")
-                .arg(pegasus.settings.themes.current.name)
-            + pegasus.tr
+        Text {
+            text: qsTr("Theme loading failed :(") + pegasus.tr
 
-        width: parent.width
-        wrapMode: Text.WordWrap
-        horizontalAlignment: Text.AlignJustify
+            width: parent.width
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignJustify
 
-        color: bodyColor
-        font.pixelSize: bodyTextSize
-        font.family: uiFont.name
-    }
+            color: headerColor
+            font {
+                bold: true
+                pixelSize: rpx(50)
+                family: uiFont.name
+            }
+        }
 
-    Text {
-        text: qsTr("For now, please select a different theme from the main menu.") + pegasus.tr
+        Text {
+            text: qsTr("Pegasus couldn't load the selected theme (%1), because it"
+                + " contains errors. This may happen when you try to load an outdated"
+                + " theme, or when there's a bug in its code.")
+                    .arg(pegasus.settings.themes.current.name)
+                + pegasus.tr
 
-        width: parent.width
-        wrapMode: Text.WordWrap
-        horizontalAlignment: Text.AlignJustify
+            width: parent.width
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignJustify
 
-        color: instructionColor
-        font.pixelSize: bodyTextSize
-        font.family: uiFont.name
-    }
+            color: bodyColor
+            font.pixelSize: bodyTextSize
+            font.family: uiFont.name
+        }
 
-    Text {
-        text: qsTr("You might find more details in the log file:<pre>%1</pre>")
-                .arg(pegasus.meta.logFilePath)
-             + pegasus.tr
+        Text {
+            text: qsTr("For now, please select a different theme from the main menu.") + pegasus.tr
 
-        width: parent.width
-        wrapMode: Text.WordWrap
-        horizontalAlignment: Text.AlignJustify
+            width: parent.width
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignJustify
 
-        color: bodyColor
-        font.pixelSize: bodyTextSize
-        font.family: uiFont.name
+            color: instructionColor
+            font.pixelSize: rpx(20)
+            font.family: uiFont.name
+        }
+
+        Text {
+            text: qsTr("You might find more details in the log file:<pre>%1</pre>")
+                    .arg(pegasus.meta.logFilePath)
+                 + pegasus.tr
+
+            width: parent.width
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignJustify
+
+            color: bodyColor
+            font.pixelSize: bodyTextSize
+            font.family: uiFont.name
+        }
     }
 }
