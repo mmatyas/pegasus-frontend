@@ -63,6 +63,11 @@ Window {
             }
         }
 
+        NoGamesErrorMessage {
+            id: nogamesError
+            visible: pegasus.platforms.length === 0
+        }
+
         ThemeErrorMessage {
             id: themeError
             visible: false

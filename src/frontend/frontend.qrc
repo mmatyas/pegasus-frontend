@@ -4,6 +4,7 @@
         <file>DialogOkCancel.qml</file>
         <file>MainMenuOverlay.qml</file>
         <file>MainMenuPanel.qml</file>
+        <file>NoGamesErrorMessage.qml</file>
         <file>SplashScreen.qml</file>
         <file>ThemeErrorMessage.qml</file>
         <file>menuitems/PrimaryMenuItem.qml</file>
