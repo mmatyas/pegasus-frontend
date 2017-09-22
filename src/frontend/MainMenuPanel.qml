@@ -36,13 +36,13 @@ FocusScope {
     Rectangle {
         color: "#333"
         anchors.fill: parent
+    }
 
-        Item {
-            id: menuHeader
-            width: parent.width
-            height: rpx(30)
-            anchors.top: parent.top
-        }
+    Column {
+        width: parent.width
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: rpx(30)
+
         PrimaryMenuItem {
             id: mbSettings
             text: qsTr("Settings") + pegasus.tr
@@ -54,7 +54,6 @@ FocusScope {
             focus: true
 
             KeyNavigation.down: mbControls
-            anchors.bottom: mbControls.top
         }
         PrimaryMenuItem {
             id: mbControls
@@ -66,13 +65,10 @@ FocusScope {
             selected: focus
 
             KeyNavigation.down: scopeQuit
-            anchors.bottom: scopeQuit.top
         }
         RollableMenuItem {
             id: scopeQuit
             name: qsTr("Quit") + pegasus.tr
-
-            anchors.bottom: menuFooter.top
 
             entries: [
                 SecondaryMenuItem {
@@ -97,12 +93,6 @@ FocusScope {
                     onActivated: pegasus.system.quit()
                 }
             ]
-        }
-        Item {
-            id: menuFooter
-            width: parent.width
-            height: rpx(30)
-            anchors.bottom: parent.bottom
         }
     }
 }
