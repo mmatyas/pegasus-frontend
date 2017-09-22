@@ -101,16 +101,27 @@ private:
 class Settings : public QObject {
     Q_OBJECT
 
+    Q_PROPERTY(bool fullscreen
+               READ fullscreen WRITE setFullscreen
+               NOTIFY fullscreenChanged)
     Q_PROPERTY(ApiParts::LocaleSettings* locales READ localesPtr CONSTANT)
     Q_PROPERTY(ApiParts::ThemeSettings* themes READ themesPtr CONSTANT)
 
 public:
     explicit Settings(QObject* parent = nullptr);
 
+    bool fullscreen() const { return m_fullscreen; }
+    void setFullscreen(bool);
+
     LocaleSettings* localesPtr() { return &m_locales; }
     ThemeSettings* themesPtr() { return &m_themes; }
 
+signals:
+    void fullscreenChanged();
+
 private:
+    bool m_fullscreen;
+
     LocaleSettings m_locales;
     ThemeSettings m_themes;
 };

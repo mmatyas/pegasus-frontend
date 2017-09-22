@@ -226,6 +226,17 @@ Settings::Settings(QObject* parent)
     , m_locales(this)
     , m_themes(this)
 {
+    m_fullscreen = QSettings().value("fullscreen", true).toBool();
+}
+
+void Settings::setFullscreen(bool new_val)
+{
+    if (new_val != m_fullscreen) {
+        m_fullscreen = new_val;
+        QSettings().setValue("fullscreen", m_fullscreen);
+
+        emit fullscreenChanged();
+    }
 }
 
 } // namespace ApiParts

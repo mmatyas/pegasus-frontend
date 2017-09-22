@@ -32,6 +32,9 @@ Window {
     title: "Pegasus"
     color: "#000"
 
+    visibility: pegasus.settings.fullscreen
+                ? Window.FullScreen : Window.AutomaticVisibility
+
     // provide relative pixel value calculation, for convenience
     property real winScale: Math.min(width / 1280.0, height / 720.0)
     function rpx(value) {
