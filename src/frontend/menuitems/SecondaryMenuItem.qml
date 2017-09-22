@@ -21,5 +21,5 @@ GenericMenuItem {
     activeColor: "#777"
     inactiveColor: "#222"
     textSizePx: rpx(35)
-    selected: activeFocus
+    selected: focus
 }

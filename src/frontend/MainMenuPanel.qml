@@ -46,91 +46,63 @@ FocusScope {
         PrimaryMenuItem {
             id: mbSettings
             text: qsTr("Settings") + pegasus.tr
-            onActivated: root.showSettingsScreen()
+            onActivated: {
+                focus = true;
+                root.showSettingsScreen();
+            }
             selected: focus
-
             focus: true
+
             KeyNavigation.down: mbControls
             anchors.bottom: mbControls.top
         }
         PrimaryMenuItem {
             id: mbControls
             text: qsTr("Controls") + pegasus.tr
-            onActivated: root.showGamepadScreen()
+            onActivated: {
+                focus = true;
+                root.showGamepadScreen();
+            }
             selected: focus
 
-            KeyNavigation.up: mbSettings
-            KeyNavigation.down: mbQuit
-            anchors.bottom: mbQuit.top
+            KeyNavigation.down: scopeQuit
+            anchors.bottom: scopeQuit.top
         }
-        PrimaryMenuItem {
-            id: mbQuit
-            text: qsTr("Quit") + pegasus.tr
-            onActivated: {
-                if (quitSubmenu.focus) mbQuit.forceActiveFocus()
-                else quitSubmenu.forceActiveFocus()
-            }
-            selected: focus || quitSubmenu.visible
+        RollableMenuItem {
+            id: scopeQuit
+            name: qsTr("Quit") + pegasus.tr
 
-            KeyNavigation.up: mbControls
-            anchors.bottom: menuFooter.top
-        }
-        FocusScope {
-            id: quitSubmenu
-            width: parent.width
-            height: quitSubmenuColumn.height
-            visible: focus || (mbQuit.focus && submenuAnim.running)
             anchors.bottom: menuFooter.top
 
-            Column {
-                id: quitSubmenuColumn
-                width: parent.width
-
+            entries: [
                 SecondaryMenuItem {
                     id: mbQuitShutdown
                     text: qsTr("Shutdown") + pegasus.tr
                     onActivated: requestShutdown()
-
                     focus: true
+
+                    KeyNavigation.up: mbQuitShutdown
                     KeyNavigation.down: mbQuitReboot
-                    Keys.onEscapePressed: mbQuit.forceActiveFocus()
-                }
+                },
                 SecondaryMenuItem {
                     id: mbQuitReboot
                     text: qsTr("Reboot") + pegasus.tr
                     onActivated: requestReboot()
 
-                    KeyNavigation.up: mbQuitShutdown
                     KeyNavigation.down: mbQuitExit
-                    Keys.onEscapePressed: mbQuit.forceActiveFocus()
-                }
+                },
                 SecondaryMenuItem {
                     id: mbQuitExit
                     text: qsTr("Exit Pegasus") + pegasus.tr
                     onActivated: pegasus.system.quit()
-
-                    KeyNavigation.up: mbQuitReboot
-                    Keys.onEscapePressed: mbQuit.forceActiveFocus()
                 }
-            }
+            ]
         }
         Item {
             id: menuFooter
             width: parent.width
             height: rpx(30)
             anchors.bottom: parent.bottom
-        }
-
-        states: [
-            State {
-                name: "quitOpen"; when: quitSubmenu.focus
-                AnchorChanges { target: mbQuit; anchors.bottom: quitSubmenu.top }
-            }
-        ]
-
-        transitions: Transition {
-            id: submenuAnim
-            AnchorAnimation { duration: 150 }
         }
     }
 }

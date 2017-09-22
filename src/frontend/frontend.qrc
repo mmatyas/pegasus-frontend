@@ -7,9 +7,10 @@
         <file>NoGamesErrorMessage.qml</file>
         <file>SplashScreen.qml</file>
         <file>ThemeErrorMessage.qml</file>
-        <file>menuitems/PrimaryMenuItem.qml</file>
-        <file>menuitems/SecondaryMenuItem.qml</file>
         <file>menuitems/GenericMenuItem.qml</file>
+        <file>menuitems/PrimaryMenuItem.qml</file>
+        <file>menuitems/RollableMenuItem.qml</file>
+        <file>menuitems/SecondaryMenuItem.qml</file>
         <file>gamepad/ConfigScreen.qml</file>
         <file>gamepad/ConfigField.qml</file>
         <file>gamepad/ConfigGroup.qml</file>
