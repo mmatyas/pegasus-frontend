@@ -28,6 +28,7 @@ Platforms::Platforms(QObject* parent)
     : QObject(parent)
     , m_current_platform_idx(-1)
     , m_current_platform(nullptr)
+    , m_last_scan_duration(0)
 {
 }
 
