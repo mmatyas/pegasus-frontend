@@ -28,7 +28,7 @@ const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 
 Meta::Meta(QObject* parent)
     : QObject(parent)
-    , m_loading(false)
+    , m_loading(true)
     , m_scanning(true)
     , m_scanning_time_ms(0)
 {
@@ -44,18 +44,22 @@ Meta::Meta(QObject* parent)
 void Meta::onScanStarted()
 {
     m_scanning = true;
+    emit scanningChanged();
 }
 
 void Meta::onScanCompleted(qint64 elapsedTime)
 {
     m_scanning_time_ms = elapsedTime;
     m_scanning = false;
+    emit scanningChanged();
+
     qInfo().noquote() << tr("Data files loaded in %1ms").arg(elapsedTime);
 }
 
 void Meta::onLoadingCompleted()
 {
     m_loading = false;
+    emit loadingChanged();
 }
 
 } // namespace ApiParts
