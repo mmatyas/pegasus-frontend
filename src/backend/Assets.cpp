@@ -61,13 +61,7 @@ const QHash<AssetType, QVector<QString>> Assets::suffixes = {
 
 namespace {
 
-#ifdef Q_PROCESSOR_ARM
-// prefer opaque images on embedded systems
-const QVector<QString> image_exts = { ".jpg", ".png" };
-#else
 const QVector<QString> image_exts = { ".png", ".jpg" };
-#endif
-
 const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
 const QVector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
 
