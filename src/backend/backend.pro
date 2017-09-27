@@ -1,7 +1,7 @@
 TEMPLATE = lib
 
 QT += qml
-CONFIG += c++11 staticlib warn_on exceptions_off rtti_off
+CONFIG += c++11 staticlib warn_on exceptions_off
 
 
 SOURCES += \
