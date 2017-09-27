@@ -8,12 +8,7 @@ lessThan(QT_MINOR_VERSION, 9) {
 
 
 TEMPLATE = subdirs
-
-SUBDIRS += \
-    src
-
-OTHER_FILES += \
-    assets/*
+SUBDIRS += src
 
 qtHaveModule(testlib) {
     SUBDIRS += tests
