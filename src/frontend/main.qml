@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "messages"
 import QtQuick 2.8
 import QtQuick.Window 2.2
 
