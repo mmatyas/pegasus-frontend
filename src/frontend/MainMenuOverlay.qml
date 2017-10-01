@@ -155,17 +155,6 @@ FocusScope {
                 target: menuPanel
                 enabled: false
             }
-        },
-        State {
-            name: "_submenuWithPanel"; extend: "_submenuOpen"
-            AnchorChanges {
-                target: menuPanel;
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-        },
-        State {
-            name: "_submenuWithoutPanel"; extend: "_submenuOpen"
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
@@ -173,11 +162,11 @@ FocusScope {
             }
         },
         State {
-            name: "settings"; extend: "_submenuWithoutPanel"
+            name: "settings"; extend: "_submenuOpen"
             PropertyChanges { target: settingsPanel; focus: true }
         },
         State {
-            name: "gamepad"; extend: "_submenuWithoutPanel"
+            name: "gamepad"; extend: "_submenuOpen"
             PropertyChanges { target: gamepadPanel; focus: true }
         }
     ]
