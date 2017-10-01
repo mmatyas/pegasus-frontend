@@ -120,7 +120,6 @@ FocusScope {
     SettingsPanel {
         id: settingsPanel
         anchors.left: menuPanel.right
-        width: parent.width - menuPanel.width
 
         onScreenClosed: stepBack()
     }
@@ -174,7 +173,7 @@ FocusScope {
             }
         },
         State {
-            name: "settings"; extend: "_submenuWithPanel"
+            name: "settings"; extend: "_submenuWithoutPanel"
             PropertyChanges { target: settingsPanel; focus: true }
         },
         State {

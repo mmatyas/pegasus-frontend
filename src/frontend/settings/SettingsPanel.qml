@@ -17,42 +17,68 @@
 
 import QtQuick 2.8
 
+
 FocusScope {
+    id: root
+
     signal screenClosed()
 
+    width: parent.width
     height: parent.height
     visible: false
 
     Keys.onEscapePressed: screenClosed()
 
+
     Rectangle {
+        // background
         anchors.fill: parent
         color: "#222"
     }
 
-    Column {
-        anchors {
-            fill: parent
-            margins: rpx(40)
-            leftMargin: rpx(120)
-        }
-        spacing: rpx(20)
+    FocusScope {
+        id: content
 
-        HorizontalSelector {
-            focus: true
-            label: qsTr("Language") + pegasus.tr
-            model: pegasus.settings.locales.all
-            index: pegasus.settings.locales.index
-            onIndexChanged: pegasus.settings.locales.index = index
+        focus: true
 
-            KeyNavigation.down: setTheme
-        }
-        HorizontalSelector {
-            id: setTheme
-            label: qsTr("Theme") + pegasus.tr
-            model: pegasus.settings.themes.all
-            index: pegasus.settings.themes.index
-            onIndexChanged: pegasus.settings.themes.index = index
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.7
+
+        Column {
+            anchors.fill: parent
+            spacing: rpx(5)
+
+            Text {
+                id: header
+
+                property int textSize: rpx(36)
+
+                text: qsTr("Settings") + pegasus.tr
+                color: "#eee"
+                font.pixelSize: textSize
+                font.family: uiFont.name
+                font.bold: true
+                topPadding: textSize
+                bottomPadding: textSize
+            }
+
+            MultivalueOption {
+                id: optLanguage
+
+                focus: true
+
+                label: qsTr("Language") + pegasus.tr
+                value: pegasus.settings.locales.current.name
+
+                KeyNavigation.down: optTheme
+            }
+
+            MultivalueOption {
+                id: optTheme
+
+                label: qsTr("Theme") + pegasus.tr
+                value: pegasus.settings.themes.current.name
+            }
         }
     }
 }
