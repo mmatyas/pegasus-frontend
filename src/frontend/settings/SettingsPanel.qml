@@ -70,6 +70,17 @@ FocusScope {
                 label: qsTr("Language") + pegasus.tr
                 value: pegasus.settings.locales.current.name
 
+                onActivate: {
+                    multivalbox.model = pegasus.settings.locales.all;
+                    multivalbox.index = pegasus.settings.locales.index;
+                    multivalbox.onChangeCallback = function() {
+                        pegasus.settings.locales.index = multivalbox.index;
+                    };
+
+                    content.enabled = false;
+                    multivalbox.focus = true;
+                }
+
                 KeyNavigation.down: optTheme
             }
 
@@ -78,7 +89,39 @@ FocusScope {
 
                 label: qsTr("Theme") + pegasus.tr
                 value: pegasus.settings.themes.current.name
+
+                onActivate: {
+                    multivalbox.model = pegasus.settings.themes.all;
+                    multivalbox.index = pegasus.settings.themes.index;
+                    multivalbox.onChangeCallback = function() {
+                        pegasus.settings.themes.index = multivalbox.index;
+                    };
+
+                    content.enabled = false;
+                    multivalbox.focus = true;
+                }
             }
+        }
+    }
+
+    Rectangle {
+        // shade for MultivalueBox
+
+        anchors.fill: parent
+        color: "#000"
+
+        opacity: multivalbox.visible ? 0.3 : 0.0
+        visible: opacity > 0.0
+
+        Behavior on opacity { PropertyAnimation { duration: 150 } }
+    }
+
+    MultivalueBox {
+        id: multivalbox
+
+        onClosed: {
+            content.enabled = true;
+            content.focus = true;
         }
     }
 }

@@ -25,6 +25,7 @@
         <file>gamepad/ConfigGroupLabel.qml</file>
         <file>settings/SettingsPanel.qml</file>
         <file>settings/HorizontalSelector.qml</file>
+        <file>settings/MultivalueBox.qml</file>
         <file>settings/MultivalueOption.qml</file>
     </qresource>
 </RCC>
