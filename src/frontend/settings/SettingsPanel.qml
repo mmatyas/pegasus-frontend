@@ -100,6 +100,17 @@ FocusScope {
                     content.enabled = false;
                     multivalbox.focus = true;
                 }
+
+                KeyNavigation.down: optFullscreen
+            }
+
+            ToggleOption {
+                id: optFullscreen
+
+                label: qsTr("Fullscreen") + pegasus.tr
+
+                checked: pegasus.settings.fullscreen
+                onCheckedChanged: pegasus.settings.fullscreen = checked
             }
         }
     }
