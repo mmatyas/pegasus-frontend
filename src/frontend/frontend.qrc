@@ -26,5 +26,7 @@
         <file>settings/SettingsPanel.qml</file>
         <file>settings/MultivalueBox.qml</file>
         <file>settings/MultivalueOption.qml</file>
+        <file>settings/ToggleOption.qml</file>
+        <file>settings/Switch.qml</file>
     </qresource>
 </RCC>
