@@ -107,7 +107,8 @@ FocusScope {
             ToggleOption {
                 id: optFullscreen
 
-                label: qsTr("Fullscreen") + pegasus.tr
+                label: qsTr("Fullscreen mode") + pegasus.tr
+                note: qsTr("On some platforms this setting may have no effect") + pegasus.tr
 
                 checked: pegasus.settings.fullscreen
                 onCheckedChanged: pegasus.settings.fullscreen = checked
