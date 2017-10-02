@@ -22,16 +22,12 @@ Item {
     id: root
 
     property bool checked: false
-    property bool hover: parent.activeFocus || mouseArea.containsMouse
-
-    signal changed()
 
     width: height * 2
 
 
     function toggle() {
         checked = !checked;
-        changed();
     }
 
     Keys.onReturnPressed: if (!event.isAutoRepeat) toggle()
@@ -42,7 +38,6 @@ Item {
         id: mouseArea
 
         anchors.fill: parent
-        hoverEnabled: true
         onClicked: toggle();
     }
 
@@ -74,8 +69,8 @@ Item {
 
     states: State {
         name: "checked"; when: checked
-        PropertyChanges { target: thumb; color: hover ? "#3aa" : "#eee" }
-        PropertyChanges { target: track; color: hover ? "#3aa" : "#eee" }
+        PropertyChanges { target: thumb; color: "#3aa" }
+        PropertyChanges { target: track; color: "#3aa" }
         PropertyChanges { target: track; opacity: 0.5 }
         AnchorChanges {
             target: thumb

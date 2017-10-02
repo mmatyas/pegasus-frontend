@@ -81,6 +81,6 @@ FocusScope {
         anchors.rightMargin: horizontalPadding
         anchors.verticalCenter: parent.verticalCenter
 
-        height: fontSize * 1.1
+        height: fontSize * 1.15
     }
 }
