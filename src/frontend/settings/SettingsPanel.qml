@@ -36,31 +36,49 @@ FocusScope {
         color: "#222"
     }
 
+    Item {
+        id: header
+
+        width: parent.width
+        height: rpx(80)
+
+        Text {
+            id: title
+
+            text: qsTr("Settings") + pegasus.tr
+            color: "#eee"
+            font.pixelSize: rpx(40)
+            font.family: uiFont.name
+
+            anchors.right: parent.horizontalCenter
+            anchors.rightMargin: parent.width * 0.35
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: rpx(10)
+        }
+
+        Rectangle {
+            width: parent.width * 0.97
+            height: rpx(1)
+            color: "#555"
+
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+    }
+
     FocusScope {
         id: content
 
         focus: true
 
+        anchors.top: header.bottom
+        anchors.topMargin: rpx(30)
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width * 0.7
 
         Column {
             anchors.fill: parent
             spacing: rpx(5)
-
-            Text {
-                id: header
-
-                property int textSize: rpx(36)
-
-                text: qsTr("Settings") + pegasus.tr
-                color: "#eee"
-                font.pixelSize: textSize
-                font.family: uiFont.name
-                font.bold: true
-                topPadding: textSize
-                bottomPadding: textSize
-            }
 
             MultivalueOption {
                 id: optLanguage
@@ -115,6 +133,7 @@ FocusScope {
             }
         }
     }
+
 
     Rectangle {
         // shade for MultivalueBox
