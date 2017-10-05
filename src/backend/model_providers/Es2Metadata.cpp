@@ -141,11 +141,13 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
         return;
     }
 
+
     // find the matching game
     // NOTE: every game (path) appears only once, so we can take() it out of the map
-    const QString path = platform.m_rom_dir_path % "/" % xml_props[PATH_TAG];
-    const QString canonical_path = QFileInfo(path).canonicalFilePath();
-    Model::Game* game = game_by_path.take(canonical_path);
+
+    convertToAbsolutePath(xml_props[PATH_TAG], platform.m_rom_dir_path);
+
+    Model::Game* game = game_by_path.take(xml_props[PATH_TAG]);
     if (!game)
         return;
 
@@ -254,11 +256,12 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
 
 void Es2Metadata::convertToAbsolutePath(QString& path, const QString& root_dir_prefix)
 {
-    static const QRegularExpression HOMESTART("^~");
+    static const QRegularExpression HOME("^~");
+    static const QString DOTSLASH("./");
 
-    path.replace(HOMESTART, homePath());
-    if (path.startsWith('.'))
-        path.prepend(root_dir_prefix);
+    path.replace(HOME, homePath());
+    if (path.startsWith(DOTSLASH))
+        path.replace(0, 1, root_dir_prefix);
 }
 
 } // namespace model_providers
