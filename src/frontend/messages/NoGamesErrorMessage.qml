@@ -54,10 +54,10 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("Pegasus couldn't find any games. At the moment,"
-                + " the configuration and game list files of EmulationStation 2"
-                + " are used. If you see this message, then these files are"
-                + " either missing, not in the expected location, or contain"
+            text: qsTr("Pegasus couldn't find any games on your device. At the moment,"
+                + " the configuration and game list files of EmulationStation 2 are used."
+                + " If you think you have games but still see this message, then these"
+                + " files might be missing, not in the expected location, or contain"
                 + " errors.")
                 + pegasus.tr
 

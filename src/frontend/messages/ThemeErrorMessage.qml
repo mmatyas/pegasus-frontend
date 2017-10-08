@@ -54,9 +54,9 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("Pegasus couldn't load the selected theme (%1), because it"
-                + " contains errors. This may happen when you try to load an outdated"
-                + " theme, or when there's a bug in its code.")
+            text: qsTr("Pegasus tried to load the selected theme (%1), but failed."
+                + " This may happen when you try to load an outdated theme, or when"
+                + " there's a bug in its code.")
                     .arg(pegasus.settings.themes.current.name)
                 + pegasus.tr
 
