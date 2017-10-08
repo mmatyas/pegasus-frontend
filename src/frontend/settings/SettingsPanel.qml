@@ -50,8 +50,8 @@ FocusScope {
             font.pixelSize: rpx(40)
             font.family: uiFont.name
 
-            anchors.right: parent.horizontalCenter
-            anchors.rightMargin: parent.width * 0.35
+            anchors.left: parent.horizontalCenter
+            anchors.leftMargin: parent.width * -0.4
             anchors.bottom: parent.bottom
             anchors.bottomMargin: rpx(10)
         }
