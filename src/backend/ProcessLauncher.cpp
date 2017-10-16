@@ -61,7 +61,7 @@ QString ProcessLauncher::createLaunchCommand(const Model::Platform* platform, co
     const QRegularExpression WHITESPACE_REGEX("\\s");
     for (auto& param : params) {
         // QProcess: Literal quotes are represented by triple quotes
-        param.replace('"', "\"\"\"");
+        param.replace('"', R"(""")");
         // QProcess: Arguments containing spaces must be quoted
         if (param.contains(WHITESPACE_REGEX))
             param.prepend('"').append('"');
