@@ -24,7 +24,7 @@ namespace Model {
 
 Locale::Locale(QString bcp47tag, QObject* parent)
     : QObject(parent)
-    , m_bcp47tag(bcp47tag)
+    , m_bcp47tag(std::move(bcp47tag))
     , m_name(QLocale(m_bcp47tag).nativeLanguageName())
 {}
 

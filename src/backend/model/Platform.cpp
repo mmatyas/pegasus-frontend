@@ -29,10 +29,10 @@ Platform::Platform(QString name, QString rom_dir_path,
                    QStringList rom_filters, QString launch_cmd,
                    QObject* parent)
     : QObject(parent)
-    , m_short_name(name)
-    , m_rom_dir_path(rom_dir_path)
-    , m_rom_filters(rom_filters)
-    , m_launch_cmd(launch_cmd)
+    , m_short_name(std::move(name))
+    , m_rom_dir_path(std::move(rom_dir_path))
+    , m_rom_filters(std::move(rom_filters))
+    , m_launch_cmd(std::move(launch_cmd))
     , m_current_game_idx(-1)
     , m_current_game(nullptr)
 #ifdef QT_DEBUG
@@ -99,7 +99,7 @@ void Platform::addGame(QString path)
 #ifdef QT_DEBUG
     Q_ASSERT(!m_gamelist_locked);
 #endif
-    m_all_games.append(new Model::Game(path, this));
+    m_all_games.append(new Model::Game(std::move(path), this));
 }
 
 void Platform::sortGames()

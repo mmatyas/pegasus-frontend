@@ -32,7 +32,7 @@ GameAssets::GameAssets(QObject* parent)
 void GameAssets::setSingle(AssetType key, QString value)
 {
     Q_ASSERT(Assets::singleTypes.contains(key));
-    m_single_assets[key] = value;
+    m_single_assets[key] = std::move(value);
 }
 
 void GameAssets::appendMulti(AssetType key, QString value)
@@ -43,7 +43,7 @@ void GameAssets::appendMulti(AssetType key, QString value)
 
 Game::Game(QString path, QObject* parent)
     : QObject(parent)
-    , m_rom_path(path)
+    , m_rom_path(std::move(path))
     , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
     , m_title(m_rom_basename)
     , m_players(1)
@@ -55,7 +55,7 @@ Game::Game(QString path, QObject* parent)
     , m_playcount(0)
     , m_assets(new GameAssets(this))
 {
-    Q_ASSERT(!path.isEmpty());
+    Q_ASSERT(!m_rom_path.isEmpty());
     Q_ASSERT(m_assets);
 }
 

@@ -20,17 +20,17 @@
 
 namespace Model {
 
-Theme::Theme(QString root_dir, QString root_qml, QString name,
+Theme::Theme(QString root_dir, const QString& root_qml, QString name,
              QString author, QString version, QString summary, QString description,
              QObject* parent)
     : QObject(parent)
-    , m_root_dir(root_dir)
+    , m_root_dir(std::move(root_dir))
     , m_root_qml(root_qml.startsWith(":") ? "qrc" + root_qml : "file:" + root_qml)
-    , m_name(name)
-    , m_author(author)
-    , m_version(version)
-    , m_summary(summary)
-    , m_description(description)
+    , m_name(std::move(name))
+    , m_author(std::move(author))
+    , m_version(std::move(version))
+    , m_summary(std::move(summary))
+    , m_description(std::move(description))
 {}
 
 int Theme::compare(const Theme& other) const

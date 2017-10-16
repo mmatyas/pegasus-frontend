@@ -39,7 +39,7 @@ class Theme : public QObject {
 public:
     // this ctor expects many parameters to make all class fields const
     // and avoid implementing and sending change signals and setters
-    explicit Theme(QString root_dir, QString root_qml, QString name,
+    explicit Theme(QString root_dir, const QString& root_qml, QString name,
                    QString author = QString(),
                    QString version = QString(),
                    QString summary = QString(),
