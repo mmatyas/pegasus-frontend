@@ -20,7 +20,6 @@
 #include "PlatformListProvider.h"
 
 #include <QString>
-#include <QVector>
 
 class QXmlStreamReader;
 
@@ -31,14 +30,14 @@ class Es2PlatformList : public PlatformListProvider {
 public:
     Es2PlatformList();
 
-    QList<Model::Platform*> find() final;
+    QVector<Model::Platform*> find() final;
 
 private:
     /// returns the path to the systems file, or an empty string
     QString findSystemsFile();
 
     /// processes the systems file, returns the list of successfully parsed platforms
-    QList<Model::Platform*> parseSystemsFile(QXmlStreamReader&);
+    QVector<Model::Platform*> parseSystemsFile(QXmlStreamReader&);
     /// processes one `<system>` entry, returns a newly created Platform
     /// on success, or a nullptr on failure
     Model::Platform* parseSystemEntry(QXmlStreamReader&);

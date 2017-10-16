@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <QList>
+#include <QVector>
 
 namespace Model { class Game; }
 namespace Model { class Platform; }
@@ -26,11 +26,11 @@ namespace Model { class Platform; }
 // TODO: make this a QObject with progress signals
 class DataFinder {
 public:
-    static QList<Model::Platform*> find();
+    static QVector<Model::Platform*> find();
 
 private:
-    static QList<Model::Platform*> runPlatformListProviders();
+    static QVector<Model::Platform*> runPlatformListProviders();
     static void findGamesByExt(Model::Platform&);
-    static void removeEmptyPlatforms(QList<Model::Platform*>&);
+    static void removeEmptyPlatforms(QVector<Model::Platform*>&);
     static void runMetadataProviders(const Model::Platform&);
 };

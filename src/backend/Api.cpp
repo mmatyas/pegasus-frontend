@@ -54,7 +54,14 @@ void ApiObject::onScanCompleted()
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
 {
-    return {this, m_platforms.allPlatforms()};
+    static const auto count = [](QQmlListProperty<Model::Platform>* p) {
+        return reinterpret_cast<ApiObject*>(p->data)->m_platforms.allPlatforms().count();
+    };
+    static const auto at = [](QQmlListProperty<Model::Platform>* p, int idx) {
+        return reinterpret_cast<ApiObject*>(p->data)->m_platforms.allPlatforms().at(idx);
+    };
+
+    return {this, this, count, at};
 }
 
 void ApiObject::launchGame()

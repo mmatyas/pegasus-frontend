@@ -19,6 +19,8 @@
 
 #include "MetadataProvider.h"
 
+#include <QString>
+
 class QXmlStreamReader;
 
 

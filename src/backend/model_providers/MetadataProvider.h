@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <QList>
-
 namespace Model { class Game; }
 namespace Model { class Platform; }
 

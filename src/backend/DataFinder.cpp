@@ -27,12 +27,12 @@
 #include <memory>
 
 
-QList<Model::Platform*> DataFinder::find()
+QVector<Model::Platform*> DataFinder::find()
 {
     // TODO: map-reduce algorithms might be usable here
     // TODO: mergeDuplicatePlatforms(model);
 
-    QList<Model::Platform*> model = runPlatformListProviders();
+    QVector<Model::Platform*> model = runPlatformListProviders();
 
     for (Model::Platform* const platform_ptr : qAsConst(model)) {
         Q_ASSERT(platform_ptr);
@@ -54,9 +54,9 @@ QList<Model::Platform*> DataFinder::find()
     return model;
 }
 
-QList<Model::Platform*> DataFinder::runPlatformListProviders()
+QVector<Model::Platform*> DataFinder::runPlatformListProviders()
 {
-    QList<Model::Platform*> model;
+    QVector<Model::Platform*> model;
 
     // If you'd like to add more than one provider, use them like this:
     //
@@ -89,11 +89,11 @@ void DataFinder::findGamesByExt(Model::Platform& platform)
         platform.addGame(romdir_it.next());
 }
 
-void DataFinder::removeEmptyPlatforms(QList<Model::Platform*>& platforms)
+void DataFinder::removeEmptyPlatforms(QVector<Model::Platform*>& platforms)
 {
     // NOTE: if this turns out to be slow, STL iterators
     // could be used here
-    QMutableListIterator<Model::Platform*> it(platforms);
+    QMutableVectorIterator<Model::Platform*> it(platforms);
     while (it.hasNext()) {
         if (it.next()->allGames().isEmpty()) {
             delete it.value();

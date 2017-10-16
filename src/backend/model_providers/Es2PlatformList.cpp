@@ -35,7 +35,7 @@ Es2PlatformList::Es2PlatformList()
 {
 }
 
-QList<Model::Platform*> Es2PlatformList::find()
+QVector<Model::Platform*> Es2PlatformList::find()
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -84,7 +84,7 @@ QString Es2PlatformList::findSystemsFile()
     return QString();
 }
 
-QList<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
+QVector<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -99,7 +99,7 @@ QList<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
     }
 
     // read all <system> nodes
-    QList<Model::Platform*> platforms;
+    QVector<Model::Platform*> platforms;
     while (xml.readNextStartElement()) {
         if (xml.name() != "system") {
             xml.skipCurrentElement();

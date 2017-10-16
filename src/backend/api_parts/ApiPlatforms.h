@@ -38,7 +38,7 @@ public:
     void setIndex(int);
     void resetIndex();
 
-    QList<Model::Platform*>& allPlatforms() { return m_platforms; }
+    QVector<Model::Platform*>& allPlatforms() { return m_platforms; }
 
     void startScanning();
     qint64 scanDuration() const { return m_last_scan_duration; }
@@ -54,7 +54,7 @@ public slots:
     void onFiltersChanged(ApiParts::Filters&);
 
 private:
-    QList<Model::Platform*> m_platforms;
+    QVector<Model::Platform*> m_platforms;
 
     int m_current_platform_idx;
     Model::Platform* m_current_platform;

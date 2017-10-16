@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <QList>
+#include <QVector>
 
 namespace Model { class Platform; }
 
@@ -32,7 +32,7 @@ public:
     /// Find the available platforms, along with their essential
     /// informations, such as game/rom paths or supported file extensions.
     /// Do not return null pointers.
-    virtual QList<Model::Platform*> find() = 0;
+    virtual QVector<Model::Platform*> find() = 0;
 
     // disable copy
     PlatformListProvider(const PlatformListProvider&) = delete;
