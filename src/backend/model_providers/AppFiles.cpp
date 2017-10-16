@@ -68,7 +68,7 @@ namespace model_providers {
 
 const QLatin1String AppFiles::DEFAULT_LOCALE_TAG("en-DK");
 
-QList<Model::Locale*> AppFiles::findAvailableLocales()
+QVector<Model::Locale*> AppFiles::findAvailableLocales()
 {
     const int QM_PREFIX_LEN = 8; // length of "pegasus_"
     const int QM_SUFFIX_LEN = 3; // length of ".qm"
@@ -79,7 +79,7 @@ QList<Model::Locale*> AppFiles::findAvailableLocales()
     qm_files.append(DEFAULT_FILENAME); // default placeholder
     qm_files.sort();
 
-    QList<Model::Locale*> output;
+    QVector<Model::Locale*> output;
     for (const QString& filename : qAsConst(qm_files)) {
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
         Q_ASSERT(locale_tag_len > 0);
@@ -90,7 +90,7 @@ QList<Model::Locale*> AppFiles::findAvailableLocales()
     return output;
 }
 
-QList<Model::Theme*> AppFiles::findAvailableThemes()
+QVector<Model::Theme*> AppFiles::findAvailableThemes()
 {
     const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     const auto flags = QDirIterator::FollowSymlinks;
@@ -106,7 +106,7 @@ QList<Model::Theme*> AppFiles::findAvailableThemes()
     const QString INIKEY_SUMMARY("summary");
     const QString INIKEY_DESC("description");
 
-    QList<Model::Theme*> output;
+    QVector<Model::Theme*> output;
 
     QStringList search_paths = themeDirectories();
     for (auto& path : search_paths) {

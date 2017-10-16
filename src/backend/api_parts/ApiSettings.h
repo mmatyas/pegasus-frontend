@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QQmlListProperty>
 #include <QTranslator>
+#include <QVector>
 
 
 namespace ApiParts {
@@ -53,7 +54,7 @@ signals:
     void localeChanged();
 
 private:
-    QList<Model::Locale*> m_locales;
+    QVector<Model::Locale*> m_locales;
     int m_locale_idx;
 
     QTranslator m_translator;
@@ -88,7 +89,7 @@ signals:
     void themeChanged();
 
 private:
-    QList<Model::Theme*> m_themes;
+    QVector<Model::Theme*> m_themes;
     int m_theme_idx;
 
     void selectPreferredTheme();
