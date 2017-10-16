@@ -86,12 +86,12 @@ void Platform::resetGameIndex()
 
 QQmlListProperty<Model::Game> Platform::getFilteredGamesProp()
 {
-    return QQmlListProperty<Model::Game>(this, m_filtered_games);
+    return {this, m_filtered_games};
 }
 
 QQmlListProperty<Model::Game> Platform::getAllGamesProp()
 {
-    return QQmlListProperty<Model::Game>(this, m_all_games);
+    return {this, m_all_games};
 }
 
 void Platform::addGame(QString path)

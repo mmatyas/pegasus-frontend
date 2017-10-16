@@ -131,7 +131,7 @@ void LocaleSettings::loadSelectedLocale()
 
 QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
 {
-    return QQmlListProperty<Model::Locale>(this, m_locales);
+    return {this, m_locales};
 }
 
 //
@@ -214,7 +214,7 @@ void ThemeSettings::printChangeMsg() const
 
 QQmlListProperty<Model::Theme> ThemeSettings::getListProp()
 {
-    return QQmlListProperty<Model::Theme>(this, m_themes);
+    return {this, m_themes};
 }
 
 //

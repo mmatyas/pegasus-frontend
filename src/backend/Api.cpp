@@ -54,7 +54,7 @@ void ApiObject::onScanCompleted()
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
 {
-    return QQmlListProperty<Model::Platform>(this, m_platforms.allPlatforms());
+    return {this, m_platforms.allPlatforms()};
 }
 
 void ApiObject::launchGame()
