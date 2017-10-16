@@ -86,12 +86,26 @@ void Platform::resetGameIndex()
 
 QQmlListProperty<Model::Game> Platform::getFilteredGamesProp()
 {
-    return {this, m_filtered_games};
+    static const auto count = [](QQmlListProperty<Model::Game>* p) {
+        return reinterpret_cast<Platform*>(p->data)->m_filtered_games.count();
+    };
+    static const auto at = [](QQmlListProperty<Model::Game>* p, int idx) {
+        return reinterpret_cast<Platform*>(p->data)->m_filtered_games.at(idx);
+    };
+
+    return {this, this, count, at};
 }
 
 QQmlListProperty<Model::Game> Platform::getAllGamesProp()
 {
-    return {this, m_all_games};
+    static const auto count = [](QQmlListProperty<Model::Game>* p) {
+        return reinterpret_cast<Platform*>(p->data)->m_all_games.count();
+    };
+    static const auto at = [](QQmlListProperty<Model::Game>* p, int idx) {
+        return reinterpret_cast<Platform*>(p->data)->m_all_games.at(idx);
+    };
+
+    return {this, this, count, at};
 }
 
 void Platform::addGame(QString path)
@@ -137,7 +151,7 @@ void Platform::applyFilters(const ApiParts::Filters& filters)
 {
     // TODO: use QtConcurrent::blockingFilter
 
-    QList<Game*> filtered_games;
+    QVector<Game*> filtered_games;
     for (Model::Game* const game_ptr : qAsConst(m_all_games)) {
         const Game& game = *game_ptr;
 

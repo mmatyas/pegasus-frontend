@@ -58,8 +58,8 @@ public:
     void setCurrentGameIndex(int);
     void resetGameIndex();
 
-    const QList<Game*>& games() const { return m_filtered_games; }
-    const QList<Game*>& allGames() const { return m_all_games; }
+    const QVector<Game*>& games() const { return m_filtered_games; }
+    const QVector<Game*>& allGames() const { return m_all_games; }
     void addGame(QString path);
     void sortGames();
     void lockGameList();
@@ -85,8 +85,8 @@ private:
     int m_current_game_idx;
     Model::Game* m_current_game;
 
-    QList<Game*> m_all_games;
-    QList<Game*> m_filtered_games;
+    QVector<Game*> m_all_games;
+    QVector<Game*> m_filtered_games;
 
 #ifdef QT_DEBUG
     bool m_gamelist_locked;
