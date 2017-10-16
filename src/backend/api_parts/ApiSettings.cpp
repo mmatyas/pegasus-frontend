@@ -20,8 +20,8 @@
 #include "ScriptRunner.h"
 #include "model_providers/AppFiles.h"
 
-#include <QDebug>
 #include <QCoreApplication>
+#include <QDebug>
 #include <QSettings>
 
 
