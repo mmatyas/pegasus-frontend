@@ -17,6 +17,7 @@
 
 #include "Platform.h"
 
+#include "PropertyListMacro.h"
 #include "api_parts/ApiFilters.h"
 
 #include <QDebug>
@@ -86,26 +87,12 @@ void Platform::resetGameIndex()
 
 QQmlListProperty<Model::Game> Platform::getFilteredGamesProp()
 {
-    static const auto count = [](QQmlListProperty<Model::Game>* p) {
-        return reinterpret_cast<Platform*>(p->data)->m_filtered_games.count();
-    };
-    static const auto at = [](QQmlListProperty<Model::Game>* p, int idx) {
-        return reinterpret_cast<Platform*>(p->data)->m_filtered_games.at(idx);
-    };
-
-    return {this, this, count, at};
+    PROPERTYLIST_GETTER(m_filtered_games)
 }
 
 QQmlListProperty<Model::Game> Platform::getAllGamesProp()
 {
-    static const auto count = [](QQmlListProperty<Model::Game>* p) {
-        return reinterpret_cast<Platform*>(p->data)->m_all_games.count();
-    };
-    static const auto at = [](QQmlListProperty<Model::Game>* p, int idx) {
-        return reinterpret_cast<Platform*>(p->data)->m_all_games.at(idx);
-    };
-
-    return {this, this, count, at};
+    PROPERTYLIST_GETTER(m_all_games)
 }
 
 void Platform::addGame(QString path)

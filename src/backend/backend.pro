@@ -51,7 +51,8 @@ HEADERS += \
     model/Locale.h \
     model/Platform.h \
     model/Game.h \
-    model_providers/AppFiles.h
+    model_providers/AppFiles.h \
+    PropertyListMacro.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

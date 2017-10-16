@@ -17,6 +17,8 @@
 
 #include "Api.h"
 
+#include "PropertyListMacro.h"
+
 
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
@@ -54,14 +56,7 @@ void ApiObject::onScanCompleted()
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
 {
-    static const auto count = [](QQmlListProperty<Model::Platform>* p) {
-        return reinterpret_cast<ApiObject*>(p->data)->m_platforms.allPlatforms().count();
-    };
-    static const auto at = [](QQmlListProperty<Model::Platform>* p, int idx) {
-        return reinterpret_cast<ApiObject*>(p->data)->m_platforms.allPlatforms().at(idx);
-    };
-
-    return {this, this, count, at};
+    PROPERTYLIST_GETTER_SPEC(m_platforms.allPlatforms(), Model::Platform)
 }
 
 void ApiObject::launchGame()

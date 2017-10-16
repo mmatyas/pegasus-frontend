@@ -17,6 +17,7 @@
 
 #include "ApiSettings.h"
 
+#include "PropertyListMacro.h"
 #include "ScriptRunner.h"
 #include "model_providers/AppFiles.h"
 
@@ -131,14 +132,7 @@ void LocaleSettings::loadSelectedLocale()
 
 QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
 {
-    static const auto count = [](QQmlListProperty<Model::Locale>* p) {
-        return reinterpret_cast<LocaleSettings*>(p->data)->m_locales.count();
-    };
-    static const auto at = [](QQmlListProperty<Model::Locale>* p, int idx) {
-        return reinterpret_cast<LocaleSettings*>(p->data)->m_locales.at(idx);
-    };
-
-    return {this, this, count, at};
+    PROPERTYLIST_GETTER(m_locales)
 }
 
 //
@@ -221,14 +215,7 @@ void ThemeSettings::printChangeMsg() const
 
 QQmlListProperty<Model::Theme> ThemeSettings::getListProp()
 {
-    static const auto count = [](QQmlListProperty<Model::Theme>* p) {
-        return reinterpret_cast<ThemeSettings*>(p->data)->m_themes.count();
-    };
-    static const auto at = [](QQmlListProperty<Model::Theme>* p, int idx) {
-        return reinterpret_cast<ThemeSettings*>(p->data)->m_themes.at(idx);
-    };
-
-    return {this, this, count, at};
+    PROPERTYLIST_GETTER(m_themes)
 }
 
 //
