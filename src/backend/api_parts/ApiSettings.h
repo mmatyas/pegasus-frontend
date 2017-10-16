@@ -93,7 +93,7 @@ private:
 
     void selectPreferredTheme();
     void printChangeMsg() const;
-    int indexOfTheme(const QString& tag) const;
+    int indexOfTheme(const QString&) const;
 };
 
 
