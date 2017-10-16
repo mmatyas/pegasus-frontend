@@ -25,7 +25,7 @@
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 
-static constexpr auto MSG_PREFIX = "ES2: ";
+static constexpr auto MSG_PREFIX = "ES2:";
 
 
 namespace model_providers {

@@ -79,6 +79,7 @@ public:
 
 class Game : public QObject {
     Q_OBJECT
+
     Q_PROPERTY(QString title MEMBER m_title CONSTANT)
     Q_PROPERTY(QString description MEMBER m_description CONSTANT)
     Q_PROPERTY(QString developer MEMBER m_developer CONSTANT)
