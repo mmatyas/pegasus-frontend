@@ -56,7 +56,10 @@ void ApiObject::onScanCompleted()
 
 QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
 {
-    PROPERTYLIST_GETTER_SPEC(m_platforms.allPlatforms(), Model::Platform)
+    static const auto count = &listproperty_count<Model::Platform>;
+    static const auto at = &listproperty_at<Model::Platform>;
+
+    return {this, &m_platforms.allPlatforms(), count, at};
 }
 
 void ApiObject::launchGame()

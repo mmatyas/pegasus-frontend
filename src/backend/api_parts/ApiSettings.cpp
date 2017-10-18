@@ -132,7 +132,10 @@ void LocaleSettings::loadSelectedLocale()
 
 QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
 {
-    PROPERTYLIST_GETTER(m_locales)
+    static const auto count = &listproperty_count<Model::Locale>;
+    static const auto at = &listproperty_at<Model::Locale>;
+
+    return {this, &m_locales, count, at};
 }
 
 //
@@ -215,7 +218,10 @@ void ThemeSettings::printChangeMsg() const
 
 QQmlListProperty<Model::Theme> ThemeSettings::getListProp()
 {
-    PROPERTYLIST_GETTER(m_themes)
+    static const auto count = &listproperty_count<Model::Theme>;
+    static const auto at = &listproperty_at<Model::Theme>;
+
+    return {this, &m_themes, count, at};
 }
 
 //

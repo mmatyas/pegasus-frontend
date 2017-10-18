@@ -87,12 +87,18 @@ void Platform::resetGameIndex()
 
 QQmlListProperty<Model::Game> Platform::getFilteredGamesProp()
 {
-    PROPERTYLIST_GETTER(m_filtered_games)
+    static const auto count = &listproperty_count<Model::Game>;
+    static const auto at = &listproperty_at<Model::Game>;
+
+    return {this, &m_filtered_games, count, at};
 }
 
 QQmlListProperty<Model::Game> Platform::getAllGamesProp()
 {
-    PROPERTYLIST_GETTER(m_all_games)
+    static const auto count = &listproperty_count<Model::Game>;
+    static const auto at = &listproperty_at<Model::Game>;
+
+    return {this, &m_all_games, count, at};
 }
 
 void Platform::addGame(QString path)

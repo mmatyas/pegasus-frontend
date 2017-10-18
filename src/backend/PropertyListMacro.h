@@ -17,20 +17,17 @@
 
 #pragma once
 
+#include <QQmlListProperty>
 
-/// Generates a property list getter for the provided class field (a container)
-#define PROPERTYLIST_GETTER(field) \
-    using PointedType = std::remove_pointer<decltype(field)::value_type>::type; \
-    PROPERTYLIST_GETTER_SPEC(field, PointedType)
 
-/// Generates a property list getter for the provided field (a container),
-/// that contains pointers to PointedType
-#define PROPERTYLIST_GETTER_SPEC(field, PointedType) \
-    static const auto count = [](QQmlListProperty<PointedType>* p) { \
-        return reinterpret_cast<decltype(this)>(p->data)->field.count(); \
-    }; \
-    static const auto at = [](QQmlListProperty<PointedType>* p, int idx) { \
-        return reinterpret_cast<decltype(this)>(p->data)->field.at(idx); \
-    }; \
-    \
-    return {this, this, count, at};
+template<typename PointedType>
+static int listproperty_count(QQmlListProperty<PointedType>* p)
+{
+    return reinterpret_cast<const QVector<PointedType*>* const>(p->data)->count();
+}
+
+template<typename PointedType>
+static PointedType* listproperty_at(QQmlListProperty<PointedType>* p, int idx)
+{
+    return reinterpret_cast<const QVector<PointedType*>* const>(p->data)->at(idx);
+}
