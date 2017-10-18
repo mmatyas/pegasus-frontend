@@ -17,7 +17,7 @@
 
 #include "Api.h"
 
-#include "PropertyListMacro.h"
+#include "ListPropertyFn.h"
 
 
 ApiObject::ApiObject(QObject* parent)

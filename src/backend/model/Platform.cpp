@@ -17,7 +17,7 @@
 
 #include "Platform.h"
 
-#include "PropertyListMacro.h"
+#include "ListPropertyFn.h"
 #include "api_parts/ApiFilters.h"
 
 #include <QDebug>

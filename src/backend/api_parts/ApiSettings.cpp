@@ -17,7 +17,7 @@
 
 #include "ApiSettings.h"
 
-#include "PropertyListMacro.h"
+#include "ListPropertyFn.h"
 #include "ScriptRunner.h"
 #include "model_providers/AppFiles.h"
 
