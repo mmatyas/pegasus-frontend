@@ -174,6 +174,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
     static const QString KEY_FAVORITE("favorite");
 
     static const QString DATEFORMAT("yyyyMMdd'T'HHmmss");
+    static const QRegularExpression PLAYERSREGEX("(\\d+)(-(\\d+))?");
 
     // apply the previously read values
 
@@ -185,10 +186,17 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
     game.m_publisher = xml_props.value(KEY_PUBLISHER);
 
     // then the numbers
-    parseStoreInt(xml_props.value(KEY_PLAYERS), game.m_players);
     parseStoreInt(xml_props.value(KEY_PLAYCOUNT), game.m_playcount);
     parseStoreFloat(xml_props.value(KEY_RATING), game.m_rating);
-
+    // the player count can be a range
+    const QString players_field = xml_props.value(KEY_PLAYERS);
+    const auto players_match = PLAYERSREGEX.match(players_field);
+    if (players_match.hasMatch()) {
+        int a = 0, b = 0;
+        parseStoreInt(players_match.captured(1), a);
+        parseStoreInt(players_match.captured(3), b);
+        game.m_players = std::max(a, b);
+    }
     game.m_rating = qBound(0.f, game.m_rating, 1.f);
 
     // then the bools
