@@ -28,11 +28,4 @@ namespace Model { class Platform; }
 class DataFinder {
 public:
     static QVector<Model::Platform*> find();
-
-private:
-    static QVector<Model::Platform*> runPlatformListProviders();
-    static void findGamesByExt(Model::Platform&);
-    static void removeEmptyPlatforms(QVector<Model::Platform*>&);
-    static void runMetadataProviders(const Model::Platform&);
-    static void fixLocalAssetPaths(const Model::Platform&);
 };
