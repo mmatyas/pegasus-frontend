@@ -17,15 +17,22 @@
 
 #pragma once
 
+#include <QObject>
 #include <QVector>
 
 namespace Model { class Game; }
 namespace Model { class Platform; }
 
 
-// TODO: make this a QObject with progress signals
 // TODO: this class would really need a refactor
-class DataFinder {
+class DataFinder : public QObject {
+    Q_OBJECT
+
 public:
-    static QVector<Model::Platform*> find();
+    explicit DataFinder(QObject* parent = nullptr);
+
+    QVector<Model::Platform*> find();
+
+signals:
+    void platformGamesReady(int game_count);
 };

@@ -121,6 +121,10 @@ void fixLocalAssetPaths(const Model::Platform& platform)
 } // namespace
 
 
+DataFinder::DataFinder(QObject* parent)
+    : QObject(parent)
+{}
+
 QVector<Model::Platform*> DataFinder::find()
 {
     // TODO: map-reduce algorithms might be usable here
@@ -144,6 +148,8 @@ QVector<Model::Platform*> DataFinder::find()
         runMetadataProviders(platform);
         fixLocalAssetPaths(platform);
         platform.sortGames();
+
+        emit platformGamesReady(platform.allGames().count());
     }
 
     return model;

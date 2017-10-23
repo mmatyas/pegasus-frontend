@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "DataFinder.h"
 #include "model/Platform.h"
 
 #include <QObject>
@@ -48,6 +49,7 @@ signals:
     void indexChanged();
     void platformChanged();
     void platformGameChanged();
+    void newGamesScanned(int game_count);
     void scanCompleted(qint64 elapsedTime);
 
 public slots:
@@ -60,6 +62,7 @@ private:
     Model::Platform* m_current_platform;
 
     // initialization
+    DataFinder m_datafinder;
     QFutureWatcher<void> m_loading_watcher;
     qint64 m_last_scan_duration;
 

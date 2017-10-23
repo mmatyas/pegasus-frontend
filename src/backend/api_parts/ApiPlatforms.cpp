@@ -17,8 +17,6 @@
 
 #include "ApiPlatforms.h"
 
-#include "DataFinder.h"
-
 #include <QtConcurrent/QtConcurrent>
 
 
@@ -30,6 +28,8 @@ Platforms::Platforms(QObject* parent)
     , m_current_platform(nullptr)
     , m_last_scan_duration(0)
 {
+    connect(&m_datafinder, &DataFinder::platformGamesReady,
+            this, &ApiParts::Platforms::newGamesScanned);
 }
 
 Platforms::~Platforms()
@@ -45,7 +45,7 @@ void Platforms::startScanning()
         QElapsedTimer timer;
         timer.start();
 
-        m_platforms = DataFinder::find();
+        m_platforms = m_datafinder.find();
         m_last_scan_duration = timer.elapsed();
 
         // set the correct thread for the QObjects

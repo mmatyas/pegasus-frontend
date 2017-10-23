@@ -28,6 +28,7 @@ class Meta : public QObject {
 
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
     Q_PROPERTY(bool isScanning READ isScanning NOTIFY scanningChanged)
+    Q_PROPERTY(int gameCount READ gameCount NOTIFY gameCountChanged)
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
     Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
 
@@ -37,14 +38,18 @@ public:
     bool isLoading() const { return m_loading; }
     bool isScanning() const { return m_scanning; }
 
+    int gameCount() const { return m_game_count; }
+
 public slots:
     void onScanStarted();
     void onScanCompleted(qint64 elapsedTime);
     void onLoadingCompleted();
+    void onNewGamesScanned(int game_count);
 
 signals:
     void loadingChanged();
     void scanningChanged();
+    void gameCountChanged();
 
 private:
     static const QString m_git_revision;
@@ -53,6 +58,8 @@ private:
     bool m_loading;
     bool m_scanning;
     qint64 m_scanning_time_ms;
+
+    int m_game_count;
 };
 
 } // namespace ApiParts

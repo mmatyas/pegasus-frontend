@@ -31,6 +31,7 @@ Meta::Meta(QObject* parent)
     , m_loading(true)
     , m_scanning(true)
     , m_scanning_time_ms(0)
+    , m_game_count(0)
 {
     using regex = QRegularExpression;
     using qsp = QStandardPaths;
@@ -60,6 +61,14 @@ void Meta::onLoadingCompleted()
 {
     m_loading = false;
     emit loadingChanged();
+}
+
+void Meta::onNewGamesScanned(int game_count)
+{
+    if (game_count > 0) {
+        m_game_count += game_count;
+        emit gameCountChanged();
+    }
 }
 
 } // namespace ApiParts
