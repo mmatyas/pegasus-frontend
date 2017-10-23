@@ -22,12 +22,35 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
-    Image {
-        source: "/loading.svg"
-        sourceSize.height: 220
-        anchors {
-            bottom: parent.bottom; bottomMargin: rpx(20)
-            left: parent.left; leftMargin: rpx(40)
+
+    Item {
+        id: container
+
+        width: parent.width
+        height: logo.height + counter.height + rpx(80)
+
+        anchors.centerIn: parent
+
+        Image {
+            id: logo
+            source: "/loading.svg"
+            sourceSize.height: rpx(350)
+
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Text {
+            id: counter
+            text: qsTr("%1 games found").arg(pegasus.meta.gameCount)
+
+            color: "#eee"
+            font {
+                pixelSize: rpx(35)
+                family: uiFontCondensed.name
+            }
+
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
 }
