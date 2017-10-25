@@ -24,6 +24,7 @@ namespace Model { class Platform; }
 
 
 // TODO: make this a QObject with progress signals
+// TODO: this class would really need a refactor
 class DataFinder {
 public:
     static QVector<Model::Platform*> find();
@@ -33,4 +34,5 @@ private:
     static void findGamesByExt(Model::Platform&);
     static void removeEmptyPlatforms(QVector<Model::Platform*>&);
     static void runMetadataProviders(const Model::Platform&);
+    static void fixLocalAssetPaths(const Model::Platform&);
 };

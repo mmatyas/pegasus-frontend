@@ -48,7 +48,7 @@ Item {
         asynchronous: true
         visible: game.assets.boxFront
 
-        source: game.assets.boxFront ? "file:" + game.assets.boxFront : ""
+        source: game.assets.boxFront || ""
         sourceSize { width: 256; height: 256 }
         fillMode: Image.PreserveAspectFit
 

@@ -28,7 +28,7 @@ Item {
         if (gameData && gameData.assets.videos.length > 0) {
             for (var i = 0; i < gameData.assets.videos.length; i++) {
                 if (gameData.assets.videos[i])
-                    videoPreview.playlist.addItem("file:" + gameData.assets.videos[i]);
+                    videoPreview.playlist.addItem(gameData.assets.videos[i]);
             }
             videoPreview.play();
         }
@@ -54,7 +54,7 @@ Item {
                     height: parent.width * 0.4
 
                     asynchronous: true
-                    source: gameData ? (gameData.assets.logo ? "file:" + gameData.assets.logo : "") : ""
+                    source: gameData ? (gameData.assets.logo ? gameData.assets.logo : "") : ""
                     sourceSize { width: 512; height: 192 }
                     fillMode: Image.PreserveAspectFit
                 }
