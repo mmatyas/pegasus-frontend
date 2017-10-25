@@ -26,12 +26,12 @@
 
 namespace Model {
 
-Platform::Platform(QString name, QString rom_dir_path,
+Platform::Platform(QString name, QStringList rom_dirs,
                    QStringList rom_filters, QString launch_cmd,
                    QObject* parent)
     : QObject(parent)
     , m_short_name(std::move(name))
-    , m_rom_dir_path(std::move(rom_dir_path))
+    , m_rom_dirs(std::move(rom_dirs))
     , m_rom_filters(std::move(rom_filters))
     , m_launch_cmd(std::move(launch_cmd))
     , m_current_game_idx(-1)
@@ -41,7 +41,7 @@ Platform::Platform(QString name, QString rom_dir_path,
 #endif
 {
     Q_ASSERT(!m_short_name.isEmpty());
-    Q_ASSERT(!m_rom_dir_path.isEmpty());
+    Q_ASSERT(!m_rom_dirs.isEmpty());
     Q_ASSERT(!m_rom_filters.isEmpty());
     Q_ASSERT(!m_launch_cmd.isEmpty());
 }

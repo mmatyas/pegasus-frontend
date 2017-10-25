@@ -46,7 +46,7 @@ private:
 
 void test_Model::platformNullGame()
 {
-    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
 
     // for some reason, using simply nullptr causes a build error (Qt 5.7)
 
@@ -92,7 +92,7 @@ void test_Model::platformSetIndex()
 {
     // prepare
 
-    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
     QSignalSpy index_triggered(&platform, &Model::Platform::currentGameIndexChanged);
     QSignalSpy game_triggered(&platform, &Model::Platform::currentGameChanged);
 
@@ -125,7 +125,7 @@ void test_Model::platformSetIndex()
 
 void test_Model::platformAppendGame()
 {
-    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
     QVERIFY(platform.games().isEmpty());
 
     platform.addGame("a");
@@ -138,7 +138,7 @@ void test_Model::platformAppendGame()
 
 void test_Model::platformSortGames()
 {
-    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
     QVERIFY(platform.games().isEmpty());
 
     platform.addGame("bbb");
@@ -168,7 +168,7 @@ void test_Model::platformApplyFilters_data()
 
 void test_Model::platformApplyFilters()
 {
-    Model::Platform platform("dummy", "dummy", {"dummy"}, "dummy");
+    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
     QSignalSpy triggered(&platform, &Model::Platform::filteredGamesChanged);
     QVERIFY(triggered.isValid());
 

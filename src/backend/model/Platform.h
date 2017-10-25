@@ -49,7 +49,7 @@ class Platform : public QObject {
                READ getAllGamesProp CONSTANT)
 
 public:
-    explicit Platform(QString name, QString rom_dir_path,
+    explicit Platform(QString name, QStringList rom_dirs,
                       QStringList rom_filters, QString launch_cmd,
                       QObject* parent = nullptr);
 
@@ -72,7 +72,7 @@ public:
 
     const QString m_short_name;
     const QString m_long_name;
-    const QString m_rom_dir_path;
+    const QStringList m_rom_dirs;
     const QStringList m_rom_filters;
     const QString m_launch_cmd;
 

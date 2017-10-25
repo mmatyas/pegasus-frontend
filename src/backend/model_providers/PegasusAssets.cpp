@@ -35,14 +35,16 @@ void PegasusAssets::fill(const Model::Platform& platform)
 
 void PegasusAssets::fillOne(const Model::Platform& platform, const Model::Game& game)
 {
+    Q_ASSERT(!platform.m_rom_dirs.isEmpty());
+
     constexpr auto MEDIA_SUBDIR = "/media/";
 
-    const QString path_base = platform.m_rom_dir_path
+    const QString path_base = platform.m_rom_dirs.first()
                               % MEDIA_SUBDIR
                               % game.m_rom_basename;
 
     // check if the media dir exists
-    if (!validPath(platform.m_rom_dir_path % MEDIA_SUBDIR))
+    if (!validPath(platform.m_rom_dirs.first() % MEDIA_SUBDIR))
         return;
 
     // shortcut for the assets member

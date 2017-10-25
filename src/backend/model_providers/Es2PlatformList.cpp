@@ -148,7 +148,7 @@ Model::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
     // construct the new platform
     return new Model::Platform(
         xml_props["name"],
-        xml_props["path"],
+        QStringList(xml_props["path"]),
         parseFilters(xml_props["extension"]),
         xml_props["command"]);
 }

@@ -82,11 +82,11 @@ void DataFinder::findGamesByExt(Model::Platform& platform)
     // TODO: handle incorrect filters
     // TODO: add proper subdirectory support
 
-    QDirIterator romdir_it(platform.m_rom_dir_path,
-                           platform.m_rom_filters,
-                           filters, flags);
-    while (romdir_it.hasNext())
-        platform.addGame(romdir_it.next());
+    for (const QString& romdir : platform.m_rom_dirs) {
+        QDirIterator romdir_it(romdir, platform.m_rom_filters, filters, flags);
+        while (romdir_it.hasNext())
+            platform.addGame(romdir_it.next());
+    }
 }
 
 void DataFinder::removeEmptyPlatforms(QVector<Model::Platform*>& platforms)
