@@ -10,7 +10,7 @@ branches:
 env:
   global:
   - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-  - QT_VER=qt59
+  - QT_VER=qt592
   - PEGASUS_HOME=/hello/world
   matrix:
   - TARGET=x11-static
