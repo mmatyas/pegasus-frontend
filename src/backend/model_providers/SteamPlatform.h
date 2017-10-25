@@ -29,10 +29,7 @@ namespace model_providers {
 class SteamPlatform : public PlatformListProvider {
 public:
     SteamPlatform();
-
     QVector<Model::Platform*> find() final;
-
-private:
 };
 
 } // namespace model_providers

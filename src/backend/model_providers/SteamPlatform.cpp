@@ -19,7 +19,65 @@
 
 #include "model/Platform.h"
 
+#include <QDebug>
+#include <QFileInfo>
+#include <QRegularExpression>
+#include <QStandardPaths>
+#include <QStringBuilder>
+
 static constexpr auto MSG_PREFIX = "Steam:";
+
+
+namespace {
+
+QString find_steam_datadir()
+{
+    using Paths = QStandardPaths;
+    const auto steam_subdir = QStringLiteral("/Steam/");
+    const auto possible_basedirs = Paths::standardLocations(Paths::GenericDataLocation);
+
+    for (const auto& basedir : possible_basedirs) {
+        const QString steamdir_maybe = basedir % steam_subdir;
+        if (QFileInfo(steamdir_maybe).isDir()) {
+            qInfo().noquote() << MSG_PREFIX
+                              << QObject::tr("found data directory: `%1`").arg(steamdir_maybe);
+            return steamdir_maybe;
+        }
+    }
+
+    return QString();
+}
+
+QStringList find_steam_installdirs(const QString& steam_datadir)
+{
+    QStringList installdirs;
+    installdirs << steam_datadir % QStringLiteral("steamapps");
+
+
+    const QString config_path = steam_datadir % QStringLiteral("config/config.vdf");
+    QFile configfile(config_path);
+    if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning().noquote() << MSG_PREFIX
+            << QObject::tr("while Steam seems to be installed, "
+                           "the config file `%1` could not be opened").arg(config_path);
+        return installdirs;
+    }
+
+
+    const QRegularExpression installdir_regex(R""("BaseInstallFolder_\d+"\s+"([^"]+)")"");
+
+    QTextStream stream(&configfile);
+    while (!stream.atEnd()) {
+        const QString line = stream.readLine();
+        const auto match = installdir_regex.match(line);
+        if (match.hasMatch())
+            installdirs << match.captured(1) % QStringLiteral("/steamapps");
+    }
+
+    return installdirs;
+}
+
+} // namespace
 
 
 namespace model_providers {
@@ -30,7 +88,27 @@ SteamPlatform::SteamPlatform()
 
 QVector<Model::Platform*> SteamPlatform::find()
 {
-    return QVector<Model::Platform*>();
+    const QString steamdir = find_steam_datadir();
+    if (steamdir.isEmpty())
+        return {};
+
+    QStringList installdirs = find_steam_installdirs(steamdir);
+    installdirs.erase(std::remove_if(
+        installdirs.begin(), installdirs.end(),
+            [](const QString& dir){ return !QFileInfo(dir).isDir(); }),
+        installdirs.end());
+    if (installdirs.isEmpty()) {
+        qWarning().noquote() << MSG_PREFIX << QObject::tr("no installation directories found");
+        return {};
+    }
+
+    QVector<Model::Platform*> result;
+    result.push_back(new Model::Platform(
+        QStringLiteral("steam"),
+        installdirs,
+        QStringList(QStringLiteral("appmanifest_*.acf")),
+        QString())); // unimplemented -- "steam steam://rungameid/${appid}"
+    return result;
 }
 
 } // namespace model_providers

@@ -21,6 +21,7 @@
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
 #include "model_providers/PegasusAssets.h"
+#include "model_providers/SteamPlatform.h"
 
 #include <QDirIterator>
 
@@ -58,16 +59,14 @@ QVector<Model::Platform*> DataFinder::runPlatformListProviders()
 {
     QVector<Model::Platform*> model;
 
-    // If you'd like to add more than one provider, use them like this:
-    //
-    // QVector<model_providers::PlatformListProvider*> providers;
-    // providers.push_back(new model_providers::Es2PlatformList());
-    //
-    // for (auto& provider : providers)
-    //     model.append(provider->find());
+    using ProviderPtr = std::unique_ptr<model_providers::PlatformListProvider>;
+    std::vector<ProviderPtr> providers;
 
-    model_providers::Es2PlatformList provider;
-    model.append(provider.find());
+    providers.emplace_back(new model_providers::Es2PlatformList());
+    providers.emplace_back(new model_providers::SteamPlatform());
+
+    for (auto& provider : qAsConst(providers))
+        model.append(provider->find());
 
     return model;
 }
