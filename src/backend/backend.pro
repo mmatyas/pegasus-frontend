@@ -26,7 +26,8 @@ SOURCES += \
     model/Platform.cpp \
     model/Game.cpp \
     model_providers/AppFiles.cpp \
-    model_providers/SteamPlatform.cpp
+    model_providers/SteamPlatform.cpp \
+    model_providers/SteamMetadata.cpp
 
 HEADERS += \
     Api.h \
@@ -54,7 +55,8 @@ HEADERS += \
     model/Game.h \
     model_providers/AppFiles.h \
     ListPropertyFn.h \
-    model_providers/SteamPlatform.h
+    model_providers/SteamPlatform.h \
+    model_providers/SteamMetadata.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

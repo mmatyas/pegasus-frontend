@@ -21,6 +21,7 @@
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
 #include "model_providers/PegasusAssets.h"
+#include "model_providers/SteamMetadata.h"
 #include "model_providers/SteamPlatform.h"
 
 #include <QDirIterator>
@@ -112,6 +113,7 @@ void DataFinder::runMetadataProviders(const Model::Platform& platform)
 
     providers.emplace_back(new model_providers::PegasusAssets());
     providers.emplace_back(new model_providers::Es2Metadata());
+    providers.emplace_back(new model_providers::SteamMetadata());
 
     for (auto& provider : qAsConst(providers))
         provider->fill(platform);
