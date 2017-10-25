@@ -177,42 +177,8 @@ bool read_json(Model::Game& game, const QByteArray& bytes)
     return true;
 }
 
-} // namespace
-
-
-namespace model_providers {
-
-void SteamMetadata::fill(const Model::Platform& platform)
+void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAccessManager& netman)
 {
-    if (platform.m_short_name != QLatin1Literal("steam"))
-        return;
-
-    std::vector<SteamGameEntry> entries;
-
-    for (Model::Game* const game_ptr : platform.allGames()) {
-        Q_ASSERT(game_ptr);
-        SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
-        if (entry.valid()) {
-            game_ptr->m_title = entry.title;
-            entry.game_ptr = game_ptr;
-
-            entries.push_back(std::move(entry));
-        }
-    }
-
-    if (entries.empty()) {
-        qInfo().noquote() << MSG_PREFIX
-            << QObject::tr("couldn't find any installed games");
-        return;
-    }
-
-    QNetworkAccessManager netman; // TODO: move NAM to global
-    if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
-        qWarning().noquote() << MSG_PREFIX
-            << QObject::tr("no internet connection - most game data may be missing");
-        return;
-    }
-
     const int TIMEOUT_MS(10000);
     const QString APPDETAILS_URL(QStringLiteral("http://store.steampowered.com/api/appdetails/?appids="));
 
@@ -269,6 +235,45 @@ void SteamMetadata::fill(const Model::Platform& platform)
         listener->deleteLater();
         listener = nullptr;
     }
+}
+
+} // namespace
+
+
+namespace model_providers {
+
+void SteamMetadata::fill(const Model::Platform& platform)
+{
+    if (platform.m_short_name != QLatin1Literal("steam"))
+        return;
+
+    std::vector<SteamGameEntry> entries;
+
+    for (Model::Game* const game_ptr : platform.allGames()) {
+        Q_ASSERT(game_ptr);
+        SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
+        if (entry.valid()) {
+            game_ptr->m_title = entry.title;
+            entry.game_ptr = game_ptr;
+
+            entries.push_back(std::move(entry));
+        }
+    }
+
+    if (entries.empty()) {
+        qInfo().noquote() << MSG_PREFIX
+            << QObject::tr("couldn't find any installed games");
+        return;
+    }
+
+    QNetworkAccessManager netman; // TODO: move NAM to global
+    if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
+        qWarning().noquote() << MSG_PREFIX
+            << QObject::tr("no internet connection - most game data may be missing");
+        return;
+    }
+
+    download_metadata(entries, netman);
 }
 
 } // namespace model_providers
