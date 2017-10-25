@@ -21,8 +21,11 @@
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
 #include "model_providers/PegasusAssets.h"
-#include "model_providers/SteamMetadata.h"
-#include "model_providers/SteamPlatform.h"
+
+#ifndef Q_PROCESSOR_ARM
+    #include "model_providers/SteamMetadata.h"
+    #include "model_providers/SteamPlatform.h"
+#endif
 
 #include <QDirIterator>
 
@@ -65,7 +68,9 @@ QVector<Model::Platform*> DataFinder::runPlatformListProviders()
     std::vector<ProviderPtr> providers;
 
     providers.emplace_back(new model_providers::Es2PlatformList());
+#ifndef Q_PROCESSOR_ARM
     providers.emplace_back(new model_providers::SteamPlatform());
+#endif
 
     for (auto& provider : qAsConst(providers))
         model.append(provider->find());
@@ -113,7 +118,9 @@ void DataFinder::runMetadataProviders(const Model::Platform& platform)
 
     providers.emplace_back(new model_providers::PegasusAssets());
     providers.emplace_back(new model_providers::Es2Metadata());
+#ifndef Q_PROCESSOR_ARM
     providers.emplace_back(new model_providers::SteamMetadata());
+#endif
 
     for (auto& provider : qAsConst(providers))
         provider->fill(platform);
