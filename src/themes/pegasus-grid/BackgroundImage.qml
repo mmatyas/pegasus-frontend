@@ -27,9 +27,9 @@ Item {
         visible: gameData
 
         asynchronous: true
-        opacity: 0.35
+        opacity: (gameData && gameData.assets.background) ? 1 : 0.35
 
-        source: gameData ? gameData.assets.screenshots[0] || "" : ""
+        source: gameData ? gameData.assets.background || gameData.assets.screenshots[0] || "" : ""
         sourceSize { width: 512; height: 512 }
         fillMode: Image.PreserveAspectFit
         smooth: false

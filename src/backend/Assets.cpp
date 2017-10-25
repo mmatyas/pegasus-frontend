@@ -33,10 +33,10 @@ const QVector<AssetType> Assets::singleTypes = {
     AssetType::BEZEL,
     AssetType::STEAMGRID,
     AssetType::FLYER,
+    AssetType::BACKGROUND,
     AssetType::MUSIC,
 };
 const QVector<AssetType> Assets::multiTypes = {
-    AssetType::FANARTS,
     AssetType::SCREENSHOTS,
     AssetType::VIDEOS,
 };
@@ -52,9 +52,9 @@ const QHash<AssetType, QVector<QString>> Assets::suffixes = {
     { AssetType::BEZEL, { "-bezel", "-screenmarquee", "-border" } },
     { AssetType::STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
     { AssetType::FLYER, { "-flyer" } },
+    { AssetType::BACKGROUND, { "-background", "" } },
     { AssetType::MUSIC, { "-music", "" } },
     // multi
-    { AssetType::FANARTS, { "-fanart", "-art" } },
     { AssetType::SCREENSHOTS, { "-screenshot" } },
     { AssetType::VIDEOS, { "-video", "" } },
 };

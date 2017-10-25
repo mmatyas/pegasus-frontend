@@ -146,7 +146,7 @@ bool read_json(Model::Game& game, const QByteArray& bytes)
 
     const QString background_image = app_data[QLatin1String("background")].toString();
     if (!background_image.isEmpty())
-        assets.appendMulti(AssetType::SCREENSHOTS, background_image);
+        assets.setSingle(AssetType::BACKGROUND, background_image);
 
     const auto screenshots_arr = app_data[QLatin1String("screenshots")].toArray();
     for (const auto& arr_entry : screenshots_arr) {

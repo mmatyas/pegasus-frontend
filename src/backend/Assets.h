@@ -32,10 +32,10 @@ enum class AssetType : unsigned char {
     BEZEL, // image around the game screen
     STEAMGRID,
     FLYER,
-    FANARTS,
+    BACKGROUND,
+    MUSIC,
     SCREENSHOTS,
     VIDEOS,
-    MUSIC,
 };
 
 /// Definitions of supported asset types and file formats
