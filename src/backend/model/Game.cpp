@@ -17,7 +17,7 @@
 
 #include "Game.h"
 
-#include "Utils.h"
+#include "VectorUtils.h"
 #include "api_parts/ApiFilters.h"
 
 #include <QDebug>

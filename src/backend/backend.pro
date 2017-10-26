@@ -56,7 +56,8 @@ HEADERS += \
     model_providers/AppFiles.h \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
-    model_providers/SteamMetadata.h
+    model_providers/SteamMetadata.h \
+    VectorUtils.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

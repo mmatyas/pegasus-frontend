@@ -17,20 +17,18 @@
 
 #pragma once
 
-class QString;
+#include <algorithm>
+#include <vector>
 
 
-/// Returns true if the path is an existing regular file
-bool validPath(const QString& path);
+/// Returns true if the vector contains the item
+template<typename T>
+bool contains(const std::vector<T>& vec, const T& item) {
+    return std::find(vec.cbegin(), vec.cend(), item) != vec.cend();
+}
 
-/// If the string can be converted to an integer,
-/// it will be saved to the provided field
-void parseStoreInt(const QString& str, int& val);
-
-/// If the string can be converted to a `float` value,
-/// it will be saved to the provided field
-void parseStoreFloat(const QString& str, float& val);
-
-/// Returns $PEGASUS_HOME if defined, or $HOME if defined,
-/// otherwise QDir::homePath().
-QString homePath();
+/// Appends [source] to the end of [target]
+template<typename T>
+void append(std::vector<T>& target, std::vector<T>& source) {
+    target.insert(target.end(), source.begin(), source.end());
+}

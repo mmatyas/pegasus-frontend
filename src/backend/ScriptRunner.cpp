@@ -17,7 +17,7 @@
 
 #include "ScriptRunner.h"
 
-#include "Utils.h"
+#include "VectorUtils.h"
 
 #include <QDebug>
 #include <QDirIterator>
