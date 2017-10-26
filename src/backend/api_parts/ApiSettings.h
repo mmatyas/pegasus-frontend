@@ -44,8 +44,8 @@ class LocaleSettings : public QObject {
 public:
     explicit LocaleSettings(QObject* parent = nullptr);
 
-    Model::Locale* current() const { return m_locales.at(index()); }
-    int index() const { return m_locale_idx; }
+    Model::Locale* current() const { return m_locales.at(m_locale_idx); }
+    int index() const { return static_cast<int>(m_locale_idx); }
     void setIndex(int idx);
 
     QQmlListProperty<Model::Locale> getListProp();
@@ -54,14 +54,13 @@ signals:
     void localeChanged();
 
 private:
-    QVector<Model::Locale*> m_locales;
-    int m_locale_idx;
+    std::vector<Model::Locale*> m_locales;
+    size_t m_locale_idx;
 
     QTranslator m_translator;
 
     void selectPreferredLocale();
     void loadSelectedLocale();
-    int indexOfLocale(const QString& tag) const;
 };
 
 
@@ -80,8 +79,8 @@ class ThemeSettings : public QObject {
 public:
     explicit ThemeSettings(QObject* parent);
 
-    Model::Theme* current() const { return m_themes.at(index()); }
-    int index() const { return m_theme_idx; }
+    Model::Theme* current() const { return m_themes.at(m_theme_idx); }
+    int index() const { return static_cast<int>(m_theme_idx); }
     void setIndex(int idx);
     QQmlListProperty<Model::Theme> getListProp();
 
@@ -89,12 +88,11 @@ signals:
     void themeChanged();
 
 private:
-    QVector<Model::Theme*> m_themes;
-    int m_theme_idx;
+    std::vector<Model::Theme*> m_themes;
+    size_t m_theme_idx;
 
     void selectPreferredTheme();
     void printChangeMsg() const;
-    int indexOfTheme(const QString&) const;
 };
 
 

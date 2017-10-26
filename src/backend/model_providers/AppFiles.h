@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include <QVector>
+#include <QLatin1String>
+#include <vector>
 
 namespace Model { class Locale; }
 namespace Model { class Theme; }
@@ -28,8 +29,8 @@ namespace model_providers {
 struct AppFiles {
     static const QLatin1String DEFAULT_LOCALE_TAG;
 
-    static QVector<Model::Locale*> findAvailableLocales();
-    static QVector<Model::Theme*> findAvailableThemes();
+    static std::vector<Model::Locale*> findAvailableLocales();
+    static std::vector<Model::Theme*> findAvailableThemes();
 };
 
 } // namespace model_providers

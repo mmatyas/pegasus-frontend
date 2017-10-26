@@ -21,10 +21,16 @@
 #include <vector>
 
 
+/// Returns the iterator pointing to [item], or [vec].cend()
+template<typename T>
+typename std::vector<T>::const_iterator find(const std::vector<T>& vec, const T& item) {
+    return std::find(vec.cbegin(), vec.cend(), item);
+}
+
 /// Returns true if the vector contains the item
 template<typename T>
 bool contains(const std::vector<T>& vec, const T& item) {
-    return std::find(vec.cbegin(), vec.cend(), item) != vec.cend();
+    return find(vec, item) != vec.cend();
 }
 
 /// Appends [source] to the end of [target]

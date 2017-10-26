@@ -19,6 +19,7 @@
 
 #include "ListPropertyFn.h"
 #include "ScriptRunner.h"
+#include "VectorUtils.h"
 #include "model_providers/AppFiles.h"
 
 #include <QCoreApplication>
@@ -51,10 +52,10 @@ namespace ApiParts {
 LocaleSettings::LocaleSettings(QObject* parent)
     : QObject(parent)
     , m_locales(model_providers::AppFiles::findAvailableLocales())
-    , m_locale_idx(-1)
+    , m_locale_idx(0)
     , m_translator(this)
 {
-    for (Model::Locale* locale : qAsConst(m_locales)) {
+    for (Model::Locale* locale : m_locales) {
         locale->setParent(this);
         qInfo().noquote() << tr("Found locale '%1' (`%2`)").arg(locale->name(), locale->tag());
     }
@@ -65,54 +66,46 @@ LocaleSettings::LocaleSettings(QObject* parent)
     qApp->installTranslator(&m_translator);
 }
 
-int LocaleSettings::indexOfLocale(const QString& tag) const
-{
-    for (int idx = 0; idx < m_locales.count(); idx++) {
-        if (m_locales.at(idx)->tag() == tag)
-            return idx;
-    }
-
-    return -1;
-}
-
 void LocaleSettings::selectPreferredLocale()
 {
     // this method should be called after all translations have been found
-    Q_ASSERT(!m_locales.isEmpty());
+    Q_ASSERT(!m_locales.empty());
     using model_providers::AppFiles;
 
 
     // A. Try to use the saved config value
     const QString requested_tag = QSettings().value(SETTINGSKEY_LOCALE).toString();
+
+    decltype(m_locales)::const_iterator iter;
     if (!requested_tag.isEmpty())
-        m_locale_idx = indexOfLocale(requested_tag);
+        iter = find(m_locales, requested_tag);
 
     // B. Try to use the system default language
-    if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(QLocale().bcp47Name());
+    if (iter == m_locales.cend())
+        iter = find(m_locales, QLocale().bcp47Name());
 
     // C. Fall back to the default
-    if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(AppFiles::DEFAULT_LOCALE_TAG);
+    if (iter == m_locales.cend())
+        iter = find(m_locales, AppFiles::DEFAULT_LOCALE_TAG);
 
-
-    Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
+    Q_ASSERT(iter != m_locales.end());
+    m_locale_idx = static_cast<size_t>(std::distance(m_locales.cbegin(), iter));
 }
 
 void LocaleSettings::setIndex(int idx)
 {
-    // verify
-    if (idx == m_locale_idx)
+    if (idx == static_cast<int>(m_locale_idx))
         return;
 
-    const bool valid_idx = (0 <= idx && idx < m_locales.length());
+    // verify
+    const bool valid_idx = (0 <= idx && idx < static_cast<int>(m_locales.size()));
     if (!valid_idx) {
         qWarning() << QObject::tr("Invalid locale index #%1").arg(idx);
         return;
     }
 
     // load
-    m_locale_idx = idx;
+    m_locale_idx = static_cast<size_t>(idx);
     loadSelectedLocale();
 
     // remember
@@ -156,20 +149,10 @@ ThemeSettings::ThemeSettings(QObject* parent)
     printChangeMsg();
 }
 
-int ThemeSettings::indexOfTheme(const QString& dir_path) const
-{
-    for (int idx = 0; idx < m_themes.count(); idx++) {
-        if (m_themes.at(idx)->dir() == dir_path)
-            return idx;
-    }
-
-    return -1;
-}
-
 void ThemeSettings::selectPreferredTheme()
 {
     // this method should be called after all themes have been found
-    Q_ASSERT(!m_themes.isEmpty());
+    Q_ASSERT(!m_themes.empty());
 
 
     // A. Try to use the saved config value
