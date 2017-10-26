@@ -36,7 +36,7 @@ Meta::Meta(QObject* parent)
     using qsp = QStandardPaths;
 
     Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
-    m_log_path = qsp::standardLocations(qsp::AppConfigLocation).first();
+    m_log_path = qsp::standardLocations(qsp::AppConfigLocation).constFirst();
     m_log_path = m_log_path.replace(regex("(/pegasus-frontend){2}$"), "/pegasus-frontend");
     m_log_path += "/lastrun.log";
 }

@@ -238,7 +238,7 @@ void test_Model::assetsAppendMulti()
 
     assets.appendMulti(AssetType::VIDEOS, "dummy");
     QCOMPARE(assets.videos().count(), 1);
-    QCOMPARE(assets.videos().first(), QLatin1String("dummy"));
+    QCOMPARE(assets.videos().constFirst(), QLatin1String("dummy"));
 }
 
 

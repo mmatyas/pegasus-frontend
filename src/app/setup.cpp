@@ -44,7 +44,7 @@ void setupLogStreams(std::list<QTextStream>& streams)
     using qsp = QStandardPaths;
 
     Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
-    QString log_path = qsp::standardLocations(qsp::AppConfigLocation).first();
+    QString log_path = qsp::standardLocations(qsp::AppConfigLocation).constFirst();
     log_path = log_path.replace(regex("/pegasus-frontend/pegasus-frontend$"), "/pegasus-frontend");
 
     if (!QDir().mkpath(log_path)) {
