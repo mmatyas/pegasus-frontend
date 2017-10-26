@@ -33,7 +33,7 @@ namespace {
 QString find_steam_datadir()
 {
     using Paths = QStandardPaths;
-    const auto steam_subdir = QStringLiteral("/Steam/");
+    const auto steam_subdir = QLatin1String("/Steam/");
     const auto possible_basedirs = Paths::standardLocations(Paths::GenericDataLocation);
 
     for (const auto& basedir : possible_basedirs) {
@@ -51,10 +51,10 @@ QString find_steam_datadir()
 QStringList find_steam_installdirs(const QString& steam_datadir)
 {
     QStringList installdirs;
-    installdirs << steam_datadir % QStringLiteral("steamapps");
+    installdirs << steam_datadir % QLatin1String("steamapps");
 
 
-    const QString config_path = steam_datadir % QStringLiteral("config/config.vdf");
+    const QString config_path = steam_datadir % QLatin1String("config/config.vdf");
     QFile configfile(config_path);
     if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning().noquote() << MSG_PREFIX
@@ -71,7 +71,7 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
         const QString line = stream.readLine();
         const auto match = installdir_regex.match(line);
         if (match.hasMatch())
-            installdirs << match.captured(1) % QStringLiteral("/steamapps");
+            installdirs << match.captured(1) % QLatin1String("/steamapps");
     }
 
     return installdirs;
@@ -104,9 +104,9 @@ QVector<Model::Platform*> SteamPlatform::find()
 
     QVector<Model::Platform*> result;
     result.push_back(new Model::Platform(
-        QStringLiteral("steam"),
+        QLatin1String("steam"),
         installdirs,
-        QStringList(QStringLiteral("appmanifest_*.acf")),
+        QStringList(QLatin1String("appmanifest_*.acf")),
         QString())); // unimplemented -- "steam steam://rungameid/${appid}"
     return result;
 }

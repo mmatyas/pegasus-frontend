@@ -180,7 +180,7 @@ bool read_json(Model::Game& game, const QByteArray& bytes)
 void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAccessManager& netman)
 {
     const int TIMEOUT_MS(10000);
-    const QString APPDETAILS_URL(QStringLiteral("http://store.steampowered.com/api/appdetails/?appids="));
+    const QString APPDETAILS_URL(QLatin1String("http://store.steampowered.com/api/appdetails/?appids="));
 
     QVector<QNetworkReply*> listeners;
     int completed_transfers = 0;
