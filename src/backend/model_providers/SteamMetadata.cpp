@@ -20,6 +20,7 @@
 #include "model/Platform.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QEventLoop>
 #include <QFile>
 #include <QJsonArray>
@@ -28,6 +29,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QRegularExpression>
+#include <QStandardPaths>
 #include <QStringBuilder>
 #include <QTimer>
 
@@ -177,6 +179,58 @@ bool read_json(Model::Game& game, const QByteArray& bytes)
     return true;
 }
 
+QString cached_json_path(const SteamGameEntry& entry)
+{
+    auto cache_path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    Q_ASSERT(!cache_path.isEmpty()); // according to the Qt docs
+
+    cache_path += QLatin1String("/steam");
+    QDir cache_dir(cache_path);
+    if (!cache_dir.mkpath(QLatin1String("."))) {
+        // NOTE: mkpath() returns true if the dir already exists
+        qWarning().noquote() << MSG_PREFIX
+            << QObject::tr("could not create cache directory `%1`").arg(cache_path);
+        return QString();
+    }
+
+    return cache_path % QLatin1Char('/') % entry.appid % QLatin1String(".json");
+}
+
+void cache_json(const SteamGameEntry& entry, const QByteArray& bytes)
+{
+    const QString json_path = cached_json_path(entry);
+    QFile json_file(json_path);
+    if (!json_file.open(QIODevice::WriteOnly)) {
+        qWarning().noquote() << MSG_PREFIX
+            << QObject::tr("could not create cache file `%1` for game `%2`")
+               .arg(json_path, entry.title);
+        return;
+    }
+
+    if (json_file.write(bytes) != bytes.length()) {
+        qWarning().noquote() << MSG_PREFIX
+            << QObject::tr("writing cache file `%1` was not successful")
+               .arg(json_path, entry.title);
+        json_file.remove();
+    }
+}
+
+bool fill_from_cache(const SteamGameEntry& entry)
+{
+    const QString json_path = cached_json_path(entry);
+    QFile json_file(json_path);
+    if (!json_file.open(QIODevice::ReadOnly))
+        return false;
+
+    const bool json_success = read_json(*entry.game_ptr, json_file.readAll());
+    if (!json_success) {
+        json_file.remove();
+        return false;
+    }
+
+    return true;
+}
+
 void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAccessManager& netman)
 {
     const int TIMEOUT_MS(10000);
@@ -207,10 +261,10 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
                         << QObject::tr("downloading metadata for `%1` failed").arg(entry.title);
                 }
                 else {
-                    bool parse_success = read_json(*entry.game_ptr, reply->readAll());
-                    if (parse_success) {
-                        qInfo().noquote() << MSG_PREFIX
-                            << QObject::tr("game `%1` queried successfully").arg(entry.title);
+                    const auto raw_data = reply->readAll();
+                    const bool json_success = read_json(*entry.game_ptr, raw_data);
+                    if (json_success) {
+                        cache_json(entry, raw_data);
                     }
                     else {
                         qWarning().noquote() << MSG_PREFIX
@@ -247,6 +301,8 @@ void SteamMetadata::fill(const Model::Platform& platform)
     if (platform.m_short_name != QLatin1Literal("steam"))
         return;
 
+    // try to fill using manifest files
+
     std::vector<SteamGameEntry> entries;
 
     for (Model::Game* const game_ptr : platform.allGames()) {
@@ -267,6 +323,20 @@ void SteamMetadata::fill(const Model::Platform& platform)
         return;
     }
 
+    // try to fill using cached jsons
+
+    std::vector<SteamGameEntry> uncached_entries;
+    for (auto& entry : entries) {
+        const bool filled = fill_from_cache(entry);
+        if (!filled)
+            uncached_entries.push_back(std::move(entry));
+    }
+
+    if (uncached_entries.empty())
+        return;
+
+    // try to fill from network
+
     QNetworkAccessManager netman; // TODO: move NAM to global
     if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
         qWarning().noquote() << MSG_PREFIX
@@ -274,7 +344,7 @@ void SteamMetadata::fill(const Model::Platform& platform)
         return;
     }
 
-    download_metadata(entries, netman);
+    download_metadata(uncached_entries, netman);
 }
 
 } // namespace model_providers
