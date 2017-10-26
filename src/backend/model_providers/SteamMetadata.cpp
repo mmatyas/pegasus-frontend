@@ -254,6 +254,7 @@ void SteamMetadata::fill(const Model::Platform& platform)
         SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
         if (entry.valid()) {
             game_ptr->m_title = entry.title;
+            game_ptr->m_launch_cmd = QLatin1String("steam steam://rungameid/") % entry.appid;
             entry.game_ptr = game_ptr;
 
             entries.push_back(std::move(entry));

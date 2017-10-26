@@ -106,8 +106,8 @@ QVector<Model::Platform*> SteamPlatform::find()
     result.push_back(new Model::Platform(
         QLatin1String("steam"),
         installdirs,
-        QStringList(QLatin1String("appmanifest_*.acf")),
-        QString())); // unimplemented -- "steam steam://rungameid/${appid}"
+        QStringList(QLatin1String("appmanifest_*.acf"))
+    ));
     return result;
 }
 
