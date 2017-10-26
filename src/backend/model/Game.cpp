@@ -17,6 +17,7 @@
 
 #include "Game.h"
 
+#include "Utils.h"
 #include "api_parts/ApiFilters.h"
 
 #include <QDebug>
@@ -31,13 +32,13 @@ GameAssets::GameAssets(QObject* parent)
 
 void GameAssets::setSingle(AssetType key, QString value)
 {
-    Q_ASSERT(Assets::singleTypes.contains(key));
+    Q_ASSERT(contains(Assets::singleTypes, key));
     m_single_assets[key] = std::move(value);
 }
 
 void GameAssets::appendMulti(AssetType key, QString value)
 {
-    Q_ASSERT(Assets::multiTypes.contains(key));
+    Q_ASSERT(contains(Assets::multiTypes, key));
     m_multi_assets[key].append(value);
 }
 

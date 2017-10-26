@@ -22,7 +22,7 @@
 #include <QStringBuilder>
 
 
-const QVector<AssetType> Assets::singleTypes = {
+const std::vector<AssetType> Assets::singleTypes = {
     AssetType::BOX_FRONT,
     AssetType::BOX_BACK,
     AssetType::BOX_SPINE,
@@ -36,12 +36,13 @@ const QVector<AssetType> Assets::singleTypes = {
     AssetType::BACKGROUND,
     AssetType::MUSIC,
 };
-const QVector<AssetType> Assets::multiTypes = {
+
+const std::vector<AssetType> Assets::multiTypes = {
     AssetType::SCREENSHOTS,
     AssetType::VIDEOS,
 };
 
-const QHash<AssetType, QVector<QString>> Assets::suffixes = {
+const QHash<AssetType, std::vector<QString>> Assets::suffixes = {
     { AssetType::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
     { AssetType::BOX_BACK, { "-boxBack", "-box_back" } },
     { AssetType::BOX_SPINE, { "-boxSpine", "-box_spine", "-boxSide", "-box_side" } },
@@ -61,13 +62,13 @@ const QHash<AssetType, QVector<QString>> Assets::suffixes = {
 
 namespace {
 
-const QVector<QString> image_exts = { ".png", ".jpg" };
-const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
-const QVector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
+const std::vector<QString> image_exts = { ".png", ".jpg" };
+const std::vector<QString> video_exts = { ".webm", ".mp4", ".avi" };
+const std::vector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
 
 } // namespace
 
-const QVector<QString>& Assets::extensions(AssetType key)
+const std::vector<QString>& Assets::extensions(AssetType key)
 {
    switch (key) {
        case AssetType::VIDEOS:

@@ -18,7 +18,7 @@
 #pragma once
 
 #include <QHash>
-#include <QVector>
+#include <vector>
 
 
 enum class AssetType : unsigned char {
@@ -41,11 +41,11 @@ enum class AssetType : unsigned char {
 /// Definitions of supported asset types and file formats
 class Assets {
 public:
-    static const QVector<AssetType> singleTypes;
-    static const QVector<AssetType> multiTypes;
-    static const QHash<AssetType, QVector<QString>> suffixes;
+    static const std::vector<AssetType> singleTypes;
+    static const std::vector<AssetType> multiTypes;
+    static const QHash<AssetType, std::vector<QString>> suffixes;
 
-    static const QVector<QString>& extensions(AssetType key);
+    static const std::vector<QString>& extensions(AssetType key);
 
     static QString findFirst(AssetType, const QString& path_base);
     static QStringList findAll(AssetType, const QString& path_base);

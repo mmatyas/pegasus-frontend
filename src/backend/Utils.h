@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <vector>
+
 class QString;
 
 
@@ -34,3 +37,9 @@ void parseStoreFloat(const QString& str, float& val);
 /// Returns $PEGASUS_HOME if defined, or $HOME if defined,
 /// otherwise QDir::homePath().
 QString homePath();
+
+/// Returns true if the vector contains the item
+template<typename T>
+bool contains(const std::vector<T>& vec, const T& item) {
+    return std::find(vec.cbegin(), vec.cend(), item) != vec.cend();
+}

@@ -21,6 +21,7 @@
 
 #include <QString>
 #include <QQmlListProperty>
+#include <QVector>
 
 namespace ApiParts { class Filters; }
 
