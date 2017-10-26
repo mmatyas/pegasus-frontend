@@ -24,7 +24,7 @@
 
 
 namespace {
-const QMap<ScriptRunner::EventType, QString> script_dirs = {
+const std::map<ScriptRunner::EventType, QString> script_dirs = {
     { ScriptRunner::EventType::QUIT, "quit" },
     { ScriptRunner::EventType::REBOOT, "reboot" },
     { ScriptRunner::EventType::SHUTDOWN, "shutdown" },
@@ -38,10 +38,10 @@ const QMap<ScriptRunner::EventType, QString> script_dirs = {
 
 void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
 {
-    Q_ASSERT(script_dirs.contains(event));
+    Q_ASSERT(script_dirs.count(event) > 0);
 
     const auto scripts = findScripts(event);
-    const auto dirname = script_dirs.value(event);
+    const auto dirname = script_dirs.at(event);
 
     if (scripts.count() > 0) {
         qInfo().noquote() << QObject::tr("Running `%1` scripts...").arg(dirname);
@@ -51,9 +51,9 @@ void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
 
 QVector<QString> ScriptRunner::findScripts(ScriptRunner::EventType event)
 {
-    Q_ASSERT(script_dirs.contains(event));
+    Q_ASSERT(script_dirs.count(event) > 0);
 
-    return findScripts(script_dirs.value(event));
+    return findScripts(script_dirs.at(event));
 }
 
 QVector<QString> ScriptRunner::findScripts(const QString& dirname)
