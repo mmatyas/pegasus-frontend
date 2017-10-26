@@ -43,7 +43,6 @@ Platform::Platform(QString name, QStringList rom_dirs,
     Q_ASSERT(!m_short_name.isEmpty());
     Q_ASSERT(!m_rom_dirs.isEmpty());
     Q_ASSERT(!m_rom_filters.isEmpty());
-    Q_ASSERT(!m_launch_cmd.isEmpty());
 }
 
 void Platform::setCurrentGameIndex(int idx)

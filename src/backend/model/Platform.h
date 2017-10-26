@@ -50,7 +50,8 @@ class Platform : public QObject {
 
 public:
     explicit Platform(QString name, QStringList rom_dirs,
-                      QStringList rom_filters, QString launch_cmd,
+                      QStringList rom_filters,
+                      QString launch_cmd = QString(),
                       QObject* parent = nullptr);
 
     Model::Game* currentGame() const { return m_current_game; }

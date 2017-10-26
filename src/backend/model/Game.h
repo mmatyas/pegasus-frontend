@@ -118,6 +118,8 @@ public:
     int m_playcount;
     QDateTime m_lastplayed;
 
+    QString m_launch_cmd;
+
     GameAssets* assets() const { return m_assets; }
 
 private:

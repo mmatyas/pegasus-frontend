@@ -34,7 +34,11 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
 
 void ProcessLauncher::launchGame(const Model::Platform* platform, const Model::Game* game)
 {
-    const QString launch_cmd = createLaunchCommand(platform, game);
+    // games can be launched using either a command common for the platform,
+    // or one specific for the game
+    const QString launch_cmd = game->m_launch_cmd.isEmpty()
+        ? createLaunchCommand(platform, game)
+        : game->m_launch_cmd;
 
     qInfo().noquote() << tr("Executing command: `%1`").arg(launch_cmd);
 
@@ -69,7 +73,7 @@ QString ProcessLauncher::createLaunchCommand(const Model::Platform* platform, co
 
     // replace known keywords
     QString launch_cmd = platform->m_launch_cmd;
-    // first, replace manually quoted elements in the command string
+    // first, replace manually quoted elements in the command string (see Qt docs)
     launch_cmd
         .replace("\"%ROM%\"", params.value(ParamType::PATH))
         .replace("\"%ROM_RAW%\"", params.value(ParamType::PATH))
