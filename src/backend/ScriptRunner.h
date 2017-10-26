@@ -18,7 +18,7 @@
 #pragma once
 
 #include <QString>
-#include <QVector>
+#include <vector>
 
 
 /// A utility class for finding and running external scripts
@@ -37,8 +37,8 @@ public:
 
     static void findAndRunScripts(EventType);
 
-    static QVector<QString> findScripts(const QString& dirname);
-    static QVector<QString> findScripts(EventType);
+    static std::vector<QString> findScripts(const QString& dirname);
+    static std::vector<QString> findScripts(EventType);
 
-    static void runScripts(const QVector<QString>& paths);
+    static void runScripts(const std::vector<QString>& paths);
 };

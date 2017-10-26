@@ -17,6 +17,8 @@
 
 #include "ScriptRunner.h"
 
+#include "Utils.h"
+
 #include <QDebug>
 #include <QDirIterator>
 #include <QProcess>
@@ -43,27 +45,27 @@ void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
     const auto scripts = findScripts(event);
     const auto dirname = script_dirs.at(event);
 
-    if (scripts.count() > 0) {
+    if (scripts.size() > 0) {
         qInfo().noquote() << QObject::tr("Running `%1` scripts...").arg(dirname);
         runScripts(scripts);
     }
 }
 
-QVector<QString> ScriptRunner::findScripts(ScriptRunner::EventType event)
+std::vector<QString> ScriptRunner::findScripts(ScriptRunner::EventType event)
 {
     Q_ASSERT(script_dirs.count(event) > 0);
 
     return findScripts(script_dirs.at(event));
 }
 
-QVector<QString> ScriptRunner::findScripts(const QString& dirname)
+std::vector<QString> ScriptRunner::findScripts(const QString& dirname)
 {
     static const auto filters = QDir::Files | QDir::Readable | QDir::Executable | QDir::NoDotAndDotDot;
     static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     Q_ASSERT(!dirname.isEmpty());
 
-    QVector<QString> scripts;
+    std::vector<QString> scripts;
 
     auto search_paths = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
     for (auto& path : search_paths) {
@@ -71,30 +73,30 @@ QVector<QString> ScriptRunner::findScripts(const QString& dirname)
         // do not add the organization name to the search path
         path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
 
-        QVector<QString> local_scripts;
+        std::vector<QString> local_scripts;
         QDirIterator scripdir(path, filters, flags);
         while (scripdir.hasNext())
-            local_scripts.append(scripdir.next());
+            local_scripts.push_back(scripdir.next());
 
         std::sort(local_scripts.begin(), local_scripts.end());
-        scripts.append(local_scripts);
+        append(scripts, local_scripts);
     }
 
     return scripts;
 }
 
-void ScriptRunner::runScripts(const QVector<QString>& paths)
+void ScriptRunner::runScripts(const std::vector<QString>& paths)
 {
-    if (paths.length() <= 0)
+    if (paths.empty())
         return;
 
     static const auto SCRIPTSTART_MSG = QObject::tr("[%1/%2] %3");
-    const int num_field_width = QString::number(paths.length()).length();
+    const int num_field_width = QString::number(paths.size()).length();
 
-    for (int i = 0; i < paths.length(); i++) {
+    for (size_t i = 0; i < paths.size(); i++) {
         qInfo().noquote() << SCRIPTSTART_MSG
                              .arg(i + 1, num_field_width)
-                             .arg(paths.length()).arg(paths.at(i));
+                             .arg(paths.size()).arg(paths.at(i));
         QProcess::execute(paths.at(i));
     }
 }

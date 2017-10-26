@@ -43,3 +43,9 @@ template<typename T>
 bool contains(const std::vector<T>& vec, const T& item) {
     return std::find(vec.cbegin(), vec.cend(), item) != vec.cend();
 }
+
+/// Appends [source] to the end of [target]
+template<typename T>
+void append(std::vector<T>& target, std::vector<T>& source) {
+    target.insert(target.end(), source.begin(), source.end());
+}
