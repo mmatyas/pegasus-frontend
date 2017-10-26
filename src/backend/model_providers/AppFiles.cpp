@@ -117,17 +117,17 @@ QVector<Model::Theme*> AppFiles::findAvailableThemes()
             const auto qml_path = basedir + qml_filename;
 
             if (!fileExists(ini_path)) {
-                qWarning().noquote() << warn_missingfile.arg(ini_filename).arg(basedir);
+                qWarning().noquote() << warn_missingfile.arg(ini_filename, basedir);
                 continue;
             }
             if (!fileExists(qml_path)) {
-                qWarning().noquote() << warn_missingfile.arg(qml_filename).arg(basedir);
+                qWarning().noquote() << warn_missingfile.arg(qml_filename, basedir);
                 continue;
             }
 
             const QSettings metadata(ini_path, QSettings::IniFormat);
             if (!metadata.contains(INIKEY_NAME)) {
-                qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME).arg(ini_filename);
+                qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME, ini_filename);
                 continue;
             }
 
