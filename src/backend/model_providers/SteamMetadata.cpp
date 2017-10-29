@@ -239,48 +239,52 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
     QVector<QNetworkReply*> listeners;
     int completed_transfers = 0;
 
-    QTimer timeout;
-    timeout.setSingleShot(true);
-    timeout.start(TIMEOUT_MS);
+    QTimer loop_timeout;
+    loop_timeout.setSingleShot(true);
+    loop_timeout.start(TIMEOUT_MS);
 
     QEventLoop loop;
-    QObject::connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
+    QObject::connect(&loop_timeout, &QTimer::timeout,
+                     &loop, &QEventLoop::quit);
 
-    for (const SteamGameEntry& entry : entries) {
-        const QUrl url(APPDETAILS_URL + entry.appid);
+    for (size_t i = 0; i < entries.size(); i++) {
+        const QUrl url(APPDETAILS_URL + entries[i].appid);
         QNetworkReply* reply = netman.get(QNetworkRequest(url));
 
         QObject::connect(reply, &QNetworkReply::finished,
-            [&, reply](){
+            [&, i, reply](){
                 completed_transfers++;
                 if (completed_transfers == listeners.count())
                     loop.quit();
 
+
                 if (reply->error()) {
                     qWarning().noquote() << MSG_PREFIX
-                        << QObject::tr("downloading metadata for `%1` failed").arg(entry.title);
+                        << QObject::tr("downloading metadata for `%1` failed")
+                           .arg(entries[i].title);
                 }
                 else {
                     const auto raw_data = reply->readAll();
-                    const bool json_success = read_json(*entry.game_ptr, raw_data);
+                    const bool json_success = read_json(*entries[i].game_ptr, raw_data);
                     if (json_success) {
-                        cache_json(entry, raw_data);
+                        cache_json(entries[i], raw_data);
                     }
                     else {
                         qWarning().noquote() << MSG_PREFIX
                             << QObject::tr("failed to parse the response of the server "
                                            "for game `%` - perhaps the Steam API changed?")
-                                           .arg(entry.title);
+                                           .arg(entries[i].title);
                     }
                 }
 
-                timeout.start(TIMEOUT_MS); // restart the timer
+                loop_timeout.start(TIMEOUT_MS); // restart the timer
             });
 
         listeners << reply;
     }
 
     loop.exec();
+
 
     for (auto& listener : listeners) {
         if (!listener->isFinished())
