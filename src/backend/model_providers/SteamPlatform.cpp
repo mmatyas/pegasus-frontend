@@ -71,7 +71,7 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
         const QString line = stream.readLine();
         const auto match = installdir_regex.match(line);
         if (match.hasMatch()) {
-            const auto path = match.captured(1) % QLatin1String("/steamapps");
+            const QString path = match.captured(1) % QLatin1String("/steamapps");
             if (!installdirs.contains(path))
                 installdirs << path;
         }
