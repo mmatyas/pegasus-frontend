@@ -53,6 +53,8 @@ QString find_steam_datadir()
         }
     }
 
+    qInfo().noquote() << MSG_PREFIX
+                      << QObject::tr("no installation found");
     return QString();
 }
 
