@@ -34,7 +34,12 @@ QString find_steam_datadir()
 {
     using Paths = QStandardPaths;
 
-    auto possible_dirs = Paths::standardLocations(Paths::GenericDataLocation);
+    QStringList possible_dirs;
+
+#ifdef Q_OS_UNIX
+    // Linux: ~/.local/share/Steam
+    // macOS: ~/Library/Application Support/Steam
+    possible_dirs = Paths::standardLocations(Paths::GenericDataLocation);
     for (QString& dir : possible_dirs)
         dir.append(QLatin1String("/Steam/"));
 
@@ -42,6 +47,11 @@ QString find_steam_datadir()
     // in addition on Linux, ~/.steam/steam
     possible_dirs << Paths::standardLocations(Paths::HomeLocation).first()
                      % QLatin1String("/.steam/steam/");
+#endif
+#endif // unix
+
+#ifdef Q_OS_WIN
+    // unimplemented
 #endif
 
 
