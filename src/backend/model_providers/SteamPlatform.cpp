@@ -33,15 +33,23 @@ namespace {
 QString find_steam_datadir()
 {
     using Paths = QStandardPaths;
-    const auto steam_subdir = QLatin1String("/Steam/");
-    const auto possible_basedirs = Paths::standardLocations(Paths::GenericDataLocation);
 
-    for (const auto& basedir : possible_basedirs) {
-        const QString steamdir_maybe = basedir % steam_subdir;
-        if (QFileInfo(steamdir_maybe).isDir()) {
+    auto possible_dirs = Paths::standardLocations(Paths::GenericDataLocation);
+    for (QString& dir : possible_dirs)
+        dir.append(QLatin1String("/Steam/"));
+
+#ifdef Q_OS_LINUX
+    // in addition on Linux, ~/.steam/steam
+    possible_dirs << Paths::standardLocations(Paths::HomeLocation).first()
+                     % QLatin1String("/.steam/steam/");
+#endif
+
+
+    for (const auto& dir : qAsConst(possible_dirs)) {
+        if (QFileInfo(dir).isDir()) {
             qInfo().noquote() << MSG_PREFIX
-                              << QObject::tr("found data directory: `%1`").arg(steamdir_maybe);
-            return steamdir_maybe;
+                              << QObject::tr("found data directory: `%1`").arg(dir);
+            return dir;
         }
     }
 
