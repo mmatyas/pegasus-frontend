@@ -275,7 +275,7 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
                     else {
                         qWarning().noquote() << MSG_PREFIX
                             << QObject::tr("failed to parse the response of the server "
-                                           "for game `%` - perhaps the Steam API changed?")
+                                           "for game `%1` - perhaps the Steam API changed?")
                                            .arg(entries[i].title);
                     }
                 }
