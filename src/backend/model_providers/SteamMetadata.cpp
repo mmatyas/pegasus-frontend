@@ -121,6 +121,8 @@ bool read_json(Model::Game& game, const QByteArray& bytes)
 
     Model::GameAssets& assets = *game.assets();
 
+    game.m_title = app_data[QLatin1String("name")].toString();
+
     game.m_description = app_data[QLatin1String("short_description")].toString();
     if (game.m_description.isEmpty())
         game.m_description = app_data[QLatin1String("about_the_game")].toString();
