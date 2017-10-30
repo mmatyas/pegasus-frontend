@@ -263,8 +263,8 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
                 if (reply->error()) {
                     qWarning().noquote() << MSG_PREFIX
-                        << QObject::tr("downloading metadata for `%1` failed")
-                           .arg(entries[i].title);
+                        << QObject::tr("downloading metadata for `%1` failed (%2)")
+                           .arg(entries[i].title, reply->errorString());
                 }
                 else {
                     const auto raw_data = reply->readAll();
