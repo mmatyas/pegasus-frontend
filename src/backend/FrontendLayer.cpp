@@ -17,7 +17,34 @@
 
 #include "FrontendLayer.h"
 
+#include <QNetworkAccessManager>
+#include <QNetworkDiskCache>
 #include <QQmlContext>
+#include <QQmlNetworkAccessManagerFactory>
+#include <QStandardPaths>
+
+
+namespace {
+
+class DiskCachedNAMFactory : public QQmlNetworkAccessManagerFactory {
+public:
+    QNetworkAccessManager* create(QObject* parent) override;
+};
+
+QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
+{
+    QNetworkAccessManager* nam = new QNetworkAccessManager(parent);
+    QNetworkDiskCache* cache = new QNetworkDiskCache(nam);
+
+    QString cache_path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    cache_path += QLatin1String("/netcache");
+    cache->setCacheDirectory(cache_path);
+
+    nam->setCache(cache);
+    return nam;
+}
+
+} // namespace
 
 
 FrontendLayer::FrontendLayer(QObject* parent)
@@ -33,6 +60,7 @@ void FrontendLayer::rebuild(QObject* api)
     engine = new QQmlApplicationEngine();
     engine->addImportPath("lib/qml");
     engine->addImportPath("qml");
+    engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
     engine->rootContext()->setContextProperty(QStringLiteral("pegasus"), api);
     engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 
