@@ -45,7 +45,7 @@ struct SteamGameEntry {
 
     SteamGameEntry() : game_ptr(nullptr) {}
 
-    bool valid() const { return !title.isEmpty() && !appid.isEmpty(); }
+    bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
 };
 
 SteamGameEntry read_manifest(const QString& manifest_path)
@@ -63,7 +63,7 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     SteamGameEntry entry;
 
     QTextStream stream(&manifest);
-    while (!stream.atEnd() && !entry.valid()) {
+    while (!stream.atEnd() && !entry.parsed()) {
         const QString line = stream.readLine();
 
         const auto appid_match = appid_regex.match(line);
@@ -313,7 +313,7 @@ void SteamMetadata::fill(const Model::Platform& platform)
     for (Model::Game* const game_ptr : platform.allGames()) {
         Q_ASSERT(game_ptr);
         SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
-        if (entry.valid()) {
+        if (!entry.appid.isEmpty()) {
             game_ptr->m_title = entry.title;
             game_ptr->m_launch_cmd = QLatin1String("steam steam://rungameid/") % entry.appid;
             entry.game_ptr = game_ptr;
