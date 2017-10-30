@@ -79,5 +79,6 @@
         <file>fonts/Roboto.ttf</file>
         <file>fonts/RobotoCondensed.ttf</file>
         <file>platform_logo/steam.svg</file>
+        <file>platform_logo/retropie.svg</file>
     </qresource>
 </RCC>
