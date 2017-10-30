@@ -27,7 +27,7 @@ Item {
 
     property alias imageWidth: boxFront.paintedWidth
     property alias imageHeight: boxFront.paintedHeight
-    property real imageHeightRatio: 1
+    property real imageHeightRatio: 0.5
 
 
     height: width * imageHeightRatio

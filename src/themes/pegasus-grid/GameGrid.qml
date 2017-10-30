@@ -23,7 +23,7 @@ GridView {
     property var platformData: pegasus.currentPlatform
 
     model: platformData ? platformData.games : 0
-    onModelChanged: firstImageLoaded = false
+    onModelChanged: { firstImageLoaded = false; cellHeightRatio = 0.5; }
 
     currentIndex: pegasus.currentPlatform.currentGameIndex
     onCurrentIndexChanged: platformData.currentGameIndex = currentIndex
@@ -42,13 +42,17 @@ GridView {
     //   2. GridView is too stupid to automatically set the cell dimensions,
     // we have to do it manually. Loop bindings and such also have to be avoided.
 
-    property real columnCount: (cellHeightRatio > 1.2) ? 5 : 4
+    property real columnCount: {
+        if (cellHeightRatio > 1.2) return 5;
+        if (cellHeightRatio > 0.6) return 4;
+        return 3;
+    }
 
     property bool firstImageLoaded: false
-    property real cellHeightRatio: 1
+    property real cellHeightRatio: 0.5
 
     function calcHeightRatio(imageW, imageH) {
-        cellHeightRatio = 1;
+        cellHeightRatio = 0.5;
 
         if (imageW > 0 && imageH > 0)
             cellHeightRatio = imageH / imageW;
@@ -78,6 +82,11 @@ GridView {
         game: modelData
 
         onClicked: GridView.view.currentIndex = index
+        imageHeightRatio: {
+            if (firstImageLoaded) return cellHeightRatio;
+            return 0.5;
+        }
+
 
         onImageLoaded: {
             // NOTE: because images are loaded asynchronously,
