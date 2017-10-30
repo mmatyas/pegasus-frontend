@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QRegularExpression>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QStringBuilder>
 
@@ -51,7 +52,11 @@ QString find_steam_datadir()
 #endif // unix
 
 #ifdef Q_OS_WIN
-    // unimplemented
+    QSettings reg_base(QLatin1String("HKEY_CURRENT_USER\\Software\\Valve\\Steam"),
+                       QSettings::NativeFormat);
+    const QString reg_value = reg_base.value(QLatin1String("SteamPath")).toString();
+    if (!reg_value.isEmpty())
+        possible_dirs << reg_value % QChar('/');
 #endif
 
 
