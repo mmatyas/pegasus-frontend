@@ -20,6 +20,7 @@ import QtQuick.Layouts 1.3
 import QtMultimedia 5.8
 import "qrc:/qmlutils" as PegasusUtils
 
+
 Item {
     property var gameData: pegasus.currentGame
 
@@ -94,13 +95,26 @@ Item {
             border { color: "#444"; width: 1 }
 
             Layout.fillWidth: true
-            Layout.preferredHeight: parent.width * 0.75
+            Layout.preferredHeight: parent.width * videoPreview.heightRatio
             Layout.bottomMargin: rpx(4)
 
             visible: videoPreview.playlist.itemCount
 
             Video {
                 id: videoPreview
+
+                property real preferredHeightRatio: {
+                    if (pegasus.currentPlatform
+                        && pegasus.currentPlatform.shortName === "steam")
+                        return 0.5625; // 9/16
+
+                    return 0.75;
+                }
+                property real heightRatio: metaData.resolution
+                    ? Math.min(metaData.resolution.height / metaData.resolution.width,
+                               preferredHeightRatio)
+                    : preferredHeightRatio
+
 
                 anchors { fill: parent; margins: 1 }
                 fillMode: VideoOutput.PreserveAspectFit
