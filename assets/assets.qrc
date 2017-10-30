@@ -78,5 +78,6 @@
         <file>loading.svg</file>
         <file>fonts/Roboto.ttf</file>
         <file>fonts/RobotoCondensed.ttf</file>
+        <file>platform_logo/steam.svg</file>
     </qresource>
 </RCC>
