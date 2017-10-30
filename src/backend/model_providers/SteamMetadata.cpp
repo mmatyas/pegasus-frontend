@@ -316,6 +316,9 @@ void SteamMetadata::fill(const Model::Platform& platform)
         Q_ASSERT(game_ptr);
         SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
         if (!entry.appid.isEmpty()) {
+            if (entry.title.isEmpty())
+                entry.title = QLatin1String("App #") % entry.appid;
+
             game_ptr->m_title = entry.title;
             game_ptr->m_launch_cmd = QLatin1String("steam steam://rungameid/") % entry.appid;
             entry.game_ptr = game_ptr;
