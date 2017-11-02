@@ -22,35 +22,46 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
+    Image {
+        id: logo
+        source: "/loading.svg"
+        sourceSize.height: parent.height * 0.792
+        opacity: 0.4
+
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: rpx(-5)
+    }
 
     Item {
-        id: container
-
-        width: parent.width
-        height: logo.height + counter.height + rpx(80)
-
-        anchors.centerIn: parent
-
-        Image {
-            id: logo
-            source: "/loading.svg"
-            sourceSize.height: rpx(350)
-
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
+        anchors.left: parent.left
+        anchors.leftMargin: parent.width * 0.66
+        anchors.verticalCenter: parent.verticalCenter
+        width: childrenRect.width
+        height: childrenRect.height
 
         Text {
             id: counter
-            text: qsTr("%1 games found").arg(pegasus.meta.gameCount)
 
+            text: pegasus.meta.gameCount
             color: "#eee"
             font {
-                pixelSize: rpx(35)
-                family: uiFontCondensed.name
+                pixelSize: rpx(100)
+                family: uiFont.name
+            }
+        }
+
+        Text {
+            text: qsTr("games found") + pegasus.tr
+            color: "#aaa"
+            font {
+                pixelSize: rpx(33)
+                family: uiFont.name
             }
 
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: counter.left
+            anchors.top: counter.baseline
+            anchors.margins: rpx(5)
         }
     }
 }
