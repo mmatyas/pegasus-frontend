@@ -25,17 +25,16 @@ Rectangle {
     Image {
         id: logo
         source: "/loading.svg"
-        sourceSize.height: parent.height * 0.792
-        opacity: 0.4
+        sourceSize.height: parent.height * 0.85
+        opacity: 0.25
 
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.margins: rpx(-5)
     }
 
     Item {
         anchors.left: parent.left
-        anchors.leftMargin: parent.width * 0.66
+        anchors.leftMargin: parent.width * 0.61
         anchors.verticalCenter: parent.verticalCenter
         width: childrenRect.width
         height: childrenRect.height
@@ -44,24 +43,24 @@ Rectangle {
             id: counter
 
             text: pegasus.meta.gameCount
-            color: "#eee"
+            color: "#eaeaea"
             font {
-                pixelSize: rpx(100)
+                pixelSize: rpx(110)
                 family: uiFont.name
             }
         }
 
         Text {
-            text: qsTr("games found") + pegasus.tr
+            text: qsTr("games found, loading...") + pegasus.tr
             color: "#aaa"
             font {
-                pixelSize: rpx(33)
+                pixelSize: rpx(28)
                 family: uiFont.name
             }
 
             anchors.left: counter.left
             anchors.top: counter.baseline
-            anchors.margins: rpx(5)
+            anchors.margins: rpx(12)
         }
     }
 }
