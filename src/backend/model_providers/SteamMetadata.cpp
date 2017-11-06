@@ -29,6 +29,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QRegularExpression>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QStringBuilder>
 #include <QTimer>
@@ -47,6 +48,19 @@ struct SteamGameEntry {
 
     bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
 };
+
+QString find_steam_exe()
+{
+#ifdef Q_OS_WIN
+    QSettings reg_base(QLatin1String("HKEY_CURRENT_USER\\Software\\Valve\\Steam"),
+                       QSettings::NativeFormat);
+    QString reg_value = reg_base.value(QLatin1String("SteamExe")).toString();
+    if (!reg_value.isEmpty())
+        return reg_value.prepend('"').append('"');
+#endif
+    // it should be in the PATH
+    return QStringLiteral("steam");
+}
 
 SteamGameEntry read_manifest(const QString& manifest_path)
 {
@@ -308,6 +322,8 @@ void SteamMetadata::fill(const Model::Platform& platform)
     if (platform.m_short_name != QLatin1Literal("steam"))
         return;
 
+    const QString steamexe = find_steam_exe();
+
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
@@ -320,7 +336,7 @@ void SteamMetadata::fill(const Model::Platform& platform)
                 entry.title = QLatin1String("App #") % entry.appid;
 
             game_ptr->m_title = entry.title;
-            game_ptr->m_launch_cmd = QLatin1String("steam steam://rungameid/") % entry.appid;
+            game_ptr->m_launch_cmd = steamexe + QLatin1String(" steam://rungameid/") % entry.appid;
             entry.game_ptr = game_ptr;
 
             entries.push_back(std::move(entry));
