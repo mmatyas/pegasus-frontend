@@ -97,6 +97,7 @@ Window {
                 rebootDialog.focus = true;
             }
             onRequestQuit: {
+                themeContent.source = "";
                 pegasus.system.quit();
             }
         }
