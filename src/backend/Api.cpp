@@ -32,7 +32,7 @@ ApiObject::ApiObject(QObject* parent)
 
     connect(&m_platforms, &ApiParts::Platforms::modelChanged,
             this, &ApiObject::platformModelChanged);
-    connect(&m_platforms, &ApiParts::Platforms::indexChanged,
+    connect(&m_platforms, &ApiParts::Platforms::platformChanged,
             this, &ApiObject::currentPlatformIndexChanged);
     connect(&m_platforms, &ApiParts::Platforms::platformChanged,
             this, &ApiObject::currentPlatformChanged);
@@ -55,14 +55,6 @@ void ApiObject::onScanCompleted()
 {
     m_meta.onScanCompleted(m_platforms.scanDuration());
     m_meta.onLoadingCompleted();
-}
-
-QQmlListProperty<Model::Platform> ApiObject::getPlatformsProp()
-{
-    static const auto count = &listproperty_count<Model::Platform>;
-    static const auto at = &listproperty_at<Model::Platform>;
-
-    return {this, &m_platforms.allPlatforms(), count, at};
 }
 
 void ApiObject::launchGame()

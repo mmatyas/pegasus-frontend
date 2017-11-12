@@ -33,22 +33,19 @@ public:
     explicit Platforms(QObject* parent = nullptr);
     ~Platforms();
 
-    int currentIndex() const { return m_current_platform_idx; }
-    Model::Platform* currentPlatform() const { return m_current_platform; }
-
-    void setIndex(int);
-    void resetIndex();
-
-    QVector<Model::Platform*>& allPlatforms() { return m_platforms; }
+    int currentIndex() const { return m_platform_idx; }
+    void setCurrentIndex(int);
+    Model::Platform* currentPlatform() const;
+    QQmlListProperty<Model::Platform> getListProp();
 
     void startScanning();
     qint64 scanDuration() const { return m_last_scan_duration; }
 
 signals:
     void modelChanged();
-    void indexChanged();
     void platformChanged();
     void platformGameChanged();
+
     void newGamesScanned(int game_count);
     void scanCompleted(qint64 elapsedTime);
 
@@ -57,9 +54,7 @@ public slots:
 
 private:
     QVector<Model::Platform*> m_platforms;
-
-    int m_current_platform_idx;
-    Model::Platform* m_current_platform;
+    int m_platform_idx;
 
     // initialization
     DataFinder m_datafinder;

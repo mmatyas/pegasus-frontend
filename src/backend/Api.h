@@ -36,64 +36,62 @@
 class ApiObject : public QObject {
     Q_OBJECT
 
-    // platform-related properties
-    Q_PROPERTY(QQmlListProperty<Model::Platform> platforms
-               READ getPlatformsProp
-               NOTIFY platformModelChanged)
-    Q_PROPERTY(int currentPlatformIndex
-               READ currentPlatformIndex WRITE setCurrentPlatformIndex
-               RESET resetPlatformIndex
-               NOTIFY currentPlatformIndexChanged)
-    Q_PROPERTY(Model::Platform* currentPlatform
-               READ currentPlatform
-               NOTIFY currentPlatformChanged)
-    // shortcut for currentPlatform.currentGame
-    Q_PROPERTY(Model::Game* currentGame
-               READ currentGame
-               NOTIFY currentGameChanged)
-
     // subcomponents
+
     Q_PROPERTY(ApiParts::Filters* filters READ filters CONSTANT)
     Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(ApiParts::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
 
-    // internal properties
+    // shortcuts
+    // it feels more natural to use api.platforms and api.platforms[i].games
+    // as a model than api.platforms.all
+
+    Q_PROPERTY(QQmlListProperty<Model::Platform> platforms
+               READ getPlatformsProp
+               NOTIFY platformModelChanged)
+    Q_PROPERTY(Model::Platform* currentPlatform
+               READ currentPlatform
+               NOTIFY currentPlatformChanged)
+    Q_PROPERTY(int currentPlatformIndex
+               READ currentPlatformIndex
+               WRITE setCurrentPlatformIndex
+               NOTIFY currentPlatformIndexChanged)
+    Q_PROPERTY(Model::Game* currentGame
+               READ currentGame
+               NOTIFY currentGameChanged)
+
+    // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
 
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
+    // game launching
+    Q_INVOKABLE void launchGame();
+
+    // scanning
     void startScanning();
 
-    // platform-related properties
+    // subcomponents
+    ApiParts::Filters* filters() { return &m_filters; }
+    ApiParts::Meta* meta() { return &m_meta; }
+    ApiParts::Platforms* platformTable() { return &m_platforms; }
+    ApiParts::Settings* settings() { return &m_settings; }
+    ApiParts::System* system() { return &m_system; }
 
-    QQmlListProperty<Model::Platform> getPlatformsProp();
+    // shortcuts
+
+    QQmlListProperty<Model::Platform> getPlatformsProp() { return m_platforms.getListProp(); }
     int currentPlatformIndex() const { return m_platforms.currentIndex(); }
-    void setCurrentPlatformIndex(int idx) { m_platforms.setIndex(idx); }
-    void resetPlatformIndex() { m_platforms.resetIndex(); }
+    void setCurrentPlatformIndex(int idx) { m_platforms.setCurrentIndex(idx); }
 
     Model::Platform* currentPlatform() const { return m_platforms.currentPlatform(); }
     Model::Game* currentGame() const {
         return currentPlatform() ? currentPlatform()->currentGame() : nullptr;
     }
 
-    // game launching
-    Q_INVOKABLE void launchGame();
-
-    // subcomponents
-    ApiParts::Filters* filters() { return &m_filters; }
-    ApiParts::Meta* meta() { return &m_meta; }
-    ApiParts::Settings* settings() { return &m_settings; }
-    ApiParts::System* system() { return &m_system; }
-
 signals:
-    // platform-related properties
-    void platformModelChanged();
-    void currentPlatformIndexChanged();
-    void currentPlatformChanged();
-    void currentGameChanged();
-
     // game launching
     void prepareLaunch();
     void executeLaunch(const Model::Platform*, const Model::Game*);
@@ -104,6 +102,12 @@ signals:
 
     // quit/reboot/shutdown
     void appCloseRequested(AppCloseType);
+
+    // shortcuts
+    void platformModelChanged();
+    void currentPlatformIndexChanged();
+    void currentPlatformChanged();
+    void currentGameChanged();
 
 public slots:
     // game launch communication

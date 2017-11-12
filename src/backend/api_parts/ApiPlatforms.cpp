@@ -17,6 +17,8 @@
 
 #include "ApiPlatforms.h"
 
+#include "ListPropertyFn.h"
+
 #include <QtConcurrent/QtConcurrent>
 
 
@@ -24,8 +26,7 @@ namespace ApiParts {
 
 Platforms::Platforms(QObject* parent)
     : QObject(parent)
-    , m_current_platform_idx(-1)
-    , m_current_platform(nullptr)
+    , m_platform_idx(-1)
     , m_last_scan_duration(0)
 {
     connect(&m_datafinder, &DataFinder::platformGamesReady,
@@ -36,6 +37,43 @@ Platforms::~Platforms()
 {
     for (auto& platform : qAsConst(m_platforms))
         delete platform;
+}
+
+Model::Platform* Platforms::currentPlatform() const
+{
+    if (m_platform_idx < 0)
+        return nullptr;
+
+    Q_ASSERT(m_platform_idx < m_platforms.length());
+    return m_platforms.at(m_platform_idx);
+}
+
+void Platforms::setCurrentIndex(int idx)
+{
+    // Setting the index to a valid value causes changing the current platform
+    // and the current game. Setting the index to an invalid value should not
+    // change anything.
+
+    if (idx == m_platform_idx)
+        return;
+
+    const bool valid_idx = (0 <= idx || idx < m_platforms.count());
+    if (!valid_idx) {
+        qWarning() << tr("Invalid platform index #%1").arg(idx);
+        return;
+    }
+
+    m_platform_idx = idx;
+    emit platformChanged();
+    emit platformGameChanged();
+}
+
+QQmlListProperty<Model::Platform> Platforms::getListProp()
+{
+    static const auto count = &listproperty_count<Model::Platform>;
+    static const auto at = &listproperty_at<Model::Platform>;
+
+    return {this, &m_platforms, count, at};
 }
 
 void Platforms::startScanning()
@@ -62,7 +100,7 @@ void Platforms::onScanResultsAvailable()
 {
     // NOTE: `tr` (see below) uses `int`; assuming we have
     //       less than 2 million games, it will be enough
-    int32_t game_count = 0;
+    int game_count = 0;
 
     for (int i = 0; i < m_platforms.length(); i++) {
         Model::Platform* const platform_ptr = m_platforms.at(i);
@@ -81,7 +119,7 @@ void Platforms::onScanResultsAvailable()
     emit modelChanged();
 
     if (!m_platforms.isEmpty())
-        setIndex(0);
+        setCurrentIndex(0);
 }
 
 void Platforms::onPlatformGameChanged(int idx)
@@ -95,49 +133,6 @@ void Platforms::onFiltersChanged(ApiParts::Filters& filters)
     // TODO: use QtConcurrent::blockingMap here
     for (Model::Platform* const platform : qAsConst(m_platforms))
         platform->applyFilters(filters);
-}
-
-// NOTES:
-//  - Changing the index to a valid value causes changing the current platform
-//    and the current game as well. The list of platforms is fixed, so the index
-//    and the platform pointer are always change in pair.
-//  - Setting the index to -1 shall make the platform pointer null. The platform
-//    themselves should not change.
-//  - Setting the index to out of range values should not change anything.
-void Platforms::setIndex(int idx)
-{
-    if (idx == m_current_platform_idx)
-        return;
-
-    if (idx == -1) {
-        resetIndex();
-        return;
-    }
-
-    const bool valid_idx = (0 <= idx || idx < m_platforms.count());
-    if (!valid_idx) {
-        qWarning() << tr("Invalid platform index #%1").arg(idx);
-        return;
-    }
-
-    m_current_platform_idx = idx;
-    m_current_platform = m_platforms.at(idx);
-    Q_ASSERT(m_current_platform);
-
-    emit platformChanged();
-    emit platformGameChanged();
-}
-
-void Platforms::resetIndex()
-{
-    // these values are always in pair
-    Q_ASSERT((m_current_platform_idx == -1) == (m_current_platform == nullptr));
-    if (!m_current_platform) // already reset
-        return;
-
-    m_current_platform_idx = -1;
-    m_current_platform = nullptr;
-    emit platformChanged();
 }
 
 } // namespace ApiParts
