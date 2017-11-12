@@ -31,6 +31,7 @@ FocusScope {
 
     signal requestShutdown()
     signal requestReboot()
+    signal requestQuit()
 
 
     Rectangle {
@@ -90,7 +91,7 @@ FocusScope {
                 SecondaryMenuItem {
                     id: mbQuitExit
                     text: qsTr("Exit Pegasus") + pegasus.tr
-                    onActivated: pegasus.system.quit()
+                    onActivated: requestQuit()
                 }
             ]
         }

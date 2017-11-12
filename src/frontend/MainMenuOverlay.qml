@@ -26,6 +26,7 @@ FocusScope {
     signal close()
     signal requestShutdown()
     signal requestReboot()
+    signal requestQuit()
 
     anchors.fill: parent
     visible: shade.opacity > 0
@@ -115,6 +116,7 @@ FocusScope {
 
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
+        onRequestQuit: root.requestQuit()
     }
 
     SettingsPanel {
