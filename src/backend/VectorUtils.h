@@ -21,6 +21,8 @@
 #include <vector>
 
 
+static constexpr size_t VEC_NPOS = static_cast<size_t>(-1);
+
 /// Returns the iterator pointing to [item], or [vec].cend()
 template<typename T>
 typename std::vector<T>::const_iterator find(const std::vector<T>& vec, const T& item) {

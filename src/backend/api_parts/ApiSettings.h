@@ -33,34 +33,39 @@ class LocaleSettings : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(Model::Locale* current
-               READ current
+               READ qt_current
                NOTIFY localeChanged)
     Q_PROPERTY(int index
-               READ index WRITE setIndex
+               READ qt_index
+               WRITE qt_setIndex
                NOTIFY localeChanged)
     Q_PROPERTY(QQmlListProperty<Model::Locale> all
-               READ getListProp CONSTANT)
+               READ qt_getListProp CONSTANT)
 
 public:
     explicit LocaleSettings(QObject* parent = nullptr);
 
-    Model::Locale* current() const { return m_locales.at(m_locale_idx); }
-    int index() const { return static_cast<int>(m_locale_idx); }
-    void setIndex(int idx);
+    const Model::Locale* qt_current() const { return &m_locales[m_locale_idx]; }
+    int qt_index() const { return static_cast<int>(m_locale_idx); }
+    void qt_setIndex(int);
 
-    QQmlListProperty<Model::Locale> getListProp();
+    QQmlListProperty<Model::Locale> qt_getListProp();
+
+
+    const Model::Locale& current() const { return m_locales[m_locale_idx]; }
 
 signals:
     void localeChanged();
 
 private:
-    std::vector<Model::Locale*> m_locales;
+    std::vector<Model::Locale> m_locales;
     size_t m_locale_idx;
 
     QTranslator m_translator;
 
     void selectPreferredLocale();
     void loadSelectedLocale();
+    size_t indexOfLocale(const QString&) const;
 };
 
 
@@ -68,31 +73,37 @@ class ThemeSettings : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(Model::Theme* current
-               READ current
+               READ qt_current
                NOTIFY themeChanged)
     Q_PROPERTY(int index
-               READ index WRITE setIndex
+               READ qt_index
+               WRITE qt_setIndex
                NOTIFY themeChanged)
     Q_PROPERTY(QQmlListProperty<Model::Theme> all
-               READ getListProp CONSTANT)
+               READ qt_getListProp CONSTANT)
 
 public:
     explicit ThemeSettings(QObject* parent);
 
-    Model::Theme* current() const { return m_themes.at(m_theme_idx); }
-    int index() const { return static_cast<int>(m_theme_idx); }
-    void setIndex(int idx);
-    QQmlListProperty<Model::Theme> getListProp();
+    const Model::Theme* qt_current() const { return &m_themes[m_theme_idx]; }
+    int qt_index() const { return static_cast<int>(m_theme_idx); }
+    void qt_setIndex(int);
+
+    QQmlListProperty<Model::Theme> qt_getListProp();
+
+
+    const Model::Theme& current() const { return m_themes[m_theme_idx]; }
 
 signals:
     void themeChanged();
 
 private:
-    std::vector<Model::Theme*> m_themes;
+    std::vector<Model::Theme> m_themes;
     size_t m_theme_idx;
 
     void selectPreferredTheme();
     void printChangeMsg() const;
+    size_t indexOfTheme(const QString&) const;
 };
 
 

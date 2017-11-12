@@ -31,3 +31,22 @@ static PointedType* listproperty_at(QQmlListProperty<PointedType>* p, int idx)
 {
     return reinterpret_cast<const QVector<PointedType*>* const>(p->data)->at(idx);
 }
+
+// listproperty functions for STL containers
+
+template<typename T>
+static int listproperty_stl_count(QQmlListProperty<T>* p)
+{
+    return static_cast<int>(
+        reinterpret_cast<const std::vector<T>* const>(p->data)
+        ->size()
+    );
+}
+
+template<typename T>
+static T* listproperty_stl_at(QQmlListProperty<T>* p, int idx)
+{
+    return reinterpret_cast<const std::vector<T>* const>(p->data)
+        ->at(static_cast<size_t>(idx)
+    );
+}

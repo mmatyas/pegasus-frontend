@@ -29,8 +29,8 @@ namespace model_providers {
 struct AppFiles {
     static const QLatin1String DEFAULT_LOCALE_TAG;
 
-    static std::vector<Model::Locale*> findAvailableLocales();
-    static std::vector<Model::Theme*> findAvailableThemes();
+    static std::vector<Model::Locale> findAvailableLocales();
+    static std::vector<Model::Theme> findAvailableThemes();
 };
 
 } // namespace model_providers

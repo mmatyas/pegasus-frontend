@@ -52,18 +52,27 @@ namespace ApiParts {
 LocaleSettings::LocaleSettings(QObject* parent)
     : QObject(parent)
     , m_locales(model_providers::AppFiles::findAvailableLocales())
-    , m_locale_idx(0)
+    , m_locale_idx(VEC_NPOS)
     , m_translator(this)
 {
-    for (Model::Locale* locale : m_locales) {
-        locale->setParent(this);
-        qInfo().noquote() << tr("Found locale '%1' (`%2`)").arg(locale->name(), locale->tag());
+    for (Model::Locale& locale : m_locales) {
+        locale.setParent(this);
+        qInfo().noquote() << tr("Found locale '%1' (`%2`)").arg(locale.name(), locale.tag());
     }
 
     selectPreferredLocale();
     loadSelectedLocale();
 
     qApp->installTranslator(&m_translator);
+}
+
+size_t LocaleSettings::indexOfLocale(const QString& tag) const
+{
+    for (size_t idx = 0; idx < m_locales.size(); idx++) {
+        if (m_locales[idx].tag() == tag)
+            return idx;
+    }
+    return VEC_NPOS;
 }
 
 void LocaleSettings::selectPreferredLocale()
@@ -78,38 +87,38 @@ void LocaleSettings::selectPreferredLocale()
 
     decltype(m_locales)::const_iterator iter;
     if (!requested_tag.isEmpty())
-        iter = find(m_locales, requested_tag);
+        m_locale_idx = indexOfLocale(requested_tag);
 
     // B. Try to use the system default language
     if (iter == m_locales.cend())
-        iter = find(m_locales, QLocale().bcp47Name());
+        m_locale_idx = indexOfLocale(QLocale().bcp47Name());
 
     // C. Fall back to the default
     if (iter == m_locales.cend())
-        iter = find(m_locales, AppFiles::DEFAULT_LOCALE_TAG);
+        m_locale_idx = indexOfLocale(AppFiles::DEFAULT_LOCALE_TAG);
 
-    Q_ASSERT(iter != m_locales.end());
-    m_locale_idx = static_cast<size_t>(std::distance(m_locales.cbegin(), iter));
+
+    Q_ASSERT(m_locale_idx != VEC_NPOS);
 }
 
-void LocaleSettings::setIndex(int idx)
+void LocaleSettings::qt_setIndex(int qt_idx)
 {
-    if (idx == static_cast<int>(m_locale_idx))
+    const size_t idx = static_cast<size_t>(qt_idx);
+    if (idx == m_locale_idx)
         return;
 
     // verify
-    const bool valid_idx = (0 <= idx && idx < static_cast<int>(m_locales.size()));
-    if (!valid_idx) {
+    if (m_locales.size() <= idx) {
         qWarning() << QObject::tr("Invalid locale index #%1").arg(idx);
         return;
     }
 
     // load
-    m_locale_idx = static_cast<size_t>(idx);
+    m_locale_idx = idx;
     loadSelectedLocale();
 
     // remember
-    QSettings().setValue(SETTINGSKEY_LOCALE, current()->tag());
+    QSettings().setValue(SETTINGSKEY_LOCALE, current().tag());
 
     callScripts();
     emit localeChanged();
@@ -117,13 +126,13 @@ void LocaleSettings::setIndex(int idx)
 
 void LocaleSettings::loadSelectedLocale()
 {
-    m_translator.load("pegasus_" + current()->tag(), ":/lang", "-");
+    m_translator.load("pegasus_" + current().tag(), ":/lang", "-");
 
     qInfo().noquote() << QObject::tr("Locale set to '%1' (`%2`)")
-                         .arg(current()->name(), current()->tag());
+                         .arg(current().name(), current().tag());
 }
 
-QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
+QQmlListProperty<Model::Locale> LocaleSettings::qt_getListProp()
 {
     static const auto count = &listproperty_count<Model::Locale>;
     static const auto at = &listproperty_at<Model::Locale>;
@@ -138,15 +147,24 @@ QQmlListProperty<Model::Locale> LocaleSettings::getListProp()
 ThemeSettings::ThemeSettings(QObject* parent)
     : QObject(parent)
     , m_themes(model_providers::AppFiles::findAvailableThemes())
-    , m_theme_idx(-1)
+    , m_theme_idx(VEC_NPOS)
 {
-    for (Model::Theme* theme : qAsConst(m_themes)) {
-        theme->setParent(this);
-        qInfo().noquote() << tr("Found theme '%1' (`%2`)").arg(theme->name(), theme->dir());
+    for (Model::Theme& theme : m_themes) {
+        theme.setParent(this);
+        qInfo().noquote() << tr("Found theme '%1' (`%2`)").arg(theme.name(), theme.dir());
     }
 
     selectPreferredTheme();
     printChangeMsg();
+}
+
+size_t ThemeSettings::indexOfTheme(const QString& dir_path) const
+{
+    for (size_t idx = 0; idx < m_themes.size(); idx++) {
+        if (m_themes[idx].dir() == dir_path)
+            return idx;
+    }
+    return VEC_NPOS;
 }
 
 void ThemeSettings::selectPreferredTheme()
@@ -163,22 +181,22 @@ void ThemeSettings::selectPreferredTheme()
     // B. Fall back to the built-in theme
     //    Either the config value is invalid, or has missing files,
     //    thus not present in `m_themes`.
-    if (m_theme_idx < 0)
+    if (m_theme_idx == VEC_NPOS)
         m_theme_idx = indexOfTheme(":/themes/pegasus-grid/");
 
 
-    Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
+    Q_ASSERT(m_theme_idx != VEC_NPOS);
 }
 
-void ThemeSettings::setIndex(int idx)
+void ThemeSettings::qt_setIndex(int qt_idx)
 {
-    // verify
+    const size_t idx = static_cast<size_t>(qt_idx);
     if (idx == m_theme_idx)
         return;
 
-    const bool valid_idx = (0 <= idx && idx < m_themes.length());
-    if (!valid_idx) {
-        qWarning() << tr("Invalid theme index #%1").arg(idx);
+    // verify
+    if (m_themes.size() <= idx) {
+        qWarning() << QObject::tr("Invalid locale index #%1").arg(idx);
         return;
     }
 
@@ -187,7 +205,7 @@ void ThemeSettings::setIndex(int idx)
     printChangeMsg();
 
     // remember
-    QSettings().setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
+    QSettings().setValue(SETTINGSKEY_THEME, current().dir());
 
     callScripts();
     emit themeChanged();
@@ -196,10 +214,10 @@ void ThemeSettings::setIndex(int idx)
 void ThemeSettings::printChangeMsg() const
 {
     qInfo().noquote() << QObject::tr("Theme set to '%1' (%2)")
-                         .arg(current()->name(), current()->dir());
+                         .arg(current().name(), current().dir());
 }
 
-QQmlListProperty<Model::Theme> ThemeSettings::getListProp()
+QQmlListProperty<Model::Theme> ThemeSettings::qt_getListProp()
 {
     static const auto count = &listproperty_count<Model::Theme>;
     static const auto at = &listproperty_at<Model::Theme>;

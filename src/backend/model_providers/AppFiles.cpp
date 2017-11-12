@@ -68,7 +68,7 @@ namespace model_providers {
 
 const QLatin1String AppFiles::DEFAULT_LOCALE_TAG("en-DK");
 
-std::vector<Model::Locale*> AppFiles::findAvailableLocales()
+std::vector<Model::Locale> AppFiles::findAvailableLocales()
 {
     const int QM_PREFIX_LEN = 8; // length of "pegasus_"
     const int QM_SUFFIX_LEN = 3; // length of ".qm"
@@ -79,7 +79,7 @@ std::vector<Model::Locale*> AppFiles::findAvailableLocales()
     qm_files.append(DEFAULT_FILENAME); // default placeholder
     qm_files.sort();
 
-    std::vector<Model::Locale*> output;
+    std::vector<Model::Locale> output;
     for (const QString& filename : qAsConst(qm_files)) {
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
         Q_ASSERT(locale_tag_len > 0);
@@ -87,10 +87,11 @@ std::vector<Model::Locale*> AppFiles::findAvailableLocales()
         const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
         output.emplace_back(locale_tag);
     }
+
     return output;
 }
 
-std::vector<Model::Theme*> AppFiles::findAvailableThemes()
+std::vector<Model::Theme> AppFiles::findAvailableThemes()
 {
     const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     const auto flags = QDirIterator::FollowSymlinks;
@@ -106,7 +107,7 @@ std::vector<Model::Theme*> AppFiles::findAvailableThemes()
     const QString INIKEY_SUMMARY("summary");
     const QString INIKEY_DESC("description");
 
-    std::vector<Model::Theme*> output;
+    std::vector<Model::Theme> output;
 
     QStringList search_paths = themeDirectories();
     for (auto& path : search_paths) {
@@ -142,11 +143,11 @@ std::vector<Model::Theme*> AppFiles::findAvailableThemes()
         }
     }
 
-    std::sort(output.begin(), output.end(),
-        [](const Model::Theme* a, const Model::Theme* b) {
-            return a->compare(*b) < 0;
+    /*std::sort(output.begin(), output.end(),
+        [](const Model::Theme& a, const Model::Theme& b) {
+            return a.compare(b) < 0;
         }
-    );
+    );*/
 
     return output;
 }
