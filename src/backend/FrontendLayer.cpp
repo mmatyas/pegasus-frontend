@@ -77,3 +77,9 @@ void FrontendLayer::teardown()
 
     engine->deleteLater();
 }
+
+void FrontendLayer::clearCache()
+{
+    Q_ASSERT(engine);
+    engine->clearComponentCache();
+}

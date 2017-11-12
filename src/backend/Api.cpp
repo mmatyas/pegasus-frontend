@@ -37,6 +37,10 @@ ApiObject::ApiObject(QObject* parent)
 
     connect(&m_datafinder, &DataFinder::platformGamesReady,
             &m_meta, &Types::Meta::onNewGamesScanned);
+
+    // partial QML reload
+    connect(&m_meta, &Types::Meta::qmlClearCacheRequested,
+            this, &ApiObject::qmlClearCacheRequested);
 }
 
 void ApiObject::startScanning()

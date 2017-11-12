@@ -96,6 +96,9 @@ signals:
     void currentCollectionChanged();
     void currentGameChanged();
 
+    // partial QML reload
+    void qmlClearCacheRequested();
+
 public slots:
     // game launch communication
     void onReadyToLaunch();

@@ -157,6 +157,9 @@ void connectAndStartEngine(ApiObject& api, FrontendLayer& frontend, ProcessLaunc
     QObject::connect(&api, &ApiObject::restoreAfterGame,
                      &frontend, &FrontendLayer::rebuild);
 
+    // special commands
+    QObject::connect(&api, &ApiObject::qmlClearCacheRequested,
+                     &frontend, &FrontendLayer::clearCache);
 
     // close the app on quit request
     QObject::connect(&api, &ApiObject::appCloseRequested, onAppClose);

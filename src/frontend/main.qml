@@ -60,6 +60,17 @@ Window {
                 themeContent.enabled = false;
                 mainMenu.focus = true;
             }
+            Keys.onPressed: {
+                if (event.key === Qt.Key_F5) {
+                    event.accepted = true;
+
+                    themeContent.source = "";
+                    pegasus.meta.clearQMLCache();
+                    themeContent.source = Qt.binding(function() {
+                        return pegasus.settings.themes.current.qmlPath;
+                    });
+                }
+            }
 
             source: pegasus.settings.themes.current.qmlPath
             asynchronous: true
