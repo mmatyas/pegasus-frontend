@@ -50,8 +50,8 @@ void test_Model::platformNullGame()
 
     // for some reason, using simply nullptr causes a build error (Qt 5.7)
 
-    QCOMPARE(platform.currentGame(), static_cast<Model::Game*>(nullptr));
-    QCOMPARE(platform.currentGameIndex(), -1);
+    QCOMPARE(platform.gameList().current(), static_cast<Model::Game*>(nullptr));
+    QCOMPARE(platform.gameList().index(), -1);
 }
 
 void test_Model::prepareTestPlatform(Model::Platform& platform,
@@ -64,14 +64,14 @@ void test_Model::prepareTestPlatform(Model::Platform& platform,
     QVERIFY(spy_idx.isValid());
     QVERIFY(spy_game.isValid());
 
-    platform.addGame("dummy0");
-    platform.addGame("dummy1");
-    platform.lockGameList();
+    platform.gameListMut().addGame("dummy0");
+    platform.gameListMut().addGame("dummy1");
+    platform.gameListMut().lockGameList();
 
-    QVERIFY(platform.games().count() == 2);
-    QVERIFY(platform.currentGame() != static_cast<Model::Game*>(nullptr));
-    QVERIFY(platform.currentGame() == platform.games().first());
-    QVERIFY(platform.currentGameIndex() == 0);
+    QVERIFY(platform.gameList().games().count() == 2);
+    QVERIFY(platform.gameList().current() != static_cast<Model::Game*>(nullptr));
+    QVERIFY(platform.gameList().current() == platform.gameList().games().first());
+    QVERIFY(platform.gameList().index() == 0);
     QVERIFY(spy_idx.count() == 1);
     QVERIFY(spy_game.count() == 1);
 }
@@ -93,8 +93,9 @@ void test_Model::platformSetIndex()
     // prepare
 
     Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    QSignalSpy index_triggered(&platform, &Model::Platform::currentGameIndexChanged);
-    QSignalSpy game_triggered(&platform, &Model::Platform::currentGameChanged);
+    Model::GameList& gameList = platform.gameListMut();
+    QSignalSpy index_triggered(&gameList, &Model::GameList::currentChanged);
+    QSignalSpy game_triggered(&gameList, &Model::GameList::currentChanged);
 
     prepareTestPlatform(platform, index_triggered, game_triggered);
 
@@ -103,21 +104,21 @@ void test_Model::platformSetIndex()
     QFETCH(int, index);
     QFETCH(bool, game_change_triggered);
 
-    if (index < -1 || index > platform.games().count())
+    if (index < -1 || index > gameList.games().count())
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index #-?[0-9]+"));
 
-    platform.setCurrentGameIndex(index);
+    gameList.setIndex(index);
 
     if (index == -1) {
         // -1 makes it undefined
-        QCOMPARE(platform.currentGame(), static_cast<Model::Game*>(nullptr));
-        QCOMPARE(platform.currentGameIndex(), -1);
+        QCOMPARE(gameList.current(), static_cast<Model::Game*>(nullptr));
+        QCOMPARE(gameList.index(), -1);
     }
     else {
         int expected_idx = game_change_triggered ? index : 0;
 
-        QCOMPARE(platform.currentGame(), platform.games().at(expected_idx));
-        QCOMPARE(platform.currentGameIndex(), expected_idx);
+        QCOMPARE(gameList.current(), gameList.games().at(expected_idx));
+        QCOMPARE(gameList.index(), expected_idx);
     }
     QCOMPARE(index_triggered.count(), game_change_triggered ? 2 : 1);
     QCOMPARE(game_triggered.count(), game_change_triggered ? 2 : 1);
@@ -126,28 +127,30 @@ void test_Model::platformSetIndex()
 void test_Model::platformAppendGame()
 {
     Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    QVERIFY(platform.games().isEmpty());
+    Model::GameList& gameList = platform.gameListMut();
+    QVERIFY(gameList.games().isEmpty());
 
-    platform.addGame("a");
-    platform.addGame("b");
-    platform.addGame("c");
-    platform.lockGameList();
+    gameList.addGame("a");
+    gameList.addGame("b");
+    gameList.addGame("c");
+    gameList.lockGameList();
 
-    QCOMPARE(platform.games().count(), 3);
+    QCOMPARE(gameList.games().count(), 3);
 }
 
 void test_Model::platformSortGames()
 {
     Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    QVERIFY(platform.games().isEmpty());
+    Model::GameList& gameList = platform.gameListMut();
+    QVERIFY(gameList.games().isEmpty());
 
-    platform.addGame("bbb");
-    platform.addGame("aaa");
-    platform.sortGames();
-    platform.lockGameList();
+    gameList.addGame("bbb");
+    gameList.addGame("aaa");
+    gameList.sortGames();
+    gameList.lockGameList();
 
-    QCOMPARE(platform.games().first()->m_rom_path, QLatin1String("aaa"));
-    QCOMPARE(platform.games().last()->m_rom_path, QLatin1String("bbb"));
+    QCOMPARE(gameList.games().first()->m_rom_path, QLatin1String("aaa"));
+    QCOMPARE(gameList.games().last()->m_rom_path, QLatin1String("bbb"));
 }
 
 void test_Model::platformApplyFilters_data()
@@ -169,35 +172,36 @@ void test_Model::platformApplyFilters_data()
 void test_Model::platformApplyFilters()
 {
     Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    QSignalSpy triggered(&platform, &Model::Platform::filteredGamesChanged);
+    Model::GameList& gameList = platform.gameListMut();
+    QSignalSpy triggered(&gameList, &Model::GameList::filteredGamesChanged);
     QVERIFY(triggered.isValid());
 
-    platform.addGame("file1");
-        platform.allGames().last()->m_title = "not-fav, 1P";
-        platform.allGames().last()->m_favorite = false;
-        platform.allGames().last()->m_players = 1;
-    platform.addGame("file2");
-        platform.allGames().last()->m_title = "not-fav, 2P";
-        platform.allGames().last()->m_favorite = false;
-        platform.allGames().last()->m_players = 2;
-    platform.addGame("file3");
-        platform.allGames().last()->m_title = "fav, 1P";
-        platform.allGames().last()->m_favorite = true;
-        platform.allGames().last()->m_players = 1;
-    platform.addGame("file4");
-        platform.allGames().last()->m_title = "My Game";
-        platform.allGames().last()->m_favorite = false;
-        platform.allGames().last()->m_players = 1;
-    platform.addGame("file5");
-        platform.allGames().last()->m_title = "Another Game";
-        platform.allGames().last()->m_favorite = true;
-        platform.allGames().last()->m_players = 1;
+    gameList.addGame("file1");
+        gameList.allGames().last()->m_title = "not-fav, 1P";
+        gameList.allGames().last()->m_favorite = false;
+        gameList.allGames().last()->m_players = 1;
+    gameList.addGame("file2");
+        gameList.allGames().last()->m_title = "not-fav, 2P";
+        gameList.allGames().last()->m_favorite = false;
+        gameList.allGames().last()->m_players = 2;
+    gameList.addGame("file3");
+        gameList.allGames().last()->m_title = "fav, 1P";
+        gameList.allGames().last()->m_favorite = true;
+        gameList.allGames().last()->m_players = 1;
+    gameList.addGame("file4");
+        gameList.allGames().last()->m_title = "My Game";
+        gameList.allGames().last()->m_favorite = false;
+        gameList.allGames().last()->m_players = 1;
+    gameList.addGame("file5");
+        gameList.allGames().last()->m_title = "Another Game";
+        gameList.allGames().last()->m_favorite = true;
+        gameList.allGames().last()->m_players = 1;
 
     QVERIFY(triggered.count() == 0);
-    platform.lockGameList();
+    gameList.lockGameList();
 
-    QVERIFY(platform.games().count() == 5);
-    QVERIFY(platform.games().count() == platform.allGames().count());
+    QVERIFY(gameList.games().count() == 5);
+    QVERIFY(gameList.games().count() == gameList.allGames().count());
     QVERIFY(triggered.count() == 1);
 
     QFETCH(QString, title);
@@ -210,13 +214,13 @@ void test_Model::platformApplyFilters()
         filters.m_favorite = favorite;
         filters.m_player_count = player_cnt;
 
-    platform.applyFilters(filters);
+    gameList.applyFilters(filters);
 
-    QCOMPARE(platform.games().count(), matching_games_cnt);
+    QCOMPARE(gameList.games().count(), matching_games_cnt);
 
     // if the filter didn't change the list of games,
     // there should be no new trigger
-    if (matching_games_cnt == platform.allGames().count())
+    if (matching_games_cnt == gameList.allGames().count())
         QCOMPARE(triggered.count(), 1);
     else
         QCOMPARE(triggered.count(), 2);

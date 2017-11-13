@@ -85,13 +85,13 @@ QString Es2Metadata::findGamelistFile(const Model::Platform& platform)
 
 void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Model::Platform& platform)
 {
-    Q_ASSERT(!platform.allGames().isEmpty());
+    Q_ASSERT(!platform.gameList().allGames().isEmpty());
 
     // Build a path -> game map for quick access.
     // To find matches between the real files and the ones in the gamelist,
     // their canonical path will be compared.
     QHash<QString, Model::Game*> game_by_path;
-    for (Model::Game* game : qAsConst(platform.allGames()))
+    for (Model::Game* game : qAsConst(platform.gameList().allGames()))
         game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
 

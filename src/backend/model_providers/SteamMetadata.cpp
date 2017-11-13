@@ -328,7 +328,7 @@ void SteamMetadata::fill(const Model::Platform& platform)
 
     std::vector<SteamGameEntry> entries;
 
-    for (Model::Game* const game_ptr : platform.allGames()) {
+    for (Model::Game* const game_ptr : platform.gameList().allGames()) {
         Q_ASSERT(game_ptr);
         SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
         if (!entry.appid.isEmpty()) {

@@ -27,7 +27,7 @@ namespace model_providers {
 
 void PegasusAssets::fill(const Model::Platform& platform)
 {
-    for (Model::Game* const game_ptr : qAsConst(platform.allGames())) {
+    for (Model::Game* const game_ptr : qAsConst(platform.gameList().allGames())) {
         Q_ASSERT(game_ptr);
         fillOne(platform, *game_ptr);
     }

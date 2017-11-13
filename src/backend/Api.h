@@ -20,10 +20,9 @@
 #include "AppCloseType.h"
 #include "api_parts/ApiFilters.h"
 #include "api_parts/ApiMeta.h"
-#include "api_parts/ApiPlatforms.h"
 #include "api_parts/ApiSettings.h"
 #include "api_parts/ApiSystem.h"
-#include "model/Platform.h"
+#include "model/PlatformList.h"
 
 #include <QObject>
 #include <QQmlListProperty>
@@ -42,21 +41,13 @@ class ApiObject : public QObject {
     Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(ApiParts::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(ApiParts::System* system READ system CONSTANT)
+    Q_PROPERTY(Model::PlatformList* platforms READ platformList CONSTANT)
 
     // shortcuts
-    // it feels more natural to use api.platforms and api.platforms[i].games
-    // as a model than api.platforms.all
 
-    Q_PROPERTY(QQmlListProperty<Model::Platform> platforms
-               READ getPlatformsProp
-               NOTIFY platformModelChanged)
     Q_PROPERTY(Model::Platform* currentPlatform
                READ currentPlatform
                NOTIFY currentPlatformChanged)
-    Q_PROPERTY(int currentPlatformIndex
-               READ currentPlatformIndex
-               WRITE setCurrentPlatformIndex
-               NOTIFY currentPlatformIndexChanged)
     Q_PROPERTY(Model::Game* currentGame
                READ currentGame
                NOTIFY currentGameChanged)
@@ -76,19 +67,15 @@ public:
     // subcomponents
     ApiParts::Filters* filters() { return &m_filters; }
     ApiParts::Meta* meta() { return &m_meta; }
-    ApiParts::Platforms* platformTable() { return &m_platforms; }
     ApiParts::Settings* settings() { return &m_settings; }
     ApiParts::System* system() { return &m_system; }
+    Model::PlatformList* platformList() { return &m_platform_list; }
 
     // shortcuts
 
-    QQmlListProperty<Model::Platform> getPlatformsProp() { return m_platforms.getListProp(); }
-    int currentPlatformIndex() const { return m_platforms.currentIndex(); }
-    void setCurrentPlatformIndex(int idx) { m_platforms.setCurrentIndex(idx); }
-
-    Model::Platform* currentPlatform() const { return m_platforms.currentPlatform(); }
+    Model::Platform* currentPlatform() const { return m_platform_list.current(); }
     Model::Game* currentGame() const {
-        return currentPlatform() ? currentPlatform()->currentGame() : nullptr;
+        return currentPlatform() ? currentPlatform()->gameList().current() : nullptr;
     }
 
 signals:
@@ -104,8 +91,6 @@ signals:
     void appCloseRequested(AppCloseType);
 
     // shortcuts
-    void platformModelChanged();
-    void currentPlatformIndexChanged();
     void currentPlatformChanged();
     void currentGameChanged();
 
@@ -117,14 +102,16 @@ public slots:
 private slots:
     // internal communication
     void onScanCompleted();
+    void onFiltersChanged();
 
 private:
     ApiParts::Meta m_meta;
-    ApiParts::Platforms m_platforms;
     ApiParts::System m_system;
     ApiParts::Settings m_settings;
     ApiParts::Filters m_filters;
+    Model::PlatformList m_platform_list;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
+
 };

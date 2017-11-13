@@ -17,6 +17,7 @@
 
 #include "DataFinder.h"
 
+#include "model/Game.h"
 #include "model/Platform.h"
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
@@ -64,7 +65,7 @@ void findGamesByExt(Model::Platform& platform)
     for (const QString& romdir : platform.m_rom_dirs) {
         QDirIterator romdir_it(romdir, platform.m_rom_filters, filters, flags);
         while (romdir_it.hasNext())
-            platform.addGame(romdir_it.next());
+            platform.gameListMut().addGame(romdir_it.next());
     }
 }
 
@@ -74,7 +75,7 @@ void removeEmptyPlatforms(QVector<Model::Platform*>& platforms)
     // could be used here
     QMutableVectorIterator<Model::Platform*> it(platforms);
     while (it.hasNext()) {
-        if (it.next()->allGames().isEmpty()) {
+        if (it.next()->gameList().allGames().isEmpty()) {
             delete it.value();
             it.remove();
         }
@@ -127,9 +128,9 @@ QVector<Model::Platform*> DataFinder::find()
         Model::Platform& platform = *platform_ptr;
 
         runMetadataProviders(platform);
-        platform.sortGames();
+        platform.gameListMut().sortGames();
 
-        emit platformGamesReady(platform.allGames().count());
+        emit platformGamesReady(platform.gameList().allGames().count());
     }
 
     return model;

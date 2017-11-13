@@ -20,14 +20,15 @@ SOURCES += \
     model_providers/Es2Metadata.cpp \
     model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp \
-    api_parts/ApiPlatforms.cpp \
     model/ThemeEntry.cpp \
     model/Locale.cpp \
-    model/Platform.cpp \
-    model/Game.cpp \
     model_providers/AppFiles.cpp \
     model_providers/SteamPlatform.cpp \
-    model_providers/SteamMetadata.cpp
+    model_providers/SteamMetadata.cpp \
+    model/Game.cpp \
+    model/GameList.cpp \
+    model/Platform.cpp \
+    model/PlatformList.cpp
 
 HEADERS += \
     Api.h \
@@ -47,16 +48,17 @@ HEADERS += \
     model_providers/Es2Metadata.h \
     model_providers/Es2PlatformList.h \
     model_providers/PegasusAssets.h \
-    api_parts/ApiPlatforms.h \
     AppCloseType.h \
     model/ThemeEntry.h \
     model/Locale.h \
-    model/Platform.h \
-    model/Game.h \
     model_providers/AppFiles.h \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
-    model_providers/SteamMetadata.h
+    model_providers/SteamMetadata.h \
+    model/Game.h \
+    model/GameList.h \
+    model/Platform.h \
+    model/PlatformList.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

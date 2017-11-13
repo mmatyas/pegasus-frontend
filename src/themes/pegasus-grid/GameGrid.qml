@@ -22,11 +22,12 @@ GridView {
 
     property var platformData: pegasus.currentPlatform
 
-    model: platformData ? platformData.games : 0
+    model: platformData.games.model
     onModelChanged: { firstImageLoaded = false; cellHeightRatio = 0.5; }
 
-    currentIndex: pegasus.currentPlatform.currentGameIndex
-    onCurrentIndexChanged: platformData.currentGameIndex = currentIndex
+    //currentIndex: pegasus.currentPlatform.currentGameIndex
+    currentIndex: pegasus.platforms.current.games.index
+    onCurrentIndexChanged: pegasus.platforms.current.games.index = currentIndex
     Component.onCompleted: positionViewAtIndex(currentIndex, PathView.Center)
 
     // For better visibility, box arts should be displayed in five columns if

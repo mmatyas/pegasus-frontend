@@ -28,32 +28,28 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_system, &ApiParts::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
     connect(&m_filters, &ApiParts::Filters::filtersChanged,
-            [this]{ m_platforms.onFiltersChanged(m_filters); });
+            this, &ApiObject::onFiltersChanged);
 
-    connect(&m_platforms, &ApiParts::Platforms::modelChanged,
-            this, &ApiObject::platformModelChanged);
-    connect(&m_platforms, &ApiParts::Platforms::platformChanged,
-            this, &ApiObject::currentPlatformIndexChanged);
-    connect(&m_platforms, &ApiParts::Platforms::platformChanged,
+    connect(&m_platform_list, &Model::PlatformList::currentChanged,
             this, &ApiObject::currentPlatformChanged);
-    connect(&m_platforms, &ApiParts::Platforms::platformGameChanged,
+    connect(&m_platform_list, &Model::PlatformList::currentPlatformGameChanged,
             this, &ApiObject::currentGameChanged);
-    connect(&m_platforms, &ApiParts::Platforms::scanCompleted,
-            this, &ApiObject::onScanCompleted);
 
-    connect(&m_platforms, &ApiParts::Platforms::newGamesScanned,
+    connect(&m_platform_list, &Model::PlatformList::scanCompleted,
+            this, &ApiObject::onScanCompleted);
+    connect(&m_platform_list, &Model::PlatformList::newGamesScanned,
             &m_meta, &ApiParts::Meta::onNewGamesScanned);
 }
 
 void ApiObject::startScanning()
 {
     m_meta.onScanStarted();
-    m_platforms.startScanning();
+    m_platform_list.startScanning();
 }
 
 void ApiObject::onScanCompleted()
 {
-    m_meta.onScanCompleted(m_platforms.scanDuration());
+    m_meta.onScanCompleted(m_platform_list.scanDuration());
     m_meta.onLoadingCompleted();
 }
 
@@ -82,4 +78,10 @@ void ApiObject::onGameFinished()
 {
     // TODO: this is where play count could be increased
     emit restoreAfterGame(this);
+}
+
+void ApiObject::onFiltersChanged()
+{
+    for (Model::Platform* const platform : m_platform_list.model())
+        platform->gameListMut().applyFilters(m_filters);
 }

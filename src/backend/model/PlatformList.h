@@ -18,42 +18,52 @@
 #pragma once
 
 #include "DataFinder.h"
-#include "model/Platform.h"
+#include "Platform.h"
 
 #include <QObject>
 #include <QFutureWatcher>
 
 
-namespace ApiParts {
+namespace Model {
 
-class Platforms : public QObject {
+class PlatformList : public QObject {
     Q_OBJECT
 
-public:
-    explicit Platforms(QObject* parent = nullptr);
-    ~Platforms();
+    Q_PROPERTY(Model::Platform* current
+               READ current
+               NOTIFY currentChanged)
+    Q_PROPERTY(int index
+               READ index
+               WRITE setIndex
+               NOTIFY currentChanged)
+    Q_PROPERTY(QQmlListProperty<Model::Platform> model
+               READ modelProp
+               CONSTANT)
 
-    int currentIndex() const { return m_platform_idx; }
-    void setCurrentIndex(int);
-    Model::Platform* currentPlatform() const;
-    QQmlListProperty<Model::Platform> getListProp();
+public:
+    explicit PlatformList(QObject* parent = nullptr);
+    ~PlatformList();
+
+    int index() const { return m_platform_idx; }
+    void setIndex(int);
+    Platform* current() const;
+
+    QQmlListProperty<Platform> modelProp();
+    const QVector<Platform*>& model() const { return m_platforms; }
 
     void startScanning();
     qint64 scanDuration() const { return m_last_scan_duration; }
 
 signals:
-    void modelChanged();
-    void platformChanged();
-    void platformGameChanged();
+    //void modelChanged();
+    void currentChanged();
+    void currentPlatformGameChanged();
 
     void newGamesScanned(int game_count);
     void scanCompleted(qint64 elapsedTime);
 
-public slots:
-    void onFiltersChanged(ApiParts::Filters&);
-
 private:
-    QVector<Model::Platform*> m_platforms;
+    QVector<Platform*> m_platforms;
     int m_platform_idx;
 
     // initialization
@@ -65,4 +75,4 @@ private:
     void onPlatformGameChanged(int platformIndex);
 };
 
-} // namespace ApiParts
+} // namespace Model

@@ -15,31 +15,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ApiPlatforms.h"
+#include "PlatformList.h"
 
 #include "ListPropertyFn.h"
 
 #include <QtConcurrent/QtConcurrent>
 
 
-namespace ApiParts {
+namespace Model {
 
-Platforms::Platforms(QObject* parent)
+PlatformList::PlatformList(QObject* parent)
     : QObject(parent)
     , m_platform_idx(-1)
     , m_last_scan_duration(0)
 {
     connect(&m_datafinder, &DataFinder::platformGamesReady,
-            this, &ApiParts::Platforms::newGamesScanned);
+            this, &Model::PlatformList::newGamesScanned);
 }
 
-Platforms::~Platforms()
+PlatformList::~PlatformList()
 {
     for (auto& platform : qAsConst(m_platforms))
         delete platform;
 }
 
-Model::Platform* Platforms::currentPlatform() const
+Model::Platform* PlatformList::current() const
 {
     if (m_platform_idx < 0)
         return nullptr;
@@ -48,7 +48,7 @@ Model::Platform* Platforms::currentPlatform() const
     return m_platforms.at(m_platform_idx);
 }
 
-void Platforms::setCurrentIndex(int idx)
+void PlatformList::setIndex(int idx)
 {
     // Setting the index to a valid value causes changing the current platform
     // and the current game. Setting the index to an invalid value should not
@@ -64,19 +64,19 @@ void Platforms::setCurrentIndex(int idx)
     }
 
     m_platform_idx = idx;
-    emit platformChanged();
-    emit platformGameChanged();
+    emit currentChanged();
+    //emit platformGameChanged();
 }
 
-QQmlListProperty<Model::Platform> Platforms::getListProp()
+QQmlListProperty<Model::Platform> PlatformList::modelProp()
 {
-    static const auto count = &listproperty_count<Model::Platform>;
-    static const auto at = &listproperty_at<Model::Platform>;
+    static const auto count = &listproperty_count<Platform>;
+    static const auto at = &listproperty_at<Platform>;
 
     return {this, &m_platforms, count, at};
 }
 
-void Platforms::startScanning()
+void PlatformList::startScanning()
 {
     // launch the game search on a parallel thread
     QFuture<void> future = QtConcurrent::run([this]{
@@ -87,52 +87,57 @@ void Platforms::startScanning()
         m_last_scan_duration = timer.elapsed();
 
         // set the correct thread for the QObjects
-        for (Model::Platform* const platform : qAsConst(m_platforms))
+        for (Platform* const platform : qAsConst(m_platforms)) {
             platform->moveToThread(thread());
+            platform->gameListMut().moveToThread(thread());
+        }
     });
 
     m_loading_watcher.setFuture(future);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            this, &ApiParts::Platforms::onScanResultsAvailable);
+            this, &Model::PlatformList::onScanResultsAvailable);
 }
 
-void Platforms::onScanResultsAvailable()
+void PlatformList::onScanResultsAvailable()
 {
     // NOTE: `tr` (see below) uses `int`; assuming we have
     //       less than 2 million games, it will be enough
     int game_count = 0;
 
     for (int i = 0; i < m_platforms.length(); i++) {
-        Model::Platform* const platform_ptr = m_platforms.at(i);
+        Platform* const platform_ptr = m_platforms.at(i);
         Q_ASSERT(platform_ptr);
 
-        connect(platform_ptr, &Model::Platform::currentGameChanged,
-                [this, i](){ ApiParts::Platforms::onPlatformGameChanged(i); });
+        //connect(platform_ptr, &Platform::currentGameChanged,
+        //        [this, i](){ PlatformList::onPlatformGameChanged(i); });
+        connect(platform_ptr, &Platform::currentGameChanged,
+                this, &PlatformList::currentPlatformGameChanged);
 
-        Model::Platform& platform = *platform_ptr;
-        platform.lockGameList();
-        game_count += platform.allGames().count();
+        Platform& platform = *platform_ptr;
+        platform.gameListMut().lockGameList();
+        game_count += platform.gameListMut().allGames().count();
     }
     qInfo().noquote() << tr("%n games found", "", game_count);
 
     emit scanCompleted(scanDuration());
-    emit modelChanged();
+    //emit modelChanged();
 
     if (!m_platforms.isEmpty())
-        setCurrentIndex(0);
+        setIndex(0);
 }
-
-void Platforms::onPlatformGameChanged(int idx)
+/*
+void PlatformList::onPlatformGameChanged(int idx)
 {
-    if (idx == currentIndex())
+    if (idx == index())
         emit platformGameChanged();
 }
-
-void Platforms::onFiltersChanged(ApiParts::Filters& filters)
+*/
+/*
+void PlatformList::onFiltersChanged(ApiParts::Filters& filters)
 {
     // TODO: use QtConcurrent::blockingMap here
-    for (Model::Platform* const platform : qAsConst(m_platforms))
+    for (Platform* const platform : qAsConst(m_platforms))
         platform->applyFilters(filters);
 }
-
-} // namespace ApiParts
+*/
+} // namespace Model

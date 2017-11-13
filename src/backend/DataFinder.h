@@ -20,7 +20,6 @@
 #include <QObject>
 #include <QVector>
 
-namespace Model { class Game; }
 namespace Model { class Platform; }
 
 
