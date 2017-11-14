@@ -15,10 +15,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ApiSystem.h"
+#include "System.h"
 
 
-namespace ApiParts {
+namespace Api {
 
 System::System(QObject* parent)
     : QObject(parent)
@@ -30,10 +30,6 @@ void System::quit()
     emit appCloseRequested(AppCloseType::QUIT);
 }
 
-// NOTE: on Linux distros using systemd-logind, local users can
-// reboot and shutdown the system without root privileges. Also
-// see https://wiki.archlinux.org/index.php/Allow_users_to_shutdown
-
 void System::reboot()
 {
     emit appCloseRequested(AppCloseType::REBOOT);
@@ -44,4 +40,4 @@ void System::shutdown()
     emit appCloseRequested(AppCloseType::SHUTDOWN);
 }
 
-} // namespace ApiParts
+} // namespace Api

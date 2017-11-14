@@ -25,7 +25,7 @@ ApiObject::ApiObject(QObject* parent)
 {
     connect(m_settings.localesPtr(), &ApiParts::LocaleSettings::localeChanged,
             this, &ApiObject::localeChanged);
-    connect(&m_system, &ApiParts::System::appCloseRequested,
+    connect(&m_system, &Api::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
     connect(&m_filters, &ApiParts::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);

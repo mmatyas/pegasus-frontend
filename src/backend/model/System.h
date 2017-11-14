@@ -22,8 +22,7 @@
 #include <QObject>
 
 
-namespace ApiParts {
-
+namespace Api {
 
 /// Provides a set of system calls for the frontend
 class System : public QObject {
@@ -40,4 +39,4 @@ signals:
     void appCloseRequested(AppCloseType);
 };
 
-} // namespace ApiParts
+} // namespace Api

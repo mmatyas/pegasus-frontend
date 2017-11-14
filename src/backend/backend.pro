@@ -16,7 +16,6 @@ SOURCES += \
     api_parts/ApiFilters.cpp \
     api_parts/ApiMeta.cpp \
     api_parts/ApiSettings.cpp \
-    api_parts/ApiSystem.cpp \
     model_providers/Es2Metadata.cpp \
     model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp \
@@ -25,6 +24,7 @@ SOURCES += \
     model_providers/AppFiles.cpp \
     model_providers/SteamPlatform.cpp \
     model_providers/SteamMetadata.cpp \
+    model/System.cpp \
     model/Game.cpp \
     model/GameList.cpp \
     model/Platform.cpp \
@@ -42,7 +42,6 @@ HEADERS += \
     api_parts/ApiFilters.h \
     api_parts/ApiMeta.h \
     api_parts/ApiSettings.h \
-    api_parts/ApiSystem.h \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
     model_providers/Es2Metadata.h \
@@ -55,6 +54,7 @@ HEADERS += \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
     model_providers/SteamMetadata.h \
+    model/System.h \
     model/Game.h \
     model/GameList.h \
     model/Platform.h \
