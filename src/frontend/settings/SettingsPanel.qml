@@ -89,7 +89,7 @@ FocusScope {
                 value: pegasus.settings.locales.current.name
 
                 onActivate: {
-                    multivalbox.model = pegasus.settings.locales.all;
+                    multivalbox.model = pegasus.settings.locales.model;
                     multivalbox.index = pegasus.settings.locales.index;
                     multivalbox.onChangeCallback = function() {
                         pegasus.settings.locales.index = multivalbox.index;
@@ -109,7 +109,7 @@ FocusScope {
                 value: pegasus.settings.themes.current.name
 
                 onActivate: {
-                    multivalbox.model = pegasus.settings.themes.all;
+                    multivalbox.model = pegasus.settings.themes.model;
                     multivalbox.index = pegasus.settings.themes.index;
                     multivalbox.onChangeCallback = function() {
                         pegasus.settings.themes.index = multivalbox.index;

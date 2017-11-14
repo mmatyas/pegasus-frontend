@@ -15,10 +15,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ThemeEntry.h"
+#include "Theme.h"
 
 
-namespace Model {
+namespace Api {
 
 Theme::Theme(QString root_dir, QString root_qml, QString name,
              QString author, QString version, QString summary, QString description,
@@ -38,4 +38,4 @@ int Theme::compare(const Theme& other) const
     return QString::localeAwareCompare(m_name, other.m_name);
 }
 
-} // namespace Model
+} // namespace Api

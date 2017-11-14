@@ -17,28 +17,45 @@
 
 #pragma once
 
+#include "Theme.h"
+
 #include <QObject>
-#include <QString>
+#include <QQmlListProperty>
+#include <QVector>
 
 
 namespace Api {
 
-/// An utility class to contain language informations
-class Locale : public QObject {
+class ThemeList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString tag READ tag CONSTANT)
-    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(Api::Theme* current
+               READ current
+               NOTIFY themeChanged)
+    Q_PROPERTY(int index
+               READ index WRITE setIndex
+               NOTIFY themeChanged)
+    Q_PROPERTY(QQmlListProperty<Api::Theme> model
+               READ getListProp CONSTANT)
 
 public:
-    explicit Locale(QString bcp47tag, QObject* parent = nullptr);
+    explicit ThemeList(QObject* parent);
 
-    const QString tag() const { return m_bcp47tag; }
-    const QString name() const { return m_name; }
+    Theme* current() const { return m_themes.at(index()); }
+    int index() const { return m_theme_idx; }
+    void setIndex(int idx);
+    QQmlListProperty<Theme> getListProp();
+
+signals:
+    void themeChanged();
 
 private:
-    const QString m_bcp47tag;
-    const QString m_name;
+    QVector<Theme*> m_themes;
+    int m_theme_idx;
+
+    void selectPreferredTheme();
+    void printChangeMsg() const;
+    int indexOfTheme(const QString&) const;
 };
 
 } // namespace Api

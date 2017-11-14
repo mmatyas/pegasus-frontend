@@ -17,28 +17,45 @@
 
 #pragma once
 
+#include "model/LocaleList.h"
+#include "model/ThemeList.h"
+
 #include <QObject>
-#include <QString>
 
 
 namespace Api {
 
-/// An utility class to contain language informations
-class Locale : public QObject {
+/// Provides a settings interface for the frontend layer
+class Settings : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString tag READ tag CONSTANT)
-    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool fullscreen
+               READ fullscreen
+               WRITE setFullscreen
+               NOTIFY fullscreenChanged)
+    Q_PROPERTY(Api::LocaleList* locales READ localesPtr CONSTANT)
+    Q_PROPERTY(Api::ThemeList* themes READ themesPtr CONSTANT)
 
 public:
-    explicit Locale(QString bcp47tag, QObject* parent = nullptr);
+    explicit Settings(QObject* parent = nullptr);
 
-    const QString tag() const { return m_bcp47tag; }
-    const QString name() const { return m_name; }
+    bool fullscreen() const { return m_fullscreen; }
+    void setFullscreen(bool);
+
+    LocaleList* localesPtr() { return &m_locales; }
+    ThemeList* themesPtr() { return &m_themes; }
+
+signals:
+    void fullscreenChanged();
+
+private slots:
+    void callScripts();
 
 private:
-    const QString m_bcp47tag;
-    const QString m_name;
+    bool m_fullscreen;
+
+    LocaleList m_locales;
+    ThemeList m_themes;
 };
 
 } // namespace Api

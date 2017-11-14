@@ -23,7 +23,7 @@
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
 {
-    connect(m_settings.localesPtr(), &ApiParts::LocaleSettings::localeChanged,
+    connect(m_settings.localesPtr(), &Api::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
     connect(&m_system, &Api::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
