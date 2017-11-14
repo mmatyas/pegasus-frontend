@@ -17,13 +17,10 @@
 
 #include "Game.h"
 
-#include "api_parts/ApiFilters.h"
-
-#include <QDebug>
 #include <QFileInfo>
 
 
-namespace Model {
+namespace Types {
 
 GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
@@ -59,4 +56,4 @@ Game::Game(QString path, QObject* parent)
     Q_ASSERT(m_assets);
 }
 
-} // namespace Model
+} // namespace Types

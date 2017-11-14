@@ -17,7 +17,7 @@
 
 #include "SteamPlatform.h"
 
-#include "model/Platform.h"
+#include "types/Platform.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -114,7 +114,7 @@ SteamPlatform::SteamPlatform()
 {
 }
 
-QVector<Model::Platform*> SteamPlatform::find()
+QVector<Types::Platform*> SteamPlatform::find()
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())
@@ -130,8 +130,8 @@ QVector<Model::Platform*> SteamPlatform::find()
         return {};
     }
 
-    QVector<Model::Platform*> result;
-    result.push_back(new Model::Platform(
+    QVector<Types::Platform*> result;
+    result.push_back(new Types::Platform(
         QLatin1String("steam"),
         installdirs,
         QStringList(QLatin1String("appmanifest_*.acf"))

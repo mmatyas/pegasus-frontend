@@ -23,22 +23,22 @@
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
 {
-    connect(m_settings.localesPtr(), &Api::LocaleList::localeChanged,
+    connect(m_settings.localesPtr(), &Types::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
-    connect(&m_system, &Api::System::appCloseRequested,
+    connect(&m_system, &Types::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
-    connect(&m_filters, &Api::Filters::filtersChanged,
+    connect(&m_filters, &Types::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
 
-    connect(&m_platform_list, &Model::PlatformList::currentChanged,
+    connect(&m_platform_list, &Types::PlatformList::currentChanged,
             this, &ApiObject::currentPlatformChanged);
-    connect(&m_platform_list, &Model::PlatformList::currentPlatformGameChanged,
+    connect(&m_platform_list, &Types::PlatformList::currentPlatformGameChanged,
             this, &ApiObject::currentGameChanged);
 
-    connect(&m_platform_list, &Model::PlatformList::scanCompleted,
+    connect(&m_platform_list, &Types::PlatformList::scanCompleted,
             this, &ApiObject::onScanCompleted);
-    connect(&m_platform_list, &Model::PlatformList::newGamesScanned,
-            &m_meta, &Api::Meta::onNewGamesScanned);
+    connect(&m_platform_list, &Types::PlatformList::newGamesScanned,
+            &m_meta, &Types::Meta::onNewGamesScanned);
 }
 
 void ApiObject::startScanning()
@@ -82,6 +82,6 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onFiltersChanged()
 {
-    for (Model::Platform* const platform : m_platform_list.model())
+    for (Types::Platform* const platform : m_platform_list.model())
         platform->gameListMut().applyFilters(m_filters);
 }

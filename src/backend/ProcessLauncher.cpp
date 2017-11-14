@@ -18,7 +18,7 @@
 #include "ProcessLauncher.h"
 
 #include "ScriptRunner.h"
-#include "model/Platform.h"
+#include "types/Platform.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -32,7 +32,7 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::launchGame(const Model::Platform* platform, const Model::Game* game)
+void ProcessLauncher::launchGame(const Types::Platform* platform, const Types::Game* game)
 {
     // games can be launched using either a command common for the platform,
     // or one specific for the game
@@ -49,7 +49,7 @@ void ProcessLauncher::launchGame(const Model::Platform* platform, const Model::G
     emit processFinished();
 }
 
-QString ProcessLauncher::createLaunchCommand(const Model::Platform* platform, const Model::Game* game)
+QString ProcessLauncher::createLaunchCommand(const Types::Platform* platform, const Types::Game* game)
 {
     enum class ParamType : unsigned char {
         PATH,

@@ -24,7 +24,7 @@
 #include <QQmlListProperty>
 
 
-namespace Model {
+namespace Types {
 
 class GameAssets : public QObject {
     Q_OBJECT
@@ -93,7 +93,7 @@ class Game : public QObject {
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
     Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
     Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
-    Q_PROPERTY(Model::GameAssets* assets READ assets CONSTANT)
+    Q_PROPERTY(Types::GameAssets* assets READ assets CONSTANT)
 
 public:
     explicit Game(QString path, QObject* parent = nullptr);
@@ -126,4 +126,4 @@ private:
     GameAssets* m_assets;
 };
 
-} // namespace Model
+} // namespace Types

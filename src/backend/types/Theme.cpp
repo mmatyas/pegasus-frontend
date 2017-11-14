@@ -15,16 +15,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Filters.h"
+#include "Theme.h"
 
 
-namespace Api {
+namespace Types {
 
-Filters::Filters(QObject* parent)
+Theme::Theme(QString root_dir, QString root_qml, QString name,
+             QString author, QString version, QString summary, QString description,
+             QObject* parent)
     : QObject(parent)
-    , m_favorite(false)
-    , m_player_count(1)
+    , m_root_dir(std::move(root_dir))
+    , m_root_qml(std::move(root_qml))
+    , m_name(std::move(name))
+    , m_author(std::move(author))
+    , m_version(std::move(version))
+    , m_summary(std::move(summary))
+    , m_description(std::move(description))
+{}
+
+int Theme::compare(const Theme& other) const
 {
+    return QString::localeAwareCompare(m_name, other.m_name);
 }
 
-} // namespace Api
+} // namespace Types

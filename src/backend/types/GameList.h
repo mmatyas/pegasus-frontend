@@ -22,25 +22,25 @@
 #include <QObject>
 #include <QQmlListProperty>
 
-namespace Api { class Filters; }
+namespace Types { class Filters; }
 
 
-namespace Model {
+namespace Types {
 
 class GameList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(Model::Game* current
+    Q_PROPERTY(Types::Game* current
                READ current
                NOTIFY currentChanged)
     Q_PROPERTY(int index
                READ index
                WRITE setIndex
                NOTIFY currentChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Game> model
+    Q_PROPERTY(QQmlListProperty<Types::Game> model
                READ getFilteredGamesProp
                NOTIFY filteredGamesChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Game> modelAll
+    Q_PROPERTY(QQmlListProperty<Types::Game> modelAll
                READ getAllGamesProp
                CONSTANT)
 
@@ -58,7 +58,7 @@ public:
     // backend-side functions
 
     void clearFilters();
-    void applyFilters(const Api::Filters&);
+    void applyFilters(const Filters&);
 
     void addGame(QString path);
     void sortGames();
@@ -82,4 +82,4 @@ private:
 #endif
 };
 
-} // namespace Model
+} // namespace Types

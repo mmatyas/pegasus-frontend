@@ -17,26 +17,28 @@
 
 #pragma once
 
-#include "AppCloseType.h"
-
 #include <QObject>
+#include <QString>
 
 
-namespace Api {
+namespace Types {
 
-/// Provides a set of system calls for the frontend
-class System : public QObject {
+/// An utility class to contain language informations
+class Locale : public QObject {
     Q_OBJECT
 
+    Q_PROPERTY(QString tag READ tag CONSTANT)
+    Q_PROPERTY(QString name READ name CONSTANT)
+
 public:
-    explicit System(QObject* parent = nullptr);
+    explicit Locale(QString bcp47tag, QObject* parent = nullptr);
 
-    Q_INVOKABLE void quit();
-    Q_INVOKABLE void reboot();
-    Q_INVOKABLE void shutdown();
+    const QString tag() const { return m_bcp47tag; }
+    const QString name() const { return m_name; }
 
-signals:
-    void appCloseRequested(AppCloseType);
+private:
+    const QString m_bcp47tag;
+    const QString m_name;
 };
 
-} // namespace Api
+} // namespace Types

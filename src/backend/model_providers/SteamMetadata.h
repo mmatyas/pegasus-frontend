@@ -28,7 +28,7 @@ namespace model_providers {
 
 class SteamMetadata : public MetadataProvider {
 public:
-    void fill(const Model::Platform&) final;
+    void fill(const Types::Platform&) final;
 };
 
 } // namespace model_providers

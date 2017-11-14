@@ -15,17 +15,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Locale.h"
+#pragma once
 
-#include <QLocale>
+#include <QObject>
 
 
-namespace Api {
+namespace Types {
 
-Locale::Locale(QString bcp47tag, QObject* parent)
-    : QObject(parent)
-    , m_bcp47tag(std::move(bcp47tag))
-    , m_name(QLocale(m_bcp47tag).nativeLanguageName())
-{}
+/// Stores parameters to filter the list of games
+class Filters : public QObject {
+    Q_OBJECT
 
-} // namespace Api
+    Q_PROPERTY(QString title MEMBER m_title NOTIFY filtersChanged)
+    Q_PROPERTY(int playerCount MEMBER m_player_count NOTIFY filtersChanged)
+    Q_PROPERTY(bool favorite MEMBER m_favorite NOTIFY filtersChanged)
+
+public:
+    explicit Filters(QObject* parent = nullptr);
+
+    QString m_title;
+    bool m_favorite;
+    int m_player_count;
+
+signals:
+    void filtersChanged();
+};
+
+} // namespace Types

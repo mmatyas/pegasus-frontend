@@ -22,7 +22,7 @@
 #include <QStandardPaths>
 
 
-namespace Api {
+namespace Types {
 
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 
@@ -71,4 +71,4 @@ void Meta::onNewGamesScanned(int game_count)
     }
 }
 
-} // namespace Api
+} // namespace Types

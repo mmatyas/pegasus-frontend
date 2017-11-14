@@ -24,7 +24,7 @@
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
 #include "SystemCommands.h"
-#include "model/Platform.h"
+//#include "types/Platform.h"
 
 #include <QDir>
 #include <QFile>
@@ -84,15 +84,15 @@ void registerAPIClasses()
 
     const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
 
-    qmlRegisterUncreatableType<Model::Game>(API_URI, 0, 2, "Game", error_msg);
-    qmlRegisterUncreatableType<Model::GameList>(API_URI, 0, 6, "GameList", error_msg);
-    qmlRegisterUncreatableType<Model::Platform>(API_URI, 0, 2, "Platform", error_msg);
-    qmlRegisterUncreatableType<Model::PlatformList>(API_URI, 0, 6, "PlatformList", error_msg);
-    qmlRegisterUncreatableType<Model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
-    qmlRegisterUncreatableType<Api::Locale>(API_URI, 0, 6, "Locale", error_msg);
-    qmlRegisterUncreatableType<Api::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
-    qmlRegisterUncreatableType<Api::Theme>(API_URI, 0, 6, "Theme", error_msg);
-    qmlRegisterUncreatableType<Api::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
+    qmlRegisterUncreatableType<Types::Game>(API_URI, 0, 2, "Game", error_msg);
+    qmlRegisterUncreatableType<Types::GameList>(API_URI, 0, 6, "GameList", error_msg);
+    qmlRegisterUncreatableType<Types::Platform>(API_URI, 0, 2, "Platform", error_msg);
+    qmlRegisterUncreatableType<Types::PlatformList>(API_URI, 0, 6, "PlatformList", error_msg);
+    qmlRegisterUncreatableType<Types::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
+    qmlRegisterUncreatableType<Types::Locale>(API_URI, 0, 6, "Locale", error_msg);
+    qmlRegisterUncreatableType<Types::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
+    qmlRegisterUncreatableType<Types::Theme>(API_URI, 0, 6, "Theme", error_msg);
+    qmlRegisterUncreatableType<Types::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
 }
 
 void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)

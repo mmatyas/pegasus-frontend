@@ -28,21 +28,21 @@ namespace model_providers {
 
 class Es2Metadata : public MetadataProvider {
 public:
-    void fill(const Model::Platform&) final;
+    void fill(const Types::Platform&) final;
 
 private:
     /// returns the path to the metadata file, or an empty string
-    QString findGamelistFile(const Model::Platform&);
+    QString findGamelistFile(const Types::Platform&);
 
     /// processes the metadata file, filling up the games in the process
-    void parseGamelistFile(QXmlStreamReader&, const Model::Platform&);
+    void parseGamelistFile(QXmlStreamReader&, const Types::Platform&);
     /// processes one <game> node, checks if there is a matching game,
     /// and fills its entry with metadata on success
-    void parseGameEntry(QXmlStreamReader&, const Model::Platform&,
-                        QHash<QString, Model::Game*>&);
+    void parseGameEntry(QXmlStreamReader&, const Types::Platform&,
+                        QHash<QString, Types::Game*>&);
 
     /// fills a game with metadata
-    void applyMetadata(Model::Game&, const Model::Platform&, const QHash<QString, QString>&);
+    void applyMetadata(Types::Game&, const Types::Platform&, const QHash<QString, QString>&);
 
     /// replaces leading `~` with the home dir and makes paths starting
     /// with dot(s) be relative to a root dir

@@ -37,8 +37,8 @@ void test_Api::initialState()
 
     ApiObject api;
 
-    QCOMPARE(api.currentPlatform(), static_cast<Model::Platform*>(nullptr));
-    QCOMPARE(api.currentGame(), static_cast<Model::Game*>(nullptr));
+    QCOMPARE(api.currentPlatform(), static_cast<Types::Platform*>(nullptr));
+    QCOMPARE(api.currentGame(), static_cast<Types::Game*>(nullptr));
 }
 
 

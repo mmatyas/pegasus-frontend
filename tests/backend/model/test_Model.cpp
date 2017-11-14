@@ -17,8 +17,8 @@
 
 #include <QtTest/QtTest>
 
-#include "model/Filters.h"
-#include "model/Platform.h"
+#include "types/Filters.h"
+#include "types/Platform.h"
 
 
 class test_Model : public QObject
@@ -41,20 +41,20 @@ private slots:
     void assetsAppendMulti();
 
 private:
-    void prepareTestPlatform(Model::Platform&, QSignalSpy&, QSignalSpy&);
+    void prepareTestPlatform(Types::Platform&, QSignalSpy&, QSignalSpy&);
 };
 
 void test_Model::platformNullGame()
 {
-    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
+    Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
 
     // for some reason, using simply nullptr causes a build error (Qt 5.7)
 
-    QCOMPARE(platform.gameList().current(), static_cast<Model::Game*>(nullptr));
+    QCOMPARE(platform.gameList().current(), static_cast<Types::Game*>(nullptr));
     QCOMPARE(platform.gameList().index(), -1);
 }
 
-void test_Model::prepareTestPlatform(Model::Platform& platform,
+void test_Model::prepareTestPlatform(Types::Platform& platform,
                                      QSignalSpy& spy_idx, QSignalSpy& spy_game)
 {
     // add two games, then lock the list;
@@ -69,7 +69,7 @@ void test_Model::prepareTestPlatform(Model::Platform& platform,
     platform.gameListMut().lockGameList();
 
     QVERIFY(platform.gameList().games().count() == 2);
-    QVERIFY(platform.gameList().current() != static_cast<Model::Game*>(nullptr));
+    QVERIFY(platform.gameList().current() != static_cast<Types::Game*>(nullptr));
     QVERIFY(platform.gameList().current() == platform.gameList().games().first());
     QVERIFY(platform.gameList().index() == 0);
     QVERIFY(spy_idx.count() == 1);
@@ -92,10 +92,10 @@ void test_Model::platformSetIndex()
 {
     // prepare
 
-    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    Model::GameList& gameList = platform.gameListMut();
-    QSignalSpy index_triggered(&gameList, &Model::GameList::currentChanged);
-    QSignalSpy game_triggered(&gameList, &Model::GameList::currentChanged);
+    Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
+    Types::GameList& gameList = platform.gameListMut();
+    QSignalSpy index_triggered(&gameList, &Types::GameList::currentChanged);
+    QSignalSpy game_triggered(&gameList, &Types::GameList::currentChanged);
 
     prepareTestPlatform(platform, index_triggered, game_triggered);
 
@@ -111,7 +111,7 @@ void test_Model::platformSetIndex()
 
     if (index == -1) {
         // -1 makes it undefined
-        QCOMPARE(gameList.current(), static_cast<Model::Game*>(nullptr));
+        QCOMPARE(gameList.current(), static_cast<Types::Game*>(nullptr));
         QCOMPARE(gameList.index(), -1);
     }
     else {
@@ -126,8 +126,8 @@ void test_Model::platformSetIndex()
 
 void test_Model::platformAppendGame()
 {
-    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    Model::GameList& gameList = platform.gameListMut();
+    Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
+    Types::GameList& gameList = platform.gameListMut();
     QVERIFY(gameList.games().isEmpty());
 
     gameList.addGame("a");
@@ -140,8 +140,8 @@ void test_Model::platformAppendGame()
 
 void test_Model::platformSortGames()
 {
-    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    Model::GameList& gameList = platform.gameListMut();
+    Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
+    Types::GameList& gameList = platform.gameListMut();
     QVERIFY(gameList.games().isEmpty());
 
     gameList.addGame("bbb");
@@ -171,9 +171,9 @@ void test_Model::platformApplyFilters_data()
 
 void test_Model::platformApplyFilters()
 {
-    Model::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
-    Model::GameList& gameList = platform.gameListMut();
-    QSignalSpy triggered(&gameList, &Model::GameList::filteredGamesChanged);
+    Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
+    Types::GameList& gameList = platform.gameListMut();
+    QSignalSpy triggered(&gameList, &Types::GameList::filteredGamesChanged);
     QVERIFY(triggered.isValid());
 
     gameList.addGame("file1");
@@ -209,7 +209,7 @@ void test_Model::platformApplyFilters()
     QFETCH(int, player_cnt);
     QFETCH(int, matching_games_cnt);
 
-    Api::Filters filters;
+    Types::Filters filters;
         filters.m_title = title;
         filters.m_favorite = favorite;
         filters.m_player_count = player_cnt;
@@ -228,7 +228,7 @@ void test_Model::platformApplyFilters()
 
 void test_Model::assetsSetSingle()
 {
-    Model::GameAssets assets;
+    Types::GameAssets assets;
     QCOMPARE(assets.boxFront(), QString());
 
     assets.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
@@ -237,7 +237,7 @@ void test_Model::assetsSetSingle()
 
 void test_Model::assetsAppendMulti()
 {
-    Model::GameAssets assets;
+    Types::GameAssets assets;
     QCOMPARE(assets.videos().count(), 0);
 
     assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile("/dummy").toString());

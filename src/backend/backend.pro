@@ -19,18 +19,18 @@ SOURCES += \
     model_providers/AppFiles.cpp \
     model_providers/SteamPlatform.cpp \
     model_providers/SteamMetadata.cpp \
-    model/Game.cpp \
-    model/GameList.cpp \
-    model/Filters.cpp \
-    model/Locale.cpp \
-    model/LocaleList.cpp \
-    model/Meta.cpp \
-    model/Platform.cpp \
-    model/PlatformList.cpp \
-    model/Settings.cpp \
-    model/System.cpp \
-    model/Theme.cpp \
-    model/ThemeList.cpp
+    types/Game.cpp \
+    types/GameList.cpp \
+    types/Filters.cpp \
+    types/Locale.cpp \
+    types/LocaleList.cpp \
+    types/Meta.cpp \
+    types/Platform.cpp \
+    types/PlatformList.cpp \
+    types/Settings.cpp \
+    types/System.cpp \
+    types/Theme.cpp \
+    types/ThemeList.cpp
 
 HEADERS += \
     Api.h \
@@ -51,18 +51,18 @@ HEADERS += \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
     model_providers/SteamMetadata.h \
-    model/Filters.h \
-    model/Game.h \
-    model/GameList.h \
-    model/Platform.h \
-    model/PlatformList.h \
-    model/Locale.h \
-    model/LocaleList.h \
-    model/Meta.h \
-    model/Settings.h \
-    model/System.h \
-    model/Theme.h \
-    model/ThemeList.h
+    types/Filters.h \
+    types/Game.h \
+    types/GameList.h \
+    types/Platform.h \
+    types/PlatformList.h \
+    types/Locale.h \
+    types/LocaleList.h \
+    types/Meta.h \
+    types/Settings.h \
+    types/System.h \
+    types/Theme.h \
+    types/ThemeList.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

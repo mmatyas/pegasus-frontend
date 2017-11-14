@@ -18,22 +18,22 @@
 #include "PegasusAssets.h"
 
 #include "Utils.h"
-#include "model/Platform.h"
+#include "types/Platform.h"
 
 #include <QStringBuilder>
 
 
 namespace model_providers {
 
-void PegasusAssets::fill(const Model::Platform& platform)
+void PegasusAssets::fill(const Types::Platform& platform)
 {
-    for (Model::Game* const game_ptr : qAsConst(platform.gameList().allGames())) {
+    for (Types::Game* const game_ptr : qAsConst(platform.gameList().allGames())) {
         Q_ASSERT(game_ptr);
         fillOne(platform, *game_ptr);
     }
 }
 
-void PegasusAssets::fillOne(const Model::Platform& platform, const Model::Game& game)
+void PegasusAssets::fillOne(const Types::Platform& platform, const Types::Game& game)
 {
     Q_ASSERT(!platform.m_rom_dirs.isEmpty());
 
@@ -49,7 +49,7 @@ void PegasusAssets::fillOne(const Model::Platform& platform, const Model::Game& 
 
     // shortcut for the assets member
     Q_ASSERT(game.assets());
-    Model::GameAssets& assets = *game.assets();
+    Types::GameAssets& assets = *game.assets();
 
     for (auto asset_type : Assets::singleTypes) {
         // the portable asset search is always the first,

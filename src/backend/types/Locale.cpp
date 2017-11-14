@@ -15,30 +15,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "Locale.h"
 
-#include <QObject>
-#include <QString>
+#include <QLocale>
 
 
-namespace Api {
+namespace Types {
 
-/// An utility class to contain language informations
-class Locale : public QObject {
-    Q_OBJECT
+Locale::Locale(QString bcp47tag, QObject* parent)
+    : QObject(parent)
+    , m_bcp47tag(std::move(bcp47tag))
+    , m_name(QLocale(m_bcp47tag).nativeLanguageName())
+{}
 
-    Q_PROPERTY(QString tag READ tag CONSTANT)
-    Q_PROPERTY(QString name READ name CONSTANT)
-
-public:
-    explicit Locale(QString bcp47tag, QObject* parent = nullptr);
-
-    const QString tag() const { return m_bcp47tag; }
-    const QString name() const { return m_name; }
-
-private:
-    const QString m_bcp47tag;
-    const QString m_name;
-};
-
-} // namespace Api
+} // namespace Types

@@ -17,8 +17,8 @@
 
 #include "DataFinder.h"
 
-#include "model/Game.h"
-#include "model/Platform.h"
+#include "types/Game.h"
+#include "types/Platform.h"
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"
 #include "model_providers/PegasusAssets.h"
@@ -34,9 +34,9 @@
 
 namespace {
 
-QVector<Model::Platform*> runPlatformListProviders()
+QVector<Types::Platform*> runPlatformListProviders()
 {
-    QVector<Model::Platform*> model;
+    QVector<Types::Platform*> model;
 
     using ProviderPtr = std::unique_ptr<model_providers::PlatformListProvider>;
     std::vector<ProviderPtr> providers;
@@ -52,7 +52,7 @@ QVector<Model::Platform*> runPlatformListProviders()
     return model;
 }
 
-void findGamesByExt(Model::Platform& platform)
+void findGamesByExt(Types::Platform& platform)
 {
     // TODO: handle empty rom filter list
 
@@ -69,11 +69,11 @@ void findGamesByExt(Model::Platform& platform)
     }
 }
 
-void removeEmptyPlatforms(QVector<Model::Platform*>& platforms)
+void removeEmptyPlatforms(QVector<Types::Platform*>& platforms)
 {
     // NOTE: if this turns out to be slow, STL iterators
     // could be used here
-    QMutableVectorIterator<Model::Platform*> it(platforms);
+    QMutableVectorIterator<Types::Platform*> it(platforms);
     while (it.hasNext()) {
         if (it.next()->gameList().allGames().isEmpty()) {
             delete it.value();
@@ -82,7 +82,7 @@ void removeEmptyPlatforms(QVector<Model::Platform*>& platforms)
     }
 }
 
-void runMetadataProviders(const Model::Platform& platform)
+void runMetadataProviders(const Types::Platform& platform)
 {
     // NOTE: Qt containers have some troubles with move semantics
     // TODO: do not recreate the providers for each platform every time
@@ -107,25 +107,25 @@ DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
 {}
 
-QVector<Model::Platform*> DataFinder::find()
+QVector<Types::Platform*> DataFinder::find()
 {
     // TODO: map-reduce algorithms might be usable here
     // TODO: mergeDuplicatePlatforms(model);
 
-    QVector<Model::Platform*> model = runPlatformListProviders();
+    QVector<Types::Platform*> model = runPlatformListProviders();
 
-    for (Model::Platform* const platform_ptr : qAsConst(model)) {
+    for (Types::Platform* const platform_ptr : qAsConst(model)) {
         Q_ASSERT(platform_ptr);
-        Model::Platform& platform = *platform_ptr;
+        Types::Platform& platform = *platform_ptr;
 
         findGamesByExt(platform);
     }
 
     removeEmptyPlatforms(model);
 
-    for (Model::Platform* const platform_ptr : qAsConst(model)) {
+    for (Types::Platform* const platform_ptr : qAsConst(model)) {
         Q_ASSERT(platform_ptr);
-        Model::Platform& platform = *platform_ptr;
+        Types::Platform& platform = *platform_ptr;
 
         runMetadataProviders(platform);
         platform.gameListMut().sortGames();

@@ -17,28 +17,26 @@
 
 #pragma once
 
+#include "AppCloseType.h"
+
 #include <QObject>
 
 
-namespace Api {
+namespace Types {
 
-/// Stores parameters to filter the list of games
-class Filters : public QObject {
+/// Provides a set of system calls for the frontend
+class System : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString title MEMBER m_title NOTIFY filtersChanged)
-    Q_PROPERTY(int playerCount MEMBER m_player_count NOTIFY filtersChanged)
-    Q_PROPERTY(bool favorite MEMBER m_favorite NOTIFY filtersChanged)
-
 public:
-    explicit Filters(QObject* parent = nullptr);
+    explicit System(QObject* parent = nullptr);
 
-    QString m_title;
-    bool m_favorite;
-    int m_player_count;
+    Q_INVOKABLE void quit();
+    Q_INVOKABLE void reboot();
+    Q_INVOKABLE void shutdown();
 
 signals:
-    void filtersChanged();
+    void appCloseRequested(AppCloseType);
 };
 
-} // namespace Api
+} // namespace Types

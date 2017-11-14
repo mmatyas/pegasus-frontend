@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "model/LocaleList.h"
-#include "model/ThemeList.h"
+#include "LocaleList.h"
+#include "ThemeList.h"
 
 #include <QObject>
 
 
-namespace Api {
+namespace Types {
 
 /// Provides a settings interface for the frontend layer
 class Settings : public QObject {
@@ -33,8 +33,8 @@ class Settings : public QObject {
                READ fullscreen
                WRITE setFullscreen
                NOTIFY fullscreenChanged)
-    Q_PROPERTY(Api::LocaleList* locales READ localesPtr CONSTANT)
-    Q_PROPERTY(Api::ThemeList* themes READ themesPtr CONSTANT)
+    Q_PROPERTY(Types::LocaleList* locales READ localesPtr CONSTANT)
+    Q_PROPERTY(Types::ThemeList* themes READ themesPtr CONSTANT)
 
 public:
     explicit Settings(QObject* parent = nullptr);
@@ -58,4 +58,4 @@ private:
     ThemeList m_themes;
 };
 
-} // namespace Api
+} // namespace Types

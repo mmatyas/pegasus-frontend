@@ -17,7 +17,7 @@
 
 #include "SteamMetadata.h"
 
-#include "model/Platform.h"
+#include "types/Platform.h"
 
 #include <QDebug>
 #include <QDir>
@@ -42,7 +42,7 @@ namespace {
 struct SteamGameEntry {
     QString title;
     QString appid;
-    Model::Game* game_ptr;
+    Types::Game* game_ptr;
 
     SteamGameEntry() : game_ptr(nullptr) {}
 
@@ -109,7 +109,7 @@ QString join_json_array(const QJsonArray& arr)
     return result;
 }
 
-bool read_json(Model::Game& game, const QByteArray& bytes)
+bool read_json(Types::Game& game, const QByteArray& bytes)
 {
     const auto json = QJsonDocument::fromJson(bytes);
     if (json.isNull())
@@ -133,7 +133,7 @@ bool read_json(Model::Game& game, const QByteArray& bytes)
 
     // now the actual field reading
 
-    Model::GameAssets& assets = *game.assets();
+    Types::GameAssets& assets = *game.assets();
 
     game.m_title = app_data[QLatin1String("name")].toString();
 
@@ -317,7 +317,7 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
 namespace model_providers {
 
-void SteamMetadata::fill(const Model::Platform& platform)
+void SteamMetadata::fill(const Types::Platform& platform)
 {
     if (platform.m_short_name != QLatin1Literal("steam"))
         return;
@@ -328,7 +328,7 @@ void SteamMetadata::fill(const Model::Platform& platform)
 
     std::vector<SteamGameEntry> entries;
 
-    for (Model::Game* const game_ptr : platform.gameList().allGames()) {
+    for (Types::Game* const game_ptr : platform.gameList().allGames()) {
         Q_ASSERT(game_ptr);
         SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
         if (!entry.appid.isEmpty()) {

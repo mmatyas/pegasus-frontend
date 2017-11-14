@@ -22,7 +22,7 @@
 #include <QtConcurrent/QtConcurrent>
 
 
-namespace Model {
+namespace Types {
 
 PlatformList::PlatformList(QObject* parent)
     : QObject(parent)
@@ -30,7 +30,7 @@ PlatformList::PlatformList(QObject* parent)
     , m_last_scan_duration(0)
 {
     connect(&m_datafinder, &DataFinder::platformGamesReady,
-            this, &Model::PlatformList::newGamesScanned);
+            this, &PlatformList::newGamesScanned);
 }
 
 PlatformList::~PlatformList()
@@ -39,7 +39,7 @@ PlatformList::~PlatformList()
         delete platform;
 }
 
-Model::Platform* PlatformList::current() const
+Platform* PlatformList::current() const
 {
     if (m_platform_idx < 0)
         return nullptr;
@@ -68,7 +68,7 @@ void PlatformList::setIndex(int idx)
     //emit platformGameChanged();
 }
 
-QQmlListProperty<Model::Platform> PlatformList::modelProp()
+QQmlListProperty<Platform> PlatformList::modelProp()
 {
     static const auto count = &listproperty_count<Platform>;
     static const auto at = &listproperty_at<Platform>;
@@ -95,7 +95,7 @@ void PlatformList::startScanning()
 
     m_loading_watcher.setFuture(future);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            this, &Model::PlatformList::onScanResultsAvailable);
+            this, &PlatformList::onScanResultsAvailable);
 }
 
 void PlatformList::onScanResultsAvailable()
@@ -140,4 +140,4 @@ void PlatformList::onFiltersChanged(ApiParts::Filters& filters)
         platform->applyFilters(filters);
 }
 */
-} // namespace Model
+} // namespace Types

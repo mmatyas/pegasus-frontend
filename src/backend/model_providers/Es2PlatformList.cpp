@@ -18,7 +18,7 @@
 #include "Es2PlatformList.h"
 
 #include "Utils.h"
-#include "model/Platform.h"
+#include "types/Platform.h"
 
 #include <QDebug>
 #include <QFile>
@@ -35,7 +35,7 @@ Es2PlatformList::Es2PlatformList()
 {
 }
 
-QVector<Model::Platform*> Es2PlatformList::find()
+QVector<Types::Platform*> Es2PlatformList::find()
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -84,7 +84,7 @@ QString Es2PlatformList::findSystemsFile()
     return QString();
 }
 
-QVector<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
+QVector<Types::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -99,14 +99,14 @@ QVector<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xm
     }
 
     // read all <system> nodes
-    QVector<Model::Platform*> platforms;
+    QVector<Types::Platform*> platforms;
     while (xml.readNextStartElement()) {
         if (xml.name() != "system") {
             xml.skipCurrentElement();
             continue;
         }
 
-        Model::Platform* platform = parseSystemEntry(xml);
+        Types::Platform* platform = parseSystemEntry(xml);
         if (platform) {
             if (!platform->m_short_name.isEmpty())
                 platforms.push_back(platform);
@@ -118,7 +118,7 @@ QVector<Model::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xm
     return platforms;
 }
 
-Model::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
+Types::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -146,7 +146,7 @@ Model::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
         .replace("~", homePath());
 
     // construct the new platform
-    return new Model::Platform(
+    return new Types::Platform(
         xml_props["name"],
         QStringList(xml_props["path"]),
         parseFilters(xml_props["extension"]),

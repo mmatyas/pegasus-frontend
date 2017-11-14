@@ -18,8 +18,8 @@
 #include "AppFiles.h"
 
 #include "Utils.h"
-#include "model/Locale.h"
-#include "model/Theme.h"
+#include "types/Locale.h"
+#include "types/Theme.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -70,7 +70,7 @@ namespace model_providers {
 
 const QLatin1String AppFiles::DEFAULT_LOCALE_TAG("en-DK");
 
-QVector<Api::Locale*> AppFiles::findAvailableLocales()
+QVector<Types::Locale*> AppFiles::findAvailableLocales()
 {
     const int QM_PREFIX_LEN = 8; // length of "pegasus_"
     const int QM_SUFFIX_LEN = 3; // length of ".qm"
@@ -81,18 +81,18 @@ QVector<Api::Locale*> AppFiles::findAvailableLocales()
     qm_files.append(DEFAULT_FILENAME); // default placeholder
     qm_files.sort();
 
-    QVector<Api::Locale*> output;
+    QVector<Types::Locale*> output;
     for (const QString& filename : qAsConst(qm_files)) {
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
         Q_ASSERT(locale_tag_len > 0);
 
         const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
-        output.append(new Api::Locale(locale_tag));
+        output.append(new Types::Locale(locale_tag));
     }
     return output;
 }
 
-QVector<Api::Theme*> AppFiles::findAvailableThemes()
+QVector<Types::Theme*> AppFiles::findAvailableThemes()
 {
     const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     const auto flags = QDirIterator::FollowSymlinks;
@@ -108,7 +108,7 @@ QVector<Api::Theme*> AppFiles::findAvailableThemes()
     const QString INIKEY_SUMMARY("summary");
     const QString INIKEY_DESC("description");
 
-    QVector<Api::Theme*> output;
+    QVector<Types::Theme*> output;
 
     QStringList search_paths = themeDirectories();
     for (auto& path : search_paths) {
@@ -140,7 +140,7 @@ QVector<Api::Theme*> AppFiles::findAvailableThemes()
             else
                 qml_path = QUrl::fromLocalFile(qml_path).toString();
 
-            output.append(new Api::Theme(
+            output.append(new Types::Theme(
                 basedir, qml_path,
                 metadata.value(INIKEY_NAME).toString(),
                 metadata.value(INIKEY_AUTHOR).toString(),
@@ -152,7 +152,7 @@ QVector<Api::Theme*> AppFiles::findAvailableThemes()
     }
 
     std::sort(output.begin(), output.end(),
-        [](const Api::Theme* a, const Api::Theme* b) {
+        [](const Types::Theme* a, const Types::Theme* b) {
             return a->compare(*b) < 0;
         }
     );

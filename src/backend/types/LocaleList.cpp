@@ -41,7 +41,7 @@ void callScripts()
 } // namespace
 
 
-namespace Api {
+namespace Types {
 
 LocaleList::LocaleList(QObject* parent)
     : QObject(parent)
@@ -133,4 +133,4 @@ QQmlListProperty<Locale> LocaleList::getListProp()
     return {this, &m_locales, count, at};
 }
 
-} // namespace Api
+} // namespace Types

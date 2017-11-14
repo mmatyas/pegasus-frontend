@@ -15,26 +15,29 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Platform.h"
+#include "System.h"
 
 
-namespace Model {
+namespace Types {
 
-Platform::Platform(QString name, QStringList rom_dirs,
-                   QStringList rom_filters, QString launch_cmd,
-                   QObject* parent)
+System::System(QObject* parent)
     : QObject(parent)
-    , m_short_name(std::move(name))
-    , m_rom_dirs(std::move(rom_dirs))
-    , m_rom_filters(std::move(rom_filters))
-    , m_launch_cmd(std::move(launch_cmd))
 {
-    Q_ASSERT(!m_short_name.isEmpty());
-    Q_ASSERT(!m_rom_dirs.isEmpty());
-    Q_ASSERT(!m_rom_filters.isEmpty());
-
-    connect(&m_gamelist, &GameList::currentChanged,
-            this, &Platform::currentGameChanged);
 }
 
-} // namespace Model
+void System::quit()
+{
+    emit appCloseRequested(AppCloseType::QUIT);
+}
+
+void System::reboot()
+{
+    emit appCloseRequested(AppCloseType::REBOOT);
+}
+
+void System::shutdown()
+{
+    emit appCloseRequested(AppCloseType::SHUTDOWN);
+}
+
+} // namespace Types

@@ -18,7 +18,7 @@
 #include "Es2Metadata.h"
 
 #include "Utils.h"
-#include "model/Platform.h"
+#include "types/Platform.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -33,7 +33,7 @@ static constexpr auto MSG_PREFIX = "ES2:";
 
 namespace model_providers {
 
-void Es2Metadata::fill(const Model::Platform& platform)
+void Es2Metadata::fill(const Types::Platform& platform)
 {
     // find the metadata file
     const QString xml_path = findGamelistFile(platform);
@@ -58,7 +58,7 @@ void Es2Metadata::fill(const Model::Platform& platform)
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }
 
-QString Es2Metadata::findGamelistFile(const Model::Platform& platform)
+QString Es2Metadata::findGamelistFile(const Types::Platform& platform)
 {
     Q_ASSERT(!platform.m_short_name.isEmpty());
 
@@ -83,15 +83,15 @@ QString Es2Metadata::findGamelistFile(const Model::Platform& platform)
     return QString();
 }
 
-void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Model::Platform& platform)
+void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Types::Platform& platform)
 {
     Q_ASSERT(!platform.gameList().allGames().isEmpty());
 
     // Build a path -> game map for quick access.
     // To find matches between the real files and the ones in the gamelist,
     // their canonical path will be compared.
-    QHash<QString, Model::Game*> game_by_path;
-    for (Model::Game* game : qAsConst(platform.gameList().allGames()))
+    QHash<QString, Types::Game*> game_by_path;
+    for (Types::Game* game : qAsConst(platform.gameList().allGames()))
         game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
 
@@ -119,8 +119,8 @@ void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Model::Platform
 }
 
 void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
-                                 const Model::Platform& platform,
-                                 QHash<QString, Model::Game*>& game_by_path)
+                                 const Types::Platform& platform,
+                                 QHash<QString, Types::Game*>& game_by_path)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
@@ -148,14 +148,14 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
 
     convertToAbsolutePath(xml_props[PATH_TAG], platform.m_rom_dirs.first());
 
-    Model::Game* game = game_by_path.take(xml_props[PATH_TAG]);
+    Types::Game* game = game_by_path.take(xml_props[PATH_TAG]);
     if (!game)
         return;
 
     applyMetadata(*game, platform, xml_props);
 }
 
-void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platform,
+void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platform,
                                 const QHash<QString, QString>& xml_props)
 {
     // this function will run quite often; let's cache some variables
@@ -223,7 +223,7 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
 
     // and also see if we can set the assets
 
-    Model::GameAssets& assets = *game.assets();
+    Types::GameAssets& assets = *game.assets();
 
     const QString rom_dir_prefix = platform.m_rom_dirs.first() % '/';
 

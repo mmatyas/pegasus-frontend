@@ -40,7 +40,7 @@ void callScripts()
 } // namespace
 
 
-namespace Api {
+namespace Types {
 
 ThemeList::ThemeList(QObject* parent)
     : QObject(parent)
@@ -124,4 +124,4 @@ QQmlListProperty<Theme> ThemeList::getListProp()
     return {this, &m_themes, count, at};
 }
 
-} // namespace Api
+} // namespace Types

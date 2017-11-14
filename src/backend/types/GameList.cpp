@@ -17,13 +17,13 @@
 
 #include "GameList.h"
 
+#include "Filters.h"
 #include "ListPropertyFn.h"
-#include "model/Filters.h"
 
 #include <QDebug>
 
 
-namespace Model {
+namespace Types {
 
 GameList::GameList(QObject* parent)
     : QObject(parent)
@@ -35,7 +35,7 @@ GameList::GameList(QObject* parent)
 
 GameList::~GameList() = default;
 
-Model::Game* GameList::current() const
+Game* GameList::current() const
 {
     if (m_game_idx < 0)
         return nullptr;
@@ -59,7 +59,7 @@ void GameList::setIndex(int idx)
     emit currentChanged();
 }
 
-QQmlListProperty<Model::Game> GameList::getFilteredGamesProp()
+QQmlListProperty<Game> GameList::getFilteredGamesProp()
 {
     static const auto count = &listproperty_count<Game>;
     static const auto at = &listproperty_at<Game>;
@@ -67,7 +67,7 @@ QQmlListProperty<Model::Game> GameList::getFilteredGamesProp()
     return {this, &m_filtered_games, count, at};
 }
 
-QQmlListProperty<Model::Game> GameList::getAllGamesProp()
+QQmlListProperty<Game> GameList::getAllGamesProp()
 {
     static const auto count = &listproperty_count<Game>;
     static const auto at = &listproperty_at<Game>;
@@ -112,7 +112,7 @@ void GameList::clearFilters()
     setIndex(0);
 }
 
-void GameList::applyFilters(const Api::Filters& filters)
+void GameList::applyFilters(const Filters& filters)
 {
     // TODO: use QtConcurrent::blockingFilter
 
@@ -141,4 +141,4 @@ void GameList::applyFilters(const Api::Filters& filters)
         setIndex(-1);
 }
 
-} // namespace Model
+} // namespace Types

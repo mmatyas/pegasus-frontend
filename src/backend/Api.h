@@ -18,11 +18,11 @@
 #pragma once
 
 #include "AppCloseType.h"
-#include "model/Filters.h"
-#include "model/Meta.h"
-#include "model/Settings.h"
-#include "model/System.h"
-#include "model/PlatformList.h"
+#include "types/Filters.h"
+#include "types/Meta.h"
+#include "types/Settings.h"
+#include "types/System.h"
+#include "types/PlatformList.h"
 
 #include <QObject>
 #include <QQmlListProperty>
@@ -37,18 +37,18 @@ class ApiObject : public QObject {
 
     // subcomponents
 
-    Q_PROPERTY(Api::Filters* filters READ filters CONSTANT)
-    Q_PROPERTY(Api::Meta* meta READ meta CONSTANT)
-    Q_PROPERTY(Api::Settings* settings READ settings CONSTANT)
-    Q_PROPERTY(Api::System* system READ system CONSTANT)
-    Q_PROPERTY(Model::PlatformList* platforms READ platformList CONSTANT)
+    Q_PROPERTY(Types::Filters* filters READ filters CONSTANT)
+    Q_PROPERTY(Types::Meta* meta READ meta CONSTANT)
+    Q_PROPERTY(Types::Settings* settings READ settings CONSTANT)
+    Q_PROPERTY(Types::System* system READ system CONSTANT)
+    Q_PROPERTY(Types::PlatformList* platforms READ platformList CONSTANT)
 
     // shortcuts
 
-    Q_PROPERTY(Model::Platform* currentPlatform
+    Q_PROPERTY(Types::Platform* currentPlatform
                READ currentPlatform
                NOTIFY currentPlatformChanged)
-    Q_PROPERTY(Model::Game* currentGame
+    Q_PROPERTY(Types::Game* currentGame
                READ currentGame
                NOTIFY currentGameChanged)
 
@@ -65,23 +65,23 @@ public:
     void startScanning();
 
     // subcomponents
-    Api::Filters* filters() { return &m_filters; }
-    Api::Meta* meta() { return &m_meta; }
-    Api::Settings* settings() { return &m_settings; }
-    Api::System* system() { return &m_system; }
-    Model::PlatformList* platformList() { return &m_platform_list; }
+    Types::Filters* filters() { return &m_filters; }
+    Types::Meta* meta() { return &m_meta; }
+    Types::Settings* settings() { return &m_settings; }
+    Types::System* system() { return &m_system; }
+    Types::PlatformList* platformList() { return &m_platform_list; }
 
     // shortcuts
 
-    Model::Platform* currentPlatform() const { return m_platform_list.current(); }
-    Model::Game* currentGame() const {
+    Types::Platform* currentPlatform() const { return m_platform_list.current(); }
+    Types::Game* currentGame() const {
         return currentPlatform() ? currentPlatform()->gameList().current() : nullptr;
     }
 
 signals:
     // game launching
     void prepareLaunch();
-    void executeLaunch(const Model::Platform*, const Model::Game*);
+    void executeLaunch(const Types::Platform*, const Types::Game*);
     void restoreAfterGame(ApiObject*);
 
     // triggers translation update
@@ -105,11 +105,11 @@ private slots:
     void onFiltersChanged();
 
 private:
-    Api::Meta m_meta;
-    Api::System m_system;
-    Api::Settings m_settings;
-    Api::Filters m_filters;
-    Model::PlatformList m_platform_list;
+    Types::Meta m_meta;
+    Types::System m_system;
+    Types::Settings m_settings;
+    Types::Filters m_filters;
+    Types::PlatformList m_platform_list;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

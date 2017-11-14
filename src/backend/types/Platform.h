@@ -22,17 +22,17 @@
 #include <QString>
 #include <QQmlListProperty>
 
-namespace ApiParts { class Filters; }
+namespace Types { class Filters; }
 
 
-namespace Model {
+namespace Types {
 
 class Platform : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString shortName MEMBER m_short_name CONSTANT)
     Q_PROPERTY(QString longName MEMBER m_long_name CONSTANT)
-    Q_PROPERTY(Model::GameList* games READ gameListPtr CONSTANT)
+    Q_PROPERTY(Types::GameList* games READ gameListPtr CONSTANT)
 
 public:
     explicit Platform(QString name, QStringList rom_dirs,
@@ -57,4 +57,4 @@ private:
     GameList m_gamelist;
 };
 
-} // namespace Model
+} // namespace Types

@@ -19,8 +19,8 @@
 
 #include <QVector>
 
-namespace Api { class Locale; }
-namespace Api { class Theme; }
+namespace Types { class Locale; }
+namespace Types { class Theme; }
 
 
 namespace model_providers {
@@ -28,8 +28,8 @@ namespace model_providers {
 struct AppFiles {
     static const QLatin1String DEFAULT_LOCALE_TAG;
 
-    static QVector<Api::Locale*> findAvailableLocales();
-    static QVector<Api::Theme*> findAvailableThemes();
+    static QVector<Types::Locale*> findAvailableLocales();
+    static QVector<Types::Theme*> findAvailableThemes();
 };
 
 } // namespace model_providers

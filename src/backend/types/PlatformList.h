@@ -24,19 +24,19 @@
 #include <QFutureWatcher>
 
 
-namespace Model {
+namespace Types {
 
 class PlatformList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(Model::Platform* current
+    Q_PROPERTY(Types::Platform* current
                READ current
                NOTIFY currentChanged)
     Q_PROPERTY(int index
                READ index
                WRITE setIndex
                NOTIFY currentChanged)
-    Q_PROPERTY(QQmlListProperty<Model::Platform> model
+    Q_PROPERTY(QQmlListProperty<Types::Platform> model
                READ modelProp
                CONSTANT)
 
@@ -75,4 +75,4 @@ private:
     void onPlatformGameChanged(int platformIndex);
 };
 
-} // namespace Model
+} // namespace Types

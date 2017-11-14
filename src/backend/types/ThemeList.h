@@ -24,18 +24,18 @@
 #include <QVector>
 
 
-namespace Api {
+namespace Types {
 
 class ThemeList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(Api::Theme* current
+    Q_PROPERTY(Types::Theme* current
                READ current
                NOTIFY themeChanged)
     Q_PROPERTY(int index
                READ index WRITE setIndex
                NOTIFY themeChanged)
-    Q_PROPERTY(QQmlListProperty<Api::Theme> model
+    Q_PROPERTY(QQmlListProperty<Types::Theme> model
                READ getListProp CONSTANT)
 
 public:
@@ -58,4 +58,4 @@ private:
     int indexOfTheme(const QString&) const;
 };
 
-} // namespace Api
+} // namespace Types
