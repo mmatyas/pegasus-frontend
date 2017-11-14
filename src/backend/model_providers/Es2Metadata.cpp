@@ -24,6 +24,7 @@
 #include <QFileInfo>
 #include <QRegularExpression>
 #include <QStringBuilder>
+#include <QUrl>
 #include <QXmlStreamReader>
 
 
@@ -230,19 +231,19 @@ void Es2Metadata::applyMetadata(Model::Game& game, const Model::Platform& platfo
         QString path = xml_props.value(KEY_IMAGE);
         convertToAbsolutePath(path, rom_dir_prefix);
         if (!path.isEmpty() && validPath(path))
-            assets.setSingle(AssetType::BOX_FRONT, path);
+            assets.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile(path).toString());
     }
     if (assets.marquee().isEmpty()) {
         QString path = xml_props.value(KEY_MARQUEE);
         convertToAbsolutePath(path, rom_dir_prefix);
         if (!path.isEmpty() && validPath(path))
-            assets.setSingle(AssetType::MARQUEE, path);
+            assets.setSingle(AssetType::MARQUEE, QUrl::fromLocalFile(path).toString());
     }
     {
         QString path = xml_props.value(KEY_VIDEO);
         convertToAbsolutePath(path, rom_dir_prefix);
         if (!path.isEmpty() && validPath(path))
-            assets.appendMulti(AssetType::VIDEOS, path);
+            assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile(path).toString());
     }
 
     // search for assets in ~/.emulationstation/downloaded_images

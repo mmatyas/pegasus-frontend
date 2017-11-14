@@ -20,6 +20,7 @@
 #include "Utils.h"
 
 #include <QStringBuilder>
+#include <QUrl>
 
 
 const QVector<AssetType> Assets::singleTypes = {
@@ -88,11 +89,11 @@ QString Assets::findFirst(AssetType asset_type, const QString& path_base)
         for (const auto& ext : possible_fileexts) {
             const QString path = path_base % suffix % ext;
             if (validPath(path))
-                return path;
+                return QUrl::fromLocalFile(path).toString();
         }
     }
 
-    return QString();
+    return {};
 }
 
 QStringList Assets::findAll(AssetType asset_type, const QString& path_base)
@@ -106,7 +107,7 @@ QStringList Assets::findAll(AssetType asset_type, const QString& path_base)
         for (const auto& ext : possible_fileexts) {
             const QString path = path_base % suffix % ext;
             if (validPath(path))
-                results.append(path);
+                results.append(QUrl::fromLocalFile(path).toString());
         }
     }
 

@@ -99,25 +99,6 @@ void runMetadataProviders(const Model::Platform& platform)
         provider->fill(platform);
 }
 
-// FIXME: this is a temporary workaround
-void fixLocalAssetPaths(const Model::Platform& platform)
-{
-    for (auto& game_ptr : platform.allGames()) {
-        Model::GameAssets& assets = *game_ptr->assets();
-
-        for (QString& path : assets.m_single_assets) {
-            if (!path.isEmpty() && !path.contains(QLatin1String("://")))
-                path.prepend(QStringLiteral("file://"));
-        }
-        for (QStringList& paths : assets.m_multi_assets) {
-            for (QString& path : paths) {
-                if (!path.isEmpty() && !path.contains(QLatin1String("://")))
-                    path.prepend(QStringLiteral("file://"));
-            }
-        }
-    }
-}
-
 } // namespace
 
 
@@ -146,7 +127,6 @@ QVector<Model::Platform*> DataFinder::find()
         Model::Platform& platform = *platform_ptr;
 
         runMetadataProviders(platform);
-        fixLocalAssetPaths(platform);
         platform.sortGames();
 
         emit platformGamesReady(platform.allGames().count());
