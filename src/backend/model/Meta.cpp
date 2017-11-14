@@ -15,14 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ApiMeta.h"
+#include "Meta.h"
 
 #include <QDebug>
 #include <QRegularExpression>
 #include <QStandardPaths>
 
 
-namespace ApiParts {
+namespace Api {
 
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 
@@ -71,4 +71,4 @@ void Meta::onNewGamesScanned(int game_count)
     }
 }
 
-} // namespace ApiParts
+} // namespace Api

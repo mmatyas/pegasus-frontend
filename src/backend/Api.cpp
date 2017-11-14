@@ -38,7 +38,7 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_platform_list, &Model::PlatformList::scanCompleted,
             this, &ApiObject::onScanCompleted);
     connect(&m_platform_list, &Model::PlatformList::newGamesScanned,
-            &m_meta, &ApiParts::Meta::onNewGamesScanned);
+            &m_meta, &Api::Meta::onNewGamesScanned);
 }
 
 void ApiObject::startScanning()

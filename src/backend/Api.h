@@ -19,7 +19,7 @@
 
 #include "AppCloseType.h"
 #include "api_parts/ApiFilters.h"
-#include "api_parts/ApiMeta.h"
+#include "model/Meta.h"
 #include "model/Settings.h"
 #include "model/System.h"
 #include "model/PlatformList.h"
@@ -38,7 +38,7 @@ class ApiObject : public QObject {
     // subcomponents
 
     Q_PROPERTY(ApiParts::Filters* filters READ filters CONSTANT)
-    Q_PROPERTY(ApiParts::Meta* meta READ meta CONSTANT)
+    Q_PROPERTY(Api::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(Api::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(Api::System* system READ system CONSTANT)
     Q_PROPERTY(Model::PlatformList* platforms READ platformList CONSTANT)
@@ -66,7 +66,7 @@ public:
 
     // subcomponents
     ApiParts::Filters* filters() { return &m_filters; }
-    ApiParts::Meta* meta() { return &m_meta; }
+    Api::Meta* meta() { return &m_meta; }
     Api::Settings* settings() { return &m_settings; }
     Api::System* system() { return &m_system; }
     Model::PlatformList* platformList() { return &m_platform_list; }
@@ -105,7 +105,7 @@ private slots:
     void onFiltersChanged();
 
 private:
-    ApiParts::Meta m_meta;
+    Api::Meta m_meta;
     Api::System m_system;
     Api::Settings m_settings;
     ApiParts::Filters m_filters;

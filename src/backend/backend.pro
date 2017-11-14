@@ -14,7 +14,6 @@ SOURCES += \
     SystemCommands.cpp \
     Utils.cpp \
     api_parts/ApiFilters.cpp \
-    api_parts/ApiMeta.cpp \
     model_providers/Es2Metadata.cpp \
     model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp \
@@ -25,6 +24,7 @@ SOURCES += \
     model/GameList.cpp \
     model/Locale.cpp \
     model/LocaleList.cpp \
+    model/Meta.cpp \
     model/Platform.cpp \
     model/PlatformList.cpp \
     model/Settings.cpp \
@@ -42,7 +42,6 @@ HEADERS += \
     SystemCommands.h \
     Utils.h \
     api_parts/ApiFilters.h \
-    api_parts/ApiMeta.h \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
     model_providers/Es2Metadata.h \
@@ -59,6 +58,7 @@ HEADERS += \
     model/PlatformList.h \
     model/Locale.h \
     model/LocaleList.h \
+    model/Meta.h \
     model/Settings.h \
     model/System.h \
     model/Theme.h \
