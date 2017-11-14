@@ -18,7 +18,7 @@
 #include "GameList.h"
 
 #include "ListPropertyFn.h"
-#include "api_parts/ApiFilters.h"
+#include "model/Filters.h"
 
 #include <QDebug>
 
@@ -112,7 +112,7 @@ void GameList::clearFilters()
     setIndex(0);
 }
 
-void GameList::applyFilters(const ApiParts::Filters& filters)
+void GameList::applyFilters(const Api::Filters& filters)
 {
     // TODO: use QtConcurrent::blockingFilter
 

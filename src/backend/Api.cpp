@@ -27,7 +27,7 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::localeChanged);
     connect(&m_system, &Api::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
-    connect(&m_filters, &ApiParts::Filters::filtersChanged,
+    connect(&m_filters, &Api::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
 
     connect(&m_platform_list, &Model::PlatformList::currentChanged,

@@ -20,7 +20,7 @@
 #include <QObject>
 
 
-namespace ApiParts {
+namespace Api {
 
 /// Stores parameters to filter the list of games
 class Filters : public QObject {
@@ -41,4 +41,4 @@ signals:
     void filtersChanged();
 };
 
-} // namespace ApiParts
+} // namespace Api

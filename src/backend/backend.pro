@@ -13,7 +13,6 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
-    api_parts/ApiFilters.cpp \
     model_providers/Es2Metadata.cpp \
     model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp \
@@ -22,6 +21,7 @@ SOURCES += \
     model_providers/SteamMetadata.cpp \
     model/Game.cpp \
     model/GameList.cpp \
+    model/Filters.cpp \
     model/Locale.cpp \
     model/LocaleList.cpp \
     model/Meta.cpp \
@@ -41,7 +41,6 @@ HEADERS += \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
-    api_parts/ApiFilters.h \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
     model_providers/Es2Metadata.h \
@@ -52,6 +51,7 @@ HEADERS += \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
     model_providers/SteamMetadata.h \
+    model/Filters.h \
     model/Game.h \
     model/GameList.h \
     model/Platform.h \

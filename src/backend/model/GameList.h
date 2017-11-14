@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QQmlListProperty>
 
-namespace ApiParts { class Filters; }
+namespace Api { class Filters; }
 
 
 namespace Model {
@@ -58,7 +58,7 @@ public:
     // backend-side functions
 
     void clearFilters();
-    void applyFilters(const ApiParts::Filters&);
+    void applyFilters(const Api::Filters&);
 
     void addGame(QString path);
     void sortGames();

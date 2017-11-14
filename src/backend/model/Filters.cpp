@@ -15,10 +15,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ApiFilters.h"
+#include "Filters.h"
 
 
-namespace ApiParts {
+namespace Api {
 
 Filters::Filters(QObject* parent)
     : QObject(parent)
@@ -27,4 +27,4 @@ Filters::Filters(QObject* parent)
 {
 }
 
-} // namespace ApiParts
+} // namespace Api

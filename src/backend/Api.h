@@ -18,7 +18,7 @@
 #pragma once
 
 #include "AppCloseType.h"
-#include "api_parts/ApiFilters.h"
+#include "model/Filters.h"
 #include "model/Meta.h"
 #include "model/Settings.h"
 #include "model/System.h"
@@ -37,7 +37,7 @@ class ApiObject : public QObject {
 
     // subcomponents
 
-    Q_PROPERTY(ApiParts::Filters* filters READ filters CONSTANT)
+    Q_PROPERTY(Api::Filters* filters READ filters CONSTANT)
     Q_PROPERTY(Api::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(Api::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(Api::System* system READ system CONSTANT)
@@ -65,7 +65,7 @@ public:
     void startScanning();
 
     // subcomponents
-    ApiParts::Filters* filters() { return &m_filters; }
+    Api::Filters* filters() { return &m_filters; }
     Api::Meta* meta() { return &m_meta; }
     Api::Settings* settings() { return &m_settings; }
     Api::System* system() { return &m_system; }
@@ -108,7 +108,7 @@ private:
     Api::Meta m_meta;
     Api::System m_system;
     Api::Settings m_settings;
-    ApiParts::Filters m_filters;
+    Api::Filters m_filters;
     Model::PlatformList m_platform_list;
 
     // used to trigger re-rendering of texts on locale change

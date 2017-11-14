@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "api_parts/ApiFilters.h"
+#include "model/Filters.h"
 #include "model/Platform.h"
 
 
@@ -209,7 +209,7 @@ void test_Model::platformApplyFilters()
     QFETCH(int, player_cnt);
     QFETCH(int, matching_games_cnt);
 
-    ApiParts::Filters filters;
+    Api::Filters filters;
         filters.m_title = title;
         filters.m_favorite = favorite;
         filters.m_player_count = player_cnt;
