@@ -65,7 +65,7 @@ void PlatformList::setIndex(int idx)
 
     m_platform_idx = idx;
     emit currentChanged();
-    //emit platformGameChanged();
+    emit currentPlatformGameChanged();
 }
 
 QQmlListProperty<Platform> PlatformList::modelProp()
