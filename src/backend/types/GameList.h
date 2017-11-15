@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QQmlListProperty>
+#include <QVector>
 
 namespace Types { class Filters; }
 

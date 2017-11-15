@@ -20,6 +20,7 @@ SOURCES += \
     model_providers/SteamPlatform.cpp \
     model_providers/SteamMetadata.cpp \
     types/Game.cpp \
+    types/GameAssets.cpp \
     types/GameList.cpp \
     types/Filters.cpp \
     types/Locale.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     model_providers/SteamMetadata.h \
     types/Filters.h \
     types/Game.h \
+    types/GameAssets.h \
     types/GameList.h \
     types/Platform.h \
     types/PlatformList.h \

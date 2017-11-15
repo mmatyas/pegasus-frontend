@@ -18,6 +18,7 @@
 #include "Es2Metadata.h"
 
 #include "Utils.h"
+#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 #include <QDebug>

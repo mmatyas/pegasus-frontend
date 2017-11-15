@@ -15,31 +15,25 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Game.h"
-
 #include "GameAssets.h"
-
-#include <QFileInfo>
 
 
 namespace Types {
 
-Game::Game(QString path, QObject* parent)
+GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
-    , m_rom_path(std::move(path))
-    , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
-    , m_title(m_rom_basename)
-    , m_players(1)
-    , m_favorite(false)
-    , m_rating(0)
-    , m_year(0)
-    , m_month(0)
-    , m_day(0)
-    , m_playcount(0)
-    , m_assets(new GameAssets(this))
+{}
+
+void GameAssets::setSingle(AssetType key, QString value)
 {
-    Q_ASSERT(!m_rom_path.isEmpty());
-    Q_ASSERT(m_assets);
+    Q_ASSERT(Assets::singleTypes.contains(key));
+    m_single_assets[key] = std::move(value);
+}
+
+void GameAssets::appendMulti(AssetType key, QString value)
+{
+    Q_ASSERT(Assets::multiTypes.contains(key));
+    m_multi_assets[key].append(value);
 }
 
 } // namespace Types

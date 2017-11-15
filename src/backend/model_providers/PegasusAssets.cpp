@@ -18,6 +18,7 @@
 #include "PegasusAssets.h"
 
 #include "Utils.h"
+#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 #include <QStringBuilder>

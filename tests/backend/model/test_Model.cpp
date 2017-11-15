@@ -18,6 +18,7 @@
 #include <QtTest/QtTest>
 
 #include "types/Filters.h"
+#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 

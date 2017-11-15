@@ -17,6 +17,7 @@
 
 #include "SteamMetadata.h"
 
+#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 #include <QDebug>
