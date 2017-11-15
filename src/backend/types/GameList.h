@@ -65,7 +65,7 @@ public:
     void sortGames();
     void lockGameList();
 
-    const QVector<Game*>& games() const { return m_filtered_games; }
+    const QVector<Game*>& filteredGames() const { return m_filtered_games; }
     const QVector<Game*>& allGames() const { return m_all_games; }
 
 signals:

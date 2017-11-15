@@ -68,9 +68,9 @@ void test_Model::prepareTestPlatform(Types::Platform& platform,
     platform.gameListMut().addGame("dummy1");
     platform.gameListMut().lockGameList();
 
-    QVERIFY(platform.gameList().games().count() == 2);
+    QVERIFY(platform.gameList().filteredGames().count() == 2);
     QVERIFY(platform.gameList().current() != static_cast<Types::Game*>(nullptr));
-    QVERIFY(platform.gameList().current() == platform.gameList().games().first());
+    QVERIFY(platform.gameList().current() == platform.gameList().filteredGames().first());
     QVERIFY(platform.gameList().index() == 0);
     QVERIFY(spy_idx.count() == 1);
     QVERIFY(spy_game.count() == 1);
@@ -104,7 +104,7 @@ void test_Model::platformSetIndex()
     QFETCH(int, index);
     QFETCH(bool, game_change_triggered);
 
-    if (index < -1 || index > gameList.games().count())
+    if (index < -1 || index > gameList.filteredGames().count())
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index #-?[0-9]+"));
 
     gameList.setIndex(index);
@@ -117,7 +117,7 @@ void test_Model::platformSetIndex()
     else {
         int expected_idx = game_change_triggered ? index : 0;
 
-        QCOMPARE(gameList.current(), gameList.games().at(expected_idx));
+        QCOMPARE(gameList.current(), gameList.filteredGames().at(expected_idx));
         QCOMPARE(gameList.index(), expected_idx);
     }
     QCOMPARE(index_triggered.count(), game_change_triggered ? 2 : 1);
@@ -128,29 +128,29 @@ void test_Model::platformAppendGame()
 {
     Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
     Types::GameList& gameList = platform.gameListMut();
-    QVERIFY(gameList.games().isEmpty());
+    QVERIFY(gameList.filteredGames().isEmpty());
 
     gameList.addGame("a");
     gameList.addGame("b");
     gameList.addGame("c");
     gameList.lockGameList();
 
-    QCOMPARE(gameList.games().count(), 3);
+    QCOMPARE(gameList.filteredGames().count(), 3);
 }
 
 void test_Model::platformSortGames()
 {
     Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
     Types::GameList& gameList = platform.gameListMut();
-    QVERIFY(gameList.games().isEmpty());
+    QVERIFY(gameList.filteredGames().isEmpty());
 
     gameList.addGame("bbb");
     gameList.addGame("aaa");
     gameList.sortGames();
     gameList.lockGameList();
 
-    QCOMPARE(gameList.games().first()->m_rom_path, QLatin1String("aaa"));
-    QCOMPARE(gameList.games().last()->m_rom_path, QLatin1String("bbb"));
+    QCOMPARE(gameList.filteredGames().first()->m_rom_path, QLatin1String("aaa"));
+    QCOMPARE(gameList.filteredGames().last()->m_rom_path, QLatin1String("bbb"));
 }
 
 void test_Model::platformApplyFilters_data()
@@ -200,8 +200,8 @@ void test_Model::platformApplyFilters()
     QVERIFY(triggered.count() == 0);
     gameList.lockGameList();
 
-    QVERIFY(gameList.games().count() == 5);
-    QVERIFY(gameList.games().count() == gameList.allGames().count());
+    QVERIFY(gameList.filteredGames().count() == 5);
+    QVERIFY(gameList.filteredGames().count() == gameList.allGames().count());
     QVERIFY(triggered.count() == 1);
 
     QFETCH(QString, title);
@@ -216,7 +216,7 @@ void test_Model::platformApplyFilters()
 
     gameList.applyFilters(filters);
 
-    QCOMPARE(gameList.games().count(), matching_games_cnt);
+    QCOMPARE(gameList.filteredGames().count(), matching_games_cnt);
 
     // if the filter didn't change the list of games,
     // there should be no new trigger
