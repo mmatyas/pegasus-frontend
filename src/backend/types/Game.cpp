@@ -17,8 +17,6 @@
 
 #include "Game.h"
 
-#include "GameAssets.h"
-
 #include <QFileInfo>
 
 
@@ -36,10 +34,8 @@ Game::Game(QString path, QObject* parent)
     , m_month(0)
     , m_day(0)
     , m_playcount(0)
-    , m_assets(new GameAssets(this))
 {
     Q_ASSERT(!m_rom_path.isEmpty());
-    Q_ASSERT(m_assets);
 }
 
 } // namespace Types

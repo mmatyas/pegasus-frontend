@@ -27,7 +27,7 @@ public:
     void fill(const Types::Platform&) final;
 
 private:
-    void fillOne(const Types::Platform&, const Types::Game&);
+    void fillOne(const Types::Platform&, Types::Game&);
 };
 
 } // namespace model_providers

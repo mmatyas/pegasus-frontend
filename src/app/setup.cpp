@@ -24,7 +24,6 @@
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
 #include "SystemCommands.h"
-#include "types/GameAssets.h"
 //#include "types/Platform.h"
 
 #include <QDir>

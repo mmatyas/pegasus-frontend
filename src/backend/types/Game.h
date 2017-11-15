@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include "GameAssets.h"
+
 #include <QDateTime>
 #include <QString>
 #include <QObject>
-
-namespace Types { class GameAssets; }
 
 
 namespace Types {
@@ -42,7 +42,7 @@ class Game : public QObject {
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
     Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
     Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
-    Q_PROPERTY(Types::GameAssets* assets READ assets CONSTANT)
+    Q_PROPERTY(Types::GameAssets* assets READ assetsPtr CONSTANT)
 
 public:
     explicit Game(QString path, QObject* parent = nullptr);
@@ -69,10 +69,11 @@ public:
 
     QString m_launch_cmd;
 
-    GameAssets* assets() const { return m_assets; }
+    GameAssets& assets() { return m_assets; }
+    GameAssets* assetsPtr() { return &m_assets; }
 
 private:
-    GameAssets* m_assets;
+    GameAssets m_assets;
 };
 
 } // namespace Types

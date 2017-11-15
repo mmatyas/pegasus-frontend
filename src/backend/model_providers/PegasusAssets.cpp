@@ -18,7 +18,6 @@
 #include "PegasusAssets.h"
 
 #include "Utils.h"
-#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 #include <QStringBuilder>
@@ -34,7 +33,7 @@ void PegasusAssets::fill(const Types::Platform& platform)
     }
 }
 
-void PegasusAssets::fillOne(const Types::Platform& platform, const Types::Game& game)
+void PegasusAssets::fillOne(const Types::Platform& platform, Types::Game& game)
 {
     Q_ASSERT(!platform.m_rom_dirs.isEmpty());
 
@@ -49,8 +48,7 @@ void PegasusAssets::fillOne(const Types::Platform& platform, const Types::Game& 
         return;
 
     // shortcut for the assets member
-    Q_ASSERT(game.assets());
-    Types::GameAssets& assets = *game.assets();
+    Types::GameAssets& assets = game.assets();
 
     for (auto asset_type : Assets::singleTypes) {
         // the portable asset search is always the first,

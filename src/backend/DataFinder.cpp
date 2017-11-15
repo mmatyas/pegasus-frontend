@@ -18,7 +18,6 @@
 #include "DataFinder.h"
 
 #include "types/Game.h"
-#include "types/GameAssets.h"
 #include "types/Platform.h"
 #include "model_providers/Es2Metadata.h"
 #include "model_providers/Es2PlatformList.h"

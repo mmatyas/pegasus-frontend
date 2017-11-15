@@ -17,7 +17,6 @@
 
 #include "SteamMetadata.h"
 
-#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 #include <QDebug>
@@ -134,7 +133,7 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
 
     // now the actual field reading
 
-    Types::GameAssets& assets = *game.assets();
+    Types::GameAssets& assets = game.assets();
 
     game.m_title = app_data[QLatin1String("name")].toString();
 

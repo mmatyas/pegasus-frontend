@@ -18,7 +18,6 @@
 #include "Es2Metadata.h"
 
 #include "Utils.h"
-#include "types/GameAssets.h"
 #include "types/Platform.h"
 
 #include <QDebug>
@@ -224,7 +223,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platfo
 
     // and also see if we can set the assets
 
-    Types::GameAssets& assets = *game.assets();
+    Types::GameAssets& assets = game.assets();
 
     const QString rom_dir_prefix = platform.m_rom_dirs.first() % '/';
 
