@@ -1,0 +1,68 @@
+// Pegasus Frontend
+// Copyright (C) 2017  Mátyás Mustoha
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+#include <QtTest/QtTest>
+
+#include "types/ThemeList.h"
+
+
+class test_ThemeList : public QObject {
+    Q_OBJECT
+
+private slots:
+    void neverEmpty();
+
+    void indexChange();
+    void indexChange_data();
+};
+
+void test_ThemeList::neverEmpty()
+{
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
+
+    Types::ThemeList themelist;
+    QVERIFY(themelist.index() >= 0);
+}
+
+void test_ThemeList::indexChange()
+{
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
+    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
+
+    Types::ThemeList themelist;
+    int initial_index = themelist.index();
+
+    QFETCH(int, testval);
+
+    themelist.setIndex(testval);
+    QCOMPARE(themelist.index(), initial_index);
+}
+
+void test_ThemeList::indexChange_data()
+{
+    QTest::addColumn<int>("testval");
+
+    QTest::newRow("undefined (-1)") << -1;
+    QTest::newRow("out of range (pos)") << 999;
+    QTest::newRow("out of range (neg)") << -999;
+}
+
+
+QTEST_MAIN(test_ThemeList)
+#include "test_ThemeList.moc"
