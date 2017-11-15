@@ -46,7 +46,6 @@ public:
     Locale* current() const;
     int index() const { return m_locale_idx; }
     void setIndex(int idx);
-
     QQmlListProperty<Locale> getListProp();
 
 signals:
