@@ -43,7 +43,7 @@ class LocaleList : public QObject {
 public:
     explicit LocaleList(QObject* parent = nullptr);
 
-    Locale* current() const { return m_locales.at(index()); }
+    Locale* current() const;
     int index() const { return m_locale_idx; }
     void setIndex(int idx);
 

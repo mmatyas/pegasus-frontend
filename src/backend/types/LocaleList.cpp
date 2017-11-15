@@ -18,25 +18,16 @@
 #include "LocaleList.h"
 
 #include "ListPropertyFn.h"
-#include "ScriptRunner.h"
 #include "model_providers/AppFiles.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QSettings>
-#include <QString>
 
 
 namespace {
 
 const QLatin1String SETTINGSKEY_LOCALE("locale");
-
-void callScripts()
-{
-    using ScriptEvent = ScriptRunner::EventType;
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
-}
 
 } // namespace
 
@@ -58,6 +49,12 @@ LocaleList::LocaleList(QObject* parent)
     loadSelectedLocale();
 
     qApp->installTranslator(&m_translator);
+}
+
+Locale* LocaleList::current() const
+{
+    Q_ASSERT(m_locale_idx >= 0 && m_locales.length());
+    return m_locales.at(index());
 }
 
 int LocaleList::indexOfLocale(const QString& tag) const
@@ -109,12 +106,10 @@ void LocaleList::setIndex(int idx)
     // load
     m_locale_idx = idx;
     loadSelectedLocale();
+    emit localeChanged();
 
     // remember
     QSettings().setValue(SETTINGSKEY_LOCALE, current()->tag());
-
-    callScripts();
-    emit localeChanged();
 }
 
 void LocaleList::loadSelectedLocale()

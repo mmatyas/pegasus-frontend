@@ -33,15 +33,16 @@ class ThemeList : public QObject {
                READ current
                NOTIFY themeChanged)
     Q_PROPERTY(int index
-               READ index WRITE setIndex
+               READ index
+               WRITE setIndex
                NOTIFY themeChanged)
     Q_PROPERTY(QQmlListProperty<Types::Theme> model
                READ getListProp CONSTANT)
 
 public:
-    explicit ThemeList(QObject* parent);
+    explicit ThemeList(QObject* parent = nullptr);
 
-    Theme* current() const { return m_themes.at(index()); }
+    Theme* current() const;
     int index() const { return m_theme_idx; }
     void setIndex(int idx);
     QQmlListProperty<Theme> getListProp();

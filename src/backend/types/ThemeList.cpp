@@ -18,10 +18,8 @@
 #include "ThemeList.h"
 
 #include "ListPropertyFn.h"
-#include "ScriptRunner.h"
 #include "model_providers/AppFiles.h"
 
-#include <QCoreApplication>
 #include <QDebug>
 #include <QSettings>
 
@@ -29,13 +27,6 @@
 namespace {
 
 const QLatin1String SETTINGSKEY_THEME("theme");
-
-void callScripts()
-{
-    using ScriptEvent = ScriptRunner::EventType;
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
-}
 
 } // namespace
 
@@ -54,6 +45,12 @@ ThemeList::ThemeList(QObject* parent)
 
     selectPreferredTheme();
     printChangeMsg();
+}
+
+Theme* ThemeList::current() const
+{
+    Q_ASSERT(m_theme_idx >= 0 && m_themes.length());
+    return m_themes.at(index());
 }
 
 int ThemeList::indexOfTheme(const QString& dir_path) const
@@ -102,12 +99,10 @@ void ThemeList::setIndex(int idx)
     // set
     m_theme_idx = idx;
     printChangeMsg();
+    emit themeChanged();
 
     // remember
     QSettings().setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
-
-    callScripts();
-    emit themeChanged();
 }
 
 void ThemeList::printChangeMsg() const
