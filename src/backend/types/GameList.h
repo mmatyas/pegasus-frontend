@@ -38,6 +38,11 @@ class GameList : public QObject {
                READ index
                WRITE setIndex
                NOTIFY currentChanged)
+    Q_PROPERTY(int count
+               READ filteredCount
+               NOTIFY filteredGamesChanged)
+    Q_PROPERTY(int countAll
+               READ allCount CONSTANT)
     Q_PROPERTY(QQmlListProperty<Types::Game> model
                READ getFilteredGamesProp
                NOTIFY filteredGamesChanged)
@@ -52,6 +57,8 @@ public:
     Game* current() const;
     int index() const { return m_game_idx; }
     void setIndex(int);
+    int filteredCount() const { return m_filtered_games.count(); }
+    int allCount() const { return m_all_games.count(); }
     QQmlListProperty<Game> getFilteredGamesProp();
     QQmlListProperty<Game> getAllGamesProp();
 

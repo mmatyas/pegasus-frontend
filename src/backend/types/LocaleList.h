@@ -37,6 +37,8 @@ class LocaleList : public QObject {
                READ index
                WRITE setIndex
                NOTIFY localeChanged)
+    Q_PROPERTY(int count
+               READ count CONSTANT)
     Q_PROPERTY(QQmlListProperty<Types::Locale> model
                READ getListProp CONSTANT)
 
@@ -46,6 +48,7 @@ public:
     Locale* current() const;
     int index() const { return m_locale_idx; }
     void setIndex(int idx);
+    int count() const { return m_locales.count(); }
     QQmlListProperty<Locale> getListProp();
 
 signals:

@@ -36,6 +36,8 @@ class ThemeList : public QObject {
                READ index
                WRITE setIndex
                NOTIFY themeChanged)
+    Q_PROPERTY(int count
+               READ count CONSTANT)
     Q_PROPERTY(QQmlListProperty<Types::Theme> model
                READ getListProp CONSTANT)
 
@@ -45,6 +47,7 @@ public:
     Theme* current() const;
     int index() const { return m_theme_idx; }
     void setIndex(int idx);
+    int count() const { return m_themes.count(); }
     QQmlListProperty<Theme> getListProp();
 
 signals:

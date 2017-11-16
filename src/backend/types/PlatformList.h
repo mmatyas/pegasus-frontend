@@ -36,6 +36,8 @@ class PlatformList : public QObject {
                READ index
                WRITE setIndex
                NOTIFY currentChanged)
+    Q_PROPERTY(int count
+               READ count CONSTANT)
     Q_PROPERTY(QQmlListProperty<Types::Platform> model
                READ modelProp
                CONSTANT)
@@ -48,6 +50,7 @@ public:
     void setIndex(int);
     Platform* current() const;
 
+    int count() const { return m_platforms.count(); }
     QQmlListProperty<Platform> modelProp();
     const QVector<Platform*>& model() const { return m_platforms; }
 
