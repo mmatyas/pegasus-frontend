@@ -27,6 +27,7 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QUrl>
 
 
 namespace {
@@ -114,7 +115,7 @@ QVector<Model::Theme*> AppFiles::findAvailableThemes()
         while (themedir.hasNext()) {
             const auto basedir = themedir.next() + '/';
             const auto ini_path = basedir + ini_filename;
-            const auto qml_path = basedir + qml_filename;
+            auto qml_path = basedir + qml_filename;
 
             if (!fileExists(ini_path)) {
                 qWarning().noquote() << warn_missingfile.arg(ini_filename, basedir);
@@ -130,6 +131,13 @@ QVector<Model::Theme*> AppFiles::findAvailableThemes()
                 qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME, ini_filename);
                 continue;
             }
+
+            // add the qrc/file protocol prefix
+            const bool is_builtin = basedir.startsWith(':');
+            if (is_builtin)
+                qml_path = QLatin1String("qrc://") + qml_path.midRef(1);
+            else
+                qml_path = QUrl::fromLocalFile(qml_path).toString();
 
             output.append(new Model::Theme(
                 basedir, qml_path,
