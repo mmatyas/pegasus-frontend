@@ -27,6 +27,7 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QStringBuilder>
 #include <QUrl>
 
 
@@ -135,7 +136,7 @@ QVector<Model::Theme*> AppFiles::findAvailableThemes()
             // add the qrc/file protocol prefix
             const bool is_builtin = basedir.startsWith(':');
             if (is_builtin)
-                qml_path = QLatin1String("qrc://") + qml_path.midRef(1);
+                qml_path = QLatin1String("qrc://") % qml_path.midRef(1);
             else
                 qml_path = QUrl::fromLocalFile(qml_path).toString();
 
