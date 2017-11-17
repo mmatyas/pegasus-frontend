@@ -33,11 +33,11 @@ namespace {
 
 QString find_steam_datadir()
 {
-    using Paths = QStandardPaths;
-
     QStringList possible_dirs;
 
 #ifdef Q_OS_UNIX
+    using Paths = QStandardPaths;
+
     // Linux: ~/.local/share/Steam
     // macOS: ~/Library/Application Support/Steam
     possible_dirs = Paths::standardLocations(Paths::GenericDataLocation);
