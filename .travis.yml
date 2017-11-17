@@ -64,7 +64,7 @@ after_success:
   - curl --upload-file
       pegasus-fe_${SUFFIX}.zip
       https://transfer.sh/pegasus-fe_${SUFFIX}.zip
-  - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
+  - wget -c https://github.com/mmatyas/uploadtool/raw/master/upload.sh
   - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
 
 matrix:
