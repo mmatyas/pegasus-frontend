@@ -31,6 +31,8 @@ private slots:
 
     void indexChange();
     void indexChange_data();
+
+    void count();
 };
 
 void test_LocaleList::initTestCase()
@@ -69,6 +71,15 @@ void test_LocaleList::indexChange_data()
     QTest::newRow("undefined (-1)") << -1;
     QTest::newRow("out of range (pos)") << 999;
     QTest::newRow("out of range (neg)") << -999;
+}
+
+void test_LocaleList::count()
+{
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
+
+    Types::LocaleList localelist;
+    QCOMPARE(localelist.count(), localelist.property("count").toInt());
 }
 
 

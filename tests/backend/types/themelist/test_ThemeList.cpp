@@ -31,6 +31,8 @@ private slots:
 
     void indexChange();
     void indexChange_data();
+
+    void count();
 };
 
 void test_ThemeList::initTestCase()
@@ -69,6 +71,15 @@ void test_ThemeList::indexChange_data()
     QTest::newRow("undefined (-1)") << -1;
     QTest::newRow("out of range (pos)") << 999;
     QTest::newRow("out of range (neg)") << -999;
+}
+
+void test_ThemeList::count()
+{
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
+
+    Types::ThemeList themelist;
+    QCOMPARE(themelist.count(), themelist.property("count").toInt());
 }
 
 
