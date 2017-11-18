@@ -23,41 +23,49 @@
 class test_LocaleList : public QObject {
     Q_OBJECT
 
+private:
+    int initial_index;
+
 private slots:
-    void neverEmpty();
+    void initTestCase();
 
     void indexChange();
     void indexChange_data();
 };
 
-void test_LocaleList::neverEmpty()
+void test_LocaleList::initTestCase()
 {
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
     Types::LocaleList localelist;
     QVERIFY(localelist.index() >= 0);
+
+    initial_index = localelist.index();
 }
 
 void test_LocaleList::indexChange()
 {
+    QFETCH(int, testval);
+
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid locale index .*"));
+    if (testval != initial_index)
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid locale index .*"));
 
     Types::LocaleList localelist;
-    int initial_index = localelist.index();
-
-    QFETCH(int, testval);
+    QSignalSpy triggered(&localelist, &Types::LocaleList::localeChanged);
 
     localelist.setIndex(testval);
     QCOMPARE(localelist.index(), initial_index);
+    QCOMPARE(triggered.count(), 0);
 }
 
 void test_LocaleList::indexChange_data()
 {
     QTest::addColumn<int>("testval");
 
+    QTest::newRow("same") << initial_index;
     QTest::newRow("undefined (-1)") << -1;
     QTest::newRow("out of range (pos)") << 999;
     QTest::newRow("out of range (neg)") << -999;

@@ -23,41 +23,49 @@
 class test_ThemeList : public QObject {
     Q_OBJECT
 
+private:
+    int initial_index;
+
 private slots:
-    void neverEmpty();
+    void initTestCase();
 
     void indexChange();
     void indexChange_data();
 };
 
-void test_ThemeList::neverEmpty()
+void test_ThemeList::initTestCase()
 {
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
     Types::ThemeList themelist;
     QVERIFY(themelist.index() >= 0);
+
+    initial_index = themelist.index();
 }
 
 void test_ThemeList::indexChange()
 {
+    QFETCH(int, testval);
+
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
+    if (testval != initial_index)
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
 
     Types::ThemeList themelist;
-    int initial_index = themelist.index();
-
-    QFETCH(int, testval);
+    QSignalSpy triggered(&themelist, &Types::ThemeList::themeChanged);
 
     themelist.setIndex(testval);
     QCOMPARE(themelist.index(), initial_index);
+    QCOMPARE(triggered.count(), 0);
 }
 
 void test_ThemeList::indexChange_data()
 {
     QTest::addColumn<int>("testval");
 
+    QTest::newRow("same") << initial_index;
     QTest::newRow("undefined (-1)") << -1;
     QTest::newRow("out of range (pos)") << 999;
     QTest::newRow("out of range (neg)") << -999;
