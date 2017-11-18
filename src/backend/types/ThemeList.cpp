@@ -49,7 +49,7 @@ ThemeList::ThemeList(QObject* parent)
 
 Theme* ThemeList::current() const
 {
-    Q_ASSERT(m_theme_idx >= 0 && m_themes.length());
+    Q_ASSERT(0 <= index() && index() < m_themes.length());
     return m_themes.at(index());
 }
 

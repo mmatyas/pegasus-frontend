@@ -53,7 +53,7 @@ LocaleList::LocaleList(QObject* parent)
 
 Locale* LocaleList::current() const
 {
-    Q_ASSERT(m_locale_idx >= 0 && m_locales.length());
+    Q_ASSERT(0 <= index() && index() < m_locales.length());
     return m_locales.at(index());
 }
 

@@ -58,8 +58,11 @@ void test_LocaleList::indexChange()
     Types::LocaleList localelist;
     QSignalSpy triggered(&localelist, &Types::LocaleList::localeChanged);
 
-    localelist.setIndex(testval);
-    QCOMPARE(localelist.index(), initial_index);
+    Types::Locale* before = localelist.current();
+    localelist.setProperty("index", testval);
+
+    QCOMPARE(localelist.property("index").toInt(), initial_index);
+    QCOMPARE(localelist.property("current").value<Types::Locale*>(), before);
     QCOMPARE(triggered.count(), 0);
 }
 

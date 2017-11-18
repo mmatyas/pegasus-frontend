@@ -58,8 +58,11 @@ void test_ThemeList::indexChange()
     Types::ThemeList themelist;
     QSignalSpy triggered(&themelist, &Types::ThemeList::themeChanged);
 
-    themelist.setIndex(testval);
-    QCOMPARE(themelist.index(), initial_index);
+    Types::Theme* before = themelist.current();
+    themelist.setProperty("index", testval);
+
+    QCOMPARE(themelist.property("index").toInt(), initial_index);
+    QCOMPARE(themelist.property("current").value<Types::Theme*>(), before);
     QCOMPARE(triggered.count(), 0);
 }
 
