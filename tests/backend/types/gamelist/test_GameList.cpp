@@ -30,6 +30,9 @@ private slots:
     void addGame();
     void sortGames();
 
+    void indexChange();
+    void indexChange_data();
+
     void applyFilters();
     void applyFilters_data();
 };
@@ -48,9 +51,6 @@ void test_GameList::addGame()
 {
     Types::GameList list;
 
-    QVERIFY(list.allGames().isEmpty());
-    QVERIFY(list.filteredGames().isEmpty());
-
     list.addGame("a");
     list.addGame("b");
     list.addGame("c");
@@ -66,8 +66,6 @@ void test_GameList::sortGames()
 {
     Types::GameList gamelist;
 
-    QVERIFY(gamelist.allGames().isEmpty());
-
     gamelist.addGame("bbb");
     gamelist.addGame("aaa");
     gamelist.sortGames();
@@ -75,6 +73,51 @@ void test_GameList::sortGames()
 
     QCOMPARE(gamelist.allGames().first()->m_rom_path, QLatin1String("aaa"));
     QCOMPARE(gamelist.allGames().last()->m_rom_path, QLatin1String("bbb"));
+}
+
+void test_GameList::indexChange()
+{
+    Types::GameList list;
+    QSignalSpy triggered(&list, &Types::GameList::currentChanged);
+    QVERIFY(triggered.isValid());
+
+    list.addGame("a");
+    list.addGame("b");
+    list.lockGameList();
+
+    QVERIFY(triggered.count() == 1);
+    QVERIFY(list.index() == 0);
+
+
+    QFETCH(int, target);
+    QFETCH(int, expected);
+    if (target != expected)
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid game index.*"));
+
+    list.setProperty("index", target);
+
+    QCOMPARE(list.property("index").toInt(), expected);
+    QCOMPARE(triggered.count(), expected == 0 ? 1 : 2);
+    Types::Game* current_ptr = list.property("current").value<Types::Game*>();
+    if (expected == -1) {
+        QCOMPARE(current_ptr, nullptr);
+    }
+    else {
+        Q_ASSERT(0 <= expected && expected < list.allGames().count());
+        QCOMPARE(current_ptr, list.allGames().at(expected));
+    }
+}
+
+void test_GameList::indexChange_data()
+{
+    QTest::addColumn<int>("target");
+    QTest::addColumn<int>("expected");
+
+    QTest::newRow("same") << 0 << 0;
+    QTest::newRow("different") << 1 << 1;
+    QTest::newRow("undefined (-1)") << -1 << -1;
+    QTest::newRow("out of range (pos)") << 999 << 0;
+    QTest::newRow("out of range (neg)") << -999 << 0;
 }
 
 void test_GameList::applyFilters()
