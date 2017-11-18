@@ -57,6 +57,7 @@ void test_LocaleList::indexChange()
 
     Types::LocaleList localelist;
     QSignalSpy triggered(&localelist, &Types::LocaleList::localeChanged);
+    QVERIFY(triggered.isValid());
 
     Types::Locale* before = localelist.current();
     localelist.setProperty("index", testval);

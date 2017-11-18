@@ -34,6 +34,7 @@ void test_System::appClose()
 {
     Types::System system;
     QSignalSpy spy(&system, &Types::System::appCloseRequested);
+    QVERIFY(spy.isValid());
 
     QFETCH(AppCloseType, close_type);
     switch (close_type) {

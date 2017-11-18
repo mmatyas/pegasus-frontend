@@ -57,6 +57,7 @@ void test_ThemeList::indexChange()
 
     Types::ThemeList themelist;
     QSignalSpy triggered(&themelist, &Types::ThemeList::themeChanged);
+    QVERIFY(triggered.isValid());
 
     Types::Theme* before = themelist.current();
     themelist.setProperty("index", testval);
