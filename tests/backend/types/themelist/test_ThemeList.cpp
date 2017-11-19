@@ -72,7 +72,7 @@ void test_ThemeList::indexChange_data()
     QTest::addColumn<int>("testval");
 
     QTest::newRow("same") << initial_index;
-    QTest::newRow("undefined (-1)") << -1;
+    QTest::newRow("undefined (-1)") << -1; // there's always at least one theme
     QTest::newRow("out of range (pos)") << 999;
     QTest::newRow("out of range (neg)") << -999;
 }
