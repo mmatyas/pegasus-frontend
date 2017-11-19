@@ -54,7 +54,7 @@ void PlatformList::setIndex(int idx)
     if (idx == m_platform_idx)
         return;
 
-    const bool valid_idx = (0 <= idx || idx < m_platforms.count());
+    const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_platforms.count());
     if (!valid_idx) {
         qWarning() << tr("Invalid platform index #%1").arg(idx);
         return;
