@@ -18,12 +18,14 @@
 #pragma once
 
 #include "AppCloseType.h"
+#include "DataFinder.h"
 #include "types/Filters.h"
 #include "types/Meta.h"
 #include "types/Settings.h"
 #include "types/System.h"
 #include "types/PlatformList.h"
 
+#include <QFutureWatcher>
 #include <QObject>
 #include <QQmlListProperty>
 
@@ -101,7 +103,6 @@ public slots:
 
 private slots:
     // internal communication
-    void onScanCompleted();
     void onFiltersChanged();
 
 private:
@@ -111,7 +112,10 @@ private:
     Types::Filters m_filters;
     Types::PlatformList m_platform_list;
 
+    // initialization
+    DataFinder m_datafinder;
+    QFutureWatcher<void> m_loading_watcher;
+
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
-
 };

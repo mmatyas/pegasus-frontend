@@ -17,11 +17,7 @@
 
 #pragma once
 
-#include "DataFinder.h"
 #include "Platform.h"
-
-#include <QObject>
-#include <QFutureWatcher>
 
 
 namespace Types {
@@ -39,43 +35,32 @@ class PlatformList : public QObject {
     Q_PROPERTY(int count
                READ count CONSTANT)
     Q_PROPERTY(QQmlListProperty<Types::Platform> model
-               READ modelProp
+               READ platformsProp
                CONSTANT)
 
 public:
     explicit PlatformList(QObject* parent = nullptr);
     ~PlatformList();
 
+    Platform* current() const;
     int index() const { return m_platform_idx; }
     void setIndex(int);
-    Platform* current() const;
-
     int count() const { return m_platforms.count(); }
-    QQmlListProperty<Platform> modelProp();
-    const QVector<Platform*>& model() const { return m_platforms; }
+    QQmlListProperty<Platform> platformsProp();
 
-    void startScanning();
-    qint64 scanDuration() const { return m_last_scan_duration; }
+    const QVector<Platform*>& platforms() const { return m_platforms; }
+    QVector<Platform*>& platformsMut() { return m_platforms; }
 
 signals:
-    //void modelChanged();
     void currentChanged();
     void currentPlatformGameChanged();
 
-    void newGamesScanned(int game_count);
-    void scanCompleted(qint64 elapsedTime);
+public slots:
+    void onScanComplete();
 
 private:
     QVector<Platform*> m_platforms;
     int m_platform_idx;
-
-    // initialization
-    DataFinder m_datafinder;
-    QFutureWatcher<void> m_loading_watcher;
-    qint64 m_last_scan_duration;
-
-    void onScanResultsAvailable();
-    void onPlatformGameChanged(int platformIndex);
 };
 
 } // namespace Types

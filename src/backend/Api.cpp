@@ -17,7 +17,7 @@
 
 #include "Api.h"
 
-#include "ListPropertyFn.h"
+#include <QtConcurrent/QtConcurrent>
 
 
 ApiObject::ApiObject(QObject* parent)
@@ -35,22 +35,36 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_platform_list, &Types::PlatformList::currentPlatformGameChanged,
             this, &ApiObject::currentGameChanged);
 
-    connect(&m_platform_list, &Types::PlatformList::scanCompleted,
-            this, &ApiObject::onScanCompleted);
-    connect(&m_platform_list, &Types::PlatformList::newGamesScanned,
+    connect(&m_datafinder, &DataFinder::platformGamesReady,
             &m_meta, &Types::Meta::onNewGamesScanned);
 }
 
 void ApiObject::startScanning()
 {
-    m_meta.onScanStarted();
-    m_platform_list.startScanning();
-}
+    // TODO: reorganize the scanning workflow
 
-void ApiObject::onScanCompleted()
-{
-    m_meta.onScanCompleted(m_platform_list.scanDuration());
-    m_meta.onLoadingCompleted();
+    // launch the game search on a parallel thread
+    QFuture<void> future = QtConcurrent::run([this]{
+        QElapsedTimer timer;
+        timer.start();
+
+        m_meta.onScanStarted();
+        m_platform_list.platformsMut() = m_datafinder.find();
+        m_meta.onScanCompleted(timer.elapsed());
+
+        // set the correct thread for the QObjects
+        for (Types::Platform* const platform : m_platform_list.platforms()) {
+            platform->moveToThread(thread());
+            platform->gameListMut().moveToThread(thread());
+        }
+    });
+
+    m_loading_watcher.setFuture(future);
+
+    connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
+            &m_platform_list, &Types::PlatformList::onScanComplete);
+    connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
+            &m_meta, &Types::Meta::onLoadingCompleted);
 }
 
 void ApiObject::launchGame()
@@ -82,6 +96,6 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onFiltersChanged()
 {
-    for (Types::Platform* const platform : m_platform_list.model())
+    for (Types::Platform* const platform : m_platform_list.platforms())
         platform->gameListMut().applyFilters(m_filters);
 }
