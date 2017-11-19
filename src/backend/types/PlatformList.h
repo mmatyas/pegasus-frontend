@@ -58,6 +58,9 @@ signals:
 public slots:
     void onScanComplete();
 
+private slots:
+    void onPlatformGameChanged();
+
 private:
     QVector<Platform*> m_platforms;
     int m_platform_idx;

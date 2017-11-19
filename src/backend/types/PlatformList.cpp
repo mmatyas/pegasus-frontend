@@ -75,13 +75,16 @@ QQmlListProperty<Platform> PlatformList::platformsProp()
 
 void PlatformList::onScanComplete()
 {
+    // TODO: handle the locking and counting during searching
+
+
     // NOTE: `tr` (see below) uses `int`; assuming we have
     //       less than 2 million games, it will be enough
     int game_count = 0;
 
     for (Platform* const platform : m_platforms) {
         connect(platform, &Platform::currentGameChanged,
-                this, &PlatformList::currentPlatformGameChanged);
+                this, &PlatformList::onPlatformGameChanged);
 
         Types::GameList& gamelist = platform->gameListMut();
         gamelist.lockGameList();
@@ -91,6 +94,12 @@ void PlatformList::onScanComplete()
 
     if (!m_platforms.isEmpty())
         setIndex(0);
+}
+
+void PlatformList::onPlatformGameChanged()
+{
+    if (sender() == current())
+        emit currentPlatformGameChanged();
 }
 
 } // namespace Types
