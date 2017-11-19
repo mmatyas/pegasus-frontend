@@ -319,7 +319,7 @@ namespace model_providers {
 
 void SteamMetadata::fill(const Types::Platform& platform)
 {
-    if (platform.m_short_name != QLatin1Literal("steam"))
+    if (platform.shortName() != QLatin1Literal("steam"))
         return;
 
     const QString steamexe = find_steam_exe();

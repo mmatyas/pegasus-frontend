@@ -108,7 +108,7 @@ QVector<Types::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xm
 
         Types::Platform* platform = parseSystemEntry(xml);
         if (platform) {
-            if (!platform->m_short_name.isEmpty())
+            if (!platform->shortName().isEmpty())
                 platforms.push_back(platform);
             else
                 delete platform;
@@ -146,11 +146,12 @@ Types::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
         .replace("~", homePath());
 
     // construct the new platform
-    return new Types::Platform(
-        xml_props["name"],
-        QStringList(xml_props["path"]),
-        parseFilters(xml_props["extension"]),
-        xml_props["command"]);
+    auto platform = new Types::Platform(); // TODO: check for fail
+    platform->setShortName(xml_props["name"]);
+    platform->searchDirsMut().append(xml_props["path"]);
+    platform->romFiltersMut().append(parseFilters(xml_props["extension"]));
+    platform->setCommonLaunchCmd(xml_props["command"]);
+    return platform;
 }
 
 QStringList Es2PlatformList::parseFilters(const QString& str) {

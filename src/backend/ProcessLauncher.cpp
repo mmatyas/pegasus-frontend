@@ -72,7 +72,7 @@ QString ProcessLauncher::createLaunchCommand(const Types::Platform* platform, co
     }
 
     // replace known keywords
-    QString launch_cmd = platform->m_launch_cmd;
+    QString launch_cmd = platform->launchCmd();
     // first, replace manually quoted elements in the command string (see Qt docs)
     launch_cmd
         .replace("\"%ROM%\"", params.value(ParamType::PATH))

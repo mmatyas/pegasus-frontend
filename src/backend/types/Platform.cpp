@@ -20,21 +20,29 @@
 
 namespace Types {
 
-Platform::Platform(QString name, QStringList rom_dirs,
-                   QStringList rom_filters, QString launch_cmd,
-                   QObject* parent)
+Platform::Platform(QObject* parent)
     : QObject(parent)
-    , m_short_name(std::move(name))
-    , m_rom_dirs(std::move(rom_dirs))
-    , m_rom_filters(std::move(rom_filters))
-    , m_launch_cmd(std::move(launch_cmd))
 {
-    Q_ASSERT(!m_short_name.isEmpty());
-    Q_ASSERT(!m_rom_dirs.isEmpty());
-    Q_ASSERT(!m_rom_filters.isEmpty());
-
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Platform::currentGameChanged);
+}
+
+void Platform::setShortName(QString str)
+{
+    Q_ASSERT(!str.isEmpty());
+    m_short_name = str;
+}
+
+void Platform::setLongName(QString str)
+{
+    Q_ASSERT(!str.isEmpty());
+    m_long_name = str;
+}
+
+void Platform::setCommonLaunchCmd(QString str)
+{
+    Q_ASSERT(!str.isEmpty());
+    m_launch_cmd = str;
 }
 
 } // namespace Types

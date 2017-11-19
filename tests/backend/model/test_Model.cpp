@@ -74,7 +74,7 @@ void test_Model::platformSetIndex()
 {
     // prepare
 
-    Types::Platform platform("dummy", {"dummy"}, {"dummy"}, "dummy");
+    Types::Platform platform;
     Types::GameList& gameList = platform.gameListMut();
     QSignalSpy index_triggered(&gameList, &Types::GameList::currentChanged);
     QSignalSpy game_triggered(&gameList, &Types::GameList::currentChanged);

@@ -62,8 +62,8 @@ void findGamesByExt(Types::Platform& platform)
     // TODO: handle incorrect filters
     // TODO: add proper subdirectory support
 
-    for (const QString& romdir : platform.m_rom_dirs) {
-        QDirIterator romdir_it(romdir, platform.m_rom_filters, filters, flags);
+    for (const QString& romdir : platform.searchDirs()) {
+        QDirIterator romdir_it(romdir, platform.romFilters(), filters, flags);
         while (romdir_it.hasNext())
             platform.gameListMut().addGame(romdir_it.next());
     }

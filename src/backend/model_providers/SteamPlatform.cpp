@@ -130,12 +130,13 @@ QVector<Types::Platform*> SteamPlatform::find()
         return {};
     }
 
-    QVector<Types::Platform*> result;
-    result.push_back(new Types::Platform(
-        QLatin1String("steam"),
-        installdirs,
-        QStringList(QLatin1String("appmanifest_*.acf"))
-    ));
+
+    auto platform = new Types::Platform(); // TODO: check for fail
+    platform->setShortName(QStringLiteral("steam"));
+    platform->searchDirsMut().append(installdirs);
+    platform->romFiltersMut().append(QStringLiteral("appmanifest_*.acf"));
+
+    QVector<Types::Platform*> result { platform };
     return result;
 }
 

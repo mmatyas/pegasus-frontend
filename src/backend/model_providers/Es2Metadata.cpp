@@ -40,7 +40,7 @@ void Es2Metadata::fill(const Types::Platform& platform)
     if (xml_path.isEmpty()) {
         qWarning().noquote()
             << MSG_PREFIX
-            << QObject::tr("gamelist for platform `%1` not found").arg(platform.m_short_name);
+            << QObject::tr("gamelist for platform `%1` not found").arg(platform.shortName());
         return;
     }
 
@@ -60,15 +60,15 @@ void Es2Metadata::fill(const Types::Platform& platform)
 
 QString Es2Metadata::findGamelistFile(const Types::Platform& platform)
 {
-    Q_ASSERT(!platform.m_short_name.isEmpty());
+    Q_ASSERT(!platform.shortName().isEmpty());
 
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
     static constexpr auto FILENAME = "/gamelist.xml";
 
     const QVector<QString> possible_dirs = {
-        platform.m_rom_dirs.first(),
-        homePath() % "/.emulationstation/gamelists/" % platform.m_short_name,
-        "/etc/emulationstation/gamelists/" % platform.m_short_name,
+        platform.searchDirs().first(),
+        homePath() % "/.emulationstation/gamelists/" % platform.shortName(),
+        "/etc/emulationstation/gamelists/" % platform.shortName(),
     };
 
     for (const auto& dir : possible_dirs) {
@@ -146,7 +146,7 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
     // find the matching game
     // NOTE: every game (path) appears only once, so we can take() it out of the map
 
-    convertToAbsolutePath(xml_props[PATH_TAG], platform.m_rom_dirs.first());
+    convertToAbsolutePath(xml_props[PATH_TAG], platform.searchDirs().first());
 
     Types::Game* game = game_by_path.take(xml_props[PATH_TAG]);
     if (!game)
@@ -225,7 +225,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platfo
 
     Types::GameAssets& assets = game.assets();
 
-    const QString rom_dir_prefix = platform.m_rom_dirs.first() % '/';
+    const QString rom_dir_prefix = platform.searchDirs().first() % '/';
 
     if (assets.boxFront().isEmpty()) {
         QString path = xml_props.value(KEY_IMAGE);
@@ -250,7 +250,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platfo
 
     const QString path_base = homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/")
-                              % platform.m_short_name % '/'
+                              % platform.shortName() % '/'
                               % game.m_rom_basename;
 
     for (auto asset_type : Assets::singleTypes) {
