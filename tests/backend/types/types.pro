@@ -4,5 +4,6 @@ SUBDIRS += \
     gamelist \
     localelist \
     platform \
+    platformlist \
     system \
     themelist \
