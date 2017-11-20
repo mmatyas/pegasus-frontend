@@ -17,20 +17,19 @@
 
 #include <QtTest/QtTest>
 
-#include "types/Filters.h"
-#include "types/Platform.h"
+#include "types/GameAssets.h"
 
 
-class test_Model : public QObject
+class test_GameAssets : public QObject
 {
     Q_OBJECT
 
 private slots:
-    void assetsSetSingle();
-    void assetsAppendMulti();
+    void setSingle();
+    void appendMulti();
 };
 
-void test_Model::assetsSetSingle()
+void test_GameAssets::setSingle()
 {
     Types::GameAssets assets;
     QCOMPARE(assets.boxFront(), QString());
@@ -39,7 +38,7 @@ void test_Model::assetsSetSingle()
     QCOMPARE(assets.boxFront(), QLatin1String("file:///dummy"));
 }
 
-void test_Model::assetsAppendMulti()
+void test_GameAssets::appendMulti()
 {
     Types::GameAssets assets;
     QCOMPARE(assets.videos().count(), 0);
@@ -50,5 +49,5 @@ void test_Model::assetsAppendMulti()
 }
 
 
-QTEST_MAIN(test_Model)
-#include "test_Model.moc"
+QTEST_MAIN(test_GameAssets)
+#include "test_GameAssets.moc"

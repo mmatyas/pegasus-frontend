@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    gameassets \
     gamelist \
     localelist \
     platform \
