@@ -30,11 +30,7 @@ PlatformList::PlatformList(QObject* parent)
 {
 }
 
-PlatformList::~PlatformList()
-{
-    for (auto& platform : qAsConst(m_platforms))
-        delete platform;
-}
+PlatformList::~PlatformList() = default;
 
 Platform* PlatformList::current() const
 {
@@ -83,6 +79,8 @@ void PlatformList::onScanComplete()
     int game_count = 0;
 
     for (Platform* const platform : m_platforms) {
+        platform->setParent(this);
+
         connect(platform, &Platform::currentGameChanged,
                 this, &PlatformList::onPlatformGameChanged);
 
