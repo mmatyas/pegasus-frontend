@@ -30,13 +30,16 @@ private slots:
 
     void indexChange();
     void indexChange_data();
+
+private:
+    const Types::Collection* const null_coll = static_cast<Types::Collection*>(nullptr); // Qt 5.7
 };
 
 void test_CollectionList::empty()
 {
     Types::CollectionList list;
 
-    QCOMPARE(list.property("current").value<Types::Collection*>(), nullptr);
+    QCOMPARE(list.property("current").value<Types::Collection*>(), null_coll);
     QCOMPARE(list.property("index").toInt(), -1);
     QCOMPARE(list.property("count").toInt(), 0);
 }
@@ -103,7 +106,7 @@ void test_CollectionList::indexChange()
     // check pointer
     auto current_ptr = list.property("current").value<Types::Collection*>();
     if (expected == -1) {
-        QCOMPARE(current_ptr, nullptr);
+        QCOMPARE(current_ptr, null_coll);
     }
     else {
         Q_ASSERT(0 <= expected && expected < list.elements().count());

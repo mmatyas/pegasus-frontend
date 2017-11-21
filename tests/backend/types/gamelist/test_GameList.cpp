@@ -35,13 +35,16 @@ private slots:
 
     void applyFilters();
     void applyFilters_data();
+
+private:
+    const Types::Game* const null_game = static_cast<Types::Game*>(nullptr); // Qt 5.7
 };
 
 void test_GameList::empty()
 {
     Types::GameList list;
 
-    QCOMPARE(list.property("current").value<Types::Game*>(), nullptr);
+    QCOMPARE(list.property("current").value<Types::Game*>(), null_game);
     QCOMPARE(list.property("index").toInt(), -1);
     QCOMPARE(list.property("count").toInt(), 0);
     QCOMPARE(list.property("countAll").toInt(), 0);
@@ -100,7 +103,7 @@ void test_GameList::indexChange()
     QCOMPARE(triggered.count(), expected == 0 ? 1 : 2);
     Types::Game* current_ptr = list.property("current").value<Types::Game*>();
     if (expected == -1) {
-        QCOMPARE(current_ptr, nullptr);
+        QCOMPARE(current_ptr, null_game);
     }
     else {
         Q_ASSERT(0 <= expected && expected < list.allGames().count());
