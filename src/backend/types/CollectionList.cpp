@@ -26,47 +26,47 @@ namespace Types {
 
 CollectionList::CollectionList(QObject* parent)
     : QObject(parent)
-    , m_platform_idx(-1)
+    , m_collection_idx(-1)
 {
 }
 
 CollectionList::~CollectionList() = default;
 
-Platform* CollectionList::current() const
+Collection* CollectionList::current() const
 {
-    if (m_platform_idx < 0)
+    if (m_collection_idx < 0)
         return nullptr;
 
-    Q_ASSERT(m_platform_idx < m_platforms.length());
-    return m_platforms.at(m_platform_idx);
+    Q_ASSERT(m_collection_idx < m_collections.length());
+    return m_collections.at(m_collection_idx);
 }
 
 void CollectionList::setIndex(int idx)
 {
-    // Setting the index to a valid value causes changing the current platform
+    // Setting the index to a valid value causes changing the current collection
     // and the current game. Setting the index to an invalid value should not
     // change anything.
 
-    if (idx == m_platform_idx)
+    if (idx == m_collection_idx)
         return;
 
-    const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_platforms.count());
+    const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_collections.count());
     if (!valid_idx) {
-        qWarning() << tr("Invalid platform index #%1").arg(idx);
+        qWarning() << tr("Invalid collection index #%1").arg(idx);
         return;
     }
 
-    m_platform_idx = idx;
+    m_collection_idx = idx;
     emit currentChanged();
-    emit currentPlatformGameChanged();
+    emit currentGameChanged();
 }
 
-QQmlListProperty<Platform> CollectionList::elementsProp()
+QQmlListProperty<Collection> CollectionList::elementsProp()
 {
-    static const auto count = &listproperty_count<Platform>;
-    static const auto at = &listproperty_at<Platform>;
+    static const auto count = &listproperty_count<Collection>;
+    static const auto at = &listproperty_at<Collection>;
 
-    return {this, &m_platforms, count, at};
+    return {this, &m_collections, count, at};
 }
 
 void CollectionList::onScanComplete()
@@ -78,28 +78,28 @@ void CollectionList::onScanComplete()
     //       less than 2 million games, it will be enough
     int game_count = 0;
 
-    for (Platform* const platform : m_platforms) {
-        platform->setParent(this);
+    for (Collection* const coll : m_collections) {
+        coll->setParent(this);
 
-        connect(platform, &Platform::currentGameChanged,
-                this, &CollectionList::onPlatformGameChanged);
+        connect(coll, &Collection::currentGameChanged,
+                this, &CollectionList::onGameChanged);
 
-        Types::GameList& gamelist = platform->gameListMut();
+        Types::GameList& gamelist = coll->gameListMut();
         gamelist.lockGameList();
         game_count += gamelist.allGames().count();
     }
     qInfo().noquote() << tr("%n games found", "", game_count);
 
-    if (!m_platforms.isEmpty()) {
+    if (!m_collections.isEmpty()) {
         setIndex(0);
         emit countChanged();
     }
 }
 
-void CollectionList::onPlatformGameChanged()
+void CollectionList::onGameChanged()
 {
     if (sender() == current())
-        emit currentPlatformGameChanged();
+        emit currentGameChanged();
 }
 
 } // namespace Types

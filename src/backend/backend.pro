@@ -26,12 +26,12 @@ SOURCES += \
     types/Locale.cpp \
     types/LocaleList.cpp \
     types/Meta.cpp \
-    types/Platform.cpp \
     types/Settings.cpp \
     types/System.cpp \
     types/Theme.cpp \
     types/ThemeList.cpp \
-    types/CollectionList.cpp
+    types/CollectionList.cpp \
+    types/Collection.cpp
 
 HEADERS += \
     Api.h \
@@ -56,7 +56,6 @@ HEADERS += \
     types/Game.h \
     types/GameAssets.h \
     types/GameList.h \
-    types/Platform.h \
     types/Locale.h \
     types/LocaleList.h \
     types/Meta.h \
@@ -64,7 +63,8 @@ HEADERS += \
     types/System.h \
     types/Theme.h \
     types/ThemeList.h \
-    types/CollectionList.h
+    types/CollectionList.h \
+    types/Collection.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

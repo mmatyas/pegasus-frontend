@@ -24,10 +24,10 @@ namespace model_providers {
 
 class PegasusAssets : public MetadataProvider {
 public:
-    void fill(const Types::Platform&) final;
+    void fill(const Types::Collection&) final;
 
 private:
-    void fillOne(const Types::Platform&, Types::Game&);
+    void fillOne(const Types::Collection&, Types::Game&);
 };
 
 } // namespace model_providers

@@ -31,8 +31,8 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::onFiltersChanged);
 
     connect(&m_collections, &Types::CollectionList::currentChanged,
-            this, &ApiObject::currentPlatformChanged);
-    connect(&m_collections, &Types::CollectionList::currentPlatformGameChanged,
+            this, &ApiObject::currentCollectionChanged);
+    connect(&m_collections, &Types::CollectionList::currentGameChanged,
             this, &ApiObject::currentGameChanged);
 
     connect(&m_datafinder, &DataFinder::platformGamesReady,
@@ -53,9 +53,9 @@ void ApiObject::startScanning()
         m_meta.onScanCompleted(timer.elapsed());
 
         // set the correct thread for the QObjects
-        for (Types::Platform* const platform : m_collections.elements()) {
-            platform->moveToThread(thread());
-            platform->gameListMut().moveToThread(thread());
+        for (Types::Collection* const coll : m_collections.elements()) {
+            coll->moveToThread(thread());
+            coll->gameListMut().moveToThread(thread());
         }
     });
 
@@ -69,8 +69,8 @@ void ApiObject::startScanning()
 
 void ApiObject::launchGame()
 {
-    if (!currentPlatform()) {
-        qWarning() << tr("The current platform is undefined, you can't launch any games!");
+    if (!currentCollection()) {
+        qWarning() << tr("The current collection is undefined, you can't launch any games!");
         return;
     }
     if (!currentGame()) {
@@ -83,9 +83,9 @@ void ApiObject::launchGame()
 
 void ApiObject::onReadyToLaunch()
 {
-    Q_ASSERT(currentPlatform());
+    Q_ASSERT(currentCollection());
     Q_ASSERT(currentGame());
-    emit executeLaunch(currentPlatform(), currentGame());
+    emit executeLaunch(currentCollection(), currentGame());
 }
 
 void ApiObject::onGameFinished()
@@ -96,6 +96,6 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onFiltersChanged()
 {
-    for (Types::Platform* const platform : m_collections.elements())
-        platform->gameListMut().applyFilters(m_filters);
+    for (Types::Collection* const collection : m_collections.elements())
+        collection->gameListMut().applyFilters(m_filters);
 }

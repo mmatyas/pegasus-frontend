@@ -18,7 +18,7 @@
 #include "Es2Metadata.h"
 
 #include "Utils.h"
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -33,14 +33,14 @@ static constexpr auto MSG_PREFIX = "ES2:";
 
 namespace model_providers {
 
-void Es2Metadata::fill(const Types::Platform& platform)
+void Es2Metadata::fill(const Types::Collection& collection)
 {
     // find the metadata file
-    const QString xml_path = findGamelistFile(platform);
+    const QString xml_path = findGamelistFile(collection);
     if (xml_path.isEmpty()) {
         qWarning().noquote()
             << MSG_PREFIX
-            << QObject::tr("gamelist for platform `%1` not found").arg(platform.shortName());
+            << QObject::tr("gamelist for platform `%1` not found").arg(collection.shortName());
         return;
     }
 
@@ -53,22 +53,22 @@ void Es2Metadata::fill(const Types::Platform& platform)
 
     // parse the file
     QXmlStreamReader xml(&xml_file);
-    parseGamelistFile(xml, platform);
+    parseGamelistFile(xml, collection);
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }
 
-QString Es2Metadata::findGamelistFile(const Types::Platform& platform)
+QString Es2Metadata::findGamelistFile(const Types::Collection& collection)
 {
-    Q_ASSERT(!platform.shortName().isEmpty());
+    Q_ASSERT(!collection.shortName().isEmpty());
 
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
     static constexpr auto FILENAME = "/gamelist.xml";
 
     const QVector<QString> possible_dirs = {
-        platform.searchDirs().first(),
-        homePath() % "/.emulationstation/gamelists/" % platform.shortName(),
-        "/etc/emulationstation/gamelists/" % platform.shortName(),
+        collection.searchDirs().first(),
+        homePath() % "/.emulationstation/gamelists/" % collection.shortName(),
+        "/etc/emulationstation/gamelists/" % collection.shortName(),
     };
 
     for (const auto& dir : possible_dirs) {
@@ -83,15 +83,15 @@ QString Es2Metadata::findGamelistFile(const Types::Platform& platform)
     return QString();
 }
 
-void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Types::Platform& platform)
+void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Types::Collection& collection)
 {
-    Q_ASSERT(!platform.gameList().allGames().isEmpty());
+    Q_ASSERT(!collection.gameList().allGames().isEmpty());
 
     // Build a path -> game map for quick access.
     // To find matches between the real files and the ones in the gamelist,
     // their canonical path will be compared.
     QHash<QString, Types::Game*> game_by_path;
-    for (Types::Game* game : qAsConst(platform.gameList().allGames()))
+    for (Types::Game* game : qAsConst(collection.gameList().allGames()))
         game_by_path.insert(QFileInfo(game->m_rom_path).canonicalFilePath(), game);
 
 
@@ -114,12 +114,12 @@ void Es2Metadata::parseGamelistFile(QXmlStreamReader& xml, const Types::Platform
             continue;
         }
 
-        parseGameEntry(xml, platform, game_by_path);
+        parseGameEntry(xml, collection, game_by_path);
     }
 }
 
 void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
-                                 const Types::Platform& platform,
+                                 const Types::Collection& collection,
                                  QHash<QString, Types::Game*>& game_by_path)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
@@ -146,16 +146,16 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
     // find the matching game
     // NOTE: every game (path) appears only once, so we can take() it out of the map
 
-    convertToAbsolutePath(xml_props[PATH_TAG], platform.searchDirs().first());
+    convertToAbsolutePath(xml_props[PATH_TAG], collection.searchDirs().first());
 
     Types::Game* game = game_by_path.take(xml_props[PATH_TAG]);
     if (!game)
         return;
 
-    applyMetadata(*game, platform, xml_props);
+    applyMetadata(*game, collection, xml_props);
 }
 
-void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platform,
+void Es2Metadata::applyMetadata(Types::Game& game, const Types::Collection& collection,
                                 const QHash<QString, QString>& xml_props)
 {
     // this function will run quite often; let's cache some variables
@@ -225,7 +225,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platfo
 
     Types::GameAssets& assets = game.assets();
 
-    const QString rom_dir_prefix = platform.searchDirs().first() % '/';
+    const QString rom_dir_prefix = collection.searchDirs().first() % '/';
 
     if (assets.boxFront().isEmpty()) {
         QString path = xml_props.value(KEY_IMAGE);
@@ -250,7 +250,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Platform& platfo
 
     const QString path_base = homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/")
-                              % platform.shortName() % '/'
+                              % collection.shortName() % '/'
                               % game.m_rom_basename;
 
     for (auto asset_type : Assets::singleTypes) {

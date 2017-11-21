@@ -27,7 +27,7 @@ namespace Types { class Filters; }
 
 namespace Types {
 
-class Platform : public QObject {
+class Collection : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
@@ -35,7 +35,7 @@ class Platform : public QObject {
     Q_PROPERTY(Types::GameList* games READ gameListPtr CONSTANT)
 
 public:
-    explicit Platform(QObject* parent = nullptr);
+    explicit Collection(QObject* parent = nullptr);
 
     void setShortName(QString);
     void setLongName(QString);

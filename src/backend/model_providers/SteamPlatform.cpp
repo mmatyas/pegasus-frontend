@@ -17,7 +17,7 @@
 
 #include "SteamPlatform.h"
 
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -114,7 +114,7 @@ SteamPlatform::SteamPlatform()
 {
 }
 
-QVector<Types::Platform*> SteamPlatform::find()
+QVector<Types::Collection*> SteamPlatform::find()
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())
@@ -131,12 +131,12 @@ QVector<Types::Platform*> SteamPlatform::find()
     }
 
 
-    auto platform = new Types::Platform(); // TODO: check for fail
-    platform->setShortName(QStringLiteral("steam"));
-    platform->searchDirsMut().append(installdirs);
-    platform->romFiltersMut().append(QStringLiteral("appmanifest_*.acf"));
+    auto collection = new Types::Collection(); // TODO: check for fail
+    collection->setShortName(QStringLiteral("steam"));
+    collection->searchDirsMut().append(installdirs);
+    collection->romFiltersMut().append(QStringLiteral("appmanifest_*.acf"));
 
-    QVector<Types::Platform*> result { platform };
+    QVector<Types::Collection*> result { collection };
     return result;
 }
 

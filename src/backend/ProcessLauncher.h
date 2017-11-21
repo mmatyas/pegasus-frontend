@@ -22,7 +22,7 @@
 #include <QProcess>
 
 namespace Types { class Game; }
-namespace Types { class Platform; }
+namespace Types { class Collection; }
 
 
 /// Launches and manages external processes
@@ -38,7 +38,7 @@ signals:
     void processFinished();
 
 public slots:
-    void launchGame(const Types::Platform*, const Types::Game*);
+    void launchGame(const Types::Collection*, const Types::Game*);
 
 private slots:
     void onProcessStarted();
@@ -48,7 +48,7 @@ private slots:
 private:
     QPointer<QProcess> process;
 
-    QString createLaunchCommand(const Types::Platform*, const Types::Game*);
+    QString createLaunchCommand(const Types::Collection*, const Types::Game*);
     void runProcess(const QString&);
 
     void beforeRun();

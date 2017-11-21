@@ -18,7 +18,7 @@
 #include "ProcessLauncher.h"
 
 #include "ScriptRunner.h"
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -32,12 +32,12 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::launchGame(const Types::Platform* platform, const Types::Game* game)
+void ProcessLauncher::launchGame(const Types::Collection* collection, const Types::Game* game)
 {
     // games can be launched using either a command common for the platform,
     // or one specific for the game
     const QString launch_cmd = game->m_launch_cmd.isEmpty()
-        ? createLaunchCommand(platform, game)
+        ? createLaunchCommand(collection, game)
         : game->m_launch_cmd;
 
     qInfo().noquote() << tr("Executing command: `%1`").arg(launch_cmd);
@@ -49,7 +49,7 @@ void ProcessLauncher::launchGame(const Types::Platform* platform, const Types::G
     emit processFinished();
 }
 
-QString ProcessLauncher::createLaunchCommand(const Types::Platform* platform, const Types::Game* game)
+QString ProcessLauncher::createLaunchCommand(const Types::Collection* collection, const Types::Game* game)
 {
     enum class ParamType : unsigned char {
         PATH,
@@ -72,7 +72,7 @@ QString ProcessLauncher::createLaunchCommand(const Types::Platform* platform, co
     }
 
     // replace known keywords
-    QString launch_cmd = platform->launchCmd();
+    QString launch_cmd = collection->launchCmd();
     // first, replace manually quoted elements in the command string (see Qt docs)
     launch_cmd
         .replace("\"%ROM%\"", params.value(ParamType::PATH))

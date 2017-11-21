@@ -18,7 +18,7 @@
 #include "Es2PlatformList.h"
 
 #include "Utils.h"
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QFile>
@@ -35,7 +35,7 @@ Es2PlatformList::Es2PlatformList()
 {
 }
 
-QVector<Types::Platform*> Es2PlatformList::find()
+QVector<Types::Collection*> Es2PlatformList::find()
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -84,7 +84,7 @@ QString Es2PlatformList::findSystemsFile()
     return QString();
 }
 
-QVector<Types::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
+QVector<Types::Collection*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xml)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -99,26 +99,26 @@ QVector<Types::Platform*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& xm
     }
 
     // read all <system> nodes
-    QVector<Types::Platform*> platforms;
+    QVector<Types::Collection*> collections;
     while (xml.readNextStartElement()) {
         if (xml.name() != "system") {
             xml.skipCurrentElement();
             continue;
         }
 
-        Types::Platform* platform = parseSystemEntry(xml);
-        if (platform) {
-            if (!platform->shortName().isEmpty())
-                platforms.push_back(platform);
+        Types::Collection* collection = parseSystemEntry(xml);
+        if (collection) {
+            if (!collection->shortName().isEmpty())
+                collections.push_back(collection);
             else
-                delete platform;
+                delete collection;
         }
     }
 
-    return platforms;
+    return collections;
 }
 
-Types::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
+Types::Collection* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -146,12 +146,12 @@ Types::Platform* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
         .replace("~", homePath());
 
     // construct the new platform
-    auto platform = new Types::Platform(); // TODO: check for fail
-    platform->setShortName(xml_props["name"]);
-    platform->searchDirsMut().append(xml_props["path"]);
-    platform->romFiltersMut().append(parseFilters(xml_props["extension"]));
-    platform->setCommonLaunchCmd(xml_props["command"]);
-    return platform;
+    auto collection = new Types::Collection(); // TODO: check for fail
+    collection->setShortName(xml_props["name"]);
+    collection->searchDirsMut().append(xml_props["path"]);
+    collection->romFiltersMut().append(parseFilters(xml_props["extension"]));
+    collection->setCommonLaunchCmd(xml_props["command"]);
+    return collection;
 }
 
 QStringList Es2PlatformList::parseFilters(const QString& str) {

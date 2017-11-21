@@ -17,7 +17,7 @@
 
 #include "SteamMetadata.h"
 
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QDir>
@@ -317,9 +317,9 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
 namespace model_providers {
 
-void SteamMetadata::fill(const Types::Platform& platform)
+void SteamMetadata::fill(const Types::Collection& collection)
 {
-    if (platform.shortName() != QLatin1Literal("steam"))
+    if (collection.shortName() != QLatin1Literal("steam"))
         return;
 
     const QString steamexe = find_steam_exe();
@@ -328,7 +328,7 @@ void SteamMetadata::fill(const Types::Platform& platform)
 
     std::vector<SteamGameEntry> entries;
 
-    for (Types::Game* const game_ptr : platform.gameList().allGames()) {
+    for (Types::Game* const game_ptr : collection.gameList().allGames()) {
         Q_ASSERT(game_ptr);
         SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
         if (!entry.appid.isEmpty()) {

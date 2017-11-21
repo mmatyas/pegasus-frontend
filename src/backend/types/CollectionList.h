@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "Platform.h"
+#include "Collection.h"
 
 
 namespace Types {
@@ -25,7 +25,7 @@ namespace Types {
 class CollectionList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(Types::Platform* current
+    Q_PROPERTY(Types::Collection* current
                READ current
                NOTIFY currentChanged)
     Q_PROPERTY(int index
@@ -35,7 +35,7 @@ class CollectionList : public QObject {
     Q_PROPERTY(int count
                READ count
                NOTIFY countChanged)
-    Q_PROPERTY(QQmlListProperty<Types::Platform> model
+    Q_PROPERTY(QQmlListProperty<Types::Collection> model
                READ elementsProp
                CONSTANT)
 
@@ -43,29 +43,29 @@ public:
     explicit CollectionList(QObject* parent = nullptr);
     ~CollectionList();
 
-    Platform* current() const;
-    int index() const { return m_platform_idx; }
+    Collection* current() const;
+    int count() const { return m_collections.count(); }
+    int index() const { return m_collection_idx; }
     void setIndex(int);
-    int count() const { return m_platforms.count(); }
-    QQmlListProperty<Platform> elementsProp();
+    QQmlListProperty<Collection> elementsProp();
 
-    const QVector<Platform*>& elements() const { return m_platforms; }
-    QVector<Platform*>& elementsMut() { return m_platforms; }
+    const QVector<Collection*>& elements() const { return m_collections; }
+    QVector<Collection*>& elementsMut() { return m_collections; }
 
 signals:
     void countChanged();
     void currentChanged();
-    void currentPlatformGameChanged();
+    void currentGameChanged();
 
 public slots:
     void onScanComplete();
 
 private slots:
-    void onPlatformGameChanged();
+    void onGameChanged();
 
 private:
-    QVector<Platform*> m_platforms;
-    int m_platform_idx;
+    QVector<Collection*> m_collections;
+    int m_collection_idx;
 };
 
 } // namespace Types

@@ -47,9 +47,9 @@ class ApiObject : public QObject {
 
     // shortcuts
 
-    Q_PROPERTY(Types::Platform* currentPlatform
-               READ currentPlatform
-               NOTIFY currentPlatformChanged)
+    Q_PROPERTY(Types::Collection* currentCollection
+               READ currentCollection
+               NOTIFY currentCollectionChanged)
     Q_PROPERTY(Types::Game* currentGame
                READ currentGame
                NOTIFY currentGameChanged)
@@ -75,15 +75,15 @@ public:
 
     // shortcuts
 
-    Types::Platform* currentPlatform() const { return m_collections.current(); }
+    Types::Collection* currentCollection() const { return m_collections.current(); }
     Types::Game* currentGame() const {
-        return currentPlatform() ? currentPlatform()->gameList().current() : nullptr;
+        return currentCollection() ? currentCollection()->gameList().current() : nullptr;
     }
 
 signals:
     // game launching
     void prepareLaunch();
-    void executeLaunch(const Types::Platform*, const Types::Game*);
+    void executeLaunch(const Types::Collection*, const Types::Game*);
     void restoreAfterGame(ApiObject*);
 
     // triggers translation update
@@ -93,7 +93,7 @@ signals:
     void appCloseRequested(AppCloseType);
 
     // shortcuts
-    void currentPlatformChanged();
+    void currentCollectionChanged();
     void currentGameChanged();
 
 public slots:

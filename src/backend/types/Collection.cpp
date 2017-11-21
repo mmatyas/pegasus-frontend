@@ -15,31 +15,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Platform.h"
+#include "Collection.h"
 
 
 namespace Types {
 
-Platform::Platform(QObject* parent)
+Collection::Collection(QObject* parent)
     : QObject(parent)
 {
     connect(&m_gamelist, &GameList::currentChanged,
-            this, &Platform::currentGameChanged);
+            this, &Collection::currentGameChanged);
 }
 
-void Platform::setShortName(QString str)
+void Collection::setShortName(QString str)
 {
     Q_ASSERT(!str.isEmpty());
     m_short_name = str;
 }
 
-void Platform::setLongName(QString str)
+void Collection::setLongName(QString str)
 {
     Q_ASSERT(!str.isEmpty());
     m_long_name = str;
 }
 
-void Platform::setCommonLaunchCmd(QString str)
+void Collection::setCommonLaunchCmd(QString str)
 {
     Q_ASSERT(!str.isEmpty());
     m_launch_cmd = str;

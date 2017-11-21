@@ -17,10 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 
-class test_Platform : public QObject {
+class test_Collection : public QObject {
     Q_OBJECT
 
 private slots:
@@ -28,34 +28,34 @@ private slots:
     void gameChanged();
 };
 
-void test_Platform::names()
+void test_Collection::names()
 {
-    Types::Platform platform;
-    platform.setShortName("short");
-    platform.setLongName("long");
-    platform.setCommonLaunchCmd("runner");
+    Types::Collection collection;
+    collection.setShortName("short");
+    collection.setLongName("long");
+    collection.setCommonLaunchCmd("runner");
 
     // the properties are read-only and should be called only after the initial setup
-    QCOMPARE(platform.property("shortName").toString(), QStringLiteral("short"));
-    QCOMPARE(platform.property("longName").toString(), QStringLiteral("long"));
+    QCOMPARE(collection.property("shortName").toString(), QStringLiteral("short"));
+    QCOMPARE(collection.property("longName").toString(), QStringLiteral("long"));
 }
 
-void test_Platform::gameChanged()
+void test_Collection::gameChanged()
 {
-    Types::Platform platform;
-    QSignalSpy triggered(&platform, &Types::Platform::currentGameChanged);
+    Types::Collection collection;
+    QSignalSpy triggered(&collection, &Types::Collection::currentGameChanged);
     QVERIFY(triggered.isValid());
 
-    platform.gameListMut().addGame("dummy1");
-    platform.gameListMut().addGame("dummy2");
+    collection.gameListMut().addGame("dummy1");
+    collection.gameListMut().addGame("dummy2");
 
-    platform.gameListMut().lockGameList();
+    collection.gameListMut().lockGameList();
     QCOMPARE(triggered.count(), 1);
 
-    platform.gameListMut().setIndex(1);
+    collection.gameListMut().setIndex(1);
     QCOMPARE(triggered.count(), 2);
 }
 
 
-QTEST_MAIN(test_Platform)
-#include "test_Platform.moc"
+QTEST_MAIN(test_Collection)
+#include "test_Collection.moc"

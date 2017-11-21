@@ -19,7 +19,7 @@
 
 #include <QVector>
 
-namespace Types { class Platform; }
+namespace Types { class Collection; }
 
 
 namespace model_providers {
@@ -32,7 +32,7 @@ public:
     /// Find the available platforms, along with their essential
     /// informations, such as game/rom paths or supported file extensions.
     /// Do not return null pointers.
-    virtual QVector<Types::Platform*> find() = 0;
+    virtual QVector<Types::Collection*> find() = 0;
 
     // disable copy
     PlatformListProvider(const PlatformListProvider&) = delete;

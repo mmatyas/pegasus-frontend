@@ -18,7 +18,7 @@
 #pragma once
 
 namespace Types { class Game; }
-namespace Types { class Platform; }
+namespace Types { class Collection; }
 
 
 namespace model_providers {
@@ -34,7 +34,7 @@ public:
     ///
     /// NOTE: while the Platform itself is const, the data pointed by
     ///       the Game pointers is not!
-    virtual void fill(const Types::Platform&) = 0;
+    virtual void fill(const Types::Collection&) = 0;
 
     // disable copy
     MetadataProvider(const MetadataProvider&) = delete;

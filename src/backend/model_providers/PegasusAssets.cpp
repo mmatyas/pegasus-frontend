@@ -18,33 +18,33 @@
 #include "PegasusAssets.h"
 
 #include "Utils.h"
-#include "types/Platform.h"
+#include "types/Collection.h"
 
 #include <QStringBuilder>
 
 
 namespace model_providers {
 
-void PegasusAssets::fill(const Types::Platform& platform)
+void PegasusAssets::fill(const Types::Collection& collection)
 {
-    for (Types::Game* const game_ptr : qAsConst(platform.gameList().allGames())) {
+    for (Types::Game* const game_ptr : qAsConst(collection.gameList().allGames())) {
         Q_ASSERT(game_ptr);
-        fillOne(platform, *game_ptr);
+        fillOne(collection, *game_ptr);
     }
 }
 
-void PegasusAssets::fillOne(const Types::Platform& platform, Types::Game& game)
+void PegasusAssets::fillOne(const Types::Collection& collection, Types::Game& game)
 {
-    Q_ASSERT(!platform.searchDirs().isEmpty());
+    Q_ASSERT(!collection.searchDirs().isEmpty());
 
     constexpr auto MEDIA_SUBDIR = "/media/";
 
-    const QString path_base = platform.searchDirs().first()
+    const QString path_base = collection.searchDirs().first()
                               % MEDIA_SUBDIR
                               % game.m_rom_basename;
 
     // check if the media dir exists
-    if (!validPath(platform.searchDirs().first() % MEDIA_SUBDIR))
+    if (!validPath(collection.searchDirs().first() % MEDIA_SUBDIR))
         return;
 
     // shortcut for the assets member

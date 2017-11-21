@@ -30,17 +30,17 @@ class Es2PlatformList : public PlatformListProvider {
 public:
     Es2PlatformList();
 
-    QVector<Types::Platform*> find() final;
+    QVector<Types::Collection*> find() final;
 
 private:
     /// returns the path to the systems file, or an empty string
     QString findSystemsFile();
 
     /// processes the systems file, returns the list of successfully parsed platforms
-    QVector<Types::Platform*> parseSystemsFile(QXmlStreamReader&);
+    QVector<Types::Collection*> parseSystemsFile(QXmlStreamReader&);
     /// processes one `<system>` entry, returns a newly created Platform
     /// on success, or a nullptr on failure
-    Types::Platform* parseSystemEntry(QXmlStreamReader&);
+    Types::Collection* parseSystemEntry(QXmlStreamReader&);
     /// returns a list of unique, '*.'-prefixed lowercase file extensions
     QStringList parseFilters(const QString&);
 

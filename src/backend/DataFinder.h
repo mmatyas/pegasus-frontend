@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QVector>
 
-namespace Types { class Platform; }
+namespace Types { class Collection; }
 
 
 // TODO: this class would really need a refactor
@@ -30,7 +30,7 @@ class DataFinder : public QObject {
 public:
     explicit DataFinder(QObject* parent = nullptr);
 
-    QVector<Types::Platform*> find();
+    QVector<Types::Collection*> find();
 
 signals:
     void platformGamesReady(int game_count);

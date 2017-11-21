@@ -36,7 +36,7 @@ void test_CollectionList::empty()
 {
     Types::CollectionList list;
 
-    QCOMPARE(list.property("current").value<Types::Platform*>(), nullptr);
+    QCOMPARE(list.property("current").value<Types::Collection*>(), nullptr);
     QCOMPARE(list.property("index").toInt(), -1);
     QCOMPARE(list.property("count").toInt(), 0);
 }
@@ -44,23 +44,23 @@ void test_CollectionList::empty()
 void test_CollectionList::addPlatform()
 {
     Types::CollectionList list;
-    QSignalSpy spy_platform(&list, &Types::CollectionList::currentChanged);
-    QSignalSpy spy_game(&list, &Types::CollectionList::currentPlatformGameChanged);
-    QVERIFY(spy_platform.isValid());
+    QSignalSpy spy_current(&list, &Types::CollectionList::currentChanged);
+    QSignalSpy spy_game(&list, &Types::CollectionList::currentGameChanged);
+    QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().append(new Types::Collection());
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().append(new Types::Collection());
     list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
-    QCOMPARE(list.property("current").value<Types::Platform*>(), list.elements().first());
+    QCOMPARE(list.property("current").value<Types::Collection*>(), list.elements().first());
     QCOMPARE(list.property("index").toInt(), 0);
     QCOMPARE(list.property("count").toInt(), 2);
-    QCOMPARE(spy_platform.count(), 1);
+    QCOMPARE(spy_current.count(), 1);
     QCOMPARE(spy_game.count(), 1);
 }
 
@@ -69,22 +69,22 @@ void test_CollectionList::indexChange()
     // prepare
 
     Types::CollectionList list;
-    QSignalSpy spy_platform(&list, &Types::CollectionList::currentChanged);
-    QSignalSpy spy_game(&list, &Types::CollectionList::currentPlatformGameChanged);
-    QVERIFY(spy_platform.isValid());
+    QSignalSpy spy_current(&list, &Types::CollectionList::currentChanged);
+    QSignalSpy spy_game(&list, &Types::CollectionList::currentGameChanged);
+    QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().append(new Types::Collection());
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().append(new Types::Collection());
     list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
     QVERIFY(list.count() == 2);
     QVERIFY(list.index() == 0);
-    QVERIFY(spy_platform.count() == 1);
+    QVERIFY(spy_current.count() == 1);
     QVERIFY(spy_game.count() == 1);
 
     // test
@@ -92,16 +92,16 @@ void test_CollectionList::indexChange()
     QFETCH(int, target);
     QFETCH(int, expected);
     if (target != expected)
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid platform index.*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid collection index.*"));
 
     list.setProperty("index", target);
 
     QCOMPARE(list.property("index").toInt(), expected);
-    QCOMPARE(spy_platform.count(), expected == 0 ? 1 : 2);
+    QCOMPARE(spy_current.count(), expected == 0 ? 1 : 2);
     QCOMPARE(spy_game.count(), expected == 0 ? 1 : 2);
 
     // check pointer
-    auto current_ptr = list.property("current").value<Types::Platform*>();
+    auto current_ptr = list.property("current").value<Types::Collection*>();
     if (expected == -1) {
         QCOMPARE(current_ptr, nullptr);
     }
