@@ -90,8 +90,10 @@ void CollectionList::onScanComplete()
     }
     qInfo().noquote() << tr("%n games found", "", game_count);
 
-    if (!m_platforms.isEmpty())
+    if (!m_platforms.isEmpty()) {
         setIndex(0);
+        emit countChanged();
+    }
 }
 
 void CollectionList::onPlatformGameChanged()

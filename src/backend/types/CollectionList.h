@@ -33,7 +33,8 @@ class CollectionList : public QObject {
                WRITE setIndex
                NOTIFY currentChanged)
     Q_PROPERTY(int count
-               READ count CONSTANT)
+               READ count
+               NOTIFY countChanged)
     Q_PROPERTY(QQmlListProperty<Types::Platform> model
                READ elementsProp
                CONSTANT)
@@ -52,6 +53,7 @@ public:
     QVector<Platform*>& elementsMut() { return m_platforms; }
 
 signals:
+    void countChanged();
     void currentChanged();
     void currentPlatformGameChanged();
 
