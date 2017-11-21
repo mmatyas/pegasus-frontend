@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "PlatformList.h"
+#include "CollectionList.h"
 
 #include "ListPropertyFn.h"
 
@@ -24,15 +24,15 @@
 
 namespace Types {
 
-PlatformList::PlatformList(QObject* parent)
+CollectionList::CollectionList(QObject* parent)
     : QObject(parent)
     , m_platform_idx(-1)
 {
 }
 
-PlatformList::~PlatformList() = default;
+CollectionList::~CollectionList() = default;
 
-Platform* PlatformList::current() const
+Platform* CollectionList::current() const
 {
     if (m_platform_idx < 0)
         return nullptr;
@@ -41,7 +41,7 @@ Platform* PlatformList::current() const
     return m_platforms.at(m_platform_idx);
 }
 
-void PlatformList::setIndex(int idx)
+void CollectionList::setIndex(int idx)
 {
     // Setting the index to a valid value causes changing the current platform
     // and the current game. Setting the index to an invalid value should not
@@ -61,7 +61,7 @@ void PlatformList::setIndex(int idx)
     emit currentPlatformGameChanged();
 }
 
-QQmlListProperty<Platform> PlatformList::platformsProp()
+QQmlListProperty<Platform> CollectionList::elementsProp()
 {
     static const auto count = &listproperty_count<Platform>;
     static const auto at = &listproperty_at<Platform>;
@@ -69,7 +69,7 @@ QQmlListProperty<Platform> PlatformList::platformsProp()
     return {this, &m_platforms, count, at};
 }
 
-void PlatformList::onScanComplete()
+void CollectionList::onScanComplete()
 {
     // TODO: handle the locking and counting during searching
 
@@ -82,7 +82,7 @@ void PlatformList::onScanComplete()
         platform->setParent(this);
 
         connect(platform, &Platform::currentGameChanged,
-                this, &PlatformList::onPlatformGameChanged);
+                this, &CollectionList::onPlatformGameChanged);
 
         Types::GameList& gamelist = platform->gameListMut();
         gamelist.lockGameList();
@@ -94,7 +94,7 @@ void PlatformList::onScanComplete()
         setIndex(0);
 }
 
-void PlatformList::onPlatformGameChanged()
+void CollectionList::onPlatformGameChanged()
 {
     if (sender() == current())
         emit currentPlatformGameChanged();

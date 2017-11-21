@@ -23,7 +23,7 @@
 #include "types/Meta.h"
 #include "types/Settings.h"
 #include "types/System.h"
-#include "types/PlatformList.h"
+#include "types/CollectionList.h"
 
 #include <QFutureWatcher>
 #include <QObject>
@@ -43,7 +43,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(Types::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(Types::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(Types::System* system READ system CONSTANT)
-    Q_PROPERTY(Types::PlatformList* platforms READ platformList CONSTANT)
+    Q_PROPERTY(Types::CollectionList* collections READ collectionList CONSTANT)
 
     // shortcuts
 
@@ -71,11 +71,11 @@ public:
     Types::Meta* meta() { return &m_meta; }
     Types::Settings* settings() { return &m_settings; }
     Types::System* system() { return &m_system; }
-    Types::PlatformList* platformList() { return &m_platform_list; }
+    Types::CollectionList* collectionList() { return &m_collections; }
 
     // shortcuts
 
-    Types::Platform* currentPlatform() const { return m_platform_list.current(); }
+    Types::Platform* currentPlatform() const { return m_collections.current(); }
     Types::Game* currentGame() const {
         return currentPlatform() ? currentPlatform()->gameList().current() : nullptr;
     }
@@ -110,7 +110,7 @@ private:
     Types::System m_system;
     Types::Settings m_settings;
     Types::Filters m_filters;
-    Types::PlatformList m_platform_list;
+    Types::CollectionList m_collections;
 
     // initialization
     DataFinder m_datafinder;

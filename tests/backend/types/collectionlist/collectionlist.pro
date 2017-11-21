@@ -3,7 +3,7 @@ CONFIG += testcase
 QT += qml testlib
 CONFIG += c++11 warn_on exceptions_off
 
-TARGET = test_PlatformList
+TARGET = test_CollectionList
 SOURCES = $${TARGET}.cpp
 DEFINES *= $${COMMON_DEFINES}
 

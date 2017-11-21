@@ -87,12 +87,12 @@ void registerAPIClasses()
     qmlRegisterUncreatableType<Types::Game>(API_URI, 0, 2, "Game", error_msg);
     qmlRegisterUncreatableType<Types::GameList>(API_URI, 0, 6, "GameList", error_msg);
     qmlRegisterUncreatableType<Types::Platform>(API_URI, 0, 2, "Platform", error_msg);
-    qmlRegisterUncreatableType<Types::PlatformList>(API_URI, 0, 6, "PlatformList", error_msg);
     qmlRegisterUncreatableType<Types::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
     qmlRegisterUncreatableType<Types::Locale>(API_URI, 0, 6, "Locale", error_msg);
     qmlRegisterUncreatableType<Types::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
     qmlRegisterUncreatableType<Types::Theme>(API_URI, 0, 6, "Theme", error_msg);
     qmlRegisterUncreatableType<Types::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
+    qmlRegisterUncreatableType<Types::CollectionList>(API_URI, 0, 7, "CollectionList", error_msg);
 }
 
 void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)

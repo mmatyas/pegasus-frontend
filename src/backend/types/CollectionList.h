@@ -22,7 +22,7 @@
 
 namespace Types {
 
-class PlatformList : public QObject {
+class CollectionList : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(Types::Platform* current
@@ -35,21 +35,21 @@ class PlatformList : public QObject {
     Q_PROPERTY(int count
                READ count CONSTANT)
     Q_PROPERTY(QQmlListProperty<Types::Platform> model
-               READ platformsProp
+               READ elementsProp
                CONSTANT)
 
 public:
-    explicit PlatformList(QObject* parent = nullptr);
-    ~PlatformList();
+    explicit CollectionList(QObject* parent = nullptr);
+    ~CollectionList();
 
     Platform* current() const;
     int index() const { return m_platform_idx; }
     void setIndex(int);
     int count() const { return m_platforms.count(); }
-    QQmlListProperty<Platform> platformsProp();
+    QQmlListProperty<Platform> elementsProp();
 
-    const QVector<Platform*>& platforms() const { return m_platforms; }
-    QVector<Platform*>& platformsMut() { return m_platforms; }
+    const QVector<Platform*>& elements() const { return m_platforms; }
+    QVector<Platform*>& elementsMut() { return m_platforms; }
 
 signals:
     void currentChanged();

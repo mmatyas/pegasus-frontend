@@ -17,10 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "types/PlatformList.h"
+#include "types/CollectionList.h"
 
 
-class test_PlatformList : public QObject {
+class test_CollectionList : public QObject {
     Q_OBJECT
 
 private slots:
@@ -32,54 +32,54 @@ private slots:
     void indexChange_data();
 };
 
-void test_PlatformList::empty()
+void test_CollectionList::empty()
 {
-    Types::PlatformList list;
+    Types::CollectionList list;
 
     QCOMPARE(list.property("current").value<Types::Platform*>(), nullptr);
     QCOMPARE(list.property("index").toInt(), -1);
     QCOMPARE(list.property("count").toInt(), 0);
 }
 
-void test_PlatformList::addPlatform()
+void test_CollectionList::addPlatform()
 {
-    Types::PlatformList list;
-    QSignalSpy spy_platform(&list, &Types::PlatformList::currentChanged);
-    QSignalSpy spy_game(&list, &Types::PlatformList::currentPlatformGameChanged);
+    Types::CollectionList list;
+    QSignalSpy spy_platform(&list, &Types::CollectionList::currentChanged);
+    QSignalSpy spy_game(&list, &Types::CollectionList::currentPlatformGameChanged);
     QVERIFY(spy_platform.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.platformsMut().append(new Types::Platform());
-    list.platformsMut().last()->gameListMut().addGame("dummy1");
-    list.platformsMut().append(new Types::Platform());
-    list.platformsMut().last()->gameListMut().addGame("dummy2");
+    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().last()->gameListMut().addGame("dummy1");
+    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
-    QCOMPARE(list.property("current").value<Types::Platform*>(), list.platforms().first());
+    QCOMPARE(list.property("current").value<Types::Platform*>(), list.elements().first());
     QCOMPARE(list.property("index").toInt(), 0);
     QCOMPARE(list.property("count").toInt(), 2);
     QCOMPARE(spy_platform.count(), 1);
     QCOMPARE(spy_game.count(), 1);
 }
 
-void test_PlatformList::indexChange()
+void test_CollectionList::indexChange()
 {
     // prepare
 
-    Types::PlatformList list;
-    QSignalSpy spy_platform(&list, &Types::PlatformList::currentChanged);
-    QSignalSpy spy_game(&list, &Types::PlatformList::currentPlatformGameChanged);
+    Types::CollectionList list;
+    QSignalSpy spy_platform(&list, &Types::CollectionList::currentChanged);
+    QSignalSpy spy_game(&list, &Types::CollectionList::currentPlatformGameChanged);
     QVERIFY(spy_platform.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.platformsMut().append(new Types::Platform());
-    list.platformsMut().last()->gameListMut().addGame("dummy1");
-    list.platformsMut().append(new Types::Platform());
-    list.platformsMut().last()->gameListMut().addGame("dummy2");
+    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().last()->gameListMut().addGame("dummy1");
+    list.elementsMut().append(new Types::Platform());
+    list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
     QVERIFY(list.count() == 2);
@@ -106,12 +106,12 @@ void test_PlatformList::indexChange()
         QCOMPARE(current_ptr, nullptr);
     }
     else {
-        Q_ASSERT(0 <= expected && expected < list.platforms().count());
-        QCOMPARE(current_ptr, list.platforms().at(expected));
+        Q_ASSERT(0 <= expected && expected < list.elements().count());
+        QCOMPARE(current_ptr, list.elements().at(expected));
     }
 }
 
-void test_PlatformList::indexChange_data()
+void test_CollectionList::indexChange_data()
 {
     QTest::addColumn<int>("target");
     QTest::addColumn<int>("expected");
@@ -124,5 +124,5 @@ void test_PlatformList::indexChange_data()
 }
 
 
-QTEST_MAIN(test_PlatformList)
-#include "test_PlatformList.moc"
+QTEST_MAIN(test_CollectionList)
+#include "test_CollectionList.moc"

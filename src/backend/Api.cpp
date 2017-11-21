@@ -30,9 +30,9 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_filters, &Types::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
 
-    connect(&m_platform_list, &Types::PlatformList::currentChanged,
+    connect(&m_collections, &Types::CollectionList::currentChanged,
             this, &ApiObject::currentPlatformChanged);
-    connect(&m_platform_list, &Types::PlatformList::currentPlatformGameChanged,
+    connect(&m_collections, &Types::CollectionList::currentPlatformGameChanged,
             this, &ApiObject::currentGameChanged);
 
     connect(&m_datafinder, &DataFinder::platformGamesReady,
@@ -49,11 +49,11 @@ void ApiObject::startScanning()
         timer.start();
 
         m_meta.onScanStarted();
-        m_platform_list.platformsMut() = m_datafinder.find();
+        m_collections.elementsMut() = m_datafinder.find();
         m_meta.onScanCompleted(timer.elapsed());
 
         // set the correct thread for the QObjects
-        for (Types::Platform* const platform : m_platform_list.platforms()) {
+        for (Types::Platform* const platform : m_collections.elements()) {
             platform->moveToThread(thread());
             platform->gameListMut().moveToThread(thread());
         }
@@ -62,7 +62,7 @@ void ApiObject::startScanning()
     m_loading_watcher.setFuture(future);
 
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            &m_platform_list, &Types::PlatformList::onScanComplete);
+            &m_collections, &Types::CollectionList::onScanComplete);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
             &m_meta, &Types::Meta::onLoadingCompleted);
 }
@@ -96,6 +96,6 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onFiltersChanged()
 {
-    for (Types::Platform* const platform : m_platform_list.platforms())
+    for (Types::Platform* const platform : m_collections.elements())
         platform->gameListMut().applyFilters(m_filters);
 }

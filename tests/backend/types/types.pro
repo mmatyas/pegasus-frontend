@@ -1,10 +1,10 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    collectionlist \
     gameassets \
     gamelist \
     localelist \
     platform \
-    platformlist \
     system \
     themelist \

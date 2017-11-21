@@ -73,7 +73,7 @@ Window {
 
         NoGamesErrorMessage {
             id: nogamesError
-            visible: pegasus.platforms.model.count === 0
+            visible: pegasus.collections.model.count === 0
         }
 
         ThemeErrorMessage {
