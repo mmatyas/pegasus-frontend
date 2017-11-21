@@ -20,13 +20,12 @@ import QtQuick 2.8
 GridView {
     id: grid_root
 
-    property var platformData: pegasus.currentPlatform
+    property var platformData: pegasus.collections.current
 
     model: platformData.games.model
     onModelChanged: { firstImageLoaded = false; cellHeightRatio = 0.5; }
 
-    //currentIndex: pegasus.currentPlatform.currentGameIndex
-    currentIndex: pegasus.collections.current.games.index
+    currentIndex: platformData.games.index
     onCurrentIndexChanged: pegasus.collections.current.games.index = currentIndex
     Component.onCompleted: positionViewAtIndex(currentIndex, PathView.Center)
 

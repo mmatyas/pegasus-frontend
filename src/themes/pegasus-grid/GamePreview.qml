@@ -104,8 +104,8 @@ Item {
                 id: videoPreview
 
                 property real preferredHeightRatio: {
-                    if (pegasus.currentPlatform
-                        && pegasus.currentPlatform.shortName === "steam")
+                    if (pegasus.currentCollection
+                        && pegasus.currentCollection.shortName === "steam")
                         return 0.5625; // 9/16
 
                     return 0.75;
