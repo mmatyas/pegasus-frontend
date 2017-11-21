@@ -100,7 +100,7 @@ void GameList::lockGameList()
 #endif
 
     clearFilters();
-    emit allCountChanged();
+    emit allGamesChanged();
 }
 
 void GameList::clearFilters()

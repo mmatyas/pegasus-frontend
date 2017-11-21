@@ -43,13 +43,13 @@ class GameList : public QObject {
                NOTIFY filteredGamesChanged)
     Q_PROPERTY(int countAll
                READ allCount
-               NOTIFY allCountChanged)
+               NOTIFY allGamesChanged)
     Q_PROPERTY(QQmlListProperty<Types::Game> model
                READ getFilteredGamesProp
                NOTIFY filteredGamesChanged)
     Q_PROPERTY(QQmlListProperty<Types::Game> modelAll
                READ getAllGamesProp
-               CONSTANT)
+               NOTIFY allGamesChanged)
 
 public:
     explicit GameList(QObject* parent = nullptr);
@@ -79,7 +79,7 @@ public:
 signals:
     void currentChanged();
     void filteredGamesChanged();
-    void allCountChanged();
+    void allGamesChanged();
 
 private:
     int m_game_idx;

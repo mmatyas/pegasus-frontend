@@ -34,10 +34,10 @@ class CollectionList : public QObject {
                NOTIFY currentChanged)
     Q_PROPERTY(int count
                READ count
-               NOTIFY countChanged)
+               NOTIFY modelChanged)
     Q_PROPERTY(QQmlListProperty<Types::Collection> model
                READ elementsProp
-               CONSTANT)
+               NOTIFY modelChanged)
 
 public:
     explicit CollectionList(QObject* parent = nullptr);
@@ -53,7 +53,7 @@ public:
     QVector<Collection*>& elementsMut() { return m_collections; }
 
 signals:
-    void countChanged();
+    void modelChanged();
     void currentChanged();
     void currentGameChanged();
 

@@ -92,7 +92,7 @@ void CollectionList::onScanComplete()
 
     if (!m_collections.isEmpty()) {
         setIndex(0);
-        emit countChanged();
+        emit modelChanged();
     }
 }
 
