@@ -88,9 +88,10 @@ All trademarks, service marks, trade names, trade dress, product names and logos
 
 ## Donate
 
-Pegasus is a free and open source project, and will remain as one. If you would like to financially support me, you can use the following link. This is completely optional, but every contribution is much appreciated!
+Pegasus is a free and open source project, and will remain as one. If you would like to financially support me, you can use the following links. This is completely optional, but every contribution is much appreciated!
 
 [![PayPal](https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png)](https://paypal.me/MatyasMustoha)
+[![Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/mmatyas/donate)
 
 
 
