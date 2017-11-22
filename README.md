@@ -86,6 +86,13 @@ Pegasus Frontend is available under GPLv3 license. Some included assets, such as
 All trademarks, service marks, trade names, trade dress, product names and logos are property of their respective owners. All company, product and service names used in this product are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.
 
 
+## Donate
+
+Pegasus is a free and open source project, and will remain as one. If you would like to financially support me, you can use the following link. This is completely optional, but every contribution is much appreciated!
+
+[![PayPal](https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png)](https://paypal.me/MatyasMustoha)
+
+
 
 [gh ci builds]: https://github.com/mmatyas/pegasus-frontend/releases/tag/continuous
 [appveyor mingw build]: https://ci.appveyor.com/api/projects/mmatyas/pegasus-frontend/artifacts/build/pegasus_ci.zip?job=Environment%3A%20flavor%3Dmingw%2C%20QTDIR%3DC%3A%5CQt%5C5.9%5Cmingw53_32
