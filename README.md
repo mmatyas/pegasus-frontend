@@ -81,7 +81,7 @@ Additional parameters are available for QMake:
 
 ## License
 
-Pegasus Frontend is available under GPLv3 license. You can find the details in the [LICENSE](LICENSE.md) file.
+Pegasus Frontend is available under GPLv3 license. Some included assets, such as product logos and symbols may not be available for commercial usage and/or may require additional permissions from their respective owners for certain legal uses. Furthermore, trademark usage may be limited as per §7 of the GPLv3 license. You can find the details in the [LICENSE](LICENSE.md) file.
 
 All trademarks, service marks, trade names, trade dress, product names and logos are property of their respective owners. All company, product and service names used in this product are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.
 
