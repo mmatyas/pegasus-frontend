@@ -26,12 +26,7 @@
 #include <QSettings>
 
 
-void handleLogMsg(QtMsgType, const QMessageLogContext&, const QString&);
 void handleCommandLineArgs(QGuiApplication&);
-
-// using std::list because QTextStream is not copyable,
-// and neither Qt not std::vector can be used in this case
-std::list<QTextStream> log_streams;
 
 int main(int argc, char *argv[])
 {
@@ -45,13 +40,12 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("pegasus-frontend.org");
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
-    setupLogStreams(log_streams);
-    qInstallMessageHandler(handleLogMsg);
+    setupLogStreams();
 
     handleCommandLineArgs(app);
-    setupGamepadNavigation();
+    setupGamepad();
     // this should come before the ApiObject constructor,
-    // as it may produce language change signals
+    // as that may produce language change signals
     registerAPIClasses();
 
     // the main parts of the backend
@@ -59,13 +53,7 @@ int main(int argc, char *argv[])
     ApiObject api;
     FrontendLayer frontend;
     ProcessLauncher launcher;
-    setupAsyncGameLaunch(api, frontend, launcher);
-
-    api.startScanning();
-    frontend.rebuild(&api);
-
-    setupControlsChangeScripts();
-    setupAppCloseScripts(api);
+    connectAndStartEngine(api, frontend, launcher);
 
     return app.exec();
 }
@@ -82,12 +70,4 @@ void handleCommandLineArgs(QGuiApplication& app)
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app);
-}
-
-void handleLogMsg(QtMsgType type, const QMessageLogContext& context, const QString& msg)
-{
-    // forward the message to all registered output streams
-    const QByteArray preparedMsg = qFormatLogMessage(type, context, msg).toLocal8Bit();
-    for (auto& stream : log_streams)
-        stream << preparedMsg << endl;
 }

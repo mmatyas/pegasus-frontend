@@ -18,49 +18,31 @@
 #include "setup.h"
 
 #include "Api.h"
-#include "AppCloseType.h"
 #include "FrontendLayer.h"
 #include "GamepadAxisNavigation.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
 #include "SystemCommands.h"
 
+#include <QCoreApplication>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QGamepadKeyNavigation>
 #include <QGamepadManager>
-#include <QGuiApplication>
-#include <QQmlContext>
+#include <QQmlEngine>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <QTextStream>
 
 
-void setupLogStreams(std::list<QTextStream>& streams)
-{
-    streams.emplace_back(stdout);
+namespace {
 
-    using regex = QRegularExpression;
-    using qsp = QStandardPaths;
+// using std::list because QTextStream is not copyable,
+// and neither Qt not std::vector can be used in this case
+std::list<QTextStream> log_streams;
 
-    Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
-    QString log_path = qsp::standardLocations(qsp::AppConfigLocation).constFirst();
-    log_path = log_path.replace(regex("/pegasus-frontend/pegasus-frontend$"), "/pegasus-frontend");
-
-    if (!QDir().mkpath(log_path)) {
-        streams.back() << QObject::tr("Warning: `%1` does not exists, and could not create it."
-                                      " File logging disabled.").arg(log_path) << endl;
-        return;
-    }
-
-    log_path += "/lastrun.log";
-
-    static QFile log_file(log_path);
-    log_file.open(QIODevice::WriteOnly | QIODevice::Text);
-
-    streams.emplace_back(&log_file);
-}
-
-void setupGamepadNavigation()
+void mapGamepadToKeyboard()
 {
     static QGamepadKeyNavigation padkeynav;
     static GamepadAxisNavigation padaxisnav;
@@ -75,6 +57,66 @@ void setupGamepadNavigation()
 
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
                      &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
+}
+
+void setupControlsChangeScripts()
+{
+    const auto callback = [](){
+        using ScriptEvent = ScriptRunner::EventType;
+
+        ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+        ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
+    };
+
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, callback);
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, callback);
+}
+
+void onLogMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+    // forward the message to all registered output streams
+    const QByteArray preparedMsg = qFormatLogMessage(type, context, msg).toLocal8Bit();
+    for (auto& stream : log_streams)
+        stream << preparedMsg << endl;
+}
+
+} // namespace
+
+void setupLogStreams()
+{
+    log_streams.emplace_back(stdout);
+    qInstallMessageHandler(onLogMessage);
+
+
+    using regex = QRegularExpression;
+    using qsp = QStandardPaths;
+    Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
+
+    QString log_path = qsp::standardLocations(qsp::AppConfigLocation).constFirst();
+    log_path = log_path.replace(regex("/pegasus-frontend/pegasus-frontend$"), "/pegasus-frontend");
+
+    if (!QDir().mkpath(log_path)) {
+        log_streams.back() << QObject::tr("Warning: Could not open or create `%1`."
+                                          " File logging disabled.").arg(log_path) << endl;
+        return;
+    }
+
+    log_path += "/lastrun.log";
+
+    static QFile log_file(log_path);
+    if (!log_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        log_streams.back() << QObject::tr("Warning: Could not open `%1` for writing."
+                                          " File logging disabled.").arg(log_path) << endl;
+        return;
+    }
+
+    log_streams.emplace_back(&log_file);
+}
+
+void setupGamepad()
+{
+    mapGamepadToKeyboard();
+    setupControlsChangeScripts();
 }
 
 void registerAPIClasses()
@@ -94,7 +136,7 @@ void registerAPIClasses()
     qmlRegisterUncreatableType<Types::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
 }
 
-void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)
+void connectAndStartEngine(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)
 {
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
@@ -114,51 +156,41 @@ void setupAsyncGameLaunch(ApiObject& api, FrontendLayer& frontend, ProcessLaunch
 
     QObject::connect(&api, &ApiObject::restoreAfterGame,
                      &frontend, &FrontendLayer::rebuild);
+
+
+    // close the app on quit request
+    QObject::connect(&api, &ApiObject::appCloseRequested, onAppClose);
+
+    // start the engine
+    frontend.rebuild(&api);
+    api.startScanning();
 }
 
-void setupControlsChangeScripts()
+void onAppClose(AppCloseType type)
 {
-    const auto callback = [](){
-        using ScriptEvent = ScriptRunner::EventType;
+    using ScriptEvent = ScriptRunner::EventType;
 
-        ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-        ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
-    };
+    ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
+    switch (type) {
+        case AppCloseType::REBOOT:
+            ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
+            break;
+        case AppCloseType::SHUTDOWN:
+            ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
+            break;
+        default: break;
+    }
 
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, callback);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, callback);
-}
+    qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
 
-void setupAppCloseScripts(ApiObject& api)
-{
-    const auto callback = [](AppCloseType type){
-        using ScriptEvent = ScriptRunner::EventType;
-
-        ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
-        switch (type) {
-            case AppCloseType::REBOOT:
-                ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
-                break;
-            case AppCloseType::SHUTDOWN:
-                ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
-                break;
-            default: break;
-        }
-
-        qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
-
-        QCoreApplication::quit();
-        switch (type) {
-            case AppCloseType::REBOOT:
-                SystemCommands::reboot();
-                break;
-            case AppCloseType::SHUTDOWN:
-                SystemCommands::shutdown();
-                break;
-            default: break;
-        }
-    };
-
-    // do the connection
-    QObject::connect(&api, &ApiObject::appCloseRequested, callback);
+    QCoreApplication::quit();
+    switch (type) {
+        case AppCloseType::REBOOT:
+            SystemCommands::reboot();
+            break;
+        case AppCloseType::SHUTDOWN:
+            SystemCommands::shutdown();
+            break;
+        default: break;
+    }
 }

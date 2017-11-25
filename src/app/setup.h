@@ -17,18 +17,15 @@
 
 #pragma once
 
-#include <list>
+#include "AppCloseType.h"
 
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;
 
-class QTextStream;
 
-
-void setupLogStreams(std::list<QTextStream>&);
-void setupGamepadNavigation();
+void setupLogStreams();
+void setupGamepad();
 void registerAPIClasses();
-void setupAsyncGameLaunch(ApiObject&, FrontendLayer&, ProcessLauncher&);
-void setupControlsChangeScripts();
-void setupAppCloseScripts(ApiObject&);
+void connectAndStartEngine(ApiObject&, FrontendLayer&, ProcessLauncher&);
+void onAppClose(AppCloseType);
