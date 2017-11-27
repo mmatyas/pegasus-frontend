@@ -80,7 +80,15 @@ void GameList::addGame(QString path)
 #ifdef QT_DEBUG
     Q_ASSERT(!m_gamelist_locked);
 #endif
-    m_all_games.append(new Game(std::move(path), this));
+    addGame(new Game(std::move(path), this));
+}
+
+void GameList::addGame(Game* game_ptr)
+{
+#ifdef QT_DEBUG
+    Q_ASSERT(!m_gamelist_locked);
+#endif
+    m_all_games.append(game_ptr);
 }
 
 void GameList::sortGames()

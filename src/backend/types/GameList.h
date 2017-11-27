@@ -70,6 +70,7 @@ public:
     void applyFilters(const Filters&);
 
     void addGame(QString path);
+    void addGame(Game* game_ptr);
     void sortGames();
     void lockGameList();
 
