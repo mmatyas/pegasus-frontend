@@ -19,6 +19,7 @@ SOURCES += \
     model_providers/AppFiles.cpp \
     model_providers/SteamPlatform.cpp \
     model_providers/SteamMetadata.cpp \
+    providers/Es2Provider.cpp \
     types/Game.cpp \
     types/GameAssets.cpp \
     types/GameList.cpp \
@@ -52,6 +53,8 @@ HEADERS += \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
     model_providers/SteamMetadata.h \
+    providers/Provider.h \
+    providers/Es2Provider.h \
     types/Filters.h \
     types/Game.h \
     types/GameAssets.h \

@@ -32,8 +32,14 @@
 #include <memory>
 
 
-namespace {
+#include "providers/Es2Provider.h"
 
+
+#include <QDebug>
+
+
+namespace {
+/*
 QVector<Types::Collection*> runPlatformListProviders()
 {
     QVector<Types::Collection*> model;
@@ -68,8 +74,8 @@ void findGamesByExt(Types::Collection& platform)
             platform.gameListMut().addGame(romdir_it.next());
     }
 }
-
-void removeEmptyPlatforms(QVector<Types::Collection*>& platforms)
+*/
+void removeEmptyCollections(QVector<Types::Collection*>& platforms)
 {
     // NOTE: if this turns out to be slow, STL iterators
     // could be used here
@@ -107,7 +113,7 @@ DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
 {}
 
-QVector<Types::Collection*> DataFinder::find()
+/*QVector<Types::Collection*> DataFinder::find()
 {
     // TODO: map-reduce algorithms might be usable here
     // TODO: mergeDuplicatePlatforms(model);
@@ -134,4 +140,30 @@ QVector<Types::Collection*> DataFinder::find()
     }
 
     return model;
+}*/
+
+QVector<Types::Collection*> DataFinder::find()
+{
+    QHash<QString, Types::Game*> games;
+    QHash<QString, Types::Collection*> collections;
+    QVector<QString> metadata_dirs;
+
+
+    using ProviderPtr = std::unique_ptr<providers::Provider>;
+    std::vector<ProviderPtr> providers;
+
+    providers.emplace_back(new providers::Es2Provider());
+
+    for (auto& provider : providers)
+        provider->find(games, collections, metadata_dirs);
+
+
+    QVector<Types::Collection*> result;
+    for (Types::Collection* const coll : collections) {
+        qDebug()  << "coll" << coll->tag() << coll->gameList().allCount() << coll->gameList().filteredCount();
+        result << coll;
+}
+
+    removeEmptyCollections(result);
+    return result;
 }

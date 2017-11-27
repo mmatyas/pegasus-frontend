@@ -15,29 +15,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Game.h"
+#pragma once
 
-#include <QFileInfo>
-#include <QDebug>
+#include "Provider.h"
 
 
-namespace Types {
+namespace providers {
 
-Game::Game(QString path, QObject* parent)
-    : QObject(parent)
-    , m_rom_path(std::move(path))
-    , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
-    , m_title(m_rom_basename)
-    , m_players(1)
-    , m_favorite(false)
-    , m_rating(0)
-    , m_year(0)
-    , m_month(0)
-    , m_day(0)
-    , m_playcount(0)
-{
-    qDebug() << "game" << m_rom_path << m_title;
-    Q_ASSERT(!m_rom_path.isEmpty());
-}
+class Es2Provider : public Provider {
+public:
+    void find(QHash<QString, Types::Game*>& games,
+              QHash<QString, Types::Collection*>& collections,
+              QVector<QString>& metadata_dirs) override;
+};
 
-} // namespace Types
+} // namespace providers
