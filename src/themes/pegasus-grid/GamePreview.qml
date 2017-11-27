@@ -105,7 +105,7 @@ Item {
 
                 property real preferredHeightRatio: {
                     if (pegasus.currentCollection
-                        && pegasus.currentCollection.shortName === "steam")
+                        && pegasus.currentCollection.tag === "steam")
                         return 0.5625; // 9/16
 
                     return 0.75;

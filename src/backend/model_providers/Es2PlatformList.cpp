@@ -108,7 +108,7 @@ QVector<Types::Collection*> Es2PlatformList::parseSystemsFile(QXmlStreamReader& 
 
         Types::Collection* collection = parseSystemEntry(xml);
         if (collection) {
-            if (!collection->shortName().isEmpty())
+            if (!collection->tag().isEmpty())
                 collections.push_back(collection);
             else
                 delete collection;
@@ -146,8 +146,7 @@ Types::Collection* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
         .replace("~", homePath());
 
     // construct the new platform
-    auto collection = new Types::Collection(); // TODO: check for fail
-    collection->setShortName(xml_props["name"]);
+    auto collection = new Types::Collection(xml_props["name"]); // TODO: check for fail
     collection->searchDirsMut().append(xml_props["path"]);
     collection->romFiltersMut().append(parseFilters(xml_props["extension"]));
     collection->setCommonLaunchCmd(xml_props["command"]);

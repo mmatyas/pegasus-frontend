@@ -40,7 +40,7 @@ void Es2Metadata::fill(const Types::Collection& collection)
     if (xml_path.isEmpty()) {
         qWarning().noquote()
             << MSG_PREFIX
-            << QObject::tr("gamelist for platform `%1` not found").arg(collection.shortName());
+            << QObject::tr("gamelist for platform `%1` not found").arg(collection.tag());
         return;
     }
 
@@ -60,15 +60,15 @@ void Es2Metadata::fill(const Types::Collection& collection)
 
 QString Es2Metadata::findGamelistFile(const Types::Collection& collection)
 {
-    Q_ASSERT(!collection.shortName().isEmpty());
+    Q_ASSERT(!collection.tag().isEmpty());
 
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
     static constexpr auto FILENAME = "/gamelist.xml";
 
     const QVector<QString> possible_dirs = {
         collection.searchDirs().first(),
-        homePath() % "/.emulationstation/gamelists/" % collection.shortName(),
-        "/etc/emulationstation/gamelists/" % collection.shortName(),
+        homePath() % "/.emulationstation/gamelists/" % collection.tag(),
+        "/etc/emulationstation/gamelists/" % collection.tag(),
     };
 
     for (const auto& dir : possible_dirs) {
@@ -250,7 +250,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Collection& coll
 
     const QString path_base = homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/")
-                              % collection.shortName() % '/'
+                              % collection.tag() % '/'
                               % game.m_rom_basename;
 
     for (auto asset_type : Assets::singleTypes) {

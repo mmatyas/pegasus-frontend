@@ -319,7 +319,7 @@ namespace model_providers {
 
 void SteamMetadata::fill(const Types::Collection& collection)
 {
-    if (collection.shortName() != QLatin1Literal("steam"))
+    if (collection.tag() != QLatin1Literal("steam"))
         return;
 
     const QString steamexe = find_steam_exe();

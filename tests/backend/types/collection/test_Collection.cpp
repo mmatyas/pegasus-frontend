@@ -30,19 +30,18 @@ private slots:
 
 void test_Collection::names()
 {
-    Types::Collection collection;
-    collection.setShortName("short");
-    collection.setLongName("long");
+    Types::Collection collection("mytag");
+    collection.setName("myname");
     collection.setCommonLaunchCmd("runner");
 
     // the properties are read-only and should be called only after the initial setup
-    QCOMPARE(collection.property("shortName").toString(), QStringLiteral("short"));
-    QCOMPARE(collection.property("longName").toString(), QStringLiteral("long"));
+    QCOMPARE(collection.property("tag").toString(), QStringLiteral("mytag"));
+    QCOMPARE(collection.property("name").toString(), QStringLiteral("myname"));
 }
 
 void test_Collection::gameChanged()
 {
-    Types::Collection collection;
+    Types::Collection collection("dummy");
     QSignalSpy triggered(&collection, &Types::Collection::currentGameChanged);
     QVERIFY(triggered.isValid());
 

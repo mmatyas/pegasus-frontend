@@ -30,19 +30,18 @@ namespace Types {
 class Collection : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString shortName READ shortName CONSTANT)
-    Q_PROPERTY(QString longName READ longName CONSTANT)
+    Q_PROPERTY(QString tag READ tag CONSTANT)
+    Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(Types::GameList* games READ gameListPtr CONSTANT)
 
 public:
-    explicit Collection(QObject* parent = nullptr);
+    explicit Collection(QString tag, QObject* parent = nullptr);
 
-    void setShortName(QString);
-    void setLongName(QString);
+    void setName(QString);
     void setCommonLaunchCmd(QString);
 
-    const QString& shortName() const { return m_short_name; }
-    const QString& longName() const { return m_long_name; }
+    const QString& tag() const { return m_tag; }
+    const QString& name() const { return m_name; }
     const QString& launchCmd() const { return m_launch_cmd; }
 
     const QStringList& searchDirs() const { return m_rom_dirs; }
@@ -57,8 +56,8 @@ signals:
     void currentGameChanged();
 
 private:
-    QString m_short_name;
-    QString m_long_name;
+    const QString m_tag;
+    QString m_name;
     QString m_launch_cmd;
     QStringList m_rom_dirs;
     QStringList m_rom_filters;

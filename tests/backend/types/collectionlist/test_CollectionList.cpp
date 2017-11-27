@@ -54,9 +54,9 @@ void test_CollectionList::addPlatform()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new Types::Collection());
+    list.elementsMut().append(new Types::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection());
+    list.elementsMut().append(new Types::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
@@ -79,9 +79,9 @@ void test_CollectionList::indexChange()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new Types::Collection());
+    list.elementsMut().append(new Types::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection());
+    list.elementsMut().append(new Types::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 

@@ -20,23 +20,20 @@
 
 namespace Types {
 
-Collection::Collection(QObject* parent)
+Collection::Collection(QString tag, QObject* parent)
     : QObject(parent)
+    , m_tag(std::move(tag))
 {
+    Q_ASSERT(!m_tag.isEmpty());
+
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
 }
 
-void Collection::setShortName(QString str)
+void Collection::setName(QString str)
 {
     Q_ASSERT(!str.isEmpty());
-    m_short_name = str;
-}
-
-void Collection::setLongName(QString str)
-{
-    Q_ASSERT(!str.isEmpty());
-    m_long_name = str;
+    m_name = str;
 }
 
 void Collection::setCommonLaunchCmd(QString str)
