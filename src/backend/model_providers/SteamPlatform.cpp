@@ -132,8 +132,8 @@ QVector<Types::Collection*> SteamPlatform::find()
 
 
     auto collection = new Types::Collection(QStringLiteral("steam")); // TODO: check for fail
-    collection->searchDirsMut().append(installdirs);
-    collection->romFiltersMut().append(QStringLiteral("appmanifest_*.acf"));
+    collection->sourceDirsMut().append(installdirs);
+    //collection->romFiltersMut().append(QStringLiteral("appmanifest_*.acf"));
 
     QVector<Types::Collection*> result { collection };
     return result;

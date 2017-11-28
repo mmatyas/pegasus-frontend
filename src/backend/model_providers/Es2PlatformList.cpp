@@ -147,8 +147,7 @@ Types::Collection* Es2PlatformList::parseSystemEntry(QXmlStreamReader& xml)
 
     // construct the new platform
     auto collection = new Types::Collection(xml_props["name"]); // TODO: check for fail
-    collection->searchDirsMut().append(xml_props["path"]);
-    collection->romFiltersMut().append(parseFilters(xml_props["extension"]));
+    collection->sourceDirsMut().append(xml_props["path"]);
     collection->setCommonLaunchCmd(xml_props["command"]);
     return collection;
 }

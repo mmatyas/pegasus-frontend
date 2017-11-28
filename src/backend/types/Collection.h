@@ -44,10 +44,8 @@ public:
     const QString& name() const { return m_name; }
     const QString& launchCmd() const { return m_launch_cmd; }
 
-    const QStringList& searchDirs() const { return m_rom_dirs; }
-    const QStringList& romFilters() const { return m_rom_filters; }
-    QStringList& searchDirsMut() { return m_rom_dirs; }
-    QStringList& romFiltersMut() { return m_rom_filters; }
+    const QStringList& sourceDirs() const { return m_source_dirs; }
+    QStringList& sourceDirsMut() { return m_source_dirs; }
 
     const GameList& gameList() const { return m_gamelist; }
     GameList& gameListMut() { return m_gamelist; }
@@ -59,8 +57,7 @@ private:
     const QString m_tag;
     QString m_name;
     QString m_launch_cmd;
-    QStringList m_rom_dirs;
-    QStringList m_rom_filters;
+    QStringList m_source_dirs;
 
     GameList m_gamelist;
     GameList* gameListPtr() { return &m_gamelist; }

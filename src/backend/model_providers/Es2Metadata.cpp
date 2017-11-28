@@ -66,7 +66,7 @@ QString Es2Metadata::findGamelistFile(const Types::Collection& collection)
     static constexpr auto FILENAME = "/gamelist.xml";
 
     const QVector<QString> possible_dirs = {
-        collection.searchDirs().first(),
+        collection.sourceDirs().first(),
         homePath() % "/.emulationstation/gamelists/" % collection.tag(),
         "/etc/emulationstation/gamelists/" % collection.tag(),
     };
@@ -146,7 +146,7 @@ void Es2Metadata::parseGameEntry(QXmlStreamReader& xml,
     // find the matching game
     // NOTE: every game (path) appears only once, so we can take() it out of the map
 
-    convertToAbsolutePath(xml_props[PATH_TAG], collection.searchDirs().first());
+    convertToAbsolutePath(xml_props[PATH_TAG], collection.sourceDirs().first());
 
     Types::Game* game = game_by_path.take(xml_props[PATH_TAG]);
     if (!game)
@@ -225,7 +225,7 @@ void Es2Metadata::applyMetadata(Types::Game& game, const Types::Collection& coll
 
     Types::GameAssets& assets = game.assets();
 
-    const QString rom_dir_prefix = collection.searchDirs().first() % '/';
+    const QString rom_dir_prefix = collection.sourceDirs().first() % '/';
 
     if (assets.boxFront().isEmpty()) {
         QString path = xml_props.value(KEY_IMAGE);

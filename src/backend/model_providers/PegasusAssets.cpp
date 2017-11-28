@@ -35,16 +35,16 @@ void PegasusAssets::fill(const Types::Collection& collection)
 
 void PegasusAssets::fillOne(const Types::Collection& collection, Types::Game& game)
 {
-    Q_ASSERT(!collection.searchDirs().isEmpty());
+    Q_ASSERT(!collection.sourceDirs().isEmpty());
 
     constexpr auto MEDIA_SUBDIR = "/media/";
 
-    const QString path_base = collection.searchDirs().first()
+    const QString path_base = collection.sourceDirs().first()
                               % MEDIA_SUBDIR
                               % game.m_rom_basename;
 
     // check if the media dir exists
-    if (!validPath(collection.searchDirs().first() % MEDIA_SUBDIR))
+    if (!validPath(collection.sourceDirs().first() % MEDIA_SUBDIR))
         return;
 
     // shortcut for the assets member
