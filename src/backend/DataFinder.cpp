@@ -75,13 +75,14 @@ void findGamesByExt(Types::Collection& platform)
     }
 }
 */
-void removeEmptyCollections(QVector<Types::Collection*>& platforms)
+void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
 {
     // NOTE: if this turns out to be slow, STL iterators
     // could be used here
-    QMutableVectorIterator<Types::Collection*> it(platforms);
+    QMutableHashIterator<QString, Types::Collection*> it(collections);
     while (it.hasNext()) {
-        if (it.next()->gameList().allGames().isEmpty()) {
+        if (it.next().value()->gameList().allGames().isEmpty()) {
+            qDebug() << "del" << it.value()->tag();
             delete it.value();
             it.remove();
         }
@@ -142,6 +143,29 @@ DataFinder::DataFinder(QObject* parent)
     return model;
 }*/
 
+// Providers can add new games, new collections and further directories
+// to check for metadata info.
+void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
+                                  QHash<QString, Types::Collection*>& collections,
+                                  QVector<QString>& metadata_dirs)
+{
+    using ProviderPtr = std::unique_ptr<providers::Provider>;
+    std::vector<ProviderPtr> providers;
+
+    providers.emplace_back(new providers::Es2Provider());
+
+    int total_game_count = 0;
+    for (auto& provider : providers) {
+        provider->find(games, collections, metadata_dirs);
+        if (total_game_count != games.count()) {
+            total_game_count = games.count();
+            emit totalCountChanged(total_game_count);
+        }
+    }
+
+    removeEmptyCollections(collections);
+}
+
 QVector<Types::Collection*> DataFinder::find()
 {
     QHash<QString, Types::Game*> games;
@@ -149,21 +173,12 @@ QVector<Types::Collection*> DataFinder::find()
     QVector<QString> metadata_dirs;
 
 
-    using ProviderPtr = std::unique_ptr<providers::Provider>;
-    std::vector<ProviderPtr> providers;
-
-    providers.emplace_back(new providers::Es2Provider());
-
-    for (auto& provider : providers)
-        provider->find(games, collections, metadata_dirs);
+    runListProviders(games, collections, metadata_dirs);
 
 
     QVector<Types::Collection*> result;
-    for (Types::Collection* const coll : collections) {
-        qDebug()  << "coll" << coll->tag() << coll->gameList().allCount() << coll->gameList().filteredCount();
+    for (Types::Collection* const coll : collections)
         result << coll;
-}
 
-    removeEmptyCollections(result);
     return result;
 }

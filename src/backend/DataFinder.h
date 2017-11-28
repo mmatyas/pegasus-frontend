@@ -21,6 +21,7 @@
 #include <QVector>
 
 namespace Types { class Collection; }
+namespace Types { class Game; }
 
 
 // TODO: this class would really need a refactor
@@ -33,5 +34,11 @@ public:
     QVector<Types::Collection*> find();
 
 signals:
+    void totalCountChanged(int);
     void platformGamesReady(int game_count);
+
+private:
+    void runListProviders(QHash<QString, Types::Game*>&,
+                          QHash<QString, Types::Collection*>&,
+                          QVector<QString>&);
 };

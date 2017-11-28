@@ -150,6 +150,7 @@ void readSystemEntry(QXmlStreamReader& xml,
 
 
     // construct the new platform
+    // TODO: only create if it has games
 
     const QString& tag = xml_props[QLatin1String("name")];
     Types::Collection*& collection_ptr = collections[tag];
