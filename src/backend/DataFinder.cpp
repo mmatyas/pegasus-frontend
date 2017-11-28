@@ -32,6 +32,7 @@
 #include <memory>
 
 
+#include "providers/Es2Metadata.h"
 #include "providers/Es2Provider.h"
 
 
@@ -40,24 +41,6 @@
 
 namespace {
 /*
-QVector<Types::Collection*> runPlatformListProviders()
-{
-    QVector<Types::Collection*> model;
-
-    using ProviderPtr = std::unique_ptr<model_providers::PlatformListProvider>;
-    std::vector<ProviderPtr> providers;
-
-    providers.emplace_back(new model_providers::Es2PlatformList());
-#ifndef Q_PROCESSOR_ARM
-    providers.emplace_back(new model_providers::SteamPlatform());
-#endif
-
-    for (auto& provider : qAsConst(providers))
-        model.append(provider->find());
-
-    return model;
-}
-
 void findGamesByExt(Types::Collection& platform)
 {
     // TODO: handle empty rom filter list
@@ -87,24 +70,6 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
             it.remove();
         }
     }
-}
-
-void runMetadataProviders(const Types::Collection& platform)
-{
-    // NOTE: Qt containers have some troubles with move semantics
-    // TODO: do not recreate the providers for each platform every time
-
-    using ProviderPtr = std::unique_ptr<model_providers::MetadataProvider>;
-    std::vector<ProviderPtr> providers;
-
-    providers.emplace_back(new model_providers::PegasusAssets());
-    providers.emplace_back(new model_providers::Es2Metadata());
-#ifndef Q_PROCESSOR_ARM
-    providers.emplace_back(new model_providers::SteamMetadata());
-#endif
-
-    for (auto& provider : qAsConst(providers))
-        provider->fill(platform);
 }
 
 } // namespace
@@ -166,6 +131,19 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
     removeEmptyCollections(collections);
 }
 
+void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
+                                      const QHash<QString, Types::Collection*>& collections,
+                                      const QVector<QString>& metadata_dirs)
+{
+    using ProviderPtr = std::unique_ptr<providers::MetadataProvider>;
+    std::vector<ProviderPtr> providers;
+
+    providers.emplace_back(new providers::Es2Metadata());
+
+    for (auto& provider : qAsConst(providers))
+        provider->fill(games, collections, metadata_dirs);
+}
+
 QVector<Types::Collection*> DataFinder::find()
 {
     QHash<QString, Types::Game*> games;
@@ -174,6 +152,7 @@ QVector<Types::Collection*> DataFinder::find()
 
 
     runListProviders(games, collections, metadata_dirs);
+    runMetadataProviders(games, collections, metadata_dirs);
 
 
     QVector<Types::Collection*> result;

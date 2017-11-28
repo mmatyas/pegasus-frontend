@@ -32,7 +32,8 @@ SOURCES += \
     types/Theme.cpp \
     types/ThemeList.cpp \
     types/CollectionList.cpp \
-    types/Collection.cpp
+    types/Collection.cpp \
+    providers/Es2Metadata.cpp
 
 HEADERS += \
     Api.h \
@@ -55,6 +56,7 @@ HEADERS += \
     model_providers/SteamMetadata.h \
     providers/Provider.h \
     providers/Es2Provider.h \
+    providers/Es2Metadata.h \
     types/Filters.h \
     types/Game.h \
     types/GameAssets.h \
@@ -67,7 +69,8 @@ HEADERS += \
     types/Theme.h \
     types/ThemeList.h \
     types/CollectionList.h \
-    types/Collection.h
+    types/Collection.h \
+    providers/MetadataProvider.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

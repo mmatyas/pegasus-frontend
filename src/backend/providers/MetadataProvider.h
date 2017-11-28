@@ -17,31 +17,28 @@
 
 #pragma once
 
-#include <QObject>
+#include <QHash>
 #include <QVector>
+#include <QString>
 
 namespace Types { class Collection; }
 namespace Types { class Game; }
 
 
-// TODO: this class would really need a refactor
-class DataFinder : public QObject {
-    Q_OBJECT
+namespace providers {
 
+class MetadataProvider {
 public:
-    explicit DataFinder(QObject* parent = nullptr);
+    MetadataProvider() = default;
+    virtual ~MetadataProvider() = default;
 
-    QVector<Types::Collection*> find();
+    virtual void fill(const QHash<QString, Types::Game*>& games,
+                      const QHash<QString, Types::Collection*>& collections,
+                      const QVector<QString>& metadata_dirs) = 0;
 
-signals:
-    void totalCountChanged(int);
-    void platformGamesReady(int game_count);
-
-private:
-    void runListProviders(QHash<QString, Types::Game*>&,
-                          QHash<QString, Types::Collection*>&,
-                          QVector<QString>&);
-    void runMetadataProviders(const QHash<QString, Types::Game*>&,
-                              const QHash<QString, Types::Collection*>&,
-                              const QVector<QString>&);
+    // disable copy
+    MetadataProvider(const MetadataProvider&) = delete;
+    MetadataProvider& operator=(const MetadataProvider&) = delete;
 };
+
+} // namespace providers
