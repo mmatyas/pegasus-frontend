@@ -65,7 +65,6 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
     QMutableHashIterator<QString, Types::Collection*> it(collections);
     while (it.hasNext()) {
         if (it.next().value()->gameList().allGames().isEmpty()) {
-            qDebug() << "del" << it.value()->tag();
             delete it.value();
             it.remove();
         }

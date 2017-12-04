@@ -36,7 +36,6 @@ Game::Game(QString path, QObject* parent)
     , m_day(0)
     , m_playcount(0)
 {
-    qDebug() << "game" << m_rom_path << m_title;
     Q_ASSERT(!m_rom_path.isEmpty());
 }
 
