@@ -34,7 +34,8 @@ SOURCES += \
     types/Collection.cpp \
     providers/Es2Metadata.cpp \
     providers/Es2Gamelist.cpp \
-    providers/Es2SystemsParser.cpp
+    providers/Es2SystemsParser.cpp \
+    providers/Es2GamelistParser.cpp
 
 HEADERS += \
     Api.h \
@@ -72,7 +73,8 @@ HEADERS += \
     providers/MetadataProvider.h \
     providers/GamelistProvider.h \
     providers/Es2Gamelist.h \
-    providers/Es2SystemsParser.h
+    providers/Es2SystemsParser.h \
+    providers/Es2GamelistParser.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
