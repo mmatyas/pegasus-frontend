@@ -17,16 +17,28 @@
 
 #pragma once
 
-#include "Provider.h"
+#include <QHash>
+#include <QVector>
+#include <QString>
+
+namespace Types { class Game; }
+namespace Types { class Collection; }
 
 
 namespace providers {
 
-class Es2Provider : public Provider {
+class GamelistProvider {
 public:
-    void find(QHash<QString, Types::Game*>& games,
-              QHash<QString, Types::Collection*>& collections,
-              QVector<QString>& metadata_dirs) override;
+    GamelistProvider() = default;
+    virtual ~GamelistProvider() = default;
+
+    virtual void find(QHash<QString, Types::Game*>& games,
+                      QHash<QString, Types::Collection*>& collections,
+                      QVector<QString>& metadata_dirs) = 0;
+
+    // disable copy
+    GamelistProvider(const GamelistProvider&) = delete;
+    GamelistProvider& operator=(const GamelistProvider&) = delete;
 };
 
 } // namespace providers

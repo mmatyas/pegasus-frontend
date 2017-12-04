@@ -33,7 +33,7 @@
 
 
 #include "providers/Es2Metadata.h"
-#include "providers/Es2Provider.h"
+#include "providers/Es2Gamelist.h"
 
 
 #include <QDebug>
@@ -114,7 +114,7 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
                                   QHash<QString, Types::Collection*>& collections,
                                   QVector<QString>& metadata_dirs)
 {
-    using ProviderPtr = std::unique_ptr<providers::Provider>;
+    using ProviderPtr = std::unique_ptr<providers::GamelistProvider>;
     std::vector<ProviderPtr> providers;
 
     providers.emplace_back(new providers::Es2Provider());

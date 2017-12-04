@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Es2Provider.h"
+#include "Es2Gamelist.h"
 
 #include "types/Collection.h"
 #include "types/Game.h"
