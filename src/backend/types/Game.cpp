@@ -23,11 +23,10 @@
 
 namespace Types {
 
-Game::Game(QString path, QObject* parent)
+Game::Game(QFileInfo fileinfo, QObject* parent)
     : QObject(parent)
-    , m_rom_path(std::move(path))
-    , m_rom_basename(QFileInfo(m_rom_path).completeBaseName())
-    , m_title(m_rom_basename)
+    , m_fileinfo(std::move(fileinfo))
+    , m_title(m_fileinfo.completeBaseName())
     , m_players(1)
     , m_favorite(false)
     , m_rating(0)
@@ -36,7 +35,6 @@ Game::Game(QString path, QObject* parent)
     , m_day(0)
     , m_playcount(0)
 {
-    Q_ASSERT(!m_rom_path.isEmpty());
 }
 
 } // namespace Types

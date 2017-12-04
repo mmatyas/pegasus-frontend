@@ -214,11 +214,12 @@ void findAssets(Types::Game& game, QHash<QString, QString>& xml_props, const Typ
     }
 
     // search for assets in ~/.emulationstation/downloaded_images
+    // TODO: move to metadata
 
     const QString path_base = homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/")
                               % collection.tag() % '/'
-                              % game.m_rom_basename;
+                              % game.m_fileinfo.completeBaseName();
 
     for (auto asset_type : Assets::singleTypes) {
         if (assets.m_single_assets[asset_type].isEmpty()) {

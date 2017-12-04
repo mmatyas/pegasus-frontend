@@ -330,7 +330,7 @@ void SteamMetadata::fill(const Types::Collection& collection)
 
     for (Types::Game* const game_ptr : collection.gameList().allGames()) {
         Q_ASSERT(game_ptr);
-        SteamGameEntry entry = read_manifest(game_ptr->m_rom_path);
+        SteamGameEntry entry = read_manifest(game_ptr->m_fileinfo.filePath());
         if (!entry.appid.isEmpty()) {
             if (entry.title.isEmpty())
                 entry.title = QLatin1String("App #") % entry.appid;

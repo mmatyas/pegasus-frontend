@@ -74,8 +74,8 @@ void test_GameList::sortGames()
     gamelist.sortGames();
     gamelist.lockGameList();
 
-    QCOMPARE(gamelist.allGames().first()->m_rom_path, QLatin1String("aaa"));
-    QCOMPARE(gamelist.allGames().last()->m_rom_path, QLatin1String("bbb"));
+    QCOMPARE(gamelist.allGames().first()->m_fileinfo.filePath(), QLatin1String("aaa"));
+    QCOMPARE(gamelist.allGames().last()->m_fileinfo.filePath(), QLatin1String("bbb"));
 }
 
 void test_GameList::indexChange()

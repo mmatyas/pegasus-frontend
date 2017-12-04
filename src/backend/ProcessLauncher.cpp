@@ -57,8 +57,8 @@ QString ProcessLauncher::createLaunchCommand(const Types::Collection* collection
     };
 
     QMap<ParamType, QString> params = {
-        { ParamType::PATH, game->m_rom_path },
-        { ParamType::BASENAME, QFileInfo(game->m_rom_path).completeBaseName() },
+        { ParamType::PATH, game->m_fileinfo.filePath() },
+        { ParamType::BASENAME, game->m_fileinfo.completeBaseName() },
     };
 
     // Prepare the parameters for QProcess
@@ -74,6 +74,7 @@ QString ProcessLauncher::createLaunchCommand(const Types::Collection* collection
     // replace known keywords
     QString launch_cmd = collection->launchCmd();
     // first, replace manually quoted elements in the command string (see Qt docs)
+    // TODO: ES2 compatibility should be handled in its file
     launch_cmd
         .replace("\"%ROM%\"", params.value(ParamType::PATH))
         .replace("\"%ROM_RAW%\"", params.value(ParamType::PATH))

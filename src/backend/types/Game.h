@@ -20,6 +20,7 @@
 #include "GameAssets.h"
 
 #include <QDateTime>
+#include <QFileInfo>
 #include <QString>
 #include <QObject>
 
@@ -45,10 +46,9 @@ class Game : public QObject {
     Q_PROPERTY(Types::GameAssets* assets READ assetsPtr CONSTANT)
 
 public:
-    explicit Game(QString path, QObject* parent = nullptr);
+    explicit Game(QFileInfo fileinfo, QObject* parent = nullptr);
 
-    const QString m_rom_path;
-    const QString m_rom_basename;
+    const QFileInfo m_fileinfo;
 
     QString m_title;
     QString m_description;

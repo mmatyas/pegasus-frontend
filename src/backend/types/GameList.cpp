@@ -95,7 +95,8 @@ void GameList::sortGames()
 {
     std::sort(m_all_games.begin(), m_all_games.end(),
         [](const Game* a, const Game* b) {
-            return QString::localeAwareCompare(a->m_rom_basename, b->m_rom_basename) < 0;
+            return QString::localeAwareCompare(a->m_fileinfo.completeBaseName(),
+                                               b->m_fileinfo.completeBaseName()) < 0;
         }
     );
 }

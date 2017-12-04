@@ -138,11 +138,12 @@ void readSystemEntry(QXmlStreamReader& xml,
 
     QDirIterator dir_it(xml_props[QLatin1String("path")], name_filters, dir_filters, dir_flags);
     while (dir_it.hasNext()) {
-        const QString path = QFileInfo(dir_it.next()).canonicalFilePath();
+        dir_it.next();
+        QFileInfo fileinfo = dir_it.fileInfo();
 
-        Types::Game*& game_ptr = games[path];
+        Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
         if (!game_ptr)
-            game_ptr = new Types::Game(path, collection);
+            game_ptr = new Types::Game(fileinfo, collection);
 
         collection->gameListMut().addGame(game_ptr);
     }

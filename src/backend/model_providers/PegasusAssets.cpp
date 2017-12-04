@@ -41,7 +41,7 @@ void PegasusAssets::fillOne(const Types::Collection& collection, Types::Game& ga
 
     const QString path_base = collection.sourceDirs().first()
                               % MEDIA_SUBDIR
-                              % game.m_rom_basename;
+                              % game.m_fileinfo.completeBaseName();
 
     // check if the media dir exists
     if (!validPath(collection.sourceDirs().first() % MEDIA_SUBDIR))
