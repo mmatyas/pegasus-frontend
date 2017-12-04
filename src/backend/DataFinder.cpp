@@ -17,47 +17,19 @@
 
 #include "DataFinder.h"
 
-#include "types/Game.h"
+#include "providers/Es2Metadata.h"
+#include "providers/Es2Gamelist.h"
 #include "types/Collection.h"
-#include "model_providers/Es2Metadata.h"
-#include "model_providers/Es2PlatformList.h"
-#include "model_providers/PegasusAssets.h"
 
 #ifndef Q_PROCESSOR_ARM
-    #include "model_providers/SteamMetadata.h"
-    #include "model_providers/SteamPlatform.h"
+// Steam here
 #endif
 
-#include <QDirIterator>
 #include <memory>
 
 
-#include "providers/Es2Metadata.h"
-#include "providers/Es2Gamelist.h"
-
-
-#include <QDebug>
-
-
 namespace {
-/*
-void findGamesByExt(Types::Collection& platform)
-{
-    // TODO: handle empty rom filter list
 
-    static const auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
-
-    // TODO: handle incorrect filters
-    // TODO: add proper subdirectory support
-
-    for (const QString& romdir : platform.searchDirs()) {
-        QDirIterator romdir_it(romdir, platform.romFilters(), filters, flags);
-        while (romdir_it.hasNext())
-            platform.gameListMut().addGame(romdir_it.next());
-    }
-}
-*/
 void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
 {
     // NOTE: if this turns out to be slow, STL iterators
@@ -77,35 +49,6 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
 DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
 {}
-
-/*QVector<Types::Collection*> DataFinder::find()
-{
-    // TODO: map-reduce algorithms might be usable here
-    // TODO: mergeDuplicatePlatforms(model);
-
-    QVector<Types::Collection*> model = runPlatformListProviders();
-
-    for (Types::Collection* const platform_ptr : qAsConst(model)) {
-        Q_ASSERT(platform_ptr);
-        Types::Collection& platform = *platform_ptr;
-
-        findGamesByExt(platform);
-    }
-
-    removeEmptyPlatforms(model);
-
-    for (Types::Collection* const platform_ptr : qAsConst(model)) {
-        Q_ASSERT(platform_ptr);
-        Types::Collection& platform = *platform_ptr;
-
-        runMetadataProviders(platform);
-        platform.gameListMut().sortGames();
-
-        emit platformGamesReady(platform.gameList().allGames().count());
-    }
-
-    return model;
-}*/
 
 // Providers can add new games, new collections and further directories
 // to check for metadata info.
