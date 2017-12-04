@@ -13,8 +13,6 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
-    model_providers/Es2Metadata.cpp \
-    model_providers/Es2PlatformList.cpp \
     model_providers/PegasusAssets.cpp \
     model_providers/AppFiles.cpp \
     model_providers/SteamPlatform.cpp \
@@ -48,15 +46,12 @@ HEADERS += \
     Utils.h \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
-    model_providers/Es2Metadata.h \
-    model_providers/Es2PlatformList.h \
     model_providers/PegasusAssets.h \
     AppCloseType.h \
     model_providers/AppFiles.h \
     ListPropertyFn.h \
     model_providers/SteamPlatform.h \
     model_providers/SteamMetadata.h \
-    providers/Es2Metadata.h \
     types/Filters.h \
     types/Game.h \
     types/GameAssets.h \
@@ -73,6 +68,7 @@ HEADERS += \
     providers/MetadataProvider.h \
     providers/GamelistProvider.h \
     providers/Es2Gamelist.h \
+    providers/Es2Metadata.h \
     providers/Es2SystemsParser.h \
     providers/Es2GamelistParser.h
 
