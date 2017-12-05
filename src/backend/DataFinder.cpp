@@ -23,7 +23,8 @@
 #include "types/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
-// Steam here
+#include "providers/SteamGamelist.h"
+#include "providers/SteamMetadata.h"
 #endif
 
 #include <memory>
@@ -61,6 +62,9 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
     std::vector<ProviderPtr> providers;
 
     providers.emplace_back(new providers::Es2Provider());
+#ifndef Q_PROCESSOR_ARM
+    providers.emplace_back(new providers::SteamGamelist());
+#endif
 
     int total_game_count = 0;
     for (auto& provider : providers) {
@@ -83,6 +87,9 @@ void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
 
     providers.emplace_back(new providers::PegasusMetadata());
     providers.emplace_back(new providers::Es2Metadata());
+#ifndef Q_PROCESSOR_ARM
+    providers.emplace_back(new providers::SteamMetadata());
+#endif
 
     for (auto& provider : qAsConst(providers))
         provider->fill(games, collections, metadata_dirs);

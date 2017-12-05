@@ -33,7 +33,9 @@ SOURCES += \
     providers/Es2Gamelist.cpp \
     providers/Es2SystemsParser.cpp \
     providers/Es2GamelistParser.cpp \
-    providers/PegasusMetadata.cpp
+    providers/PegasusMetadata.cpp \
+    providers/SteamGamelist.cpp \
+    providers/SteamMetadata.cpp
 
 HEADERS += \
     Api.h \
@@ -70,7 +72,9 @@ HEADERS += \
     providers/Es2Metadata.h \
     providers/Es2SystemsParser.h \
     providers/Es2GamelistParser.h \
-    providers/PegasusMetadata.h
+    providers/PegasusMetadata.h \
+    providers/SteamGamelist.h \
+    providers/SteamMetadata.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

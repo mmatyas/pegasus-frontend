@@ -65,6 +65,10 @@ void Es2Metadata::fill(const QHash<QString, Types::Game*>& games,
     for (const auto& collection_ptr : collections) {
         Types::Collection& collection = *collection_ptr;
 
+        // ignore Steam
+        if (collection.tag() == QLatin1String("steam"))
+            continue;
+
         // find the metadata file
         const QString gamelist_path = findGamelistFile(collection);
         if (gamelist_path.isEmpty())
