@@ -197,19 +197,20 @@ void findAssets(Types::Game& game, QHash<QString, QString>& xml_props, const Typ
     if (assets.boxFront().isEmpty()) {
         QString& path = xml_props[KEY_IMAGE];
         convertToCanonicalPath(path, rom_dir);
-        if (!path.isEmpty() && validPath(path))
+        if (!path.isEmpty() && validPath(path) && assets.m_single_assets[AssetType::BOX_FRONT].isEmpty())
             assets.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile(path).toString());
     }
     if (assets.marquee().isEmpty()) {
         QString& path = xml_props[KEY_MARQUEE];
         convertToCanonicalPath(path, rom_dir);
-        if (!path.isEmpty() && validPath(path))
+        if (!path.isEmpty() && validPath(path) && assets.m_single_assets[AssetType::MARQUEE].isEmpty())
             assets.setSingle(AssetType::MARQUEE, QUrl::fromLocalFile(path).toString());
     }
     {
         QString& path = xml_props[KEY_VIDEO];
         convertToCanonicalPath(path, rom_dir);
-        if (!path.isEmpty() && validPath(path))
+        QString url = QUrl::fromLocalFile(path).toString();
+        if (!path.isEmpty() && validPath(path) && !assets.m_multi_assets[AssetType::VIDEOS].contains(url))
             assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile(path).toString());
     }
 
