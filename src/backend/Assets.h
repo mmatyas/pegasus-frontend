@@ -22,6 +22,7 @@
 
 
 enum class AssetType : unsigned char {
+    UNKNOWN,
     BOX_FRONT,
     BOX_BACK,
     BOX_SPINE,

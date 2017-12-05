@@ -70,14 +70,17 @@ const QVector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
 
 const QVector<QString>& Assets::extensions(AssetType key)
 {
-   switch (key) {
-       case AssetType::VIDEOS:
-           return video_exts;
-       case AssetType::MUSIC:
-           return audio_exts;
-       default:
-           return image_exts;
-   }
+    static const QVector<QString> empty_vec;
+    switch (key) {
+        case AssetType::UNKNOWN:
+            return empty_vec;
+        case AssetType::VIDEOS:
+            return video_exts;
+        case AssetType::MUSIC:
+            return audio_exts;
+        default:
+            return image_exts;
+    }
 }
 
 QString Assets::findFirst(AssetType asset_type, const QString& path_base)

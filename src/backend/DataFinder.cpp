@@ -19,6 +19,7 @@
 
 #include "providers/Es2Metadata.h"
 #include "providers/Es2Gamelist.h"
+#include "providers/PegasusMetadata.h"
 #include "types/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
@@ -80,6 +81,7 @@ void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
     using ProviderPtr = std::unique_ptr<providers::MetadataProvider>;
     std::vector<ProviderPtr> providers;
 
+    providers.emplace_back(new providers::PegasusMetadata());
     providers.emplace_back(new providers::Es2Metadata());
 
     for (auto& provider : qAsConst(providers))

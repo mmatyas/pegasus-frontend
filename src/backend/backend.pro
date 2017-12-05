@@ -33,7 +33,8 @@ SOURCES += \
     providers/Es2Metadata.cpp \
     providers/Es2Gamelist.cpp \
     providers/Es2SystemsParser.cpp \
-    providers/Es2GamelistParser.cpp
+    providers/Es2GamelistParser.cpp \
+    providers/PegasusMetadata.cpp
 
 HEADERS += \
     Api.h \
@@ -70,7 +71,8 @@ HEADERS += \
     providers/Es2Gamelist.h \
     providers/Es2Metadata.h \
     providers/Es2SystemsParser.h \
-    providers/Es2GamelistParser.h
+    providers/Es2GamelistParser.h \
+    providers/PegasusMetadata.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
