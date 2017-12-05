@@ -18,15 +18,111 @@
 #include "ThemeList.h"
 
 #include "ListPropertyFn.h"
-#include "model_providers/AppFiles.h"
+#include "Utils.h"
 
+#include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
 #include <QSettings>
+#include <QStandardPaths>
+#include <QStringBuilder>
+#include <QUrl>
 
 
 namespace {
 
 const QLatin1String SETTINGSKEY_THEME("theme");
+
+QStringList themeDirectories()
+{
+    QStringList theme_dirs;
+    theme_dirs << ":";
+    theme_dirs << QCoreApplication::applicationDirPath();
+#ifdef INSTALL_DATADIR
+    if (validPath(INSTALL_DATADIR))
+        theme_dirs << QString(INSTALL_DATADIR);
+#endif
+    theme_dirs << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
+    theme_dirs << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+
+    for (QString& path : theme_dirs) {
+        path += "/themes/";
+        // do not add the organization name to the search path
+        path.replace(QLatin1String("/pegasus-frontend/pegasus-frontend/"),
+                     QLatin1String("/pegasus-frontend/"));
+    }
+
+    return theme_dirs;
+}
+
+QVector<Types::Theme*> findAvailableThemes()
+{
+    const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    const auto flags = QDirIterator::FollowSymlinks;
+
+    const QString ini_filename("theme.ini");
+    const QString qml_filename("theme.qml");
+    const QString warn_missingfile = QObject::tr("Warning: no `%1` file found in `%2`, theme skipped");
+    const QString warn_missingentry = QObject::tr("Warning: there is no `%1` entry in `%2`, theme skipped");
+
+    const QString INIKEY_NAME("name");
+    const QString INIKEY_AUTHOR("author");
+    const QString INIKEY_VERSION("version");
+    const QString INIKEY_SUMMARY("summary");
+    const QString INIKEY_DESC("description");
+
+    QVector<Types::Theme*> output;
+
+    QStringList search_paths = themeDirectories();
+    for (auto& path : search_paths) {
+        QDirIterator themedir(path, filters, flags);
+        while (themedir.hasNext()) {
+            const QString basedir = themedir.next() % '/';
+            const QString ini_path = basedir % ini_filename;
+            QString qml_path = basedir % qml_filename;
+
+            if (!validFileQt(ini_path)) {
+                qWarning().noquote() << warn_missingfile.arg(ini_filename, basedir);
+                continue;
+            }
+            if (!validFileQt(qml_path)) {
+                qWarning().noquote() << warn_missingfile.arg(qml_filename, basedir);
+                continue;
+            }
+
+            const QSettings metadata(ini_path, QSettings::IniFormat);
+            if (!metadata.contains(INIKEY_NAME)) {
+                qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME, ini_filename);
+                continue;
+            }
+
+            // add the qrc/file protocol prefix
+            const bool is_builtin = basedir.startsWith(':');
+            if (is_builtin)
+                qml_path = QLatin1String("qrc://") % qml_path.midRef(1);
+            else
+                qml_path = QUrl::fromLocalFile(qml_path).toString();
+
+            output.append(new Types::Theme(
+                basedir, qml_path,
+                metadata.value(INIKEY_NAME).toString(),
+                metadata.value(INIKEY_AUTHOR).toString(),
+                metadata.value(INIKEY_VERSION).toString(),
+                metadata.value(INIKEY_SUMMARY).toString(),
+                metadata.value(INIKEY_DESC).toString()
+            ));
+        }
+    }
+
+    std::sort(output.begin(), output.end(),
+        [](const Types::Theme* a, const Types::Theme* b) {
+            return a->compare(*b) < 0;
+        }
+    );
+
+    return output;
+}
 
 } // namespace
 
@@ -35,7 +131,7 @@ namespace Types {
 
 ThemeList::ThemeList(QObject* parent)
     : QObject(parent)
-    , m_themes(model_providers::AppFiles::findAvailableThemes())
+    , m_themes(findAvailableThemes())
     , m_theme_idx(-1)
 {
     for (Theme* theme : qAsConst(m_themes)) {

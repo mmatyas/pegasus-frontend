@@ -40,6 +40,12 @@ bool validPath(const QString& path) {
 #endif
 }
 
+bool validFileQt(const QString& path)
+{
+    QFileInfo file(path);
+    return file.exists() && file.isFile();
+}
+
 void parseStoreInt(const QString& str, int& val) {
     bool success = false;
     const int parsed_val = str.toInt(&success);

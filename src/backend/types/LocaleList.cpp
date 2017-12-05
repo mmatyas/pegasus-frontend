@@ -18,16 +18,37 @@
 #include "LocaleList.h"
 
 #include "ListPropertyFn.h"
-#include "model_providers/AppFiles.h"
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
 #include <QSettings>
 
 
 namespace {
 
 const QLatin1String SETTINGSKEY_LOCALE("locale");
+
+QVector<Types::Locale*> findAvailableLocales()
+{
+    constexpr int QM_PREFIX_LEN = 8; // length of "pegasus_"
+    constexpr int QM_SUFFIX_LEN = 3; // length of ".qm"
+
+    // find the available languages
+    QStringList qm_files = QDir(QStringLiteral(":/lang")).entryList(QStringList(QStringLiteral("*.qm")));
+    qm_files.append(QStringLiteral("pegasus_en.qm")); // default placeholder
+    qm_files.sort();
+
+    QVector<Types::Locale*> output;
+    for (const QString& filename : qAsConst(qm_files)) {
+        const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
+        Q_ASSERT(locale_tag_len > 0);
+
+        const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
+        output.append(new Types::Locale(locale_tag));
+    }
+    return output;
+}
 
 } // namespace
 
@@ -36,7 +57,7 @@ namespace Types {
 
 LocaleList::LocaleList(QObject* parent)
     : QObject(parent)
-    , m_locales(model_providers::AppFiles::findAvailableLocales())
+    , m_locales(findAvailableLocales())
     , m_locale_idx(-1)
     , m_translator(this)
 {
@@ -69,11 +90,6 @@ int LocaleList::indexOfLocale(const QString& tag) const
 
 void LocaleList::selectPreferredLocale()
 {
-    // this method should be called after all translations have been found
-    Q_ASSERT(!m_locales.isEmpty());
-    using model_providers::AppFiles;
-
-
     // A. Try to use the saved config value
     const QString requested_tag = QSettings().value(SETTINGSKEY_LOCALE).toString();
     if (!requested_tag.isEmpty())
@@ -85,7 +101,7 @@ void LocaleList::selectPreferredLocale()
 
     // C. Fall back to the default
     if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(AppFiles::DEFAULT_LOCALE_TAG);
+        m_locale_idx = indexOfLocale(QStringLiteral("en"));
 
 
     Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());

@@ -13,7 +13,6 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
-    model_providers/AppFiles.cpp \
     types/Game.cpp \
     types/GameAssets.cpp \
     types/GameList.cpp \
@@ -45,7 +44,6 @@ HEADERS += \
     SystemCommands.h \
     Utils.h \
     AppCloseType.h \
-    model_providers/AppFiles.h \
     ListPropertyFn.h \
     types/Filters.h \
     types/Game.h \
