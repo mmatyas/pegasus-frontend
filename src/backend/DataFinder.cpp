@@ -100,8 +100,15 @@ QVector<Types::Collection*> DataFinder::find()
 
 
     QVector<Types::Collection*> result;
-    for (Types::Collection* const coll : collections)
+    for (Types::Collection* const coll : collections) {
+        coll->gameListMut().sortGames();
         result << coll;
+    }
+    std::sort(result.begin(), result.end(),
+        [](const Types::Collection* a, const Types::Collection* b) {
+            return QString::localeAwareCompare(a->tag(), b->tag()) < 0;
+        }
+    );
 
     return result;
 }
