@@ -44,8 +44,6 @@ HEADERS += \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
-    model_providers/MetadataProvider.h \
-    model_providers/PlatformListProvider.h \
     AppCloseType.h \
     model_providers/AppFiles.h \
     ListPropertyFn.h \
