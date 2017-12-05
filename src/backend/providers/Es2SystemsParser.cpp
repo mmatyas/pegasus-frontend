@@ -133,7 +133,7 @@ void readSystemEntry(QXmlStreamReader& xml,
     // add the games
 
     static constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    static constexpr auto dir_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parseFilters(xml_props[QLatin1String("extension")]);
 
     QDirIterator dir_it(xml_props[QLatin1String("path")], name_filters, dir_filters, dir_flags);
