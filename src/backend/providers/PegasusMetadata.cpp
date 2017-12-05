@@ -139,9 +139,14 @@ void PegasusMetadata::fill(const QHash<QString, Types::Game*>& games,
             // - left(strlen) returns the whole string
             // - mid(strlen) returns a null string
 
-            const QString shortpath = dir_base % '/' % fileinfo.completeBaseName().leftRef(last_dash);
-            if (!games_shortpath.contains(shortpath))
-                continue;
+            QString shortpath = dir_base % '/' % fileinfo.completeBaseName().leftRef(last_dash);
+            if (!games_shortpath.contains(shortpath)) {
+                // this also happens when the filename part contains a dash, but has no suffix
+                shortpath += fileinfo.completeBaseName().midRef(last_dash);
+                if (!games_shortpath.contains(shortpath))
+                    continue;
+                last_dash = fileinfo.completeBaseName().size();
+            }
 
             const QString suffix = fileinfo.completeBaseName().mid(last_dash);
             const AssetType type = findAssetType(suffix, fileinfo.suffix());
