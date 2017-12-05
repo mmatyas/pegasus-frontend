@@ -111,8 +111,8 @@ void register_appmanifests(QHash<QString, Types::Game*>& games, Types::Collectio
 {
     Q_ASSERT(collection);
 
-    static constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static constexpr auto dir_flags = QDirIterator::FollowSymlinks;
+    static const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto dir_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = { QStringLiteral("appmanifest_*.acf") };
 
     for (const QString& dir_path : collection->sourceDirs()) {
