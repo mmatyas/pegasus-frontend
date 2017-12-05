@@ -13,7 +13,6 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
-    model_providers/PegasusAssets.cpp \
     model_providers/AppFiles.cpp \
     model_providers/SteamPlatform.cpp \
     model_providers/SteamMetadata.cpp \
@@ -47,7 +46,6 @@ HEADERS += \
     Utils.h \
     model_providers/MetadataProvider.h \
     model_providers/PlatformListProvider.h \
-    model_providers/PegasusAssets.h \
     AppCloseType.h \
     model_providers/AppFiles.h \
     ListPropertyFn.h \
