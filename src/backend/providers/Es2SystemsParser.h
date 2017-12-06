@@ -19,6 +19,7 @@
 
 #include <QHash>
 #include <QXmlStreamReader>
+#include <functional>
 
 namespace Types { class Collection; }
 namespace Types { class Game; }
@@ -30,7 +31,8 @@ namespace es2_utils {
 void readSystemsFile(QXmlStreamReader& xml,
                      QHash<QString, Types::Game*>& games,
                      QHash<QString, Types::Collection*>& collections,
-                     QVector<QString>& metadata_dirs);
+                     QVector<QString>& metadata_dirs,
+                     const std::function<void(int)>& onGamesChangedCB);
 void readSystemEntry(QXmlStreamReader& xml,
                      QHash<QString, Types::Game*>& games,
                      QHash<QString, Types::Collection*>& collections,

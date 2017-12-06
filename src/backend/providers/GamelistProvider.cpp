@@ -15,19 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
-
 #include "GamelistProvider.h"
 
 
 namespace providers {
 
-class SteamGamelist : public GamelistProvider {
-    Q_OBJECT
-public:
-    void find(QHash<QString, Types::Game*>& games,
-              QHash<QString, Types::Collection*>& collections,
-              QVector<QString>& metadata_dirs) override;
-};
+GamelistProvider::GamelistProvider(QObject* parent)
+    : QObject(parent)
+{}
+
+GamelistProvider::~GamelistProvider() = default;
 
 } // namespace providers

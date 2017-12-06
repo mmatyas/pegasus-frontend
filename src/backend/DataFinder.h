@@ -35,7 +35,6 @@ public:
 
 signals:
     void totalCountChanged(int);
-    void platformGamesReady(int game_count);
 
 private:
     void runListProviders(QHash<QString, Types::Game*>&,

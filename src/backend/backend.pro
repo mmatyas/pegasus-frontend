@@ -32,7 +32,8 @@ SOURCES += \
     providers/Es2GamelistParser.cpp \
     providers/PegasusMetadata.cpp \
     providers/SteamGamelist.cpp \
-    providers/SteamMetadata.cpp
+    providers/SteamMetadata.cpp \
+    providers/GamelistProvider.cpp
 
 HEADERS += \
     Api.h \

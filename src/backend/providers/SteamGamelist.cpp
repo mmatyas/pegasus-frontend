@@ -163,7 +163,10 @@ void SteamGamelist::find(QHash<QString, Types::Game*>& games,
     collection->sourceDirsMut().append(installdirs);
 
 
+    const int game_count_before = games.count();
     register_appmanifests(games, collection);
+    if (game_count_before != games.count())
+        emit GamelistProvider::gameCountChanged(games.count());
 }
 
 } // namespace providers

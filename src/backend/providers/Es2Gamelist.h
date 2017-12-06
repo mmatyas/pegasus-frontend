@@ -23,6 +23,7 @@
 namespace providers {
 
 class Es2Provider : public GamelistProvider {
+    Q_OBJECT
 public:
     void find(QHash<QString, Types::Game*>& games,
               QHash<QString, Types::Collection*>& collections,

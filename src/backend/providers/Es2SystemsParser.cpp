@@ -36,7 +36,8 @@ namespace es2_utils {
 void readSystemsFile(QXmlStreamReader& xml,
                      QHash<QString, Types::Game*>& games,
                      QHash<QString, Types::Collection*>& collections,
-                     QVector<QString>& metadata_dirs)
+                     QVector<QString>& metadata_dirs,
+                     const std::function<void(int)>& onGamesChangedCB)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -51,6 +52,7 @@ void readSystemsFile(QXmlStreamReader& xml,
     }
 
     // read all <system> nodes
+    int game_count = games.count();
     while (xml.readNextStartElement()) {
         if (xml.name() != QLatin1String("system")) {
             xml.skipCurrentElement();
@@ -58,6 +60,10 @@ void readSystemsFile(QXmlStreamReader& xml,
         }
 
         readSystemEntry(xml, games, collections, metadata_dirs);
+        if (game_count != games.count()) {
+            game_count = games.count();
+            onGamesChangedCB(game_count);
+        }
     }
 }
 

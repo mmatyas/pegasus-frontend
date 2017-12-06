@@ -68,10 +68,10 @@ void Meta::onLoadingCompleted()
     emit loadingChanged();
 }
 
-void Meta::onNewGamesScanned(int game_count)
+void Meta::onGameCountUpdate(int game_count)
 {
-    if (game_count > 0) {
-        m_game_count += game_count;
+    if (m_game_count != game_count) {
+        m_game_count = game_count;
         emit gameCountChanged();
     }
 }

@@ -75,7 +75,8 @@ void Es2Provider::find(QHash<QString, Types::Game*>& games,
 
     // parse the systems file
     QXmlStreamReader xml(&xml_file);
-    es2_utils::readSystemsFile(xml, games, collections, metadata_dirs);
+    es2_utils::readSystemsFile(xml, games, collections, metadata_dirs,
+        [this](int count){ emit GamelistProvider::gameCountChanged(count); });
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }

@@ -46,7 +46,8 @@ public slots:
     void onScanStarted();
     void onScanCompleted(qint64 elapsedTime);
     void onLoadingCompleted();
-    void onNewGamesScanned(int game_count);
+
+    void onGameCountUpdate(int game_count);
 
 signals:
     void loadingChanged();

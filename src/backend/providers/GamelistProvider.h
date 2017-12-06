@@ -20,6 +20,7 @@
 #include <QHash>
 #include <QVector>
 #include <QString>
+#include <QObject>
 
 namespace Types { class Game; }
 namespace Types { class Collection; }
@@ -27,10 +28,12 @@ namespace Types { class Collection; }
 
 namespace providers {
 
-class GamelistProvider {
+class GamelistProvider : public QObject {
+    Q_OBJECT
+
 public:
-    GamelistProvider() = default;
-    virtual ~GamelistProvider() = default;
+    explicit GamelistProvider(QObject* parent = nullptr);
+    virtual ~GamelistProvider();
 
     virtual void find(QHash<QString, Types::Game*>& games,
                       QHash<QString, Types::Collection*>& collections,
@@ -39,6 +42,9 @@ public:
     // disable copy
     GamelistProvider(const GamelistProvider&) = delete;
     GamelistProvider& operator=(const GamelistProvider&) = delete;
+
+signals:
+    void gameCountChanged(int);
 };
 
 } // namespace providers

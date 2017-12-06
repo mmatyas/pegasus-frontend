@@ -66,13 +66,10 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
     providers.emplace_back(new providers::SteamGamelist());
 #endif
 
-    int total_game_count = 0;
     for (auto& provider : providers) {
+        connect(provider.get(), &providers::GamelistProvider::gameCountChanged,
+                this, &DataFinder::totalCountChanged);
         provider->find(games, collections, metadata_dirs);
-        if (total_game_count != games.count()) {
-            total_game_count = games.count();
-            emit totalCountChanged(total_game_count);
-        }
     }
 
     removeEmptyCollections(collections);
