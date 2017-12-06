@@ -120,8 +120,8 @@ void PegasusMetadata::fill(const QHash<QString, Types::Game*>& games,
         games_shortpath.insert(shortpath, game);
     }
 
-    static const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto dir_flags = QDirIterator::FollowSymlinks;
+    const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    const auto dir_flags = QDirIterator::FollowSymlinks;
 
     for (const QString& dir_base : metadata_dirs) {
         const QString media_dir = dir_base + MEDIA_SUBDIR;
