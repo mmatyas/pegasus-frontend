@@ -138,20 +138,34 @@ void readSystemEntry(QXmlStreamReader& xml,
 
     // add the games
 
-    static const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    static const auto dir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto file_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static const auto dir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
+    static const auto file_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parseFilters(xml_props[QLatin1String("extension")]);
 
-    QDirIterator dir_it(xml_props[QLatin1String("path")], name_filters, dir_filters, dir_flags);
-    while (dir_it.hasNext()) {
-        dir_it.next();
-        QFileInfo fileinfo = dir_it.fileInfo();
+    // pass 1: find all (sub-)directories, but ignore 'media'
+    QStringList dirs;
+    QDirIterator dirs_it(xml_props[QLatin1String("path")], dir_filters, dir_flags);
+    while (dirs_it.hasNext()) {
+        dirs << dirs_it.next();
+    }
+    dirs.removeOne(xml_props[QLatin1String("path")] + QStringLiteral("/media"));
+    dirs.append(xml_props[QLatin1String("path")]);
 
-        Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
-        if (!game_ptr)
-            game_ptr = new Types::Game(fileinfo, collection);
+    // pass 2: scan for game files
+    for (const QString& dir_path : qAsConst(dirs)) {
+        QDirIterator files_it(dir_path, name_filters, file_filters, file_flags);
+        while (files_it.hasNext()) {
+            files_it.next();
+            QFileInfo fileinfo = files_it.fileInfo();
 
-        collection->gameListMut().addGame(game_ptr);
+            Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
+            if (!game_ptr)
+                game_ptr = new Types::Game(fileinfo, collection);
+
+            collection->gameListMut().addGame(game_ptr);
+        }
     }
 
     // search for metadata here in the next phase
