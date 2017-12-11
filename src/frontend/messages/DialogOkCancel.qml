@@ -34,7 +34,7 @@ FocusScope {
     anchors.fill: parent
     visible: shade.opacity > 0
 
-    onFocusChanged: {
+    onActiveFocusChanged: {
         state = activeFocus ? "open" : "";
         if (activeFocus)
             cancelButton.focus = true;

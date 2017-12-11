@@ -11,6 +11,8 @@
         <file>messages/DialogOkCancel.qml</file>
         <file>messages/NoGamesErrorMessage.qml</file>
         <file>messages/ThemeErrorMessage.qml</file>
+        <file>messages/ShutdownDialog.qml</file>
+        <file>messages/RebootDialog.qml</file>
         <file>gamepad/ConfigScreen.qml</file>
         <file>gamepad/ConfigField.qml</file>
         <file>gamepad/ConfigGroup.qml</file>
