@@ -184,12 +184,12 @@ QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QStrin
 
 /// returns a list of unique, '*.'-prefixed lowercase file extensions
 QStringList parseFilters(const QString& filters_raw) {
-    auto filter_list = filters_raw.split(" ", QString::SkipEmptyParts);
+    QStringList filter_list = filters_raw.split(" ", QString::SkipEmptyParts);
     for (auto& filter : filter_list)
         filter = filter.prepend("*").toLower();
 
-    // remove duplicates
-    return filter_list.toSet().toList();
+    filter_list.removeDuplicates();
+    return filter_list;
 }
 
 } // namespace es2_utils
