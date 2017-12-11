@@ -26,9 +26,5 @@ DialogOkCancel
     message: qsTr("The system will reboot. Are you sure?") + pegasus.tr
     symbol: "\u21BB"
 
-    Component.onCompleted: console.log("hello!" + focus)
-
-    //onActiveFocusChanged:
-
     onAccept: pegasus.system.reboot()
 }

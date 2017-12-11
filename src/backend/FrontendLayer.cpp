@@ -58,8 +58,8 @@ void FrontendLayer::rebuild(QObject* api)
     Q_ASSERT(!engine);
 
     engine = new QQmlApplicationEngine();
-    engine->addImportPath("lib/qml");
-    engine->addImportPath("qml");
+    engine->addImportPath(QStringLiteral("lib/qml"));
+    engine->addImportPath(QStringLiteral("qml"));
     engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
     engine->rootContext()->setContextProperty(QStringLiteral("pegasus"), api);
     engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
