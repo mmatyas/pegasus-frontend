@@ -75,21 +75,10 @@ Window {
             source: pegasus.settings.themes.current.qmlPath
             asynchronous: true
 
-            onSourceChanged: themeError.visible = false
             onStatusChanged: {
                 if (status == Loader.Error)
-                    themeError.visible = true;
+                    themeContent.source = "messages/ThemeErrorMessage.qml";
             }
-        }
-
-        NoGamesErrorMessage {
-            id: nogamesError
-            visible: pegasus.collections.count === 0
-        }
-
-        ThemeErrorMessage {
-            id: themeError
-            visible: false
         }
 
         MainMenuOverlay {
@@ -123,6 +112,9 @@ Window {
 
         onLoadingChanged: {
             if (!loading) {
+                if (pegasus.collections.count === 0)
+                    themeContent.source = "messages/NoGamesErrorMessage.qml";
+
                 // break bindings
                 loading = false;
                 visible = false;
