@@ -17,7 +17,7 @@
 
 #include "Es2Metadata.h"
 
-#include "Es2GamelistParser.h"
+#include "Es2MetadataParser.h"
 #include "Utils.h"
 #include "types/Collection.h"
 

@@ -17,7 +17,7 @@
 
 #include "Es2Gamelist.h"
 
-#include "Es2SystemsParser.h"
+#include "Es2GamelistParser.h"
 #include "Utils.h"
 
 #include <QDebug>
