@@ -30,7 +30,7 @@ private slots:
 
 void test_Api::initialState()
 {
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));

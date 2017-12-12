@@ -37,7 +37,7 @@ private slots:
 
 void test_LocaleList::initTestCase()
 {
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
     Types::LocaleList localelist;
@@ -50,7 +50,7 @@ void test_LocaleList::indexChange()
 {
     QFETCH(int, testval);
 
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
     if (testval != initial_index)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid locale index .*"));
@@ -79,7 +79,7 @@ void test_LocaleList::indexChange_data()
 
 void test_LocaleList::count()
 {
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
     Types::LocaleList localelist;

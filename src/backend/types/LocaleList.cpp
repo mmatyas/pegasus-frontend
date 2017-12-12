@@ -27,9 +27,26 @@
 
 namespace {
 
-const QLatin1String SETTINGSKEY_LOCALE("locale");
+const QString SETTINGSKEY_LOCALE(QStringLiteral("locale"));
 
-QVector<Types::Locale*> findAvailableLocales()
+} // namespace
+
+
+namespace Types {
+
+LocaleList::LocaleList(QObject* parent)
+    : QObject(parent)
+    , m_locale_idx(-1)
+    , m_translator(this)
+{
+    findAvailableLocales();
+    selectPreferredLocale();
+    loadSelectedLocale();
+
+    qApp->installTranslator(&m_translator);
+}
+
+void LocaleList::findAvailableLocales()
 {
     constexpr int QM_PREFIX_LEN = 8; // length of "pegasus_"
     constexpr int QM_SUFFIX_LEN = 3; // length of ".qm"
@@ -39,53 +56,16 @@ QVector<Types::Locale*> findAvailableLocales()
     qm_files.append(QStringLiteral("pegasus_en.qm")); // default placeholder
     qm_files.sort();
 
-    QVector<Types::Locale*> output;
     for (const QString& filename : qAsConst(qm_files)) {
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
         Q_ASSERT(locale_tag_len > 0);
 
         const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
-        output.append(new Types::Locale(locale_tag));
+        m_locales.append(new Types::Locale(locale_tag, this));
+
+        qInfo().noquote() << tr("Found locale '%1' (`%2`)")
+                             .arg(m_locales.last()->name(), m_locales.last()->tag());
     }
-    return output;
-}
-
-} // namespace
-
-
-namespace Types {
-
-LocaleList::LocaleList(QObject* parent)
-    : QObject(parent)
-    , m_locales(findAvailableLocales())
-    , m_locale_idx(-1)
-    , m_translator(this)
-{
-    for (Locale* locale : qAsConst(m_locales)) {
-        locale->setParent(this);
-        qInfo().noquote() << tr("Found locale '%1' (`%2`)").arg(locale->name(), locale->tag());
-    }
-
-    selectPreferredLocale();
-    loadSelectedLocale();
-
-    qApp->installTranslator(&m_translator);
-}
-
-Locale* LocaleList::current() const
-{
-    Q_ASSERT(0 <= index() && index() < m_locales.length());
-    return m_locales.at(index());
-}
-
-int LocaleList::indexOfLocale(const QString& tag) const
-{
-    for (int idx = 0; idx < m_locales.count(); idx++) {
-        if (m_locales.at(idx)->tag() == tag)
-            return idx;
-    }
-
-    return -1;
 }
 
 void LocaleList::selectPreferredLocale()
@@ -107,6 +87,31 @@ void LocaleList::selectPreferredLocale()
     Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
 }
 
+void LocaleList::loadSelectedLocale()
+{
+    m_translator.load(QStringLiteral("pegasus_") + current()->tag(),
+                      QStringLiteral(":/lang"),
+                      QStringLiteral("-"));
+    qInfo().noquote() << QObject::tr("Locale set to '%1' (`%2`)")
+                         .arg(current()->name(), current()->tag());
+}
+
+int LocaleList::indexOfLocale(const QString& tag) const
+{
+    for (int idx = 0; idx < m_locales.count(); idx++) {
+        if (m_locales.at(idx)->tag() == tag)
+            return idx;
+    }
+
+    return -1;
+}
+
+Locale* LocaleList::current() const
+{
+    Q_ASSERT(0 <= index() && index() < m_locales.length());
+    return m_locales.at(index());
+}
+
 void LocaleList::setIndex(int idx)
 {
     // verify
@@ -126,14 +131,6 @@ void LocaleList::setIndex(int idx)
 
     // remember
     QSettings().setValue(SETTINGSKEY_LOCALE, current()->tag());
-}
-
-void LocaleList::loadSelectedLocale()
-{
-    m_translator.load("pegasus_" + current()->tag(), ":/lang", "-");
-
-    qInfo().noquote() << QObject::tr("Locale set to '%1' (`%2`)")
-                         .arg(current()->name(), current()->tag());
 }
 
 QQmlListProperty<Locale> LocaleList::getListProp()

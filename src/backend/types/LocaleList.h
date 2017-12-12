@@ -60,6 +60,7 @@ private:
 
     QTranslator m_translator;
 
+    void findAvailableLocales();
     void selectPreferredLocale();
     void loadSelectedLocale();
     int indexOfLocale(const QString& tag) const;
