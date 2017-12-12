@@ -52,7 +52,6 @@ FocusScope {
                 root.showSettingsScreen();
             }
             selected: focus
-            focus: true
 
             KeyNavigation.down: mbControls
         }
@@ -70,6 +69,7 @@ FocusScope {
         RollableMenuItem {
             id: scopeQuit
             name: qsTr("Quit") + pegasus.tr
+            focus: true
 
             entries: [
                 SecondaryMenuItem {
