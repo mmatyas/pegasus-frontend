@@ -37,7 +37,7 @@ private slots:
 
 void test_ThemeList::initTestCase()
 {
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
     Types::ThemeList themelist;
@@ -50,7 +50,7 @@ void test_ThemeList::indexChange()
 {
     QFETCH(int, testval);
 
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
     if (testval != initial_index)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
@@ -79,7 +79,7 @@ void test_ThemeList::indexChange_data()
 
 void test_ThemeList::count()
 {
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme.*"));
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
     Types::ThemeList themelist;

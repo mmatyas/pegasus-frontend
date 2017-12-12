@@ -32,7 +32,7 @@
 
 namespace {
 
-const QLatin1String SETTINGSKEY_THEME("theme");
+const QString SETTINGSKEY_THEME(QStringLiteral("theme"));
 
 QStringList themeDirectories()
 {
@@ -56,23 +56,35 @@ QStringList themeDirectories()
     return theme_dirs;
 }
 
-QVector<Types::Theme*> findAvailableThemes()
+} // namespace
+
+
+namespace Types {
+
+ThemeList::ThemeList(QObject* parent)
+    : QObject(parent)
+    , m_theme_idx(-1)
+{
+    findAvailableThemes();
+    selectPreferredTheme();
+    printChangeMsg();
+}
+
+void ThemeList::findAvailableThemes()
 {
     const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     const auto flags = QDirIterator::FollowSymlinks;
 
-    const QString ini_filename("theme.ini");
-    const QString qml_filename("theme.qml");
+    const QString ini_filename(QStringLiteral("theme.ini"));
+    const QString qml_filename(QStringLiteral("theme.qml"));
     const QString warn_missingfile = QObject::tr("Warning: no `%1` file found in `%2`, theme skipped");
     const QString warn_missingentry = QObject::tr("Warning: there is no `%1` entry in `%2`, theme skipped");
 
-    const QString INIKEY_NAME("name");
-    const QString INIKEY_AUTHOR("author");
-    const QString INIKEY_VERSION("version");
-    const QString INIKEY_SUMMARY("summary");
-    const QString INIKEY_DESC("description");
-
-    QVector<Types::Theme*> output;
+    const QString INIKEY_NAME(QStringLiteral("name"));
+    const QString INIKEY_AUTHOR(QStringLiteral("author"));
+    const QString INIKEY_VERSION(QStringLiteral("version"));
+    const QString INIKEY_SUMMARY(QStringLiteral("summary"));
+    const QString INIKEY_DESC(QStringLiteral("description"));
 
     QStringList search_paths = themeDirectories();
     for (auto& path : search_paths) {
@@ -104,59 +116,26 @@ QVector<Types::Theme*> findAvailableThemes()
             else
                 qml_path = QUrl::fromLocalFile(qml_path).toString();
 
-            output.append(new Types::Theme(
+            m_themes.append(new Types::Theme(
                 basedir, qml_path,
                 metadata.value(INIKEY_NAME).toString(),
                 metadata.value(INIKEY_AUTHOR).toString(),
                 metadata.value(INIKEY_VERSION).toString(),
                 metadata.value(INIKEY_SUMMARY).toString(),
-                metadata.value(INIKEY_DESC).toString()
+                metadata.value(INIKEY_DESC).toString(),
+                this
             ));
+
+            qInfo().noquote() << tr("Found theme '%1' (`%2`)")
+                                 .arg(m_themes.last()->name(), m_themes.last()->dir());
         }
     }
 
-    std::sort(output.begin(), output.end(),
-        [](const Types::Theme* a, const Types::Theme* b) {
+    std::sort(m_themes.begin(), m_themes.end(),
+        [](const Types::Theme* const a, const Types::Theme* const b) {
             return a->compare(*b) < 0;
         }
     );
-
-    return output;
-}
-
-} // namespace
-
-
-namespace Types {
-
-ThemeList::ThemeList(QObject* parent)
-    : QObject(parent)
-    , m_themes(findAvailableThemes())
-    , m_theme_idx(-1)
-{
-    for (Theme* theme : qAsConst(m_themes)) {
-        theme->setParent(this);
-        qInfo().noquote() << tr("Found theme '%1' (`%2`)").arg(theme->name(), theme->dir());
-    }
-
-    selectPreferredTheme();
-    printChangeMsg();
-}
-
-Theme* ThemeList::current() const
-{
-    Q_ASSERT(0 <= index() && index() < m_themes.length());
-    return m_themes.at(index());
-}
-
-int ThemeList::indexOfTheme(const QString& dir_path) const
-{
-    for (int idx = 0; idx < m_themes.count(); idx++) {
-        if (m_themes.at(idx)->dir() == dir_path)
-            return idx;
-    }
-
-    return -1;
 }
 
 void ThemeList::selectPreferredTheme()
@@ -180,6 +159,28 @@ void ThemeList::selectPreferredTheme()
     Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
 }
 
+void ThemeList::printChangeMsg() const
+{
+    qInfo().noquote() << QObject::tr("Theme set to '%1' (%2)")
+                         .arg(current()->name(), current()->dir());
+}
+
+Theme* ThemeList::current() const
+{
+    Q_ASSERT(0 <= index() && index() < m_themes.length());
+    return m_themes.at(index());
+}
+
+int ThemeList::indexOfTheme(const QString& dir_path) const
+{
+    for (int idx = 0; idx < m_themes.count(); idx++) {
+        if (m_themes.at(idx)->dir() == dir_path)
+            return idx;
+    }
+
+    return -1;
+}
+
 void ThemeList::setIndex(int idx)
 {
     // verify
@@ -199,12 +200,6 @@ void ThemeList::setIndex(int idx)
 
     // remember
     QSettings().setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
-}
-
-void ThemeList::printChangeMsg() const
-{
-    qInfo().noquote() << QObject::tr("Theme set to '%1' (%2)")
-                         .arg(current()->name(), current()->dir());
 }
 
 QQmlListProperty<Theme> ThemeList::getListProp()

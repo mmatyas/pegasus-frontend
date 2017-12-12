@@ -57,6 +57,7 @@ private:
     QVector<Theme*> m_themes;
     int m_theme_idx;
 
+    void findAvailableThemes();
     void selectPreferredTheme();
     void printChangeMsg() const;
     int indexOfTheme(const QString&) const;
