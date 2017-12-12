@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "messages"
 import QtQuick 2.8
 import QtQuick.Window 2.2
 
@@ -81,9 +80,14 @@ Window {
             }
         }
 
-        MainMenuOverlay {
+        Loader {
             id: mainMenu
-
+            anchors.fill: parent
+            sourceComponent: MainMenuOverlay { focus: true }
+            asynchronous: true
+        }
+        Connections {
+            target: mainMenu.item
             onClose: {
                 themeContent.enabled = true;
                 themeContent.focus = true;

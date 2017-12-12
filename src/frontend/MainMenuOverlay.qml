@@ -32,7 +32,7 @@ FocusScope {
     visible: shade.opacity > 0
 
     Keys.onEscapePressed: if (!event.isAutoRepeat) stepBack()
-    onFocusChanged: state = activeFocus ? "menuOpen" : ""
+    onActiveFocusChanged: state = activeFocus ? "menuOpen" : ""
 
 
     // return to the main menu from a panel, or close the overlay
