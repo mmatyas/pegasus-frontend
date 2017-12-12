@@ -26,16 +26,25 @@ Item {
 
     onGameDataChanged: {
         videoPreview.playlist.clear();
-        if (gameData && gameData.assets.videos.length > 0) {
-            for (var i = 0; i < gameData.assets.videos.length; i++) {
-                if (gameData.assets.videos[i])
-                    videoPreview.playlist.addItem(gameData.assets.videos[i]);
-            }
-            videoPreview.play();
-        }
+        videoDelay.restart();
     }
 
     visible: gameData
+
+    Timer {
+        // a small delay to avoid loading videos during scrolling
+        id: videoDelay
+        interval: 50
+        onTriggered: {
+            if (gameData && gameData.assets.videos.length > 0) {
+                for (var i = 0; i < gameData.assets.videos.length; i++) {
+                    if (gameData.assets.videos[i])
+                        videoPreview.playlist.addItem(gameData.assets.videos[i]);
+                }
+                videoPreview.play();
+            }
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -98,7 +107,7 @@ Item {
             Layout.preferredHeight: parent.width * videoPreview.heightRatio
             Layout.bottomMargin: rpx(4)
 
-            visible: videoPreview.playlist.itemCount
+            visible: gameData && gameData.assets.videos.length
 
             Video {
                 id: videoPreview
