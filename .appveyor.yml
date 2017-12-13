@@ -3,7 +3,7 @@ version: 0.0.{build}
 pull_requests:
   do_not_increment_build_number: true
 
-os: Visual Studio 2015
+os: Visual Studio 2017
 
 platform:
   - x86
@@ -18,7 +18,7 @@ environment:
       QTDIR: C:\Qt\5.9\mingw53_32
 
     - flavor: msvc
-      QTDIR: C:\Qt\5.9\msvc2015
+      QTDIR: C:\Qt\5.9\msvc2017_64
 
 init:
   - if %flavor%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
@@ -26,7 +26,7 @@ init:
   - set PEGASUS_HOME=C:\hello\world
 
 before_build:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - git submodule update --init
 
 build_script:
