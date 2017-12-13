@@ -138,10 +138,10 @@ void readSystemEntry(QXmlStreamReader& xml,
 
     // add the games
 
-    static const auto dir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto file_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static const auto dir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
-    static const auto file_flags = QDirIterator::FollowSymlinks;
+    static constexpr auto dir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    static constexpr auto file_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static constexpr auto dir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
+    static constexpr auto file_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parseFilters(xml_props[QLatin1String("extension")]);
 
     // pass 1: find all (sub-)directories, but ignore 'media'

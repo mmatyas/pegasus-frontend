@@ -58,8 +58,8 @@ QVector<QString> ScriptRunner::findScripts(ScriptRunner::EventType event)
 
 QVector<QString> ScriptRunner::findScripts(const QString& dirname)
 {
-    static const auto filters = QDir::Files | QDir::Readable | QDir::Executable | QDir::NoDotAndDotDot;
-    static const auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    constexpr auto filters = QDir::Files | QDir::Readable | QDir::Executable | QDir::NoDotAndDotDot;
+    constexpr auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     Q_ASSERT(!dirname.isEmpty());
 
@@ -88,11 +88,10 @@ void ScriptRunner::runScripts(const QVector<QString>& paths)
     if (paths.length() <= 0)
         return;
 
-    static const auto SCRIPTSTART_MSG = QObject::tr("[%1/%2] %3");
     const int num_field_width = QString::number(paths.length()).length();
 
     for (int i = 0; i < paths.length(); i++) {
-        qInfo().noquote() << SCRIPTSTART_MSG
+        qInfo().noquote() << QObject::tr("[%1/%2] %3")
                              .arg(i + 1, num_field_width)
                              .arg(paths.length()).arg(paths.at(i));
         QProcess::execute(paths.at(i));

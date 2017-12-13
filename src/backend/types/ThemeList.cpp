@@ -72,8 +72,8 @@ ThemeList::ThemeList(QObject* parent)
 
 void ThemeList::findAvailableThemes()
 {
-    const auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    const auto flags = QDirIterator::FollowSymlinks;
+    constexpr auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto flags = QDirIterator::FollowSymlinks;
 
     const QString ini_filename(QStringLiteral("theme.ini"));
     const QString qml_filename(QStringLiteral("theme.qml"));
@@ -204,8 +204,8 @@ void ThemeList::setIndex(int idx)
 
 QQmlListProperty<Theme> ThemeList::getListProp()
 {
-    static const auto count = &listproperty_count<Theme>;
-    static const auto at = &listproperty_at<Theme>;
+    static constexpr auto count = &listproperty_count<Theme>;
+    static constexpr auto at = &listproperty_at<Theme>;
 
     return {this, &m_themes, count, at};
 }

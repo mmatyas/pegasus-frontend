@@ -63,8 +63,8 @@ void CollectionList::setIndex(int idx)
 
 QQmlListProperty<Collection> CollectionList::elementsProp()
 {
-    static const auto count = &listproperty_count<Collection>;
-    static const auto at = &listproperty_at<Collection>;
+    static constexpr auto count = &listproperty_count<Collection>;
+    static constexpr auto at = &listproperty_at<Collection>;
 
     return {this, &m_collections, count, at};
 }

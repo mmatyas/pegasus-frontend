@@ -25,7 +25,9 @@
 #include <QRegularExpression>
 
 
-static const auto SEPARATOR = "----------------------------------------";
+namespace {
+static constexpr auto SEPARATOR = "----------------------------------------";
+} // namespace
 
 ProcessLauncher::ProcessLauncher(QObject* parent)
     : QObject(parent)

@@ -135,8 +135,8 @@ void LocaleList::setIndex(int idx)
 
 QQmlListProperty<Locale> LocaleList::getListProp()
 {
-    static const auto count = &listproperty_count<Locale>;
-    static const auto at = &listproperty_at<Locale>;
+    static constexpr auto count = &listproperty_count<Locale>;
+    static constexpr auto at = &listproperty_at<Locale>;
 
     return {this, &m_locales, count, at};
 }

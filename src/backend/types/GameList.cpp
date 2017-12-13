@@ -61,16 +61,16 @@ void GameList::setIndex(int idx)
 
 QQmlListProperty<Game> GameList::getFilteredGamesProp()
 {
-    static const auto count = &listproperty_count<Game>;
-    static const auto at = &listproperty_at<Game>;
+    static constexpr auto count = &listproperty_count<Game>;
+    static constexpr auto at = &listproperty_at<Game>;
 
     return {this, &m_filtered_games, count, at};
 }
 
 QQmlListProperty<Game> GameList::getAllGamesProp()
 {
-    static const auto count = &listproperty_count<Game>;
-    static const auto at = &listproperty_at<Game>;
+    static constexpr auto count = &listproperty_count<Game>;
+    static constexpr auto at = &listproperty_at<Game>;
 
     return {this, &m_all_games, count, at};
 }
