@@ -33,7 +33,8 @@ SOURCES += \
     providers/SteamMetadata.cpp \
     providers/GamelistProvider.cpp \
     providers/Es2MetadataParser.cpp \
-    providers/Es2GamelistParser.cpp
+    providers/Es2GamelistParser.cpp \
+    ConfigFile.cpp
 
 HEADERS += \
     Api.h \
@@ -67,7 +68,8 @@ HEADERS += \
     providers/SteamGamelist.h \
     providers/SteamMetadata.h \
     providers/Es2MetadataParser.h \
-    providers/Es2GamelistParser.h
+    providers/Es2GamelistParser.h \
+    ConfigFile.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
