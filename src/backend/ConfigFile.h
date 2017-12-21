@@ -24,7 +24,8 @@
 
 namespace config {
 
-using Config = QHash<QString, QVariant>;
+using ConfigGroup = QHash<QString, QVariant>;
+using Config = QHash<QString, ConfigGroup>;
 
 Config read(const QString& path);
 Config readStream(QTextStream& stream, const QString& stream_name = QString(""));

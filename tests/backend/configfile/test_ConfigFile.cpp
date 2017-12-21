@@ -35,7 +35,8 @@ void test_ConfigFile::empty()
 
     config::Config config = config::readStream(stream);
 
-    QCOMPARE(config.isEmpty(), true);
+    QCOMPARE(config.contains(QString()), true);
+    QCOMPARE(config.value(QString()).count(), 0);
 }
 
 void test_ConfigFile::datablob()
@@ -46,7 +47,8 @@ void test_ConfigFile::datablob()
     QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`.*?`: line [0-9]+ is invalid, skipped"));
     config::Config config = config::readStream(stream);
 
-    QCOMPARE(config.isEmpty(), true);
+    QCOMPARE(config.contains(QString()), true);
+    QCOMPARE(config.value(QString()).count(), 0);
 }
 
 

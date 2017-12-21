@@ -37,73 +37,93 @@ Config read(const QString& path)
 
 Config readStream(QTextStream& stream, const QString& stream_name)
 {
-    static const QRegularExpression rx_section(R"(^\[(.*)\]\s*$)"); // [name]
-    static const QRegularExpression rx_keyval(R"(^([^=]+)=(.*)$)"); // key = value
+    static const QRegularExpression rx_section(R"(^\[(.*)\]$)"); // [name]
+    static const QRegularExpression rx_keyval(R"(^([^=:]+)[=:](.+)$)"); // key = value
     static const QRegularExpression rx_multiline(R"(^\s+)"); // starts with whitespace
 
     Config config;
-    QString current_group;
-    QString current_key;
-    bool current_key_is_array(false);
+    ConfigGroup& cur_group = config[QString()];
+    QString last_key;
     int linenum = 0;
 
     QString line;
     while (stream.readLineInto(&line)) {
         linenum++;
+        const QStringRef trimmed_line = line.leftRef(-1).trimmed();
 
         // comment or empty line
-        if (line.startsWith('#') || line.leftRef(-1).trimmed().isEmpty())
+        if (trimmed_line.isEmpty() || line.startsWith('#'))
             continue;
 
-        // section
-        const auto rx_section_match = rx_section.match(line);
-        if (rx_section_match.hasMatch()) {
-            current_group = rx_section_match.capturedRef(1).trimmed().toString() % '.';
-            current_key.clear();
-            current_key_is_array = false;
-            continue;
-        }
+        // multiline (starts with whitespace but trimmed_line is not empty)
+        if (rx_multiline.match(line).hasMatch() && !last_key.isEmpty()) {
+            QVariant& last_item = cur_group[last_key];
 
-        // keyval pair
-        const auto rx_keyval_match = rx_keyval.match(line);
-        if (rx_keyval_match.hasMatch()) {
-            const QStringRef keyref = rx_keyval_match.capturedRef(1).trimmed();
-            const bool key_is_array = keyref.endsWith(QLatin1String("[]"));
-            const QString key = key_is_array
-                ? current_group % keyref.left(keyref.length() - 2).trimmed().toString()
-                : current_group % keyref.toString();
-            const QString val = rx_keyval_match.capturedRef(2).trimmed().toString();
+            const QStringRef val = (trimmed_line == QLatin1String("."))
+                ? QStringLiteral("\n").leftRef(-1)
+                : trimmed_line;
 
-            if (key_is_array) {
-                if (!config.contains(key) || !config[key].canConvert(QVariant::List)) {
-                    config.insert(key, QVariant(QVariant::List));
-                }
-                config[key].toList().append(val);
-            }
-            else {
-                config[key] = QVariant(val);
-            }
-
-            current_key = key;
-            current_key_is_array = key_is_array;
-            continue;
-        }
-
-        // multiline
-        if (rx_multiline.match(line).hasMatch() && !current_key.isEmpty()) {
-            QString val = line.trimmed();
-            if (val.length() == 1 && val.startsWith('.'))
-                val = '\n';
-
-            if (current_key_is_array) {
-                QList<QVariant> list(config[current_key].toList());
+            // array -> append to last
+            if (last_item.type() == QVariant::List) {
+                QVariantList list = last_item.toList();
                 list.last() = QVariant(list.constLast().toString() + val);
-                config[current_key] = QVariant(list);
+                last_item = QVariant(list);
             }
+            // regular value -> append
             else {
-                config[current_key] = QVariant(config[current_key].toString() + val);
+                last_item = QVariant(last_item.toString() + val);
             }
 
+            continue;
+        }
+
+        // section (after the multiline check)
+        const auto rx_section_match = rx_section.match(trimmed_line);
+        if (rx_section_match.hasMatch()) {
+            const QString group_name = rx_section_match.capturedRef(1).trimmed().toString();
+            cur_group = config[group_name];
+            last_key.clear();
+            continue;
+        }
+
+        // keyval pair (after the multiline check)
+        const auto rx_keyval_match = rx_keyval.match(trimmed_line);
+        if (rx_keyval_match.hasMatch()) {
+            const QString key = rx_keyval_match.capturedRef(1).trimmed().toString();
+            if (key.isEmpty()) {
+                qWarning().noquote()
+                    << QObject::tr("`%1`, line %2: option name missing, line skipped")
+                       .arg(stream_name, QString::number(linenum));
+                continue;
+            }
+            const QString val = rx_keyval_match.capturedRef(2).trimmed().toString();
+            if (val.isEmpty()) {
+                qWarning().noquote()
+                    << QObject::tr("`%1`, line %2: option value missing, line skipped")
+                       .arg(stream_name, QString::number(linenum));
+                continue;
+            }
+
+            if (cur_group.contains(key)) {
+                QVariant& item = cur_group[key];
+
+                // array -> append
+                if (item.type() == QVariant::List) {
+                    QVariantList list = item.toList();
+                    list.append(val);
+                    item = QVariant(list);
+                }
+                // regular value -> turn into array
+                else {
+                    QVariantList list = { item, val };
+                    item = QVariant(list);
+                }
+            }
+            else {
+                cur_group.insert(key, val);
+            }
+
+            last_key = key;
             continue;
         }
 
