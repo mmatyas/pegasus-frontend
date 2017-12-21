@@ -23,6 +23,22 @@
 #include <QStringBuilder>
 
 
+namespace {
+
+QString join(const QString& original, const QStringRef& addition)
+{
+    if (addition == QLatin1String("."))
+        return original + '\n';
+
+    if (original.endsWith('\n'))
+        return original % addition;
+
+    return original % ' ' % addition;
+}
+
+} // namespace
+
+
 namespace config {
 
 Config read(const QString& path)
@@ -42,7 +58,7 @@ Config readStream(QTextStream& stream, const QString& stream_name)
     static const QRegularExpression rx_multiline(R"(^\s+)"); // starts with whitespace
 
     Config config;
-    ConfigGroup& cur_group = config[QString()];
+    ConfigGroup* cur_group = &config[QString()];
     QString last_key;
     int linenum = 0;
 
@@ -57,21 +73,17 @@ Config readStream(QTextStream& stream, const QString& stream_name)
 
         // multiline (starts with whitespace but trimmed_line is not empty)
         if (rx_multiline.match(line).hasMatch() && !last_key.isEmpty()) {
-            QVariant& last_item = cur_group[last_key];
-
-            const QStringRef val = (trimmed_line == QLatin1String("."))
-                ? QStringLiteral("\n").leftRef(-1)
-                : trimmed_line;
+            QVariant& last_item = (*cur_group)[last_key];
 
             // array -> append to last
             if (last_item.type() == QVariant::List) {
                 QVariantList list = last_item.toList();
-                list.last() = QVariant(list.constLast().toString() + val);
+                list.last() = QVariant(join(list.constLast().toString(), trimmed_line));
                 last_item = QVariant(list);
             }
             // regular value -> append
             else {
-                last_item = QVariant(last_item.toString() + val);
+                last_item = QVariant(join(last_item.toString(), trimmed_line));
             }
 
             continue;
@@ -81,7 +93,7 @@ Config readStream(QTextStream& stream, const QString& stream_name)
         const auto rx_section_match = rx_section.match(trimmed_line);
         if (rx_section_match.hasMatch()) {
             const QString group_name = rx_section_match.capturedRef(1).trimmed().toString();
-            cur_group = config[group_name];
+            cur_group = &config[group_name];
             last_key.clear();
             continue;
         }
@@ -104,8 +116,8 @@ Config readStream(QTextStream& stream, const QString& stream_name)
                 continue;
             }
 
-            if (cur_group.contains(key)) {
-                QVariant& item = cur_group[key];
+            if (cur_group->contains(key)) {
+                QVariant& item = (*cur_group)[key];
 
                 // array -> append
                 if (item.type() == QVariant::List) {
@@ -120,7 +132,7 @@ Config readStream(QTextStream& stream, const QString& stream_name)
                 }
             }
             else {
-                cur_group.insert(key, val);
+                cur_group->insert(key, val);
             }
 
             last_key = key;
