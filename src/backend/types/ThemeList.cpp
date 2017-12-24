@@ -17,6 +17,7 @@
 
 #include "ThemeList.h"
 
+#include "ConfigFile.h"
 #include "ListPropertyFn.h"
 #include "Utils.h"
 
@@ -75,27 +76,29 @@ void ThemeList::findAvailableThemes()
     constexpr auto filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto flags = QDirIterator::FollowSymlinks;
 
-    const QString ini_filename(QStringLiteral("theme.ini"));
+    const QString meta_filename(QStringLiteral("theme.cfg"));
     const QString qml_filename(QStringLiteral("theme.qml"));
     const QString warn_missingfile = QObject::tr("Warning: no `%1` file found in `%2`, theme skipped");
     const QString warn_missingentry = QObject::tr("Warning: there is no `%1` entry in `%2`, theme skipped");
 
-    const QString INIKEY_NAME(QStringLiteral("name"));
-    const QString INIKEY_AUTHOR(QStringLiteral("author"));
-    const QString INIKEY_VERSION(QStringLiteral("version"));
-    const QString INIKEY_SUMMARY(QStringLiteral("summary"));
-    const QString INIKEY_DESC(QStringLiteral("description"));
+    const QString META_KEY_NAME(QStringLiteral("name"));
+    const QString META_KEY_AUTHOR(QStringLiteral("author"));
+    const QString META_KEY_VERSION(QStringLiteral("version"));
+    const QString META_KEY_SUMMARY(QStringLiteral("summary"));
+    const QString META_KEY_DESC(QStringLiteral("description"));
+    const QString META_KEY_KEYWORDS(QStringLiteral("keywords"));
+    const QString META_KEY_HOMEPAGE(QStringLiteral("homepage"));
 
     QStringList search_paths = themeDirectories();
     for (auto& path : search_paths) {
         QDirIterator themedir(path, filters, flags);
         while (themedir.hasNext()) {
             const QString basedir = themedir.next() % '/';
-            const QString ini_path = basedir % ini_filename;
+            const QString meta_path = basedir % meta_filename;
             QString qml_path = basedir % qml_filename;
 
-            if (!validFileQt(ini_path)) {
-                qWarning().noquote() << warn_missingfile.arg(ini_filename, basedir);
+            if (!validFileQt(meta_path)) {
+                qWarning().noquote() << warn_missingfile.arg(meta_filename, basedir);
                 continue;
             }
             if (!validFileQt(qml_path)) {
@@ -103,9 +106,10 @@ void ThemeList::findAvailableThemes()
                 continue;
             }
 
-            const QSettings metadata(ini_path, QSettings::IniFormat);
-            if (!metadata.contains(INIKEY_NAME)) {
-                qWarning().noquote() << warn_missingentry.arg(INIKEY_NAME, ini_filename);
+            const config::Config metadata = config::read(meta_path);
+            const config::ConfigGroup& metadata_root = metadata[QString()];
+            if (!metadata_root.contains(META_KEY_NAME)) {
+                qWarning().noquote() << warn_missingentry.arg(META_KEY_NAME, meta_path);
                 continue;
             }
 
@@ -118,11 +122,11 @@ void ThemeList::findAvailableThemes()
 
             m_themes.append(new Types::Theme(
                 basedir, qml_path,
-                metadata.value(INIKEY_NAME).toString(),
-                metadata.value(INIKEY_AUTHOR).toString(),
-                metadata.value(INIKEY_VERSION).toString(),
-                metadata.value(INIKEY_SUMMARY).toString(),
-                metadata.value(INIKEY_DESC).toString(),
+                metadata_root.value(META_KEY_NAME).toString(),
+                metadata_root.value(META_KEY_AUTHOR).toString(),
+                metadata_root.value(META_KEY_VERSION).toString(),
+                metadata_root.value(META_KEY_SUMMARY).toString(),
+                metadata_root.value(META_KEY_DESC).toString(),
                 this
             ));
 

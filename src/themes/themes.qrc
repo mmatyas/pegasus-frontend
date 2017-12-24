@@ -6,10 +6,10 @@
         <file>pegasus-grid/GamePreview.qml</file>
         <file>pegasus-grid/PlatformBar.qml</file>
         <file>pegasus-grid/PlatformCard.qml</file>
-        <file>pegasus-grid/theme.ini</file>
         <file>pegasus-grid/GameGridItem.qml</file>
         <file>pegasus-grid/filter_panel/CheckBox.qml</file>
         <file>pegasus-grid/filter_panel/FilterPanel.qml</file>
         <file>pegasus-grid/filter_panel/TextLine.qml</file>
+        <file>pegasus-grid/theme.cfg</file>
     </qresource>
 </RCC>
