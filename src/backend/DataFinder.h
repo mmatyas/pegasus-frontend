@@ -35,6 +35,7 @@ public:
 
 signals:
     void totalCountChanged(int);
+    void metadataSearchStarted();
 
 private:
     void runListProviders(QHash<QString, Types::Game*>&,

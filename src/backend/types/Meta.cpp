@@ -29,7 +29,8 @@ const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 Meta::Meta(QObject* parent)
     : QObject(parent)
     , m_loading(true)
-    , m_scanning(true)
+    , m_scanning(false)
+    , m_scanning_meta(false)
     , m_scanning_time_ms(0)
     , m_game_count(0)
 {
@@ -53,10 +54,18 @@ void Meta::onScanStarted()
     emit scanningChanged();
 }
 
+void Meta::onScanMetaStarted()
+{
+    m_scanning_meta = true;
+    emit scanningMetaChanged();
+}
+
 void Meta::onScanCompleted(qint64 elapsedTime)
 {
     m_scanning_time_ms = elapsedTime;
     m_scanning = false;
+    m_scanning_meta = false;
+    emit scanningMetaChanged();
     emit scanningChanged();
 
     qInfo().noquote() << tr("Data files loaded in %1ms").arg(elapsedTime);

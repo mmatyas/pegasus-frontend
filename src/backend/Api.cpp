@@ -37,6 +37,8 @@ ApiObject::ApiObject(QObject* parent)
 
     connect(&m_datafinder, &DataFinder::totalCountChanged,
             &m_meta, &Types::Meta::onGameCountUpdate);
+    connect(&m_datafinder, &DataFinder::metadataSearchStarted,
+            &m_meta, &Types::Meta::onScanMetaStarted);
 
     // partial QML reload
     connect(&m_meta, &Types::Meta::qmlClearCacheRequested,

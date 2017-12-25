@@ -79,6 +79,8 @@ void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
                                       const QHash<QString, Types::Collection*>& collections,
                                       const QVector<QString>& metadata_dirs)
 {
+    emit metadataSearchStarted();
+
     using ProviderPtr = std::unique_ptr<providers::MetadataProvider>;
     std::vector<ProviderPtr> providers;
 

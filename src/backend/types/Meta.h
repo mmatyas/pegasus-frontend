@@ -28,6 +28,7 @@ class Meta : public QObject {
 
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
     Q_PROPERTY(bool isScanning READ isScanning NOTIFY scanningChanged)
+    Q_PROPERTY(bool isScanningMeta READ isScanningMeta NOTIFY scanningMetaChanged)
     Q_PROPERTY(int gameCount READ gameCount NOTIFY gameCountChanged)
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
     Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
@@ -37,6 +38,7 @@ public:
 
     bool isLoading() const { return m_loading; }
     bool isScanning() const { return m_scanning; }
+    bool isScanningMeta() const { return m_scanning_meta; }
 
     int gameCount() const { return m_game_count; }
 
@@ -44,6 +46,7 @@ public:
 
 public slots:
     void onScanStarted();
+    void onScanMetaStarted();
     void onScanCompleted(qint64 elapsedTime);
     void onLoadingCompleted();
 
@@ -52,6 +55,7 @@ public slots:
 signals:
     void loadingChanged();
     void scanningChanged();
+    void scanningMetaChanged();
     void gameCountChanged();
 
     void qmlClearCacheRequested();
@@ -62,6 +66,7 @@ private:
 
     bool m_loading;
     bool m_scanning;
+    bool m_scanning_meta;
     qint64 m_scanning_time_ms;
 
     int m_game_count;
