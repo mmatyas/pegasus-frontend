@@ -22,6 +22,15 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
+    property bool scanningMeta: pegasus.meta.isScanningMeta
+    onScanningMetaChanged: {
+        label_gamesState.text += "  \u2713"
+        label_metaState.opacity = 1.0;
+        loading_dots.anchors.left = label_metaState.right
+        loading_dots.anchors.baseline = label_metaState.baseline
+        scanningMeta = true;
+    }
+
     Image {
         id: logo
         source: "/loading.svg"
@@ -40,6 +49,22 @@ Rectangle {
         height: childrenRect.height
 
         Text {
+            id: label_found
+            text: qsTr("games\nfound") + pegasus.tr
+            color: "#888"
+            font {
+                pixelSize: rpx(20)
+                family: uiFont.name
+                italic: true
+            }
+
+            anchors.left: counter.right
+            anchors.bottom: counter.baseline
+            anchors.leftMargin: rpx(8)
+            anchors.bottomMargin: -rpx(6)
+        }
+
+        Text {
             id: counter
 
             text: pegasus.meta.gameCount
@@ -51,16 +76,74 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("games found, loading...") + pegasus.tr
-            color: "#aaa"
-            font {
-                pixelSize: rpx(28)
-                family: uiFont.name
+            id: label_gamesState
+
+            property int leftMarginOffset: rpx(50)
+            PropertyAnimation on leftMarginOffset {
+                duration: 300; to: 0
+                easing.type: Easing.OutQuad
             }
 
-            anchors.left: counter.left
+            text: qsTr("looking for games") + pegasus.tr
+            color: "#aaa"
+            font {
+                pixelSize: rpx(24)
+                family: uiFont.name
+                italic: true
+            }
+
+            anchors.left: parent.left
             anchors.top: counter.baseline
-            anchors.margins: rpx(12)
+            anchors.topMargin: rpx(24)
+            anchors.leftMargin: rpx(18) + leftMarginOffset
+
+            opacity: 1.0
+            Behavior on opacity { PropertyAnimation { duration: 100 } }
+        }
+
+        Text {
+            id: label_metaState
+
+            property int leftMarginOffset: rpx(50)
+            PropertyAnimation on leftMarginOffset {
+                duration: 400; to: 0
+                easing.type: Easing.OutQuad
+            }
+
+            text: qsTr("looking for metadata") + pegasus.tr
+            color: "#aaa"
+            font {
+                pixelSize: rpx(24)
+                family: uiFont.name
+                italic: true
+            }
+
+            anchors.left: parent.left
+            anchors.top: label_gamesState.bottom
+            anchors.topMargin: rpx(4)
+            anchors.leftMargin: rpx(18) + leftMarginOffset
+
+            opacity: 0.33
+            Behavior on opacity { PropertyAnimation { duration: 100 } }
+        }
+
+        Timer {
+            interval: 250; running: true; repeat: true
+            onTriggered: loading_dots.text = loading_dots.text.length === 3
+                         ? "." : loading_dots.text + "."
+        }
+
+        Text {
+            id: loading_dots
+            text: "."
+            color: "#aaa"
+            font {
+                pixelSize: rpx(24)
+                family: uiFont.name
+                italic: true
+            }
+            anchors.left: label_gamesState.right
+            anchors.baseline: label_gamesState.baseline
         }
     }
 }
