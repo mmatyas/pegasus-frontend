@@ -169,7 +169,9 @@ void readSystemEntry(QXmlStreamReader& xml,
     }
 
     // search for metadata here in the next phase
-    metadata_dirs << xml_props[QLatin1String("path")];
+    const QFileInfo metadir_info(xml_props[QLatin1String("path")]);
+    if (metadir_info.exists() && metadir_info.isDir())
+        metadata_dirs << metadir_info.canonicalFilePath();
 }
 
 QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QString>& map, const QStringRef& str)
