@@ -1,0 +1,234 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "Home\n\n\nPegasus is an experimental emulator frontend, focusing on customizability, cross platform support (including embedded) and high performance. Here you can find the related documentation, development notes and guides.\n\n\nUser guide\n\n\n\n\nDefault controls\n\n\nScripting\n\n\n\n\nDevelopment\n\n\n\n\nInstalling Qt on desktop\n\n\nCross compiling Qt for embedded\n\n\nBuilding Pegasus\n\n\nDeployment\n\n\nTranslations\n\n\n\n\nCustomization\n\n\n\n\nTheme guide", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#home", 
+            "text": "Pegasus is an experimental emulator frontend, focusing on customizability, cross platform support (including embedded) and high performance. Here you can find the related documentation, development notes and guides.", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#user-guide", 
+            "text": "Default controls  Scripting", 
+            "title": "User guide"
+        }, 
+        {
+            "location": "/#development", 
+            "text": "Installing Qt on desktop  Cross compiling Qt for embedded  Building Pegasus  Deployment  Translations", 
+            "title": "Development"
+        }, 
+        {
+            "location": "/#customization", 
+            "text": "Theme guide", 
+            "title": "Customization"
+        }, 
+        {
+            "location": "/user-guide/controls/", 
+            "text": "Controls\n\n\nThe default controls currently are:\n\n\n\n\n\n\n\n\nKeyboard\n\n\nGamepad\n\n\nEffect\n\n\n\n\n\n\n\n\n\n\narrows\n\n\ndpad\n\n\nnavigation\n\n\n\n\n\n\nenter\n\n\nCross\n\n\nselect/ok\n\n\n\n\n\n\nescape\n\n\nCircle\n\n\ncancel/back\n\n\n\n\n\n\nctrl\n\n\nSquare\n\n\nfilter menu (used in the main theme)\n\n\n\n\n\n\nA or Q\n\n\nL1 or L2\n\n\nprevious platform (used in the main theme)\n\n\n\n\n\n\nE or D\n\n\nR1 or R2\n\n\nnext platform (used in the main theme)", 
+            "title": "Controls"
+        }, 
+        {
+            "location": "/user-guide/controls/#controls", 
+            "text": "The default controls currently are:     Keyboard  Gamepad  Effect      arrows  dpad  navigation    enter  Cross  select/ok    escape  Circle  cancel/back    ctrl  Square  filter menu (used in the main theme)    A or Q  L1 or L2  previous platform (used in the main theme)    E or D  R1 or R2  next platform (used in the main theme)", 
+            "title": "Controls"
+        }, 
+        {
+            "location": "/user-guide/scripting/", 
+            "text": "Scripting\n\n\nPegasus supports calling external scripts and executables on certain program events.\n\n\n1. The scripts directory\n\n\nFirst, create a new directory called \nscripts\n inside the config directory:\n\n\n\n\nLinux: \n~/.config/pegasus-frontend\n or \n/etc/xdg/pegasus-frontend\n\n\nWindows: \nC:\\Users\\\nUser Name\n\\AppData\\Roaming\\pegasus-frontend\n\n\n\n\n2. Event directories\n\n\nInside the \nscripts\n folder, create a new directory for the kind of event you want to script:\n\n\n\n\n\n\n\n\nName\n\n\nWhen\n\n\n\n\n\n\n\n\n\n\nquit\n\n\non program quit\n\n\n\n\n\n\nreboot\n\n\non system reboot (also calls \nquit\n first)\n\n\n\n\n\n\nshutdown\n\n\non system shutdown (also calls \nquit\n first)\n\n\n\n\n\n\nconfig-changed\n\n\non the change of any configuration option\n\n\n\n\n\n\ncontrols-changed\n\n\non change of the control settings (also calls \nconfig\n first)\n\n\n\n\n\n\nsettings-changed\n\n\non change of the regular (non-control) settings (also calls \nconfig\n first)\n\n\n\n\n\n\ngame-start\n\n\nbefore starting a game\n\n\n\n\n\n\ngame-end\n\n\nafter finishing a game\n\n\n\n\n\n\n\n\n3. Script calling\n\n\nPut your executable scripts or binaries into these new directories. They will be called in \nalphabetic order\n when the event happens.", 
+            "title": "Scripting"
+        }, 
+        {
+            "location": "/user-guide/scripting/#scripting", 
+            "text": "Pegasus supports calling external scripts and executables on certain program events.", 
+            "title": "Scripting"
+        }, 
+        {
+            "location": "/user-guide/scripting/#1-the-scripts-directory", 
+            "text": "First, create a new directory called  scripts  inside the config directory:   Linux:  ~/.config/pegasus-frontend  or  /etc/xdg/pegasus-frontend  Windows:  C:\\Users\\ User Name \\AppData\\Roaming\\pegasus-frontend", 
+            "title": "1. The scripts directory"
+        }, 
+        {
+            "location": "/user-guide/scripting/#2-event-directories", 
+            "text": "Inside the  scripts  folder, create a new directory for the kind of event you want to script:     Name  When      quit  on program quit    reboot  on system reboot (also calls  quit  first)    shutdown  on system shutdown (also calls  quit  first)    config-changed  on the change of any configuration option    controls-changed  on change of the control settings (also calls  config  first)    settings-changed  on change of the regular (non-control) settings (also calls  config  first)    game-start  before starting a game    game-end  after finishing a game", 
+            "title": "2. Event directories"
+        }, 
+        {
+            "location": "/user-guide/scripting/#3-script-calling", 
+            "text": "Put your executable scripts or binaries into these new directories. They will be called in  alphabetic order  when the event happens.", 
+            "title": "3. Script calling"
+        }, 
+        {
+            "location": "/dev/install-qt/", 
+            "text": "Installing Qt for desktop\n\n\nQt is a cross-platform application framework used by Pegasus. At least Qt 5.7 is requred, with 5.9 or later recommended for better performance on embedded platforms. For desktop platforms you can get the Qt tools using their installer:\n\n\n \n Download the Qt installer\n\n\nThen walk through the installation, and select the component \"Desktop gcc\" (Linux), \"MinGW\" (Windows) or \"macOS\" for macOS:\n\n\n\n    \n\n    \n\n\n\n\n\nNow you have the Qt libraries and the Qt Creator IDE installed.\n\n\n\n\nComponents on Windows\n\n\nOn \nWindows\n you can choose between MinGW and MSVC compiler packages. If you're planning to edit the source code and you want to use Visual Studio, you can select the matching MSVC component instead of MinGW.\n\n\n\n\n\n\nEmbedded\n\n\nThese instructions are for \ndesktop\n platforms. For embedded devices, you have to compile Qt manually, or use the prebuilt libraries available on Pegasus' GitHub page. See [TODO].\n\n\n\n\nAlternative installations\n\n\nLinux\n\n\nOn many Linux distros, such as Debian (Ubuntu, Mint, ...) the Qt libraries available in the official repositories are often several years old (as a trade-off between stability and access to the latest software).\n\n\nUbuntu\n\n\nOn \nUbuntu\n, you can use the following PPAs to get the latest Qt releases:\n\n\n# for 14.04, use this:\nsudo add-apt-repository ppa:beineri/opt-qt593-trusty\n# for 16.04, use this:\nsudo add-apt-repository ppa:beineri/opt-qt593-xenial\n\nsudo apt-get update\nsudo apt-get install  \\\n    qt59declarative  \\\n    qt59graphicaleffects  \\\n    qt59gamepad  \\\n    qt59imageformats  \\\n    qt59multimedia  \\\n    qt59svg  \\\n    qt59tools\n\nsource /opt/qt59/bin/qt59-env.sh\n\n\n\n\nTo use this installation, you will need to call \n/opt/qt59/bin/qt59-env.sh\n every time you open a new terminal. You can do this by adding the \nsource ...\n line above to your \n~/.bashrc\n file (or whatever shell you use).\n\n\nArch\n\n\nIf you're using \nArch\n, you can get Qt from AUR; here's the relevant \nwiki page\n.\n\n\nWindows/MSYS2\n\n\nQt is availale in the MSYS2 repos. See \nhttps://wiki.qt.io/MSYS2\n.\n\n\nWindows/vcpkg\n\n\nAt the time of writing, Qt 5.8 is available in vcpkg as a port.\n\n\nmacOS/Homebrew\n\n\nQt is availale in the Homebrew repos, but may not be up to date. See \nhttp://brewformulas.org/qt5\n.", 
+            "title": "Installing Qt"
+        }, 
+        {
+            "location": "/dev/install-qt/#installing-qt-for-desktop", 
+            "text": "Qt is a cross-platform application framework used by Pegasus. At least Qt 5.7 is requred, with 5.9 or later recommended for better performance on embedded platforms. For desktop platforms you can get the Qt tools using their installer:     Download the Qt installer  Then walk through the installation, and select the component \"Desktop gcc\" (Linux), \"MinGW\" (Windows) or \"macOS\" for macOS:  \n     \n       Now you have the Qt libraries and the Qt Creator IDE installed.   Components on Windows  On  Windows  you can choose between MinGW and MSVC compiler packages. If you're planning to edit the source code and you want to use Visual Studio, you can select the matching MSVC component instead of MinGW.    Embedded  These instructions are for  desktop  platforms. For embedded devices, you have to compile Qt manually, or use the prebuilt libraries available on Pegasus' GitHub page. See [TODO].", 
+            "title": "Installing Qt for desktop"
+        }, 
+        {
+            "location": "/dev/install-qt/#alternative-installations", 
+            "text": "", 
+            "title": "Alternative installations"
+        }, 
+        {
+            "location": "/dev/install-qt/#linux", 
+            "text": "On many Linux distros, such as Debian (Ubuntu, Mint, ...) the Qt libraries available in the official repositories are often several years old (as a trade-off between stability and access to the latest software).", 
+            "title": "Linux"
+        }, 
+        {
+            "location": "/dev/install-qt/#ubuntu", 
+            "text": "On  Ubuntu , you can use the following PPAs to get the latest Qt releases:  # for 14.04, use this:\nsudo add-apt-repository ppa:beineri/opt-qt593-trusty\n# for 16.04, use this:\nsudo add-apt-repository ppa:beineri/opt-qt593-xenial\n\nsudo apt-get update\nsudo apt-get install  \\\n    qt59declarative  \\\n    qt59graphicaleffects  \\\n    qt59gamepad  \\\n    qt59imageformats  \\\n    qt59multimedia  \\\n    qt59svg  \\\n    qt59tools\n\nsource /opt/qt59/bin/qt59-env.sh  To use this installation, you will need to call  /opt/qt59/bin/qt59-env.sh  every time you open a new terminal. You can do this by adding the  source ...  line above to your  ~/.bashrc  file (or whatever shell you use).", 
+            "title": "Ubuntu"
+        }, 
+        {
+            "location": "/dev/install-qt/#arch", 
+            "text": "If you're using  Arch , you can get Qt from AUR; here's the relevant  wiki page .", 
+            "title": "Arch"
+        }, 
+        {
+            "location": "/dev/install-qt/#windowsmsys2", 
+            "text": "Qt is availale in the MSYS2 repos. See  https://wiki.qt.io/MSYS2 .", 
+            "title": "Windows/MSYS2"
+        }, 
+        {
+            "location": "/dev/install-qt/#windowsvcpkg", 
+            "text": "At the time of writing, Qt 5.8 is available in vcpkg as a port.", 
+            "title": "Windows/vcpkg"
+        }, 
+        {
+            "location": "/dev/install-qt/#macoshomebrew", 
+            "text": "Qt is availale in the Homebrew repos, but may not be up to date. See  http://brewformulas.org/qt5 .", 
+            "title": "macOS/Homebrew"
+        }, 
+        {
+            "location": "/dev/cross-compile-qt/", 
+            "text": "Cross compiling Qt for embedded platforms\n\n\n\n\nDanger\n\n\nCross compiling Qt is not trivial, you'll need some experience setting it all up. If you'd just like to make Pegasus run on a new device, consider opening a \nnew issue\n!\n\n\n\n\nThis documentation lists the configurations I personally use when building Qt.\n\n\nIf the latest Qt is not available for your platform, or you're not pleased with it (eg. hardware acceleration is disabled), you'll need to build it manually. You can get the latest officially released source code from the Qt website, from \nhere\n (select open source, click 'All downloads' on the bottom, then search for 'Source packages'). The general steps and requirements are described in the \nQt documentation\n.\n\n\nBuilding Qt takes significant time, about 30-60 minutes on a good desktop PC, depending on the selected components. It requires at least 2 GB of RAM and 6.5 GB free space. \nDo not\n try to build it on your $5 board computer.\n\n\nInstead, you can \ncross compile\n Qt. Cross compilation means the program or library you build will run on a different architecture or platform than your own PC. For example, if you're on Linux, you can build programs that will run on Windows, or on a phone or embedded device. For this, you'll need a \ntoolchain\n, a compiler that generates code for a certain platform, and a \nsysroot\n, a collection of libraries from the target device. Getting a toolchain and sysroot is different for every platform; you can find cross compilers for the popular targets, eg. ARMv7-Linux, while for others you might need to build a whole custom GCC. You'll have look around for them for your platform. For the Raspberry Pi cross compilation, this guide was very helpful: \nhttps://wiki.qt.io/RaspberryPi2EGLFS\n. This also shows how you can set up Qt Creator for testing and such.\n\n\nThe configurations below are mainly based on the Debian automatic builds, and the guide mentioned above. If you haven't read the \nofficial Qt docs\n yet, do it now. The \nconfigure\n step produces a detailed status report; make sure everything looks correct. You'll need everything under QML and Qt Quick (except maybe DirectX 12), and depending on your platform, 'EGLFS' under 'QPA backends' and at least one of the 'EGLFS details', that matches your device (eg. EGLFS Rasberry Pi). You might also want the X11 options off, if you won't use it. See \nconfigure --help\n or the documentation for the available options.\n\n\nRaspbian sysroot\n\n\nThe sysroot used for compilation is based on Raspbian, with the following additional packages installed:\n\n\napt-get build-dep -y qt4-x11 libqt5gui5\napt-get install -y libudev-dev libinput-dev libts-dev libxcb-xinerama0-dev libxcb-xinerama0\napt-get install -y libopenal-dev libsqlite3-dev libfontconfig-dev\napt-get install -y libglib2.0-dev gstreamer1.0-omx libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev\napt-get install -y libsmbclient-dev libssh-dev libsdl2-dev\n\n\n\n\nRaspberry Pi 1 / Zero (ARMv6)\n\n\ntoolchain: \nhttps://github.com/raspberrypi/tools\n, cloned to \n/opt/raspberrypi-tools\n\nsysroot: see \nRaspbian sysroot\n\n\n../configure \\\n    -opensource \\\n    -confirm-license \\\n    -release \\\n    -strip \\\n    -no-rpath \\\n    -make libs \\\n    -skip qtwebengine \\\n    -skip wayland \\\n    -device linux-rasp-pi-g++ \\\n    -opengl es2 \\\n    -device-option CROSS_COMPILE=/opt/raspberrypi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf- \\\n    -sysroot /opt/rpi-sysroot \\\n    -prefix /opt/qt58-rpi1 \\\n    -extprefix /opt/qt58-rpi1 \\\n    -hostprefix /opt/qt58-rpi1_hosttools \\\n    -no-use-gold-linker \\\n    -openssl \\\n    -fontconfig \\\n    -gstreamer 1.0 \\\n    -no-xcb \\\n    -no-dbus \\\n    -no-glib \\\n    -no-icu \\\n    -system-zlib \\\n    -system-libpng \\\n    -system-libjpeg \\\n    -system-sqlite \\\n    -verbose\n\n\n\n\nRaspberry Pi 2 (ARMv7) / 3 (ARMv8, but v7 compatible)\n\n\nNOTE: The difference is the \n-device\n parameter and the output paths.\n\n\ntoolchain: \nhttps://github.com/raspberrypi/tools\n, cloned to \n/opt/raspberrypi-tools\n\nsysroot: see \nRaspbian sysroot\n\n\n../configure \\\n    -opensource \\\n    -confirm-license \\\n    -release \\\n    -strip \\\n    -no-rpath \\\n    -make libs \\\n    -skip qtwebengine \\\n    -skip wayland \\\n    -device linux-rasp-pi2-g++ \\\n    -opengl es2 \\\n    -device-option CROSS_COMPILE=/opt/raspberrypi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf- \\\n    -sysroot /opt/rpi-sysroot \\\n    -prefix /opt/qt58-rpi2 \\\n    -extprefix /opt/qt58-rpi2 \\\n    -hostprefix /opt/qt58-rpi2_hosttools \\\n    -no-use-gold-linker \\\n    -openssl \\\n    -fontconfig \\\n    -gstreamer 1.0 \\\n    -no-xcb \\\n    -no-dbus \\\n    -no-glib \\\n    -no-icu \\\n    -system-zlib \\\n    -system-libpng \\\n    -system-libjpeg \\\n    -system-sqlite \\\n    -verbose\n\n\n\n\nX11 static build\n\n\nThis was actually a native build, so the cross compilation options aren't needed.\n\n\n../configure\n    -opensource\n    -confirm-license\n    -release\n    -strip\n    -no-rpath\n    -static\n    -c++std c++11\n    -make libs\n    -skip qtwebengine\n    -skip wayland\n    -prefix /opt/qt58-x11-static\n    -openssl\n    -gstreamer 1.0\n    -fontconfig\n    -no-dbus\n    -verbose\n    -no-glib\n    -qt-zlib\n    -platform linux-g++\n    -no-icu\n    -qpa xcb\n    -xcb", 
+            "title": "Cross compile Qt"
+        }, 
+        {
+            "location": "/dev/cross-compile-qt/#cross-compiling-qt-for-embedded-platforms", 
+            "text": "Danger  Cross compiling Qt is not trivial, you'll need some experience setting it all up. If you'd just like to make Pegasus run on a new device, consider opening a  new issue !   This documentation lists the configurations I personally use when building Qt.  If the latest Qt is not available for your platform, or you're not pleased with it (eg. hardware acceleration is disabled), you'll need to build it manually. You can get the latest officially released source code from the Qt website, from  here  (select open source, click 'All downloads' on the bottom, then search for 'Source packages'). The general steps and requirements are described in the  Qt documentation .  Building Qt takes significant time, about 30-60 minutes on a good desktop PC, depending on the selected components. It requires at least 2 GB of RAM and 6.5 GB free space.  Do not  try to build it on your $5 board computer.  Instead, you can  cross compile  Qt. Cross compilation means the program or library you build will run on a different architecture or platform than your own PC. For example, if you're on Linux, you can build programs that will run on Windows, or on a phone or embedded device. For this, you'll need a  toolchain , a compiler that generates code for a certain platform, and a  sysroot , a collection of libraries from the target device. Getting a toolchain and sysroot is different for every platform; you can find cross compilers for the popular targets, eg. ARMv7-Linux, while for others you might need to build a whole custom GCC. You'll have look around for them for your platform. For the Raspberry Pi cross compilation, this guide was very helpful:  https://wiki.qt.io/RaspberryPi2EGLFS . This also shows how you can set up Qt Creator for testing and such.  The configurations below are mainly based on the Debian automatic builds, and the guide mentioned above. If you haven't read the  official Qt docs  yet, do it now. The  configure  step produces a detailed status report; make sure everything looks correct. You'll need everything under QML and Qt Quick (except maybe DirectX 12), and depending on your platform, 'EGLFS' under 'QPA backends' and at least one of the 'EGLFS details', that matches your device (eg. EGLFS Rasberry Pi). You might also want the X11 options off, if you won't use it. See  configure --help  or the documentation for the available options.", 
+            "title": "Cross compiling Qt for embedded platforms"
+        }, 
+        {
+            "location": "/dev/cross-compile-qt/#raspbian-sysroot", 
+            "text": "The sysroot used for compilation is based on Raspbian, with the following additional packages installed:  apt-get build-dep -y qt4-x11 libqt5gui5\napt-get install -y libudev-dev libinput-dev libts-dev libxcb-xinerama0-dev libxcb-xinerama0\napt-get install -y libopenal-dev libsqlite3-dev libfontconfig-dev\napt-get install -y libglib2.0-dev gstreamer1.0-omx libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev\napt-get install -y libsmbclient-dev libssh-dev libsdl2-dev", 
+            "title": "Raspbian sysroot"
+        }, 
+        {
+            "location": "/dev/cross-compile-qt/#raspberry-pi-1-zero-armv6", 
+            "text": "toolchain:  https://github.com/raspberrypi/tools , cloned to  /opt/raspberrypi-tools \nsysroot: see  Raspbian sysroot  ../configure \\\n    -opensource \\\n    -confirm-license \\\n    -release \\\n    -strip \\\n    -no-rpath \\\n    -make libs \\\n    -skip qtwebengine \\\n    -skip wayland \\\n    -device linux-rasp-pi-g++ \\\n    -opengl es2 \\\n    -device-option CROSS_COMPILE=/opt/raspberrypi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf- \\\n    -sysroot /opt/rpi-sysroot \\\n    -prefix /opt/qt58-rpi1 \\\n    -extprefix /opt/qt58-rpi1 \\\n    -hostprefix /opt/qt58-rpi1_hosttools \\\n    -no-use-gold-linker \\\n    -openssl \\\n    -fontconfig \\\n    -gstreamer 1.0 \\\n    -no-xcb \\\n    -no-dbus \\\n    -no-glib \\\n    -no-icu \\\n    -system-zlib \\\n    -system-libpng \\\n    -system-libjpeg \\\n    -system-sqlite \\\n    -verbose", 
+            "title": "Raspberry Pi 1 / Zero (ARMv6)"
+        }, 
+        {
+            "location": "/dev/cross-compile-qt/#raspberry-pi-2-armv7-3-armv8-but-v7-compatible", 
+            "text": "NOTE: The difference is the  -device  parameter and the output paths.  toolchain:  https://github.com/raspberrypi/tools , cloned to  /opt/raspberrypi-tools \nsysroot: see  Raspbian sysroot  ../configure \\\n    -opensource \\\n    -confirm-license \\\n    -release \\\n    -strip \\\n    -no-rpath \\\n    -make libs \\\n    -skip qtwebengine \\\n    -skip wayland \\\n    -device linux-rasp-pi2-g++ \\\n    -opengl es2 \\\n    -device-option CROSS_COMPILE=/opt/raspberrypi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf- \\\n    -sysroot /opt/rpi-sysroot \\\n    -prefix /opt/qt58-rpi2 \\\n    -extprefix /opt/qt58-rpi2 \\\n    -hostprefix /opt/qt58-rpi2_hosttools \\\n    -no-use-gold-linker \\\n    -openssl \\\n    -fontconfig \\\n    -gstreamer 1.0 \\\n    -no-xcb \\\n    -no-dbus \\\n    -no-glib \\\n    -no-icu \\\n    -system-zlib \\\n    -system-libpng \\\n    -system-libjpeg \\\n    -system-sqlite \\\n    -verbose", 
+            "title": "Raspberry Pi 2 (ARMv7) / 3 (ARMv8, but v7 compatible)"
+        }, 
+        {
+            "location": "/dev/cross-compile-qt/#x11-static-build", 
+            "text": "This was actually a native build, so the cross compilation options aren't needed.  ../configure\n    -opensource\n    -confirm-license\n    -release\n    -strip\n    -no-rpath\n    -static\n    -c++std c++11\n    -make libs\n    -skip qtwebengine\n    -skip wayland\n    -prefix /opt/qt58-x11-static\n    -openssl\n    -gstreamer 1.0\n    -fontconfig\n    -no-dbus\n    -verbose\n    -no-glib\n    -qt-zlib\n    -platform linux-g++\n    -no-icu\n    -qpa xcb\n    -xcb", 
+            "title": "X11 static build"
+        }, 
+        {
+            "location": "/dev/build/", 
+            "text": "Building Pegasus\n\n\nPegasus is a C++ program that uses the Qt framework. To build it run on your OS or device, you'll need a C++11 supporting compiler (g++ 4.6 or better), Qt 5.7 or later (version is important!) for your platform, and at least the following additional Qt components:\n\n\n\n\nQML module\n\n\nQt Quick 2 module\n\n\nMultimedia module (might be called as MultimediaQuick)\n\n\nSvg module\n\n\nGamepad module\n\n\n\n\nQt also provides a graphical IDE called Qt Creator, which you can use if you wish, but it's not a requirement. For installing Qt, see \nthis page\n.\n\n\nUsing Qt Creator\n\n\n\n\nOpen Qt Creator and open the project file (\npegasus.pro\n)\n\n\nQt Creator will ask you which Qt setup (\"kit\") you want to use (in case you've installed multiple versions), and where you want to place the generated files (see Details). If everything's OK, click Configure Project.\n\n\n(optional) Change the configuration (see \nhere\n)\n\n\n\n\nIn the bottom left corner, on the sidebar of Qt Creator, you can find 4 buttons:\n\n\n\n\nwith the button that looks like a desktop monitor, you can change the build type (optimized Release build or development-friendly but slower Debug build)\n\n\nthe green arrow will build and run the program\n\n\nthe green arrow with a bug will also open several debug toolbars\n\n\nthe hammer will build the project but won't start the application\n\n\n\n\n\n\n\n\nChange the build type to Release, and press the green arrow to build and run the project.\n\n\n\n\n\n\nUsing the command line\n\n\n\n\nCreate a build directory somewhere, and \ncd\n into it\n\n\nCall \nqmake\n, the configuration tool of Qt: \n/path/to/qmake  path/to/project  [options]\n.\n\n\nIf you have multiple Qt versions installed, make sure you call the right \nqmake\n. If you've installed using the official release from the Qt site, you can find it in \n[qt-installdir]/Qt5/[version]/gcc_64/bin\n (you can add it to your \n$PATH\n if you want, but it's not necessary).\n\n\nYou can also change some configuration options, which you can find \nhere\n.\n\n\n\n\n\n\nCall \nmake\n\n\n(optional) Call \nmake install\n\n\n\n\nConfiguration options\n\n\nYou can change build parameters to \nqmake\n (the Qt configuration tool) by appending \nKEY=VALUE\n pairs to its command line call. If you're using Qt Creator, you can find these settings on the Projects -\n Build settings tab, where you can modify the Additional arguments option (see \nhere\n).\n\n\n\n\n\n\nYou can use the following parameters:\n\n\n\n\n\n\n\n\nOption\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nINSTALLDIR\n\n\nThe general installation directory used by \nmake install\n. Defaults to \n/opt/pegasus-frontend\n on Linux and \nC:\\pegasus-frontend\n on Windows. You can fine tune the installation directory of some components by other options.\n\n\n\n\n\n\nINSTALL_BINDIR\n\n\nThe installation directory of the runtime binary (\"exe\"). Defaults to \nINSTALLDIR\n.\n\n\n\n\n\n\nINSTALL_DATADIR\n\n\nThe installation directory of the data files, eg. default themes. Defaults to \nINSTALLDIR\n.\n\n\n\n\n\n\nINSTALL_ICONDIR\n\n\n[Linux only] The installation directory of the icon file. Defaults to \nINSTALLDIR\n (to make it portable), \n/usr/share/pixmaps\n is recommended if you want to install Pegasus system-wide.\n\n\n\n\n\n\nINSTALL_DESKTOPDIR\n\n\n[Linux only] The installation directory of the desktop entry. Defaults to \nINSTALLDIR\n (to make it portable), \n/usr/share/applications\n is recommended if you want to install Pegasus system-wide.", 
+            "title": "Building"
+        }, 
+        {
+            "location": "/dev/build/#building-pegasus", 
+            "text": "Pegasus is a C++ program that uses the Qt framework. To build it run on your OS or device, you'll need a C++11 supporting compiler (g++ 4.6 or better), Qt 5.7 or later (version is important!) for your platform, and at least the following additional Qt components:   QML module  Qt Quick 2 module  Multimedia module (might be called as MultimediaQuick)  Svg module  Gamepad module   Qt also provides a graphical IDE called Qt Creator, which you can use if you wish, but it's not a requirement. For installing Qt, see  this page .", 
+            "title": "Building Pegasus"
+        }, 
+        {
+            "location": "/dev/build/#using-qt-creator", 
+            "text": "Open Qt Creator and open the project file ( pegasus.pro )  Qt Creator will ask you which Qt setup (\"kit\") you want to use (in case you've installed multiple versions), and where you want to place the generated files (see Details). If everything's OK, click Configure Project.  (optional) Change the configuration (see  here )   In the bottom left corner, on the sidebar of Qt Creator, you can find 4 buttons:   with the button that looks like a desktop monitor, you can change the build type (optimized Release build or development-friendly but slower Debug build)  the green arrow will build and run the program  the green arrow with a bug will also open several debug toolbars  the hammer will build the project but won't start the application     Change the build type to Release, and press the green arrow to build and run the project.", 
+            "title": "Using Qt Creator"
+        }, 
+        {
+            "location": "/dev/build/#using-the-command-line", 
+            "text": "Create a build directory somewhere, and  cd  into it  Call  qmake , the configuration tool of Qt:  /path/to/qmake  path/to/project  [options] .  If you have multiple Qt versions installed, make sure you call the right  qmake . If you've installed using the official release from the Qt site, you can find it in  [qt-installdir]/Qt5/[version]/gcc_64/bin  (you can add it to your  $PATH  if you want, but it's not necessary).  You can also change some configuration options, which you can find  here .    Call  make  (optional) Call  make install", 
+            "title": "Using the command line"
+        }, 
+        {
+            "location": "/dev/build/#configuration-options", 
+            "text": "You can change build parameters to  qmake  (the Qt configuration tool) by appending  KEY=VALUE  pairs to its command line call. If you're using Qt Creator, you can find these settings on the Projects -  Build settings tab, where you can modify the Additional arguments option (see  here ).    You can use the following parameters:     Option  Description      INSTALLDIR  The general installation directory used by  make install . Defaults to  /opt/pegasus-frontend  on Linux and  C:\\pegasus-frontend  on Windows. You can fine tune the installation directory of some components by other options.    INSTALL_BINDIR  The installation directory of the runtime binary (\"exe\"). Defaults to  INSTALLDIR .    INSTALL_DATADIR  The installation directory of the data files, eg. default themes. Defaults to  INSTALLDIR .    INSTALL_ICONDIR  [Linux only] The installation directory of the icon file. Defaults to  INSTALLDIR  (to make it portable),  /usr/share/pixmaps  is recommended if you want to install Pegasus system-wide.    INSTALL_DESKTOPDIR  [Linux only] The installation directory of the desktop entry. Defaults to  INSTALLDIR  (to make it portable),  /usr/share/applications  is recommended if you want to install Pegasus system-wide.", 
+            "title": "Configuration options"
+        }, 
+        {
+            "location": "/dev/deploy/", 
+            "text": "Deployment\n\n\nQt uses lots of modules, plugins and QML files, which makes it somewhat hard to create deployable packages manually. Fortunately, there are tools that can collect the necessary files for you.\n\n\nSee the general Qt documentation \nhere\n, especially the platform-specific notes. Since most of the details are described there, I'll just list the commands I usually use.\n\n\nLinux\n\n\n\n\nStatic builds\n\n\nIf you've manually built Qt as a static library, a simple \nmake install\n will likely be enough.\n\n\n\n\nYou can use \nlinuxdeployqt\n to create AppImages:\n\n\n./linuxdeployqt-continuous-x86_64.AppImage \\\n    -qmldir \nbuild dir\n \\\n    -bundle-non-qt-libs \\\n    \ninstall dir\n\n\ncp /path/to/libQt5Svg.so.5 ./lib/\n\n./linuxdeployqt-continuous-x86_64.AppImage \\\n    -appimage \\\n    \ninstall dir\n\n\n\n\n\nWindows\n\n\n windeployqt\n      --release\n      --qmldir \nbuild dir\n\n      --no-translations\n      --no-opengl-sw\n      \ninstallation dir\n\n\n\n\n\nmacOS\n\n\nHaven't tried yet. \nmacdeployqt\n should work in theory.", 
+            "title": "Deployment"
+        }, 
+        {
+            "location": "/dev/deploy/#deployment", 
+            "text": "Qt uses lots of modules, plugins and QML files, which makes it somewhat hard to create deployable packages manually. Fortunately, there are tools that can collect the necessary files for you.  See the general Qt documentation  here , especially the platform-specific notes. Since most of the details are described there, I'll just list the commands I usually use.", 
+            "title": "Deployment"
+        }, 
+        {
+            "location": "/dev/deploy/#linux", 
+            "text": "Static builds  If you've manually built Qt as a static library, a simple  make install  will likely be enough.   You can use  linuxdeployqt  to create AppImages:  ./linuxdeployqt-continuous-x86_64.AppImage \\\n    -qmldir  build dir  \\\n    -bundle-non-qt-libs \\\n     install dir \n\ncp /path/to/libQt5Svg.so.5 ./lib/\n\n./linuxdeployqt-continuous-x86_64.AppImage \\\n    -appimage \\\n     install dir", 
+            "title": "Linux"
+        }, 
+        {
+            "location": "/dev/deploy/#windows", 
+            "text": "windeployqt\n      --release\n      --qmldir  build dir \n      --no-translations\n      --no-opengl-sw\n       installation dir", 
+            "title": "Windows"
+        }, 
+        {
+            "location": "/dev/deploy/#macos", 
+            "text": "Haven't tried yet.  macdeployqt  should work in theory.", 
+            "title": "macOS"
+        }, 
+        {
+            "location": "/dev/translate/", 
+            "text": "Translations\n\n\nPegasus supports most languages in use today, and you can easily add new translations for any locale. The translations are stored in simple text files in XML format, so the only thing you need is a text editor. There's also a graphical tool to make things easier (see below). The translations themselves are collected in a separate repository \nhere\n, which is also included as a Git submodule in the main Pegasus repo.\n\n\n\n\nIn short\n\n\n\n\ndownload the \nQt tools\n\n\ndownload the \ntranslation repo\n\n\ncreate a copy of \npegasus_en.ts\n for your language\n\n\nopen the new file in \nQt Linguist\n and translate the UI strings\n\n\nopen a new issue in the \ntranslation repo\n and attach your TS file\n\n\n\n\n\n\n\n\nTodo\n\n\nIn the future, there'll be likely some kind of online site for managing translations.\n\n\n\n\nFile format and name\n\n\nThe translation files are text files in XML format, encoded in UTF-8. Their file name includes the \nBCP47 language tag\n of the locale the they're made for. Usually, this means the following structure:\n\n\npegasus_[language][-script][-country].ts\n\n\n\n\nwhere\n\n\n\n\nlanguage\n is the language code (two letters, lowercase)\n\n\noptionally,\nscript\n defines the writing system (eg. simplified/traditional chinese) (four letters, title case)\n\n\noptionally, \ncountry\n defines a country-specific variant (two letters, uppercase)\n\n\n\n\nfor example, \nhi-Deva-IN\n means Hindi language, Devanagari script, and used in India.\n\n\n1. Preparing the tools\n\n\nYou can use any decent text editor, or you can also use \nQt Linguist\n, a graphical translation tool:\n\n\n\n\nQt Linguist is included with Qt, see \nhere\n. After installation, search for \nlinguist\n in the installation directory of Qt (Linux) or the Start menu (Windows).\n\n\n2. Prepare the translation files\n\n\nYou can find the translation files in \nthis repository\n. If you have no experience with Git, just click on the green \nClone or download\n button, then \nDownload ZIP\n.\n\n\nThen, create a copy of \npegasus_en.ts\n, and change \nen\n to your locale's code (see above).\n\n\n\n\nDeveloper note\n\n\nYou can create this file with \nlupdate ../src -ts pegasus_en.ts\n.\n\n\n\n\n3. Translate the file\n\n\nOpen your new file in a text editor or in Qt Linguist.\n\n\nIf you're using a \ntext editor\n, the translateable strings are inside \nmessage\n tags: you can see the original text in the \nsource\n tag, and you can provide your translation in \ntranslation\n. Also change the language tag on the top of the file (\nTS ...\n).\n\n\nIf you're using \nQt Linguist\n, first set your language in \nEdit -\n Translation file settings\n. After that, you can select a \"module\" on the left, then see the relevant strings in the upper-middle panel. You can add the translation in the center panel (marked with \"1\" on the picture above). A detailed guide for Qt Linguist can be found \nhere\n.\n\n\n\n\nHelp\n\n\n\n\n%1\n, \n%2\n, ... in the text is a placeholder for additional values, such as numbers, file names, etc.\n\n\nYou don't have to translate \nevery\n string; most of them won't be visible for the users, and will only be used in debug log files. It's enough to translate only the QML files (hover over the source code panel or check the \nlocation\n tag for the file name).\n\n\n\n\n\n\n\n\nTodo\n\n\nIn the future, UI and log messages will likely be separated to make translation easier.\n\n\n\n\n4. (dev) Add your translation to the QRC file\n\n\nThere's a file called \ntranslations.qrc.in\n in the translations repository. It's another XML file that you can open in a text editor, and collects all the translation files. Simply add a new \nfile\npegasus_LOCALECODE.qm\n/file\n entry.\n\n\n5. (dev) Rebuild Pegasus\n\n\nAt the moment, all translation files must be built into Pegasus. See the \nbuild documentation\n about how to rebuild the program.\n\n\n\n\nNote\n\n\nThis step is only required for trying out the translation in-app. You can safely skip it if you don't want to deal with building Pegasus.\n\n\n\n\n6. Open a pull request\n\n\nIf you know Git, open a pull request in the \ntranslations repository\n. Alternatively, open a new issue and attach your translation (TS) file.", 
+            "title": "Translations"
+        }, 
+        {
+            "location": "/dev/translate/#translations", 
+            "text": "Pegasus supports most languages in use today, and you can easily add new translations for any locale. The translations are stored in simple text files in XML format, so the only thing you need is a text editor. There's also a graphical tool to make things easier (see below). The translations themselves are collected in a separate repository  here , which is also included as a Git submodule in the main Pegasus repo.   In short   download the  Qt tools  download the  translation repo  create a copy of  pegasus_en.ts  for your language  open the new file in  Qt Linguist  and translate the UI strings  open a new issue in the  translation repo  and attach your TS file     Todo  In the future, there'll be likely some kind of online site for managing translations.", 
+            "title": "Translations"
+        }, 
+        {
+            "location": "/dev/translate/#file-format-and-name", 
+            "text": "The translation files are text files in XML format, encoded in UTF-8. Their file name includes the  BCP47 language tag  of the locale the they're made for. Usually, this means the following structure:  pegasus_[language][-script][-country].ts  where   language  is the language code (two letters, lowercase)  optionally, script  defines the writing system (eg. simplified/traditional chinese) (four letters, title case)  optionally,  country  defines a country-specific variant (two letters, uppercase)   for example,  hi-Deva-IN  means Hindi language, Devanagari script, and used in India.", 
+            "title": "File format and name"
+        }, 
+        {
+            "location": "/dev/translate/#1-preparing-the-tools", 
+            "text": "You can use any decent text editor, or you can also use  Qt Linguist , a graphical translation tool:   Qt Linguist is included with Qt, see  here . After installation, search for  linguist  in the installation directory of Qt (Linux) or the Start menu (Windows).", 
+            "title": "1. Preparing the tools"
+        }, 
+        {
+            "location": "/dev/translate/#2-prepare-the-translation-files", 
+            "text": "You can find the translation files in  this repository . If you have no experience with Git, just click on the green  Clone or download  button, then  Download ZIP .  Then, create a copy of  pegasus_en.ts , and change  en  to your locale's code (see above).   Developer note  You can create this file with  lupdate ../src -ts pegasus_en.ts .", 
+            "title": "2. Prepare the translation files"
+        }, 
+        {
+            "location": "/dev/translate/#3-translate-the-file", 
+            "text": "Open your new file in a text editor or in Qt Linguist.  If you're using a  text editor , the translateable strings are inside  message  tags: you can see the original text in the  source  tag, and you can provide your translation in  translation . Also change the language tag on the top of the file ( TS ... ).  If you're using  Qt Linguist , first set your language in  Edit -  Translation file settings . After that, you can select a \"module\" on the left, then see the relevant strings in the upper-middle panel. You can add the translation in the center panel (marked with \"1\" on the picture above). A detailed guide for Qt Linguist can be found  here .   Help   %1 ,  %2 , ... in the text is a placeholder for additional values, such as numbers, file names, etc.  You don't have to translate  every  string; most of them won't be visible for the users, and will only be used in debug log files. It's enough to translate only the QML files (hover over the source code panel or check the  location  tag for the file name).     Todo  In the future, UI and log messages will likely be separated to make translation easier.", 
+            "title": "3. Translate the file"
+        }, 
+        {
+            "location": "/dev/translate/#4-dev-add-your-translation-to-the-qrc-file", 
+            "text": "There's a file called  translations.qrc.in  in the translations repository. It's another XML file that you can open in a text editor, and collects all the translation files. Simply add a new  file pegasus_LOCALECODE.qm /file  entry.", 
+            "title": "4. (dev) Add your translation to the QRC file"
+        }, 
+        {
+            "location": "/dev/translate/#5-dev-rebuild-pegasus", 
+            "text": "At the moment, all translation files must be built into Pegasus. See the  build documentation  about how to rebuild the program.   Note  This step is only required for trying out the translation in-app. You can safely skip it if you don't want to deal with building Pegasus.", 
+            "title": "5. (dev) Rebuild Pegasus"
+        }, 
+        {
+            "location": "/dev/translate/#6-open-a-pull-request", 
+            "text": "If you know Git, open a pull request in the  translations repository . Alternatively, open a new issue and attach your translation (TS) file.", 
+            "title": "6. Open a pull request"
+        }
+    ]
+}

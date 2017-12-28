@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    
+    <url>
+     <loc>http://www.pegasus-frontend.org/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/user-guide/controls/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/user-guide/scripting/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/dev/install-qt/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/dev/cross-compile-qt/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/dev/build/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/dev/deploy/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>http://www.pegasus-frontend.org/dev/translate/</loc>
+     <lastmod>2017-12-28</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+</urlset>

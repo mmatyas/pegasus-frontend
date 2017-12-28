@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="author" content="Mátyás Mustoha"> 
+    <link rel="canonical" href="http://www.pegasus-frontend.org/dev/translate/"> 
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+
+    <title>Translations - Pegasus Docs</title>
+
+    <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+    <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/cinder.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+    <link href="../../css/extra.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    <script>
+    WebFont.load({
+        google: {
+            families: ['Open Sans', 'PT Sans']
+        }
+    });
+    </script>
+</head>
+
+<body>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-60112109-3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-60112109-3');
+    </script>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Pegasus Docs</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="../..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../user-guide/controls/">Controls</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../user-guide/scripting/">Scripting</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../install-qt/">Installing Qt</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../cross-compile-qt/">Cross compile Qt</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../build/">Building</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../deploy/">Deployment</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">Translations</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../deploy/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li class="disabled">
+                        <a rel="prev" >
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a href="https://github.com/mmatyas/pegasus-frontend/">
+                            
+                                <i class="fa fa-github"></i>
+                            
+                            GitHub
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="first-level active"><a href="#translations">Translations</a></li>
+        
+            <li class="second-level"><a href="#file-format-and-name">File format and name</a></li>
+            
+        
+            <li class="second-level"><a href="#1-preparing-the-tools">1. Preparing the tools</a></li>
+            
+        
+            <li class="second-level"><a href="#2-prepare-the-translation-files">2. Prepare the translation files</a></li>
+            
+        
+            <li class="second-level"><a href="#3-translate-the-file">3. Translate the file</a></li>
+            
+        
+            <li class="second-level"><a href="#4-dev-add-your-translation-to-the-qrc-file">4. (dev) Add your translation to the QRC file</a></li>
+            
+        
+            <li class="second-level"><a href="#5-dev-rebuild-pegasus">5. (dev) Rebuild Pegasus</a></li>
+            
+        
+            <li class="second-level"><a href="#6-open-a-pull-request">6. Open a pull request</a></li>
+            
+        
+    
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<h1 id="translations">Translations</h1>
+<p>Pegasus supports most languages in use today, and you can easily add new translations for any locale. The translations are stored in simple text files in XML format, so the only thing you need is a text editor. There's also a graphical tool to make things easier (see below). The translations themselves are collected in a separate repository <a href="https://github.com/mmatyas/pegasus-frontend-translations">here</a>, which is also included as a Git submodule in the main Pegasus repo.</p>
+<div class="admonition tldr">
+<p class="admonition-title">In short</p>
+<ul>
+<li>download the <a href="../install-qt/">Qt tools</a></li>
+<li>download the <a href="https://github.com/mmatyas/pegasus-frontend-translations">translation repo</a></li>
+<li>create a copy of <code>pegasus_en.ts</code> for your language</li>
+<li>open the new file in <em>Qt Linguist</em> and translate the UI strings</li>
+<li>open a new issue in the <a href="https://github.com/mmatyas/pegasus-frontend-translations/issues">translation repo</a> and attach your TS file</li>
+</ul>
+</div>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>In the future, there'll be likely some kind of online site for managing translations.</p>
+</div>
+<h2 id="file-format-and-name">File format and name</h2>
+<p>The translation files are text files in XML format, encoded in UTF-8. Their file name includes the <a href="https://en.wikipedia.org/wiki/IETF_language_tag#Syntax_of_language_tags"><em>BCP47 language tag</em></a> of the locale the they're made for. Usually, this means the following structure:</p>
+<pre><code>pegasus_[language][-script][-country].ts
+</code></pre>
+
+<p>where</p>
+<ul>
+<li><code>language</code> is the language code (two letters, lowercase)</li>
+<li>optionally,<code>script</code> defines the writing system (eg. simplified/traditional chinese) (four letters, title case)</li>
+<li>optionally, <code>country</code> defines a country-specific variant (two letters, uppercase)</li>
+</ul>
+<p>for example, <code>hi-Deva-IN</code> means Hindi language, Devanagari script, and used in India.</p>
+<h2 id="1-preparing-the-tools">1. Preparing the tools</h2>
+<p>You can use any decent text editor, or you can also use <em>Qt Linguist</em>, a graphical translation tool:</p>
+<p><img alt="linguist" src="https://doc.qt.io/qt-5/images/linguist-linguist.png" /></p>
+<p>Qt Linguist is included with Qt, see <a href="../install-qt/">here</a>. After installation, search for <code>linguist</code> in the installation directory of Qt (Linux) or the Start menu (Windows).</p>
+<h2 id="2-prepare-the-translation-files">2. Prepare the translation files</h2>
+<p>You can find the translation files in <a href="https://github.com/mmatyas/pegasus-frontend-translations">this repository</a>. If you have no experience with Git, just click on the green <em>Clone or download</em> button, then <em>Download ZIP</em>.</p>
+<p>Then, create a copy of <code>pegasus_en.ts</code>, and change <code>en</code> to your locale's code (see above).</p>
+<div class="admonition info">
+<p class="admonition-title">Developer note</p>
+<p>You can create this file with <code>lupdate ../src -ts pegasus_en.ts</code>.</p>
+</div>
+<h2 id="3-translate-the-file">3. Translate the file</h2>
+<p>Open your new file in a text editor or in Qt Linguist.</p>
+<p>If you're using a <strong>text editor</strong>, the translateable strings are inside <code>&lt;message&gt;</code> tags: you can see the original text in the <code>&lt;source&gt;</code> tag, and you can provide your translation in <code>&lt;translation&gt;</code>. Also change the language tag on the top of the file (<code>&lt;TS ...&gt;</code>).</p>
+<p>If you're using <strong>Qt Linguist</strong>, first set your language in <em>Edit -&gt; Translation file settings</em>. After that, you can select a "module" on the left, then see the relevant strings in the upper-middle panel. You can add the translation in the center panel (marked with "1" on the picture above). A detailed guide for Qt Linguist can be found <a href="https://doc.qt.io/qt-5/linguist-translators.html">here</a>.</p>
+<div class="admonition help">
+<p class="admonition-title">Help</p>
+<ul>
+<li><code>%1</code>, <code>%2</code>, ... in the text is a placeholder for additional values, such as numbers, file names, etc.</li>
+<li>You don't have to translate <em>every</em> string; most of them won't be visible for the users, and will only be used in debug log files. It's enough to translate only the QML files (hover over the source code panel or check the <code>&lt;location&gt;</code> tag for the file name).</li>
+</ul>
+</div>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>In the future, UI and log messages will likely be separated to make translation easier.</p>
+</div>
+<h2 id="4-dev-add-your-translation-to-the-qrc-file">4. (dev) Add your translation to the QRC file</h2>
+<p>There's a file called <code>translations.qrc.in</code> in the translations repository. It's another XML file that you can open in a text editor, and collects all the translation files. Simply add a new <code>&lt;file&gt;pegasus_LOCALECODE.qm&lt;/file&gt;</code> entry.</p>
+<h2 id="5-dev-rebuild-pegasus">5. (dev) Rebuild Pegasus</h2>
+<p>At the moment, all translation files must be built into Pegasus. See the <a href="../build/">build documentation</a> about how to rebuild the program.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This step is only required for trying out the translation in-app. You can safely skip it if you don't want to deal with building Pegasus.</p>
+</div>
+<h2 id="6-open-a-pull-request">6. Open a pull request</h2>
+<p>If you know Git, open a pull request in the <a href="https://github.com/mmatyas/pegasus-frontend-translations">translations repository</a>. Alternatively, open a new issue and attach your translation (TS) file.</p></div>
+        
+    </div>
+
+    <footer class="col-md-12 text-center">
+        <hr>
+        <p>
+        <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p></small>
+    </footer>
+
+    <script src="../../js/jquery-1.10.2.min.js"></script>
+    <script src="../../js/bootstrap-3.0.3.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    var base_url = '../..';
+    </script>
+    <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+    <script src="../../js/base.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        From here you can search these documents. Enter your search terms below.
+                    </p>
+                    <form role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                        </div>
+                    </form>
+                    <div id="mkdocs-search-results"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+</html>
