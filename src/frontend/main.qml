@@ -77,6 +77,8 @@ Window {
             onStatusChanged: {
                 if (status == Loader.Error)
                     themeContent.source = "messages/ThemeErrorMessage.qml";
+                else if (status == Loader.Ready)
+                    item.focus = true;
             }
         }
 

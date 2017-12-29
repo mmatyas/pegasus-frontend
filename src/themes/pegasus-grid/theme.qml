@@ -20,8 +20,6 @@ import "filter_panel"
 
 
 FocusScope {
-    focus: true
-
     Keys.onReleased: if (event.key === Qt.Key_Control && !event.isAutoRepeat) {
         if (filter.focus)
             content.focus = true
