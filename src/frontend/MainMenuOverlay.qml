@@ -81,7 +81,7 @@ FocusScope {
 
         Text {
             id: revision
-            text: pegasus.meta.gitRevision
+            text: api.meta.gitRevision
             color: "#eee"
             font {
                 pixelSize: rpx(12)

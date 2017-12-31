@@ -67,7 +67,7 @@ FocusScope {
             placeholderColor: "#bbb" // FIXME
             textColor: root.textColor
             fontSize: content.normalTextSize
-            onTextChanged: pegasus.filters.title = text
+            onTextChanged: api.filters.title = text
 
             width: rpx(200)
 
@@ -82,8 +82,8 @@ FocusScope {
             textColor: root.textColor
             fontSize: content.normalTextSize
 
-            checked: pegasus.filters.favorite
-            onCheckedChanged: pegasus.filters.favorite = checked
+            checked: api.filters.favorite
+            onCheckedChanged: api.filters.favorite = checked
 
             KeyNavigation.down: itemMultiplayer
         }
@@ -95,8 +95,8 @@ FocusScope {
             textColor: root.textColor
             fontSize: content.normalTextSize
 
-            checked: pegasus.filters.playerCount > 1
-            onCheckedChanged: pegasus.filters.playerCount = (checked ? 2 : 1)
+            checked: api.filters.playerCount > 1
+            onCheckedChanged: api.filters.playerCount = (checked ? 2 : 1)
         }
     }
 }

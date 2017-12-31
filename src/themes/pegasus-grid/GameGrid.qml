@@ -20,13 +20,13 @@ import QtQuick 2.8
 GridView {
     id: grid_root
 
-    property var platformData: pegasus.collections.current
+    property var platformData: api.collections.current
 
     model: platformData.games.model
     onModelChanged: { firstImageLoaded = false; cellHeightRatio = 0.5; }
 
     currentIndex: platformData.games.index
-    onCurrentIndexChanged: pegasus.collections.current.games.index = currentIndex
+    onCurrentIndexChanged: api.collections.current.games.index = currentIndex
     Component.onCompleted: positionViewAtIndex(currentIndex, PathView.Center)
 
     // For better visibility, box arts should be displayed in five columns if

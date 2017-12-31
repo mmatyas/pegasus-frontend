@@ -32,7 +32,7 @@ FocusScope {
 
         focus: true
         Keys.forwardTo: [topbar, gamegrid]
-        Keys.onReturnPressed: pegasus.launchGame();
+        Keys.onReturnPressed: api.launchGame();
 
         anchors.fill: parent
 

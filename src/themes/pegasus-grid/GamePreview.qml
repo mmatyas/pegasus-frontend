@@ -22,7 +22,7 @@ import "qrc:/qmlutils" as PegasusUtils
 
 
 Item {
-    property var gameData: pegasus.collections.current.games.current
+    property var gameData: api.collections.current.games.current
 
     onGameDataChanged: {
         videoPreview.playlist.clear();
@@ -113,8 +113,8 @@ Item {
                 id: videoPreview
 
                 property real preferredHeightRatio: {
-                    if (pegasus.currentCollection
-                        && pegasus.currentCollection.tag === "steam")
+                    if (api.currentCollection
+                        && api.currentCollection.tag === "steam")
                         return 0.5625; // 9/16
 
                     return 0.75;

@@ -45,7 +45,7 @@ FocusScope {
         Text {
             id: title
 
-            text: qsTr("Settings") + pegasus.tr
+            text: qsTr("Settings") + api.tr
             color: "#eee"
             font.pixelSize: rpx(40)
             font.family: uiFont.name
@@ -85,14 +85,14 @@ FocusScope {
 
                 focus: true
 
-                label: qsTr("Language") + pegasus.tr
-                value: pegasus.settings.locales.current.name
+                label: qsTr("Language") + api.tr
+                value: api.settings.locales.current.name
 
                 onActivate: {
-                    multivalbox.model = pegasus.settings.locales.model;
-                    multivalbox.index = pegasus.settings.locales.index;
+                    multivalbox.model = api.settings.locales.model;
+                    multivalbox.index = api.settings.locales.index;
                     multivalbox.onChangeCallback = function() {
-                        pegasus.settings.locales.index = multivalbox.index;
+                        api.settings.locales.index = multivalbox.index;
                     };
 
                     content.enabled = false;
@@ -105,14 +105,14 @@ FocusScope {
             MultivalueOption {
                 id: optTheme
 
-                label: qsTr("Theme") + pegasus.tr
-                value: pegasus.settings.themes.current.name
+                label: qsTr("Theme") + api.tr
+                value: api.settings.themes.current.name
 
                 onActivate: {
-                    multivalbox.model = pegasus.settings.themes.model;
-                    multivalbox.index = pegasus.settings.themes.index;
+                    multivalbox.model = api.settings.themes.model;
+                    multivalbox.index = api.settings.themes.index;
                     multivalbox.onChangeCallback = function() {
-                        pegasus.settings.themes.index = multivalbox.index;
+                        api.settings.themes.index = multivalbox.index;
                     };
 
                     content.enabled = false;
@@ -125,11 +125,11 @@ FocusScope {
             ToggleOption {
                 id: optFullscreen
 
-                label: qsTr("Fullscreen mode") + pegasus.tr
-                note: qsTr("On some platforms this setting may have no effect") + pegasus.tr
+                label: qsTr("Fullscreen mode") + api.tr
+                note: qsTr("On some platforms this setting may have no effect") + api.tr
 
-                checked: pegasus.settings.fullscreen
-                onCheckedChanged: pegasus.settings.fullscreen = checked
+                checked: api.settings.fullscreen
+                onCheckedChanged: api.settings.fullscreen = checked
             }
         }
     }

@@ -22,7 +22,7 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
-    property bool scanningMeta: pegasus.meta.isScanningMeta
+    property bool scanningMeta: api.meta.isScanningMeta
     onScanningMetaChanged: {
         label_gamesState.text += "  \u2713"
         label_metaState.opacity = 1.0;
@@ -50,7 +50,7 @@ Rectangle {
 
         Text {
             id: label_found
-            text: qsTr("games\nfound") + pegasus.tr
+            text: qsTr("games\nfound") + api.tr
             color: "#888"
             font {
                 pixelSize: rpx(20)
@@ -67,7 +67,7 @@ Rectangle {
         Text {
             id: counter
 
-            text: pegasus.meta.gameCount
+            text: api.meta.gameCount
             color: "#eaeaea"
             font {
                 pixelSize: rpx(110)
@@ -84,7 +84,7 @@ Rectangle {
                 easing.type: Easing.OutQuad
             }
 
-            text: qsTr("looking for games") + pegasus.tr
+            text: qsTr("looking for games") + api.tr
             color: "#aaa"
             font {
                 pixelSize: rpx(24)
@@ -110,7 +110,7 @@ Rectangle {
                 easing.type: Easing.OutQuad
             }
 
-            text: qsTr("looking for metadata") + pegasus.tr
+            text: qsTr("looking for metadata") + api.tr
             color: "#aaa"
             font {
                 pixelSize: rpx(24)

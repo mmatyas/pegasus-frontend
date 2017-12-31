@@ -46,7 +46,7 @@ FocusScope {
 
         PrimaryMenuItem {
             id: mbSettings
-            text: qsTr("Settings") + pegasus.tr
+            text: qsTr("Settings") + api.tr
             onActivated: {
                 focus = true;
                 root.showSettingsScreen();
@@ -57,7 +57,7 @@ FocusScope {
         }
         PrimaryMenuItem {
             id: mbControls
-            text: qsTr("Controls") + pegasus.tr
+            text: qsTr("Controls") + api.tr
             onActivated: {
                 focus = true;
                 root.showGamepadScreen();
@@ -68,13 +68,13 @@ FocusScope {
         }
         RollableMenuItem {
             id: scopeQuit
-            name: qsTr("Quit") + pegasus.tr
+            name: qsTr("Quit") + api.tr
             focus: true
 
             entries: [
                 SecondaryMenuItem {
                     id: mbQuitShutdown
-                    text: qsTr("Shutdown") + pegasus.tr
+                    text: qsTr("Shutdown") + api.tr
                     onActivated: requestShutdown()
                     focus: true
 
@@ -83,14 +83,14 @@ FocusScope {
                 },
                 SecondaryMenuItem {
                     id: mbQuitReboot
-                    text: qsTr("Reboot") + pegasus.tr
+                    text: qsTr("Reboot") + api.tr
                     onActivated: requestReboot()
 
                     KeyNavigation.down: mbQuitExit
                 },
                 SecondaryMenuItem {
                     id: mbQuitExit
-                    text: qsTr("Exit Pegasus") + pegasus.tr
+                    text: qsTr("Exit Pegasus") + api.tr
                     onActivated: requestQuit()
                 }
             ]

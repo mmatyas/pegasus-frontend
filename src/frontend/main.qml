@@ -31,7 +31,7 @@ Window {
     title: "Pegasus"
     color: "#000"
 
-    visibility: pegasus.settings.fullscreen
+    visibility: api.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
 
     // provide relative pixel value calculation, for convenience
@@ -64,14 +64,14 @@ Window {
                     event.accepted = true;
 
                     themeContent.source = "";
-                    pegasus.meta.clearQMLCache();
+                    api.meta.clearQMLCache();
                     themeContent.source = Qt.binding(function() {
-                        return pegasus.settings.themes.current.qmlPath;
+                        return api.settings.themes.current.qmlPath;
                     });
                 }
             }
 
-            source: pegasus.settings.themes.current.qmlPath
+            source: api.settings.themes.current.qmlPath
             asynchronous: true
 
             onStatusChanged: {
@@ -106,7 +106,7 @@ Window {
             }
             onRequestQuit: {
                 themeContent.source = "";
-                pegasus.system.quit();
+                api.system.quit();
             }
         }
     }
@@ -114,11 +114,11 @@ Window {
     SplashScreen {
         id: splashScreen
 
-        property bool loading: themeContent.status === Loader.Loading || pegasus.meta.isLoading
+        property bool loading: themeContent.status === Loader.Loading || api.meta.isLoading
 
         onLoadingChanged: {
             if (!loading) {
-                if (pegasus.collections.count === 0)
+                if (api.collections.count === 0)
                     themeContent.source = "messages/NoGamesErrorMessage.qml";
 
                 // break bindings

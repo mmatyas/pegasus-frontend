@@ -18,7 +18,7 @@
 import QtQuick 2.8
 
 Rectangle {
-    property var platformModel: pegasus.collections.model
+    property var platformModel: api.collections.model
 
     color: "#333"
     height: rpx(54)
@@ -72,8 +72,8 @@ Rectangle {
             }
         }
 
-        Component.onCompleted: currentIndex = pegasus.collections.index
-        onCurrentIndexChanged: pegasus.collections.index = currentIndex
+        Component.onCompleted: currentIndex = api.collections.index
+        onCurrentIndexChanged: api.collections.index = currentIndex
     }
 
     Component {

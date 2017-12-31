@@ -19,7 +19,7 @@ import QtQuick 2.8
 import QtGraphicalEffects 1.0
 
 Item {
-    property var gameData: pegasus.currentGame
+    property var gameData: api.currentGame
 
     Image {
         anchors.fill: parent
