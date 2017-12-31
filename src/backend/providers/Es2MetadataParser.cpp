@@ -155,7 +155,7 @@ void applyMetadata(Types::Game& game, const QHash<QString, QString>& xml_props)
 
     // then the numbers
     game.m_playcount = xml_props[KEY_PLAYCOUNT].toInt();
-    game.m_rating = qBound(0.f, xml_props[KEY_PLAYCOUNT].toFloat(), 1.f);
+    game.m_rating = qBound(0.f, xml_props[KEY_RATING].toFloat(), 1.f);
 
     // the player count can be a range
     const QString players_field = xml_props[KEY_PLAYERS];
