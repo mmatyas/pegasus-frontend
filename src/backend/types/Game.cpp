@@ -30,11 +30,22 @@ Game::Game(QFileInfo fileinfo, QObject* parent)
     , m_players(1)
     , m_favorite(false)
     , m_rating(0)
+    , m_playcount(0)
     , m_year(0)
     , m_month(0)
     , m_day(0)
-    , m_playcount(0)
 {
+}
+
+void Game::setRelease(QDate date)
+{
+    if (!date.isValid())
+        return;
+
+    m_release = std::move(date);
+    m_year = m_release.year();
+    m_month = m_release.month();
+    m_day = m_release.day();
 }
 
 } // namespace Types

@@ -38,6 +38,7 @@ class Game : public QObject {
     Q_PROPERTY(int year MEMBER m_year CONSTANT)
     Q_PROPERTY(int month MEMBER m_month CONSTANT)
     Q_PROPERTY(int day MEMBER m_day CONSTANT)
+    Q_PROPERTY(QDate release MEMBER m_release CONSTANT)
     Q_PROPERTY(int players MEMBER m_players CONSTANT)
     Q_PROPERTY(bool favorite MEMBER m_favorite CONSTANT)
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
@@ -60,9 +61,7 @@ public:
     bool m_favorite;
     float m_rating;
 
-    int m_year;
-    int m_month;
-    int m_day;
+    void setRelease(QDate);
 
     int m_playcount;
     QDateTime m_lastplayed;
@@ -73,6 +72,11 @@ public:
     GameAssets* assetsPtr() { return &m_assets; }
 
 private:
+    int m_year;
+    int m_month;
+    int m_day;
+    QDate m_release;
+
     GameAssets m_assets;
 };
 

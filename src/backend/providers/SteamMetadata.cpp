@@ -146,12 +146,8 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
 
         // FIXME: the date format will likely fail for non-English locales (see Qt docs)
         const QDateTime datetime(QDateTime::fromString(date_str, QLatin1String("d MMM, yyyy")));
-        if (datetime.isValid()) {
-            const QDate date(datetime.date());
-            game.m_year = date.year();
-            game.m_month = date.month();
-            game.m_day = date.day();
-        }
+        if (datetime.isValid())
+            game.setRelease(datetime.date());
     }
 
     const QString header_image = app_data[QLatin1String("header_image")].toString();

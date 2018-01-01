@@ -180,13 +180,9 @@ void applyMetadata(Types::Game& game, const QHash<QString, QString>& xml_props)
 
     game.m_lastplayed = QDateTime::fromString(xml_props[KEY_LASTPLAYED], DATEFORMAT);
 
-    const QDateTime release_date(QDateTime::fromString(xml_props[KEY_RELEASE], DATEFORMAT));
-    if (release_date.isValid()) {
-        const QDate date(release_date.date());
-        game.m_year = date.year();
-        game.m_month = date.month();
-        game.m_day = date.day();
-    }
+    const QDateTime release_time(QDateTime::fromString(xml_props[KEY_RELEASE], DATEFORMAT));
+    if (release_time.isValid())
+        game.setRelease(release_time.date());
 }
 
 void findAssets(Types::Game& game, QHash<QString, QString>& xml_props, const Types::Collection& collection)
