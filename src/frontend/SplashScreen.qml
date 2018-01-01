@@ -53,15 +53,15 @@ Rectangle {
             text: qsTr("games\nfound") + api.tr
             color: "#888"
             font {
-                pixelSize: rpx(20)
+                pixelSize: vpx(20)
                 family: uiFont.name
                 italic: true
             }
 
             anchors.left: counter.right
             anchors.bottom: counter.baseline
-            anchors.leftMargin: rpx(8)
-            anchors.bottomMargin: -rpx(6)
+            anchors.leftMargin: vpx(8)
+            anchors.bottomMargin: -vpx(6)
         }
 
         Text {
@@ -70,7 +70,7 @@ Rectangle {
             text: api.meta.gameCount
             color: "#eaeaea"
             font {
-                pixelSize: rpx(110)
+                pixelSize: vpx(110)
                 family: uiFont.name
             }
         }
@@ -78,7 +78,7 @@ Rectangle {
         Text {
             id: label_gamesState
 
-            property int leftMarginOffset: rpx(50)
+            property int leftMarginOffset: vpx(50)
             PropertyAnimation on leftMarginOffset {
                 duration: 300; to: 0
                 easing.type: Easing.OutQuad
@@ -87,15 +87,15 @@ Rectangle {
             text: qsTr("looking for games") + api.tr
             color: "#aaa"
             font {
-                pixelSize: rpx(24)
+                pixelSize: vpx(24)
                 family: uiFont.name
                 italic: true
             }
 
             anchors.left: parent.left
             anchors.top: counter.baseline
-            anchors.topMargin: rpx(24)
-            anchors.leftMargin: rpx(18) + leftMarginOffset
+            anchors.topMargin: vpx(24)
+            anchors.leftMargin: vpx(18) + leftMarginOffset
 
             opacity: 1.0
             Behavior on opacity { PropertyAnimation { duration: 100 } }
@@ -104,7 +104,7 @@ Rectangle {
         Text {
             id: label_metaState
 
-            property int leftMarginOffset: rpx(50)
+            property int leftMarginOffset: vpx(50)
             PropertyAnimation on leftMarginOffset {
                 duration: 400; to: 0
                 easing.type: Easing.OutQuad
@@ -113,15 +113,15 @@ Rectangle {
             text: qsTr("looking for metadata") + api.tr
             color: "#aaa"
             font {
-                pixelSize: rpx(24)
+                pixelSize: vpx(24)
                 family: uiFont.name
                 italic: true
             }
 
             anchors.left: parent.left
             anchors.top: label_gamesState.bottom
-            anchors.topMargin: rpx(4)
-            anchors.leftMargin: rpx(18) + leftMarginOffset
+            anchors.topMargin: vpx(4)
+            anchors.leftMargin: vpx(18) + leftMarginOffset
 
             opacity: 0.33
             Behavior on opacity { PropertyAnimation { duration: 100 } }
@@ -138,7 +138,7 @@ Rectangle {
             text: "."
             color: "#aaa"
             font {
-                pixelSize: rpx(24)
+                pixelSize: vpx(24)
                 family: uiFont.name
                 italic: true
             }

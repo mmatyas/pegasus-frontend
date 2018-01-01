@@ -79,7 +79,7 @@ Item {
     Rectangle {
         id: highlightX
         width: parent.width * 0.9
-        height: rpx(2)
+        height: vpx(2)
         anchors.centerIn: parent
 
         color: "#3cc"

@@ -37,24 +37,24 @@ FocusScope {
     DropShadow {
         source: panel
         anchors.fill: panel
-        radius: rpx(10)
+        radius: vpx(10)
     }
 
     Column {
         id: content
 
-        property int normalTextSize: rpx(20)
+        property int normalTextSize: vpx(20)
         property int selectedIndex: 0
 
-        padding: rpx(20)
-        spacing: rpx(8)
+        padding: vpx(20)
+        spacing: vpx(8)
 
         Text {
             text: qsTr("Filters")
             color: root.textColor
             font {
                 bold: true
-                pixelSize: rpx(26)
+                pixelSize: vpx(26)
                 family: uiFont.name
             }
             height: font.pixelSize * 1.5
@@ -69,7 +69,7 @@ FocusScope {
             fontSize: content.normalTextSize
             onTextChanged: api.filters.title = text
 
-            width: rpx(200)
+            width: vpx(200)
 
             focus: true
             KeyNavigation.down: itemFavorites

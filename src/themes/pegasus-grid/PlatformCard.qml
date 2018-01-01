@@ -38,7 +38,7 @@ Item {
         anchors {
             verticalCenter: parent.top
             horizontalCenter: main.right
-            horizontalCenterOffset: rpx(-27)
+            horizontalCenterOffset: vpx(-27)
         }
 
         Text {
@@ -49,13 +49,13 @@ Item {
             anchors {
                 left: parent.left
                 bottom: parent.bottom
-                leftMargin: rpx(8)
-                bottomMargin: rpx(4)
+                leftMargin: vpx(8)
+                bottomMargin: vpx(4)
             }
             font {
                 bold: true
                 capitalization: Font.AllUppercase
-                pixelSize: rpx(16)
+                pixelSize: vpx(16)
                 family: uiFontCondensed.name
             }
         }
@@ -63,7 +63,7 @@ Item {
         Rectangle {
             color: "#faa"
             width: parent.width
-            height: rpx(2)
+            height: vpx(2)
             anchors.top: parent.bottom
             anchors.left: parent.left
             antialiasing: true
@@ -82,9 +82,9 @@ Item {
         height: parent.height - 12
         anchors {
             bottom: parent.bottom
-            bottomMargin: rpx(6)
+            bottomMargin: vpx(6)
             horizontalCenter: parent.horizontalCenter
-            horizontalCenterOffset: rpx(-32)
+            horizontalCenterOffset: vpx(-32)
         }
     }
 }

@@ -35,7 +35,7 @@ FocusScope {
 
         color: "#50000000"
         border.color: "#60000000"
-        border.width: rpx(1)
+        border.width: vpx(1)
     }
 
     TextInput {
@@ -44,8 +44,8 @@ FocusScope {
         focus: true
 
         anchors.fill: parent
-        anchors.leftMargin: rpx(8)
-        anchors.rightMargin: rpx(8)
+        anchors.leftMargin: vpx(8)
+        anchors.rightMargin: vpx(8)
 
         verticalAlignment: Text.AlignVCenter
 
@@ -59,8 +59,8 @@ FocusScope {
     Text {
         id: placeholder
         anchors.fill: parent
-        anchors.leftMargin: rpx(8)
-        anchors.rightMargin: rpx(8)
+        anchors.leftMargin: vpx(8)
+        anchors.rightMargin: vpx(8)
 
         verticalAlignment: Text.AlignVCenter
 

@@ -43,7 +43,7 @@ Item {
 
     Image {
         id: boxFront
-        anchors { fill: parent; margins: rpx(5) }
+        anchors { fill: parent; margins: vpx(5) }
 
         asynchronous: true
         visible: game.assets.boxFront
@@ -73,7 +73,7 @@ Item {
     }
 
     Text {
-        width: parent.width - rpx(64)
+        width: parent.width - vpx(64)
         anchors.centerIn: parent
 
         visible: !game.assets.boxFront
@@ -83,7 +83,7 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         color: "#eee"
         font {
-            pixelSize: rpx(16)
+            pixelSize: vpx(16)
             family: uiFont.name
         }
     }

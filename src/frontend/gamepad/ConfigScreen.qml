@@ -94,7 +94,7 @@ FocusScope {
     Rectangle {
         id: deviceSelect
         width: parent.width
-        height: rpx(70)
+        height: vpx(70)
         color: "#333"
         anchors.top: parent.top
 
@@ -156,8 +156,8 @@ FocusScope {
             bottom: footer.top
         }
 
-        property int horizontalOffset: rpx(-560)
-        property int verticalSpacing: rpx(170)
+        property int horizontalOffset: vpx(-560)
+        property int verticalSpacing: vpx(170)
 
         onActiveFocusChanged:
             if (!activeFocus) padPreview.currentButton = ""
@@ -489,11 +489,11 @@ FocusScope {
         }
 
         Column {
-            spacing: rpx(1)
+            spacing: vpx(1)
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: rpx(-220)
+                verticalCenterOffset: vpx(-220)
             }
 
             ConfigGroupLabel {
@@ -501,7 +501,7 @@ FocusScope {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
             Row {
-                spacing: rpx(1)
+                spacing: vpx(1)
                 property int alignment: Text.AlignHCenter
 
                 ConfigField {
@@ -565,19 +565,19 @@ FocusScope {
     Item {
         id: footer
         width: parent.width
-        height: rpx(50)
+        height: vpx(50)
         anchors.bottom: parent.bottom
 
         Rectangle {
             width: parent.width * 0.97
-            height: rpx(1)
+            height: vpx(1)
             color: "#777"
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         Canvas {
-            width: backButtonIcon.width + rpx(4)
+            width: backButtonIcon.width + vpx(4)
             height: width
             anchors.centerIn: backButtonIcon
 
@@ -606,14 +606,14 @@ FocusScope {
             height: label.height
             width: height
             radius: width * 0.5
-            border { color: "#777"; width: rpx(1) }
+            border { color: "#777"; width: vpx(1) }
             color: "transparent"
 
             anchors {
                 right: label.left
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: rpx(1)
-                margins: rpx(10)
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
             }
 
             Text {
@@ -635,12 +635,12 @@ FocusScope {
             color: "#777"
             font {
                 family: uiFont.name
-                pixelSize: rpx(22)
+                pixelSize: vpx(22)
                 capitalization: Font.SmallCaps
             }
             anchors {
                 verticalCenter: parent.verticalCenter
-                verticalCenterOffset: rpx(-1)
+                verticalCenterOffset: vpx(-1)
                 right: parent.right; rightMargin: parent.width * 0.015
             }
         }

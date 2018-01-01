@@ -36,7 +36,7 @@ Rectangle {
     Text {
         id: itemLabel
         anchors {
-            right: parent.right; rightMargin: rpx(32)
+            right: parent.right; rightMargin: vpx(32)
             verticalCenter: parent.verticalCenter
         }
         color: "#eee"

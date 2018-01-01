@@ -40,25 +40,25 @@ FocusScope {
         id: header
 
         width: parent.width
-        height: rpx(80)
+        height: vpx(80)
 
         Text {
             id: title
 
             text: qsTr("Settings") + api.tr
             color: "#eee"
-            font.pixelSize: rpx(40)
+            font.pixelSize: vpx(40)
             font.family: uiFont.name
 
             anchors.left: parent.horizontalCenter
             anchors.leftMargin: parent.width * -0.4
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: rpx(10)
+            anchors.bottomMargin: vpx(10)
         }
 
         Rectangle {
             width: parent.width * 0.97
-            height: rpx(1)
+            height: vpx(1)
             color: "#555"
 
             anchors.bottom: parent.bottom
@@ -72,13 +72,13 @@ FocusScope {
         focus: true
 
         anchors.top: header.bottom
-        anchors.topMargin: rpx(30)
+        anchors.topMargin: vpx(30)
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width * 0.7
 
         Column {
             anchors.fill: parent
-            spacing: rpx(5)
+            spacing: vpx(5)
 
             MultivalueOption {
                 id: optLanguage

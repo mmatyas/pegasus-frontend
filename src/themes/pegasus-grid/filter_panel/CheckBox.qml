@@ -26,7 +26,7 @@ Row {
 
     property bool checked: false
 
-    spacing: rpx(8)
+    spacing: vpx(8)
 
     Rectangle {
         width: parent.fontSize * 1.4
@@ -34,7 +34,7 @@ Row {
 
         color: "#50000000"
         border.color: "#60000000"
-        border.width: rpx(1)
+        border.width: vpx(1)
 
         anchors.verticalCenter: parent.verticalCenter
 

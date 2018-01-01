@@ -22,7 +22,7 @@ Rectangle {
     anchors.fill: parent
     color: "#000"
 
-    readonly property int bodyTextSize: rpx(18)
+    readonly property int bodyTextSize: vpx(18)
 
     readonly property color headerColor: "#eee"
     readonly property color bodyColor: "#ccc"
@@ -33,7 +33,7 @@ Rectangle {
         spacing: bodyTextSize * 1.5
 
         anchors {
-            left: parent.left; leftMargin: rpx(50)
+            left: parent.left; leftMargin: vpx(50)
             right: parent.horizontalCenter
             verticalCenter: parent.verticalCenter
         }
@@ -48,7 +48,7 @@ Rectangle {
             color: headerColor
             font {
                 bold: true
-                pixelSize: rpx(50)
+                pixelSize: vpx(50)
                 family: uiFont.name
             }
         }
@@ -78,7 +78,7 @@ Rectangle {
             horizontalAlignment: Text.AlignJustify
 
             color: instructionColor
-            font.pixelSize: rpx(20)
+            font.pixelSize: vpx(20)
             font.family: uiFont.name
         }
 

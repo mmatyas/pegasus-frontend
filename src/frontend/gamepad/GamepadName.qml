@@ -22,11 +22,11 @@ Text {
 
     color: highlighted ? "#3cc" : "#eee"
     anchors {
-        left: parent.left; leftMargin: rpx(25)
+        left: parent.left; leftMargin: vpx(25)
         verticalCenter: parent.verticalCenter
     }
     font {
-        pixelSize: rpx(30)
+        pixelSize: vpx(30)
         family: uiFont.name
     }
 }

@@ -52,10 +52,10 @@ FocusScope {
         GameGrid {
             id: gamegrid
             z: 100
-            width: (parent.width * 0.6) - rpx(32)
+            width: (parent.width * 0.6) - vpx(32)
             anchors {
-                top: topbar.bottom; topMargin: rpx(32)
-                right: parent.right; rightMargin: rpx(6)
+                top: topbar.bottom; topMargin: vpx(32)
+                right: parent.right; rightMargin: vpx(6)
                 bottom: parent.bottom
             }
         }
@@ -64,8 +64,8 @@ FocusScope {
             z: 200
             width: (parent.width * 0.35) - anchors.leftMargin
             anchors {
-                top: topbar.bottom; topMargin: rpx(32)
-                left: parent.left; leftMargin: rpx(16)
+                top: topbar.bottom; topMargin: vpx(32)
+                left: parent.left; leftMargin: vpx(16)
                 bottom: parent.bottom
             }
         }

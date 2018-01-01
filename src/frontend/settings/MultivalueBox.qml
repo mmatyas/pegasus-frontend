@@ -30,7 +30,7 @@ FocusScope {
 
     signal closed()
 
-    width: rpx(280)
+    width: vpx(280)
     height: parent.height
 
     anchors.left: parent.right
@@ -42,7 +42,7 @@ FocusScope {
     Keys.onEnterPressed: { onChangeCallback(); closed(); }
 
 
-    property real textSize: rpx(22)
+    property real textSize: vpx(22)
     property real itemHeight: 2.25 * textSize
 
     // center the list on the initially selected item
@@ -101,7 +101,7 @@ FocusScope {
                 id: label
 
                 anchors.right: parent.right
-                anchors.rightMargin: rpx(24)
+                anchors.rightMargin: vpx(24)
                 anchors.verticalCenter: parent.verticalCenter
 
                 text: modelData.name
@@ -116,7 +116,7 @@ FocusScope {
     Rectangle {
         id: boxMask
 
-        radius: rpx(8)
+        radius: vpx(8)
         anchors.fill: listContainer
 
         visible: false

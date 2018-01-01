@@ -22,7 +22,7 @@ import QtQuick 2.8
 FocusScope {
     id: root
 
-    width: rpx(350)
+    width: vpx(350)
     height: parent.height
     visible: x < parent.width && 0 < x + width
 
@@ -42,7 +42,7 @@ FocusScope {
     Column {
         width: parent.width
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: rpx(30)
+        anchors.bottomMargin: vpx(30)
 
         PrimaryMenuItem {
             id: mbSettings

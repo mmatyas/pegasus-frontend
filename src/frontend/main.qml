@@ -36,7 +36,7 @@ Window {
 
     // provide relative pixel value calculation, for convenience
     property real winScale: Math.min(width / 1280.0, height / 720.0)
-    function rpx(value) {
+    function vpx(value) {
         return winScale * value;
     }
 

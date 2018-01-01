@@ -21,8 +21,8 @@ Rectangle {
     property alias text: label.text
 
     color: "#444"
-    width: label.width + rpx(10)
-    height: rpx(20)
+    width: label.width + vpx(10)
+    height: vpx(20)
 
     Text {
         id: label

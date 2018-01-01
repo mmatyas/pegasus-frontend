@@ -21,7 +21,7 @@ Rectangle {
     property var platformModel: api.collections.model
 
     color: "#333"
-    height: rpx(54)
+    height: vpx(54)
 
     Keys.forwardTo: platformPath
 
@@ -31,21 +31,21 @@ Rectangle {
         delegate: platformCardDelegate
 
         path: Path {
-            startX: rpx(-400)
-            startY: rpx(36)
+            startX: vpx(-400)
+            startY: vpx(36)
 
             PathAttribute { name: "itemZ"; value: 201 }
-            PathLine { x: parent.width * 0.2; y: rpx(36) }
+            PathLine { x: parent.width * 0.2; y: vpx(36) }
 
             PathPercent { value: 0.04 }
             PathAttribute { name: "itemZ"; value: 200 }
-            PathLine { x: parent.width * 0.23; y: rpx(18) }
+            PathLine { x: parent.width * 0.23; y: vpx(18) }
 
             PathPercent { value: 0.08 }
-            PathLine { x: parent.width * 0.7; y: rpx(18) }
+            PathLine { x: parent.width * 0.7; y: vpx(18) }
 
             PathPercent { value: 1 }
-            PathAttribute { name: "itemZ"; value: rpx(5) }
+            PathAttribute { name: "itemZ"; value: vpx(5) }
         }
 
         pathItemCount: 20
@@ -87,7 +87,7 @@ Rectangle {
 
             z: PathView.itemZ
             width: parent.parent.width * 0.5
-            height: rpx(72)
+            height: vpx(72)
         }
     }
 

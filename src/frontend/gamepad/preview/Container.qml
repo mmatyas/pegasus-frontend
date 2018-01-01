@@ -23,7 +23,7 @@ Item {
     width: parent.width
     height: padBase.height
     anchors.verticalCenter: parent.verticalCenter
-    anchors.verticalCenterOffset: rpx(45)
+    anchors.verticalCenterOffset: vpx(45)
 
     property Gamepad gamepad
     property string currentButton: ""
@@ -32,7 +32,7 @@ Item {
     Image {
         id: padBase
         width: parent.width
-        height: rpx(320)
+        height: vpx(320)
         anchors.centerIn: parent
 
         fillMode: Image.PreserveAspectFit
@@ -45,12 +45,12 @@ Item {
 
     PadTrigger {
         id: padL2
-        width: rpx(50)
+        width: vpx(50)
         anchors {
             bottom: padBase.verticalCenter
-            bottomMargin: rpx(113)
+            bottomMargin: vpx(113)
             right: padBase.horizontalCenter
-            rightMargin: rpx(131)
+            rightMargin: vpx(131)
         }
 
         shortName: "l2"
@@ -58,12 +58,12 @@ Item {
     }
     PadShoulder {
         id: padL1
-        width: rpx(110)
+        width: vpx(110)
         anchors {
             bottom: padBase.verticalCenter
-            bottomMargin: rpx(84)
+            bottomMargin: vpx(84)
             right: padBase.horizontalCenter
-            rightMargin: rpx(110)
+            rightMargin: vpx(110)
         }
 
         shortName: "l1"
@@ -101,12 +101,12 @@ Item {
         height: padGuide.height
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: rpx(-20)
+            verticalCenterOffset: vpx(-20)
             horizontalCenter: padBase.horizontalCenter
         }
         PadButton {
             id: padSelect
-            width: rpx(38)
+            width: vpx(38)
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
 
@@ -115,7 +115,7 @@ Item {
         }
         PadButton {
             id: padStart
-            width: rpx(38)
+            width: vpx(38)
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
 
@@ -124,7 +124,7 @@ Item {
         }
         PadButton {
             id: padGuide
-            width: rpx(50)
+            width: vpx(50)
             anchors.centerIn: parent
 
             shortName: "guide"
@@ -138,13 +138,13 @@ Item {
         height: width
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: rpx(-15)
+            verticalCenterOffset: vpx(-15)
             left: padBase.horizontalCenter
-            leftMargin: rpx(112)
+            leftMargin: vpx(112)
         }
         PadButton {
             id: padA
-            width: rpx(38)
+            width: vpx(38)
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -193,12 +193,12 @@ Item {
 
     Stick {
         id: padLeftStick
-        width: rpx(110)
+        width: vpx(110)
         anchors {
             top: padBase.verticalCenter
-            topMargin: rpx(22)
+            topMargin: vpx(22)
             right: padBase.horizontalCenter
-            rightMargin: rpx(18)
+            rightMargin: vpx(18)
         }
 
         side: "l"

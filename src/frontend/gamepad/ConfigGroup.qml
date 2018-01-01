@@ -21,7 +21,7 @@ Column {
     property alias label: groupLabel.text
     property int alignment: Text.AlignLeft
 
-    spacing: rpx(1)
+    spacing: vpx(1)
 
     ConfigGroupLabel {
         id: groupLabel

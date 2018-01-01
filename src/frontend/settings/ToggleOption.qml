@@ -25,8 +25,8 @@ FocusScope {
     property alias note: sublabel.text
     property alias checked: toggle.checked
 
-    property int fontSize: rpx(22)
-    property int horizontalPadding: rpx(30)
+    property int fontSize: vpx(22)
+    property int horizontalPadding: vpx(30)
 
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
@@ -36,7 +36,7 @@ FocusScope {
         id: underline
 
         width: parent.width
-        height: rpx(3)
+        height: vpx(3)
         anchors.bottom: parent.bottom
 
         color: "#3aa"

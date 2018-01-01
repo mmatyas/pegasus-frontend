@@ -22,7 +22,7 @@ Rectangle {
     property bool pressed: false
     property bool recording: false
 
-    width: rpx(140)
+    width: vpx(140)
     height: label.font.pixelSize * 1.5
     color: {
         if (recording) return "#c33";
@@ -34,7 +34,7 @@ Rectangle {
     anchors {
         left: parent.alignment === Text.AlignLeft ? parent.left : undefined
         right: parent.alignment === Text.AlignRight ? parent.right : undefined
-        margins: (Positioner.index - 1) * rpx(3)
+        margins: (Positioner.index - 1) * vpx(3)
     }
 
     Text {
@@ -42,14 +42,14 @@ Rectangle {
         color: "#eee"
         font {
             family: uiFont.name
-            pixelSize: rpx(18)
+            pixelSize: vpx(18)
         }
         horizontalAlignment: parent.parent.alignment
         anchors {
             left: parent.left
             right: parent.right
             verticalCenter: parent.verticalCenter
-            margins: rpx(5)
+            margins: vpx(5)
         }
     }
 }

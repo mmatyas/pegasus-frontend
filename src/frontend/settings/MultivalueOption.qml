@@ -24,8 +24,8 @@ FocusScope {
     property alias label: label.text
     property alias value: value.text
 
-    property int fontSize: rpx(22)
-    property int horizontalPadding: rpx(30)
+    property int fontSize: vpx(22)
+    property int horizontalPadding: vpx(30)
 
     signal activate()
 
@@ -40,7 +40,7 @@ FocusScope {
         id: underline
 
         width: parent.width
-        height: rpx(3)
+        height: vpx(3)
         anchors.bottom: parent.bottom
 
         color: "#3aa"

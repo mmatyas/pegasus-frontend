@@ -48,7 +48,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: rpx(8)
+        spacing: vpx(8)
 
         PegasusUtils.AutoScroll {
             Layout.fillWidth: true
@@ -56,7 +56,7 @@ Item {
 
             Column {
                 width: parent.width
-                spacing: rpx(16)
+                spacing: vpx(16)
 
                 Image {
                     // logo
@@ -78,7 +78,7 @@ Item {
                     horizontalAlignment: Text.AlignJustify
                     font {
                         bold: true
-                        pixelSize: rpx(24)
+                        pixelSize: vpx(24)
                         capitalization: Font.SmallCaps
                         family: uiFont.name
                     }
@@ -92,7 +92,7 @@ Item {
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignJustify
                     font {
-                        pixelSize: rpx(16)
+                        pixelSize: vpx(16)
                         family: uiFont.name
                     }
                 }
@@ -105,7 +105,7 @@ Item {
 
             Layout.fillWidth: true
             Layout.preferredHeight: parent.width * videoPreview.heightRatio
-            Layout.bottomMargin: rpx(4)
+            Layout.bottomMargin: vpx(4)
 
             visible: gameData && gameData.assets.videos.length
 

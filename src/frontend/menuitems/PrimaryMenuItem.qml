@@ -21,5 +21,5 @@ GenericMenuItem {
     z: 1000
     activeColor: "#555"
     inactiveColor: "#333"
-    textSizePx: rpx(50)
+    textSizePx: vpx(50)
 }

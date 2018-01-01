@@ -84,13 +84,13 @@ FocusScope {
             text: api.meta.gitRevision
             color: "#eee"
             font {
-                pixelSize: rpx(12)
+                pixelSize: vpx(12)
                 family: "monospace"
             }
             anchors {
                 left: parent.left
                 bottom: parent.bottom
-                margins: rpx(10)
+                margins: vpx(10)
             }
         }
 
