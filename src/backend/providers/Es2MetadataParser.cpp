@@ -149,9 +149,9 @@ void applyMetadata(Types::Game& game, const QHash<QString, QString>& xml_props)
     // first, the simple strings
     game.m_title = xml_props[KEY_NAME];
     game.m_description = xml_props[KEY_DESC];
-    game.m_developer = xml_props[KEY_DEVELOPER];
-    game.m_genre = xml_props[KEY_GENRE];
-    game.m_publisher = xml_props[KEY_PUBLISHER];
+    game.addDeveloper(xml_props[KEY_DEVELOPER]);
+    game.addPublisher(xml_props[KEY_PUBLISHER]);
+    game.addGenre(xml_props[KEY_GENRE]);
 
     // then the numbers
     game.m_playcount = xml_props[KEY_PLAYCOUNT].toInt();

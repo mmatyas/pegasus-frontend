@@ -94,20 +94,6 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     return entry;
 }
 
-QString join_json_array(const QJsonArray& arr)
-{
-    if (arr.isEmpty())
-        return QString();
-
-    QString result;
-    for (int i = 0; i < arr.count() - 1; i++) {
-        result += arr[i].toString() % ", ";
-    }
-    result += arr.last().toString();
-
-    return result;
-}
-
 bool read_json(Types::Game& game, const QByteArray& bytes)
 {
     const auto json = QJsonDocument::fromJson(bytes);
@@ -155,8 +141,18 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
     assets.setSingle(AssetType::STEAMGRID, header_image);
     assets.setSingle(AssetType::BOX_FRONT, header_image);
 
-    game.m_developer = join_json_array(app_data[QLatin1String("developers")].toArray());
-    game.m_publisher = join_json_array(app_data[QLatin1String("publishers")].toArray());
+    const QJsonArray developer_arr = app_data[QLatin1String("developers")].toArray();
+    if (!developer_arr.isEmpty()) {
+        for (int i = 0; i < developer_arr.count(); i++)
+            game.addDeveloper(developer_arr[i].toString());
+    }
+    const QJsonArray publisher_arr = app_data[QLatin1String("publishers")].toArray();
+    if (!publisher_arr.isEmpty()) {
+        for (int i = 0; i < publisher_arr.count(); i++)
+            game.addDeveloper(publisher_arr[i].toString());
+    }
+
+    // TODO: add genre support
 
     const QString background_image = app_data[QLatin1String("background")].toString();
     if (!background_image.isEmpty())

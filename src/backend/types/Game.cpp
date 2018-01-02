@@ -18,7 +18,23 @@
 #include "Game.h"
 
 #include <QFileInfo>
-#include <QDebug>
+#include <QStringBuilder>
+
+
+namespace {
+void addToStrAndList(const QString& new_val, QString& str, QStringList& list)
+{
+    if (new_val.isEmpty())
+        return;
+
+    if (str.isEmpty())
+        str = new_val;
+    else
+        str += QLatin1String(", ") % new_val;
+
+    list.append(new_val);
+}
+} // namespace
 
 
 namespace Types {
@@ -35,6 +51,21 @@ Game::Game(QFileInfo fileinfo, QObject* parent)
     , m_month(0)
     , m_day(0)
 {
+}
+
+void Game::addDeveloper(const QString& dev)
+{
+    addToStrAndList(dev, m_developer_str, m_developer_list);
+}
+
+void Game::addPublisher(const QString& pub)
+{
+    addToStrAndList(pub, m_publisher_str, m_publisher_list);
+}
+
+void Game::addGenre(const QString& genre)
+{
+    addToStrAndList(genre, m_genre_str, m_genre_list);
 }
 
 void Game::setRelease(QDate date)

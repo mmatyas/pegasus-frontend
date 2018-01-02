@@ -32,9 +32,12 @@ class Game : public QObject {
 
     Q_PROPERTY(QString title MEMBER m_title CONSTANT)
     Q_PROPERTY(QString description MEMBER m_description CONSTANT)
-    Q_PROPERTY(QString developer MEMBER m_developer CONSTANT)
-    Q_PROPERTY(QString publisher MEMBER m_publisher CONSTANT)
-    Q_PROPERTY(QString genre MEMBER m_genre CONSTANT)
+    Q_PROPERTY(QString developer MEMBER m_developer_str CONSTANT)
+    Q_PROPERTY(QString publisher MEMBER m_publisher_str CONSTANT)
+    Q_PROPERTY(QString genre MEMBER m_genre_str CONSTANT)
+    Q_PROPERTY(QStringList developerList MEMBER m_developer_list CONSTANT)
+    Q_PROPERTY(QStringList publisherList MEMBER m_publisher_list CONSTANT)
+    Q_PROPERTY(QStringList genreList MEMBER m_genre_list CONSTANT)
     Q_PROPERTY(int year MEMBER m_year CONSTANT)
     Q_PROPERTY(int month MEMBER m_month CONSTANT)
     Q_PROPERTY(int day MEMBER m_day CONSTANT)
@@ -53,9 +56,10 @@ public:
 
     QString m_title;
     QString m_description;
-    QString m_developer;
-    QString m_publisher;
-    QString m_genre;
+
+    void addDeveloper(const QString&);
+    void addPublisher(const QString&);
+    void addGenre(const QString&);
 
     int m_players;
     bool m_favorite;
@@ -72,6 +76,13 @@ public:
     GameAssets* assetsPtr() { return &m_assets; }
 
 private:
+    QString m_developer_str;
+    QString m_publisher_str;
+    QString m_genre_str;
+    QStringList m_developer_list;
+    QStringList m_publisher_list;
+    QStringList m_genre_list;
+
     int m_year;
     int m_month;
     int m_day;
