@@ -22,9 +22,9 @@ DialogOkCancel
 {
     focus: true
 
-    title: qsTr("Reboot") + pegasus.tr
-    message: qsTr("The system will reboot. Are you sure?") + pegasus.tr
+    title: qsTr("Reboot") + api.tr
+    message: qsTr("The system will reboot. Are you sure?") + api.tr
     symbol: "\u21BB"
 
-    onAccept: pegasus.system.reboot()
+    onAccept: api.system.reboot()
 }

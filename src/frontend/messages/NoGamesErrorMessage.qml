@@ -39,7 +39,7 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("No games found :(") + pegasus.tr
+            text: qsTr("No games found :(") + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
@@ -59,7 +59,7 @@ Rectangle {
                 + " If you think you have games but still see this message, then these"
                 + " files might be missing, not in the expected location, or contain"
                 + " errors.")
-                + pegasus.tr
+                + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
@@ -71,7 +71,7 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("Please see the log file for more details.") + pegasus.tr
+            text: qsTr("Please see the log file for more details.") + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
@@ -84,8 +84,8 @@ Rectangle {
 
         Text {
             text: qsTr("You can find it here:<pre>%1</pre>")
-                    .arg(pegasus.meta.logFilePath)
-                 + pegasus.tr
+                    .arg(api.meta.logFilePath)
+                 + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap

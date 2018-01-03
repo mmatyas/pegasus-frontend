@@ -39,7 +39,7 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("Theme loading failed :(") + pegasus.tr
+            text: qsTr("Theme loading failed :(") + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
@@ -57,8 +57,8 @@ Rectangle {
             text: qsTr("Pegasus tried to load the selected theme (%1), but failed."
                 + " This may happen when you try to load an outdated theme, or when"
                 + " there's a bug in its code.")
-                    .arg(pegasus.settings.themes.current.name)
-                + pegasus.tr
+                    .arg(api.settings.themes.current.name)
+                + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
@@ -70,7 +70,7 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("For now, please select a different theme from the main menu.") + pegasus.tr
+            text: qsTr("For now, please select a different theme from the main menu.") + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
@@ -83,8 +83,8 @@ Rectangle {
 
         Text {
             text: qsTr("You might find more details in the log file:<pre>%1</pre>")
-                    .arg(pegasus.meta.logFilePath)
-                 + pegasus.tr
+                    .arg(api.meta.logFilePath)
+                 + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap

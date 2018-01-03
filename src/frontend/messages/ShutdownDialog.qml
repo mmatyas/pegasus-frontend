@@ -22,9 +22,9 @@ DialogOkCancel
 {
     focus: true
 
-    title: qsTr("Shutdown") + pegasus.tr
-    message: qsTr("The system will shut down. Are you sure?") + pegasus.tr
+    title: qsTr("Shutdown") + api.tr
+    message: qsTr("The system will shut down. Are you sure?") + api.tr
     symbol: "\u23FB"
 
-    onAccept: pegasus.system.shutdown()
+    onAccept: api.system.shutdown()
 }

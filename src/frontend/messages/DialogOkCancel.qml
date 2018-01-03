@@ -161,7 +161,7 @@ FocusScope {
                 Text {
                     anchors.centerIn: parent
 
-                    text: qsTr("Ok") + pegasus.tr
+                    text: qsTr("Ok") + api.tr
                     color: "#eee"
                     font {
                         pixelSize: root.textSize
@@ -193,7 +193,7 @@ FocusScope {
                 Text {
                     anchors.centerIn: parent
 
-                    text: qsTr("Cancel") + pegasus.tr
+                    text: qsTr("Cancel") + api.tr
                     color: "#eee"
                     font {
                         pixelSize: root.textSize
