@@ -84,7 +84,7 @@ Window {
         Loader {
             id: mainMenu
             anchors.fill: parent
-            sourceComponent: MainMenuOverlay { focus: true }
+            sourceComponent: MenuOverlay { focus: true }
             asynchronous: true
         }
         Connections {
