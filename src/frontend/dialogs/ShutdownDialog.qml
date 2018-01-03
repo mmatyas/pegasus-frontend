@@ -18,13 +18,13 @@
 import QtQuick 2.0
 
 
-DialogOkCancel
+GenericOkCancelDialog
 {
     focus: true
 
-    title: qsTr("Reboot") + api.tr
-    message: qsTr("The system will reboot. Are you sure?") + api.tr
-    symbol: "\u21BB"
+    title: qsTr("Shutdown") + api.tr
+    message: qsTr("The system will shut down. Are you sure?") + api.tr
+    symbol: "\u23FB"
 
-    onAccept: api.system.reboot()
+    onAccept: api.system.shutdown()
 }

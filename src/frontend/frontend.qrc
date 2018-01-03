@@ -8,11 +8,8 @@
         <file>menuitems/PrimaryMenuItem.qml</file>
         <file>menuitems/RollableMenuItem.qml</file>
         <file>menuitems/SecondaryMenuItem.qml</file>
-        <file>messages/DialogOkCancel.qml</file>
-        <file>messages/NoGamesErrorMessage.qml</file>
-        <file>messages/ThemeErrorMessage.qml</file>
-        <file>messages/ShutdownDialog.qml</file>
-        <file>messages/RebootDialog.qml</file>
+        <file>messages/NoGamesError.qml</file>
+        <file>messages/ThemeError.qml</file>
         <file>gamepad/ConfigScreen.qml</file>
         <file>gamepad/ConfigField.qml</file>
         <file>gamepad/ConfigGroup.qml</file>
@@ -30,5 +27,8 @@
         <file>settings/MultivalueOption.qml</file>
         <file>settings/ToggleOption.qml</file>
         <file>settings/Switch.qml</file>
+        <file>dialogs/GenericOkCancelDialog.qml</file>
+        <file>dialogs/RebootDialog.qml</file>
+        <file>dialogs/ShutdownDialog.qml</file>
     </qresource>
 </RCC>

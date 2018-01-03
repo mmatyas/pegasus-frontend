@@ -73,10 +73,9 @@ Window {
 
             source: api.settings.themes.current.qmlPath
             asynchronous: true
-
             onStatusChanged: {
                 if (status == Loader.Error)
-                    themeContent.source = "messages/ThemeErrorMessage.qml";
+                    themeContent.source = "messages/ThemeError.qml";
                 else if (status == Loader.Ready)
                     item.focus = true;
             }
@@ -96,12 +95,12 @@ Window {
             }
             onRequestShutdown: {
                 content.enabled = false;
-                powerDialog.source = "messages/ShutdownDialog.qml"
+                powerDialog.source = "dialogs/ShutdownDialog.qml"
                 powerDialog.focus = true;
             }
             onRequestReboot: {
                 content.enabled = false;
-                powerDialog.source = "messages/RebootDialog.qml"
+                powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
             onRequestQuit: {
@@ -119,7 +118,7 @@ Window {
         onLoadingChanged: {
             if (!loading) {
                 if (api.collections.count === 0)
-                    themeContent.source = "messages/NoGamesErrorMessage.qml";
+                    themeContent.source = "messages/NoGamesError.qml";
 
                 // break bindings
                 loading = false;
