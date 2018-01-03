@@ -15,8 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "gamepad" as GamepadConfig
-import "settings"
+import "menu/gamepad" as GamepadConfig
+import "menu/settings"
+import "menu"
 import QtQuick 2.8
 
 

@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "menuitems"
+import "mainmenu"
 import QtQuick 2.8
 
 

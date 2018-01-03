@@ -2,31 +2,31 @@
     <qresource prefix="/frontend">
         <file>main.qml</file>
         <file>MenuOverlay.qml</file>
-        <file>MainMenuPanel.qml</file>
         <file>SplashScreen.qml</file>
-        <file>menuitems/GenericMenuItem.qml</file>
-        <file>menuitems/PrimaryMenuItem.qml</file>
-        <file>menuitems/RollableMenuItem.qml</file>
-        <file>menuitems/SecondaryMenuItem.qml</file>
         <file>messages/NoGamesError.qml</file>
         <file>messages/ThemeError.qml</file>
-        <file>gamepad/ConfigScreen.qml</file>
-        <file>gamepad/ConfigField.qml</file>
-        <file>gamepad/ConfigGroup.qml</file>
-        <file>gamepad/GamepadName.qml</file>
-        <file>gamepad/preview/PadButton.qml</file>
-        <file>gamepad/preview/Dpad.qml</file>
-        <file>gamepad/preview/DpadHighlight.qml</file>
-        <file>gamepad/preview/Stick.qml</file>
-        <file>gamepad/preview/Container.qml</file>
-        <file>gamepad/preview/PadTrigger.qml</file>
-        <file>gamepad/preview/PadShoulder.qml</file>
-        <file>gamepad/ConfigGroupLabel.qml</file>
-        <file>settings/SettingsPanel.qml</file>
-        <file>settings/MultivalueBox.qml</file>
-        <file>settings/MultivalueOption.qml</file>
-        <file>settings/ToggleOption.qml</file>
-        <file>settings/Switch.qml</file>
+        <file>menu/MainMenuPanel.qml</file>
+        <file>menu/mainmenu/GenericMenuItem.qml</file>
+        <file>menu/mainmenu/PrimaryMenuItem.qml</file>
+        <file>menu/mainmenu/RollableMenuItem.qml</file>
+        <file>menu/mainmenu/SecondaryMenuItem.qml</file>
+        <file>menu/gamepad/ConfigScreen.qml</file>
+        <file>menu/gamepad/ConfigField.qml</file>
+        <file>menu/gamepad/ConfigGroup.qml</file>
+        <file>menu/gamepad/GamepadName.qml</file>
+        <file>menu/gamepad/preview/PadButton.qml</file>
+        <file>menu/gamepad/preview/Dpad.qml</file>
+        <file>menu/gamepad/preview/DpadHighlight.qml</file>
+        <file>menu/gamepad/preview/Stick.qml</file>
+        <file>menu/gamepad/preview/Container.qml</file>
+        <file>menu/gamepad/preview/PadTrigger.qml</file>
+        <file>menu/gamepad/preview/PadShoulder.qml</file>
+        <file>menu/gamepad/ConfigGroupLabel.qml</file>
+        <file>menu/settings/SettingsPanel.qml</file>
+        <file>menu/settings/MultivalueBox.qml</file>
+        <file>menu/settings/MultivalueOption.qml</file>
+        <file>menu/settings/ToggleOption.qml</file>
+        <file>menu/settings/Switch.qml</file>
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
