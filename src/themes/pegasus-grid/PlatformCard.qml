@@ -71,7 +71,7 @@ Item {
     }
 
     Image {
-        source: "/platform_logo/" + platformShortName + ".svg"
+        source: "assets/platform_logo/" + platformShortName + ".svg"
         sourceSize.height: 100
         fillMode: Image.PreserveAspectFit
 
