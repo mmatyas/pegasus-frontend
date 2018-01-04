@@ -5,12 +5,13 @@
         <file>SplashScreen.qml</file>
         <file>messages/NoGamesError.qml</file>
         <file>messages/ThemeError.qml</file>
+        <file>menu/GamepadScreen.qml</file>
         <file>menu/MainMenuPanel.qml</file>
+        <file>menu/SettingsScreen.qml</file>
         <file>menu/mainmenu/GenericMenuItem.qml</file>
         <file>menu/mainmenu/PrimaryMenuItem.qml</file>
         <file>menu/mainmenu/RollableMenuItem.qml</file>
         <file>menu/mainmenu/SecondaryMenuItem.qml</file>
-        <file>menu/gamepad/ConfigScreen.qml</file>
         <file>menu/gamepad/ConfigField.qml</file>
         <file>menu/gamepad/ConfigGroup.qml</file>
         <file>menu/gamepad/GamepadName.qml</file>
@@ -22,7 +23,6 @@
         <file>menu/gamepad/preview/PadTrigger.qml</file>
         <file>menu/gamepad/preview/PadShoulder.qml</file>
         <file>menu/gamepad/ConfigGroupLabel.qml</file>
-        <file>menu/settings/SettingsPanel.qml</file>
         <file>menu/settings/MultivalueBox.qml</file>
         <file>menu/settings/MultivalueOption.qml</file>
         <file>menu/settings/ToggleOption.qml</file>

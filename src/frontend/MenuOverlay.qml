@@ -15,8 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "menu/gamepad" as GamepadConfig
-import "menu/settings"
 import "menu"
 import QtQuick 2.8
 
@@ -120,14 +118,14 @@ FocusScope {
         onRequestQuit: root.requestQuit()
     }
 
-    SettingsPanel {
+    SettingsScreen {
         id: settingsPanel
         anchors.left: menuPanel.right
 
         onScreenClosed: stepBack()
     }
 
-    GamepadConfig.ConfigScreen {
+    GamepadScreen {
         id: gamepadPanel
         anchors.left: menuPanel.right
 

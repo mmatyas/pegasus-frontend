@@ -15,9 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "preview" as GamepadPreview
+import "gamepad/preview" as GamepadPreview
+import "gamepad"
 import QtQuick 2.8
 import QtGamepad 1.0
+
 
 FocusScope {
     property bool hasGamepads: GamepadManager.connectedGamepads.length > 0
