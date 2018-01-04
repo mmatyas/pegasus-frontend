@@ -117,14 +117,14 @@ Window {
 
         onLoadingChanged: {
             if (!loading) {
-                if (api.collections.count === 0)
-                    themeContent.source = "messages/NoGamesError.qml";
-
                 // break bindings
                 loading = false;
                 visible = false;
                 enabled = false;
                 content.focus = true;
+
+                if (api.collections.count === 0)
+                    themeContent.source = "messages/NoGamesError.qml";
             }
         }
     }
