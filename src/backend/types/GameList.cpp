@@ -19,6 +19,7 @@
 
 #include "Filters.h"
 #include "ListPropertyFn.h"
+#include "Utils.h"
 
 #include <QDebug>
 
@@ -57,6 +58,24 @@ void GameList::setIndex(int idx)
 
     m_game_idx = idx;
     emit currentChanged();
+}
+
+void GameList::incrementIndex()
+{
+    const int target_idx = m_filtered_games.isEmpty()
+        ? -1
+        : mathMod(m_game_idx + 1, m_filtered_games.count());
+
+    setIndex(target_idx);
+}
+
+void GameList::decrementIndex()
+{
+    const int target_idx = m_filtered_games.isEmpty()
+        ? -1
+        : mathMod(m_game_idx - 1, m_filtered_games.count());
+
+    setIndex(target_idx);
 }
 
 QQmlListProperty<Game> GameList::getFilteredGamesProp()

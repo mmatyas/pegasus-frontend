@@ -33,6 +33,10 @@ private slots:
     void indexChange();
     void indexChange_data();
 
+    void indexIncrement();
+    void indexDecrement();
+    void indexIncDecEmpty();
+
     void applyFilters();
     void applyFilters_data();
 
@@ -122,6 +126,53 @@ void test_GameList::indexChange_data()
     QTest::newRow("out of range (pos)") << 999 << 0;
     QTest::newRow("out of range (neg)") << -999 << 0;
 }
+
+void test_GameList::indexIncDecEmpty()
+{
+    Types::GameList list;
+    QVERIFY(list.index() == -1);
+
+    // increment empty -> stays -1
+    list.incrementIndex();
+    QCOMPARE(list.index(), -1);
+
+    // decrement empty -> stays -1
+    list.decrementIndex();
+    QCOMPARE(list.index(), -1);
+}
+
+void test_GameList::indexIncrement()
+{
+    Types::GameList list;
+    list.addGame("bbb");
+    list.addGame("aaa");
+    list.lockGameList();
+    QVERIFY(list.index() == 0);
+
+    // increment regular -> index increases
+    list.incrementIndex();
+    QCOMPARE(list.index(), 1);
+    // increment last -> goes circular
+    list.incrementIndex();
+    QCOMPARE(list.index(), 0);
+}
+
+void test_GameList::indexDecrement()
+{
+    Types::GameList list;
+    list.addGame("bbb");
+    list.addGame("aaa");
+    list.lockGameList();
+    QVERIFY(list.index() == 0);
+
+    // decrement first -> goes circular
+    list.decrementIndex();
+    QCOMPARE(list.index(), 1);
+    // decrement regular -> index decreases
+    list.decrementIndex();
+    QCOMPARE(list.index(), 0);
+}
+
 
 void test_GameList::applyFilters()
 {

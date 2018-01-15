@@ -56,10 +56,14 @@ public:
     ~GameList();
 
     Game* current() const;
-    int index() const { return m_game_idx; }
-    void setIndex(int);
     int filteredCount() const { return m_filtered_games.count(); }
     int allCount() const { return m_all_games.count(); }
+
+    int index() const { return m_game_idx; }
+    void setIndex(int);
+    Q_INVOKABLE void incrementIndex();
+    Q_INVOKABLE void decrementIndex();
+
     QQmlListProperty<Game> getFilteredGamesProp();
     QQmlListProperty<Game> getAllGamesProp();
 
