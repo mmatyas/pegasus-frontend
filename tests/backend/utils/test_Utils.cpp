@@ -35,6 +35,8 @@ private slots:
     void validPath();
 
     void homePath();
+
+    void mathMod();
 };
 
 void test_Utils::loadInt_data()
@@ -127,6 +129,16 @@ void test_Utils::homePath()
     else
         QCOMPARE(::homePath(), env.value(HOME_ENV_KEY));
 }
+
+void test_Utils::mathMod()
+{
+    int expected = 0;
+    for (int i = -6; i <= 6; i++) {
+        QCOMPARE(::mathMod(i, 3), expected);
+        expected = (expected + 1) % 3;
+    }
+}
+
 
 QTEST_MAIN(test_Utils)
 #include "test_Utils.moc"

@@ -37,3 +37,7 @@ void parseStoreFloat(const QString& str, float& val);
 /// Returns $PEGASUS_HOME if defined, or $HOME if defined,
 /// otherwise QDir::homePath().
 QString homePath();
+
+
+/// Mathematical modulo -- the result has the same sign as the divisor
+inline int mathMod(int a, int n) { return (a % n + n) % n; }
