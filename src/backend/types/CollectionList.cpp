@@ -18,6 +18,7 @@
 #include "CollectionList.h"
 
 #include "ListPropertyFn.h"
+#include "Utils.h"
 
 #include <QDebug>
 
@@ -59,6 +60,24 @@ void CollectionList::setIndex(int idx)
     m_collection_idx = idx;
     emit currentChanged();
     emit currentGameChanged();
+}
+
+void CollectionList::incrementIndex()
+{
+    const int target_idx = m_collections.isEmpty()
+        ? -1
+        : mathMod(m_collection_idx + 1, m_collections.count());
+
+    setIndex(target_idx);
+}
+
+void CollectionList::decrementIndex()
+{
+    const int target_idx = m_collections.isEmpty()
+        ? -1
+        : mathMod(m_collection_idx - 1, m_collections.count());
+
+    setIndex(target_idx);
 }
 
 QQmlListProperty<Collection> CollectionList::elementsProp()

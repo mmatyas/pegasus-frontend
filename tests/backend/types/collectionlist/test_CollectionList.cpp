@@ -31,6 +31,10 @@ private slots:
     void indexChange();
     void indexChange_data();
 
+    void indexIncrement();
+    void indexDecrement();
+    void indexIncDecEmpty();
+
 private:
     const Types::Collection* const null_coll = static_cast<Types::Collection*>(nullptr); // Qt 5.7
 };
@@ -124,6 +128,52 @@ void test_CollectionList::indexChange_data()
     QTest::newRow("undefined (-1)") << -1 << -1;
     QTest::newRow("out of range (pos)") << 999 << 0;
     QTest::newRow("out of range (neg)") << -999 << 0;
+}
+
+void test_CollectionList::indexIncDecEmpty()
+{
+    Types::CollectionList list;
+    QVERIFY(list.index() == -1);
+
+    // increment empty -> stays -1
+    list.incrementIndex();
+    QCOMPARE(list.index(), -1);
+
+    // decrement empty -> stays -1
+    list.decrementIndex();
+    QCOMPARE(list.index(), -1);
+}
+
+void test_CollectionList::indexIncrement()
+{
+    Types::CollectionList list;
+    list.elementsMut().append(new Types::Collection("coll1"));
+    list.elementsMut().append(new Types::Collection("coll2"));
+    list.onScanComplete();
+    QVERIFY(list.index() == 0);
+
+    // increment regular -> index increases
+    list.incrementIndex();
+    QCOMPARE(list.index(), 1);
+    // increment last -> goes circular
+    list.incrementIndex();
+    QCOMPARE(list.index(), 0);
+}
+
+void test_CollectionList::indexDecrement()
+{
+    Types::CollectionList list;
+    list.elementsMut().append(new Types::Collection("coll1"));
+    list.elementsMut().append(new Types::Collection("coll2"));
+    list.onScanComplete();
+    QVERIFY(list.index() == 0);
+
+    // decrement first -> goes circular
+    list.decrementIndex();
+    QCOMPARE(list.index(), 1);
+    // decrement regular -> index decreases
+    list.decrementIndex();
+    QCOMPARE(list.index(), 0);
 }
 
 

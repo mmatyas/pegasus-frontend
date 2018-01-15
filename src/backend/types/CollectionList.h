@@ -45,10 +45,13 @@ public:
 
     Collection* current() const;
     int count() const { return m_collections.count(); }
+
     int index() const { return m_collection_idx; }
     void setIndex(int);
-    QQmlListProperty<Collection> elementsProp();
+    Q_INVOKABLE void incrementIndex();
+    Q_INVOKABLE void decrementIndex();
 
+    QQmlListProperty<Collection> elementsProp();
     const QVector<Collection*>& elements() const { return m_collections; }
     QVector<Collection*>& elementsMut() { return m_collections; }
 
