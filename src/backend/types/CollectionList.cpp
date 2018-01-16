@@ -80,6 +80,24 @@ void CollectionList::decrementIndex()
     setIndex(target_idx);
 }
 
+void CollectionList::incrementIndexNoWrap()
+{
+    const int target_idx = m_collections.isEmpty()
+        ? -1
+        : std::min(m_collection_idx + 1, m_collections.count() - 1);
+
+    setIndex(target_idx);
+}
+
+void CollectionList::decrementIndexNoWrap()
+{
+    const int target_idx = m_collections.isEmpty()
+        ? -1
+        : std::max(m_collection_idx - 1, 0);
+
+    setIndex(target_idx);
+}
+
 QQmlListProperty<Collection> CollectionList::elementsProp()
 {
     static constexpr auto count = &listproperty_count<Collection>;

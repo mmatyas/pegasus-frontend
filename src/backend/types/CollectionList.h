@@ -50,6 +50,8 @@ public:
     void setIndex(int);
     Q_INVOKABLE void incrementIndex();
     Q_INVOKABLE void decrementIndex();
+    Q_INVOKABLE void incrementIndexNoWrap();
+    Q_INVOKABLE void decrementIndexNoWrap();
 
     QQmlListProperty<Collection> elementsProp();
     const QVector<Collection*>& elements() const { return m_collections; }
