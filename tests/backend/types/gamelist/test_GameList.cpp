@@ -33,9 +33,9 @@ private slots:
     void indexChange();
     void indexChange_data();
 
-    void indexIncrement();
-    void indexDecrement();
     void indexIncDecEmpty();
+    void indexIncDec();
+    void indexIncDec_data();
 
     void applyFilters();
     void applyFilters_data();
@@ -141,38 +141,39 @@ void test_GameList::indexIncDecEmpty()
     QCOMPARE(list.index(), -1);
 }
 
-void test_GameList::indexIncrement()
+void test_GameList::indexIncDec_data()
 {
-    Types::GameList list;
-    list.addGame("bbb");
-    list.addGame("aaa");
-    list.lockGameList();
-    QVERIFY(list.index() == 0);
+    QTest::addColumn<int>("start_idx");
+    QTest::addColumn<QString>("metacall");
+    QTest::addColumn<int>("expected_idx");
 
-    // increment regular -> index increases
-    list.incrementIndex();
-    QCOMPARE(list.index(), 1);
-    // increment last -> goes circular
-    list.incrementIndex();
-    QCOMPARE(list.index(), 0);
+    QTest::newRow("increment regular") << 0 << "incrementIndex" << 1;
+    QTest::newRow("increment last") << 1 << "incrementIndex" << 0;
+    QTest::newRow("decrement regular") << 1 << "decrementIndex" << 0;
+    QTest::newRow("decrement first") << 0 << "decrementIndex" << 1;
+    QTest::newRow("increment regular, no wrap") << 0 << "incrementIndexNoWrap" << 1;
+    QTest::newRow("increment last, no wrap") << 1 << "incrementIndexNoWrap" << 1;
+    QTest::newRow("decrement regular, no wrap") << 1 << "decrementIndexNoWrap" << 0;
+    QTest::newRow("decrement first, no wrap") << 0 << "decrementIndexNoWrap" << 0;
 }
 
-void test_GameList::indexDecrement()
+void test_GameList::indexIncDec()
 {
     Types::GameList list;
-    list.addGame("bbb");
     list.addGame("aaa");
+    list.addGame("bbb");
     list.lockGameList();
-    QVERIFY(list.index() == 0);
 
-    // decrement first -> goes circular
-    list.decrementIndex();
-    QCOMPARE(list.index(), 1);
-    // decrement regular -> index decreases
-    list.decrementIndex();
-    QCOMPARE(list.index(), 0);
+    QFETCH(int, start_idx);
+    QFETCH(QString, metacall);
+    QFETCH(int, expected_idx);
+
+    list.setIndex(start_idx);
+    QVERIFY(list.index() == start_idx);
+
+    QMetaObject::invokeMethod(&list, metacall.toStdString().c_str(), Qt::DirectConnection);
+    QCOMPARE(list.index(), expected_idx);
 }
-
 
 void test_GameList::applyFilters()
 {
