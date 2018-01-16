@@ -31,11 +31,9 @@ private slots:
     void indexChange();
     void indexChange_data();
 
-    void indexIncrement();
-    void indexDecrement();
-    void indexIncrementNoWrap();
-    void indexDecrementNoWrap();
     void indexIncDecEmpty();
+    void indexIncDec();
+    void indexIncDec_data();
 
 private:
     const Types::Collection* const null_coll = static_cast<Types::Collection*>(nullptr); // Qt 5.7
@@ -146,26 +144,23 @@ void test_CollectionList::indexIncDecEmpty()
     QCOMPARE(list.index(), -1);
 }
 
-void test_CollectionList::indexIncrement()
+void test_CollectionList::indexIncDec_data()
 {
-    Types::CollectionList list;
-    list.elementsMut().append(new Types::Collection("coll1"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection("coll2"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.onScanComplete();
-    QVERIFY(list.index() == 0);
+    QTest::addColumn<int>("start_idx");
+    QTest::addColumn<QString>("metacall");
+    QTest::addColumn<int>("expected_idx");
 
-    // increment regular -> index increases
-    QMetaObject::invokeMethod(&list, "incrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.index(), 1);
-    // increment last -> goes circular
-    QMetaObject::invokeMethod(&list, "incrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.index(), 0);
+    QTest::newRow("increment regular") << 0 << "incrementIndex" << 1;
+    QTest::newRow("increment last") << 1 << "incrementIndex" << 0;
+    QTest::newRow("decrement regular") << 1 << "decrementIndex" << 0;
+    QTest::newRow("decrement first") << 0 << "decrementIndex" << 1;
+    QTest::newRow("increment regular, no wrap") << 0 << "incrementIndexNoWrap" << 1;
+    QTest::newRow("increment last, no wrap") << 1 << "incrementIndexNoWrap" << 1;
+    QTest::newRow("decrement regular, no wrap") << 1 << "decrementIndexNoWrap" << 0;
+    QTest::newRow("decrement first, no wrap") << 0 << "decrementIndexNoWrap" << 0;
 }
 
-void test_CollectionList::indexIncrementNoWrap()
+void test_CollectionList::indexIncDec()
 {
     Types::CollectionList list;
     list.elementsMut().append(new Types::Collection("coll1"));
@@ -174,54 +169,16 @@ void test_CollectionList::indexIncrementNoWrap()
     list.elementsMut().last()->gameListMut().addGame("dummy1");
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
     list.onScanComplete();
-    QVERIFY(list.index() == 0);
 
-    // increment regular, no wrap -> index increases
-    QMetaObject::invokeMethod(&list, "incrementIndexNoWrap", Qt::DirectConnection);
-    QCOMPARE(list.index(), 1);
-    // increment last, no wrap -> stays last
-    QMetaObject::invokeMethod(&list, "incrementIndexNoWrap", Qt::DirectConnection);
-    QCOMPARE(list.index(), 1);
-}
+    QFETCH(int, start_idx);
+    QFETCH(QString, metacall);
+    QFETCH(int, expected_idx);
 
-void test_CollectionList::indexDecrement()
-{
-    Types::CollectionList list;
-    list.elementsMut().append(new Types::Collection("coll1"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection("coll2"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.onScanComplete();
-    list.setIndex(1);
-    QVERIFY(list.index() == 1);
+    list.setIndex(start_idx);
+    QVERIFY(list.index() == start_idx);
 
-    // decrement regular -> index decreases
-    QMetaObject::invokeMethod(&list, "decrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.index(), 0);
-    // decrement first -> goes circular
-    QMetaObject::invokeMethod(&list, "decrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.index(), 1);
-}
-
-void test_CollectionList::indexDecrementNoWrap()
-{
-    Types::CollectionList list;
-    list.elementsMut().append(new Types::Collection("coll1"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection("coll2"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.onScanComplete();
-    list.setIndex(1);
-    QVERIFY(list.index() == 1);
-
-    // decrement regular, no wrap -> index decreases
-    QMetaObject::invokeMethod(&list, "decrementIndexNoWrap", Qt::DirectConnection);
-    QCOMPARE(list.index(), 0);
-    // decrement first, no wrap -> stays first
-    QMetaObject::invokeMethod(&list, "decrementIndexNoWrap", Qt::DirectConnection);
-    QCOMPARE(list.index(), 0);
+    QMetaObject::invokeMethod(&list, metacall.toStdString().c_str(), Qt::DirectConnection);
+    QCOMPARE(list.index(), expected_idx);
 }
 
 
