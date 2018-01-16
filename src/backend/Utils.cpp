@@ -27,6 +27,8 @@
 #include <sys/stat.h>
 #endif
 
+#include <unordered_map>
+
 
 bool validPath(const QString& path) {
 #ifdef Q_OS_UNIX
@@ -76,4 +78,15 @@ QString homePath()
 #endif
     }();
     return home_path;
+}
+
+const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)
+{
+    static const std::unordered_map<IndexShiftDirection, std::function<int(int,int)>> fn_table {
+        { IndexShiftDirection::INCREMENT,        [](int idx, int count){ return mathMod(idx + 1, count); } },
+        { IndexShiftDirection::DECREMENT,        [](int idx, int count){ return mathMod(idx - 1, count); } },
+        { IndexShiftDirection::INCREMENT_NOWRAP, [](int idx, int count){ return std::min(idx + 1, count - 1); } },
+        { IndexShiftDirection::DECREMENT_NOWRAP, [](int idx, int)      { return std::max(idx - 1, 0); } },
+    };
+    return fn_table.at(direction);
 }

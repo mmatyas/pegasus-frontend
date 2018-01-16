@@ -60,22 +60,29 @@ void GameList::setIndex(int idx)
     emit currentChanged();
 }
 
-void GameList::incrementIndex()
+void GameList::shiftIndex(IndexShiftDirection dir)
 {
-    const int target_idx = m_filtered_games.isEmpty()
-        ? -1
-        : mathMod(m_game_idx + 1, m_filtered_games.count());
+    if (m_filtered_games.isEmpty())
+        return;
 
+    const int target_idx = shifterFn(dir)(m_game_idx, m_filtered_games.count());
     setIndex(target_idx);
 }
 
-void GameList::decrementIndex()
-{
-    const int target_idx = m_filtered_games.isEmpty()
-        ? -1
-        : mathMod(m_game_idx - 1, m_filtered_games.count());
+void GameList::incrementIndex() {
+    shiftIndex(IndexShiftDirection::INCREMENT);
+}
 
-    setIndex(target_idx);
+void GameList::decrementIndex() {
+    shiftIndex(IndexShiftDirection::DECREMENT);
+}
+
+void GameList::incrementIndexNoWrap() {
+    shiftIndex(IndexShiftDirection::INCREMENT_NOWRAP);
+}
+
+void GameList::decrementIndexNoWrap() {
+    shiftIndex(IndexShiftDirection::DECREMENT_NOWRAP);
 }
 
 QQmlListProperty<Game> GameList::getFilteredGamesProp()

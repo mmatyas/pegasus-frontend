@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <functional>
+
 class QString;
 
 
@@ -41,3 +43,13 @@ QString homePath();
 
 /// Mathematical modulo -- the result has the same sign as the divisor
 inline int mathMod(int a, int n) { return (a % n + n) % n; }
+
+
+// Index shifting
+enum class IndexShiftDirection : unsigned char {
+    INCREMENT,
+    INCREMENT_NOWRAP,
+    DECREMENT,
+    DECREMENT_NOWRAP,
+};
+const std::function<int(int,int)>& shifterFn(IndexShiftDirection);

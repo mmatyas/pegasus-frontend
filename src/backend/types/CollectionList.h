@@ -19,6 +19,8 @@
 
 #include "Collection.h"
 
+enum class IndexShiftDirection : unsigned char;
+
 
 namespace Types {
 
@@ -71,6 +73,8 @@ private slots:
 private:
     QVector<Collection*> m_collections;
     int m_collection_idx;
+
+    void shiftIndex(IndexShiftDirection);
 };
 
 } // namespace Types

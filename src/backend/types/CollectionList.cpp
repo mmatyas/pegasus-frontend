@@ -62,40 +62,29 @@ void CollectionList::setIndex(int idx)
     emit currentGameChanged();
 }
 
-void CollectionList::incrementIndex()
+void CollectionList::shiftIndex(IndexShiftDirection dir)
 {
-    const int target_idx = m_collections.isEmpty()
-        ? -1
-        : mathMod(m_collection_idx + 1, m_collections.count());
+    if (m_collections.isEmpty())
+        return;
 
+    const int target_idx = shifterFn(dir)(m_collection_idx, m_collections.count());
     setIndex(target_idx);
 }
 
-void CollectionList::decrementIndex()
-{
-    const int target_idx = m_collections.isEmpty()
-        ? -1
-        : mathMod(m_collection_idx - 1, m_collections.count());
-
-    setIndex(target_idx);
+void CollectionList::incrementIndex() {
+    shiftIndex(IndexShiftDirection::INCREMENT);
 }
 
-void CollectionList::incrementIndexNoWrap()
-{
-    const int target_idx = m_collections.isEmpty()
-        ? -1
-        : std::min(m_collection_idx + 1, m_collections.count() - 1);
-
-    setIndex(target_idx);
+void CollectionList::decrementIndex() {
+    shiftIndex(IndexShiftDirection::DECREMENT);
 }
 
-void CollectionList::decrementIndexNoWrap()
-{
-    const int target_idx = m_collections.isEmpty()
-        ? -1
-        : std::max(m_collection_idx - 1, 0);
+void CollectionList::incrementIndexNoWrap() {
+    shiftIndex(IndexShiftDirection::INCREMENT_NOWRAP);
+}
 
-    setIndex(target_idx);
+void CollectionList::decrementIndexNoWrap() {
+    shiftIndex(IndexShiftDirection::DECREMENT_NOWRAP);
 }
 
 QQmlListProperty<Collection> CollectionList::elementsProp()

@@ -23,6 +23,8 @@
 #include <QQmlListProperty>
 #include <QVector>
 
+enum class IndexShiftDirection : unsigned char;
+
 namespace Types { class Filters; }
 
 
@@ -63,6 +65,8 @@ public:
     void setIndex(int);
     Q_INVOKABLE void incrementIndex();
     Q_INVOKABLE void decrementIndex();
+    Q_INVOKABLE void incrementIndexNoWrap();
+    Q_INVOKABLE void decrementIndexNoWrap();
 
     QQmlListProperty<Game> getFilteredGamesProp();
     QQmlListProperty<Game> getAllGamesProp();
@@ -91,6 +95,8 @@ private:
 
     QVector<Game*> m_all_games;
     QVector<Game*> m_filtered_games;
+
+    void shiftIndex(IndexShiftDirection);
 
 #ifdef QT_DEBUG
     bool m_gamelist_locked;
