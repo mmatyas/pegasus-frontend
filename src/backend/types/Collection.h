@@ -52,6 +52,7 @@ public:
 
 signals:
     void currentGameChanged();
+    void launchRequested(const Collection*, const Game*);
 
 private:
     const QString m_tag;

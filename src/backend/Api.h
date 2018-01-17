@@ -60,9 +60,6 @@ class ApiObject : public QObject {
 public:
     explicit ApiObject(QObject* parent = nullptr);
 
-    // game launching
-    Q_INVOKABLE void launchGame();
-
     // scanning
     void startScanning();
 
@@ -106,6 +103,7 @@ public slots:
 
 private slots:
     // internal communication
+    void onLaunchRequested(const Types::Collection*, const Types::Game*);
     void onFiltersChanged();
 
 private:
@@ -114,6 +112,10 @@ private:
     Types::Settings m_settings;
     Types::Filters m_filters;
     Types::CollectionList m_collections;
+
+    // the collection and game that requested the game launch
+    const Types::Collection* m_launch_collection;
+    const Types::Game* m_launch_game;
 
     // initialization
     DataFinder m_datafinder;

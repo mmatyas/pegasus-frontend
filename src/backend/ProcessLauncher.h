@@ -48,9 +48,9 @@ private slots:
 private:
     QPointer<QProcess> process;
 
-    QString createLaunchCommand(const Types::Collection*, const Types::Game*);
+    void prepareLaunchCommand(QString&, const Types::Game&) const;
     void runProcess(const QString&);
 
-    void beforeRun();
-    void afterRun();
+    void beforeRun() const;
+    void afterRun() const;
 };

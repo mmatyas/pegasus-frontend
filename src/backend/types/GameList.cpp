@@ -106,7 +106,7 @@ void GameList::addGame(QString path)
 #ifdef QT_DEBUG
     Q_ASSERT(!m_gamelist_locked);
 #endif
-    addGame(new Game(std::move(path), this));
+    addGame(new Game(std::move(path)));
 }
 
 void GameList::addGame(Game* game_ptr)
@@ -115,6 +115,7 @@ void GameList::addGame(Game* game_ptr)
     Q_ASSERT(!m_gamelist_locked);
 #endif
     m_all_games.append(game_ptr);
+    connect(game_ptr, &Game::launchRequested, this, &GameList::launchRequested);
 }
 
 void GameList::sortGames()

@@ -28,6 +28,8 @@ Collection::Collection(QString tag, QObject* parent)
 
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
+    connect(&m_gamelist, &GameList::launchRequested,
+            this, [this](const Game* game){ emit launchRequested(this, game); });
 }
 
 void Collection::setName(QString str)

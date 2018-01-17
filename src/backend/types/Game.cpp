@@ -79,4 +79,9 @@ void Game::setRelease(QDate date)
     m_day = m_release.day();
 }
 
+void Game::launch()
+{
+    emit launchRequested(this);
+}
+
 } // namespace Types
