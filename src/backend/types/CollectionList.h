@@ -63,6 +63,7 @@ signals:
     void modelChanged();
     void currentChanged();
     void currentGameChanged();
+    void launchRequested(const Collection*, const Game*);
 
 public slots:
     void onScanComplete();

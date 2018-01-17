@@ -71,9 +71,13 @@ public:
     QDateTime m_lastplayed;
 
     QString m_launch_cmd;
+    Q_INVOKABLE void launch();
 
     GameAssets& assets() { return m_assets; }
     GameAssets* assetsPtr() { return &m_assets; }
+
+signals:
+    void launchRequested(const Game*);
 
 private:
     QString m_developer_str;
