@@ -149,7 +149,7 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
     const QJsonArray publisher_arr = app_data[QLatin1String("publishers")].toArray();
     if (!publisher_arr.isEmpty()) {
         for (int i = 0; i < publisher_arr.count(); i++)
-            game.addDeveloper(publisher_arr[i].toString());
+            game.addPublisher(publisher_arr[i].toString());
     }
 
     // TODO: add genre support
