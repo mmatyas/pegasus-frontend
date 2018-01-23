@@ -56,7 +56,7 @@ Item {
                 bold: true
                 capitalization: Font.AllUppercase
                 pixelSize: vpx(16)
-                family: uiFontCondensed.name
+                family: globalFonts.condensed
             }
         }
 

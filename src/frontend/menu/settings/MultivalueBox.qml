@@ -107,7 +107,7 @@ FocusScope {
                 text: modelData.name
                 color: "#444"
                 font.pixelSize: root.textSize
-                font.family: uiFont.name
+                font.family: globalFonts.sans
                 horizontalAlignment: Text.AlignRight
             }
         }

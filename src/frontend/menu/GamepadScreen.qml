@@ -622,7 +622,7 @@ FocusScope {
                 text: "B"
                 color: "#777"
                 font {
-                    family: uiFont.name
+                    family: globalFonts.sans
                     pixelSize: parent.height * 0.7
                 }
                 anchors.centerIn: parent
@@ -636,7 +636,7 @@ FocusScope {
 
             color: "#777"
             font {
-                family: uiFont.name
+                family: globalFonts.sans
                 pixelSize: vpx(22)
                 capitalization: Font.SmallCaps
             }

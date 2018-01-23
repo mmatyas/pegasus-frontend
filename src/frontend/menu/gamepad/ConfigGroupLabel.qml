@@ -28,7 +28,7 @@ Rectangle {
         id: label
         color: "#eee"
         font {
-            family: uiFont.name
+            family: globalFonts.sans
             pixelSize: parent.height
             capitalization: Font.SmallCaps
         }

@@ -52,7 +52,7 @@ FocusScope {
         color: "#eee"
         font {
             pixelSize: root.fontSize
-            family: uiFont.name
+            family: globalFonts.sans
         }
     }
 
@@ -67,7 +67,7 @@ FocusScope {
         color: "#bbb"
         font {
             pixelSize: root.fontSize
-            family: uiFont.name
+            family: globalFonts.sans
             italic: true
         }
 

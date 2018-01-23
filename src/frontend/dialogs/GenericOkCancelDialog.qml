@@ -97,7 +97,7 @@ FocusScope {
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
-                    family: uiFont.name
+                    family: globalFonts.sans
                 }
             }
 
@@ -114,7 +114,7 @@ FocusScope {
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
-                    family: uiFont.name
+                    family: globalFonts.sans
                 }
             }
         }
@@ -138,7 +138,7 @@ FocusScope {
                 color: "#eee"
                 font {
                     pixelSize: root.textSize
-                    family: uiFont.name
+                    family: globalFonts.sans
                 }
             }
         }
@@ -165,7 +165,7 @@ FocusScope {
                     color: "#eee"
                     font {
                         pixelSize: root.textSize
-                        family: uiFont.name
+                        family: globalFonts.sans
                     }
                 }
 
@@ -197,7 +197,7 @@ FocusScope {
                     color: "#eee"
                     font {
                         pixelSize: root.textSize
-                        family: uiFont.name
+                        family: globalFonts.sans
                     }
                 }
 

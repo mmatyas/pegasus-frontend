@@ -49,7 +49,7 @@ Rectangle {
             font {
                 bold: true
                 pixelSize: vpx(50)
-                family: uiFont.name
+                family: globalFonts.sans
             }
         }
 
@@ -66,7 +66,7 @@ Rectangle {
 
             color: bodyColor
             font.pixelSize: bodyTextSize
-            font.family: uiFont.name
+            font.family: globalFonts.sans
         }
 
         Text {
@@ -78,7 +78,7 @@ Rectangle {
 
             color: instructionColor
             font.pixelSize: vpx(20)
-            font.family: uiFont.name
+            font.family: globalFonts.sans
         }
 
         Text {
@@ -92,7 +92,7 @@ Rectangle {
 
             color: bodyColor
             font.pixelSize: bodyTextSize
-            font.family: uiFont.name
+            font.family: globalFonts.sans
         }
     }
 }

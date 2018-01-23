@@ -55,7 +55,7 @@ FocusScope {
             font {
                 bold: true
                 pixelSize: vpx(26)
-                family: uiFont.name
+                family: globalFonts.sans
             }
             height: font.pixelSize * 1.5
         }

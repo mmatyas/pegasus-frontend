@@ -54,7 +54,7 @@ Rectangle {
             color: "#888"
             font {
                 pixelSize: vpx(20)
-                family: uiFont.name
+                family: globalFonts.sans
                 italic: true
             }
 
@@ -71,7 +71,7 @@ Rectangle {
             color: "#eaeaea"
             font {
                 pixelSize: vpx(110)
-                family: uiFont.name
+                family: globalFonts.sans
             }
         }
 
@@ -88,7 +88,7 @@ Rectangle {
             color: "#aaa"
             font {
                 pixelSize: vpx(24)
-                family: uiFont.name
+                family: globalFonts.sans
                 italic: true
             }
 
@@ -114,7 +114,7 @@ Rectangle {
             color: "#aaa"
             font {
                 pixelSize: vpx(24)
-                family: uiFont.name
+                family: globalFonts.sans
                 italic: true
             }
 
@@ -139,7 +139,7 @@ Rectangle {
             color: "#aaa"
             font {
                 pixelSize: vpx(24)
-                family: uiFont.name
+                family: globalFonts.sans
                 italic: true
             }
             anchors.left: label_gamesState.right

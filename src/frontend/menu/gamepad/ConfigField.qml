@@ -41,7 +41,7 @@ Rectangle {
         id: label
         color: "#eee"
         font {
-            family: uiFont.name
+            family: globalFonts.sans
             pixelSize: vpx(18)
         }
         horizontalAlignment: parent.parent.alignment

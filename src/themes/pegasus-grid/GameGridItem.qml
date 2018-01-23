@@ -84,7 +84,7 @@ Item {
         color: "#eee"
         font {
             pixelSize: vpx(16)
-            family: uiFont.name
+            family: globalFonts.sans
         }
     }
 

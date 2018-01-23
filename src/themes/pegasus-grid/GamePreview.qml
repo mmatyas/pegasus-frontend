@@ -80,7 +80,7 @@ Item {
                         bold: true
                         pixelSize: vpx(24)
                         capitalization: Font.SmallCaps
-                        family: uiFont.name
+                        family: globalFonts.sans
                     }
                 }
 
@@ -93,7 +93,7 @@ Item {
                     horizontalAlignment: Text.AlignJustify
                     font {
                         pixelSize: vpx(16)
-                        family: uiFont.name
+                        family: globalFonts.sans
                     }
                 }
             }

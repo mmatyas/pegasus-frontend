@@ -27,6 +27,6 @@ Text {
     }
     font {
         pixelSize: vpx(30)
-        family: uiFont.name
+        family: globalFonts.sans
     }
 }

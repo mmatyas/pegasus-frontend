@@ -49,7 +49,7 @@ FocusScope {
             text: qsTr("Settings") + api.tr
             color: "#eee"
             font.pixelSize: vpx(40)
-            font.family: uiFont.name
+            font.family: globalFonts.sans
 
             anchors.left: parent.horizontalCenter
             anchors.leftMargin: parent.width * -0.4

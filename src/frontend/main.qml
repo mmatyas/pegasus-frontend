@@ -41,8 +41,13 @@ Window {
     }
 
     // register custom global fonts
-    FontLoader { id: uiFont; source: "/fonts/Roboto.ttf" }
-    FontLoader { id: uiFontCondensed; source: "/fonts/RobotoCondensed.ttf" }
+    QtObject {
+        id: globalFonts
+        property string sans: sansFont.name
+        property string condensed: condensedFont.name
+    }
+    FontLoader { id: sansFont; source: "/fonts/Roboto.ttf" }
+    FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed.ttf" }
 
 
     // the main content

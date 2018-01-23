@@ -60,7 +60,7 @@ FocusScope {
 
             color: "#eee"
             font.pixelSize: fontSize
-            font.family: uiFont.name
+            font.family: globalFonts.sans
         }
 
         Text {
@@ -68,7 +68,7 @@ FocusScope {
 
             color: "#999"
             font.pixelSize: fontSize * 0.8
-            font.family: uiFont.name
+            font.family: globalFonts.sans
         }
     }
 
