@@ -31,6 +31,7 @@ class Game : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString title MEMBER m_title CONSTANT)
+    Q_PROPERTY(QString summary MEMBER m_summary CONSTANT)
     Q_PROPERTY(QString description MEMBER m_description CONSTANT)
     Q_PROPERTY(QString developer MEMBER m_developer_str CONSTANT)
     Q_PROPERTY(QString publisher MEMBER m_publisher_str CONSTANT)
@@ -55,6 +56,7 @@ public:
     const QFileInfo m_fileinfo;
 
     QString m_title;
+    QString m_summary;
     QString m_description;
 
     void addDeveloper(const QString&);
