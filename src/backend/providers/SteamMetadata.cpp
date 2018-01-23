@@ -154,6 +154,13 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
 
     // TODO: add genre support
 
+    const auto metacritic_obj = app_data[QLatin1String("metacritic")].toObject();
+    if (!metacritic_obj.isEmpty()) {
+        const double score = metacritic_obj[QLatin1String("score")].toDouble(-1);
+        if (0.0 <= score && score <= 100.0)
+            game.m_rating = static_cast<float>(score / 100.0);
+    }
+
     const QString background_image = app_data[QLatin1String("background")].toString();
     if (!background_image.isEmpty())
         assets.setSingle(AssetType::BACKGROUND, background_image);
