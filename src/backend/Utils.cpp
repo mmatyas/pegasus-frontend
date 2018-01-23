@@ -82,7 +82,7 @@ QString homePath()
 
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)
 {
-    static const std::unordered_map<IndexShiftDirection, std::function<int(int,int)>> fn_table {
+    static const std::unordered_map<IndexShiftDirection, std::function<int(int,int)>, EnumClassHash> fn_table {
         { IndexShiftDirection::INCREMENT,        [](int idx, int count){ return mathMod(idx + 1, count); } },
         { IndexShiftDirection::DECREMENT,        [](int idx, int count){ return mathMod(idx - 1, count); } },
         { IndexShiftDirection::INCREMENT_NOWRAP, [](int idx, int count){ return std::min(idx + 1, count - 1); } },
