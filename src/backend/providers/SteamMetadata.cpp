@@ -122,9 +122,8 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
 
     game.m_title = app_data[QLatin1String("name")].toString();
 
-    game.m_description = app_data[QLatin1String("short_description")].toString();
-    if (game.m_description.isEmpty())
-        game.m_description = app_data[QLatin1String("about_the_game")].toString();
+    game.m_summary = app_data[QLatin1String("short_description")].toString();
+    game.m_description = app_data[QLatin1String("about_the_game")].toString();
 
     const auto reldate_obj = app_data[QLatin1String("release_date")].toObject();
     if (!reldate_obj.isEmpty()) {
