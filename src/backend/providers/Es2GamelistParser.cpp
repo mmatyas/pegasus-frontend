@@ -161,8 +161,10 @@ void readSystemEntry(QXmlStreamReader& xml,
             QFileInfo fileinfo = files_it.fileInfo();
 
             Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
-            if (!game_ptr)
+            if (!game_ptr) {
                 game_ptr = new Types::Game(fileinfo, collection);
+                game_ptr->m_launch_cmd = collection->launchCmd();
+            }
 
             collection->gameListMut().addGame(game_ptr);
         }

@@ -36,34 +36,51 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
 
 void ProcessLauncher::launchGame(const Types::Collection* collection, const Types::Game* game)
 {
-    // games can be launched using either a command common for the platform,
-    // or one specific for the game
-    const QString launch_cmd = game->m_launch_cmd.isEmpty()
-        ? createLaunchCommand(collection, game)
-        : game->m_launch_cmd;
+    Q_ASSERT(game);
+    // collection can be null!
 
-    qInfo().noquote() << tr("Executing command: `%1`").arg(launch_cmd);
+    // first, check the game's custom launch command
+    QString launch_cmd = game->m_launch_cmd;
+    // then the lauching collection's
+    if (launch_cmd.isEmpty() && collection)
+        launch_cmd = collection->launchCmd();
+    // then the primary collection's
+    if (launch_cmd.isEmpty() && collection != game->parent()) {
+        auto main_coll = qobject_cast<const Types::Collection*>(game->parent());
+        if (main_coll)
+            launch_cmd = collection->launchCmd();
+    }
+    if (!launch_cmd.isEmpty())
+        prepareLaunchCommand(launch_cmd, *game);
 
-    beforeRun();
-    runProcess(launch_cmd);
-    afterRun();
+    if (launch_cmd.isEmpty()) {
+        qInfo().noquote()
+            << tr("Cannot launch the game `%1` because there is no launch command defined for it!")
+               .arg(game->m_title);
+    }
+    else {
+        beforeRun();
+        runProcess(launch_cmd);
+        afterRun();
+    }
 
+    // TODO: report error to the caller
     emit processFinished();
 }
 
-QString ProcessLauncher::createLaunchCommand(const Types::Collection* collection, const Types::Game* game)
+void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const Types::Game& game) const
 {
+    // 1, Prepare the parameters for QProcess
+
     enum class ParamType : unsigned char {
         PATH,
         BASENAME,
     };
-
     QMap<ParamType, QString> params = {
-        { ParamType::PATH, game->m_fileinfo.filePath() },
-        { ParamType::BASENAME, game->m_fileinfo.completeBaseName() },
+        { ParamType::PATH, game.m_fileinfo.filePath() },
+        { ParamType::BASENAME, game.m_fileinfo.completeBaseName() },
     };
 
-    // Prepare the parameters for QProcess
     const QRegularExpression WHITESPACE_REGEX("\\s");
     for (auto& param : params) {
         // QProcess: Literal quotes are represented by triple quotes
@@ -73,8 +90,8 @@ QString ProcessLauncher::createLaunchCommand(const Types::Collection* collection
             param.prepend('"').append('"');
     }
 
-    // replace known keywords
-    QString launch_cmd = collection->launchCmd();
+    // 2, Replace the known keywords
+
     // first, replace manually quoted elements in the command string (see Qt docs)
     // TODO: ES2 compatibility should be handled in its file
     launch_cmd
@@ -86,12 +103,12 @@ QString ProcessLauncher::createLaunchCommand(const Types::Collection* collection
         .replace("%ROM%", params.value(ParamType::PATH))
         .replace("%ROM_RAW%", params.value(ParamType::PATH))
         .replace("%BASENAME%", params.value(ParamType::BASENAME));
-
-    return launch_cmd;
 }
 
 void ProcessLauncher::runProcess(const QString& command)
 {
+    qInfo().noquote() << tr("Executing command: `%1`").arg(command);
+
     Q_ASSERT(!process);
     process = new QProcess();
 
@@ -170,14 +187,14 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
     }
 }
 
-void ProcessLauncher::beforeRun()
+void ProcessLauncher::beforeRun() const
 {
     // call the relevant scripts
     using ScriptEvent = ScriptRunner::EventType;
     ScriptRunner::findAndRunScripts(ScriptEvent::PROCESS_STARTED);
 }
 
-void ProcessLauncher::afterRun()
+void ProcessLauncher::afterRun() const
 {
     // call the relevant scripts
     using ScriptEvent = ScriptRunner::EventType;

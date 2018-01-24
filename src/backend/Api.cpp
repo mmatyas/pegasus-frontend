@@ -22,6 +22,8 @@
 
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
+    , m_launch_collection(nullptr)
+    , m_launch_game(nullptr)
 {
     connect(m_settings.localesPtr(), &Types::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
@@ -34,6 +36,8 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::currentCollectionChanged);
     connect(&m_collections, &Types::CollectionList::currentGameChanged,
             this, &ApiObject::currentGameChanged);
+    connect(&m_collections, &Types::CollectionList::launchRequested,
+            this, &ApiObject::onLaunchRequested);
 
     connect(&m_datafinder, &DataFinder::totalCountChanged,
             &m_meta, &Types::Meta::onGameCountUpdate);
@@ -73,31 +77,31 @@ void ApiObject::startScanning()
             &m_meta, &Types::Meta::onLoadingCompleted);
 }
 
-void ApiObject::launchGame()
+void ApiObject::onLaunchRequested(const Types::Collection* coll, const Types::Game* game)
 {
-    if (!currentCollection()) {
-        qWarning() << tr("The current collection is undefined, you can't launch any games!");
+    // avoid launch spamming
+    if (m_launch_game)
         return;
-    }
-    if (!currentGame()) {
-        qWarning() << tr("The current game is undefined, you can't launch it!");
-        return;
-    }
+
+    m_launch_collection = coll;
+    m_launch_game = game;
 
     emit prepareLaunch();
 }
 
 void ApiObject::onReadyToLaunch()
 {
-    Q_ASSERT(currentCollection());
-    Q_ASSERT(currentGame());
-    emit executeLaunch(currentCollection(), currentGame());
+    Q_ASSERT(m_launch_game);
+    emit executeLaunch(m_launch_collection, m_launch_game);
 }
 
 void ApiObject::onGameFinished()
 {
     // TODO: this is where play count could be increased
     emit restoreAfterGame(this);
+
+    m_launch_collection = nullptr;
+    m_launch_game = nullptr;
 }
 
 void ApiObject::onFiltersChanged()

@@ -32,7 +32,7 @@ FocusScope {
 
         focus: true
         Keys.forwardTo: [topbar, gamegrid]
-        Keys.onReturnPressed: api.launchGame();
+        Keys.onReturnPressed: api.currentGame.launch()
 
         anchors.fill: parent
 
