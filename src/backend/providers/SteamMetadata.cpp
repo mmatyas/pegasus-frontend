@@ -152,13 +152,22 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
             game.addPublisher(publisher_arr[i].toString());
     }
 
-    // TODO: add genre support
-
     const auto metacritic_obj = app_data[QLatin1String("metacritic")].toObject();
     if (!metacritic_obj.isEmpty()) {
         const double score = metacritic_obj[QLatin1String("score")].toDouble(-1);
         if (0.0 <= score && score <= 100.0)
             game.m_rating = static_cast<float>(score / 100.0);
+    }
+
+    const auto genre_arr = app_data[QLatin1String("genres")].toArray();
+    for (const auto& arr_entry : genre_arr) {
+        const auto genre_obj = arr_entry.toObject();
+        if (genre_obj.isEmpty())
+            break; // assume the rest will fail too
+
+        const QString genre = genre_obj[QLatin1String("description")].toString();
+        if (!genre.isEmpty())
+            game.addGenre(genre);
     }
 
     const QString background_image = app_data[QLatin1String("background")].toString();
