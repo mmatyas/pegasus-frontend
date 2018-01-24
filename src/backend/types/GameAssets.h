@@ -30,17 +30,24 @@ class GameAssets : public QObject {
 
     // NOTE: by manually listing the properties (instead of eg. a Map),
     //       it is also possible to refer the same data by a different name
+
     Q_PROPERTY(QString boxFront READ boxFront CONSTANT)
     Q_PROPERTY(QString boxBack READ boxBack CONSTANT)
     Q_PROPERTY(QString boxSpine READ boxSpine CONSTANT)
     Q_PROPERTY(QString boxFull READ boxFull CONSTANT)
-    Q_PROPERTY(QString box READ boxFull CONSTANT)
     Q_PROPERTY(QString cartridge READ cartridge CONSTANT)
     Q_PROPERTY(QString logo READ logo CONSTANT)
+    Q_PROPERTY(QString poster READ poster CONSTANT)
+
     Q_PROPERTY(QString marquee READ marquee CONSTANT)
     Q_PROPERTY(QString bezel READ bezel CONSTANT)
-    Q_PROPERTY(QString gridicon READ gridicon CONSTANT)
-    Q_PROPERTY(QString flyer READ flyer CONSTANT)
+    Q_PROPERTY(QString panel READ panel CONSTANT)
+    Q_PROPERTY(QString cabinetLeft READ cabinetLeft CONSTANT)
+    Q_PROPERTY(QString cabinetRight READ cabinetRight CONSTANT)
+
+    Q_PROPERTY(QString tile READ tile CONSTANT)
+    Q_PROPERTY(QString banner READ banner CONSTANT)
+    Q_PROPERTY(QString steam READ steam CONSTANT)
     Q_PROPERTY(QString background READ background CONSTANT)
     Q_PROPERTY(QString music READ music CONSTANT)
 
@@ -64,10 +71,17 @@ public:
     QString boxFull() const { return m_single_assets[AssetType::BOX_FULL]; }
     QString cartridge() const { return m_single_assets[AssetType::CARTRIDGE]; }
     QString logo() const { return m_single_assets[AssetType::LOGO]; }
-    QString marquee() const { return m_single_assets[AssetType::MARQUEE]; }
-    QString bezel() const { return m_single_assets[AssetType::BEZEL]; }
-    QString gridicon() const { return m_single_assets[AssetType::STEAMGRID]; }
-    QString flyer() const { return m_single_assets[AssetType::FLYER]; }
+    QString poster() const { return m_single_assets[AssetType::POSTER]; }
+
+    QString marquee() const { return m_single_assets[AssetType::ARCADE_MARQUEE]; }
+    QString bezel() const { return m_single_assets[AssetType::ARCADE_BEZEL]; }
+    QString panel() const { return m_single_assets[AssetType::ARCADE_PANEL]; }
+    QString cabinetLeft() const { return m_single_assets[AssetType::ARCADE_CABINET_L]; }
+    QString cabinetRight() const { return m_single_assets[AssetType::ARCADE_CABINET_R]; }
+
+    QString tile() const { return m_single_assets[AssetType::UI_TILE]; }
+    QString banner() const { return m_single_assets[AssetType::UI_BANNER]; }
+    QString steam() const { return m_single_assets[AssetType::UI_STEAMGRID]; }
     QString background() const { return m_single_assets[AssetType::BACKGROUND]; }
     QString music() const { return m_single_assets[AssetType::MUSIC]; }
 

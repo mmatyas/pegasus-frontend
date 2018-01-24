@@ -137,7 +137,7 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
 
     const QString header_image = app_data[QLatin1String("header_image")].toString();
     assets.setSingle(AssetType::LOGO, header_image);
-    assets.setSingle(AssetType::STEAMGRID, header_image);
+    assets.setSingle(AssetType::UI_STEAMGRID, header_image);
     assets.setSingle(AssetType::BOX_FRONT, header_image);
 
     const QJsonArray developer_arr = app_data[QLatin1String("developers")].toArray();

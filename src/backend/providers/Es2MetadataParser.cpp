@@ -199,8 +199,8 @@ void findAssets(Types::Game& game, QHash<QString, QString>& xml_props, const Typ
     if (assets.marquee().isEmpty()) {
         QString& path = xml_props[KEY_MARQUEE];
         convertToCanonicalPath(path, rom_dir);
-        if (!path.isEmpty() && validPath(path) && assets.m_single_assets[AssetType::MARQUEE].isEmpty())
-            assets.setSingle(AssetType::MARQUEE, QUrl::fromLocalFile(path).toString());
+        if (!path.isEmpty() && validPath(path) && assets.m_single_assets[AssetType::ARCADE_MARQUEE].isEmpty())
+            assets.setSingle(AssetType::ARCADE_MARQUEE, QUrl::fromLocalFile(path).toString());
     }
     {
         QString& path = xml_props[KEY_VIDEO];

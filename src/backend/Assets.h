@@ -23,18 +23,27 @@
 
 enum class AssetType : unsigned char {
     UNKNOWN,
+
     BOX_FRONT,
     BOX_BACK,
     BOX_SPINE,
     BOX_FULL,
     CARTRIDGE,
-    LOGO, // just the game logo
-    MARQUEE, // game logo with background
-    BEZEL, // image around the game screen
-    STEAMGRID,
-    FLYER,
+    LOGO,
+    POSTER,
+
+    ARCADE_MARQUEE,
+    ARCADE_BEZEL,
+    ARCADE_PANEL,
+    ARCADE_CABINET_L,
+    ARCADE_CABINET_R,
+
+    UI_TILE,
+    UI_BANNER,
+    UI_STEAMGRID,
     BACKGROUND,
     MUSIC,
+
     SCREENSHOTS,
     VIDEOS,
 };

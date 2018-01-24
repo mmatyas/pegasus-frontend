@@ -31,23 +31,29 @@ class Game : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString title MEMBER m_title CONSTANT)
+
     Q_PROPERTY(QString summary MEMBER m_summary CONSTANT)
     Q_PROPERTY(QString description MEMBER m_description CONSTANT)
+
     Q_PROPERTY(QString developer MEMBER m_developer_str CONSTANT)
     Q_PROPERTY(QString publisher MEMBER m_publisher_str CONSTANT)
     Q_PROPERTY(QString genre MEMBER m_genre_str CONSTANT)
     Q_PROPERTY(QStringList developerList MEMBER m_developer_list CONSTANT)
     Q_PROPERTY(QStringList publisherList MEMBER m_publisher_list CONSTANT)
     Q_PROPERTY(QStringList genreList MEMBER m_genre_list CONSTANT)
+
+    Q_PROPERTY(QDate release MEMBER m_release CONSTANT)
     Q_PROPERTY(int year MEMBER m_year CONSTANT)
     Q_PROPERTY(int month MEMBER m_month CONSTANT)
     Q_PROPERTY(int day MEMBER m_day CONSTANT)
-    Q_PROPERTY(QDate release MEMBER m_release CONSTANT)
+
     Q_PROPERTY(int players MEMBER m_players CONSTANT)
     Q_PROPERTY(bool favorite MEMBER m_favorite CONSTANT)
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
+
     Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
     Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
+
     Q_PROPERTY(Types::GameAssets* assets READ assetsPtr CONSTANT)
 
 public:
