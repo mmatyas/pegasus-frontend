@@ -76,7 +76,8 @@ after_success:
   - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
 
 matrix:
-  include:
+  fast_finish: true
+  allow_failures:
     # OSX build
     - os: osx
       compiler: clang
@@ -93,6 +94,7 @@ matrix:
         - make check
       after_success:
         - true
+  include:
     # Qt 5.7.1 (for Debian Stretch/Ubuntu Zesty)
     - env: QT_QPA_PLATFORM=minimal
       before_install:
