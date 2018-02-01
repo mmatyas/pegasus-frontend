@@ -18,7 +18,7 @@
 import QtQuick 2.8
 
 Rectangle {
-    property var platformModel: api.collections.model
+    property var platformModel: api.collectionList.model
 
     color: "#333"
     height: vpx(54)
@@ -72,8 +72,8 @@ Rectangle {
             }
         }
 
-        Component.onCompleted: currentIndex = api.collections.index
-        onCurrentIndexChanged: api.collections.index = currentIndex
+        Component.onCompleted: currentIndex = api.collectionList.index
+        onCurrentIndexChanged: api.collectionList.index = currentIndex
     }
 
     Component {

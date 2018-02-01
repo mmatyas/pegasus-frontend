@@ -43,7 +43,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(Types::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(Types::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(Types::System* system READ system CONSTANT)
-    Q_PROPERTY(Types::CollectionList* collections READ collectionList CONSTANT)
+    Q_PROPERTY(Types::CollectionList* collectionList READ collectionList CONSTANT)
 
     // shortcuts
 

@@ -22,7 +22,7 @@ import "qrc:/qmlutils" as PegasusUtils
 
 
 Item {
-    property var gameData: api.collections.current.games.current
+    property var gameData: api.currentGame
 
     onGameDataChanged: {
         videoPreview.playlist.clear();

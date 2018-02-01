@@ -32,7 +32,7 @@ class Collection : public QObject {
 
     Q_PROPERTY(QString tag READ tag CONSTANT)
     Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(Types::GameList* games READ gameListPtr CONSTANT)
+    Q_PROPERTY(Types::GameList* gameList READ gameListPtr CONSTANT)
 
 public:
     explicit Collection(QString tag, QObject* parent = nullptr);

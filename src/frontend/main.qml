@@ -128,7 +128,7 @@ Window {
                 enabled = false;
                 content.focus = true;
 
-                if (api.collections.count === 0)
+                if (api.collectionList.count === 0)
                     themeContent.source = "messages/NoGamesError.qml";
             }
         }
