@@ -83,19 +83,19 @@
                 
                 
                 
-                    <li class="dropdown active">
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
 <li >
-    <a href="../controls/">Controls</a>
+    <a href="../../user-guide/controls/">Controls</a>
 </li>
 
                         
                             
-<li class="active">
-    <a href="./">Scripting</a>
+<li >
+    <a href="../../user-guide/scripting/">Scripting</a>
 </li>
 
                         
@@ -143,37 +143,37 @@
                 
                 
                 
-                    <li class="dropdown">
+                    <li class="dropdown active">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Theme Dev <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
 <li >
-    <a href="../../themes/overview/">Overview</a>
+    <a href="../overview/">Overview</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">QML tutorials</a>
 </li>
 
                         
                             
 <li >
-    <a href="../../themes/qml-tutorials/">QML tutorials</a>
+    <a href="../example-simple/">Example -- Simple theme</a>
 </li>
 
                         
                             
 <li >
-    <a href="../../themes/example-simple/">Example -- Simple theme</a>
+    <a href="../example-flixnet/">Example -- Flixnet theme</a>
 </li>
 
                         
                             
 <li >
-    <a href="../../themes/example-flixnet/">Example -- Flixnet theme</a>
-</li>
-
-                        
-                            
-<li >
-    <a href="../../themes/api/">API reference</a>
+    <a href="../api/">API reference</a>
 </li>
 
                         
@@ -190,17 +190,17 @@
                         </a>
                     </li>
                     <li >
-                        <a rel="next" href="../controls/">
+                        <a rel="next" href="../overview/">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="../../dev/install-qt/">
+                        <a rel="prev" href="../example-simple/">
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
                     <li>
-                        <a href="https://github.com/mmatyas/pegasus-frontend/edit/master/docs/user-guide/scripting.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                        <a href="https://github.com/mmatyas/pegasus-frontend/edit/master/docs/themes/qml-tutorials.md"><i class="fa fa-github"></i> Edit on GitHub</a>
                     </li>
             </ul>
         </div>
@@ -211,71 +211,90 @@
         
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="first-level active"><a href="#scripting">Scripting</a></li>
-            <li class="second-level"><a href="#1-the-scripts-directory">1. The scripts directory</a></li>
+        <li class="first-level active"><a href="#qml-tutorial-collection">QML tutorial collection</a></li>
+            <li class="second-level"><a href="#basics">Basics</a></li>
                 
-            <li class="second-level"><a href="#2-event-directories">2. Event directories</a></li>
+            <li class="second-level"><a href="#dynamic-layout">Dynamic layout</a></li>
                 
-            <li class="second-level"><a href="#3-script-calling">3. Script calling</a></li>
+            <li class="second-level"><a href="#states-transitions-animations">States, transitions, animations</a></li>
+                
+            <li class="second-level"><a href="#media-playback">Media playback</a></li>
+                
+            <li class="second-level"><a href="#further-resources">Further resources</a></li>
+                
+            <li class="second-level"><a href="#visual-editor">Visual editor</a></li>
                 
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
-<h1 id="scripting">Scripting</h1>
-<p>Pegasus supports calling external scripts and executables on certain program events.</p>
-<h2 id="1-the-scripts-directory">1. The scripts directory</h2>
-<p>First, create a new directory called <code>scripts</code> inside the config directory:</p>
+<h1 id="qml-tutorial-collection">QML tutorial collection</h1>
+<p>This page collects tutorials and guides for learning QML. While the example theme guides are intended to be beginner friendly, I'd recommend reading at least the basics and the dynamic layout topics, which you'll most likely use in a theme. After that, just pick whatever you're interested in and/or look up things in the official documentation.</p>
+<h2 id="basics">Basics</h2>
+<p>These provide an introduction to the language. After reading them, you should be familiar with:</p>
 <ul>
-<li>Linux: <code>~/.config/pegasus-frontend</code> or <code>/etc/xdg/pegasus-frontend</code></li>
-<li>Windows: <code>C:\Users\&lt;User Name&gt;\AppData\Roaming\pegasus-frontend</code></li>
+<li>the basic syntax</li>
+<li>simple elements: Rectangle, Image, Text and Item</li>
+<li>positioners: Column, Row, Grid, Flow</li>
+<li>simple transformations: rotate, scale</li>
+<li>anchoring</li>
+<li><code>focus</code></li>
+<li>handling key presses with the Keys element</li>
 </ul>
-<h2 id="2-event-directories">2. Event directories</h2>
-<p>Inside the <code>scripts</code> folder, create a new directory for the kind of event you want to script:</p>
-<table>
-<thead>
-<tr>
-<th align="left">Name</th>
-<th>When</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><code>quit</code></td>
-<td>on program quit</td>
-</tr>
-<tr>
-<td align="left"><code>reboot</code></td>
-<td>on system reboot (also calls <code>quit</code> first)</td>
-</tr>
-<tr>
-<td align="left"><code>shutdown</code></td>
-<td>on system shutdown (also calls <code>quit</code> first)</td>
-</tr>
-<tr>
-<td align="left"><code>config-changed</code></td>
-<td>on the change of any configuration option</td>
-</tr>
-<tr>
-<td align="left"><code>controls-changed</code></td>
-<td>on change of the control settings (also calls <code>config</code> first)</td>
-</tr>
-<tr>
-<td align="left"><code>settings-changed</code></td>
-<td>on change of the regular (non-control) settings (also calls <code>config</code> first)</td>
-</tr>
-<tr>
-<td align="left"><code>game-start</code></td>
-<td>before starting a game</td>
-</tr>
-<tr>
-<td align="left"><code>game-end</code></td>
-<td>after finishing a game</td>
-</tr>
-</tbody>
-</table>
-<h2 id="3-script-calling">3. Script calling</h2>
-<p>Put your executable scripts or binaries into these new directories. They will be called in <strong>alphabetic order</strong> when the event happens.</p></div>
+<p><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://qmlbook.github.io/en/ch04/index.html">QML ebook chapter 4</a></li>
+<li><a href="https://en.wikipedia.org/wiki/QML">Wikipedia</a></li>
+<li><a href="https://doc.qt.io/qt-5/qml-tutorial.html">QML official tutorial</a></li>
+<li><a href="https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html#basic-types-provided-by-the-qml-language">basic types</a></li>
+</ul>
+<h2 id="dynamic-layout">Dynamic layout</h2>
+<p>A theme should be able to show the list of games and collections. An array of data objects is what QML calls "Model". You can fully customize how one item should look like on the screen (the "Delegate"), and how all these items should be aligned/layed out (the "View").</p>
+<p>The standard layouts are:</p>
+<ul>
+<li><a href="https://doc.qt.io/qt-5/qml-qtquick-listview.html">ListView</a>: aligns the items on a horizontal or vertical path</li>
+<li><a href="https://doc.qt.io/qt-5/qml-qtquick-gridview.html">GridView</a>: fills a grid with the items (either the number rows or the number of colums should be specified)</li>
+<li><a href="https://doc.qt.io/qt-5/qml-qtquick-pathview.html">PathView</a>: aligns the items along an arbitrary path</li>
+<li><a href="https://doc.qt.io/qt-5/qml-qtquick-repeater.html">Repeater</a>: simply creates the items but doesn't do any further alignment</li>
+</ul>
+<p><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://qmlbook.github.io/en/ch06/index.html">QML ebook chapter 6</a></li>
+</ul>
+<h2 id="states-transitions-animations">States, transitions, animations</h2>
+<p>You might want to create a theme that consists of multiple states, eg. a platform select screen and an actual game list. Or perhaps you want to simply move an object around in multiple steps or toggle some effects. A State object can be used to set properties of one or more objects at once. The transition between two states can be animated. Animations can also be created for individual properties, or played stand-alone.</p>
+<p><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://qmlbook.github.io/en/ch05/index.html">QML ebook chapter 5</a></li>
+</ul>
+<h2 id="media-playback">Media playback</h2>
+<p>You can write a complete media player in QML. The third-party documentation is a bit outdated, so you might want to check the official references too. The most common components are Video, Audio and Playlist.</p>
+<p><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://doc.qt.io/qt-5.10/qtmultimedia-index.html">Multimedia module</a></li>
+<li><a href="https://qmlbook.github.io/en/ch10/index.html">QML ebook chapter 10</a></li>
+</ul>
+<h2 id="further-resources">Further resources</h2>
+<p>The elements so far are what you'd commonly use in a theme, however there are still lots of features not covered here, including:</p>
+<ul>
+<li>touch control and sensors (eg. gyroscope)</li>
+<li>manual 2D drawing canvas</li>
+<li>particles and graphical effects (shadow, gradient, blur, ...)</li>
+<li>3D scenes</li>
+<li>custom shader code</li>
+</ul>
+<p>For further learning, the unofficial QML book might come handy: <a href="https://qmlbook.github.io/index.html">https://qmlbook.github.io/index.html</a></p>
+<p>You can also find a bunch of official documentations here:</p>
+<ul>
+<li><a href="https://doc.qt.io/qt-5/qmlapplications.html">https://doc.qt.io/qt-5/qmlapplications.html</a></li>
+<li><a href="https://doc.qt.io/qt-5/qtquick-index.html">https://doc.qt.io/qt-5/qtquick-index.html</a></li>
+<li><a href="https://doc.qt.io/qt-5/qtqml-index.html">https://doc.qt.io/qt-5/qtqml-index.html</a></li>
+<li><a href="https://doc.qt.io/qt-5/qml-tutorial.html">https://doc.qt.io/qt-5/qml-tutorial.html</a></li>
+<li><a href="https://doc.qt.io/qt-5/qtquick-qmlmodule.html">https://doc.qt.io/qt-5/qtquick-qmlmodule.html</a></li>
+</ul>
+<p>This one is a bit old, but might be good for learning the concepts: <a href="https://doc.qt.io/archives/qt-4.8/qtquick.html">https://doc.qt.io/archives/qt-4.8/qtquick.html</a>.</p>
+<h2 id="visual-editor">Visual editor</h2>
+<p>Qt Creator has a drag-and-drop QML editor (the Design tab). Unfortunately I couldn't use it because of crashes, but you might have better luck with it.</p></div>
         
     </div>
 

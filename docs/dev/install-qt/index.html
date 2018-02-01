@@ -2,29 +2,37 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-60112109-3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-60112109-3');
+    </script>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <meta name="author" content="Mátyás Mustoha"> 
-    <link rel="canonical" href="http://www.pegasus-frontend.org/dev/install-qt/"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
     <link rel="shortcut icon" href="../../img/favicon.ico">
 
-    <title>Installing Qt - Pegasus Docs</title>
+    <title></title>
 
     <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
     <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet' type='text/css'>
     <link href="../../css/base.css" rel="stylesheet">
     <link href="../../css/cinder.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
 
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-
     <link href="../../css/extra.css" rel="stylesheet">
+
+
+    <link href="../../css/codehl.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -43,21 +51,12 @@
 </head>
 
 <body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-60112109-3"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-60112109-3');
-    </script>
 
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
 
         <!-- Collapsed navigation -->
         <div class="navbar-header">
-            
             <!-- Expander button -->
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -68,12 +67,12 @@
             
 
             <!-- Main title -->
+
             <a class="navbar-brand" href="../..">Pegasus Docs</a>
         </div>
 
         <!-- Expanded navigation -->
         <div class="navbar-collapse collapse">
-            
                 <!-- Main navigation -->
                 <ul class="nav navbar-nav">
                 
@@ -106,7 +105,7 @@
                 
                 
                     <li class="dropdown active">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Core Dev <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
@@ -143,16 +142,53 @@
                     </li>
                 
                 
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Theme Dev <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../themes/overview/">Overview</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/qml-tutorials/">QML tutorials</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/example-simple/">Example -- Simple theme</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/example-flixnet/">Example -- Flixnet theme</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/api/">API reference</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
                 </ul>
-            
 
             <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
-                        <i class="fa fa-search"></i> Search
-                    </a>
-                </li>
-                
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fa fa-search"></i> Search
+                        </a>
+                    </li>
                     <li >
                         <a rel="next" href="../../user-guide/scripting/">
                             <i class="fa fa-arrow-left"></i> Previous
@@ -163,17 +199,9 @@
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
-                
-                
                     <li>
-                        <a href="https://github.com/mmatyas/pegasus-frontend/">
-                            
-                                <i class="fa fa-github"></i>
-                            
-                            GitHub
-                        </a>
+                        <a href="https://github.com/mmatyas/pegasus-frontend/edit/master/docs/dev/install-qt.md"><i class="fa fa-github"></i> Edit on GitHub</a>
                     </li>
-                
             </ul>
         </div>
     </div>
@@ -183,29 +211,18 @@
         
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-    
         <li class="first-level active"><a href="#installing-qt-for-desktop">Installing Qt for desktop</a></li>
-        
-    
         <li class="first-level "><a href="#alternative-installations">Alternative installations</a></li>
-        
             <li class="second-level"><a href="#linux">Linux</a></li>
-            
+                
                 <li class="third-level"><a href="#ubuntu">Ubuntu</a></li>
-            
                 <li class="third-level"><a href="#arch">Arch</a></li>
-            
-        
             <li class="second-level"><a href="#windowsmsys2">Windows/MSYS2</a></li>
-            
-        
+                
             <li class="second-level"><a href="#windowsvcpkg">Windows/vcpkg</a></li>
-            
-        
+                
             <li class="second-level"><a href="#macoshomebrew">macOS/Homebrew</a></li>
-            
-        
-    
+                
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
@@ -226,30 +243,31 @@
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Embedded</p>
-<p>These instructions are for <strong>desktop</strong> platforms. For embedded devices, you have to compile Qt manually, or use the prebuilt libraries available on Pegasus' GitHub page. See [TODO].</p>
+<p>These instructions are for <strong>desktop</strong> platforms. For embedded devices, you have to compile Qt manually, or use the prebuilt libraries available on Pegasus' GitHub page. See <a href="../cross-compile-qt/">Cross compile Qt</a>.</p>
 </div>
 <h1 id="alternative-installations">Alternative installations</h1>
 <h2 id="linux">Linux</h2>
 <p>On many Linux distros, such as Debian (Ubuntu, Mint, ...) the Qt libraries available in the official repositories are often several years old (as a trade-off between stability and access to the latest software).</p>
 <h3 id="ubuntu">Ubuntu</h3>
 <p>On <strong>Ubuntu</strong>, you can use the following PPAs to get the latest Qt releases:</p>
-<pre><code class="sh"># for 14.04, use this:
+<div class="codehilite"><pre><span></span><span class="c1"># for 14.04, use this:</span>
 sudo add-apt-repository ppa:beineri/opt-qt593-trusty
-# for 16.04, use this:
+<span class="c1"># for 16.04, use this:</span>
 sudo add-apt-repository ppa:beineri/opt-qt593-xenial
 
 sudo apt-get update
-sudo apt-get install  \
-    qt59declarative  \
-    qt59graphicaleffects  \
-    qt59gamepad  \
-    qt59imageformats  \
-    qt59multimedia  \
-    qt59svg  \
+sudo apt-get install  <span class="se">\</span>
+    qt59declarative  <span class="se">\</span>
+    qt59graphicaleffects  <span class="se">\</span>
+    qt59gamepad  <span class="se">\</span>
+    qt59imageformats  <span class="se">\</span>
+    qt59multimedia  <span class="se">\</span>
+    qt59svg  <span class="se">\</span>
     qt59tools
 
-source /opt/qt59/bin/qt59-env.sh
-</code></pre>
+<span class="nb">source</span> /opt/qt59/bin/qt59-env.sh
+</pre></div>
+
 
 <p>To use this installation, you will need to call <code>/opt/qt59/bin/qt59-env.sh</code> every time you open a new terminal. You can do this by adding the <code>source ...</code> line above to your <code>~/.bashrc</code> file (or whatever shell you use).</p>
 <h3 id="arch">Arch</h3>
@@ -278,6 +296,8 @@ source /opt/qt59/bin/qt59-env.sh
     </script>
     <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
     <script src="../../js/base.js"></script>
+    <script src="../../search/require.js"></script>
+    <script src="../../search/search.js"></script>
 
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
         <div class="modal-dialog">

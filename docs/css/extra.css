@@ -1,4 +1,28 @@
+img {
+    max-width: 100%;
+}
+
+span.optional::before {
+    content: "(optional)";
+    color: #999;
+}
+
+img.joybtn {
+    height: 1.5em;
+    display: inline-block;
+}
+img.joybtn.x25 {
+    height: 2.5em;
+}
+img.joybtn.x3 {
+    height: 3em;
+}
+
 /* based on the Material theme */
+
+p {
+    margin: 1em 0;
+}
 
 .admonition>.admonition-title:before,
 .admonition>summary:before,
@@ -26,7 +50,7 @@ details {
     padding: 0 1.2rem;
     border-left: .4rem solid #448aff;
     border-radius: .2rem;
-    font-size: 1.5rem;
+    font-size: 1.28rem;
     overflow: auto
 }
 .admonition>:last-child,
@@ -384,4 +408,69 @@ details.quote>.admonition-title:before,
 details.quote>summary:before {
     color: #9e9e9e;
     content: "\E244"
+}
+
+details {
+    padding-top:0
+}
+details[open]>summary:after {
+    -webkit-transform:rotate(180deg);
+    transform:rotate(180deg)
+}
+details:not([open]) {
+    padding-bottom:0
+}
+details:not([open])>summary {
+    border-bottom:none
+}
+details summary {
+    padding-right:4rem
+}
+[dir=rtl] details summary {
+    padding-left:4rem
+}
+.no-details details:not([open])>* {
+    display:none
+}
+.no-details details:not([open]) summary {
+    display:block
+}
+summary {
+    display:block;
+    outline:none;
+    cursor:pointer
+}
+summary::-webkit-details-marker {
+    display:none
+}
+summary:after {
+    position:absolute;
+    top:.8rem;
+    right:1.2rem;
+    color:rgba(0,0,0,.26);
+    font-size:2rem;
+    content:"\E313"
+}
+[dir=rtl] summary:after {
+    right:auto;
+    left:1.2rem
+}
+
+/* based on the Python Keys extension */
+
+span.keys {
+    padding: 0 0.2rem;
+    color: #bbb;
+}
+kbd {
+    padding:0 .29412em;
+    border:.1rem solid #c9c9c9;
+    border-radius:.2rem;
+    border-bottom-color:#bcbcbc;
+    background-color:#fcfcfc;
+    color:#555;
+    font-size:85%;
+    -webkit-box-shadow:0 .1rem 0 #b0b0b0;
+    box-shadow:0 .1rem 0 #b0b0b0;
+    word-break:break-word
 }

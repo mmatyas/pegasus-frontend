@@ -2,29 +2,37 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-60112109-3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-60112109-3');
+    </script>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <meta name="author" content="Mátyás Mustoha"> 
-    <link rel="canonical" href="http://www.pegasus-frontend.org/dev/deploy/"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
     <link rel="shortcut icon" href="../../img/favicon.ico">
 
-    <title>Deployment - Pegasus Docs</title>
+    <title></title>
 
     <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
     <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet' type='text/css'>
     <link href="../../css/base.css" rel="stylesheet">
     <link href="../../css/cinder.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
 
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-
     <link href="../../css/extra.css" rel="stylesheet">
+
+
+    <link href="../../css/codehl.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -43,21 +51,12 @@
 </head>
 
 <body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-60112109-3"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-60112109-3');
-    </script>
 
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
 
         <!-- Collapsed navigation -->
         <div class="navbar-header">
-            
             <!-- Expander button -->
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -68,12 +67,12 @@
             
 
             <!-- Main title -->
+
             <a class="navbar-brand" href="../..">Pegasus Docs</a>
         </div>
 
         <!-- Expanded navigation -->
         <div class="navbar-collapse collapse">
-            
                 <!-- Main navigation -->
                 <ul class="nav navbar-nav">
                 
@@ -106,7 +105,7 @@
                 
                 
                     <li class="dropdown active">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Core Dev <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
@@ -143,16 +142,53 @@
                     </li>
                 
                 
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Theme Dev <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../themes/overview/">Overview</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/qml-tutorials/">QML tutorials</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/example-simple/">Example -- Simple theme</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/example-flixnet/">Example -- Flixnet theme</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../themes/api/">API reference</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
                 </ul>
-            
 
             <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
-                        <i class="fa fa-search"></i> Search
-                    </a>
-                </li>
-                
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fa fa-search"></i> Search
+                        </a>
+                    </li>
                     <li >
                         <a rel="next" href="../build/">
                             <i class="fa fa-arrow-left"></i> Previous
@@ -163,17 +199,9 @@
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
-                
-                
                     <li>
-                        <a href="https://github.com/mmatyas/pegasus-frontend/">
-                            
-                                <i class="fa fa-github"></i>
-                            
-                            GitHub
-                        </a>
+                        <a href="https://github.com/mmatyas/pegasus-frontend/edit/master/docs/dev/deploy.md"><i class="fa fa-github"></i> Edit on GitHub</a>
                     </li>
-                
             </ul>
         </div>
     </div>
@@ -183,19 +211,13 @@
         
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-    
         <li class="first-level active"><a href="#deployment">Deployment</a></li>
-        
             <li class="second-level"><a href="#linux">Linux</a></li>
-            
-        
+                
             <li class="second-level"><a href="#windows">Windows</a></li>
-            
-        
+                
             <li class="second-level"><a href="#macos">macOS</a></li>
-            
-        
-    
+                
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
@@ -209,26 +231,28 @@
 <p>If you've manually built Qt as a static library, a simple <code>make install</code> will likely be enough.</p>
 </div>
 <p>You can use <a href="https://github.com/probonopd/linuxdeployqt">linuxdeployqt</a> to create AppImages:</p>
-<pre><code class="sh">./linuxdeployqt-continuous-x86_64.AppImage \
-    -qmldir &lt;build dir&gt; \
-    -bundle-non-qt-libs \
+<div class="codehilite"><pre><span></span>./linuxdeployqt-continuous-x86_64.AppImage <span class="se">\</span>
+    -qmldir &lt;build dir&gt; <span class="se">\</span>
+    -bundle-non-qt-libs <span class="se">\</span>
     &lt;install dir&gt;
 
 cp /path/to/libQt5Svg.so.5 ./lib/
 
-./linuxdeployqt-continuous-x86_64.AppImage \
-    -appimage \
+./linuxdeployqt-continuous-x86_64.AppImage <span class="se">\</span>
+    -appimage <span class="se">\</span>
     &lt;install dir&gt;
-</code></pre>
+</pre></div>
+
 
 <h2 id="windows">Windows</h2>
-<pre><code class="sh"> windeployqt
+<div class="codehilite"><pre><span></span> windeployqt
       --release
       --qmldir &lt;build dir&gt;
       --no-translations
       --no-opengl-sw
       &lt;installation dir&gt;
-</code></pre>
+</pre></div>
+
 
 <h2 id="macos">macOS</h2>
 <p>Haven't tried yet. <code>macdeployqt</code> should work in theory.</p></div>
@@ -250,6 +274,8 @@ cp /path/to/libQt5Svg.so.5 ./lib/
     </script>
     <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
     <script src="../../js/base.js"></script>
+    <script src="../../search/require.js"></script>
+    <script src="../../search/search.js"></script>
 
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
         <div class="modal-dialog">
