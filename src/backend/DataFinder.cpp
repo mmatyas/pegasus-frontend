@@ -17,17 +17,14 @@
 
 #include "DataFinder.h"
 
-#include "providers/Es2Metadata.h"
-#include "providers/Es2Gamelist.h"
-#include "providers/PegasusMetadata.h"
+#include "providers/es2/Es2Provider.h"
+//#include "providers/PegasusMetadata.h"
 #include "types/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
-#include "providers/SteamGamelist.h"
-#include "providers/SteamMetadata.h"
+//#include "providers/SteamGamelist.h"
+//#include "providers/SteamMetadata.h"
 #endif
-
-#include <memory>
 
 
 namespace {
@@ -50,59 +47,46 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
 
 DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
-{}
+{
+    providers.emplace_back(new providers::es2::Es2Provider());
+#ifndef Q_PROCESSOR_ARM
+    //providers.emplace_back(new providers::SteamGamelist());
+#endif
+
+    for (auto& provider : providers) {
+        connect(dynamic_cast<QObject*>(provider.get()), SIGNAL(gameCountChanged(int)),
+                this, SIGNAL(totalCountChanged(int)));
+    }
+}
 
 // Providers can add new games, new collections and further directories
 // to check for metadata info.
 void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
-                                  QHash<QString, Types::Collection*>& collections,
-                                  QVector<QString>& metadata_dirs)
+                                  QHash<QString, Types::Collection*>& collections)
 {
-    using ProviderPtr = std::unique_ptr<providers::GamelistProvider>;
-    std::vector<ProviderPtr> providers;
-
-    providers.emplace_back(new providers::Es2Provider());
-#ifndef Q_PROCESSOR_ARM
-    providers.emplace_back(new providers::SteamGamelist());
-#endif
-
-    for (auto& provider : providers) {
-        connect(provider.get(), &providers::GamelistProvider::gameCountChanged,
-                this, &DataFinder::totalCountChanged);
-        provider->find(games, collections, metadata_dirs);
-    }
+    for (auto& provider : providers)
+        provider->find(games, collections);
 
     removeEmptyCollections(collections);
 }
 
 void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
-                                      const QHash<QString, Types::Collection*>& collections,
-                                      const QVector<QString>& metadata_dirs)
+                                      const QHash<QString, Types::Collection*>& collections)
 {
     emit metadataSearchStarted();
 
-    using ProviderPtr = std::unique_ptr<providers::MetadataProvider>;
-    std::vector<ProviderPtr> providers;
-
-    providers.emplace_back(new providers::PegasusMetadata());
-    providers.emplace_back(new providers::Es2Metadata());
-#ifndef Q_PROCESSOR_ARM
-    providers.emplace_back(new providers::SteamMetadata());
-#endif
-
     for (auto& provider : qAsConst(providers))
-        provider->fill(games, collections, metadata_dirs);
+        provider->enhance(games, collections);
 }
 
 QVector<Types::Collection*> DataFinder::find()
 {
     QHash<QString, Types::Game*> games;
     QHash<QString, Types::Collection*> collections;
-    QVector<QString> metadata_dirs;
 
 
-    runListProviders(games, collections, metadata_dirs);
-    runMetadataProviders(games, collections, metadata_dirs);
+    runListProviders(games, collections);
+    runMetadataProviders(games, collections);
 
 
     QVector<Types::Collection*> result;

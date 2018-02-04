@@ -17,34 +17,29 @@
 
 #pragma once
 
-#include <QHash>
-#include <QVector>
-#include <QString>
-#include <QObject>
-
-namespace Types { class Game; }
-namespace Types { class Collection; }
+#include "SystemsParser.h"
+#include "MetadataParser.h"
+#include "providers/Provider.h"
 
 
 namespace providers {
+namespace es2 {
 
-class GamelistProvider : public QObject {
+class Es2Provider : public Provider {
     Q_OBJECT
 
 public:
-    explicit GamelistProvider(QObject* parent = nullptr);
-    virtual ~GamelistProvider();
+    Es2Provider(QObject* parent = nullptr);
 
-    virtual void find(QHash<QString, Types::Game*>& games,
-                      QHash<QString, Types::Collection*>& collections,
-                      QVector<QString>& metadata_dirs) = 0;
+    void find(QHash<QString, Types::Game*>&,
+              QHash<QString, Types::Collection*>&) final;
+    void enhance(const QHash<QString, Types::Game*>&,
+                 const QHash<QString, Types::Collection*>&) final;
 
-    // disable copy
-    GamelistProvider(const GamelistProvider&) = delete;
-    GamelistProvider& operator=(const GamelistProvider&) = delete;
-
-signals:
-    void gameCountChanged(int);
+private:
+    SystemsParser systems;
+    MetadataParser metadata;
 };
 
+} // namespace es2
 } // namespace providers

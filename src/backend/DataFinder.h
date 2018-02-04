@@ -17,8 +17,12 @@
 
 #pragma once
 
+#include "providers/Provider.h"
+
 #include <QObject>
 #include <QVector>
+
+#include <memory>
 
 namespace Types { class Collection; }
 namespace Types { class Game; }
@@ -39,9 +43,10 @@ signals:
 
 private:
     void runListProviders(QHash<QString, Types::Game*>&,
-                          QHash<QString, Types::Collection*>&,
-                          QVector<QString>&);
+                          QHash<QString, Types::Collection*>&);
     void runMetadataProviders(const QHash<QString, Types::Game*>&,
-                              const QHash<QString, Types::Collection*>&,
-                              const QVector<QString>&);
+                              const QHash<QString, Types::Collection*>&);
+
+    using ProviderPtr = std::unique_ptr<providers::Provider>;
+    std::vector<ProviderPtr> providers;
 };

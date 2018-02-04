@@ -15,15 +15,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "GamelistProvider.h"
+#pragma once
+
+#include <QHash>
+#include <QObject>
+
+namespace Types { class Collection; }
+namespace Types { class Game; }
 
 
 namespace providers {
+namespace es2 {
 
-GamelistProvider::GamelistProvider(QObject* parent)
-    : QObject(parent)
-{}
+class MetadataParser : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(MetadataParser)
 
-GamelistProvider::~GamelistProvider() = default;
+public:
+    MetadataParser(QObject* parent);
+    void enhance(const QHash<QString, Types::Game*>& games,
+                 const QHash<QString, Types::Collection*>& collections);
+};
 
+} // namespace es2
 } // namespace providers

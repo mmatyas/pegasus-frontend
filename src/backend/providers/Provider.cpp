@@ -15,19 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
-
-#include "GamelistProvider.h"
+#include "Provider.h"
 
 
 namespace providers {
 
-class Es2Provider : public GamelistProvider {
-    Q_OBJECT
-public:
-    void find(QHash<QString, Types::Game*>& games,
-              QHash<QString, Types::Collection*>& collections,
-              QVector<QString>& metadata_dirs) override;
-};
+Provider::Provider(QObject* parent)
+    : QObject(parent)
+{}
+
+Provider::~Provider() = default;
 
 } // namespace providers

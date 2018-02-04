@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Es2GamelistParser.h"
+#include "SystemsParser.h"
 
 #include "Utils.h"
 #include "types/Collection.h"
@@ -24,20 +24,93 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QFile>
+#include <QStringBuilder>
 
 
 namespace {
 static constexpr auto MSG_PREFIX = "ES2:"; // TODO: don't duplicate
+
+QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QString>&, const QStringRef&);
+QStringList parseFilters(const QString& filters_raw);
+
+
+QString findSystemsFile()
+{
+    // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
+
+    const QVector<QString> possible_paths = {
+        homePath() % QStringLiteral("/.emulationstation/es_systems.cfg"),
+        QStringLiteral("/etc/emulationstation/es_systems.cfg"),
+    };
+
+    for (const auto& path : possible_paths) {
+        if (validPath(path)) {
+            qInfo().noquote() << MSG_PREFIX << QObject::tr("found `%1`").arg(path);
+            return path;
+        }
+        // qDebug() << FALLBACK_MSG.arg(path);
+    }
+
+    return QString();
+}
+
+QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QString>& map, const QStringRef& str)
+{
+    QHash<QLatin1String, QString>::iterator it;
+    for (it = map.begin(); it != map.end(); ++it)
+        if (it.key() == str)
+            break;
+
+    return it;
+}
+
+/// returns a list of unique, '*.'-prefixed lowercase file extensions
+QStringList parseFilters(const QString& filters_raw) {
+    QStringList filter_list = filters_raw.split(" ", QString::SkipEmptyParts);
+    for (auto& filter : filter_list)
+        filter = filter.prepend("*").toLower();
+
+    filter_list.removeDuplicates();
+    return filter_list;
+}
+
 } // namespace
 
-namespace providers {
-namespace es2_utils {
 
-void readSystemsFile(QXmlStreamReader& xml,
-                     QHash<QString, Types::Game*>& games,
-                     QHash<QString, Types::Collection*>& collections,
-                     QVector<QString>& metadata_dirs,
-                     const std::function<void(int)>& onGamesChangedCB)
+namespace providers {
+namespace es2 {
+
+SystemsParser::SystemsParser(QObject* parent)
+    : QObject(parent)
+{}
+
+void SystemsParser::find(QHash<QString, Types::Game*>& games,
+                       QHash<QString, Types::Collection*>& collections)
+{
+    // find the systems file
+    const QString xml_path = findSystemsFile();
+    if (xml_path.isEmpty()) {
+        qWarning().noquote() << MSG_PREFIX << QObject::tr("system config file not found");
+        return;
+    }
+
+    // open the systems file
+    QFile xml_file(xml_path);
+    if (!xml_file.open(QIODevice::ReadOnly)) {
+        qWarning().noquote() << MSG_PREFIX << QObject::tr("could not open `%1`").arg(xml_path);
+        return;
+    }
+
+    // parse the systems file
+    QXmlStreamReader xml(&xml_file);
+    readSystemsFile(xml, games, collections);
+    if (xml.error())
+        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+}
+
+void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
+                                    QHash<QString, Types::Game*>& games,
+                                    QHash<QString, Types::Collection*>& collections)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -59,19 +132,17 @@ void readSystemsFile(QXmlStreamReader& xml,
             continue;
         }
 
-        readSystemEntry(xml, games, collections, metadata_dirs);
+        readSystemEntry(xml, games, collections);
         if (game_count != games.count()) {
             game_count = games.count();
-            onGamesChangedCB(game_count);
+            emit gameCountChanged(game_count);
         }
     }
 }
 
-
-void readSystemEntry(QXmlStreamReader& xml,
-                     QHash<QString, Types::Game*>& games,
-                     QHash<QString, Types::Collection*>& collections,
-                     QVector<QString>& metadata_dirs)
+void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
+                                    QHash<QString, Types::Game*>& games,
+                                    QHash<QString, Types::Collection*>& collections)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -170,31 +241,8 @@ void readSystemEntry(QXmlStreamReader& xml,
         }
     }
 
-    // search for metadata here in the next phase
-    const QFileInfo metadir_info(xml_props[QLatin1String("path")]);
-    if (metadir_info.exists() && metadir_info.isDir())
-        metadata_dirs << metadir_info.canonicalFilePath();
+    emit assetDirFound(xml_props[QLatin1String("path")]);
 }
 
-QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QString>& map, const QStringRef& str)
-{
-    QHash<QLatin1String, QString>::iterator it;
-    for (it = map.begin(); it != map.end(); ++it)
-        if (it.key() == str)
-            break;
-
-    return it;
-}
-
-/// returns a list of unique, '*.'-prefixed lowercase file extensions
-QStringList parseFilters(const QString& filters_raw) {
-    QStringList filter_list = filters_raw.split(" ", QString::SkipEmptyParts);
-    for (auto& filter : filter_list)
-        filter = filter.prepend("*").toLower();
-
-    filter_list.removeDuplicates();
-    return filter_list;
-}
-
-} // namespace es2_utils
+} // namespace es2
 } // namespace providers

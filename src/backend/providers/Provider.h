@@ -17,20 +17,34 @@
 
 #pragma once
 
-#include "MetadataProvider.h"
-
+#include <QHash>
 #include <QString>
+#include <QObject>
 
-class QXmlStreamReader;
+namespace Types { class Game; }
+namespace Types { class Collection; }
 
 
 namespace providers {
 
-class Es2Metadata : public MetadataProvider {
+class Provider : public QObject {
+    Q_OBJECT
+
 public:
-    void fill(const QHash<QString, Types::Game*>& games,
-              const QHash<QString, Types::Collection*>& collections,
-              const QVector<QString>& metadata_dirs) final;
+    explicit Provider(QObject* parent = nullptr);
+    virtual ~Provider();
+
+    /// Find all games and collections.
+    virtual void find(QHash<QString, Types::Game*>& games,
+                      QHash<QString, Types::Collection*>& collections) = 0;
+
+    /// Enhance the previously found games and collections with metadata and assets.
+    virtual void enhance(const QHash<QString, Types::Game*>& games,
+                         const QHash<QString, Types::Collection*>& collections) = 0;
+
+signals:
+    void gameCountChanged(int);
+    void assetDirFound(QString);
 };
 
 } // namespace providers

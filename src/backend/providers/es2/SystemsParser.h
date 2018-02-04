@@ -18,6 +18,7 @@
 #pragma once
 
 #include <QHash>
+#include <QObject>
 #include <QXmlStreamReader>
 
 namespace Types { class Collection; }
@@ -25,20 +26,30 @@ namespace Types { class Game; }
 
 
 namespace providers {
-namespace es2_utils {
+namespace es2 {
 
-void parseGamelistFile(QXmlStreamReader&,
-                       const Types::Collection&,
-                       const QHash<QString, Types::Game*>&);
-void parseGameEntry(QXmlStreamReader&,
-                    const Types::Collection&,
-                    const QHash<QString, Types::Game*>&);
-void applyMetadata(Types::Game&, const QHash<QString, QString>&);
-void findAssets(Types::Game&,
-                QHash<QString, QString>&,
-                const Types::Collection&);
-QHash<QString, QString>::iterator findByStrRef(QHash<QString, QString>&, const QStringRef&);
-void convertToCanonicalPath(QString& path, const QString& containing_dir);
+class SystemsParser : public QObject {
+    Q_OBJECT
+    Q_DISABLE_COPY(SystemsParser)
 
-} // namespace es2_utils
+public:
+    SystemsParser(QObject* parent);
+
+    void find(QHash<QString, Types::Game*>& games,
+              QHash<QString, Types::Collection*>& collections);
+
+signals:
+    void gameCountChanged(int count);
+    void assetDirFound(QString dir_path);
+
+private:
+    void readSystemsFile(QXmlStreamReader&,
+                         QHash<QString, Types::Game*>&,
+                         QHash<QString, Types::Collection*>&);
+    void readSystemEntry(QXmlStreamReader&,
+                         QHash<QString, Types::Game*>&,
+                         QHash<QString, Types::Collection*>&);
+};
+
+} // namespace es2
 } // namespace providers

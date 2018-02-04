@@ -15,22 +15,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Es2MetadataParser.h"
+#include "MetadataParser.h"
 
 #include "Utils.h"
 #include "types/Collection.h"
-#include "types/Game.h"
 
 #include <QDebug>
 #include <QFile>
-#include <QFileInfo>
 #include <QRegularExpression>
 #include <QStringBuilder>
 #include <QUrl>
+#include <QXmlStreamReader>
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "ES2:"; // TODO: do not duplicate
+
+void parseGamelistFile(QXmlStreamReader&, const Types::Collection&, const QHash<QString, Types::Game*>&);
+void parseGameEntry(QXmlStreamReader&, const Types::Collection&, const QHash<QString, Types::Game*>&);
+void applyMetadata(Types::Game&, const QHash<QString, QString>&);
+void findAssets(Types::Game&, QHash<QString, QString>&, const Types::Collection&);
+QHash<QString, QString>::iterator findByStrRef(QHash<QString, QString>&, const QStringRef&);
+void convertToCanonicalPath(QString& path, const QString& containing_dir);
+
+static constexpr auto MSG_PREFIX = "ES2:";
+static constexpr auto GAMELISTFILE = "/gamelist.xml";
 
 static const QString KEY_PATH(QStringLiteral("path"));
 static const QString KEY_NAME(QStringLiteral("name"));
@@ -68,11 +76,27 @@ static const QHash<QString, QString> EMPTY_GAMEENTRY = {
 
 static const QString DATEFORMAT(QStringLiteral("yyyyMMdd'T'HHmmss"));
 static const QRegularExpression PLAYERSREGEX(QStringLiteral("(\\d+)(-(\\d+))?"));
-} // namespace
 
+QString findGamelistFile(const Types::Collection& collection)
+{
+    // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-namespace providers {
-namespace es2_utils {
+    const QVector<QString> possible_files = {
+        collection.sourceDirs().constFirst() % GAMELISTFILE,
+        homePath() % QStringLiteral("/.emulationstation/gamelists/") % collection.tag() % GAMELISTFILE,
+        QStringLiteral("/etc/emulationstation/gamelists/") % collection.tag() % GAMELISTFILE,
+    };
+
+    for (const auto& path : possible_files) {
+        if (validPath(path)) {
+            qInfo().noquote() << MSG_PREFIX << QObject::tr("found `%1`").arg(path);
+            return path;
+        }
+        // qDebug() << FALLBACK_MSG.arg(path);
+    }
+
+    return QString();
+}
 
 void parseGamelistFile(QXmlStreamReader& xml,
                        const Types::Collection& collection,
@@ -218,14 +242,15 @@ void findAssets(Types::Game& game, QHash<QString, QString>& xml_props, const Typ
                               % collection.tag() % '/'
                               % game.m_fileinfo.completeBaseName();
 
-    for (auto asset_type : Assets::singleTypes) {
+    // FIXME
+    /*for (auto asset_type : Assets::singleTypes) {
         if (assets.m_single_assets[asset_type].isEmpty()) {
             assets.m_single_assets[asset_type] = Assets::findFirst(asset_type, path_base);
         }
     }
     for (auto asset_type : Assets::multiTypes) {
         assets.m_multi_assets[asset_type].append(Assets::findAll(asset_type, path_base));
-    }
+    }*/
 }
 
 QHash<QString, QString>::iterator findByStrRef(QHash<QString, QString>& map, const QStringRef& str)
@@ -251,5 +276,46 @@ void convertToCanonicalPath(QString& path, const QString& containing_dir)
     path = QFileInfo(path).canonicalFilePath();
 }
 
-} // namespace es2_utils
+} // namespace
+
+
+namespace providers {
+namespace es2 {
+
+MetadataParser::MetadataParser(QObject* parent)
+    : QObject(parent)
+{}
+
+void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
+                             const QHash<QString, Types::Collection*>& collections)
+{
+    for (const auto& collection_ptr : collections) {
+        Types::Collection& collection = *collection_ptr;
+
+        // ignore Steam
+        if (collection.tag() == QLatin1String("steam"))
+            continue;
+
+        // find the metadata file
+        const QString gamelist_path = findGamelistFile(collection);
+        if (gamelist_path.isEmpty())
+            continue;
+
+        // open the file
+        QFile xml_file(gamelist_path);
+        if (!xml_file.open(QIODevice::ReadOnly)) {
+            qWarning().noquote() << MSG_PREFIX
+                                 << QObject::tr("could not open `%1`").arg(gamelist_path);
+            continue;
+        }
+
+        // parse the file
+        QXmlStreamReader xml(&xml_file);
+        parseGamelistFile(xml, collection, games);
+        if (xml.error())
+            qWarning().noquote() << MSG_PREFIX << xml.errorString();
+    }
+}
+
+} // namespace es2
 } // namespace providers
