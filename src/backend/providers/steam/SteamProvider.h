@@ -17,16 +17,29 @@
 
 #pragma once
 
-#include "MetadataProvider.h"
+#include "Gamelist.h"
+#include "Metadata.h"
+#include "providers/Provider.h"
 
 
 namespace providers {
+namespace steam {
 
-class SteamMetadata : public MetadataProvider {
+class SteamProvider : public Provider {
+    Q_OBJECT
+
 public:
-    void fill(const QHash<QString, Types::Game*>& games,
-              const QHash<QString, Types::Collection*>& collections,
-              const QVector<QString>& metadata_dirs) final;
+    SteamProvider(QObject* parent = nullptr);
+
+    void find(QHash<QString, Types::Game*>&,
+              QHash<QString, Types::Collection*>&) final;
+    void enhance(const QHash<QString, Types::Game*>&,
+                 const QHash<QString, Types::Collection*>&) final;
+
+private:
+    Gamelist gamelist;
+    Metadata metadata;
 };
 
+} // namespace es2
 } // namespace providers

@@ -17,17 +17,28 @@
 
 #pragma once
 
-#include "GamelistProvider.h"
+#include <QHash>
+#include <QObject>
+
+namespace Types { class Collection; }
+namespace Types { class Game; }
 
 
 namespace providers {
+namespace steam {
 
-class SteamGamelist : public GamelistProvider {
+class Gamelist : public QObject {
     Q_OBJECT
+
 public:
+    explicit Gamelist(QObject* parent);
+
     void find(QHash<QString, Types::Game*>& games,
-              QHash<QString, Types::Collection*>& collections,
-              QVector<QString>& metadata_dirs) override;
+              QHash<QString, Types::Collection*>& collections);
+
+signals:
+    void gameCountChanged(int count);
 };
 
+} // namespace steam
 } // namespace providers

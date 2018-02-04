@@ -22,8 +22,7 @@
 #include "types/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
-//#include "providers/SteamGamelist.h"
-//#include "providers/SteamMetadata.h"
+#include "providers/steam/SteamProvider.h"
 #endif
 
 
@@ -50,7 +49,7 @@ DataFinder::DataFinder(QObject* parent)
 {
     providers.emplace_back(new providers::es2::Es2Provider());
 #ifndef Q_PROCESSOR_ARM
-    //providers.emplace_back(new providers::SteamGamelist());
+    providers.emplace_back(new providers::steam::SteamProvider());
 #endif
 
     for (auto& provider : providers) {

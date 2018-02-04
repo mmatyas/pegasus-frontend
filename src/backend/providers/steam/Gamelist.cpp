@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "SteamGamelist.h"
+#include "Gamelist.h"
 
 #include "types/Collection.h"
 #include "types/Game.h"
@@ -134,10 +134,14 @@ void register_appmanifests(QHash<QString, Types::Game*>& games, Types::Collectio
 
 
 namespace providers {
+namespace steam {
 
-void SteamGamelist::find(QHash<QString, Types::Game*>& games,
-                         QHash<QString, Types::Collection*>& collections,
-                         QVector<QString>&)
+Gamelist::Gamelist(QObject* parent)
+    : QObject(parent)
+{}
+
+void Gamelist::find(QHash<QString, Types::Game*>& games,
+                    QHash<QString, Types::Collection*>& collections)
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())
@@ -166,7 +170,8 @@ void SteamGamelist::find(QHash<QString, Types::Game*>& games,
     const int game_count_before = games.count();
     register_appmanifests(games, collection);
     if (game_count_before != games.count())
-        emit GamelistProvider::gameCountChanged(games.count());
+        emit gameCountChanged(games.count());
 }
 
+} // namespace steam
 } // namespace providers

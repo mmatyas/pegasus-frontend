@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "SteamMetadata.h"
+#include "Metadata.h"
 
 #include "types/Collection.h"
 
@@ -322,10 +322,14 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
 
 namespace providers {
+namespace steam {
 
-void SteamMetadata::fill(const QHash<QString, Types::Game*>&,
-                         const QHash<QString, Types::Collection*>& collections,
-                         const QVector<QString>&)
+Metadata::Metadata(QObject* parent)
+    : QObject(parent)
+{}
+
+void Metadata::enhance(const QHash<QString, Types::Game*>&,
+                       const QHash<QString, Types::Collection*>& collections)
 {
     const QString STEAM_TAG(QStringLiteral("steam"));
     if (!collections.contains(STEAM_TAG))
@@ -383,4 +387,5 @@ void SteamMetadata::fill(const QHash<QString, Types::Game*>&,
     download_metadata(uncached_entries, netman);
 }
 
+} // namespace steam
 } // namespace providers

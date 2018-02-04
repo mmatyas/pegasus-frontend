@@ -27,13 +27,14 @@ SOURCES += \
     types/CollectionList.cpp \
     types/Collection.cpp \
     #providers/PegasusMetadata.cpp \
-    #providers/SteamGamelist.cpp \
-    #providers/SteamMetadata.cpp \
     ConfigFile.cpp \
     providers/Provider.cpp \
     providers/es2/Es2Provider.cpp \
     providers/es2/SystemsParser.cpp \
-    providers/es2/MetadataParser.cpp
+    providers/es2/MetadataParser.cpp \
+    providers/steam/SteamProvider.cpp \
+    providers/steam/Gamelist.cpp \
+    providers/steam/Metadata.cpp
 
 HEADERS += \
     Api.h \
@@ -60,13 +61,14 @@ HEADERS += \
     types/CollectionList.h \
     types/Collection.h \
     #providers/PegasusMetadata.h \
-    #providers/SteamGamelist.h \
-    #providers/SteamMetadata.h \
     ConfigFile.h \
     providers/Provider.h \
     providers/es2/Es2Provider.h \
     providers/es2/SystemsParser.h \
-    providers/es2/MetadataParser.h
+    providers/es2/MetadataParser.h \
+    providers/steam/SteamProvider.h \
+    providers/steam/Gamelist.h \
+    providers/steam/Metadata.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
