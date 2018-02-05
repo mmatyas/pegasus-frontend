@@ -53,12 +53,6 @@ class Assets {
 public:
     static const QVector<AssetType> singleTypes;
     static const QVector<AssetType> multiTypes;
-    static const QHash<AssetType, QVector<QString>> suffixes;
-
-    static const QVector<QString>& extensions(AssetType key);
-
-    static QString findFirst(AssetType, const QString& path_base);
-    static QStringList findAll(AssetType, const QString& path_base);
 };
 
 inline uint qHash(const AssetType& key, uint seed) {

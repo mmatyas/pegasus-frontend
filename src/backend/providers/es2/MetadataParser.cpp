@@ -233,24 +233,6 @@ void findAssets(Types::Game& game, QHash<QString, QString>& xml_props, const Typ
         if (!path.isEmpty() && validPath(path) && !assets.m_multi_assets[AssetType::VIDEOS].contains(url))
             assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile(path).toString());
     }
-
-    // search for assets in ~/.emulationstation/downloaded_images
-    // TODO: move to metadata
-
-    const QString path_base = homePath()
-                              % QStringLiteral("/.emulationstation/downloaded_images/")
-                              % collection.tag() % '/'
-                              % game.m_fileinfo.completeBaseName();
-
-    // FIXME
-    /*for (auto asset_type : Assets::singleTypes) {
-        if (assets.m_single_assets[asset_type].isEmpty()) {
-            assets.m_single_assets[asset_type] = Assets::findFirst(asset_type, path_base);
-        }
-    }
-    for (auto asset_type : Assets::multiTypes) {
-        assets.m_multi_assets[asset_type].append(Assets::findAll(asset_type, path_base));
-    }*/
 }
 
 QHash<QString, QString>::iterator findByStrRef(QHash<QString, QString>& map, const QStringRef& str)

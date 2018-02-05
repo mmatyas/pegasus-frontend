@@ -17,11 +17,6 @@
 
 #include "Assets.h"
 
-#include "Utils.h"
-
-#include <QStringBuilder>
-#include <QUrl>
-
 
 const QVector<AssetType> Assets::singleTypes = {
     AssetType::BOX_FRONT,
@@ -46,83 +41,3 @@ const QVector<AssetType> Assets::multiTypes = {
     AssetType::SCREENSHOTS,
     AssetType::VIDEOS,
 };
-
-const QHash<AssetType, QVector<QString>> Assets::suffixes = {
-    { AssetType::BOX_FRONT, { "-boxFront", "-box_front", "-boxart2D", "" } },
-    { AssetType::BOX_BACK, { "-boxBack", "-box_back" } },
-    { AssetType::BOX_SPINE, { "-boxSpine", "-box_spine", "-boxSide", "-box_side" } },
-    { AssetType::BOX_FULL, { "-boxFull", "-box_full", "-box" } },
-    { AssetType::CARTRIDGE, { "-cartridge", "-cart", "-disc" } },
-    { AssetType::LOGO, { "-logo", "-wheel" } },
-    { AssetType::POSTER, { "-poster", "-flyer" } },
-    { AssetType::ARCADE_MARQUEE, { "-marquee" } },
-    { AssetType::ARCADE_BEZEL, { "-bezel", "-screenmarquee", "-border" } },
-    { AssetType::ARCADE_PANEL, { "-panel" } },
-    { AssetType::ARCADE_CABINET_L, { "-cabinetLeft", "-cabinet_left" } },
-    { AssetType::ARCADE_CABINET_R, { "-cabinetRight", "-cabinet_right" } },
-    { AssetType::UI_TILE, { "-tile" } },
-    { AssetType::UI_BANNER, { "-banner" } },
-    { AssetType::UI_STEAMGRID, { "-steam", "-steamgrid", "-grid" } },
-    { AssetType::BACKGROUND, { "-background", "" } },
-    { AssetType::MUSIC, { "-music", "" } },
-    // multi
-    { AssetType::SCREENSHOTS, { "-screenshot" } },
-    { AssetType::VIDEOS, { "-video", "" } },
-};
-
-namespace {
-
-const QVector<QString> image_exts = { ".png", ".jpg" };
-const QVector<QString> video_exts = { ".webm", ".mp4", ".avi" };
-const QVector<QString> audio_exts = { ".mp3", ".ogg", ".wav" };
-
-} // namespace
-
-const QVector<QString>& Assets::extensions(AssetType key)
-{
-    static const QVector<QString> empty_vec;
-    switch (key) {
-        case AssetType::UNKNOWN:
-            return empty_vec;
-        case AssetType::VIDEOS:
-            return video_exts;
-        case AssetType::MUSIC:
-            return audio_exts;
-        default:
-            return image_exts;
-    }
-}
-
-QString Assets::findFirst(AssetType asset_type, const QString& path_base)
-{
-    const auto& possible_suffixes = Assets::suffixes[asset_type];
-    const auto& possible_fileexts = Assets::extensions(asset_type);
-
-    for (const auto& suffix : possible_suffixes) {
-        for (const auto& ext : possible_fileexts) {
-            const QString path = path_base % suffix % ext;
-            if (validPath(path))
-                return QUrl::fromLocalFile(path).toString();
-        }
-    }
-
-    return {};
-}
-
-QStringList Assets::findAll(AssetType asset_type, const QString& path_base)
-{
-    const auto& possible_suffixes = Assets::suffixes[asset_type];
-    const auto& possible_fileexts = Assets::extensions(asset_type);
-
-    QStringList results;
-
-    for (const auto& suffix : possible_suffixes) {
-        for (const auto& ext : possible_fileexts) {
-            const QString path = path_base % suffix % ext;
-            if (validPath(path))
-                results.append(QUrl::fromLocalFile(path).toString());
-        }
-    }
-
-    return results;
-}
