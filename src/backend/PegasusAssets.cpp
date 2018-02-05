@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "PegasusMetadata.h"
+#include "PegasusAssets.h"
 
 #include "types/Game.h"
 
@@ -27,7 +27,6 @@
 
 
 namespace {
-static const QString MEDIA_SUBDIR("/media/");
 
 static const QHash<QString, AssetType> TYPE_BY_SUFFIX = {
     { QStringLiteral("-boxFront"), AssetType::BOX_FRONT },
@@ -115,24 +114,24 @@ AssetType findAssetType(const QString& suffix, const QString& ext)
 
 } // namespace
 
-namespace providers {
 
-void PegasusMetadata::fill(const QHash<QString, Types::Game*>& games,
-                           const QHash<QString, Types::Collection*>&,
-                           const QVector<QString>& metadata_dirs)
+void findPegasusAssets(const QStringList& asset_dirs,
+                       const QHash<QString, Types::Game*>& games)
 {
-    QHash<QString, Types::Game*> games_shortpath;
-    games_shortpath.reserve(games.size());
+    // shortpath: canonical path to dir + extensionless filename
+    QHash<QString, Types::Game*> games_by_shortpath;
+    games_by_shortpath.reserve(games.size());
     for (Types::Game* const game : games) {
         const QString shortpath = game->m_fileinfo.canonicalPath() % '/' % game->m_fileinfo.completeBaseName();
-        games_shortpath.insert(shortpath, game);
+        games_by_shortpath.insert(shortpath, game);
     }
 
-    const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    const auto dir_flags = QDirIterator::FollowSymlinks;
 
-    for (const QString& dir_base : metadata_dirs) {
-        const QString media_dir = dir_base + MEDIA_SUBDIR;
+    for (const QString& dir_base : asset_dirs) {
+        const QString media_dir = dir_base + QStringLiteral("/media");
+
+        constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+        constexpr auto dir_flags = QDirIterator::FollowSymlinks;
 
         QDirIterator dir_it(media_dir, dir_filters, dir_flags);
         while (dir_it.hasNext()) {
@@ -148,10 +147,10 @@ void PegasusMetadata::fill(const QHash<QString, Types::Game*>& games,
             // - mid(strlen) returns a null string
 
             QString shortpath = dir_base % '/' % fileinfo.completeBaseName().leftRef(last_dash);
-            if (!games_shortpath.contains(shortpath)) {
+            if (!games_by_shortpath.contains(shortpath)) {
                 // this also happens when the filename part contains a dash, but has no suffix
                 shortpath += fileinfo.completeBaseName().midRef(last_dash);
-                if (!games_shortpath.contains(shortpath))
+                if (!games_by_shortpath.contains(shortpath))
                     continue;
                 last_dash = fileinfo.completeBaseName().size();
             }
@@ -164,7 +163,7 @@ void PegasusMetadata::fill(const QHash<QString, Types::Game*>& games,
             const bool is_multi = Assets::multiTypes.contains(type);
             QString url = QUrl::fromLocalFile(dir_it.filePath()).toString();
 
-            Types::Game* const game = games_shortpath[shortpath];
+            Types::Game* const game = games_by_shortpath[shortpath];
             if (is_multi && !game->assets().m_multi_assets[type].contains(url))
                 game->assets().appendMulti(type, std::move(url));
             else if (!is_multi && game->assets().m_single_assets[type].isEmpty())
@@ -172,5 +171,3 @@ void PegasusMetadata::fill(const QHash<QString, Types::Game*>& games,
         }
     }
 }
-
-} // namespace providers

@@ -17,8 +17,8 @@
 
 #include "DataFinder.h"
 
+#include "PegasusAssets.h"
 #include "providers/es2/Es2Provider.h"
-//#include "providers/PegasusMetadata.h"
 #include "types/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
@@ -53,8 +53,11 @@ DataFinder::DataFinder(QObject* parent)
 #endif
 
     for (auto& provider : providers) {
-        connect(dynamic_cast<QObject*>(provider.get()), SIGNAL(gameCountChanged(int)),
-                this, SIGNAL(totalCountChanged(int)));
+        connect(provider.get(), &providers::Provider::gameCountChanged,
+                this, &DataFinder::totalCountChanged);
+        connect(provider.get(), &providers::Provider::assetDirFound,
+                this, &DataFinder::onAssetDirFound,
+                Qt::DirectConnection);
     }
 }
 
@@ -67,6 +70,13 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
         provider->find(games, collections);
 
     removeEmptyCollections(collections);
+}
+
+void DataFinder::onAssetDirFound(QString dir_path)
+{
+    const QFileInfo entry(dir_path);
+    if (entry.exists() && entry.isDir())
+        asset_dirs << dir_path;
 }
 
 void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
@@ -85,6 +95,11 @@ QVector<Types::Collection*> DataFinder::find()
 
 
     runListProviders(games, collections);
+
+    asset_dirs.removeDuplicates();
+    findPegasusAssets(asset_dirs, games);
+    asset_dirs.clear(); // free memory
+
     runMetadataProviders(games, collections);
 
 

@@ -17,20 +17,11 @@
 
 #pragma once
 
-#include "MetadataProvider.h"
-
+#include <QHash>
 #include <QString>
 
-class QXmlStreamReader;
+namespace Types { class Game; }
 
 
-namespace providers {
-
-class PegasusMetadata : public MetadataProvider {
-public:
-    void fill(const QHash<QString, Types::Game*>& games,
-              const QHash<QString, Types::Collection*>& collections,
-              const QVector<QString>& metadata_dirs) final;
-};
-
-} // namespace providers
+void findPegasusAssets(const QStringList& asset_dirs,
+                       const QHash<QString, Types::Game*>& games);

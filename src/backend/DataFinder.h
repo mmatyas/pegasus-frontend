@@ -49,4 +49,9 @@ private:
 
     using ProviderPtr = std::unique_ptr<providers::Provider>;
     std::vector<ProviderPtr> providers;
+
+    QStringList asset_dirs;
+
+private slots:
+    void onAssetDirFound(QString);
 };

@@ -26,7 +26,7 @@ SOURCES += \
     types/ThemeList.cpp \
     types/CollectionList.cpp \
     types/Collection.cpp \
-    #providers/PegasusMetadata.cpp \
+    PegasusAssets.cpp \
     ConfigFile.cpp \
     providers/Provider.cpp \
     providers/es2/Es2Provider.cpp \
@@ -60,7 +60,7 @@ HEADERS += \
     types/ThemeList.h \
     types/CollectionList.h \
     types/Collection.h \
-    #providers/PegasusMetadata.h \
+    PegasusAssets.h \
     ConfigFile.h \
     providers/Provider.h \
     providers/es2/Es2Provider.h \
