@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Metadata.h"
+#include "SteamMetadata.h"
 
 #include "types/Collection.h"
 

@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "SystemsParser.h"
-#include "MetadataParser.h"
+#include "Es2Systems.h"
+#include "Es2Metadata.h"
 #include "providers/Provider.h"
 
 

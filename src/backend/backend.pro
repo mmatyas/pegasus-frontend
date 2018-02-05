@@ -7,46 +7,57 @@ CONFIG += c++11 staticlib warn_on exceptions_off
 SOURCES += \
     Api.cpp \
     Assets.cpp \
+    ConfigFile.cpp \
     DataFinder.cpp \
     FrontendLayer.cpp \
+    PegasusAssets.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
+    providers/Provider.cpp \
+    providers/es2/Es2Metadata.cpp \
+    providers/es2/Es2Provider.cpp \
+    providers/es2/Es2Systems.cpp \
+    providers/steam/SteamGamelist.cpp \
+    providers/steam/SteamMetadata.cpp \
+    providers/steam/SteamProvider.cpp \
+    types/Collection.cpp \
+    types/CollectionList.cpp \
+    types/Filters.cpp \
     types/Game.cpp \
     types/GameAssets.cpp \
     types/GameList.cpp \
-    types/Filters.cpp \
     types/Locale.cpp \
     types/LocaleList.cpp \
     types/Meta.cpp \
     types/Settings.cpp \
     types/System.cpp \
     types/Theme.cpp \
-    types/ThemeList.cpp \
-    types/CollectionList.cpp \
-    types/Collection.cpp \
-    PegasusAssets.cpp \
-    ConfigFile.cpp \
-    providers/Provider.cpp \
-    providers/es2/Es2Provider.cpp \
-    providers/es2/SystemsParser.cpp \
-    providers/es2/MetadataParser.cpp \
-    providers/steam/SteamProvider.cpp \
-    providers/steam/Gamelist.cpp \
-    providers/steam/Metadata.cpp
+    types/ThemeList.cpp
 
 HEADERS += \
     Api.h \
+    AppCloseType.h \
     Assets.h \
+    ConfigFile.h \
     DataFinder.h \
     FrontendLayer.h \
+    ListPropertyFn.h \
+    PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
-    AppCloseType.h \
-    ListPropertyFn.h \
+    providers/Provider.h \
+    providers/es2/Es2Metadata.h \
+    providers/es2/Es2Provider.h \
+    providers/es2/Es2Systems.h \
+    providers/steam/SteamGamelist.h \
+    providers/steam/SteamMetadata.h \
+    providers/steam/SteamProvider.h \
+    types/Collection.h \
+    types/CollectionList.h \
     types/Filters.h \
     types/Game.h \
     types/GameAssets.h \
@@ -57,18 +68,7 @@ HEADERS += \
     types/Settings.h \
     types/System.h \
     types/Theme.h \
-    types/ThemeList.h \
-    types/CollectionList.h \
-    types/Collection.h \
-    PegasusAssets.h \
-    ConfigFile.h \
-    providers/Provider.h \
-    providers/es2/Es2Provider.h \
-    providers/es2/SystemsParser.h \
-    providers/es2/MetadataParser.h \
-    providers/steam/SteamProvider.h \
-    providers/steam/Gamelist.h \
-    providers/steam/Metadata.h
+    types/ThemeList.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

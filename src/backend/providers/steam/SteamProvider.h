@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "Gamelist.h"
-#include "Metadata.h"
+#include "SteamGamelist.h"
+#include "SteamMetadata.h"
 #include "providers/Provider.h"
 
 
