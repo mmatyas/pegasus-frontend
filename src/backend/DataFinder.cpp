@@ -25,6 +25,8 @@
 #include "providers/steam/SteamProvider.h"
 #endif
 
+#include <QDebug>
+
 
 namespace {
 
@@ -35,6 +37,8 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
     QMutableHashIterator<QString, Types::Collection*> it(collections);
     while (it.hasNext()) {
         if (it.next().value()->gameList().allGames().isEmpty()) {
+            qWarning().noquote() << QObject::tr("No games found for collection `%1`, ignored")
+                                                .arg(it.value()->tag());
             delete it.value();
             it.remove();
         }
