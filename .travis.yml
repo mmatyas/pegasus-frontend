@@ -10,7 +10,7 @@ branches:
 env:
   global:
   - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-  - QT_VER=qt592
+  - QT_VER=qt594
   - PEGASUS_HOME=/hello/world
   matrix:
   - TARGET=x11-static
@@ -22,11 +22,10 @@ git:
 
 before_install:
   - pushd /tmp
-  - wget ${TOOLS_URL}/${QT_VER}_${TARGET}.tgz
-  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-toolchain.tgz; fi
-  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-sysroot.tgz; fi
-  - for f in *.tgz; do sudo tar xzf ${f} -C /; done
-  - if [[ -n "$CROSS" ]]; then sudo mv /rpi-sysroot /opt/; fi
+  - wget ${TOOLS_URL}/${QT_VER}_${TARGET}.txz
+  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-toolchain_483.txz; fi
+  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-sysroot_jessie_2017-07-05.txz; fi
+  - for f in *.txz; do sudo tar xJf ${f} -C /opt/; done
   - if [[ "$TARGET" == "x11-static" ]]; then
       sudo ln -s ${QT_VER}_${TARGET} /opt/${QT_VER}_${TARGET}_hosttools;
       sudo apt-get -qq update &&
