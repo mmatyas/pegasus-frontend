@@ -209,27 +209,32 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
 
     // add the games
 
-    static constexpr auto dir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    static constexpr auto file_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    static constexpr auto dir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
-    static constexpr auto file_flags = QDirIterator::FollowSymlinks;
-    const QStringList name_filters = parseFilters(xml_props[QLatin1String("extension")]);
-
     // pass 1: find all (sub-)directories, but ignore 'media'
+
     QStringList dirs;
-    QDirIterator dirs_it(xml_props[QLatin1String("path")], dir_filters, dir_flags);
-    while (dirs_it.hasNext()) {
-        dirs << dirs_it.next();
+    {
+        static constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+        static constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
+
+        QDirIterator dirs_it(xml_props[QLatin1String("path")], subdir_filters, subdir_flags);
+        while (dirs_it.hasNext()) {
+            dirs << dirs_it.next();
+        }
+        dirs.removeOne(xml_props[QLatin1String("path")] + QStringLiteral("/media"));
+        dirs.append(xml_props[QLatin1String("path")]);
     }
-    dirs.removeOne(xml_props[QLatin1String("path")] + QStringLiteral("/media"));
-    dirs.append(xml_props[QLatin1String("path")]);
 
     // pass 2: scan for game files
+
+    static constexpr auto entry_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static constexpr auto entry_flags = QDirIterator::FollowSymlinks;
+    const QStringList name_filters = parseFilters(xml_props[QLatin1String("extension")]);
+
     for (const QString& dir_path : qAsConst(dirs)) {
-        QDirIterator files_it(dir_path, name_filters, file_filters, file_flags);
+        QDirIterator files_it(dir_path, name_filters, entry_filters, entry_flags);
         while (files_it.hasNext()) {
             files_it.next();
-            QFileInfo fileinfo = files_it.fileInfo();
+            const QFileInfo fileinfo = files_it.fileInfo();
 
             Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr) {
