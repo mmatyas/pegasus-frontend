@@ -226,7 +226,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
 
     // pass 2: scan for game files
 
-    static constexpr auto entry_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    static constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     static constexpr auto entry_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parseFilters(xml_props[QLatin1String("extension")]);
 
