@@ -52,10 +52,6 @@ script:
   - if [[ $TARGET == x11* ]]; then
       find -name *.qml -exec /opt/${QT_VER}_${TARGET}/bin/qmllint {} \; ;
     fi
-  - if [[ $TARGET == *static ]]; then
-      ln -s ../frontend src/app/qml-frontend;
-      ln -s ../themes/pegasus-grid src/app/qml-theme;
-    fi
   - mkdir build && cd build
   - /opt/${QT_VER}_${TARGET}_hosttools/bin/qmake ..
   - make
