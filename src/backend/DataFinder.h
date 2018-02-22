@@ -48,9 +48,9 @@ private:
                               const QHash<QString, Types::Collection*>&);
 
     using ProviderPtr = std::unique_ptr<providers::Provider>;
-    std::vector<ProviderPtr> providers;
+    std::vector<ProviderPtr> m_providers;
 
-    QStringList asset_dirs;
+    QStringList m_asset_dirs;
 
 private slots:
     void onAssetDirFound(QString);

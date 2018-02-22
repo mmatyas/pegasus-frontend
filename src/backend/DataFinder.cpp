@@ -47,12 +47,12 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
 DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
 {
-    providers.emplace_back(new providers::es2::Es2Provider());
+    m_providers.emplace_back(new providers::es2::Es2Provider());
 #ifndef Q_PROCESSOR_ARM
-    providers.emplace_back(new providers::steam::SteamProvider());
+    m_providers.emplace_back(new providers::steam::SteamProvider());
 #endif
 
-    for (auto& provider : providers) {
+    for (auto& provider : m_providers) {
         connect(provider.get(), &providers::Provider::gameCountChanged,
                 this, &DataFinder::totalCountChanged);
         connect(provider.get(), &providers::Provider::assetDirFound,
@@ -66,7 +66,7 @@ DataFinder::DataFinder(QObject* parent)
 void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
                                   QHash<QString, Types::Collection*>& collections)
 {
-    for (auto& provider : providers)
+    for (auto& provider : m_providers)
         provider->find(games, collections);
 
     removeEmptyCollections(collections);
@@ -76,7 +76,7 @@ void DataFinder::onAssetDirFound(QString dir_path)
 {
     const QFileInfo entry(dir_path);
     if (entry.exists() && entry.isDir())
-        asset_dirs << dir_path;
+        m_asset_dirs << dir_path;
 }
 
 void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
@@ -84,7 +84,7 @@ void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
 {
     emit metadataSearchStarted();
 
-    for (auto& provider : qAsConst(providers))
+    for (auto& provider : qAsConst(m_providers))
         provider->enhance(games, collections);
 }
 
@@ -96,9 +96,9 @@ QVector<Types::Collection*> DataFinder::find()
 
     runListProviders(games, collections);
 
-    asset_dirs.removeDuplicates();
-    findPegasusAssets(asset_dirs, games);
-    asset_dirs.clear(); // free memory
+    m_asset_dirs.removeDuplicates();
+    findPegasusAssets(m_asset_dirs, games);
+    m_asset_dirs.clear(); // free memory
 
     runMetadataProviders(games, collections);
 
