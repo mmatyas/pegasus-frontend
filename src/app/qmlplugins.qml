@@ -25,6 +25,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Particles 2.0
 import QtQuick.Window 2.0
 
+import QtCanvas3D 1.1
 import QtGamepad 1.0
 import QtGraphicalEffects 1.0
 import QtMultimedia 5.8
