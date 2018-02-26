@@ -96,7 +96,11 @@ const QStringList& allowedAssetExts(AssetType type)
             return image_exts;
     }
 }
-AssetType findAssetType(const QString& suffix, const QString& ext)
+
+} // namespace
+
+
+AssetType getAssetType(const QString& suffix, const QString& ext)
 {
     if (suffix.isEmpty()) {
         return TYPE_BY_EXT.contains(ext)
@@ -111,8 +115,6 @@ AssetType findAssetType(const QString& suffix, const QString& ext)
 
     return AssetType::UNKNOWN;
 }
-
-} // namespace
 
 
 void findPegasusAssets(const QStringList& asset_dirs,
@@ -156,7 +158,7 @@ void findPegasusAssets(const QStringList& asset_dirs,
             }
 
             const QString suffix = fileinfo.completeBaseName().mid(last_dash);
-            const AssetType type = findAssetType(suffix, fileinfo.suffix());
+            const AssetType type = getAssetType(suffix, fileinfo.suffix());
             if (type == AssetType::UNKNOWN)
                 continue;
 

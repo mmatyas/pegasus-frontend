@@ -20,8 +20,11 @@
 #include <QHash>
 #include <QString>
 
+enum class AssetType : unsigned char;
+
 namespace Types { class Game; }
 
 
+AssetType getAssetType(const QString& suffix, const QString& ext);
 void findPegasusAssets(const QStringList& asset_dirs,
                        const QHash<QString, Types::Game*>& games);

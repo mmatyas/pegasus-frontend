@@ -19,8 +19,11 @@
 
 #include "Utils.h"
 #include "types/Collection.h"
+#include "PegasusAssets.h" // FIXME: reorganize
 
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QRegularExpression>
 #include <QStringBuilder>
@@ -258,6 +261,45 @@ void convertToCanonicalPath(QString& path, const QString& containing_dir)
     path = QFileInfo(path).canonicalFilePath();
 }
 
+void findPegasusAssetsInScrapedir(const QDir& scrapedir, const QHash<QString, Types::Game*>& games_by_shortpath)
+{
+    // FIXME: except the short path, this function is the same as the Pegasus asset code
+    if (!scrapedir.exists())
+        return;
+
+    QDirIterator dir_it(scrapedir, QDirIterator::FollowSymlinks);
+    while (dir_it.hasNext()) {
+        dir_it.next();
+        QFileInfo fileinfo = dir_it.fileInfo();
+
+        int last_dash = fileinfo.completeBaseName().lastIndexOf(QChar('-'));
+        if (last_dash == -1)
+            last_dash = fileinfo.completeBaseName().size();
+
+        QString shortpath = scrapedir.dirName() % '/' % fileinfo.completeBaseName().leftRef(last_dash);
+        if (!games_by_shortpath.contains(shortpath)) {
+            shortpath += fileinfo.completeBaseName().midRef(last_dash);
+            if (!games_by_shortpath.contains(shortpath))
+                continue;
+            last_dash = fileinfo.completeBaseName().size();
+        }
+
+        const QString suffix = fileinfo.completeBaseName().mid(last_dash);
+        const AssetType type = getAssetType(suffix, fileinfo.suffix());
+        if (type == AssetType::UNKNOWN)
+            continue;
+
+        const bool is_multi = Assets::multiTypes.contains(type);
+        QString url = QUrl::fromLocalFile(dir_it.filePath()).toString();
+
+        Types::Game* const game = games_by_shortpath[shortpath];
+        if (is_multi && !game->assets().m_multi_assets[type].contains(url))
+            game->assets().appendMulti(type, std::move(url));
+        else if (!is_multi && game->assets().m_single_assets[type].isEmpty())
+            game->assets().setSingle(type, std::move(url));
+    }
+}
+
 } // namespace
 
 
@@ -271,6 +313,17 @@ MetadataParser::MetadataParser(QObject* parent)
 void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
                              const QHash<QString, Types::Collection*>& collections)
 {
+    const QString imgdir_base = homePath()
+                              % QStringLiteral("/.emulationstation/downloaded_images/");
+    // shortpath: dir name + extensionless filename
+    QHash<QString, Types::Game*> games_by_shortpath;
+    games_by_shortpath.reserve(games.size());
+    for (Types::Game* const game : games) {
+        const QString shortpath = game->m_fileinfo.dir().dirName() % '/' % game->m_fileinfo.completeBaseName();
+        games_by_shortpath.insert(shortpath, game);
+    }
+
+
     for (const auto& collection_ptr : collections) {
         Types::Collection& collection = *collection_ptr;
 
@@ -296,6 +349,11 @@ void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
         parseGamelistFile(xml, collection, games);
         if (xml.error())
             qWarning().noquote() << MSG_PREFIX << xml.errorString();
+
+        // search for assets in `downloaded_images`
+        constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+        const QDir imgdir(imgdir_base % collection.tag(), QString(), QDir::NoSort, dir_filters);
+        findPegasusAssetsInScrapedir(imgdir, games_by_shortpath);
     }
 }
 
