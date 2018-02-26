@@ -247,6 +247,12 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     }
 
     emit assetDirFound(xml_props[QLatin1String("path")]);
+
+    const QString home_media_path = homePath()
+        % QStringLiteral("/.emulationstation/downloaded_images/")
+        % collection->tag();
+    if (QFileInfo(home_media_path).isDir())
+        emit assetDirFound(home_media_path);
 }
 
 } // namespace es2
