@@ -19,7 +19,7 @@
 
 #include "Utils.h"
 #include "types/Collection.h"
-#include "PegasusAssets.h" // FIXME: reorganize
+#include "PegasusAssets.h"
 
 #include <QDebug>
 #include <QDir>
@@ -270,33 +270,17 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir, const QHash<QString, Ty
     QDirIterator dir_it(scrapedir, QDirIterator::FollowSymlinks);
     while (dir_it.hasNext()) {
         dir_it.next();
-        QFileInfo fileinfo = dir_it.fileInfo();
-
-        int last_dash = fileinfo.completeBaseName().lastIndexOf(QChar('-'));
-        if (last_dash == -1)
-            last_dash = fileinfo.completeBaseName().size();
-
-        QString shortpath = scrapedir.dirName() % '/' % fileinfo.completeBaseName().leftRef(last_dash);
-        if (!games_by_shortpath.contains(shortpath)) {
-            shortpath += fileinfo.completeBaseName().midRef(last_dash);
-            if (!games_by_shortpath.contains(shortpath))
-                continue;
-            last_dash = fileinfo.completeBaseName().size();
-        }
-
-        const QString suffix = fileinfo.completeBaseName().mid(last_dash);
-        const AssetType type = getAssetType(suffix, fileinfo.suffix());
-        if (type == AssetType::UNKNOWN)
+        const QFileInfo fileinfo = dir_it.fileInfo();
+        const auto detection_result = pegasus_assets::checkFile(fileinfo);
+        if (!detection_result.isValid())
             continue;
 
-        const bool is_multi = Assets::multiTypes.contains(type);
-        QString url = QUrl::fromLocalFile(dir_it.filePath()).toString();
+        const QString shortpath = scrapedir.dirName() % '/' % detection_result.basename;
+        if (!games_by_shortpath.contains(shortpath))
+            continue;
 
         Types::Game* const game = games_by_shortpath[shortpath];
-        if (is_multi && !game->assets().m_multi_assets[type].contains(url))
-            game->assets().appendMulti(type, std::move(url));
-        else if (!is_multi && game->assets().m_single_assets[type].isEmpty())
-            game->assets().setSingle(type, std::move(url));
+        pegasus_assets::addAssetToGame(*game, detection_result.asset_type, dir_it.filePath());
     }
 }
 

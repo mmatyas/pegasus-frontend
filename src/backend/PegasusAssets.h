@@ -17,14 +17,26 @@
 
 #pragma once
 
+#include <QFileInfo>
 #include <QHash>
 #include <QString>
 
 enum class AssetType : unsigned char;
-
 namespace Types { class Game; }
 
 
-AssetType getAssetType(const QString& suffix, const QString& ext);
-void findPegasusAssets(const QStringList& asset_dirs,
-                       const QHash<QString, Types::Game*>& games);
+namespace pegasus_assets {
+
+struct AssetCheckResult {
+    const QString basename;
+    const AssetType asset_type;
+
+    bool isValid() const;
+};
+AssetCheckResult checkFile(const QFileInfo&);
+void addAssetToGame(Types::Game&, AssetType, const QString&);
+
+void findAssets(const QStringList& asset_dirs,
+                const QHash<QString, Types::Game*>& games);
+
+} // namespace pegasus_assets

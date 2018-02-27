@@ -100,25 +100,61 @@ const QStringList& allowedAssetExts(AssetType type)
 } // namespace
 
 
-AssetType getAssetType(const QString& suffix, const QString& ext)
+namespace pegasus_assets {
+
+bool AssetCheckResult::isValid() const
 {
-    if (suffix.isEmpty()) {
-        return TYPE_BY_EXT.contains(ext)
-            ? TYPE_BY_EXT[ext]
-            : AssetType::UNKNOWN;
-    }
-
-    if (TYPE_BY_SUFFIX.contains(suffix)
-        && allowedAssetExts(TYPE_BY_SUFFIX[suffix]).contains(ext)) {
-        return TYPE_BY_SUFFIX[suffix];
-    }
-
-    return AssetType::UNKNOWN;
+    return asset_type != AssetType::UNKNOWN && !basename.isEmpty();
 }
 
+AssetCheckResult checkFile(const QFileInfo& file)
+{
+    const QString basename = file.completeBaseName();
+    const int last_dash = basename.lastIndexOf(QChar('-'));
+    const QString suffix = (last_dash == -1)
+        ? QString()
+        : basename.mid(last_dash);
 
-void findPegasusAssets(const QStringList& asset_dirs,
-                       const QHash<QString, Types::Game*>& games)
+    if (!TYPE_BY_SUFFIX.contains(suffix)) {
+        // missing/unknown suffix -> guess by extension
+        return {
+            basename,
+            TYPE_BY_EXT.value(file.suffix(), AssetType::UNKNOWN),
+        };
+    }
+
+    const QString game_basename = basename.left(last_dash);
+    const AssetType type = TYPE_BY_SUFFIX[suffix];
+    if (!allowedAssetExts(type).contains(file.suffix())) {
+        // known suffix but wrong extension -> invalid
+        return {
+            game_basename,
+            AssetType::UNKNOWN,
+        };
+    }
+
+    // known suffix and valid extension
+    return {
+        game_basename,
+        type,
+    };
+}
+
+void addAssetToGame(Types::Game& game, AssetType asset_type, const QString& file_path)
+{
+    const bool is_multi = Assets::multiTypes.contains(asset_type);
+    const QString url = QUrl::fromLocalFile(file_path).toString();
+
+    if (is_multi && !game.assets().m_multi_assets[asset_type].contains(url)) {
+        game.assets().appendMulti(asset_type, std::move(url));
+    }
+    else if (!is_multi && game.assets().m_single_assets[asset_type].isEmpty()) {
+        game.assets().setSingle(asset_type, std::move(url));
+    }
+}
+
+void findAssets(const QStringList& asset_dirs,
+                const QHash<QString, Types::Game*>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
     QHash<QString, Types::Game*> games_by_shortpath;
@@ -138,38 +174,19 @@ void findPegasusAssets(const QStringList& asset_dirs,
         QDirIterator dir_it(media_dir, dir_filters, dir_flags);
         while (dir_it.hasNext()) {
             dir_it.next();
-            QFileInfo fileinfo = dir_it.fileInfo();
-
-            int last_dash = fileinfo.completeBaseName().lastIndexOf(QChar('-'));
-            if (last_dash == -1)
-                last_dash = fileinfo.completeBaseName().size();
-
-            // NOTE
-            // - left(strlen) returns the whole string
-            // - mid(strlen) returns a null string
-
-            QString shortpath = dir_base % '/' % fileinfo.completeBaseName().leftRef(last_dash);
-            if (!games_by_shortpath.contains(shortpath)) {
-                // this also happens when the filename part contains a dash, but has no suffix
-                shortpath += fileinfo.completeBaseName().midRef(last_dash);
-                if (!games_by_shortpath.contains(shortpath))
-                    continue;
-                last_dash = fileinfo.completeBaseName().size();
-            }
-
-            const QString suffix = fileinfo.completeBaseName().mid(last_dash);
-            const AssetType type = getAssetType(suffix, fileinfo.suffix());
-            if (type == AssetType::UNKNOWN)
+            const QFileInfo fileinfo = dir_it.fileInfo();
+            const auto detection_result = checkFile(fileinfo);
+            if (!detection_result.isValid())
                 continue;
 
-            const bool is_multi = Assets::multiTypes.contains(type);
-            QString url = QUrl::fromLocalFile(dir_it.filePath()).toString();
+            const QString shortpath = dir_base % '/' % detection_result.basename;
+            if (!games_by_shortpath.contains(shortpath))
+                continue;
 
             Types::Game* const game = games_by_shortpath[shortpath];
-            if (is_multi && !game->assets().m_multi_assets[type].contains(url))
-                game->assets().appendMulti(type, std::move(url));
-            else if (!is_multi && game->assets().m_single_assets[type].isEmpty())
-                game->assets().setSingle(type, std::move(url));
+            addAssetToGame(*game, detection_result.asset_type, dir_it.filePath());
         }
     }
 }
+
+} // namespace pegasus_assets

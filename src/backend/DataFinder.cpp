@@ -101,7 +101,7 @@ QVector<Types::Collection*> DataFinder::find()
     runListProviders(games, collections);
 
     m_asset_dirs.removeDuplicates();
-    findPegasusAssets(m_asset_dirs, games);
+    pegasus_assets::findAssets(m_asset_dirs, games);
     m_asset_dirs.clear(); // free memory
 
     runMetadataProviders(games, collections);
