@@ -1,0 +1,14 @@
+{
+    "package": {
+        "subject": "mmatyas",
+        "name": "pegasus-frontend",
+        "repo": "generic"
+    },
+    "version": {
+        "name": "continuous"
+    },
+    "files": [
+        { "includePattern": "^pegasus-fe_(.*).zip$", "uploadPattern": "/pegasus-fe_$1.zip" }
+    ],
+    "publish": true
+}

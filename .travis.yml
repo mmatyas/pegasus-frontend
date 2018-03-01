@@ -70,6 +70,14 @@ after_success:
   - wget -c https://github.com/mmatyas/uploadtool/raw/master/upload.sh
   - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
 
+deploy:
+  provider: bintray
+  file: "etc/ci/bintray_travis.json"
+  user: "mmatyas"
+  key:
+    secure: grK+TcvmcnfEyFbBs7kTh6S/awFPQLzNROW5pwYcVc664NP4GxEFd+tl3CqkIuUv1n8HR/x/VWqIc7se12HQx41FnSYqJeArNPI7+gTHHyoR2AtcHptUR1BJUfemlrRhkjbd6dwfdwaeRDt3B1aIy9D0EG8gDgmt6tMIK390AFptwhbvarVZq2nlAnMJ3/DMWIzDXn2Kx6xErQji5LFCOmfFnOCw00z1uDpmTrO6QnfdwlORowVfhoT9SYdPtSQksYyi5Lzjeu0UmxIQtlGisqmiqPOdMb9ted0aNRhfHPYO2Dim+hOwBk+N9GO7AgHDjInkADOwtPxE7qcm5prLO0kV5Jc1ykWB4WWlBDQilggpwm2PbJbsf4zT6Dc7yRzAuarvlFkY8l8zvd4giyMzGCulMWHespglTF8YQDD6B6n78+ePeUqgq0beN/vQP5kAMIJbpXXnPrX9gHS3upO2F9HTQY1WLq+Aq0aub/9ZhEOkGMxzWdWl9u/CsoH2dySDyiyfOuhJuXyEGcfL4jL3yA8JPrZ18ApsEx3CJnnAvdJgy//0tkD5ajucEJVcsfQ5DW/HxfAT6APMMxkqvBiwxkipiUG52klXfwPfxw9oz6ZLC53HwF9MjxowOJnAf4MLbd3/H9AK7CPODPKt/n1ybVzEa3Awl9p2R/niNzaAYQA=
+
+
 matrix:
   fast_finish: true
   allow_failures:
@@ -89,6 +97,7 @@ matrix:
         - make check
       after_success:
         - true
+      deploy: null
   include:
     # Qt 5.7.1 (for Debian Stretch/Ubuntu Zesty)
     - env: QT_QPA_PLATFORM=minimal
@@ -127,3 +136,4 @@ matrix:
         - sed -i 's|SF:/home/travis/build/mmatyas/pegasus-frontend/|SF:|g' coverage.clean
         - cd ..
         - coveralls-lcov build/coverage.clean
+      deploy: null
