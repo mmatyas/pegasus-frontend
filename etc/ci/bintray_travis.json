@@ -1,0 +1,14 @@
+{
+    "package": {
+        "subject": "mmatyas",
+        "name": "pegasus-frontend",
+        "repo": "generic"
+    },
+    "version": {
+        "name": "continuous"
+    },
+    "files": [
+        { "includePattern": "dist/(.*)", "uploadPattern": "/$1" }
+    ],
+    "publish": true
+}
