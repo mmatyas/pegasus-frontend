@@ -1,8 +1,8 @@
 {
     "package": {
         "subject": "mmatyas",
-        "name": "pegasus-frontend",
-        "repo": "generic"
+        "repo": "apps",
+        "name": "pegasus-frontend"
     },
     "version": {
         "name": "continuous"
