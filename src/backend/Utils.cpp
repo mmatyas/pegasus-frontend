@@ -116,3 +116,41 @@ const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)
     };
     return fn_table.at(direction);
 }
+
+// The following is based on Qt code
+QStringList tokenize(const QString& str)
+{
+    QStringList tokens;
+    QString tmp;
+    int quoteCount = 0;
+    bool inQuote = false;
+
+    for (int i = 0; i < str.size(); ++i) {
+        if (str.at(i) == QLatin1Char('"')) {
+            ++quoteCount;
+            if (quoteCount == 3) {
+                // third consecutive quote
+                quoteCount = 0;
+                tmp += str.at(i);
+            }
+            continue;
+        }
+        if (quoteCount) {
+            if (quoteCount == 1)
+                inQuote = !inQuote;
+            quoteCount = 0;
+        }
+        if (!inQuote && str.at(i).isSpace()) {
+            if (!tmp.isEmpty()) {
+                tokens += tmp;
+                tmp.clear();
+            }
+        } else {
+            tmp += str.at(i);
+        }
+    }
+    if (!tmp.isEmpty())
+        tokens += tmp;
+
+    return tokens;
+}

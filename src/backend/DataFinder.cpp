@@ -19,6 +19,7 @@
 
 #include "PegasusAssets.h"
 #include "providers/es2/Es2Provider.h"
+#include "providers/pegasus/PegasusProvider.h"
 #include "types/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
@@ -51,6 +52,7 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
 DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
 {
+    m_providers.emplace_back(new providers::pegasus::PegasusProvider());
     m_providers.emplace_back(new providers::es2::Es2Provider());
 #ifndef Q_PROCESSOR_ARM
     m_providers.emplace_back(new providers::steam::SteamProvider());
@@ -72,6 +74,9 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
 {
     for (auto& provider : m_providers)
         provider->find(games, collections);
+
+    static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
+        ->find_in_thirdparty_dirs(m_thirdparty_rom_dirs, games, collections);
 
     removeEmptyCollections(collections);
 }

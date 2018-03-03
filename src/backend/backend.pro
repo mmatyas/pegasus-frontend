@@ -19,6 +19,7 @@ SOURCES += \
     providers/es2/Es2Metadata.cpp \
     providers/es2/Es2Provider.cpp \
     providers/es2/Es2Systems.cpp \
+    providers/pegasus/PegasusProvider.cpp \
     providers/steam/SteamGamelist.cpp \
     providers/steam/SteamMetadata.cpp \
     providers/steam/SteamProvider.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     providers/es2/Es2Metadata.h \
     providers/es2/Es2Provider.h \
     providers/es2/Es2Systems.h \
+    providers/pegasus/PegasusProvider.h \
     providers/steam/SteamGamelist.h \
     providers/steam/SteamMetadata.h \
     providers/steam/SteamProvider.h \

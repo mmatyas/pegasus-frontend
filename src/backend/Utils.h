@@ -65,3 +65,6 @@ enum class IndexShiftDirection : unsigned char {
     DECREMENT_NOWRAP,
 };
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection);
+
+// Split the provided string while respecting quotes
+QStringList tokenize(const QString&);
