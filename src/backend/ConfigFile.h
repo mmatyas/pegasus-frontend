@@ -25,18 +25,18 @@
 namespace config {
 
 /// Read and parse the stream, calling the callbacks if necessary
-/// - onSectionFound(sectionname)
-/// - onAttributeFound(key, value)
+/// - onSectionFound(line, sectionname)
+/// - onAttributeFound(line, key, value)
 /// - onError(line, message)
 void readStream(QTextStream& stream,
-                const std::function<void(const QString)>& onSectionFound,
-                const std::function<void(const QString, const QString)>& onAttributeFound,
+                const std::function<void(const int, const QString)>& onSectionFound,
+                const std::function<void(const int, const QString, const QString)>& onAttributeFound,
                 const std::function<void(const int, const QString)>& onError);
 
 /// Opens the file at the path, then calls the stream reading on it
 void readFile(const QString& path,
-              const std::function<void(const QString)>& onSectionFound,
-              const std::function<void(const QString, const QString)>& onAttributeFound,
+              const std::function<void(const int, const QString)>& onSectionFound,
+              const std::function<void(const int, const QString, const QString)>& onAttributeFound,
               const std::function<void(const int, const QString)>& onError);
 
 } // namespace config

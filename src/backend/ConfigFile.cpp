@@ -26,8 +26,8 @@
 namespace config {
 
 void readFile(const QString& path,
-              const std::function<void(const QString)>& onSectionFound,
-              const std::function<void(const QString, const QString)>& onAttributeFound,
+              const std::function<void(const int, const QString)>& onSectionFound,
+              const std::function<void(const int, const QString, const QString)>& onAttributeFound,
               const std::function<void(const int, const QString)>& onError)
 {
     QFile file(path);
@@ -39,8 +39,8 @@ void readFile(const QString& path,
 }
 
 void readStream(QTextStream& stream,
-                const std::function<void(const QString)>& onSectionFound,
-                const std::function<void(const QString, const QString)>& onAttributeFound,
+                const std::function<void(const int, const QString)>& onSectionFound,
+                const std::function<void(const int, const QString, const QString)>& onAttributeFound,
                 const std::function<void(const int, const QString)>& onError)
 {
     static const QRegularExpression rx_section(R"(^\[(.*)\]$)"); // [name]
@@ -53,7 +53,7 @@ void readStream(QTextStream& stream,
 
     const auto on_attrib_complete = [&](){
         if (!last_key.isEmpty() && !last_val.isEmpty())
-            onAttributeFound(last_key, last_val);
+            onAttributeFound(linenum, last_key, last_val);
 
         last_key.clear();
         last_val.clear();
@@ -87,7 +87,7 @@ void readStream(QTextStream& stream,
             on_attrib_complete();
 
             const QString group_name = rx_section_match.capturedRef(1).trimmed().toString();
-            onSectionFound(group_name);
+            onSectionFound(linenum, group_name);
             continue;
         }
 

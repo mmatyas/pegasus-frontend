@@ -51,11 +51,11 @@ QHash<QString, QString> read_metafile(const QString& config_file_path)
 
     config::readFile(
         config_file_path,
-        [&](const QString){
+        [&](const int, const QString){
             // theme properties are in the global section
             ignore_the_rest = true;
         },
-        [&](const QString key, const QString val){
+        [&](const int, const QString key, const QString val){
             if (ignore_the_rest)
                 return;
 

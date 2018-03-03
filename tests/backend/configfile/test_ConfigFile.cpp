@@ -64,8 +64,8 @@ void test_ConfigFile::onError(const int linenum, const QString msg)
 void test_ConfigFile::readStream(QTextStream& stream)
 {
     config::readStream(stream,
-        [this](const QString name){ this->onSectionFound(name); },
-        [this](const QString key, const QString val){ this->onAttributeFound(key, val); },
+        [this](const int, const QString name){ this->onSectionFound(name); },
+        [this](const int, const QString key, const QString val){ this->onAttributeFound(key, val); },
         [this](const int linenum, const QString msg){ this->onError(linenum, msg); });
 }
 
@@ -97,8 +97,8 @@ void test_ConfigFile::file()
     QTest::ignoreMessage(QtWarningMsg, "line 14: line invalid, skipped");
     QTest::ignoreMessage(QtWarningMsg, "line 16: line invalid, skipped");
     config::readFile(":/test.cfg",
-        [this](const QString name){ this->onSectionFound(name); },
-        [this](const QString key, const QString val){ this->onAttributeFound(key, val); },
+        [this](const int, const QString name){ this->onSectionFound(name); },
+        [this](const int, const QString key, const QString val){ this->onAttributeFound(key, val); },
         [this](const int linenum, const QString msg){ this->onError(linenum, msg); });
 
     QHash<QString, QHash<QString, QString>> expected {
