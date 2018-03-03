@@ -246,7 +246,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         }
     }
 
-    emit assetDirFound(xml_props[QLatin1String("path")]);
+    emit romDirFound(xml_props[QLatin1String("path")]);
 }
 
 } // namespace es2

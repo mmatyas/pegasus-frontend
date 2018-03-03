@@ -50,8 +50,8 @@ private:
     using ProviderPtr = std::unique_ptr<providers::Provider>;
     std::vector<ProviderPtr> m_providers;
 
-    QStringList m_asset_dirs;
+    QStringList m_thirdparty_rom_dirs;
 
 private slots:
-    void onAssetDirFound(QString);
+    void onRomDirFound(QString);
 };

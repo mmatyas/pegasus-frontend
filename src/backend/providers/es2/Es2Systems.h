@@ -40,7 +40,7 @@ public:
 
 signals:
     void gameCountChanged(int count);
-    void assetDirFound(QString dir_path);
+    void romDirFound(QString dir_path);
 
 private:
     void readSystemsFile(QXmlStreamReader&,

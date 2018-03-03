@@ -59,8 +59,8 @@ DataFinder::DataFinder(QObject* parent)
     for (auto& provider : m_providers) {
         connect(provider.get(), &providers::Provider::gameCountChanged,
                 this, &DataFinder::totalCountChanged);
-        connect(provider.get(), &providers::Provider::assetDirFound,
-                this, &DataFinder::onAssetDirFound,
+        connect(provider.get(), &providers::Provider::romDirFound,
+                this, &DataFinder::onRomDirFound,
                 Qt::DirectConnection);
     }
 }
@@ -76,17 +76,21 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
     removeEmptyCollections(collections);
 }
 
-void DataFinder::onAssetDirFound(QString dir_path)
+void DataFinder::onRomDirFound(QString dir_path)
 {
     const QFileInfo entry(dir_path);
     if (entry.exists() && entry.isDir())
-        m_asset_dirs << dir_path;
+        m_thirdparty_rom_dirs << dir_path;
 }
 
 void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
                                       const QHash<QString, Types::Collection*>& collections)
 {
     emit metadataSearchStarted();
+
+    m_thirdparty_rom_dirs.removeDuplicates();
+    pegasus_assets::findAssets(m_thirdparty_rom_dirs, games);
+    m_thirdparty_rom_dirs.clear(); // free memory
 
     for (auto& provider : qAsConst(m_providers))
         provider->enhance(games, collections);
@@ -97,15 +101,8 @@ QVector<Types::Collection*> DataFinder::find()
     QHash<QString, Types::Game*> games;
     QHash<QString, Types::Collection*> collections;
 
-
     runListProviders(games, collections);
-
-    m_asset_dirs.removeDuplicates();
-    pegasus_assets::findAssets(m_asset_dirs, games);
-    m_asset_dirs.clear(); // free memory
-
     runMetadataProviders(games, collections);
-
 
     QVector<Types::Collection*> result;
     for (Types::Collection* const coll : collections) {
