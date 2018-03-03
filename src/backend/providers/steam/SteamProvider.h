@@ -41,5 +41,5 @@ private:
     Metadata metadata;
 };
 
-} // namespace es2
+} // namespace steam
 } // namespace providers
