@@ -23,44 +23,41 @@
 #include <QStringBuilder>
 
 
-namespace {
-
-QString join(const QString& original, const QStringRef& addition)
-{
-    if (addition == QLatin1String("."))
-        return original + '\n';
-
-    if (original.endsWith('\n'))
-        return original % addition;
-
-    return original % ' ' % addition;
-}
-
-} // namespace
-
-
 namespace config {
 
-Config read(const QString& path)
+void readFile(const QString& path,
+              const std::function<void(const QString)>& onSectionFound,
+              const std::function<void(const QString, const QString)>& onAttributeFound,
+              const std::function<void(const int, const QString)>& onError)
 {
     QFile file(path);
     if (!file.open(QFile::ReadOnly | QFile::Text))
-        return {};
+        return;
 
     QTextStream stream(&file);
-    return readStream(stream, path);
+    return readStream(stream, onSectionFound, onAttributeFound, onError);
 }
 
-Config readStream(QTextStream& stream, const QString& stream_name)
+void readStream(QTextStream& stream,
+                const std::function<void(const QString)>& onSectionFound,
+                const std::function<void(const QString, const QString)>& onAttributeFound,
+                const std::function<void(const int, const QString)>& onError)
 {
     static const QRegularExpression rx_section(R"(^\[(.*)\]$)"); // [name]
-    static const QRegularExpression rx_keyval(R"(^([^=:]+)[=:](.+)$)"); // key = value
+    static const QRegularExpression rx_keyval(R"(^([^=:]+)[=:](.*)$)"); // key = value
     static const QRegularExpression rx_multiline(R"(^\s+)"); // starts with whitespace
 
-    Config config;
-    ConfigGroup* cur_group = &config[QString()];
     QString last_key;
+    QString last_val;
     int linenum = 0;
+
+    const auto on_attrib_complete = [&](){
+        if (!last_key.isEmpty() && !last_val.isEmpty())
+            onAttributeFound(last_key, last_val);
+
+        last_key.clear();
+        last_val.clear();
+    };
 
     QString line;
     while (stream.readLineInto(&line)) {
@@ -73,78 +70,52 @@ Config readStream(QTextStream& stream, const QString& stream_name)
 
         // multiline (starts with whitespace but trimmed_line is not empty)
         if (rx_multiline.match(line).hasMatch() && !last_key.isEmpty()) {
-            QVariant& last_item = (*cur_group)[last_key];
-
-            // array -> append to last
-            if (last_item.type() == QVariant::List) {
-                QVariantList list = last_item.toList();
-                list.last() = QVariant(join(list.constLast().toString(), trimmed_line));
-                last_item = QVariant(list);
+            if (trimmed_line == QLatin1String(".")) {
+                last_val.append('\n');
+                continue;
             }
-            // regular value -> append
-            else {
-                last_item = QVariant(join(last_item.toString(), trimmed_line));
+            if (!last_val.isEmpty() && !last_val.endsWith('\n')) {
+                last_val.append(' ');
             }
-
+            last_val.append(trimmed_line);
             continue;
         }
 
         // section (after the multiline check)
         const auto rx_section_match = rx_section.match(trimmed_line);
         if (rx_section_match.hasMatch()) {
+            on_attrib_complete();
+
             const QString group_name = rx_section_match.capturedRef(1).trimmed().toString();
-            cur_group = &config[group_name];
-            last_key.clear();
+            onSectionFound(group_name);
             continue;
         }
 
         // keyval pair (after the multiline check)
         const auto rx_keyval_match = rx_keyval.match(trimmed_line);
         if (rx_keyval_match.hasMatch()) {
+            on_attrib_complete();
+
             const QString key = rx_keyval_match.capturedRef(1).trimmed().toString();
             if (key.isEmpty()) {
-                qWarning().noquote()
-                    << QObject::tr("`%1`, line %2: option name missing, line skipped")
-                       .arg(stream_name, QString::number(linenum));
+                onError(linenum, QStringLiteral("attribute name missing, line skipped"));
                 continue;
             }
-            const QString val = rx_keyval_match.capturedRef(2).trimmed().toString();
-            if (val.isEmpty()) {
-                qWarning().noquote()
-                    << QObject::tr("`%1`, line %2: option value missing, line skipped")
-                       .arg(stream_name, QString::number(linenum));
-                continue;
-            }
-
-            if (cur_group->contains(key)) {
-                QVariant& item = (*cur_group)[key];
-
-                // array -> append
-                if (item.type() == QVariant::List) {
-                    QVariantList list = item.toList();
-                    list.append(val);
-                    item = QVariant(list);
-                }
-                // regular value -> turn into array
-                else {
-                    QVariantList list = { item, val };
-                    item = QVariant(list);
-                }
-            }
-            else {
-                cur_group->insert(key, val);
-            }
-
             last_key = key;
+            // the value can be empty here, in case it's purely multiline
+            last_val = rx_keyval_match.capturedRef(2).trimmed().toString();
             continue;
         }
 
         // invalid line
-        qWarning().noquote() << QObject::tr("`%1`: line %2 is invalid, skipped")
-                                .arg(stream_name, QString::number(linenum));
+        onError(linenum, "line invalid, skipped");
     }
 
-    return config;
+    // the very last line
+    if (!last_key.isEmpty() && last_val.isEmpty())
+        onError(linenum, QStringLiteral("attribute value missing, line skipped"));
+    else
+        on_attrib_complete();
 }
 
 } // namespace config

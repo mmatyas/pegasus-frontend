@@ -27,17 +27,57 @@ private slots:
     void empty();
     void datablob();
     void file();
+
+private:
+    QHash<QString, QHash<QString, QString>> m_config;
+    QString m_current_section;
+
+    void onSectionFound(const QString);
+    void onAttributeFound(const QString, const QString);
+    void onError(const int, const QString);
+
+    void readStream(QTextStream&);
 };
+
+
+void test_ConfigFile::onSectionFound(const QString section_name)
+{
+    m_current_section = section_name;
+    m_config[m_current_section];
+}
+
+void test_ConfigFile::onAttributeFound(const QString key, const QString val)
+{
+    QHash<QString, QString>& section = m_config[m_current_section];
+    if (section.count(key))
+        section[key] += QStringLiteral(", ") % val;
+    else
+        section.insert(key, val);
+}
+
+void test_ConfigFile::onError(const int linenum, const QString msg)
+{
+    qWarning().noquote() << QObject::tr("line %1: %2")
+        .arg(QString::number(linenum), msg);
+}
+
+void test_ConfigFile::readStream(QTextStream& stream)
+{
+    config::readStream(stream,
+        [this](const QString name){ this->onSectionFound(name); },
+        [this](const QString key, const QString val){ this->onAttributeFound(key, val); },
+        [this](const int linenum, const QString msg){ this->onError(linenum, msg); });
+}
+
 
 void test_ConfigFile::empty()
 {
     QByteArray buffer;
     QTextStream stream(buffer);
 
-    config::Config config = config::readStream(stream);
+    readStream(stream);
 
-    QCOMPARE(config.contains(QString()), true);
-    QCOMPARE(config.value(QString()).count(), 0);
+    QCOMPARE(m_config.isEmpty(), true);
 }
 
 void test_ConfigFile::datablob()
@@ -45,22 +85,23 @@ void test_ConfigFile::datablob()
     QByteArray buffer(1024, 0x0);
     QTextStream stream(buffer);
 
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`.*?`: line 1 is invalid, skipped"));
-    config::Config config = config::readStream(stream);
+    QTest::ignoreMessage(QtWarningMsg, "line 1: line invalid, skipped");
+    readStream(stream);
 
-    QCOMPARE(config.contains(QString()), true);
-    QCOMPARE(config.value(QString()).count(), 0);
+    QCOMPARE(m_config.isEmpty(), true);
 }
 
 void test_ConfigFile::file()
 {
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/test.cfg`: line 3 is invalid, skipped"));
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/test.cfg`: line 14 is invalid, skipped"));
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/test.cfg`: line 15 is invalid, skipped"));
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/test.cfg`: line 16 is invalid, skipped"));
-    config::Config config = config::read(":/test.cfg");
+    QTest::ignoreMessage(QtWarningMsg, "line 3: line invalid, skipped");
+    QTest::ignoreMessage(QtWarningMsg, "line 14: line invalid, skipped");
+    QTest::ignoreMessage(QtWarningMsg, "line 16: line invalid, skipped");
+    config::readFile(":/test.cfg",
+        [this](const QString name){ this->onSectionFound(name); },
+        [this](const QString key, const QString val){ this->onAttributeFound(key, val); },
+        [this](const int linenum, const QString msg){ this->onError(linenum, msg); });
 
-    config::Config expected = {
+    QHash<QString, QHash<QString, QString>> expected {
         {QString(), { {"global", "value"} }},
         {"sectionname", {
               {"key1", "val"},
@@ -72,12 +113,13 @@ void test_ConfigFile::file()
         {"multilines", {
              {"multiline1", "hello world!"},
              {"multiline2", "a line with\nline break"},
+             {"multiline3", "purely multiline"},
         }},
         {"arrays", {
-             {"array", QVariantList({"value1", "value2", "value3"})}
+             {"array", "value1, value2, value3"}
         }},
     };
-    QCOMPARE(config, expected);
+    QCOMPARE(m_config, expected);
 }
 
 

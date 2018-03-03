@@ -44,6 +44,33 @@ QStringList themeDirectories()
     return theme_dirs;
 }
 
+QHash<QString, QString> read_metafile(const QString& config_file_path)
+{
+    QHash<QString, QString> result;
+    bool ignore_the_rest = false;
+
+    config::readFile(
+        config_file_path,
+        [&](const QString){
+            // theme properties are in the global section
+            ignore_the_rest = true;
+        },
+        [&](const QString key, const QString val){
+            if (ignore_the_rest)
+                return;
+
+            if (result.count(key))
+                result[key] += QStringLiteral(", ") % val;
+            else
+                result.insert(key, val);
+        },
+        [&](const int linenum, const QString msg){
+            qWarning().noquote() << QObject::tr("`%1`, line %2: %3")
+                .arg(config_file_path, QString::number(linenum), msg);
+        });
+    return result;
+}
+
 } // namespace
 
 
@@ -93,9 +120,8 @@ void ThemeList::findAvailableThemes()
                 continue;
             }
 
-            const config::Config metadata = config::read(meta_path);
-            const config::ConfigGroup& metadata_root = metadata[QString()];
-            if (!metadata_root.contains(META_KEY_NAME)) {
+            const QHash<QString, QString> metadata = read_metafile(meta_path);
+            if (!metadata.contains(META_KEY_NAME)) {
                 qWarning().noquote() << warn_missingentry.arg(META_KEY_NAME, meta_path);
                 continue;
             }
@@ -109,11 +135,11 @@ void ThemeList::findAvailableThemes()
 
             m_themes.append(new Types::Theme(
                 basedir, qml_path,
-                metadata_root.value(META_KEY_NAME).toString(),
-                metadata_root.value(META_KEY_AUTHOR).toString(),
-                metadata_root.value(META_KEY_VERSION).toString(),
-                metadata_root.value(META_KEY_SUMMARY).toString(),
-                metadata_root.value(META_KEY_DESC).toString(),
+                metadata.value(META_KEY_NAME),
+                metadata.value(META_KEY_AUTHOR),
+                metadata.value(META_KEY_VERSION),
+                metadata.value(META_KEY_SUMMARY),
+                metadata.value(META_KEY_DESC),
                 this
             ));
 
