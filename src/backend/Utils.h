@@ -20,6 +20,7 @@
 #include <functional>
 
 class QString;
+class QStringList;
 
 
 /// Returns true if the path is an existing regular file or directory
@@ -39,6 +40,9 @@ void parseStoreFloat(const QString& str, float& val);
 /// Returns $PEGASUS_HOME if defined, or $HOME if defined,
 /// otherwise QDir::homePath().
 QString homePath();
+
+/// Returns the directory paths where config files may be located
+QStringList configDirPaths();
 
 
 /// Mathematical modulo -- the result has the same sign as the divisor

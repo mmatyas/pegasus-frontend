@@ -17,9 +17,12 @@
 
 #include "Utils.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QProcessEnvironment>
+#include <QRegularExpression>
+#include <QStandardPaths>
 #include <QString>
 #include <QVector>
 
@@ -78,6 +81,29 @@ QString homePath()
 #endif
     }();
     return home_path;
+}
+
+QStringList configDirPaths()
+{
+    static const QStringList config_dir_paths = [](){
+        QStringList paths(QLatin1String(":"));
+        paths << QCoreApplication::applicationDirPath();
+#ifdef INSTALL_DATADIR
+        if (validPath(INSTALL_DATADIR))
+            paths << QString(INSTALL_DATADIR);
+#endif
+        paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
+        paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+        paths.removeDuplicates();
+
+        // do not add the organization name to the search path
+        const QRegularExpression regex(QStringLiteral("/pegasus-frontend/pegasus-frontend$"));
+        paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
+
+        return paths;
+    }();
+
+    return config_dir_paths;
 }
 
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)

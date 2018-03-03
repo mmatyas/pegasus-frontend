@@ -37,22 +37,9 @@ const QString SETTINGSKEY_THEME(QStringLiteral("theme"));
 
 QStringList themeDirectories()
 {
-    QStringList theme_dirs;
-    theme_dirs << ":";
-    theme_dirs << QCoreApplication::applicationDirPath();
-#ifdef INSTALL_DATADIR
-    if (validPath(INSTALL_DATADIR))
-        theme_dirs << QString(INSTALL_DATADIR);
-#endif
-    theme_dirs << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
-    theme_dirs << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-
-    for (QString& path : theme_dirs) {
+    QStringList theme_dirs = ::configDirPaths();
+    for (QString& path : theme_dirs)
         path += "/themes/";
-        // do not add the organization name to the search path
-        path.replace(QLatin1String("/pegasus-frontend/pegasus-frontend/"),
-                     QLatin1String("/pegasus-frontend/"));
-    }
 
     return theme_dirs;
 }

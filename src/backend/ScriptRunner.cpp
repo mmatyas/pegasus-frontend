@@ -17,6 +17,8 @@
 
 #include "ScriptRunner.h"
 
+#include "Utils.h"
+
 #include <QDebug>
 #include <QDirIterator>
 #include <QProcess>
@@ -65,11 +67,9 @@ QVector<QString> ScriptRunner::findScripts(const QString& dirname)
 
     QVector<QString> scripts;
 
-    auto search_paths = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
+    auto search_paths = ::configDirPaths();
     for (auto& path : search_paths) {
         path += "/scripts/" + dirname;
-        // do not add the organization name to the search path
-        path.replace("/pegasus-frontend/pegasus-frontend/", "/pegasus-frontend/");
 
         QVector<QString> local_scripts;
         QDirIterator scripdir(path, filters, flags);
