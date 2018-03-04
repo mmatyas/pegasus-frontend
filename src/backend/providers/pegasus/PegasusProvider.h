@@ -34,9 +34,9 @@ public:
     void enhance(const QHash<QString, Types::Game*>&,
                  const QHash<QString, Types::Collection*>&) final;
 
-    void find_in_thirdparty_dirs(const QStringList&,
-                                 QHash<QString, Types::Game*>&,
-                                 QHash<QString, Types::Collection*>&);
+    void find_in_dirs(const QStringList&,
+                      QHash<QString, Types::Game*>&,
+                      QHash<QString, Types::Collection*>&);
 
 private:
     const QStringList m_game_dirs;

@@ -173,8 +173,8 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
 
 void traverse_dir(const QString& dir_path,
                   const QHash<QString, GameFilter>& filter_config,
-                  QHash<QString, Types::Game*>& games,
-                  QHash<QString, Types::Collection*>& collections)
+                  const QHash<QString, Types::Collection*>& collections,
+                  QHash<QString, Types::Game*>& games)
 {
     auto config_it = filter_config.constBegin();
     while (config_it != filter_config.constEnd()) {
@@ -202,7 +202,7 @@ void traverse_dir(const QString& dir_path,
             if (!include)
                 continue;
 
-            Types::Collection*& collection_ptr = collections[config_it.key()];
+            Types::Collection* const& collection_ptr = collections[config_it.key()];
             Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr)
                 game_ptr = new Types::Game(fileinfo, collection_ptr);
@@ -226,20 +226,22 @@ PegasusProvider::PegasusProvider(QObject* parent)
 void PegasusProvider::find(QHash<QString, Types::Game*>& games,
                            QHash<QString, Types::Collection*>& collections)
 {
-    for (const QString& dir_path : m_game_dirs) {
-        const auto filter_config = read_collections_file(dir_path, collections);
-        traverse_dir(dir_path, filter_config, games, collections);
-    }
+    find_in_dirs(m_game_dirs, games, collections);
 }
 
 void PegasusProvider::enhance(const QHash<QString, Types::Game*>&,
-             const QHash<QString, Types::Collection*>&)
+                              const QHash<QString, Types::Collection*>&)
 {}
 
-void PegasusProvider::find_in_thirdparty_dirs(const QStringList&,
-                             QHash<QString, Types::Game*>&,
-                             QHash<QString, Types::Collection*>&)
-{}
+void PegasusProvider::find_in_dirs(const QStringList& dir_list,
+                                   QHash<QString, Types::Game*>& games,
+                                   QHash<QString, Types::Collection*>& collections)
+{
+    for (const QString& dir_path : dir_list) {
+        const auto filter_config = read_collections_file(dir_path, collections);
+        traverse_dir(dir_path, filter_config, collections, games);
+    }
+}
 
 } // namespace pegasus
 } // namespace providers

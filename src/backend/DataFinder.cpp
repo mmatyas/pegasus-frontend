@@ -76,7 +76,7 @@ void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
         provider->find(games, collections);
 
     static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
-        ->find_in_thirdparty_dirs(m_thirdparty_rom_dirs, games, collections);
+        ->find_in_dirs(m_thirdparty_rom_dirs, games, collections);
 
     removeEmptyCollections(collections);
 }
