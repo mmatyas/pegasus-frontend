@@ -220,13 +220,13 @@ namespace pegasus {
 
 PegasusProvider::PegasusProvider(QObject* parent)
     : Provider(parent)
+    , m_game_dirs(load_game_dir_list())
 {}
 
 void PegasusProvider::find(QHash<QString, Types::Game*>& games,
                            QHash<QString, Types::Collection*>& collections)
 {
-    const QStringList game_dirs = load_game_dir_list();
-    for (const QString& dir_path : game_dirs) {
+    for (const QString& dir_path : m_game_dirs) {
         const auto filter_config = read_collections_file(dir_path, collections);
         traverse_dir(dir_path, filter_config, games, collections);
     }

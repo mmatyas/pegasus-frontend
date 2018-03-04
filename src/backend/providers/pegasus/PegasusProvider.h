@@ -37,6 +37,9 @@ public:
     void find_in_thirdparty_dirs(const QStringList&,
                                  QHash<QString, Types::Game*>&,
                                  QHash<QString, Types::Collection*>&);
+
+private:
+    const QStringList m_game_dirs;
 };
 
 } // namespace pegasus
