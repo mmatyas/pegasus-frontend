@@ -20,6 +20,8 @@
 #include "ConfigFile.h"
 #include "Utils.h"
 #include "types/Collection.h"
+#include "types/Game.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -82,6 +84,8 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
     // optional: name, launch
 
     static const QHash<QString, AttribType> key_types {
+        { QStringLiteral("name"), AttribType::NAME },
+        { QStringLiteral("launch"), AttribType::LAUNCH_CMD },
         { QStringLiteral("extension"), AttribType::EXTENSIONS },
         { QStringLiteral("extensions"), AttribType::EXTENSIONS },
         { QStringLiteral("file"), AttribType::FILES },
@@ -98,7 +102,7 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
     QString curr_coll_name;
     QHash<QString, GameFilter> config;
 
-    static const auto on_section = [&](const int, const QString name){
+    const auto on_section = [&curr_coll_name, &collections, &dir_path](const int, const QString name){
         curr_coll_name = name;
 
         if (!collections.contains(name))
@@ -106,7 +110,7 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
 
         collections[name]->sourceDirsMut().append(dir_path);
     };
-    static const auto on_attribute = [&](const int lineno, const QString key, const QString val){
+    const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (curr_coll_name.isEmpty()) {
             qWarning().noquote()
                 << QObject::tr("`%1`, line %2: no sections defined yet, values ignored")
@@ -121,8 +125,8 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
         }
         if (!key_types.contains(key)) {
             qWarning().noquote()
-                << QObject::tr("`%1`, line %2: unrecognized attribute name, ignored")
-                               .arg(curr_file_path, QString::number(lineno));
+                << QObject::tr("`%1`, line %2: unrecognized attribute name `%3`, ignored")
+                               .arg(curr_file_path, QString::number(lineno), key);
             return;
         }
 
@@ -153,7 +157,7 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
         }
 
     };
-    static const auto on_error = [&](const int lineno, const QString msg){
+    const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
             << QObject::tr("`%1`, line %2: %3")
                            .arg(curr_file_path, QString::number(lineno), msg);
@@ -166,48 +170,80 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
     config::readFile(curr_file_path, on_section, on_attribute, on_error);
 
     curr_file_path = dir_path + QStringLiteral("/collections.txt");
+    curr_coll_name.clear();
     config::readFile(curr_file_path, on_section, on_attribute, on_error);
 
+    // cleanup and return
+
+    auto config_it = config.begin();
+    for (; config_it != config.end(); ++config_it) {
+        GameFilter& filter = config_it.value();
+        filter.include.extensions.removeDuplicates();
+        filter.include.files.removeDuplicates();
+        filter.exclude.extensions.removeDuplicates();
+        filter.exclude.files.removeDuplicates();
+        filter.extra.removeDuplicates();
+    }
     return config;
 }
 
-void traverse_dir(const QString& dir_path,
+void traverse_dir(const QString& dir_base_path,
                   const QHash<QString, GameFilter>& filter_config,
                   const QHash<QString, Types::Collection*>& collections,
                   QHash<QString, Types::Game*>& games)
 {
+    constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto entry_flags = QDirIterator::FollowSymlinks;
+
     auto config_it = filter_config.constBegin();
-    while (config_it != filter_config.constEnd()) {
+    for (; config_it != filter_config.constEnd(); ++config_it) {
         const GameFilter& filter = config_it.value();
         const QRegularExpression include_regex(filter.include.regex);
         const QRegularExpression exclude_regex(filter.exclude.regex);
 
-        static constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-        static constexpr auto entry_flags = QDirIterator::FollowSymlinks;
+        // find all dirs and subdirectories, but ignore 'media'
 
-        QDirIterator dir_it(dir_path, entry_filters, entry_flags);
-        while (dir_it.hasNext()) {
-            dir_it.next();
-            const QFileInfo fileinfo = dir_it.fileInfo();
+        QStringList subdirs;
+        {
+            constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+            constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
 
-            const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
-                || filter.exclude.files.contains(fileinfo.filePath())
-                || exclude_regex.match(fileinfo.filePath()).hasMatch();
-            if (exclude)
-                continue;
+            QDirIterator dirs_it(dir_base_path, subdir_filters, subdir_flags);
+            while (dirs_it.hasNext()) {
+                subdirs << dirs_it.next();
+            }
+            subdirs.removeOne(dir_base_path + QStringLiteral("/media"));
+            subdirs.append(dir_base_path + QStringLiteral("/")); // added "/" so all entries have base + 1 length
+        }
 
-            const bool include = filter.include.extensions.contains(fileinfo.suffix())
-                || filter.include.files.contains(fileinfo.filePath())
-                || include_regex.match(fileinfo.filePath()).hasMatch();
-            if (!include)
-                continue;
+        // run through the main dir and all valid subdirs
 
-            Types::Collection* const& collection_ptr = collections[config_it.key()];
-            Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
-            if (!game_ptr)
-                game_ptr = new Types::Game(fileinfo, collection_ptr);
+        for (const QString& dir : qAsConst(subdirs)) {
+            QDirIterator dir_it(dir, entry_filters, entry_flags);
+            while (dir_it.hasNext()) {
+                dir_it.next();
+                const QFileInfo fileinfo = dir_it.fileInfo();
+                const QString relative_path = fileinfo.filePath().mid(dir_base_path.length() + 1);
 
-            collection_ptr->gameListMut().addGame(game_ptr);
+                const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
+                    || filter.exclude.files.contains(relative_path)
+                    || (!filter.exclude.regex.isEmpty() && exclude_regex.match(fileinfo.filePath()).hasMatch());
+                if (exclude)
+                    continue;
+
+                const bool include = filter.include.extensions.contains(fileinfo.suffix())
+                    || filter.include.files.contains(relative_path)
+                    || (!filter.include.regex.isEmpty() && include_regex.match(fileinfo.filePath()).hasMatch());
+                if (!include)
+                    continue;
+
+                Types::Collection* const& collection_ptr = collections[config_it.key()];
+                Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
+                if (!game_ptr)
+                    game_ptr = new Types::Game(fileinfo, collection_ptr);
+
+                collection_ptr->gameListMut().addGame(game_ptr);
+            }
         }
     }
 }
