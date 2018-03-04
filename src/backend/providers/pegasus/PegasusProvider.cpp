@@ -35,18 +35,20 @@ QStringList load_game_dir_list()
     constexpr int LINE_MAX_LEN = 4096;
 
     QStringList rom_dirs;
-    QStringList possible_config_paths = ::configDirPaths();
-    for (QString& path : possible_config_paths) {
-        path += QStringLiteral("game_dirs.txt");
+    for (QString& path : ::configDirPaths()) {
+        path += QStringLiteral("/game_dirs.txt");
 
         QFile config_file(path);
         if (!config_file.open(QFile::ReadOnly | QFile::Text))
             continue;
 
+        qInfo() << QObject::tr("Found `%1`").arg(path);
+
         QTextStream stream(&config_file);
         QString line;
         while (stream.readLineInto(&line, LINE_MAX_LEN)) {
-            rom_dirs << line;
+            if (!line.startsWith('#'))
+                rom_dirs << line;
         }
     }
 
