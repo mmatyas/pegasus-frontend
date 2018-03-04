@@ -29,14 +29,6 @@ bool validPath(const QString& path);
 /// Returns true if the path is an existing regular file or an embedded resource
 bool validFileQt(const QString& path);
 
-/// If the string can be converted to an integer,
-/// it will be saved to the provided field
-void parseStoreInt(const QString& str, int& val);
-
-/// If the string can be converted to a `float` value,
-/// it will be saved to the provided field
-void parseStoreFloat(const QString& str, float& val);
-
 /// Returns $PEGASUS_HOME if defined, or $HOME if defined,
 /// otherwise QDir::homePath().
 QString homePath();
