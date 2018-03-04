@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>empty/nothing_to_see_here</file>
+    </qresource>
+</RCC>
