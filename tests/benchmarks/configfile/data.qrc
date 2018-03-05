@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>test.cfg</file>
+    </qresource>
+</RCC>
