@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>empty/nothing_to_see_here</file>
+        <file>filled/9999-in-1.ext</file>
+        <file>filled/buggygame.ext</file>
+        <file>filled/duplicategame.ext</file>
+        <file>filled/mygame1.ext</file>
+        <file>filled/mygame2.ext</file>
+        <file>filled/mygame3.ext</file>
+        <file>filled/notgame.unk</file>
+        <file>filled/media/game_ignored.ext</file>
+        <file>filled/subdir/game_in_subdir.ext</file>
+        <file>filled/collections.txt</file>
+        <file>filled/favgame1.ext</file>
+        <file>filled/favgame2.ext</file>
+    </qresource>
+</RCC>
