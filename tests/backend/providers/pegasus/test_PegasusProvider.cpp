@@ -58,6 +58,11 @@ void test_PegasusProvider::find_in_filled_dir()
     QVERIFY(collections[QStringLiteral("faves")] != nullptr);
     QVERIFY(collections[QStringLiteral("multi")] != nullptr);
 
+    // with the correct properties
+    QCOMPARE(collections[QStringLiteral("mygames")]->name(), QStringLiteral("My Games"));
+    QCOMPARE(collections[QStringLiteral("faves")]->name(), QStringLiteral("Favorite games"));
+    QCOMPARE(collections[QStringLiteral("multi")]->name(), QStringLiteral("Multi-game ROMs"));
+
     // finds the correct amount of games
     QCOMPARE(games.count(), 7);
     QCOMPARE(collections[QStringLiteral("mygames")]->gameList().allCount(), 7);
