@@ -7,7 +7,7 @@ launch: myemulator ${FILEPATH}
 
 [faves]
 name: Favorite games
-files: favgame1.ext favgame2.ext
+files: favgame1.ext, favgame2.ext, game with spaces.ext
 
 [multi]
 name: Multi-game ROMs

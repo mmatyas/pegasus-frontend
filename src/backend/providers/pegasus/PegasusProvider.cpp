@@ -33,6 +33,15 @@
 
 namespace {
 
+QStringList tokenize(const QString& str)
+{
+    QStringList list = str.split(',', QString::SkipEmptyParts);
+    for (QString& item : list)
+        item = item.trimmed();
+
+    return list;
+}
+
 QStringList load_game_dir_list()
 {
     constexpr int LINE_MAX_LEN = 4096;
@@ -142,10 +151,10 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
                 collections[curr_coll_name]->setCommonLaunchCmd(val);
                 break;
             case CollAttribType::EXTENSIONS:
-                filter_group.extensions.append(::tokenize(val.toLower()));
+                filter_group.extensions.append(tokenize(val.toLower()));
                 break;
             case CollAttribType::FILES:
-                filter_group.files.append(::tokenize(val));
+                filter_group.files.append(tokenize(val));
                 break;
             case CollAttribType::REGEX:
                 if (!filter_group.regex.isEmpty()) {
@@ -330,13 +339,13 @@ void read_metadata_file(const QString& dir_path,
                 curr_game->m_title = val;
                 break;
             case MetaAttribType::DEVELOPER:
-                curr_game->addDevelopers(::tokenize(val));
+                curr_game->addDevelopers(tokenize(val));
                 break;
             case MetaAttribType::PUBLISHER:
-                curr_game->addPublishers(::tokenize(val));
+                curr_game->addPublishers(tokenize(val));
                 break;
             case MetaAttribType::GENRE:
-                curr_game->addGenres(::tokenize(val));
+                curr_game->addGenres(tokenize(val));
                 break;
             case MetaAttribType::PLAYER_COUNT:
                 {

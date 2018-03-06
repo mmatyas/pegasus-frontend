@@ -13,5 +13,6 @@
         <file>filled/collections.txt</file>
         <file>filled/favgame1.ext</file>
         <file>filled/favgame2.ext</file>
+        <file>filled/game with spaces.ext</file>
     </qresource>
 </RCC>

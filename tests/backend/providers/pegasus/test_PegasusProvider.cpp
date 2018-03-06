@@ -64,9 +64,9 @@ void test_PegasusProvider::find_in_filled_dir()
     QCOMPARE(collections[QStringLiteral("multi")]->name(), QStringLiteral("Multi-game ROMs"));
 
     // finds the correct amount of games
-    QCOMPARE(games.count(), 7);
-    QCOMPARE(collections[QStringLiteral("mygames")]->gameList().allCount(), 7);
-    QCOMPARE(collections[QStringLiteral("faves")]->gameList().allCount(), 2);
+    QCOMPARE(games.count(), 8);
+    QCOMPARE(collections[QStringLiteral("mygames")]->gameList().allCount(), 8);
+    QCOMPARE(collections[QStringLiteral("faves")]->gameList().allCount(), 3);
     QCOMPARE(collections[QStringLiteral("multi")]->gameList().allCount(), 1);
 
     // finds the correct files for the collections
@@ -76,12 +76,14 @@ void test_PegasusProvider::find_in_filled_dir()
         { ":/filled/mygame3.ext" },
         { ":/filled/favgame1.ext" },
         { ":/filled/favgame2.ext" },
+        { ":/filled/game with spaces.ext" },
         { ":/filled/9999-in-1.ext" },
         { ":/filled/subdir/game_in_subdir.ext" },
     };
     const QStringList faves_paths {
         { ":/filled/favgame1.ext" },
         { ":/filled/favgame2.ext" },
+        { ":/filled/game with spaces.ext" },
     };
     const QStringList multi_paths {
         { ":/filled/9999-in-1.ext" },
