@@ -22,6 +22,7 @@
 
 
 namespace {
+
 void addToStrAndList(const QString& new_val, QString& str, QStringList& list)
 {
     if (new_val.isEmpty())
@@ -34,6 +35,13 @@ void addToStrAndList(const QString& new_val, QString& str, QStringList& list)
 
     list.append(new_val);
 }
+
+void addListToStrAndList(const QStringList& new_vals, QString& str, QStringList& list)
+{
+    for (const QString& new_val : new_vals)
+        addToStrAndList(new_val, str, list);
+}
+
 } // namespace
 
 
@@ -53,19 +61,30 @@ Game::Game(QFileInfo fileinfo, QObject* parent)
 {
 }
 
-void Game::addDeveloper(const QString& dev)
+void Game::addDeveloper(const QString& val)
 {
-    addToStrAndList(dev, m_developer_str, m_developer_list);
+    addToStrAndList(val, m_developer_str, m_developer_list);
+}
+void Game::addPublisher(const QString& val)
+{
+    addToStrAndList(val, m_publisher_str, m_publisher_list);
+}
+void Game::addGenre(const QString& val)
+{
+    addToStrAndList(val, m_genre_str, m_genre_list);
 }
 
-void Game::addPublisher(const QString& pub)
+void Game::addDevelopers(const QStringList& list)
 {
-    addToStrAndList(pub, m_publisher_str, m_publisher_list);
+    addListToStrAndList(list, m_developer_str, m_developer_list);
 }
-
-void Game::addGenre(const QString& genre)
+void Game::addPublishers(const QStringList& list)
 {
-    addToStrAndList(genre, m_genre_str, m_genre_list);
+    addListToStrAndList(list, m_publisher_str, m_publisher_list);
+}
+void Game::addGenres(const QStringList& list)
+{
+    addListToStrAndList(list, m_genre_str, m_genre_list);
 }
 
 void Game::setRelease(QDate date)

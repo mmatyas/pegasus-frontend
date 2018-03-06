@@ -68,6 +68,9 @@ public:
     void addDeveloper(const QString&);
     void addPublisher(const QString&);
     void addGenre(const QString&);
+    void addDevelopers(const QStringList&);
+    void addPublishers(const QStringList&);
+    void addGenres(const QStringList&);
 
     int m_players;
     bool m_favorite;
