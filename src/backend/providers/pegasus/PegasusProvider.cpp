@@ -21,14 +21,12 @@
 #include "Utils.h"
 #include "types/Collection.h"
 #include "types/Game.h"
-#include "types/Collection.h"
 
 #include <QDebug>
 #include <QDirIterator>
 #include <QFile>
 #include <QRegularExpression>
 #include <QStringBuilder>
-#include <QTextStream>
 
 
 namespace {
@@ -112,6 +110,11 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
     QString curr_coll_name;
     QHash<QString, GameFilter> config;
 
+    const auto on_error = [&](const int lineno, const QString msg){
+        qWarning().noquote()
+            << QObject::tr("`%1`, line %2: %3")
+                           .arg(curr_file_path, QString::number(lineno), msg);
+    };
     const auto on_section = [&](const int, const QString name){
         curr_coll_name = name;
 
@@ -122,9 +125,7 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (curr_coll_name.isEmpty()) {
-            qWarning().noquote()
-                << QObject::tr("`%1`, line %2: no sections defined yet, values ignored")
-                               .arg(curr_file_path, QString::number(lineno));
+            on_error(lineno, QObject::tr("no sections defined yet, values ignored"));
             return;
         }
 
@@ -134,9 +135,7 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
             return;
         }
         if (!key_types.contains(key)) {
-            qWarning().noquote()
-                << QObject::tr("`%1`, line %2: unrecognized attribute name `%3`, ignored")
-                               .arg(curr_file_path, QString::number(lineno), key);
+            on_error(lineno, QObject::tr("unrecognized attribute name `%3`, ignored").arg(key));
             return;
         }
 
@@ -157,20 +156,13 @@ QHash<QString, GameFilter> read_collections_file(const QString& dir_path,
                 filter_group.files.append(tokenize(val));
                 break;
             case CollAttribType::REGEX:
-                if (!filter_group.regex.isEmpty()) {
-                    qWarning().noquote()
-                        << QObject::tr("`%1`, line %2: `%3` was already defined for this collection, replaced")
-                                       .arg(curr_file_path, QString::number(lineno), key);
-                }
+                if (!filter_group.regex.isEmpty())
+                    on_error(lineno, QObject::tr("`%3` was already defined for this collection, replaced").arg(key));
+
                 filter_group.regex = val;
                 break;
         }
 
-    };
-    const auto on_error = [&](const int lineno, const QString msg){
-        qWarning().noquote()
-            << QObject::tr("`%1`, line %2: %3")
-                           .arg(curr_file_path, QString::number(lineno), msg);
     };
 
 
