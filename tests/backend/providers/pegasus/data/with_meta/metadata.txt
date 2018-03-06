@@ -1,0 +1,22 @@
+[mygame1.ext]
+title: My Game 1
+# repeating the developer, publisher or genre will append, not overwrite
+developer: Dev1
+developer: Dev2
+
+[mygame2.ext]
+# `name` is also accepted for title
+name: My Game 2
+# the element separator is `,`
+publishers: Publisher with Spaces, Another Publisher
+
+[mygame3.ext]
+genres: genre1, genre2,
+  genre with spaces
+players: 2-4
+
+[subdir/game_in_subdir.ext]
+rating: 80%
+# repeating keys will overwrite previous values
+release: 1998
+release: 1998-05

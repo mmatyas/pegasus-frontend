@@ -13,6 +13,13 @@
         <file>filled/collections.txt</file>
         <file>filled/favgame1.ext</file>
         <file>filled/favgame2.ext</file>
+        <file>with_meta/mygame1.ext</file>
+        <file>with_meta/mygame2.ext</file>
+        <file>with_meta/mygame3.ext</file>
+        <file>with_meta/media/game_ignored.ext</file>
+        <file>with_meta/subdir/game_in_subdir.ext</file>
+        <file>with_meta/collections.txt</file>
+        <file>with_meta/metadata.txt</file>
         <file>filled/game with spaces.ext</file>
     </qresource>
 </RCC>

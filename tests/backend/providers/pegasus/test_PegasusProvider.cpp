@@ -30,6 +30,7 @@ class test_PegasusProvider : public QObject {
 private slots:
     void find_in_empty_dir();
     void find_in_filled_dir();
+    void enhance();
 };
 
 void test_PegasusProvider::find_in_empty_dir()
@@ -107,6 +108,46 @@ void test_PegasusProvider::find_in_filled_dir()
         QVERIFY(game != nullptr);
         QCOMPARE(all_game_paths.count(game->m_fileinfo.filePath()), 1);
     }
+}
+
+void test_PegasusProvider::enhance()
+{
+    QHash<QString, Types::Game*> games;
+    QHash<QString, Types::Collection*> collections;
+
+    providers::pegasus::PegasusProvider provider;
+    provider.find_in_dirs({ QStringLiteral(":/with_meta") }, games, collections);
+    provider.enhance_in_dirs({ QStringLiteral(":/with_meta") }, games, collections);
+
+    QCOMPARE(collections.count(), 1);
+    QCOMPARE(games.count(), 4);
+
+    const Types::Game* game;
+
+    game = games[QStringLiteral(":/with_meta/mygame1.ext")];
+    QVERIFY(game);
+    QCOMPARE(game->property("title").toString(), QStringLiteral("My Game 1"));
+    QCOMPARE(game->property("developer").toString(), QStringLiteral("Dev1, Dev2"));
+    QCOMPARE(game->property("developerList").toStringList(), QStringList({"Dev1", "Dev2"}));
+
+    game = games[QStringLiteral(":/with_meta/mygame2.ext")];
+    QVERIFY(game);
+    QCOMPARE(game->property("title").toString(), QStringLiteral("My Game 2"));
+    QCOMPARE(game->property("publisher").toString(), QStringLiteral("Publisher with Spaces, Another Publisher"));
+    QCOMPARE(game->property("publisherList").toStringList(), QStringList({"Publisher with Spaces", "Another Publisher"}));
+
+    game = games[QStringLiteral(":/with_meta/mygame3.ext")];
+    QVERIFY(game);
+    QCOMPARE(game->property("title").toString(), QStringLiteral("mygame3"));
+    QCOMPARE(game->property("genre").toString(), QStringLiteral("genre1, genre2, genre with spaces"));
+    QCOMPARE(game->property("genreList").toStringList(), QStringList({"genre1", "genre2", "genre with spaces"}));
+    QCOMPARE(game->property("players").toInt(), 4);
+
+    game = games[QStringLiteral(":/with_meta/subdir/game_in_subdir.ext")];
+    QVERIFY(game);
+    QCOMPARE(game->property("title").toString(), QStringLiteral("game_in_subdir"));
+    QCOMPARE(game->property("rating").toFloat(), 0.8f);
+    QCOMPARE(game->property("release").toDate(), QDate(1998, 5, 1));
 }
 
 

@@ -1,0 +1,2 @@
+[mygames]
+extensions: ext

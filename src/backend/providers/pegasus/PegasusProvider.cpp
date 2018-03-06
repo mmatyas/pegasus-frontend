@@ -420,11 +420,9 @@ void PegasusProvider::find(QHash<QString, Types::Game*>& games,
 }
 
 void PegasusProvider::enhance(const QHash<QString, Types::Game*>& games,
-                              const QHash<QString, Types::Collection*>&)
+                              const QHash<QString, Types::Collection*>& collections)
 {
-    for (const QString& dir_path : m_game_dirs) {
-        read_metadata_file(dir_path, games);
-    }
+    enhance_in_dirs(m_game_dirs, games, collections);
 }
 
 void PegasusProvider::find_in_dirs(const QStringList& dir_list,
@@ -434,6 +432,15 @@ void PegasusProvider::find_in_dirs(const QStringList& dir_list,
     for (const QString& dir_path : dir_list) {
         const auto filter_config = read_collections_file(dir_path, collections);
         traverse_dir(dir_path, filter_config, collections, games);
+    }
+}
+
+void PegasusProvider::enhance_in_dirs(const QStringList& dir_list,
+                                      const QHash<QString, Types::Game*>& games,
+                                      const QHash<QString, Types::Collection*>&)
+{
+    for (const QString& dir_path : dir_list) {
+        read_metadata_file(dir_path, games);
     }
 }
 
