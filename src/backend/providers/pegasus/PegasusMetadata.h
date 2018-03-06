@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,36 +17,35 @@
 
 #pragma once
 
-#include "PegasusCollections.h"
-#include "PegasusMetadata.h"
-#include "providers/Provider.h"
+#include <QHash>
+#include <QString>
+#include <QStringList>
+#include <QRegularExpression>
+
+namespace Types { class Game; }
+namespace Types { class Collection; }
 
 
 namespace providers {
 namespace pegasus {
 
-class PegasusProvider : public Provider {
-    Q_OBJECT
+enum class MetaAttribType : unsigned char;
 
+class PegasusMetadata {
 public:
-    explicit PegasusProvider(QObject* parent = nullptr);
+    PegasusMetadata();
 
-    void find(QHash<QString, Types::Game*>&,
-              QHash<QString, Types::Collection*>&) final;
-    void enhance(const QHash<QString, Types::Game*>&,
-                 const QHash<QString, Types::Collection*>&) final;
-
-    void find_in_dirs(const QStringList&,
-                      QHash<QString, Types::Game*>&,
-                      QHash<QString, Types::Collection*>&) const;
     void enhance_in_dirs(const QStringList&,
                          const QHash<QString, Types::Game*>&,
                          const QHash<QString, Types::Collection*>&) const;
 
 private:
-    const QStringList m_game_dirs;
-    const PegasusCollections collection_finder;
-    const PegasusMetadata metadata_finder;
+    const QHash<QString, MetaAttribType> m_key_types;
+    const QRegularExpression m_player_regex;
+    const QRegularExpression m_rating_regex;
+    const QRegularExpression m_release_regex;
+
+    void read_metadata_file(const QString&, const QHash<QString, Types::Game*>&) const;
 };
 
 } // namespace pegasus

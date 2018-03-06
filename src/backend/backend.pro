@@ -35,7 +35,10 @@ SOURCES += \
     types/Settings.cpp \
     types/System.cpp \
     types/Theme.cpp \
-    types/ThemeList.cpp
+    types/ThemeList.cpp \
+    providers/pegasus/PegasusCollections.cpp \
+    providers/pegasus/PegasusCommon.cpp \
+    providers/pegasus/PegasusMetadata.cpp
 
 HEADERS += \
     Api.h \
@@ -70,7 +73,10 @@ HEADERS += \
     types/Settings.h \
     types/System.h \
     types/Theme.h \
-    types/ThemeList.h
+    types/ThemeList.h \
+    providers/pegasus/PegasusCollections.h \
+    providers/pegasus/PegasusCommon.h \
+    providers/pegasus/PegasusMetadata.h
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
