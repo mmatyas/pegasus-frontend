@@ -95,6 +95,8 @@ void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
 
     m_thirdparty_rom_dirs.removeDuplicates();
     pegasus_assets::findAssets(m_thirdparty_rom_dirs, games);
+    static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
+        ->enhance_in_dirs(m_thirdparty_rom_dirs, games, collections);
     m_thirdparty_rom_dirs.clear(); // free memory
 
     for (auto& provider : qAsConst(m_providers))
