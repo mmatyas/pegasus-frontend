@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Home\n\n\nPegasus is an experimental emulator frontend, focusing on customizability, cross platform support (including embedded) and high performance. Here you can find the related documentation, development notes and guides.\n\n\nUser guide\n\n\n\n\nInstallation and setup\n\n\nGame collections and metadata files\n\n\nDefault controls\n\n\nScripting\n\n\n\n\nCore development\n\n\n\n\nInstalling Qt on desktop\n\n\nCross compiling Qt for embedded\n\n\nBuilding Pegasus\n\n\nDeployment\n\n\nTranslations\n\n\n\n\nTheme development\n\n\n\n\nOverview\n\n\nQML tutorials\n\n\nStep-by-step: Simple theme\n\n\nStep-by-step: Flixnet theme\n\n\nAPI reference", 
+            "text": "Home\n\n\nPegasus is an experimental emulator frontend, focusing on customizability, cross platform support (including embedded) and high performance. Here you can find the related documentation, development notes and guides.\n\n\nUser guide\n\n\n\n\nInstallation and setup\n\n\nGame collections and metadata files\n\n\nDefault controls\n\n\nScripting\n\n\n\n\nCore development\n\n\n\n\nInstalling Qt on desktop\n\n\nCross compiling Qt for embedded\n\n\nBuilding Pegasus\n\n\nDeployment\n\n\nTranslations\n\n\n\n\nTheme development\n\n\n\n\nOverview\n\n\nQML tutorials\n\n\nAvailable QML modules\n\n\nStep-by-step: Simple theme\n\n\nStep-by-step: Flixnet theme\n\n\nAPI reference", 
             "title": "Home"
         }, 
         {
@@ -22,7 +22,7 @@
         }, 
         {
             "location": "/#theme-development", 
-            "text": "Overview  QML tutorials  Step-by-step: Simple theme  Step-by-step: Flixnet theme  API reference", 
+            "text": "Overview  QML tutorials  Available QML modules  Step-by-step: Simple theme  Step-by-step: Flixnet theme  API reference", 
             "title": "Theme development"
         }, 
         {
@@ -339,6 +339,16 @@
             "location": "/themes/qml-tutorials/#visual-editor", 
             "text": "Qt Creator has a drag-and-drop QML editor (the Design tab). Unfortunately I couldn't use it because of crashes, but you might have better luck with it.", 
             "title": "Visual editor"
+        }, 
+        {
+            "location": "/themes/qml-modules/", 
+            "text": "Available QML modules\n\n\nThe following modules are bundled with Pegasus, and can be safely \ninclude\nd in QML files:\n\n\n\n\nQtQuick  2.0\n\n\nQtQuick.Layouts  1.3\n\n\nQtQuick.Particles  2.0\n\n\nQtQuick.Window  2.0\n\n\nQtCanvas3D  1.1\n\n\nQtGamepad  1.0\n\n\nQtGraphicalEffects  1.0\n\n\nQtMultimedia  5.8", 
+            "title": "QML modules"
+        }, 
+        {
+            "location": "/themes/qml-modules/#available-qml-modules", 
+            "text": "The following modules are bundled with Pegasus, and can be safely  include d in QML files:   QtQuick  2.0  QtQuick.Layouts  1.3  QtQuick.Particles  2.0  QtQuick.Window  2.0  QtCanvas3D  1.1  QtGamepad  1.0  QtGraphicalEffects  1.0  QtMultimedia  5.8", 
+            "title": "Available QML modules"
         }, 
         {
             "location": "/themes/example-simple/", 
