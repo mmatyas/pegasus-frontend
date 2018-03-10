@@ -342,12 +342,12 @@
         }, 
         {
             "location": "/themes/qml-modules/", 
-            "text": "Available QML modules\n\n\nThe following modules are bundled with Pegasus, and can be safely \ninclude\nd in QML files:\n\n\n\n\nQtQuick  2.0\n\n\nQtQuick.Layouts  1.3\n\n\nQtQuick.Particles  2.0\n\n\nQtQuick.Window  2.0\n\n\nQtCanvas3D  1.1\n\n\nQtGamepad  1.0\n\n\nQtGraphicalEffects  1.0\n\n\nQtMultimedia  5.8", 
+            "text": "Available QML modules\n\n\nThe following modules are bundled with Pegasus, and can be safely \ninclude\nd in QML files:\n\n\n\n\nQtQuick\n\n\nQtQuick.Layouts\n\n\nQtQuick.Particles\n\n\nQtQuick.Window\n\n\nQtCanvas3D\n\n\nQtGamepad\n\n\nQtGraphicalEffects\n\n\nQtMultimedia", 
             "title": "QML modules"
         }, 
         {
             "location": "/themes/qml-modules/#available-qml-modules", 
-            "text": "The following modules are bundled with Pegasus, and can be safely  include d in QML files:   QtQuick  2.0  QtQuick.Layouts  1.3  QtQuick.Particles  2.0  QtQuick.Window  2.0  QtCanvas3D  1.1  QtGamepad  1.0  QtGraphicalEffects  1.0  QtMultimedia  5.8", 
+            "text": "The following modules are bundled with Pegasus, and can be safely  include d in QML files:   QtQuick  QtQuick.Layouts  QtQuick.Particles  QtQuick.Window  QtCanvas3D  QtGamepad  QtGraphicalEffects  QtMultimedia", 
             "title": "Available QML modules"
         }, 
         {
