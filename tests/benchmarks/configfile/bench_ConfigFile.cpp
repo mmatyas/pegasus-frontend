@@ -82,9 +82,9 @@ void bench_ConfigFile::empty()
 void bench_ConfigFile::file()
 {
     QBENCHMARK {
-        QTest::ignoreMessage(QtWarningMsg, "line 3: line invalid, skipped");
-        QTest::ignoreMessage(QtWarningMsg, "line 14: line invalid, skipped");
-        QTest::ignoreMessage(QtWarningMsg, "line 16: line invalid, skipped");
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 3: .*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 14: .*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 16: .*"));
 
         config::readFile(":/test.cfg",
             [this](const int, const QString name){ this->onSectionFound(name); },

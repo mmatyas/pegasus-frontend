@@ -69,7 +69,11 @@ void readStream(QTextStream& stream,
             continue;
 
         // multiline (starts with whitespace but trimmed_line is not empty)
-        if (rx_multiline.match(line).hasMatch() && !last_key.isEmpty()) {
+        if (line.at(0).isSpace()) {
+            if (last_key.isEmpty()) {
+                onError(linenum, QStringLiteral("multiline value found, but no attribute has been defined yet"));
+                continue;
+            }
             if (trimmed_line == QLatin1String(".")) {
                 last_val.append('\n');
                 continue;
@@ -96,19 +100,16 @@ void readStream(QTextStream& stream,
         if (rx_keyval_match.hasMatch()) {
             on_attrib_complete();
 
-            const QString key = rx_keyval_match.capturedRef(1).trimmed().toString();
-            if (key.isEmpty()) {
-                onError(linenum, QStringLiteral("attribute name missing, line skipped"));
-                continue;
-            }
-            last_key = key;
-            // the value can be empty here, in case it's purely multiline
+            // the key is never empty if the regex matches the *trimmed* line
+            last_key = rx_keyval_match.capturedRef(1).trimmed().toString();
+            Q_ASSERT(!last_key.isEmpty());
+            // the value can be empty here, if it's purely multiline
             last_val = rx_keyval_match.capturedRef(2).trimmed().toString();
             continue;
         }
 
         // invalid line
-        onError(linenum, "line invalid, skipped");
+        onError(linenum, QStringLiteral("line invalid, skipped"));
     }
 
     // the very last line

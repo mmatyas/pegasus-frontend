@@ -93,8 +93,8 @@ void test_ConfigFile::datablob()
 
 void test_ConfigFile::file()
 {
-    QTest::ignoreMessage(QtWarningMsg, "line 3: line invalid, skipped");
-    QTest::ignoreMessage(QtWarningMsg, "line 14: line invalid, skipped");
+    QTest::ignoreMessage(QtWarningMsg, "line 3: multiline value found, but no attribute has been defined yet");
+    QTest::ignoreMessage(QtWarningMsg, "line 14: multiline value found, but no attribute has been defined yet");
     QTest::ignoreMessage(QtWarningMsg, "line 16: line invalid, skipped");
     config::readFile(":/test.cfg",
         [this](const int, const QString name){ this->onSectionFound(name); },
