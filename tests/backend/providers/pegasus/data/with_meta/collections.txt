@@ -1,2 +1,2 @@
-[mygames]
+collection: mygames
 extensions: ext

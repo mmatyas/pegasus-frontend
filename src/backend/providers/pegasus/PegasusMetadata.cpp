@@ -84,7 +84,6 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
     // reminder: sections are relative file paths
 
     QString curr_file_path;
-    QString curr_game_path;
     Types::Game* curr_game = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
@@ -92,27 +91,26 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
             << QObject::tr("`%1`, line %2: %3")
                            .arg(curr_file_path, QString::number(lineno), msg);
     };
-    const auto on_section = [&](const int lineno, const QString name){
-        curr_game_path = dir_path % '/' % name;
-        const QFileInfo fileinfo(curr_game_path);
-        curr_game = nullptr;
-
-        if (!games.contains(fileinfo.canonicalFilePath())) {
-            on_error(lineno,
-                QObject::tr("the game `%3` is either missing or excluded, values for it will be ignored").arg(name));
-            return;
-        }
-
-        curr_game = games[fileinfo.canonicalFilePath()];
-        Q_ASSERT(curr_game);
-    };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
-        if (curr_game_path.isEmpty()) {
-            on_error(lineno, QObject::tr("no sections defined yet, values ignored"));
+        if (key == QLatin1String("file")) {
+            const QString curr_game_path = dir_path % '/' % val;
+            const QFileInfo fileinfo(curr_game_path);
+            curr_game = nullptr;
+
+            if (!games.contains(fileinfo.canonicalFilePath())) {
+                on_error(lineno,
+                    QObject::tr("the game `%1` is either missing or excluded, values for it will be ignored").arg(val));
+                return;
+            }
+
+            curr_game = games[fileinfo.canonicalFilePath()];
+            Q_ASSERT(curr_game);
             return;
         }
-        if (!curr_game)
+        if (!curr_game) {
+            on_error(lineno, QObject::tr("no file defined yet, entry ignored"));
             return;
+        }
 
         if (key.startsWith(QLatin1String("x-"))) {
             // TODO: unimplemented
@@ -128,10 +126,10 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                 curr_game->m_title = val;
                 break;
             case MetaAttribType::DEVELOPER:
-                curr_game->addDevelopers(tokenize(val));
+                curr_game->addDeveloper(val);
                 break;
             case MetaAttribType::PUBLISHER:
-                curr_game->addPublishers(tokenize(val));
+                curr_game->addPublisher(val);
                 break;
             case MetaAttribType::GENRE:
                 curr_game->addGenres(tokenize(val));
@@ -184,11 +182,11 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
     // the actual reading
 
     curr_file_path = dir_path + QStringLiteral("/metadata.pegasus.txt");
-    config::readFile(curr_file_path, on_section, on_attribute, on_error);
+    config::readFile(curr_file_path, on_attribute, on_error);
 
     curr_file_path = dir_path + QStringLiteral("/metadata.txt");
     curr_game = nullptr;
-    config::readFile(curr_file_path, on_section, on_attribute, on_error);
+    config::readFile(curr_file_path, on_attribute, on_error);
 }
 
 } // namespace pegasus

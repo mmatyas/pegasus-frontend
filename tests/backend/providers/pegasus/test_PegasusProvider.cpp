@@ -55,20 +55,15 @@ void test_PegasusProvider::find_in_filled_dir()
 
     // finds the correct collections
     QCOMPARE(collections.count(), 3);
-    QVERIFY(collections[QStringLiteral("mygames")] != nullptr);
-    QVERIFY(collections[QStringLiteral("faves")] != nullptr);
-    QVERIFY(collections[QStringLiteral("multi")] != nullptr);
-
-    // with the correct properties
-    QCOMPARE(collections[QStringLiteral("mygames")]->name(), QStringLiteral("My Games"));
-    QCOMPARE(collections[QStringLiteral("faves")]->name(), QStringLiteral("Favorite games"));
-    QCOMPARE(collections[QStringLiteral("multi")]->name(), QStringLiteral("Multi-game ROMs"));
+    QVERIFY(collections[QStringLiteral("My Games")] != nullptr);
+    QVERIFY(collections[QStringLiteral("Favorite games")] != nullptr);
+    QVERIFY(collections[QStringLiteral("Multi-game ROMs")] != nullptr);
 
     // finds the correct amount of games
     QCOMPARE(games.count(), 8);
-    QCOMPARE(collections[QStringLiteral("mygames")]->gameList().allCount(), 8);
-    QCOMPARE(collections[QStringLiteral("faves")]->gameList().allCount(), 3);
-    QCOMPARE(collections[QStringLiteral("multi")]->gameList().allCount(), 1);
+    QCOMPARE(collections[QStringLiteral("My Games")]->gameList().allCount(), 8);
+    QCOMPARE(collections[QStringLiteral("Favorite games")]->gameList().allCount(), 3);
+    QCOMPARE(collections[QStringLiteral("Multi-game ROMs")]->gameList().allCount(), 1);
 
     // finds the correct files for the collections
     const QStringList mygames_paths {
@@ -89,15 +84,15 @@ void test_PegasusProvider::find_in_filled_dir()
     const QStringList multi_paths {
         { ":/filled/9999-in-1.ext" },
     };
-    for (const Types::Game* const game : collections[QStringLiteral("mygames")]->gameList().allGames()) {
+    for (const Types::Game* const game : collections[QStringLiteral("My Games")]->gameList().allGames()) {
         QVERIFY(game != nullptr);
         QCOMPARE(mygames_paths.count(game->m_fileinfo.filePath()), 1);
     }
-    for (const Types::Game* const game : collections[QStringLiteral("faves")]->gameList().allGames()) {
+    for (const Types::Game* const game : collections[QStringLiteral("Favorite games")]->gameList().allGames()) {
         QVERIFY(game != nullptr);
         QCOMPARE(faves_paths.count(game->m_fileinfo.filePath()), 1);
     }
-    for (const Types::Game* const game : collections[QStringLiteral("multi")]->gameList().allGames()) {
+    for (const Types::Game* const game : collections[QStringLiteral("Multi-game ROMs")]->gameList().allGames()) {
         QVERIFY(game != nullptr);
         QCOMPARE(multi_paths.count(game->m_fileinfo.filePath()), 1);
     }

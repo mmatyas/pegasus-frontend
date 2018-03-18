@@ -108,7 +108,6 @@ namespace providers {
 namespace pegasus {
 
 enum class CollAttribType : unsigned char {
-    NAME,
     LAUNCH_CMD,
     EXTENSIONS,
     FILES,
@@ -127,27 +126,32 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
     QString curr_file_path;
     QString curr_coll_name;
     QHash<QString, GameFilter> config;
+    Types::Collection* curr_coll = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
             << QObject::tr("`%1`, line %2: %3")
                            .arg(curr_file_path, QString::number(lineno), msg);
     };
-    const auto on_section = [&](const int, const QString name){
-        curr_coll_name = name;
-
-        if (!collections.contains(name))
-            collections.insert(name, new Types::Collection(name));
-
-        collections[name]->sourceDirsMut().append(dir_path);
-    };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
-        if (curr_coll_name.isEmpty()) {
-            on_error(lineno, QObject::tr("no sections defined yet, values ignored"));
+        if (key == QLatin1String("collection")) {
+            curr_coll_name = val;
+            curr_coll = nullptr;
+
+            if (!collections.contains(val))
+                collections.insert(val, new Types::Collection(val));
+
+            curr_coll = collections[val];
+            curr_coll->sourceDirsMut().append(dir_path);
+            curr_coll->setName(val);
             return;
         }
 
-        GameFilter& filter = config[curr_coll_name];
+        if (!curr_coll) {
+            on_error(lineno, QObject::tr("no collection defined yet, entry ignored"));
+            return;
+        }
+
         if (key.startsWith(QLatin1String("x-"))) {
             // TODO: unimplemented
             return;
@@ -157,13 +161,11 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
             return;
         }
 
+        GameFilter& filter = config[curr_coll_name];
         GameFilterGroup& filter_group = key.startsWith(QLatin1String("ignore-"))
             ? filter.exclude
             : filter.include;
         switch (key_types[key]) {
-            case CollAttribType::NAME:
-                collections[curr_coll_name]->setName(val);
-                break;
             case CollAttribType::LAUNCH_CMD:
                 collections[curr_coll_name]->setCommonLaunchCmd(val);
                 break;
@@ -171,7 +173,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
                 filter_group.extensions.append(tokenize(val.toLower()));
                 break;
             case CollAttribType::FILES:
-                filter_group.files.append(tokenize(val));
+                filter_group.files.append(val);
                 break;
             case CollAttribType::REGEX:
                 if (!filter_group.regex.isEmpty())
@@ -180,18 +182,17 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
                 filter_group.regex = val;
                 break;
         }
-
     };
 
 
     // the actual reading
 
     curr_file_path = dir_path + QStringLiteral("/collections.pegasus.txt");
-    config::readFile(curr_file_path, on_section, on_attribute, on_error);
+    config::readFile(curr_file_path,  on_attribute, on_error);
 
     curr_file_path = dir_path + QStringLiteral("/collections.txt");
     curr_coll_name.clear();
-    config::readFile(curr_file_path, on_section, on_attribute, on_error);
+    config::readFile(curr_file_path, on_attribute, on_error);
 
     // cleanup and return
 
@@ -209,7 +210,6 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
 PegasusCollections::PegasusCollections()
     : m_key_types {
-        { QStringLiteral("name"), CollAttribType::NAME },
         { QStringLiteral("launch"), CollAttribType::LAUNCH_CMD },
         { QStringLiteral("extension"), CollAttribType::EXTENSIONS },
         { QStringLiteral("extensions"), CollAttribType::EXTENSIONS },

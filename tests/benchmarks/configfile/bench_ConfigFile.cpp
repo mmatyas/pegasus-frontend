@@ -28,10 +28,8 @@ private slots:
     void file();
 
 private:
-    QHash<QString, QHash<QString, QString>> m_config;
-    QString m_current_section;
+    QVector<QPair<QString, QString>> m_entries;
 
-    void onSectionFound(const QString);
     void onAttributeFound(const QString, const QString);
     void onError(const int, const QString);
 
@@ -39,19 +37,9 @@ private:
 };
 
 
-void bench_ConfigFile::onSectionFound(const QString section_name)
-{
-    m_current_section = section_name;
-    m_config[m_current_section];
-}
-
 void bench_ConfigFile::onAttributeFound(const QString key, const QString val)
 {
-    QHash<QString, QString>& section = m_config[m_current_section];
-    if (section.count(key))
-        section[key] += QStringLiteral(", ") % val;
-    else
-        section.insert(key, val);
+    m_entries.push_back(qMakePair(key, val));
 }
 
 void bench_ConfigFile::onError(const int linenum, const QString msg)
@@ -63,7 +51,6 @@ void bench_ConfigFile::onError(const int linenum, const QString msg)
 void bench_ConfigFile::readStream(QTextStream& stream)
 {
     config::readStream(stream,
-        [this](const int, const QString name){ this->onSectionFound(name); },
         [this](const int, const QString key, const QString val){ this->onAttributeFound(key, val); },
         [this](const int linenum, const QString msg){ this->onError(linenum, msg); });
 }
@@ -83,11 +70,11 @@ void bench_ConfigFile::file()
 {
     QBENCHMARK {
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 3: .*"));
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 14: .*"));
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 16: .*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 9: .*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 10: .*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 11: .*"));
 
         config::readFile(":/test.cfg",
-            [this](const int, const QString name){ this->onSectionFound(name); },
             [this](const int, const QString key, const QString val){ this->onAttributeFound(key, val); },
             [this](const int linenum, const QString msg){ this->onError(linenum, msg); });
     }

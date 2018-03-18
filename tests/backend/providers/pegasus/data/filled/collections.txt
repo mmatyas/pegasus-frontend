@@ -1,14 +1,13 @@
-[mygames]
-name: My Games
+collection: My Games
 extensions: ext
 ignore-file: buggygame.ext
 ignore-file: duplicategame.ext
 launch: myemulator ${FILEPATH}
 
-[faves]
-name: Favorite games
-files: favgame1.ext, favgame2.ext, game with spaces.ext
+collection: Favorite games
+file: favgame1.ext
+file: favgame2.ext
+file: game with spaces.ext
 
-[multi]
-name: Multi-game ROMs
+collection: Multi-game ROMs
 regex: \d+.in.1

@@ -47,18 +47,10 @@ QStringList themeDirectories()
 QHash<QString, QString> read_metafile(const QString& config_file_path)
 {
     QHash<QString, QString> result;
-    bool ignore_the_rest = false;
 
     config::readFile(
         config_file_path,
-        [&](const int, const QString){
-            // theme properties are in the global section
-            ignore_the_rest = true;
-        },
         [&](const int, const QString key, const QString val){
-            if (ignore_the_rest)
-                return;
-
             if (result.count(key))
                 result[key] += QStringLiteral(", ") % val;
             else

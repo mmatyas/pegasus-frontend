@@ -26,7 +26,6 @@
 namespace config {
 
 void readFile(const QString& path,
-              const std::function<void(const int, const QString)>& onSectionFound,
               const std::function<void(const int, const QString, const QString)>& onAttributeFound,
               const std::function<void(const int, const QString)>& onError)
 {
@@ -35,25 +34,28 @@ void readFile(const QString& path,
         return;
 
     QTextStream stream(&file);
-    return readStream(stream, onSectionFound, onAttributeFound, onError);
+    return readStream(stream, onAttributeFound, onError);
 }
 
 void readStream(QTextStream& stream,
-                const std::function<void(const int, const QString)>& onSectionFound,
                 const std::function<void(const int, const QString, const QString)>& onAttributeFound,
                 const std::function<void(const int, const QString)>& onError)
 {
-    static const QRegularExpression rx_section(R"(^\[(.*)\]$)"); // [name]
-    static const QRegularExpression rx_keyval(R"(^([^=:]+)[=:](.*)$)"); // key = value
-    static const QRegularExpression rx_multiline(R"(^\s+)"); // starts with whitespace
+    const QRegularExpression rx_keyval(R"(^([^:]+):(.*)$)"); // key = value
 
     QString last_key;
     QString last_val;
     int linenum = 0;
 
-    const auto on_attrib_complete = [&](){
-        if (!last_key.isEmpty() && !last_val.isEmpty())
-            onAttributeFound(linenum, last_key, last_val);
+    const auto close_current_attrib = [&](){
+        // linenum is decrased by 1 because this function
+        // is called in the line *after* the attribute ends
+        if (!last_key.isEmpty()) {
+            if (last_val.isEmpty())
+                onError(linenum - 1, QStringLiteral("attribute value missing, entry ignored"));
+            else
+                onAttributeFound(linenum - 1, last_key, last_val);
+        }
 
         last_key.clear();
         last_val.clear();
@@ -62,11 +64,15 @@ void readStream(QTextStream& stream,
     QString line;
     while (stream.readLineInto(&line)) {
         linenum++;
-        const QStringRef trimmed_line = line.leftRef(-1).trimmed();
 
-        // comment or empty line
-        if (trimmed_line.isEmpty() || line.startsWith('#'))
+        if (line.startsWith('#'))
             continue;
+
+        const QStringRef trimmed_line = line.leftRef(-1).trimmed();
+        if (trimmed_line.isEmpty()) {
+            close_current_attrib();
+            continue;
+        }
 
         // multiline (starts with whitespace but trimmed_line is not empty)
         if (line.at(0).isSpace()) {
@@ -85,21 +91,12 @@ void readStream(QTextStream& stream,
             continue;
         }
 
-        // section (after the multiline check)
-        const auto rx_section_match = rx_section.match(trimmed_line);
-        if (rx_section_match.hasMatch()) {
-            on_attrib_complete();
-
-            const QString group_name = rx_section_match.capturedRef(1).trimmed().toString();
-            onSectionFound(linenum, group_name);
-            continue;
-        }
+        // either a new entry or error - in both cases, the previous entry should be closed
+        close_current_attrib();
 
         // keyval pair (after the multiline check)
         const auto rx_keyval_match = rx_keyval.match(trimmed_line);
         if (rx_keyval_match.hasMatch()) {
-            on_attrib_complete();
-
             // the key is never empty if the regex matches the *trimmed* line
             last_key = rx_keyval_match.capturedRef(1).trimmed().toString();
             Q_ASSERT(!last_key.isEmpty());
@@ -113,10 +110,8 @@ void readStream(QTextStream& stream,
     }
 
     // the very last line
-    if (!last_key.isEmpty() && last_val.isEmpty())
-        onError(linenum, QStringLiteral("attribute value missing, line skipped"));
-    else
-        on_attrib_complete();
+    linenum++;
+    close_current_attrib();
 }
 
 } // namespace config
