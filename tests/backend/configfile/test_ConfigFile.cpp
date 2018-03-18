@@ -92,12 +92,12 @@ void test_ConfigFile::file()
         [this](const int lineno, const QString msg){ this->onError(lineno, msg); });
 
     const decltype(m_entries) expected {
-        { 5, QStringLiteral("key1"), QStringLiteral("val") },
-        { 6, QStringLiteral("key2"), QStringLiteral("val") },
-        { 7, QStringLiteral("key with spaces"), QStringLiteral("val with spaces") },
-        { 14, QStringLiteral("multiline1"), QStringLiteral("hello world!") },
-        { 18, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break") },
-        { 21, QStringLiteral("multiline3"), QStringLiteral("purely multiline") },
+        std::make_tuple(5, QStringLiteral("key1"), QStringLiteral("val")),
+        std::make_tuple(6, QStringLiteral("key2"), QStringLiteral("val")),
+        std::make_tuple(7, QStringLiteral("key with spaces"), QStringLiteral("val with spaces")),
+        std::make_tuple(14, QStringLiteral("multiline1"), QStringLiteral("hello world!")),
+        std::make_tuple(18, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break")),
+        std::make_tuple(21, QStringLiteral("multiline3"), QStringLiteral("purely multiline")),
     };
     QCOMPARE(m_entries, expected);
 }
