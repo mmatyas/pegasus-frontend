@@ -206,6 +206,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 PegasusCollections::PegasusCollections()
     : m_key_types {
         { QStringLiteral("launch"), CollAttribType::LAUNCH_CMD },
+        { QStringLiteral("command"), CollAttribType::LAUNCH_CMD },
         { QStringLiteral("extension"), CollAttribType::EXTENSIONS },
         { QStringLiteral("extensions"), CollAttribType::EXTENSIONS },
         { QStringLiteral("file"), CollAttribType::FILES },
