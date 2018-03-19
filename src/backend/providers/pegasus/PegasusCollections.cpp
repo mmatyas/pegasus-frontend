@@ -123,19 +123,17 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
     // excluding keys: ignore-extensions, ignore-files, ignore-regex
     // optional: name, launch
 
-    QString curr_file_path;
-    QString curr_coll_name;
+    QString curr_config_path;
     QHash<QString, GameFilter> config;
     Types::Collection* curr_coll = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
             << QObject::tr("`%1`, line %2: %3")
-                           .arg(curr_file_path, QString::number(lineno), msg);
+                           .arg(curr_config_path, QString::number(lineno), msg);
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (key == QLatin1String("collection")) {
-            curr_coll_name = val;
             curr_coll = nullptr;
 
             if (!collections.contains(val))
@@ -161,13 +159,13 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
             return;
         }
 
-        GameFilter& filter = config[curr_coll_name];
+        GameFilter& filter = config[curr_coll->name()];
         GameFilterGroup& filter_group = key.startsWith(QLatin1String("ignore-"))
             ? filter.exclude
             : filter.include;
         switch (key_types[key]) {
             case CollAttribType::LAUNCH_CMD:
-                collections[curr_coll_name]->setCommonLaunchCmd(val);
+                curr_coll->setCommonLaunchCmd(val);
                 break;
             case CollAttribType::EXTENSIONS:
                 filter_group.extensions.append(tokenize(val.toLower()));
@@ -187,12 +185,12 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
     // the actual reading
 
-    curr_file_path = dir_path + QStringLiteral("/collections.pegasus.txt");
-    config::readFile(curr_file_path,  on_attribute, on_error);
+    curr_config_path = dir_path + QStringLiteral("/collections.pegasus.txt");
+    config::readFile(curr_config_path,  on_attribute, on_error);
 
-    curr_file_path = dir_path + QStringLiteral("/collections.txt");
-    curr_coll_name.clear();
-    config::readFile(curr_file_path, on_attribute, on_error);
+    curr_config_path = dir_path + QStringLiteral("/collections.txt");
+    curr_coll = nullptr;
+    config::readFile(curr_config_path, on_attribute, on_error);
 
     // cleanup and return
 

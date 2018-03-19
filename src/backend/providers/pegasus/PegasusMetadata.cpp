@@ -81,15 +81,13 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
 void PegasusMetadata::read_metadata_file(const QString& dir_path,
                                          const QHash<QString, Types::Game*>& games) const
 {
-    // reminder: sections are relative file paths
-
-    QString curr_file_path;
+    QString curr_config_path;
     Types::Game* curr_game = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
             << QObject::tr("`%1`, line %2: %3")
-                           .arg(curr_file_path, QString::number(lineno), msg);
+                           .arg(curr_config_path, QString::number(lineno), msg);
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (key == QLatin1String("file")) {
@@ -181,12 +179,12 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
 
     // the actual reading
 
-    curr_file_path = dir_path + QStringLiteral("/metadata.pegasus.txt");
-    config::readFile(curr_file_path, on_attribute, on_error);
+    curr_config_path = dir_path + QStringLiteral("/metadata.pegasus.txt");
+    config::readFile(curr_config_path, on_attribute, on_error);
 
-    curr_file_path = dir_path + QStringLiteral("/metadata.txt");
+    curr_config_path = dir_path + QStringLiteral("/metadata.txt");
     curr_game = nullptr;
-    config::readFile(curr_file_path, on_attribute, on_error);
+    config::readFile(curr_config_path, on_attribute, on_error);
 }
 
 } // namespace pegasus
