@@ -98,7 +98,7 @@ void readStream(QTextStream& stream,
         const auto rx_keyval_match = rx_keyval.match(trimmed_line);
         if (rx_keyval_match.hasMatch()) {
             // the key is never empty if the regex matches the *trimmed* line
-            last_key = rx_keyval_match.capturedRef(1).trimmed().toString();
+            last_key = rx_keyval_match.capturedRef(1).trimmed().toString().toLower();
             Q_ASSERT(!last_key.isEmpty());
             // the value can be empty here, if it's purely multiline
             last_val = rx_keyval_match.capturedRef(2).trimmed().toString();
