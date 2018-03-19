@@ -174,9 +174,6 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
                 filter_group.files.append(val);
                 break;
             case CollAttribType::REGEX:
-                if (!filter_group.regex.isEmpty())
-                    on_error(lineno, QObject::tr("`%3` was already defined for this collection, replaced").arg(key));
-
                 filter_group.regex = val;
                 break;
         }
