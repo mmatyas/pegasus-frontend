@@ -62,9 +62,10 @@ PegasusMetadata::PegasusMetadata()
         { QStringLiteral("release"), MetaAttribType::RELEASE },
         { QStringLiteral("rating"), MetaAttribType::RATING },
     }
-    , m_player_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
-    , m_rating_regex(QStringLiteral("(\\d+(\\.\\d+)?)%"))
-    , m_release_regex(QStringLiteral("(\\d{4})(-(\\d{1,2}))?(-(\\d{1,2}))?"))
+    , m_player_regex(QStringLiteral("^(\\d+)(-(\\d+))?$"))
+    , m_rating_percent_regex(QStringLiteral("^\\d+%$"))
+    , m_rating_float_regex(QStringLiteral("^\\d(\\.\\d+)?$"))
+    , m_release_regex(QStringLiteral("^(\\d{4})(-(\\d{1,2}))?(-(\\d{1,2}))?$"))
 {
 }
 
@@ -164,13 +165,17 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                 break;
             case MetaAttribType::RATING:
                 {
-                    const auto rx_match_a = m_rating_regex.match(val);
-                    if (!rx_match_a.hasMatch()) {
-                        on_error(lineno, QObject::tr("failed to parse rating value"));
+                    const auto rx_match_a = m_rating_percent_regex.match(val);
+                    if (rx_match_a.hasMatch()) {
+                        curr_game->m_rating = qBound(0.f, val.leftRef(val.length() - 1).toFloat() / 100.f, 1.f);
                         return;
                     }
-
-                    curr_game->m_rating = qBound(0.f, rx_match_a.capturedRef(1).toFloat() / 100.f, 1.f);
+                    const auto rx_match_b = m_rating_float_regex.match(val);
+                    if (rx_match_b.hasMatch()) {
+                        curr_game->m_rating = qBound(0.f, val.toFloat() / 100.f, 1.f);
+                        return;
+                    }
+                    on_error(lineno, QObject::tr("failed to parse rating value"));
                 }
                 break;
         }

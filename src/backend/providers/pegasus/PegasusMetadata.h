@@ -42,7 +42,8 @@ public:
 private:
     const QHash<QString, MetaAttribType> m_key_types;
     const QRegularExpression m_player_regex;
-    const QRegularExpression m_rating_regex;
+    const QRegularExpression m_rating_percent_regex;
+    const QRegularExpression m_rating_float_regex;
     const QRegularExpression m_release_regex;
 
     void read_metadata_file(const QString&, const QHash<QString, Types::Game*>&) const;
