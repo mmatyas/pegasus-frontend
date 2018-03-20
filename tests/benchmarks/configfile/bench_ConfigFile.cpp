@@ -70,9 +70,8 @@ void bench_ConfigFile::file()
 {
     QBENCHMARK {
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 3: .*"));
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 8: .*"));
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 9: .*"));
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 10: .*"));
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 11: .*"));
 
         config::readFile(":/test.cfg",
             [this](const int, const QString key, const QString val){ this->onAttributeFound(key, val); },

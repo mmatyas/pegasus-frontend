@@ -54,7 +54,7 @@ void readStream(QTextStream& stream,
             if (last_val.isEmpty())
                 onError(linenum - 1, QStringLiteral("attribute value missing, entry ignored"));
             else
-                onAttributeFound(linenum - 1, last_key, last_val);
+                onAttributeFound(linenum - 1, last_key, last_val.trimmed());
         }
 
         last_key.clear();
@@ -70,7 +70,8 @@ void readStream(QTextStream& stream,
 
         const QStringRef trimmed_line = line.leftRef(-1).trimmed();
         if (trimmed_line.isEmpty()) {
-            close_current_attrib();
+            if (!last_key.isEmpty())
+                last_val.append('\n');
             continue;
         }
 
@@ -78,10 +79,6 @@ void readStream(QTextStream& stream,
         if (line.at(0).isSpace()) {
             if (last_key.isEmpty()) {
                 onError(linenum, QStringLiteral("multiline value found, but no attribute has been defined yet"));
-                continue;
-            }
-            if (trimmed_line == QLatin1String(".")) {
-                last_val.append('\n');
                 continue;
             }
             if (!last_val.isEmpty() && !last_val.endsWith('\n')) {

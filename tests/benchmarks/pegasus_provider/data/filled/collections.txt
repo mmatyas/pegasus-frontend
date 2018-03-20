@@ -2,7 +2,7 @@ collection: My Games
 extensions: ext
 ignore-file: buggygame.ext
 ignore-file: duplicategame.ext
-launch: myemulator ${FILEPATH}
+launch: myemulator {file.path}
 
 collection: Favorite games
 files: favgame1.ext favgame2.ext

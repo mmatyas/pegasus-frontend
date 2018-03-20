@@ -84,9 +84,8 @@ void test_ConfigFile::datablob()
 void test_ConfigFile::file()
 {
     QTest::ignoreMessage(QtWarningMsg, "line 3: multiline value found, but no attribute has been defined yet");
-    QTest::ignoreMessage(QtWarningMsg, "line 9: multiline value found, but no attribute has been defined yet");
-    QTest::ignoreMessage(QtWarningMsg, "line 10: attribute value missing, entry ignored");
-    QTest::ignoreMessage(QtWarningMsg, "line 11: line invalid, skipped");
+    QTest::ignoreMessage(QtWarningMsg, "line 8: attribute value missing, entry ignored");
+    QTest::ignoreMessage(QtWarningMsg, "line 9: line invalid, skipped");
     config::readFile(":/test.cfg",
         [this](const int lineno, const QString key, const QString val){ this->onAttributeFound(lineno, key, val); },
         [this](const int lineno, const QString msg){ this->onError(lineno, msg); });
@@ -95,10 +94,11 @@ void test_ConfigFile::file()
         std::make_tuple(5, QStringLiteral("key1"), QStringLiteral("val")),
         std::make_tuple(6, QStringLiteral("key2"), QStringLiteral("val")),
         std::make_tuple(7, QStringLiteral("key with spaces"), QStringLiteral("val with spaces")),
-        std::make_tuple(14, QStringLiteral("multiline1"), QStringLiteral("hello world!")),
-        std::make_tuple(18, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break")),
-        std::make_tuple(21, QStringLiteral("multiline3"), QStringLiteral("purely multiline")),
+        std::make_tuple(12, QStringLiteral("multiline1"), QStringLiteral("hello world!")),
+        std::make_tuple(16, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break")),
+        std::make_tuple(19, QStringLiteral("multiline3"), QStringLiteral("purely multiline")),
     };
+    //qDebug() << m_entries;
     QCOMPARE(m_entries, expected);
 }
 
