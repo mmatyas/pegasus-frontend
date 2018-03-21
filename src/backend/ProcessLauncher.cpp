@@ -70,39 +70,11 @@ void ProcessLauncher::launchGame(const Types::Collection* collection, const Type
 
 void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const Types::Game& game) const
 {
-    // 1, Prepare the parameters for QProcess
-
-    enum class ParamType : unsigned char {
-        PATH,
-        BASENAME,
-    };
-    QMap<ParamType, QString> params = {
-        { ParamType::PATH, game.m_fileinfo.filePath() },
-        { ParamType::BASENAME, game.m_fileinfo.completeBaseName() },
-    };
-
-    const QRegularExpression WHITESPACE_REGEX("\\s");
-    for (auto& param : params) {
-        // QProcess: Literal quotes are represented by triple quotes
-        param.replace('"', R"(""")");
-        // QProcess: Arguments containing spaces must be quoted
-        if (param.contains(WHITESPACE_REGEX))
-            param.prepend('"').append('"');
-    }
-
-    // 2, Replace the known keywords
-
-    // first, replace manually quoted elements in the command string (see Qt docs)
-    // TODO: ES2 compatibility should be handled in its file
     launch_cmd
-        .replace("\"%ROM%\"", params.value(ParamType::PATH))
-        .replace("\"%ROM_RAW%\"", params.value(ParamType::PATH))
-        .replace("\"%BASENAME%\"", params.value(ParamType::BASENAME));
-    // then replace the unquoted forms
-    launch_cmd
-        .replace("%ROM%", params.value(ParamType::PATH))
-        .replace("%ROM_RAW%", params.value(ParamType::PATH))
-        .replace("%BASENAME%", params.value(ParamType::BASENAME));
+        .replace(QLatin1String("{file.path}"), game.m_fileinfo.absoluteFilePath())
+        .replace(QLatin1String("{file.name}"), game.m_fileinfo.fileName())
+        .replace(QLatin1String("{file.basename}"), game.m_fileinfo.completeBaseName())
+        .replace(QLatin1String("{file.dir}"), game.m_fileinfo.absolutePath());
 }
 
 void ProcessLauncher::runProcess(const QString& command)

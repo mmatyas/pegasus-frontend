@@ -204,8 +204,14 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         collection = new Types::Collection(tag); // TODO: check for fail
 
     collection->setName(xml_props[QLatin1String("fullname")]);
-    collection->setCommonLaunchCmd(xml_props[QLatin1String("command")]);
     collection->sourceDirsMut().append(xml_props[QLatin1String("path")]);
+
+    const QString launch_cmd = xml_props[QLatin1String("command")]
+        .replace(QLatin1String("\"%ROM%\""), QLatin1String("\"{file.path}\"")) // make sure we don't double quote
+        .replace(QLatin1String("%ROM%"), QLatin1String("\"{file.path}\""))
+        .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
+        .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"));
+    collection->setCommonLaunchCmd(launch_cmd);
 
     // add the games
 
