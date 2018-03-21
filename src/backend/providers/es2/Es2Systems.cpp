@@ -198,12 +198,14 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     // construct the new platform
     // TODO: only create if it has games
 
-    const QString& tag = xml_props[QLatin1String("name")];
-    Types::Collection*& collection = collections[tag];
+    const QString& fullname = xml_props[QLatin1String("fullname")];
+    const QString& shortname = xml_props[QLatin1String("name")];
+    const QString& collection_name = fullname.isEmpty() ? shortname : fullname;
+    Types::Collection*& collection = collections[collection_name];
     if (!collection)
-        collection = new Types::Collection(tag); // TODO: check for fail
+        collection = new Types::Collection(collection_name); // TODO: check for fail
 
-    collection->setName(xml_props[QLatin1String("fullname")]);
+    collection->setShortName(shortname);
     collection->sourceDirsMut().append(xml_props[QLatin1String("path")]);
 
     const QString launch_cmd = xml_props[QLatin1String("command")]

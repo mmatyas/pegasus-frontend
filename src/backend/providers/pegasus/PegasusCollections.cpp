@@ -108,6 +108,7 @@ namespace providers {
 namespace pegasus {
 
 enum class CollAttribType : unsigned char {
+    SHORT_NAME,
     LAUNCH_CMD,
     EXTENSIONS,
     FILES,
@@ -118,7 +119,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
                                                  const QString& dir_path,
                                                  QHash<QString, Types::Collection*>& collections)
 {
-    // reminder: sections are collection tags
+    // reminder: sections are collection names
     // including keys: extensions, files, regex
     // excluding keys: ignore-extensions, ignore-files, ignore-regex
     // optional: name, launch
@@ -141,7 +142,6 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
             curr_coll = collections[val];
             curr_coll->sourceDirsMut().append(dir_path);
-            curr_coll->setName(val);
             return;
         }
 
@@ -164,6 +164,9 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
             ? filter.exclude
             : filter.include;
         switch (key_types[key]) {
+            case CollAttribType::SHORT_NAME:
+                curr_coll->setShortName(val);
+                break;
             case CollAttribType::LAUNCH_CMD:
                 curr_coll->setCommonLaunchCmd(val);
                 break;
@@ -205,6 +208,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
 PegasusCollections::PegasusCollections()
     : m_key_types {
+        { QStringLiteral("shortname"), CollAttribType::SHORT_NAME },
         { QStringLiteral("launch"), CollAttribType::LAUNCH_CMD },
         { QStringLiteral("command"), CollAttribType::LAUNCH_CMD },
         { QStringLiteral("extension"), CollAttribType::EXTENSIONS },

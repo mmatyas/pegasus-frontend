@@ -80,7 +80,7 @@ Rectangle {
         id: platformCardDelegate
 
         PlatformCard {
-            platformShortName: tag
+            platformShortName: shortName
             isOnTop: PathView.isCurrentItem
 
             visible: PathView.onPath

@@ -158,12 +158,12 @@ void Gamelist::find(QHash<QString, Types::Game*>& games,
     }
 
 
-    const QString STEAM_TAG(QStringLiteral("steam"));
+    const QString STEAM_TAG(QStringLiteral("Steam"));
     Types::Collection*& collection = collections[STEAM_TAG];
     if (!collection)
         collection = new Types::Collection(STEAM_TAG); // TODO: check for fail
 
-    collection->setName(QStringLiteral("Steam"));
+    collection->setShortName(QStringLiteral("steam"));
     collection->sourceDirsMut().append(installdirs);
 
 

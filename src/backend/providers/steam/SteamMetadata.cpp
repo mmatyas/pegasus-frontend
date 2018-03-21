@@ -331,7 +331,7 @@ Metadata::Metadata(QObject* parent)
 void Metadata::enhance(const QHash<QString, Types::Game*>&,
                        const QHash<QString, Types::Collection*>& collections)
 {
-    const QString STEAM_TAG(QStringLiteral("steam"));
+    const QString STEAM_TAG(QStringLiteral("Steam"));
     if (!collections.contains(STEAM_TAG))
         return;
 

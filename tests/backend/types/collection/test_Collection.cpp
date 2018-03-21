@@ -30,12 +30,12 @@ private slots:
 
 void test_Collection::names()
 {
-    Types::Collection collection("mytag");
-    collection.setName("myname");
+    Types::Collection collection("myname");
+    collection.setShortName("abbrev");
     collection.setCommonLaunchCmd("runner");
 
     // the properties are read-only and should be called only after the initial setup
-    QCOMPARE(collection.property("tag").toString(), QStringLiteral("mytag"));
+    QCOMPARE(collection.property("shortName").toString(), QStringLiteral("abbrev"));
     QCOMPARE(collection.property("name").toString(), QStringLiteral("myname"));
 }
 

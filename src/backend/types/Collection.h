@@ -30,18 +30,21 @@ namespace Types {
 class Collection : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString tag READ tag CONSTANT)
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(Types::GameList* gameList READ gameListPtr CONSTANT)
 
-public:
-    explicit Collection(QString tag, QObject* parent = nullptr);
+    // deprecated
+    Q_PROPERTY(QString tag READ tag CONSTANT)
 
-    void setName(QString);
+public:
+    explicit Collection(QString name, QObject* parent = nullptr);
+
+    void setShortName(QString);
     void setCommonLaunchCmd(QString);
 
-    const QString& tag() const { return m_tag; }
     const QString& name() const { return m_name; }
+    const QString& shortName() const { return m_short_name; }
     const QString& launchCmd() const { return m_launch_cmd; }
 
     const QStringList& sourceDirs() const { return m_source_dirs; }
@@ -50,13 +53,16 @@ public:
     const GameList& gameList() const { return m_gamelist; }
     GameList& gameListMut() { return m_gamelist; }
 
+    // deprecated
+    const QString& tag() const;
+
 signals:
     void currentGameChanged();
     void launchRequested(const Collection*, const Game*);
 
 private:
-    const QString m_tag;
-    QString m_name;
+    const QString m_name;
+    QString m_short_name;
     QString m_launch_cmd;
     QStringList m_source_dirs;
 

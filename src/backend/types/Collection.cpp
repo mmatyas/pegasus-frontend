@@ -17,14 +17,16 @@
 
 #include "Collection.h"
 
+#include <QDebug>
+
 
 namespace Types {
 
-Collection::Collection(QString tag, QObject* parent)
+Collection::Collection(QString name, QObject* parent)
     : QObject(parent)
-    , m_tag(std::move(tag))
+    , m_name(std::move(name))
 {
-    Q_ASSERT(!m_tag.isEmpty());
+    Q_ASSERT(!m_name.isEmpty());
 
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
@@ -32,10 +34,15 @@ Collection::Collection(QString tag, QObject* parent)
             this, [this](const Game* game){ emit launchRequested(this, game); });
 }
 
-void Collection::setName(QString str)
+const QString& Collection::tag() const {
+    qWarning() << "Warning: `collection.tag` is deprecated and will be removed in the future. Do not use it in themes.";
+    return m_name;
+}
+
+void Collection::setShortName(QString str)
 {
     Q_ASSERT(!str.isEmpty());
-    m_name = str;
+    m_short_name = str;
 }
 
 void Collection::setCommonLaunchCmd(QString str)

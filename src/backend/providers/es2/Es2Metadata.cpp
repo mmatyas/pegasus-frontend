@@ -84,11 +84,19 @@ QString findGamelistFile(const Types::Collection& collection)
 {
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
-    const QVector<QString> possible_files = {
-        collection.sourceDirs().constFirst() % GAMELISTFILE,
-        homePath() % QStringLiteral("/.emulationstation/gamelists/") % collection.tag() % GAMELISTFILE,
-        QStringLiteral("/etc/emulationstation/gamelists/") % collection.tag() % GAMELISTFILE,
-    };
+    QVector<QString> possible_files;
+    for (const QString& dir : collection.sourceDirs()) {
+        possible_files.push_back(dir % GAMELISTFILE);
+    }
+    if (!collection.shortName().isEmpty()) {
+        possible_files.push_back(homePath()
+            % QStringLiteral("/.emulationstation/gamelists/")
+            % collection.shortName()
+            % GAMELISTFILE);
+        possible_files.push_back(QStringLiteral("/etc/emulationstation/gamelists/")
+            % collection.shortName()
+            % GAMELISTFILE);
+    }
 
     for (const auto& path : possible_files) {
         if (validPath(path)) {
@@ -312,7 +320,7 @@ void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
         Types::Collection& collection = *collection_ptr;
 
         // ignore Steam
-        if (collection.tag() == QLatin1String("steam"))
+        if (collection.name() == QLatin1String("Steam"))
             continue;
 
         // find the metadata file
@@ -335,9 +343,11 @@ void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
             qWarning().noquote() << MSG_PREFIX << xml.errorString();
 
         // search for assets in `downloaded_images`
-        constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-        const QDir imgdir(imgdir_base % collection.tag(), QString(), QDir::NoSort, dir_filters);
-        findPegasusAssetsInScrapedir(imgdir, games_by_shortpath);
+        if (!collection.shortName().isEmpty()) {
+            constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+            const QDir imgdir(imgdir_base % collection.shortName(), QString(), QDir::NoSort, dir_filters);
+            findPegasusAssetsInScrapedir(imgdir, games_by_shortpath);
+        }
     }
 }
 

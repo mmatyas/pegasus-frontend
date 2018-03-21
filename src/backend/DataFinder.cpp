@@ -39,7 +39,7 @@ void removeEmptyCollections(QHash<QString, Types::Collection*>& collections)
     while (it.hasNext()) {
         if (it.next().value()->gameList().allGames().isEmpty()) {
             qWarning().noquote() << QObject::tr("No games found for collection `%1`, ignored")
-                                                .arg(it.value()->tag());
+                                                .arg(it.value()->name());
             delete it.value();
             it.remove();
         }
@@ -118,7 +118,7 @@ QVector<Types::Collection*> DataFinder::find()
     }
     std::sort(result.begin(), result.end(),
         [](const Types::Collection* a, const Types::Collection* b) {
-            return QString::localeAwareCompare(a->tag(), b->tag()) < 0;
+            return QString::localeAwareCompare(a->name(), b->name()) < 0;
         }
     );
 

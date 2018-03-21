@@ -114,7 +114,7 @@ Item {
 
                 property real preferredHeightRatio: {
                     if (api.currentCollection
-                        && api.currentCollection.tag === "steam")
+                        && api.currentCollection.name === "Steam")
                         return 0.5625; // 9/16
 
                     return 0.75;
