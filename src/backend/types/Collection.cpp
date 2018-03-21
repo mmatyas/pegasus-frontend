@@ -42,7 +42,7 @@ const QString& Collection::tag() const {
 void Collection::setShortName(QString str)
 {
     Q_ASSERT(!str.isEmpty());
-    m_short_name = str;
+    m_short_name = str.toLower();
 }
 
 void Collection::setCommonLaunchCmd(QString str)
