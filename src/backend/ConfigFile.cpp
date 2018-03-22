@@ -51,10 +51,12 @@ void readStream(QTextStream& stream,
         // linenum is decrased by 1 because this function
         // is called in the line *after* the attribute ends
         if (!last_key.isEmpty()) {
+            last_val = last_val.trimmed();
+
             if (last_val.isEmpty())
                 onError(linenum - 1, QStringLiteral("attribute value missing, entry ignored"));
             else
-                onAttributeFound(linenum - 1, last_key, last_val.trimmed());
+                onAttributeFound(linenum - 1, last_key, last_val);
         }
 
         last_key.clear();
