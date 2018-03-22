@@ -19,6 +19,7 @@
 
 #include "ConfigFile.h"
 #include "PegasusCommon.h"
+#include "Utils.h"
 #include "types/Game.h"
 
 #include <QDebug>
@@ -185,11 +186,18 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
     // the actual reading
 
     curr_config_path = dir_path + QStringLiteral("/metadata.pegasus.txt");
-    config::readFile(curr_config_path, on_attribute, on_error);
-
-    curr_config_path = dir_path + QStringLiteral("/metadata.txt");
-    curr_game = nullptr;
-    config::readFile(curr_config_path, on_attribute, on_error);
+    if (::validFileQt(curr_config_path)) {
+        qInfo().noquote() << QObject::tr("Found %1").arg(curr_config_path);
+        config::readFile(curr_config_path,  on_attribute, on_error);
+    }
+    else {
+        curr_config_path = dir_path + QStringLiteral("/metadata.txt");
+        curr_game = nullptr;
+        if (::validFileQt(curr_config_path)) {
+            qInfo().noquote() << QObject::tr("Found %1").arg(curr_config_path);
+            config::readFile(curr_config_path,  on_attribute, on_error);
+        }
+    }
 }
 
 } // namespace pegasus

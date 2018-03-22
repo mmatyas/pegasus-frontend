@@ -19,6 +19,7 @@
 
 #include "ConfigFile.h"
 #include "PegasusCommon.h"
+#include "Utils.h"
 #include "types/Collection.h"
 #include "types/Game.h"
 
@@ -186,11 +187,19 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
     // the actual reading
 
     curr_config_path = dir_path + QStringLiteral("/collections.pegasus.txt");
-    config::readFile(curr_config_path,  on_attribute, on_error);
-
-    curr_config_path = dir_path + QStringLiteral("/collections.txt");
-    curr_coll = nullptr;
-    config::readFile(curr_config_path, on_attribute, on_error);
+    if (::validFileQt(curr_config_path)) {
+        qInfo().noquote() << QObject::tr("Found %1").arg(curr_config_path);
+        config::readFile(curr_config_path,  on_attribute, on_error);
+    }
+    else {
+        curr_config_path = dir_path + QStringLiteral("/collections.txt");
+        curr_coll = nullptr;
+        // FIXME: duplicate
+        if (::validFileQt(curr_config_path)) {
+            qInfo().noquote() << QObject::tr("Found %1").arg(curr_config_path);
+            config::readFile(curr_config_path,  on_attribute, on_error);
+        }
+    }
 
     // cleanup and return
 
