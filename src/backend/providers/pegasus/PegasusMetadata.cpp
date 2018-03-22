@@ -45,6 +45,7 @@ enum class MetaAttribType : unsigned char {
     LONG_DESC,
     RELEASE,
     RATING,
+    LAUNCH_CMD,
 };
 
 PegasusMetadata::PegasusMetadata()
@@ -62,6 +63,8 @@ PegasusMetadata::PegasusMetadata()
         { QStringLiteral("description"), MetaAttribType::LONG_DESC },
         { QStringLiteral("release"), MetaAttribType::RELEASE },
         { QStringLiteral("rating"), MetaAttribType::RATING },
+        { QStringLiteral("launch"), MetaAttribType::LAUNCH_CMD },
+        { QStringLiteral("command"), MetaAttribType::LAUNCH_CMD },
     }
     , m_player_regex(QStringLiteral("^(\\d+)(-(\\d+))?$"))
     , m_rating_percent_regex(QStringLiteral("^\\d+%$"))
@@ -178,6 +181,9 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                     }
                     on_error(lineno, QObject::tr("failed to parse rating value"));
                 }
+                break;
+            case MetaAttribType::LAUNCH_CMD:
+                curr_game->m_launch_cmd = val;
                 break;
         }
     };
