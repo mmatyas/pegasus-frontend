@@ -120,6 +120,11 @@ void GameList::addGame(Game* game_ptr)
 
 void GameList::sortGames()
 {
+    // remove duplicates
+    std::sort(m_all_games.begin(), m_all_games.end());
+    m_all_games.erase(std::unique(m_all_games.begin(), m_all_games.end()), m_all_games.end());
+
+    // sort by name
     std::sort(m_all_games.begin(), m_all_games.end(),
         [](const Game* a, const Game* b) {
             return QString::localeAwareCompare(a->m_fileinfo.completeBaseName(),
