@@ -51,9 +51,9 @@ void mapGamepadToKeyboard()
     padkeynav.setButtonBKey(Qt::Key_Escape);
     padkeynav.setButtonXKey(Qt::Key_Control);
     padkeynav.setButtonL1Key(Qt::Key_A);
-    padkeynav.setButtonL2Key(Qt::Key_A);
     padkeynav.setButtonR1Key(Qt::Key_D);
-    padkeynav.setButtonR2Key(Qt::Key_D);
+    padkeynav.setButtonL2Key(Qt::Key_PageUp);
+    padkeynav.setButtonR2Key(Qt::Key_PageDown);
 
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
                      &padaxisnav, &GamepadAxisNavigation::onAxisEvent);

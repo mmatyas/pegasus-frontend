@@ -27,7 +27,7 @@ GridView {
 
     currentIndex: platformData.gameList.index
     onCurrentIndexChanged: api.currentCollection.gameList.index = currentIndex
-    Component.onCompleted: positionViewAtIndex(currentIndex, PathView.Center)
+    Component.onCompleted: positionViewAtIndex(currentIndex, GridView.Center)
 
     // For better visibility, box arts should be displayed in five columns if
     // the boxes are "tall", and four if they are "wide". There are two issues:
@@ -61,6 +61,18 @@ GridView {
 
     cellWidth: width / columnCount
     cellHeight: cellWidth * cellHeightRatio;
+
+
+    Keys.onReleased: {
+        if (event.key === Qt.Key_PageUp || event.key === Qt.Key_PageDown) {
+            var rows_to_skip = Math.max(1, Math.round(grid_root.height / cellHeight));
+            var games_to_skip = rows_to_skip * columnCount;
+            if (event.key === Qt.Key_PageUp)
+                currentIndex = Math.max(currentIndex - games_to_skip, 0);
+            else
+                currentIndex = Math.min(currentIndex + games_to_skip, model.length - 1);
+        }
+    }
 
 
     displayMarginBeginning: anchors.topMargin
