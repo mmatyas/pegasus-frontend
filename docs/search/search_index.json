@@ -27,12 +27,12 @@
         }, 
         {
             "location": "/user-guide/controls/", 
-            "text": "Controls\n\n\nThe default controls are:\n\n\n\n\n\n\n\n\nKeyboard\n\n\nGamepad\n\n\nEffect\n\n\n\n\n\n\n\n\n\n\nArrows\n\n\n or \n\n\nnavigation\n\n\n\n\n\n\n\n\n / \n\n\nselect/ok\n\n\n\n\n\n\n\n\n / \n\n\ncancel/back\n\n\n\n\n\n\n\n\n / \n\n\nfilter menu*\n\n\n\n\n\n\n or \n\n\n L1/LB or\n L2/LT\n\n\nprevious platform*\n\n\n\n\n\n\n or \n\n\n R1/RB or\n R2/RT\n\n\nnext platform*\n\n\n\n\n\n\n\n\n\n\nAlpha warning\n\n\nKeys marked with \n*\n are what currently used in the the main theme, however they might change in one of the next releases until the Beta.", 
+            "text": "Controls\n\n\nThe default controls are:\n\n\n\n\n\n\n\n\nKeyboard\n\n\nGamepad\n\n\nEffect\n\n\n\n\n\n\n\n\n\n\nArrows\n\n\n or \n\n\nnavigation\n\n\n\n\n\n\n\n\n / \n\n\nselect/ok\n\n\n\n\n\n\n\n\n / \n\n\ncancel/back\n\n\n\n\n\n\n\n\n / \n\n\nfilter menu*\n\n\n\n\n\n\n or \n\n\n L1/LB\n\n\nprevious collection\n\n\n\n\n\n\n or \n\n\n R1/RB\n\n\nnext collection\n\n\n\n\n\n\nPage Up \n\n\n L2/LT\n\n\nprevious page of games\n\n\n\n\n\n\nPage Down \n\n\n R2/RT\n\n\nnext page of games\n\n\n\n\n\n\n\n\n\n\nAlpha warning\n\n\nKeys marked with \n*\n are what currently used in the the main theme, however they might change in one of the next releases until the Beta.", 
             "title": "Controls"
         }, 
         {
             "location": "/user-guide/controls/#controls", 
-            "text": "The default controls are:     Keyboard  Gamepad  Effect      Arrows   or   navigation      /   select/ok      /   cancel/back      /   filter menu*     or    L1/LB or  L2/LT  previous platform*     or    R1/RB or  R2/RT  next platform*      Alpha warning  Keys marked with  *  are what currently used in the the main theme, however they might change in one of the next releases until the Beta.", 
+            "text": "The default controls are:     Keyboard  Gamepad  Effect      Arrows   or   navigation      /   select/ok      /   cancel/back      /   filter menu*     or    L1/LB  previous collection     or    R1/RB  next collection    Page Up    L2/LT  previous page of games    Page Down    R2/RT  next page of games      Alpha warning  Keys marked with  *  are what currently used in the the main theme, however they might change in one of the next releases until the Beta.", 
             "title": "Controls"
         }, 
         {
