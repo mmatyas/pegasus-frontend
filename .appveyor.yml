@@ -53,7 +53,7 @@ build_script:
   - 7z a pegasus_ci.zip C:\pegasus-frontend
   - git describe --always > tmp_out.txt
   - set /p SUFFIX=<tmp_out.txt
-  - cp pegasus_ci.zip ../pegasus-fe_%SUFFIX%_win.zip
+  - cp pegasus_ci.zip ../pegasus-fe_%SUFFIX%_win-%flavor%.zip
 
 artifacts:
   - path: build\pegasus_ci.zip
