@@ -13,7 +13,6 @@ SOURCES += \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
-    SystemCommands.cpp \
     Utils.cpp \
 
 HEADERS += \
@@ -27,9 +26,9 @@ HEADERS += \
     PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \
-    SystemCommands.h \
     Utils.h \
 
+include(platform/platform.pri)
 include(providers/providers.pri)
 include(types/types.pri)
 

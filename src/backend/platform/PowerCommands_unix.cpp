@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,34 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "SystemCommands.h"
-
-#include <QDebug>
 #include <QProcess>
 
 
-// NOTE: on Linux distros using systemd-logind, local users can
-// reboot and shutdown the system without root privileges. Also
-// see https://wiki.archlinux.org/index.php/Allow_users_to_shutdown
+namespace platform {
+namespace power {
 
-void SystemCommands::reboot()
+void reboot()
 {
-    qInfo().noquote() << QObject::tr("Rebooting...");
-
-#ifdef Q_OS_WIN32
-    QProcess::startDetached("shutdown -r -t 0");
-#else
     QProcess::startDetached("reboot");
-#endif
 }
 
-void SystemCommands::shutdown()
+void shutdown()
 {
-    qInfo().noquote() << QObject::tr("Shutting down...");
-
-#ifdef Q_OS_WIN32
-    QProcess::startDetached("shutdown -s -t 0");
-#else
     QProcess::startDetached("poweroff");
-#endif
 }
+
+} // namespace power
+} // namespace platform

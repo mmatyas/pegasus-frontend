@@ -22,7 +22,7 @@
 #include "GamepadAxisNavigation.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
-#include "SystemCommands.h"
+#include "platform/PowerCommands.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -189,10 +189,10 @@ void onAppClose(AppCloseType type)
     QCoreApplication::quit();
     switch (type) {
         case AppCloseType::REBOOT:
-            SystemCommands::reboot();
+            platform::power::reboot();
             break;
         case AppCloseType::SHUTDOWN:
-            SystemCommands::shutdown();
+            platform::power::shutdown();
             break;
         default: break;
     }

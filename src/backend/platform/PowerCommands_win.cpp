@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,13 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include <QProcess>
 
 
-/// Contains the implementation of platform-specific system calls,
-/// such as reboot or shutdown
-class SystemCommands {
-public:
-    static void reboot();
-    static void shutdown();
-};
+namespace platform {
+namespace power {
+
+void reboot()
+{
+    QProcess::startDetached("shutdown -r -t 0");
+}
+
+void shutdown()
+{
+    QProcess::startDetached("shutdown -s -t 0");
+}
+
+} // namespace power
+} // namespace platform
