@@ -68,5 +68,5 @@ deploy:
     repo: apps
     package: pegasus-frontend
     version: continuous
-    artifact: /pegasus-fe_*.zip/
+    artifact: /pegasus-fe_.*\.zip/
     publish: true
