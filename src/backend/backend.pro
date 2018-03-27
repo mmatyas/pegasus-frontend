@@ -15,30 +15,6 @@ SOURCES += \
     ScriptRunner.cpp \
     SystemCommands.cpp \
     Utils.cpp \
-    providers/Provider.cpp \
-    providers/es2/Es2Metadata.cpp \
-    providers/es2/Es2Provider.cpp \
-    providers/es2/Es2Systems.cpp \
-    providers/pegasus/PegasusProvider.cpp \
-    providers/steam/SteamGamelist.cpp \
-    providers/steam/SteamMetadata.cpp \
-    providers/steam/SteamProvider.cpp \
-    types/Collection.cpp \
-    types/CollectionList.cpp \
-    types/Filters.cpp \
-    types/Game.cpp \
-    types/GameAssets.cpp \
-    types/GameList.cpp \
-    types/Locale.cpp \
-    types/LocaleList.cpp \
-    types/Meta.cpp \
-    types/Settings.cpp \
-    types/System.cpp \
-    types/Theme.cpp \
-    types/ThemeList.cpp \
-    providers/pegasus/PegasusCollections.cpp \
-    providers/pegasus/PegasusCommon.cpp \
-    providers/pegasus/PegasusMetadata.cpp
 
 HEADERS += \
     Api.h \
@@ -53,30 +29,9 @@ HEADERS += \
     ScriptRunner.h \
     SystemCommands.h \
     Utils.h \
-    providers/Provider.h \
-    providers/es2/Es2Metadata.h \
-    providers/es2/Es2Provider.h \
-    providers/es2/Es2Systems.h \
-    providers/pegasus/PegasusProvider.h \
-    providers/steam/SteamGamelist.h \
-    providers/steam/SteamMetadata.h \
-    providers/steam/SteamProvider.h \
-    types/Collection.h \
-    types/CollectionList.h \
-    types/Filters.h \
-    types/Game.h \
-    types/GameAssets.h \
-    types/GameList.h \
-    types/Locale.h \
-    types/LocaleList.h \
-    types/Meta.h \
-    types/Settings.h \
-    types/System.h \
-    types/Theme.h \
-    types/ThemeList.h \
-    providers/pegasus/PegasusCollections.h \
-    providers/pegasus/PegasusCommon.h \
-    providers/pegasus/PegasusMetadata.h
+
+include(providers/providers.pri)
+include(types/types.pri)
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
