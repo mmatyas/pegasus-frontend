@@ -18,57 +18,58 @@
 #include <QDebug>
 #include <QProcess>
 
-#ifdef QT_DBUS_LIB
-#include <QDBusInterface>
-#endif
 
 namespace {
 
-#ifdef QT_DBUS_LIB
-bool dbus_call(const char* const service, const char* const path, const char* const interface,
-               const QString& call_method, const QVariant& call_arg = QVariant())
+bool dbus_call(const char* const service, const char* const path, const char* const message,
+               const char* const message_arg = nullptr)
 {
-    QDBusInterface remote(
-        QLatin1String(service),
+    const QLatin1String program("dbus-send");
+    QStringList args {
+        QLatin1String("--system"),
+        QLatin1String("--print-reply"),
+        QLatin1String("--dest=") + QLatin1String(service),
         QLatin1String(path),
-        QLatin1String(interface),
-        QDBusConnection::systemBus());
-    if (!remote.isValid())
-        return false;
+        QLatin1String(message),
+    };
+    if (message_arg)
+        args << QLatin1String(message_arg);
 
-    remote.call(call_method, call_arg);
-    if (remote.lastError().isValid())
-        qWarning().noquote() << "[power] Failed to call `" << service << "`: " << remote.lastError().message();
+    const bool success = (QProcess::execute(program, args) == 0);
+    if (!success)
+        qWarning().noquote() << "[power] Requesting shutdown/reboot from D-Bus service `" << service << "` failed.";
 
-    return !remote.lastError().isValid();
+    return success;
 }
 
 // Reboot/shutdown via logind
 constexpr auto LOGIND_SERVICE = "org.freedesktop.login1";
 constexpr auto LOGIND_PATH = "/org/freedesktop/login1";
-constexpr auto LOGIND_IFACE = "org.freedesktop.login1.Manager";
+constexpr auto LOGIND_FALSE = "boolean:false";
 bool shutdown_by_logind()
 {
-    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, LOGIND_IFACE, "PowerOff", false);
+    constexpr auto MESSAGE = "org.freedesktop.login1.Manager.PowerOff";
+    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, MESSAGE, LOGIND_FALSE);
 }
 bool reboot_by_logind()
 {
-    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, LOGIND_IFACE, "Reboot", false);
+    constexpr auto MESSAGE = "org.freedesktop.login1.Manager.Reboot";
+    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, MESSAGE, LOGIND_FALSE);
 }
 
 // Reboot/shutdown via ConsoleKit
 constexpr auto CONSOLEKIT_SERVICE = "org.freedesktop.ConsoleKit";
 constexpr auto CONSOLEKIT_PATH = "/org/freedesktop/ConsoleKit/Manager";
-constexpr auto CONSOLEKIT_IFACE = "org.freedesktop.ConsoleKit.Manager";
 bool shutdown_by_consolekit()
 {
-    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, CONSOLEKIT_IFACE, "Stop");
+    constexpr auto MESSAGE = "org.freedesktop.ConsoleKit.Manager.Stop";
+    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, MESSAGE);
 }
 bool reboot_by_consolekit()
 {
-    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, CONSOLEKIT_IFACE, "Restart");
+    constexpr auto MESSAGE = "org.freedesktop.ConsoleKit.Manager.Restart";
+    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, MESSAGE);
 }
-#endif // QT_DBUS_LIB
 
 } // namespace
 
@@ -78,23 +79,19 @@ namespace power {
 
 void reboot()
 {
-#ifdef QT_DBUS_LIB
     if (reboot_by_logind())
         return;
     if (reboot_by_consolekit())
         return;
-#endif
     QProcess::startDetached("reboot");
 }
 
 void shutdown()
 {
-#ifdef QT_DBUS_LIB
     if (shutdown_by_logind())
         return;
     if (shutdown_by_consolekit())
         return;
-#endif
     QProcess::startDetached("poweroff");
 }
 

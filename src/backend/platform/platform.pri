@@ -8,7 +8,6 @@ win32 {
 }
 else:unix {
     SOURCES += platform/PowerCommands_unix.cpp
-    qtHaveModule(dbus): QT += dbus
 }
 else {
     SOURCES += platform/PowerCommands_unimpl.cpp
