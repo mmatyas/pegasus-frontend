@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+#include <QDebug>
 #include <QProcess>
 
 #ifdef QT_DBUS_LIB
@@ -24,70 +25,48 @@
 namespace {
 
 #ifdef QT_DBUS_LIB
+bool dbus_call(const char* const service, const char* const path, const char* const interface,
+               const QString& call_method, const QVariant& call_arg = QVariant())
+{
+    QDBusInterface remote(
+        QLatin1String(service),
+        QLatin1String(path),
+        QLatin1String(interface),
+        QDBusConnection::systemBus());
+    if (!remote.isValid())
+        return false;
+
+    remote.call(call_method, call_arg);
+    if (remote.lastError().isValid())
+        qWarning().noquote() << "[power] Failed to call `" << service << "`: " << remote.lastError().message();
+
+    return !remote.lastError().isValid();
+}
+
+// Reboot/shutdown via logind
 constexpr auto LOGIND_SERVICE = "org.freedesktop.login1";
 constexpr auto LOGIND_PATH = "/org/freedesktop/login1";
 constexpr auto LOGIND_IFACE = "org.freedesktop.login1.Manager";
-
 bool shutdown_by_logind()
 {
-    QDBusInterface iface(
-        QLatin1String(LOGIND_SERVICE),
-        QLatin1String(LOGIND_PATH),
-        QLatin1String(LOGIND_IFACE),
-        QDBusConnection::systemBus());
-    if (iface.isValid()) {
-        iface.call("PowerOff", false);
-        return !iface.lastError().isValid();
-    }
-
-    return false;
+    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, LOGIND_IFACE, "PowerOff", false);
 }
 bool reboot_by_logind()
 {
-    QDBusInterface iface(
-        QLatin1String(LOGIND_SERVICE),
-        QLatin1String(LOGIND_PATH),
-        QLatin1String(LOGIND_IFACE),
-        QDBusConnection::systemBus());
-    if (iface.isValid()) {
-        iface.call("Reboot", false);
-        return !iface.lastError().isValid();
-    }
-
-    return false;
+    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, LOGIND_IFACE, "Reboot", false);
 }
 
+// Reboot/shutdown via ConsoleKit
 constexpr auto CONSOLEKIT_SERVICE = "org.freedesktop.ConsoleKit";
 constexpr auto CONSOLEKIT_PATH = "/org/freedesktop/ConsoleKit/Manager";
 constexpr auto CONSOLEKIT_IFACE = "org.freedesktop.ConsoleKit.Manager";
-
 bool shutdown_by_consolekit()
 {
-    QDBusInterface iface(
-        QLatin1String(CONSOLEKIT_SERVICE),
-        QLatin1String(CONSOLEKIT_PATH),
-        QLatin1String(CONSOLEKIT_IFACE),
-        QDBusConnection::systemBus());
-    if (iface.isValid()) {
-        iface.call("Stop");
-        return !iface.lastError().isValid();
-    }
-
-    return false;
+    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, CONSOLEKIT_IFACE, "Stop");
 }
 bool reboot_by_consolekit()
 {
-    QDBusInterface iface(
-        QLatin1String(CONSOLEKIT_SERVICE),
-        QLatin1String(CONSOLEKIT_PATH),
-        QLatin1String(CONSOLEKIT_IFACE),
-        QDBusConnection::systemBus());
-    if (iface.isValid()) {
-        iface.call("Restart");
-        return !iface.lastError().isValid();
-    }
-
-    return false;
+    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, CONSOLEKIT_IFACE, "Restart");
 }
 #endif // QT_DBUS_LIB
 
