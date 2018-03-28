@@ -4,6 +4,7 @@ TARGET = pegasus-fe
 
 QT += qml quick multimedia gamepad svg
 CONFIG += c++11 warn_on exceptions_off
+unix:qtHaveModule(dbus): QT += dbus
 
 SOURCES += main.cpp \
     setup.cpp \
