@@ -86,7 +86,7 @@ void reboot()
     if (reboot_by_consolekit())
         return;
 #endif
-    QProcess::startDetached("reboot");
+    QProcess::startDetached(QLatin1String("reboot"));
 }
 
 void shutdown()
@@ -97,7 +97,7 @@ void shutdown()
     if (shutdown_by_consolekit())
         return;
 #endif
-    QProcess::startDetached("poweroff");
+    QProcess::startDetached(QLatin1String("poweroff"));
 }
 
 } // namespace power
