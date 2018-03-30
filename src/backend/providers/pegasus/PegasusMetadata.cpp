@@ -193,14 +193,14 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
 
     curr_config_path = dir_path + QStringLiteral("/metadata.pegasus.txt");
     if (::validFileQt(curr_config_path)) {
-        qInfo().noquote() << QObject::tr("Found %1").arg(curr_config_path);
+        qInfo().noquote() << QObject::tr("Found `%1`").arg(curr_config_path);
         config::readFile(curr_config_path,  on_attribute, on_error);
     }
     else {
         curr_config_path = dir_path + QStringLiteral("/metadata.txt");
         curr_game = nullptr;
         if (::validFileQt(curr_config_path)) {
-            qInfo().noquote() << QObject::tr("Found %1").arg(curr_config_path);
+            qInfo().noquote() << QObject::tr("Found `%1`").arg(curr_config_path);
             config::readFile(curr_config_path,  on_attribute, on_error);
         }
     }

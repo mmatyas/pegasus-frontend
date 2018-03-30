@@ -50,6 +50,7 @@ void test_PegasusProvider::find_in_filled_dir()
     QHash<QString, Types::Game*> games;
     QHash<QString, Types::Collection*> collections;
 
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
     providers::pegasus::PegasusProvider provider;
     provider.find_in_dirs({ QStringLiteral(":/filled") }, games, collections);
 
@@ -110,6 +111,9 @@ void test_PegasusProvider::enhance()
     QHash<QString, Types::Game*> games;
     QHash<QString, Types::Collection*> collections;
 
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/collections.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/metadata.txt`");
+    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/with_meta/metadata.txt`, line \\d: no file defined yet.*"));
     providers::pegasus::PegasusProvider provider;
     provider.find_in_dirs({ QStringLiteral(":/with_meta") }, games, collections);
     provider.enhance_in_dirs({ QStringLiteral(":/with_meta") }, games, collections);

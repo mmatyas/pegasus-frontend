@@ -38,7 +38,7 @@ QStringList load_game_dir_list()
         if (!config_file.open(QFile::ReadOnly | QFile::Text))
             continue;
 
-        qInfo() << QObject::tr("Found `%1`").arg(path);
+        qInfo().noquote() << QObject::tr("Found `%1`").arg(path);
 
         QTextStream stream(&config_file);
         QString line;
