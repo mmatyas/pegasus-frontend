@@ -20,7 +20,8 @@
 
 
 namespace {
-
+// FIXME: Add support for Mac
+#ifndef Q_OS_DARWIN
 bool dbus_call(const char* const service, const char* const path, const char* const message,
                const char* const message_arg = nullptr)
 {
@@ -70,7 +71,7 @@ bool reboot_by_consolekit()
     constexpr auto MESSAGE = "org.freedesktop.ConsoleKit.Manager.Restart";
     return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, MESSAGE);
 }
-
+#endif // Q_OS_DARWIN
 } // namespace
 
 
@@ -79,19 +80,23 @@ namespace power {
 
 void reboot()
 {
+#ifndef Q_OS_DARWIN
     if (reboot_by_logind())
         return;
     if (reboot_by_consolekit())
         return;
+#endif
     QProcess::startDetached("reboot");
 }
 
 void shutdown()
 {
+#ifndef Q_OS_DARWIN
     if (shutdown_by_logind())
         return;
     if (shutdown_by_consolekit())
         return;
+#endif
     QProcess::startDetached("poweroff");
 }
 
