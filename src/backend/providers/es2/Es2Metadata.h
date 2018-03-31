@@ -19,6 +19,8 @@
 
 #include <QHash>
 #include <QObject>
+#include <QRegularExpression>
+#include <QXmlStreamReader>
 
 namespace Types { class Collection; }
 namespace Types { class Game; }
@@ -26,6 +28,8 @@ namespace Types { class Game; }
 
 namespace providers {
 namespace es2 {
+
+enum class MetaTypes : unsigned char;
 
 class MetadataParser : public QObject {
     Q_OBJECT
@@ -35,6 +39,19 @@ public:
     MetadataParser(QObject* parent);
     void enhance(const QHash<QString, Types::Game*>& games,
                  const QHash<QString, Types::Collection*>& collections);
+
+private:
+    const QHash<QString, MetaTypes> m_key_types;
+    const QString m_date_format;
+    const QRegularExpression m_players_regex;
+
+    void parseGamelistFile(QXmlStreamReader&,
+                           const Types::Collection&,
+                           const QHash<QString, Types::Game*>&) const;
+    void parseGameEntry(QXmlStreamReader&,
+                        const Types::Collection&,
+                        const QHash<QString, Types::Game*>&) const;
+    void applyMetadata(Types::Game&, const QHash<MetaTypes, QString>&) const;
 };
 
 } // namespace es2
