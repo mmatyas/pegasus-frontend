@@ -85,7 +85,7 @@ void DataFinder::onRomDirFound(QString dir_path)
 {
     const QFileInfo entry(dir_path);
     if (entry.exists() && entry.isDir())
-        m_thirdparty_rom_dirs << dir_path;
+        m_thirdparty_rom_dirs << entry.canonicalFilePath();
 }
 
 void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
