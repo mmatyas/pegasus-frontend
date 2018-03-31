@@ -64,16 +64,17 @@ QString findGamelistFile(const Types::Collection& collection)
     return QString();
 }
 
+void resolveShellChars(QString& path, const QString& containing_dir)
+{
+    if (path.startsWith(QStringLiteral("./")))
+        path.replace(0, 1, containing_dir);
+    else if (path.startsWith(QStringLiteral("~/")))
+        path.replace(0, 1, homePath());
+}
+
 void convertToCanonicalPath(QString& path, const QString& containing_dir)
 {
-    static const QString HOMESLASH(QStringLiteral("~/"));
-    static const QString DOTSLASH(QStringLiteral("./"));
-
-    if (path.startsWith(DOTSLASH))
-        path.replace(0, 1, containing_dir);
-    else if (path.startsWith(HOMESLASH))
-        path.replace(0, 1, homePath());
-
+    resolveShellChars(path, containing_dir);
     path = QFileInfo(path).canonicalFilePath();
 }
 
@@ -149,22 +150,21 @@ void findAssets(Types::Game& game, QHash<MetaTypes, QString>& xml_props, const T
 
     if (assets.boxFront().isEmpty()) {
         QString& path = xml_props[MetaTypes::IMAGE];
-        convertToCanonicalPath(path, rom_dir);
-        if (!path.isEmpty() && validPath(path) && assets.m_single_assets[AssetType::BOX_FRONT].isEmpty())
-            assets.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile(path).toString());
+        resolveShellChars(path, rom_dir);
+        if (!path.isEmpty() && validPath(path))
+            pegasus_assets::addAssetToGame(game, AssetType::BOX_FRONT, path);
     }
     if (assets.marquee().isEmpty()) {
         QString& path = xml_props[MetaTypes::MARQUEE];
-        convertToCanonicalPath(path, rom_dir);
-        if (!path.isEmpty() && validPath(path) && assets.m_single_assets[AssetType::ARCADE_MARQUEE].isEmpty())
-            assets.setSingle(AssetType::ARCADE_MARQUEE, QUrl::fromLocalFile(path).toString());
+        resolveShellChars(path, rom_dir);
+        if (!path.isEmpty() && validPath(path))
+            pegasus_assets::addAssetToGame(game, AssetType::ARCADE_MARQUEE, path);
     }
     {
         QString& path = xml_props[MetaTypes::VIDEO];
-        convertToCanonicalPath(path, rom_dir);
-        QString url = QUrl::fromLocalFile(path).toString();
-        if (!path.isEmpty() && validPath(path) && !assets.m_multi_assets[AssetType::VIDEOS].contains(url))
-            assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile(path).toString());
+        resolveShellChars(path, rom_dir);
+        if (!path.isEmpty() && validPath(path))
+            pegasus_assets::addAssetToGame(game, AssetType::VIDEOS, path);
     }
 }
 
