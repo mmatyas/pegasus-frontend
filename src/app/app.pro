@@ -6,6 +6,7 @@ QT += qml quick multimedia gamepad svg
 CONFIG += c++11 warn_on exceptions_off
 
 win32: LIBS += -luser32 -ladvapi32
+macx: LIBS += -framework Cocoa
 
 SOURCES += main.cpp \
     setup.cpp \
