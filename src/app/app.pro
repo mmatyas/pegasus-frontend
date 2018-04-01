@@ -34,9 +34,7 @@ include($${TOP_SRCDIR}/src/link_to_backend.pri)
 # Translations
 
 LOCALE_QRC_FILE = $${TOP_SRCDIR}/lang/translations.qrc.in
-LOCALE_TS_FILES = \
-    $${TOP_SRCDIR}/lang/pegasus_hu.ts \
-    $${TOP_SRCDIR}/lang/pegasus_hu-Hung.ts
+LOCALE_TS_FILES = $$files($${TOP_SRCDIR}/lang/pegasus_*.ts)
 
 # build the QM files
 qtPrepareTool(LRELEASE, lrelease)
