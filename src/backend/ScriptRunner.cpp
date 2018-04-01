@@ -21,21 +21,23 @@
 
 #include <QDebug>
 #include <QDirIterator>
+#include <QMap>
 #include <QProcess>
-#include <QStandardPaths>
 
 
 namespace {
+
 const QMap<ScriptRunner::EventType, QString> script_dirs = {
-    { ScriptRunner::EventType::QUIT, "quit" },
-    { ScriptRunner::EventType::REBOOT, "reboot" },
-    { ScriptRunner::EventType::SHUTDOWN, "shutdown" },
-    { ScriptRunner::EventType::CONFIG_CHANGED, "config-changed" },
-    { ScriptRunner::EventType::SETTINGS_CHANGED, "settings-changed" },
-    { ScriptRunner::EventType::CONTROLS_CHANGED, "controls-changed" },
-    { ScriptRunner::EventType::PROCESS_STARTED, "game-start" },
-    { ScriptRunner::EventType::PROCESS_FINISHED, "game-end" },
+    { ScriptRunner::EventType::QUIT, QStringLiteral("quit") },
+    { ScriptRunner::EventType::REBOOT, QStringLiteral("reboot") },
+    { ScriptRunner::EventType::SHUTDOWN, QStringLiteral("shutdown") },
+    { ScriptRunner::EventType::CONFIG_CHANGED, QStringLiteral("config-changed") },
+    { ScriptRunner::EventType::SETTINGS_CHANGED, QStringLiteral("settings-changed") },
+    { ScriptRunner::EventType::CONTROLS_CHANGED, QStringLiteral("controls-changed") },
+    { ScriptRunner::EventType::PROCESS_STARTED, QStringLiteral("game-start") },
+    { ScriptRunner::EventType::PROCESS_FINISHED, QStringLiteral("game-end") },
 };
+
 } // namespace
 
 void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
