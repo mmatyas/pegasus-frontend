@@ -112,7 +112,7 @@ QVector<Types::Collection*> DataFinder::find()
     runMetadataProviders(games, collections);
 
     QVector<Types::Collection*> result;
-    for (Types::Collection* const coll : collections) {
+    for (Types::Collection* const coll : qAsConst(collections)) {
         coll->gameListMut().sortGames();
         result << coll;
     }
