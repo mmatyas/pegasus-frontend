@@ -23,6 +23,7 @@
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QSettings>
 
 
@@ -38,6 +39,7 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(GIT_REVISION);
     app.setOrganizationName(QStringLiteral("pegasus-frontend"));
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
+    app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
     setupLogStreams();
