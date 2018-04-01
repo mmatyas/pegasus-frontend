@@ -30,14 +30,14 @@ void handleCommandLineArgs(QGuiApplication&);
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::addLibraryPath("lib/plugins");
-    QCoreApplication::addLibraryPath("lib");
+    QCoreApplication::addLibraryPath(QStringLiteral("lib/plugins"));
+    QCoreApplication::addLibraryPath(QStringLiteral("lib"));
 
     QGuiApplication app(argc, argv);
-    app.setApplicationName("pegasus-frontend");
+    app.setApplicationName(QStringLiteral("pegasus-frontend"));
     app.setApplicationVersion(GIT_REVISION);
-    app.setOrganizationName("pegasus-frontend");
-    app.setOrganizationDomain("pegasus-frontend.org");
+    app.setOrganizationName(QStringLiteral("pegasus-frontend"));
+    app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
     setupLogStreams();
