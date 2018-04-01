@@ -87,6 +87,12 @@ unix:!macx {
     INSTALLS += icons desktop
 }
 win32 {
+    QMAKE_TARGET_PRODUCT = "pegasus-frontend"
+    QMAKE_TARGET_COMPANY = "pegasus-frontend.org"
+    QMAKE_TARGET_DESCRIPTION = "Pegasus emulator frontend"
+    QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2018 Matyas Mustoha"
+    RC_ICONS = win32_icon.ico
+
     target.path = $${INSTALL_BINDIR}
 }
 
