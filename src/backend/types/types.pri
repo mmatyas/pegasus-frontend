@@ -12,6 +12,7 @@ HEADERS += \
     types/System.h \
     types/Theme.h \
     types/ThemeList.h \
+    types/SysInfo.h \
 
 SOURCES += \
     types/Collection.cpp \
@@ -27,3 +28,4 @@ SOURCES += \
     types/System.cpp \
     types/Theme.cpp \
     types/ThemeList.cpp \
+    types/SysInfo.cpp \

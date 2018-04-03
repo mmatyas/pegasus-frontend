@@ -23,6 +23,7 @@
 #include "types/Meta.h"
 #include "types/Settings.h"
 #include "types/System.h"
+#include "types/SysInfo.h"
 #include "types/CollectionList.h"
 
 #include <QFutureWatcher>
@@ -43,6 +44,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(Types::Meta* meta READ meta CONSTANT)
     Q_PROPERTY(Types::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(Types::System* system READ system CONSTANT)
+    Q_PROPERTY(Types::SystemInfo* sysinfo READ sysinfo CONSTANT)
     Q_PROPERTY(Types::CollectionList* collectionList READ collectionList CONSTANT)
 
     // shortcuts
@@ -68,6 +70,7 @@ public:
     Types::Meta* meta() { return &m_meta; }
     Types::Settings* settings() { return &m_settings; }
     Types::System* system() { return &m_system; }
+    Types::SystemInfo* sysinfo() { return &m_sysinfo; }
     Types::CollectionList* collectionList() { return &m_collections; }
 
     // shortcuts
@@ -109,6 +112,7 @@ private slots:
 private:
     Types::Meta m_meta;
     Types::System m_system;
+    Types::SystemInfo m_sysinfo;
     Types::Settings m_settings;
     Types::Filters m_filters;
     Types::CollectionList m_collections;
