@@ -93,6 +93,7 @@ void ProcessLauncher::runProcess(const QString& command)
 
     // run the command
     process->setProcessChannelMode(QProcess::ForwardedChannels);
+    process->setInputChannelMode(QProcess::ForwardedInputChannel);
     process->start(command, QProcess::ReadOnly);
 
     // wait
