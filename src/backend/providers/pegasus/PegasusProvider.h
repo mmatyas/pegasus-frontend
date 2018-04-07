@@ -36,17 +36,14 @@ public:
     void enhance(const QHash<QString, Types::Game*>&,
                  const QHash<QString, Types::Collection*>&) final;
 
-    void find_in_dirs(const QStringList&,
-                      QHash<QString, Types::Game*>&,
-                      QHash<QString, Types::Collection*>&) const;
-    void enhance_in_dirs(const QStringList&,
-                         const QHash<QString, Types::Game*>&,
-                         const QHash<QString, Types::Collection*>&) const;
+    void add_game_dir(const QString&);
 
 private:
-    const QStringList m_game_dirs;
+    QStringList m_game_dirs;
     const PegasusCollections collection_finder;
     const PegasusMetadata metadata_finder;
+
+    void load_game_dir_list();
 };
 
 } // namespace pegasus

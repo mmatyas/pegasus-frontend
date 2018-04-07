@@ -17,7 +17,6 @@
 
 #include "DataFinder.h"
 
-#include "PegasusAssets.h"
 #include "providers/es2/Es2Provider.h"
 #include "providers/pegasus/PegasusProvider.h"
 #include "types/Collection.h"
@@ -72,32 +71,26 @@ DataFinder::DataFinder(QObject* parent)
 void DataFinder::runListProviders(QHash<QString, Types::Game*>& games,
                                   QHash<QString, Types::Collection*>& collections)
 {
-    for (auto& provider : m_providers)
-        provider->find(games, collections);
+    for (size_t i = 1; i < m_providers.size(); i++)
+        m_providers[i]->find(games, collections);
 
-    static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
-        ->find_in_dirs(m_thirdparty_rom_dirs, games, collections);
+    // run the Pegasus provider only after the third-party
+    // directories have been found
+    m_providers.front()->find(games, collections);
 
     removeEmptyCollections(collections);
 }
 
 void DataFinder::onRomDirFound(QString dir_path)
 {
-    const QFileInfo entry(dir_path);
-    if (entry.exists() && entry.isDir())
-        m_thirdparty_rom_dirs << entry.canonicalFilePath();
+    static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
+        ->add_game_dir(dir_path);
 }
 
 void DataFinder::runMetadataProviders(const QHash<QString, Types::Game*>& games,
                                       const QHash<QString, Types::Collection*>& collections)
 {
     emit metadataSearchStarted();
-
-    m_thirdparty_rom_dirs.removeDuplicates();
-    pegasus_assets::findAssets(m_thirdparty_rom_dirs, games);
-    static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
-        ->enhance_in_dirs(m_thirdparty_rom_dirs, games, collections);
-    m_thirdparty_rom_dirs.clear(); // free memory
 
     for (auto& provider : qAsConst(m_providers))
         provider->enhance(games, collections);

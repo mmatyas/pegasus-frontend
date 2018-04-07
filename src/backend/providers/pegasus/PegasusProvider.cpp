@@ -21,16 +21,44 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
 
 
-namespace {
+namespace providers {
+namespace pegasus {
 
-QStringList load_game_dir_list()
+PegasusProvider::PegasusProvider(QObject* parent)
+    : Provider(parent)
+{
+    load_game_dir_list();
+}
+
+void PegasusProvider::find(QHash<QString, Types::Game*>& games,
+                           QHash<QString, Types::Collection*>& collections)
+{
+    m_game_dirs.removeDuplicates();
+    collection_finder.find_in_dirs(m_game_dirs, games, collections,
+                                   [this](int game_count){ emit gameCountChanged(game_count); });
+}
+
+void PegasusProvider::enhance(const QHash<QString, Types::Game*>& games,
+                              const QHash<QString, Types::Collection*>& collections)
+{
+    metadata_finder.enhance_in_dirs(m_game_dirs, games, collections);
+}
+
+void PegasusProvider::add_game_dir(const QString& dir_path)
+{
+    const QFileInfo entry(dir_path);
+    if (entry.exists() && entry.isDir())
+        m_game_dirs << entry.canonicalFilePath();
+}
+
+void PegasusProvider::load_game_dir_list()
 {
     constexpr int LINE_MAX_LEN = 4096;
 
-    QStringList rom_dirs;
     for (QString& path : ::configDirPaths()) {
         path += QStringLiteral("/game_dirs.txt");
 
@@ -44,48 +72,9 @@ QStringList load_game_dir_list()
         QString line;
         while (stream.readLineInto(&line, LINE_MAX_LEN)) {
             if (!line.startsWith('#'))
-                rom_dirs << line;
+                add_game_dir(line);
         }
     }
-
-    return rom_dirs;
-}
-
-} // namespace
-
-
-namespace providers {
-namespace pegasus {
-
-PegasusProvider::PegasusProvider(QObject* parent)
-    : Provider(parent)
-    , m_game_dirs(load_game_dir_list())
-{}
-
-void PegasusProvider::find(QHash<QString, Types::Game*>& games,
-                           QHash<QString, Types::Collection*>& collections)
-{
-    find_in_dirs(m_game_dirs, games, collections);
-}
-
-void PegasusProvider::enhance(const QHash<QString, Types::Game*>& games,
-                              const QHash<QString, Types::Collection*>& collections)
-{
-    enhance_in_dirs(m_game_dirs, games, collections);
-}
-
-void PegasusProvider::find_in_dirs(const QStringList& dir_list,
-                                   QHash<QString, Types::Game*>& games,
-                                   QHash<QString, Types::Collection*>& collections) const
-{
-    collection_finder.find_in_dirs(dir_list, games, collections);
-}
-
-void PegasusProvider::enhance_in_dirs(const QStringList& dir_list,
-                                      const QHash<QString, Types::Game*>& games,
-                                      const QHash<QString, Types::Collection*>& collections) const
-{
-    metadata_finder.enhance_in_dirs(dir_list, games, collections);
 }
 
 } // namespace pegasus

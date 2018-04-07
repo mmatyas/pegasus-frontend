@@ -19,6 +19,7 @@
 
 #include <QHash>
 #include <QStringList>
+#include <functional>
 
 namespace Types { class Game; }
 namespace Types { class Collection; }
@@ -35,7 +36,8 @@ public:
 
     void find_in_dirs(const QStringList&,
                       QHash<QString, Types::Game*>&,
-                      QHash<QString, Types::Collection*>&) const;
+                      QHash<QString, Types::Collection*>&,
+                      const std::function<void(int)>&) const;
 
 private:
     const QHash<QString, CollAttribType> m_key_types;

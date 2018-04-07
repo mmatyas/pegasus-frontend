@@ -28,7 +28,6 @@ namespace Types { class Collection; }
 namespace Types { class Game; }
 
 
-// TODO: this class would really need a refactor
 class DataFinder : public QObject {
     Q_OBJECT
 
@@ -49,8 +48,6 @@ private:
 
     using ProviderPtr = std::unique_ptr<providers::Provider>;
     std::vector<ProviderPtr> m_providers;
-
-    QStringList m_thirdparty_rom_dirs;
 
 private slots:
     void onRomDirFound(QString);

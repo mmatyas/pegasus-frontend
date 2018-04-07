@@ -37,9 +37,10 @@ void bench_PegasusProvider::find_in_empty_dir()
     QHash<QString, Types::Game*> games;
     QHash<QString, Types::Collection*> collections;
     providers::pegasus::PegasusProvider provider;
+    provider.add_game_dir(QStringLiteral(":/empty"));
 
     QBENCHMARK {
-        provider.find_in_dirs({ QStringLiteral(":/empty") }, games, collections);
+        provider.find(games, collections);
     }
 }
 
@@ -48,10 +49,11 @@ void bench_PegasusProvider::find_in_filled_dir()
     QHash<QString, Types::Game*> games;
     QHash<QString, Types::Collection*> collections;
     providers::pegasus::PegasusProvider provider;
+    provider.add_game_dir(QStringLiteral(":/filled"));
 
     QBENCHMARK {
         QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
-        provider.find_in_dirs({ QStringLiteral(":/filled") }, games, collections);
+        provider.find(games, collections);
     }
 }
 

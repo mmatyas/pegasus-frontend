@@ -18,6 +18,7 @@
 #include "PegasusMetadata.h"
 
 #include "ConfigFile.h"
+#include "PegasusAssets.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
 #include "types/Game.h"
@@ -77,9 +78,10 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
                                       const QHash<QString, Types::Game*>& games,
                                       const QHash<QString, Types::Collection*>&) const
 {
-    for (const QString& dir_path : dir_list) {
+    pegasus_assets::findAssets(dir_list, games);
+
+    for (const QString& dir_path : dir_list)
         read_metadata_file(dir_path, games);
-    }
 }
 
 

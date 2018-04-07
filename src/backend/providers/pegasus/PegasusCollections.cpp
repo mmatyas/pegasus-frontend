@@ -236,11 +236,13 @@ PegasusCollections::PegasusCollections()
 
 void PegasusCollections::find_in_dirs(const QStringList& dir_list,
                                       QHash<QString, Types::Game*>& games,
-                                      QHash<QString, Types::Collection*>& collections) const
+                                      QHash<QString, Types::Collection*>& collections,
+                                      const std::function<void(int)>& update_gamecount_maybe) const
 {
     for (const QString& dir_path : dir_list) {
         const auto filter_config = read_collections_file(m_key_types, dir_path, collections);
         traverse_dir(dir_path, filter_config, collections, games);
+        update_gamecount_maybe(games.count());
     }
 }
 
