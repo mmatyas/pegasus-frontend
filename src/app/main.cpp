@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("pegasus-frontend"));
-    app.setApplicationVersion(GIT_REVISION);
+    app.setApplicationVersion(QStringLiteral(GIT_REVISION));
     app.setOrganizationName(QStringLiteral("pegasus-frontend"));
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
