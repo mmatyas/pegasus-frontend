@@ -1,0 +1,20 @@
+{
+    "package": {
+        "subject": "mmatyas",
+        "repo": "deb",
+        "name": "pegasus-frontend"
+    },
+    "version": {
+        "name": "continuous"
+    },
+    "files": [{
+        "includePattern": "fpm/(.*\.deb)",
+        "uploadPattern": "pool/main/p/pegasus-frontend/$1",
+        "matrixParams": {
+            "deb_distribution": "testing",
+            "deb_component": "main",
+            "deb_architecture": "amd64"
+        }
+    }],
+    "publish": true
+}

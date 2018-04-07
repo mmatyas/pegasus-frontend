@@ -28,6 +28,7 @@ before_install:
   - for f in *.txz; do sudo tar xJf ${f} -C /opt/; done
   - if [[ "$TARGET" == "x11-static" ]]; then
       sudo ln -s ${QT_VER}_${TARGET} /opt/${QT_VER}_${TARGET}_hosttools;
+      sudo apt-add-repository -y ppa:brightbox/ruby-ng &&
       sudo apt-get -qq update &&
       sudo apt-get install -y
         libasound-dev
@@ -35,7 +36,9 @@ before_install:
         libpulse-dev
         libudev-dev
         libxi-dev
+        ruby2.4
       ;
+      gem install fpm;
     fi
   - sudo mkdir /opt/pegasus-frontend
   - sudo chown travis:travis /opt/pegasus-frontend
@@ -54,15 +57,18 @@ script:
     fi
   - mkdir build && cd build
   - /opt/${QT_VER}_${TARGET}_hosttools/bin/qmake ..
+      INSTALL_BINDIR=/usr/local/bin
+      INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps
+      INSTALL_DESKTOPDIR=/usr/share/applications
   - make
   - if [[ $TARGET == x11* ]]; then make check; fi
-  - make install
+  - make install INSTALL_ROOT=$PWD/installoc
 
 after_success:
   - export SUFFIX=$(git describe --always)_${TARGET}
   - mkdir dist
   - zip -j dist/pegasus-fe_${SUFFIX}.zip
-      /opt/pegasus-frontend/pegasus-fe
+      installoc/usr/local/bin/pegasus-fe
       ../README.md
       ../LICENSE.md
   - curl --upload-file
@@ -70,14 +76,37 @@ after_success:
       https://transfer.sh/pegasus-fe_${SUFFIX}.zip
   - wget -c https://github.com/mmatyas/uploadtool/raw/master/upload.sh
   - bash ./upload.sh dist/pegasus-fe_${SUFFIX}.zip
+  - if [[ "$TARGET" == "x11-static" ]]; then
+      mkdir fpm && cd fpm;
+      export DEB_VER=$(echo $SUFFIX | sed -r 's/^alpha([0-9]+)-([0-9]+)-.*/0.\1.\2/');
+      fpm -s dir -t deb
+        --name pegasus-frontend
+        --version ${DEB_VER}
+        --license 'GPLv3+, CC-BY-NC-SA'
+        --maintainer 'Mátyás Mustoha'
+        --vendor 'pegasus-frontend.org'
+        --url http://pegasus-frontend.org
+        --category games
+        --deb-compression xz
+        --description "$(printf 'Cross platform graphical frontend for launching emulators\nPegasus is an experimental emulator frontend, focusing on customizability,\ncross platform support (including embedded) and high performance.')"
+        -d fontconfig -d gstreamer1.0-plugins-good -d policykit-1
+        $PWD/../installoc/=/
+      ;
+    fi
 
 deploy:
-  provider: bintray
-  file: "$TRAVIS_BUILD_DIR/etc/ci/bintray_travis.json"
-  user: "mmatyas"
-  key:
-    secure: grK+TcvmcnfEyFbBs7kTh6S/awFPQLzNROW5pwYcVc664NP4GxEFd+tl3CqkIuUv1n8HR/x/VWqIc7se12HQx41FnSYqJeArNPI7+gTHHyoR2AtcHptUR1BJUfemlrRhkjbd6dwfdwaeRDt3B1aIy9D0EG8gDgmt6tMIK390AFptwhbvarVZq2nlAnMJ3/DMWIzDXn2Kx6xErQji5LFCOmfFnOCw00z1uDpmTrO6QnfdwlORowVfhoT9SYdPtSQksYyi5Lzjeu0UmxIQtlGisqmiqPOdMb9ted0aNRhfHPYO2Dim+hOwBk+N9GO7AgHDjInkADOwtPxE7qcm5prLO0kV5Jc1ykWB4WWlBDQilggpwm2PbJbsf4zT6Dc7yRzAuarvlFkY8l8zvd4giyMzGCulMWHespglTF8YQDD6B6n78+ePeUqgq0beN/vQP5kAMIJbpXXnPrX9gHS3upO2F9HTQY1WLq+Aq0aub/9ZhEOkGMxzWdWl9u/CsoH2dySDyiyfOuhJuXyEGcfL4jL3yA8JPrZ18ApsEx3CJnnAvdJgy//0tkD5ajucEJVcsfQ5DW/HxfAT6APMMxkqvBiwxkipiUG52klXfwPfxw9oz6ZLC53HwF9MjxowOJnAf4MLbd3/H9AK7CPODPKt/n1ybVzEa3Awl9p2R/niNzaAYQA=
-  skip_cleanup: true
+  - provider: bintray
+    file: "$TRAVIS_BUILD_DIR/etc/ci/travis_bintray-zip.json"
+    user: "mmatyas"
+    key:
+      secure: grK+TcvmcnfEyFbBs7kTh6S/awFPQLzNROW5pwYcVc664NP4GxEFd+tl3CqkIuUv1n8HR/x/VWqIc7se12HQx41FnSYqJeArNPI7+gTHHyoR2AtcHptUR1BJUfemlrRhkjbd6dwfdwaeRDt3B1aIy9D0EG8gDgmt6tMIK390AFptwhbvarVZq2nlAnMJ3/DMWIzDXn2Kx6xErQji5LFCOmfFnOCw00z1uDpmTrO6QnfdwlORowVfhoT9SYdPtSQksYyi5Lzjeu0UmxIQtlGisqmiqPOdMb9ted0aNRhfHPYO2Dim+hOwBk+N9GO7AgHDjInkADOwtPxE7qcm5prLO0kV5Jc1ykWB4WWlBDQilggpwm2PbJbsf4zT6Dc7yRzAuarvlFkY8l8zvd4giyMzGCulMWHespglTF8YQDD6B6n78+ePeUqgq0beN/vQP5kAMIJbpXXnPrX9gHS3upO2F9HTQY1WLq+Aq0aub/9ZhEOkGMxzWdWl9u/CsoH2dySDyiyfOuhJuXyEGcfL4jL3yA8JPrZ18ApsEx3CJnnAvdJgy//0tkD5ajucEJVcsfQ5DW/HxfAT6APMMxkqvBiwxkipiUG52klXfwPfxw9oz6ZLC53HwF9MjxowOJnAf4MLbd3/H9AK7CPODPKt/n1ybVzEa3Awl9p2R/niNzaAYQA=
+    skip_cleanup: true
+  - provider: bintray
+    file: "$TRAVIS_BUILD_DIR/etc/ci/travis_bintray-deb.json"
+    user: "mmatyas"
+    key:
+      secure: grK+TcvmcnfEyFbBs7kTh6S/awFPQLzNROW5pwYcVc664NP4GxEFd+tl3CqkIuUv1n8HR/x/VWqIc7se12HQx41FnSYqJeArNPI7+gTHHyoR2AtcHptUR1BJUfemlrRhkjbd6dwfdwaeRDt3B1aIy9D0EG8gDgmt6tMIK390AFptwhbvarVZq2nlAnMJ3/DMWIzDXn2Kx6xErQji5LFCOmfFnOCw00z1uDpmTrO6QnfdwlORowVfhoT9SYdPtSQksYyi5Lzjeu0UmxIQtlGisqmiqPOdMb9ted0aNRhfHPYO2Dim+hOwBk+N9GO7AgHDjInkADOwtPxE7qcm5prLO0kV5Jc1ykWB4WWlBDQilggpwm2PbJbsf4zT6Dc7yRzAuarvlFkY8l8zvd4giyMzGCulMWHespglTF8YQDD6B6n78+ePeUqgq0beN/vQP5kAMIJbpXXnPrX9gHS3upO2F9HTQY1WLq+Aq0aub/9ZhEOkGMxzWdWl9u/CsoH2dySDyiyfOuhJuXyEGcfL4jL3yA8JPrZ18ApsEx3CJnnAvdJgy//0tkD5ajucEJVcsfQ5DW/HxfAT6APMMxkqvBiwxkipiUG52klXfwPfxw9oz6ZLC53HwF9MjxowOJnAf4MLbd3/H9AK7CPODPKt/n1ybVzEa3Awl9p2R/niNzaAYQA=
+    skip_cleanup: true
 
 
 matrix:
