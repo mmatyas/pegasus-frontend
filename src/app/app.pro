@@ -91,7 +91,7 @@ win32 {
     QMAKE_TARGET_COMPANY = "pegasus-frontend.org"
     QMAKE_TARGET_DESCRIPTION = "Pegasus emulator frontend"
     QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2018 Matyas Mustoha"
-    RC_ICONS = win32_icon.ico
+    RC_ICONS = $${TOP_SRCDIR}/etc/windows/app_icon.ico
 
     target.path = $${INSTALL_BINDIR}
 }
