@@ -8,7 +8,7 @@
         "name": "continuous"
     },
     "files": [{
-        "includePattern": "fpm/(.*\.deb)",
+        "includePattern": "dist/(.*\.deb)",
         "uploadPattern": "pool/main/p/pegasus-frontend/$1",
         "matrixParams": {
             "deb_distribution": "testing",

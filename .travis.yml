@@ -65,19 +65,18 @@ script:
   - make install INSTALL_ROOT=$PWD/installoc
 
 after_success:
+  - mkdir dist && cd dist
   - export SUFFIX=$(git describe --always)_${TARGET}
-  - mkdir dist
-  - zip -j dist/pegasus-fe_${SUFFIX}.zip
+  - zip -j pegasus-fe_${SUFFIX}.zip
       installoc/usr/local/bin/pegasus-fe
       ../README.md
       ../LICENSE.md
   - curl --upload-file
-      dist/pegasus-fe_${SUFFIX}.zip
+      pegasus-fe_${SUFFIX}.zip
       https://transfer.sh/pegasus-fe_${SUFFIX}.zip
   - wget -c https://github.com/mmatyas/uploadtool/raw/master/upload.sh
-  - bash ./upload.sh dist/pegasus-fe_${SUFFIX}.zip
+  - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
   - if [[ "$TARGET" == "x11-static" ]]; then
-      mkdir fpm && cd fpm;
       export DEB_VER=$(echo $SUFFIX | sed -r 's/^alpha([0-9]+)-([0-9]+)-.*/0.\1.\2/');
       fpm -s dir -t deb
         --name pegasus-frontend

@@ -7,8 +7,9 @@
     "version": {
         "name": "continuous"
     },
-    "files": [
-        { "includePattern": "dist/(.*)", "uploadPattern": "/$1" }
-    ],
+    "files": [{
+        "includePattern": "dist/(.*\.zip)",
+        "uploadPattern": "/$1"
+    }],
     "publish": true
 }
