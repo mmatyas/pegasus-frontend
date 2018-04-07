@@ -92,6 +92,7 @@ after_success:
         $PWD/../installoc/=/
       ;
     fi
+  - cd ..
 
 deploy:
   - provider: bintray
