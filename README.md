@@ -14,6 +14,7 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 - [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
 - [Latest automatic builds for Linux (incl. Raspberry Pi)][gh ci builds]
 - [Latest automatic build for Windows][appveyor mingw build]
+- Debian/Ubuntu repository: see below
 
 ## Features
 
@@ -29,6 +30,18 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 ## Installation
 
 At the moment, this project is still in alpha. You can find the current unstable releases and the latest automatic builds [here][gh ci builds] (for Linux) or [here][appveyor mingw build] (for Windows). You can also build the program manually from its source code.
+
+**Debian/Ubuntu:** for 64-bit desktops, the latest version can be installed like this:
+
+```sh
+# Add the repository
+curl https://bintray.com/user/downloadSubjectPublicKey?username=bintray | sudo apt-key add -
+sudo add-apt-repository 'deb https://dl.bintray.com/mmatyas/deb testing main'
+
+# Update and install
+sudo apt update
+sudo apt install pegasus-frontend
+```
 
 ### Runtime dependencies
 
