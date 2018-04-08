@@ -57,7 +57,7 @@ script:
     fi
   - mkdir build && cd build
   - /opt/${QT_VER}_${TARGET}_hosttools/bin/qmake ..
-      INSTALL_BINDIR=/usr/local/bin
+      INSTALL_BINDIR=/usr/bin
       INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps
       INSTALL_DESKTOPDIR=/usr/share/applications
   - make
@@ -68,7 +68,7 @@ after_success:
   - mkdir dist && cd dist
   - export SUFFIX=$(git describe --always)_${TARGET}
   - zip -j pegasus-fe_${SUFFIX}.zip
-      installoc/usr/local/bin/pegasus-fe
+      installoc/usr/bin/pegasus-fe
       ../README.md
       ../LICENSE.md
   - curl --upload-file
