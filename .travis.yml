@@ -88,7 +88,7 @@ after_success:
         --category games
         --deb-compression xz
         --description "$(printf 'Cross platform graphical frontend for launching emulators\nPegasus is an experimental emulator frontend, focusing on customizability,\ncross platform support (including embedded) and high performance.')"
-        -d fontconfig -d gstreamer1.0-plugins-good -d policykit-1
+        -d fontconfig -d gstreamer1.0-plugins-good -d policykit-1 -d 'libc6 >= 2.17' -d 'libstdc++6 >= 4.8'
         $PWD/../installoc/=/
       ;
     fi
