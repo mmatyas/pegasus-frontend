@@ -27,64 +27,6 @@
 #include <QDebug>
 
 
-void connectAndStartEngine(ApiObject& api, FrontendLayer& frontend, ProcessLauncher& launcher)
-{
-    // the following communication is required because process handling
-    // and destroying/rebuilding the frontend stack are asynchronous tasks;
-    // see the relevant classes
 
-    QObject::connect(&api, &ApiObject::prepareLaunch,
-                     &frontend, &FrontendLayer::teardown);
 
-    QObject::connect(&frontend, &FrontendLayer::teardownComplete,
-                     &api, &ApiObject::onReadyToLaunch);
 
-    QObject::connect(&api, &ApiObject::executeLaunch,
-                     &launcher, &ProcessLauncher::launchGame);
-
-    QObject::connect(&launcher, &ProcessLauncher::processFinished,
-                     &api, &ApiObject::onGameFinished);
-
-    QObject::connect(&api, &ApiObject::restoreAfterGame,
-                     &frontend, &FrontendLayer::rebuild);
-
-    // special commands
-    QObject::connect(&api, &ApiObject::qmlClearCacheRequested,
-                     &frontend, &FrontendLayer::clearCache);
-
-    // close the app on quit request
-    QObject::connect(&api, &ApiObject::appCloseRequested, onAppClose);
-
-    // start the engine
-    frontend.rebuild(&api);
-    api.startScanning();
-}
-
-void onAppClose(AppCloseType type)
-{
-    using ScriptEvent = ScriptRunner::EventType;
-
-    ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
-    switch (type) {
-        case AppCloseType::REBOOT:
-            ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
-            break;
-        case AppCloseType::SHUTDOWN:
-            ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
-            break;
-        default: break;
-    }
-
-    qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
-
-    QCoreApplication::quit();
-    switch (type) {
-        case AppCloseType::REBOOT:
-            platform::power::reboot();
-            break;
-        case AppCloseType::SHUTDOWN:
-            platform::power::shutdown();
-            break;
-        default: break;
-    }
-}

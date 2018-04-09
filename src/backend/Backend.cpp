@@ -19,7 +19,9 @@
 
 #include "Api.h"
 #include "ScriptRunner.h"
+#include "platform/PowerCommands.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QQmlEngine>
@@ -78,13 +80,7 @@ void on_gamepad_config()
     ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
 }
 
-} // namespace
-
-
-
-namespace backend {
-
-void setup_global()
+void register_api_classes()
 {
     // register API classes:
     //   this should come before the ApiObject constructor,
@@ -104,10 +100,46 @@ void setup_global()
     qmlRegisterUncreatableType<Types::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
 }
 
+void on_app_close(AppCloseType type)
+{
+    using ScriptEvent = ScriptRunner::EventType;
+
+    ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
+    switch (type) {
+        case AppCloseType::REBOOT:
+            ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
+            break;
+        case AppCloseType::SHUTDOWN:
+            ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
+            break;
+        default: break;
+    }
+
+    qInfo().noquote() << QObject::tr("Closing Pegasus, goodbye!");
+
+    QCoreApplication::quit();
+    switch (type) {
+        case AppCloseType::REBOOT:
+            platform::power::reboot();
+            break;
+        case AppCloseType::SHUTDOWN:
+            platform::power::shutdown();
+            break;
+        default: break;
+    }
+}
+
+} // namespace
+
+
+
+namespace backend {
+
 Context::Context()
 {
     setup_logging();
     setup_gamepad();
+    register_api_classes();
 }
 
 Context::~Context()
@@ -150,6 +182,41 @@ void Context::setup_gamepad()
     // config change
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, on_gamepad_config);
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, on_gamepad_config);
+}
+
+Backend::Backend()
+{
+    // the following communication is required because process handling
+    // and destroying/rebuilding the frontend stack are asynchronous tasks;
+    // see the relevant classes
+
+    QObject::connect(&api, &ApiObject::prepareLaunch,
+                     &frontend, &FrontendLayer::teardown);
+
+    QObject::connect(&frontend, &FrontendLayer::teardownComplete,
+                     &api, &ApiObject::onReadyToLaunch);
+
+    QObject::connect(&api, &ApiObject::executeLaunch,
+                     &launcher, &ProcessLauncher::launchGame);
+
+    QObject::connect(&launcher, &ProcessLauncher::processFinished,
+                     &api, &ApiObject::onGameFinished);
+
+    QObject::connect(&api, &ApiObject::restoreAfterGame,
+                     &frontend, &FrontendLayer::rebuild);
+
+    // special commands
+    QObject::connect(&api, &ApiObject::qmlClearCacheRequested,
+                     &frontend, &FrontendLayer::clearCache);
+
+    // close the app on quit request
+    QObject::connect(&api, &ApiObject::appCloseRequested, on_app_close);
+}
+
+void Backend::start()
+{
+    frontend.rebuild(&api);
+    api.startScanning();
 }
 
 } // namespace backend

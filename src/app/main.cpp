@@ -15,12 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "setup.h"
-
-#include "Api.h"
 #include "Backend.h"
-#include "FrontendLayer.h"
-#include "ProcessLauncher.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
@@ -44,15 +39,9 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
     handleCommandLineArgs(app);
 
-    backend::setup_global();
     backend::Context context;
-
-    // the main parts of the backend
-    // frontend <-> api <-> launcher
-    ApiObject api;
-    FrontendLayer frontend;
-    ProcessLauncher launcher;
-    connectAndStartEngine(api, frontend, launcher);
+    backend::Backend backend;
+    backend.start();
 
     return app.exec();
 }

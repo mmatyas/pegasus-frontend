@@ -17,7 +17,10 @@
 
 #pragma once
 
+#include "Api.h"
+#include "FrontendLayer.h"
 #include "GamepadAxisNavigation.h"
+#include "ProcessLauncher.h"
 
 #include <QFile>
 #include <QGamepadKeyNavigation>
@@ -26,8 +29,6 @@
 
 
 namespace backend {
-
-void setup_global();
 
 class Context {
 public:
@@ -43,6 +44,21 @@ private:
 
     void setup_logging();
     void setup_gamepad();
+};
+
+class Backend {
+public:
+    Backend();
+    Backend(const Context&) = delete;
+    Backend& operator=(const Context&) = delete;
+
+    void start();
+
+private:
+    // frontend <-> api <-> launcher
+    ApiObject api;
+    FrontendLayer frontend;
+    ProcessLauncher launcher;
 };
 
 } // namespace backend
