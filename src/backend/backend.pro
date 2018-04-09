@@ -6,6 +6,7 @@ CONFIG += c++11 staticlib warn_on exceptions_off
 
 SOURCES += \
     Api.cpp \
+    AppContext.cpp \
     Assets.cpp \
     Backend.cpp \
     ConfigFile.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 HEADERS += \
     Api.h \
     AppCloseType.h \
+    AppContext.h \
     Assets.h \
     Backend.h \
     ConfigFile.h \

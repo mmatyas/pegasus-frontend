@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+#include "AppContext.h"
 #include "Backend.h"
 
 #include <QCommandLineParser>
@@ -39,7 +40,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
     handleCommandLineArgs(app);
 
-    backend::Context context;
+    backend::AppContext context;
     backend::Backend backend;
     backend.start();
 
