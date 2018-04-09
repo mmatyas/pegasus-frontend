@@ -24,7 +24,6 @@ class FrontendLayer;
 class ProcessLauncher;
 
 
-void setupGamepad();
 void registerAPIClasses();
 void connectAndStartEngine(ApiObject&, FrontendLayer&, ProcessLauncher&);
 void onAppClose(AppCloseType);

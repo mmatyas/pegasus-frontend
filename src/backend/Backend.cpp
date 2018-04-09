@@ -17,6 +17,8 @@
 
 #include "Backend.h"
 
+#include "ScriptRunner.h"
+
 #include <QDebug>
 #include <QDir>
 #include <QRegularExpression>
@@ -57,12 +59,21 @@ QString find_writable_log_path()
 // and neither Qt not std::vector can be used in this case
 std::list<QTextStream> g_log_streams;
 
-void onLogMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+void on_log_message(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     // forward the message to all registered output streams
     const QByteArray preparedMsg = qFormatLogMessage(type, context, msg).toLocal8Bit();
     for (auto& stream : g_log_streams)
         stream << preparedMsg << endl;
+}
+
+
+void on_gamepad_config()
+{
+    using ScriptEvent = ScriptRunner::EventType;
+
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
 }
 
 } // namespace
@@ -74,6 +85,7 @@ namespace backend {
 Context::Context()
 {
     setup_logging();
+    setup_gamepad();
 }
 
 Context::~Context()
@@ -84,7 +96,7 @@ Context::~Context()
 void Context::setup_logging()
 {
     g_log_streams.emplace_back(stdout);
-    qInstallMessageHandler(onLogMessage);
+    qInstallMessageHandler(on_log_message);
 
     const QString logfile_path = find_writable_log_path();
     if (logfile_path.isEmpty())
@@ -98,6 +110,24 @@ void Context::setup_logging()
     }
 
     g_log_streams.emplace_back(&logfile);
+}
+
+void Context::setup_gamepad()
+{
+    padkeynav.setButtonAKey(Qt::Key_Return);
+    padkeynav.setButtonBKey(Qt::Key_Escape);
+    padkeynav.setButtonXKey(Qt::Key_Control);
+    padkeynav.setButtonL1Key(Qt::Key_A);
+    padkeynav.setButtonR1Key(Qt::Key_D);
+    padkeynav.setButtonL2Key(Qt::Key_PageUp);
+    padkeynav.setButtonR2Key(Qt::Key_PageDown);
+
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
+                     &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
+
+    // config change
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, on_gamepad_config);
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, on_gamepad_config);
 }
 
 } // namespace backend

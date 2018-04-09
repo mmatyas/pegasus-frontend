@@ -19,62 +19,14 @@
 
 #include "Api.h"
 #include "FrontendLayer.h"
-#include "GamepadAxisNavigation.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
 #include "platform/PowerCommands.h"
 
 #include <QCoreApplication>
 #include <QDebug>
-#include <QDir>
-#include <QFile>
-#include <QGamepadKeyNavigation>
-#include <QGamepadManager>
 #include <QQmlEngine>
-#include <QRegularExpression>
-#include <QStandardPaths>
-#include <QTextStream>
 
-
-namespace {
-
-void mapGamepadToKeyboard()
-{
-    static QGamepadKeyNavigation padkeynav;
-    static GamepadAxisNavigation padaxisnav;
-
-    padkeynav.setButtonAKey(Qt::Key_Return);
-    padkeynav.setButtonBKey(Qt::Key_Escape);
-    padkeynav.setButtonXKey(Qt::Key_Control);
-    padkeynav.setButtonL1Key(Qt::Key_A);
-    padkeynav.setButtonR1Key(Qt::Key_D);
-    padkeynav.setButtonL2Key(Qt::Key_PageUp);
-    padkeynav.setButtonR2Key(Qt::Key_PageDown);
-
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
-                     &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
-}
-
-void setupControlsChangeScripts()
-{
-    const auto callback = [](){
-        using ScriptEvent = ScriptRunner::EventType;
-
-        ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-        ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
-    };
-
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, callback);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, callback);
-}
-
-} // namespace
-
-void setupGamepad()
-{
-    mapGamepadToKeyboard();
-    setupControlsChangeScripts();
-}
 
 void registerAPIClasses()
 {

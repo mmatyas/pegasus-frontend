@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
 
     backend::Context context;
 
-    setupGamepad();
     // this should come before the ApiObject constructor,
     // as that may produce language change signals
     registerAPIClasses();

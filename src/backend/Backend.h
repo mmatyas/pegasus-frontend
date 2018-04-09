@@ -17,7 +17,10 @@
 
 #pragma once
 
+#include "GamepadAxisNavigation.h"
+
 #include <QFile>
+#include <QGamepadKeyNavigation>
 #include <QTextStream>
 #include <vector>
 
@@ -33,8 +36,11 @@ public:
 
 private:
     QFile logfile;
+    QGamepadKeyNavigation padkeynav;
+    GamepadAxisNavigation padaxisnav;
 
     void setup_logging();
+    void setup_gamepad();
 };
 
 } // namespace backend
