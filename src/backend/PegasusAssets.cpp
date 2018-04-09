@@ -169,7 +169,7 @@ void findAssets(const QStringList& asset_dirs,
         const QString media_dir = dir_base + QStringLiteral("/media");
 
         constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-        constexpr auto dir_flags = QDirIterator::FollowSymlinks;
+        constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
         QDirIterator dir_it(media_dir, dir_filters, dir_flags);
         while (dir_it.hasNext()) {
@@ -179,7 +179,10 @@ void findAssets(const QStringList& asset_dirs,
             if (!detection_result.isValid())
                 continue;
 
-            const QString shortpath = dir_base % '/' % detection_result.basename;
+            const QString shortpath = fileinfo.canonicalPath().leftRef(dir_base.length())
+                                    % fileinfo.canonicalPath().midRef(dir_base.length() + 6) // len of `/media`
+                                    % '/'
+                                    % detection_result.basename;
             if (!games_by_shortpath.contains(shortpath))
                 continue;
 
