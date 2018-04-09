@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,14 +17,24 @@
 
 #pragma once
 
-#include "AppCloseType.h"
-
-class ApiObject;
-class FrontendLayer;
-class ProcessLauncher;
+#include <QFile>
+#include <QTextStream>
+#include <vector>
 
 
-void setupGamepad();
-void registerAPIClasses();
-void connectAndStartEngine(ApiObject&, FrontendLayer&, ProcessLauncher&);
-void onAppClose(AppCloseType);
+namespace backend {
+
+class Context {
+public:
+    Context();
+    ~Context();
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
+
+private:
+    QFile logfile;
+
+    void setup_logging();
+};
+
+} // namespace backend

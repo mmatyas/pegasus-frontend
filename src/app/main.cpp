@@ -18,6 +18,7 @@
 #include "setup.h"
 
 #include "Api.h"
+#include "Backend.h"
 #include "FrontendLayer.h"
 #include "ProcessLauncher.h"
 
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::addLibraryPath(QStringLiteral("lib/plugins"));
     QCoreApplication::addLibraryPath(QStringLiteral("lib"));
+    QSettings::setDefaultFormat(QSettings::IniFormat);
 
     QGuiApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("pegasus-frontend"));
@@ -40,11 +42,10 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("pegasus-frontend"));
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-
-    setupLogStreams();
-
     handleCommandLineArgs(app);
+
+    backend::Context context;
+
     setupGamepad();
     // this should come before the ApiObject constructor,
     // as that may produce language change signals

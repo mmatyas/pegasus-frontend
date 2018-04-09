@@ -38,10 +38,6 @@
 
 namespace {
 
-// using std::list because QTextStream is not copyable,
-// and neither Qt not std::vector can be used in this case
-std::list<QTextStream> log_streams;
-
 void mapGamepadToKeyboard()
 {
     static QGamepadKeyNavigation padkeynav;
@@ -72,46 +68,7 @@ void setupControlsChangeScripts()
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, callback);
 }
 
-void onLogMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg)
-{
-    // forward the message to all registered output streams
-    const QByteArray preparedMsg = qFormatLogMessage(type, context, msg).toLocal8Bit();
-    for (auto& stream : log_streams)
-        stream << preparedMsg << endl;
-}
-
 } // namespace
-
-void setupLogStreams()
-{
-    log_streams.emplace_back(stdout);
-    qInstallMessageHandler(onLogMessage);
-
-
-    using regex = QRegularExpression;
-    using qsp = QStandardPaths;
-    Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
-
-    QString log_path = qsp::standardLocations(qsp::AppConfigLocation).constFirst();
-    log_path = log_path.replace(regex("/pegasus-frontend/pegasus-frontend$"), "/pegasus-frontend");
-
-    if (!QDir().mkpath(log_path)) {
-        log_streams.back() << QObject::tr("Warning: Could not open or create `%1`."
-                                          " File logging disabled.").arg(log_path) << endl;
-        return;
-    }
-
-    log_path += "/lastrun.log";
-
-    static QFile log_file(log_path);
-    if (!log_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        log_streams.back() << QObject::tr("Warning: Could not open `%1` for writing."
-                                          " File logging disabled.").arg(log_path) << endl;
-        return;
-    }
-
-    log_streams.emplace_back(&log_file);
-}
 
 void setupGamepad()
 {

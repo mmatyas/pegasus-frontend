@@ -14,6 +14,7 @@ SOURCES += \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     Utils.cpp \
+    Backend.cpp
 
 HEADERS += \
     Api.h \
@@ -27,6 +28,7 @@ HEADERS += \
     ProcessLauncher.h \
     ScriptRunner.h \
     Utils.h \
+    Backend.h
 
 include(platform/platform.pri)
 include(providers/providers.pri)
