@@ -34,6 +34,11 @@ Window {
     visibility: api.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
 
+    onClosing: {
+        themeContent.source = "";
+        api.system.quit();
+    }
+
     // provide relative pixel value calculation, for convenience
     property real winScale: Math.min(width / 1280.0, height / 720.0)
     function vpx(value) {
