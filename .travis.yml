@@ -62,13 +62,14 @@ script:
       INSTALL_DESKTOPDIR=/usr/share/applications
   - make
   - if [[ $TARGET == x11* ]]; then make check; fi
-  - make install INSTALL_ROOT=$PWD/installoc
+  - make install INSTALL_ROOT=$PWD/../installoc
+  - cd ..
 
 after_success:
   - mkdir dist && cd dist
   - export SUFFIX=$(git describe --always)_${TARGET}
   - zip -j pegasus-fe_${SUFFIX}.zip
-      installoc/usr/bin/pegasus-fe
+      ../installoc/usr/bin/pegasus-fe
       ../README.md
       ../LICENSE.md
   - curl --upload-file
