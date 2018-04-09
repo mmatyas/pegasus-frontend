@@ -44,11 +44,8 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
     handleCommandLineArgs(app);
 
+    backend::setup_global();
     backend::Context context;
-
-    // this should come before the ApiObject constructor,
-    // as that may produce language change signals
-    registerAPIClasses();
 
     // the main parts of the backend
     // frontend <-> api <-> launcher

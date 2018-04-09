@@ -17,10 +17,12 @@
 
 #include "Backend.h"
 
+#include "Api.h"
 #include "ScriptRunner.h"
 
 #include <QDebug>
 #include <QDir>
+#include <QQmlEngine>
 #include <QRegularExpression>
 #include <QStandardPaths>
 
@@ -81,6 +83,26 @@ void on_gamepad_config()
 
 
 namespace backend {
+
+void setup_global()
+{
+    // register API classes:
+    //   this should come before the ApiObject constructor,
+    //   as that may produce language change signals
+
+    constexpr auto API_URI = "Pegasus.Model";
+    const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
+
+    qmlRegisterUncreatableType<Types::Collection>(API_URI, 0, 7, "Collection", error_msg);
+    qmlRegisterUncreatableType<Types::CollectionList>(API_URI, 0, 7, "CollectionList", error_msg);
+    qmlRegisterUncreatableType<Types::Game>(API_URI, 0, 2, "Game", error_msg);
+    qmlRegisterUncreatableType<Types::GameList>(API_URI, 0, 6, "GameList", error_msg);
+    qmlRegisterUncreatableType<Types::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
+    qmlRegisterUncreatableType<Types::Locale>(API_URI, 0, 6, "Locale", error_msg);
+    qmlRegisterUncreatableType<Types::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
+    qmlRegisterUncreatableType<Types::Theme>(API_URI, 0, 6, "Theme", error_msg);
+    qmlRegisterUncreatableType<Types::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
+}
 
 Context::Context()
 {

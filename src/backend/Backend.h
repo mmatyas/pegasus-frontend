@@ -27,6 +27,8 @@
 
 namespace backend {
 
+void setup_global();
+
 class Context {
 public:
     Context();
