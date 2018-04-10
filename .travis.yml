@@ -40,8 +40,6 @@ before_install:
       ;
       gem install fpm;
     fi
-  - sudo mkdir /opt/pegasus-frontend
-  - sudo chown travis:travis /opt/pegasus-frontend
   - popd
 
 before_script:
@@ -72,9 +70,6 @@ after_success:
       ../installoc/usr/bin/pegasus-fe
       ../README.md
       ../LICENSE.md
-  - curl --upload-file
-      pegasus-fe_${SUFFIX}.zip
-      https://transfer.sh/pegasus-fe_${SUFFIX}.zip
   - wget -c https://github.com/mmatyas/uploadtool/raw/master/upload.sh
   - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
   - if [[ "$TARGET" == "x11-static" ]]; then
@@ -92,6 +87,7 @@ after_success:
         -d fontconfig -d gstreamer1.0-plugins-good -d policykit-1 -d 'libc6 >= 2.17' -d 'libstdc++6 >= 4.8'
         $PWD/../installoc/=/
       ;
+      bash ./upload.sh *.deb;
     fi
   - cd ..
 
