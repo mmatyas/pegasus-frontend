@@ -92,7 +92,7 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
     }
 
 
-    const QRegularExpression installdir_regex(R""("BaseInstallFolder_\d+"\s+"([^"]+)")"");
+    const QRegularExpression installdir_regex(QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")""));
 
     QTextStream stream(&configfile);
     while (!stream.atEnd()) {

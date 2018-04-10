@@ -71,8 +71,8 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     }
 
     using regex = QRegularExpression;
-    static const regex appid_regex(R""("appid"\s+"(\d+)")"", regex::CaseInsensitiveOption);
-    static const regex title_regex(R""("name"\s+"([^"]+)")"");
+    static const regex appid_regex(QStringLiteral(R""("appid"\s+"(\d+)")""), regex::CaseInsensitiveOption);
+    static const regex title_regex(QStringLiteral(R""("name"\s+"([^"]+)")""));
 
     SteamGameEntry entry;
 
