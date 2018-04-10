@@ -54,11 +54,12 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("Pegasus couldn't find any games on your device. At the moment,"
-                + " the configuration and game list files of EmulationStation 2 are used."
-                + " If you think you have games but still see this message, then these"
-                + " files might be missing, not in the expected location, or contain"
-                + " errors.")
+            text: qsTr("Pegasus couldn't find any games on your device. If you have not"
+                + " set up Pegasus yet, you can find the documentation here: <i>%1</i>."
+                + "<br>"
+                + "If you still see this message, make sure your config files are readable,"
+                + " exist in one of the expected locations and are in the expected format.")
+                    .arg("http://pegasus-frontend.org/docs")
                 + api.tr
 
             width: parent.width
@@ -85,7 +86,7 @@ Rectangle {
         Text {
             text: qsTr("You can find it here:<pre>%1</pre>")
                     .arg(api.meta.logFilePath)
-                 + api.tr
+                + api.tr
 
             width: parent.width
             wrapMode: Text.WordWrap
