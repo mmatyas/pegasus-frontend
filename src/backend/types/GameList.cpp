@@ -19,6 +19,7 @@
 
 #include "Filters.h"
 #include "ListPropertyFn.h"
+#include "LocaleUtils.h"
 #include "Utils.h"
 
 #include <QDebug>
@@ -52,7 +53,7 @@ void GameList::setIndex(int idx)
 
     const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_filtered_games.count());
     if (!valid_idx) {
-        qWarning() << tr("Invalid game index #%1").arg(idx);
+        qWarning() << tr_log("Invalid game index #%1").arg(idx);
         return;
     }
 

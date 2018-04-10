@@ -17,6 +17,7 @@
 
 #include "ScriptRunner.h"
 
+#include "LocaleUtils.h"
 #include "Utils.h"
 
 #include <QDebug>
@@ -48,7 +49,7 @@ void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
     const auto dirname = script_dirs.value(event);
 
     if (scripts.count() > 0) {
-        qInfo().noquote() << QObject::tr("Running `%1` scripts...").arg(dirname);
+        qInfo().noquote() << tr_log("Running `%1` scripts...").arg(dirname);
         runScripts(scripts);
     }
 }
@@ -93,7 +94,7 @@ void ScriptRunner::runScripts(const QVector<QString>& paths)
     const int num_field_width = QString::number(paths.length()).length();
 
     for (int i = 0; i < paths.length(); i++) {
-        qInfo().noquote() << QObject::tr("[%1/%2] %3")
+        qInfo().noquote() << tr_log("[%1/%2] %3")
                              .arg(i + 1, num_field_width)
                              .arg(paths.length()).arg(paths.at(i));
         QProcess::execute(paths.at(i));

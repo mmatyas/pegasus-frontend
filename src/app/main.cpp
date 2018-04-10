@@ -17,6 +17,7 @@
 
 #include "AppContext.h"
 #include "Backend.h"
+#include "LocaleUtils.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
@@ -52,7 +53,7 @@ void handleCommandLineArgs(QGuiApplication& app)
     QCommandLineParser argparser;
 
     //: try to make this less than 80 characters per line
-    argparser.setApplicationDescription("\n" + QObject::tr(
+    argparser.setApplicationDescription("\n" + tr_log(
         "A cross platform, customizable graphical frontend for launching emulators\n"
         "and managing your game collection."));
 

@@ -18,6 +18,7 @@
 #include "CollectionList.h"
 
 #include "ListPropertyFn.h"
+#include "LocaleUtils.h"
 #include "Utils.h"
 
 #include <QDebug>
@@ -53,7 +54,7 @@ void CollectionList::setIndex(int idx)
 
     const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_collections.count());
     if (!valid_idx) {
-        qWarning() << tr("Invalid collection index #%1").arg(idx);
+        qWarning() << tr_log("Invalid collection index #%1").arg(idx);
         return;
     }
 
@@ -116,7 +117,7 @@ void CollectionList::onScanComplete()
         gamelist.lockGameList();
         game_count += gamelist.allGames().count();
     }
-    qInfo().noquote() << tr("%n games found", "", game_count);
+    qInfo().noquote() << tr_log("%1 games found").arg(game_count);
 
     if (!m_collections.isEmpty()) {
         setIndex(0);

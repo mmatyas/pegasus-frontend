@@ -17,6 +17,7 @@
 
 #include "SteamGamelist.h"
 
+#include "LocaleUtils.h"
 #include "Utils.h"
 #include "types/Collection.h"
 #include "types/Game.h"
@@ -65,13 +66,13 @@ QString find_steam_datadir()
     for (const auto& dir : qAsConst(possible_dirs)) {
         if (QFileInfo(dir).isDir()) {
             qInfo().noquote() << MSG_PREFIX
-                              << QObject::tr("found data directory: `%1`").arg(dir);
+                              << tr_log("found data directory: `%1`").arg(dir);
             return dir;
         }
     }
 
     qInfo().noquote() << MSG_PREFIX
-                      << QObject::tr("no installation found");
+                      << tr_log("no installation found");
     return QString();
 }
 
@@ -85,8 +86,8 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
     QFile configfile(config_path);
     if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning().noquote() << MSG_PREFIX
-            << QObject::tr("while Steam seems to be installed, "
-                           "the config file `%1` could not be opened").arg(config_path);
+            << tr_log("while Steam seems to be installed, "
+                      "the config file `%1` could not be opened").arg(config_path);
         return installdirs;
     }
 
@@ -153,7 +154,7 @@ void Gamelist::find(QHash<QString, Types::Game*>& games,
             [](const QString& dir){ return !QFileInfo(dir).isDir(); }),
         installdirs.end());
     if (installdirs.isEmpty()) {
-        qWarning().noquote() << MSG_PREFIX << QObject::tr("no installation directories found");
+        qWarning().noquote() << MSG_PREFIX << tr_log("no installation directories found");
         return;
     }
 

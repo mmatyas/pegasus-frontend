@@ -17,6 +17,7 @@
 
 #include "Es2Systems.h"
 
+#include "LocaleUtils.h"
 #include "Utils.h"
 #include "types/Collection.h"
 #include "types/Game.h"
@@ -45,7 +46,7 @@ QString findSystemsFile()
 
     for (const auto& path : possible_paths) {
         if (validPath(path)) {
-            qInfo().noquote() << MSG_PREFIX << QObject::tr("found `%1`").arg(path);
+            qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -90,14 +91,14 @@ void SystemsParser::find(QHash<QString, Types::Game*>& games,
     // find the systems file
     const QString xml_path = findSystemsFile();
     if (xml_path.isEmpty()) {
-        qWarning().noquote() << MSG_PREFIX << QObject::tr("system config file not found");
+        qWarning().noquote() << MSG_PREFIX << tr_log("system config file not found");
         return;
     }
 
     // open the systems file
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << QObject::tr("could not open `%1`").arg(xml_path);
+        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(xml_path);
         return;
     }
 
@@ -114,12 +115,12 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
-        xml.raiseError(QObject::tr("could not parse `%1`")
+        xml.raiseError(tr_log("could not parse `%1`")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
     if (xml.name() != QLatin1String("systemList")) {
-        xml.raiseError(QObject::tr("`%1` does not have a `<systemList>` root node!")
+        xml.raiseError(tr_log("`%1` does not have a `<systemList>` root node!")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
@@ -181,7 +182,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         if (xml_props[key].isEmpty()) {
             qWarning().noquote()
                 << MSG_PREFIX
-                << QObject::tr("the `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
+                << tr_log("the `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
                    .arg(static_cast<QFile*>(xml.device())->fileName())
                    .arg(xml.lineNumber())
                    .arg(key);

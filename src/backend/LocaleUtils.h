@@ -15,25 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "PowerCommands.h"
+#pragma once
 
-#include "LocaleUtils.h"
-
-#include <QDebug>
-
-
-namespace platform {
-namespace power {
-
-void reboot()
-{
-    qCritical().noquote() << tr_log("[error] Reboot not implemented on this platform yet");
-}
-
-void shutdown()
-{
-    qCritical().noquote() << tr_log("[error] Shutdown not implemented on this platform yet");
-}
-
-} // namespace power
-} // namespace platform
+#define tr_log(str) QStringLiteral(str)

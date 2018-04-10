@@ -63,7 +63,7 @@ QString homePath()
         return env.value("PEGASUS_HOME", env.value("HOME", QDir::homePath()));
 #else
         // on other platforms, QDir::homePath() returns $HOME first
-        return env.value("PEGASUS_HOME", QDir::homePath());
+        return env.value(QStringLiteral("PEGASUS_HOME"), QDir::homePath());
 #endif
     }();
     return home_path;

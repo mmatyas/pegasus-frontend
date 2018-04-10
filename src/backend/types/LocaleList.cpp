@@ -18,6 +18,7 @@
 #include "LocaleList.h"
 
 #include "ListPropertyFn.h"
+#include "LocaleUtils.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -63,7 +64,7 @@ void LocaleList::findAvailableLocales()
         const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
         m_locales.append(new Types::Locale(locale_tag, this));
 
-        qInfo().noquote() << tr("Found locale '%1' (`%2`)")
+        qInfo().noquote() << tr_log("Found locale '%1' (`%2`)")
                              .arg(m_locales.last()->name(), m_locales.last()->tag());
     }
 }
@@ -92,7 +93,7 @@ void LocaleList::loadSelectedLocale()
     m_translator.load(QStringLiteral("pegasus_") + current()->tag(),
                       QStringLiteral(":/lang"),
                       QStringLiteral("-"));
-    qInfo().noquote() << QObject::tr("Locale set to '%1' (`%2`)")
+    qInfo().noquote() << tr_log("Locale set to '%1' (`%2`)")
                          .arg(current()->name(), current()->tag());
 }
 
@@ -120,7 +121,7 @@ void LocaleList::setIndex(int idx)
 
     const bool valid_idx = (0 <= idx && idx < m_locales.length());
     if (!valid_idx) {
-        qWarning() << QObject::tr("Invalid locale index #%1").arg(idx);
+        qWarning() << tr_log("Invalid locale index #%1").arg(idx);
         return;
     }
 

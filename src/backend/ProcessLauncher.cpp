@@ -17,6 +17,7 @@
 
 #include "ProcessLauncher.h"
 
+#include "LocaleUtils.h"
 #include "ScriptRunner.h"
 #include "types/Collection.h"
 
@@ -55,7 +56,7 @@ void ProcessLauncher::launchGame(const Types::Collection* collection, const Type
 
     if (launch_cmd.isEmpty()) {
         qInfo().noquote()
-            << tr("Cannot launch the game `%1` because there is no launch command defined for it!")
+            << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
                .arg(game->m_title);
     }
     else {
@@ -79,7 +80,7 @@ void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const Types::Gam
 
 void ProcessLauncher::runProcess(const QString& command)
 {
-    qInfo().noquote() << tr("Executing command: `%1`").arg(command);
+    qInfo().noquote() << tr_log("Executing command: `%1`").arg(command);
 
     Q_ASSERT(!process);
     process = new QProcess();
@@ -103,7 +104,7 @@ void ProcessLauncher::runProcess(const QString& command)
 void ProcessLauncher::onProcessStarted()
 {
     Q_ASSERT(process);
-    qInfo().noquote() << tr("Process %1 started").arg(process->processId());
+    qInfo().noquote() << tr_log("Process %1 started").arg(process->processId());
     qInfo().noquote() << SEPARATOR;
 }
 
@@ -112,18 +113,18 @@ void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
     Q_ASSERT(process);
     switch (error) {
         case QProcess::FailedToStart:
-            qWarning().noquote() << tr("Could not run the command `%1`; either the"
-                                       " invoked program is missing, or you don't have"
-                                       " the permission to run it.")
+            qWarning().noquote() << tr_log("Could not run the command `%1`; either the"
+                                           " invoked program is missing, or you don't have"
+                                           " the permission to run it.")
                                     .arg(process->program());
             break;
         case QProcess::Crashed:
-            qWarning().noquote() << tr("The external program `%1` has crashed")
+            qWarning().noquote() << tr_log("The external program `%1` has crashed")
                                     .arg(process->program());
             break;
         case QProcess::Timedout:
-            qWarning().noquote() << tr("The command `%1` has not started in a"
-                                       " reasonable amount of time")
+            qWarning().noquote() << tr_log("The command `%1` has not started in a"
+                                           " reasonable amount of time")
                                     .arg(process->program());
             break;
         case QProcess::ReadError:
@@ -132,7 +133,7 @@ void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
             Q_UNREACHABLE();
             break;
         default:
-            qWarning().noquote() << tr("Running the command `%1` failed due to an unknown error")
+            qWarning().noquote() << tr_log("Running the command `%1` failed due to an unknown error")
                                     .arg(process->program());
             break;
     }
@@ -145,11 +146,11 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
 
     switch (exitstatus) {
         case QProcess::NormalExit:
-            qInfo().noquote() << tr("The external program has finished cleanly, with exit code %2")
+            qInfo().noquote() << tr_log("The external program has finished cleanly, with exit code %2")
                                  .arg(exitcode);
             break;
         case QProcess::CrashExit:
-            qInfo().noquote() << tr("The external program has crashed on exit, with exit code %2")
+            qInfo().noquote() << tr_log("The external program has crashed on exit, with exit code %2")
                                  .arg(exitcode);
             break;
         default:

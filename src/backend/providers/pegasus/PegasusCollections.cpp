@@ -18,6 +18,7 @@
 #include "PegasusCollections.h"
 
 #include "ConfigFile.h"
+#include "LocaleUtils.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
 #include "types/Collection.h"
@@ -131,8 +132,8 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
-            << QObject::tr("`%1`, line %2: %3")
-                           .arg(curr_config_path, QString::number(lineno), msg);
+            << tr_log("`%1`, line %2: %3")
+                      .arg(curr_config_path, QString::number(lineno), msg);
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (key == QLatin1String("collection")) {
@@ -147,7 +148,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
         }
 
         if (!curr_coll) {
-            on_error(lineno, QObject::tr("no collection defined yet, entry ignored"));
+            on_error(lineno, tr_log("no collection defined yet, entry ignored"));
             return;
         }
 
@@ -156,7 +157,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
             return;
         }
         if (!key_types.contains(key)) {
-            on_error(lineno, QObject::tr("unrecognized attribute name `%3`, ignored").arg(key));
+            on_error(lineno, tr_log("unrecognized attribute name `%3`, ignored").arg(key));
             return;
         }
 
@@ -188,7 +189,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
     curr_config_path = dir_path + QStringLiteral("/collections.pegasus.txt");
     if (::validFileQt(curr_config_path)) {
-        qInfo().noquote() << QObject::tr("Found `%1`").arg(curr_config_path);
+        qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
         config::readFile(curr_config_path,  on_attribute, on_error);
     }
     else {
@@ -196,7 +197,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
         curr_coll = nullptr;
         // FIXME: duplicate
         if (::validFileQt(curr_config_path)) {
-            qInfo().noquote() << QObject::tr("Found `%1`").arg(curr_config_path);
+            qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
             config::readFile(curr_config_path,  on_attribute, on_error);
         }
     }

@@ -17,6 +17,7 @@
 
 #include "SteamMetadata.h"
 
+#include "LocaleUtils.h"
 #include "types/Collection.h"
 
 #include <QDebug>
@@ -65,7 +66,7 @@ SteamGameEntry read_manifest(const QString& manifest_path)
 {
     QFile manifest(manifest_path);
     if (!manifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX << QObject::tr("could not open `%1`").arg(manifest_path);
+        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(manifest_path);
         return {};
     }
 
@@ -212,7 +213,7 @@ QString cached_json_path(const SteamGameEntry& entry)
     if (!cache_dir.mkpath(QLatin1String("."))) {
         // NOTE: mkpath() returns true if the dir already exists
         qWarning().noquote() << MSG_PREFIX
-            << QObject::tr("could not create cache directory `%1`").arg(cache_path);
+            << tr_log("could not create cache directory `%1`").arg(cache_path);
         return QString();
     }
 
@@ -225,14 +226,14 @@ void cache_json(const SteamGameEntry& entry, const QByteArray& bytes)
     QFile json_file(json_path);
     if (!json_file.open(QIODevice::WriteOnly)) {
         qWarning().noquote() << MSG_PREFIX
-            << QObject::tr("could not create cache file `%1` for game `%2`")
+            << tr_log("could not create cache file `%1` for game `%2`")
                .arg(json_path, entry.title);
         return;
     }
 
     if (json_file.write(bytes) != bytes.length()) {
         qWarning().noquote() << MSG_PREFIX
-            << QObject::tr("writing cache file `%1` was not successful")
+            << tr_log("writing cache file `%1` was not successful")
                .arg(json_path, entry.title);
         json_file.remove();
     }
@@ -283,7 +284,7 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
                 if (reply->error()) {
                     qWarning().noquote() << MSG_PREFIX
-                        << QObject::tr("downloading metadata for `%1` failed (%2)")
+                        << tr_log("downloading metadata for `%1` failed (%2)")
                            .arg(entries[i].title, reply->errorString());
                 }
                 else {
@@ -294,9 +295,9 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
                     }
                     else {
                         qWarning().noquote() << MSG_PREFIX
-                            << QObject::tr("failed to parse the response of the server "
-                                           "for game `%1` - perhaps the Steam API changed?")
-                                           .arg(entries[i].title);
+                            << tr_log("failed to parse the response of the server "
+                                      "for game `%1` - perhaps the Steam API changed?")
+                                      .arg(entries[i].title);
                     }
                 }
 
@@ -358,8 +359,7 @@ void Metadata::enhance(const QHash<QString, Types::Game*>&,
     }
 
     if (entries.empty()) {
-        qInfo().noquote() << MSG_PREFIX
-            << QObject::tr("couldn't find any installed games");
+        qInfo().noquote() << MSG_PREFIX << tr_log("couldn't find any installed games");
         return;
     }
 
@@ -380,7 +380,7 @@ void Metadata::enhance(const QHash<QString, Types::Game*>&,
     QNetworkAccessManager netman; // TODO: move NAM to global
     if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
         qWarning().noquote() << MSG_PREFIX
-            << QObject::tr("no internet connection - most game data may be missing");
+            << tr_log("no internet connection - most game data may be missing");
         return;
     }
 

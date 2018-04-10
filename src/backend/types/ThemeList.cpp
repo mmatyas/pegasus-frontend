@@ -19,6 +19,7 @@
 
 #include "ConfigFile.h"
 #include "ListPropertyFn.h"
+#include "LocaleUtils.h"
 #include "Utils.h"
 
 #include <QCoreApplication>
@@ -57,7 +58,7 @@ QHash<QString, QString> read_metafile(const QString& config_file_path)
                 result.insert(key, val);
         },
         [&](const int linenum, const QString msg){
-            qWarning().noquote() << QObject::tr("`%1`, line %2: %3")
+            qWarning().noquote() << tr_log("`%1`, line %2: %3")
                 .arg(config_file_path, QString::number(linenum), msg);
         });
     return result;
@@ -84,8 +85,8 @@ void ThemeList::findAvailableThemes()
 
     const QString meta_filename(QStringLiteral("theme.cfg"));
     const QString qml_filename(QStringLiteral("theme.qml"));
-    const QString warn_missingfile = QObject::tr("Warning: no `%1` file found in `%2`, theme skipped");
-    const QString warn_missingentry = QObject::tr("Warning: there is no `%1` entry in `%2`, theme skipped");
+    const QString warn_missingfile = tr_log("[warning] No `%1` file found in `%2`, theme skipped");
+    const QString warn_missingentry = tr_log("[warning] There is no `%1` entry in `%2`, theme skipped");
 
     const QString META_KEY_NAME(QStringLiteral("name"));
     const QString META_KEY_AUTHOR(QStringLiteral("author"));
@@ -135,7 +136,7 @@ void ThemeList::findAvailableThemes()
                 this
             ));
 
-            qInfo().noquote() << tr("Found theme '%1' (`%2`)")
+            qInfo().noquote() << tr_log("Found theme '%1' (`%2`)")
                                  .arg(m_themes.last()->name(), m_themes.last()->dir());
         }
     }
@@ -170,7 +171,7 @@ void ThemeList::selectPreferredTheme()
 
 void ThemeList::printChangeMsg() const
 {
-    qInfo().noquote() << QObject::tr("Theme set to '%1' (%2)")
+    qInfo().noquote() << tr_log("Theme set to '%1' (%2)")
                          .arg(current()->name(), current()->dir());
 }
 
@@ -198,7 +199,7 @@ void ThemeList::setIndex(int idx)
 
     const bool valid_idx = (0 <= idx && idx < m_themes.length());
     if (!valid_idx) {
-        qWarning() << tr("Invalid theme index #%1").arg(idx);
+        qWarning() << tr_log("Invalid theme index #%1").arg(idx);
         return;
     }
 

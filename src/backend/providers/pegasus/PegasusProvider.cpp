@@ -17,6 +17,7 @@
 
 #include "PegasusProvider.h"
 
+#include "LocaleUtils.h"
 #include "Utils.h"
 
 #include <QDebug>
@@ -66,7 +67,7 @@ void PegasusProvider::load_game_dir_list()
         if (!config_file.open(QFile::ReadOnly | QFile::Text))
             continue;
 
-        qInfo().noquote() << QObject::tr("Found `%1`").arg(path);
+        qInfo().noquote() << tr_log("Found `%1`").arg(path);
 
         QTextStream stream(&config_file);
         QString line;

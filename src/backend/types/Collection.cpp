@@ -17,6 +17,8 @@
 
 #include "Collection.h"
 
+#include "LocaleUtils.h"
+
 #include <QDebug>
 
 
@@ -35,7 +37,7 @@ Collection::Collection(QString name, QObject* parent)
 }
 
 const QString& Collection::tag() const {
-    qWarning() << "Warning: `collection.tag` is deprecated and will be removed in the future. Do not use it in themes.";
+    qWarning() << tr_log("Warning: `collection.tag` is deprecated and will be removed in the future. Do not use it in themes.");
     return m_name;
 }
 

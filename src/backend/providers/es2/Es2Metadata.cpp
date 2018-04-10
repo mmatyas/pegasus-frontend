@@ -17,6 +17,7 @@
 
 #include "Es2Metadata.h"
 
+#include "LocaleUtils.h"
 #include "Utils.h"
 #include "types/Collection.h"
 #include "PegasusAssets.h"
@@ -55,7 +56,7 @@ QString findGamelistFile(const Types::Collection& collection)
 
     for (const auto& path : possible_files) {
         if (validPath(path)) {
-            qInfo().noquote() << MSG_PREFIX << QObject::tr("found `%1`").arg(path);
+            qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
             return path;
         }
         // qDebug() << FALLBACK_MSG.arg(path);
@@ -221,7 +222,7 @@ void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
         QFile xml_file(gamelist_path);
         if (!xml_file.open(QIODevice::ReadOnly)) {
             qWarning().noquote() << MSG_PREFIX
-                                 << QObject::tr("could not open `%1`").arg(gamelist_path);
+                                 << tr_log("could not open `%1`").arg(gamelist_path);
             continue;
         }
 
@@ -246,12 +247,12 @@ void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
-        xml.raiseError(QObject::tr("could not parse `%1`")
+        xml.raiseError(tr_log("could not parse `%1`")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
     if (xml.name() != QLatin1String("gameList")) {
-        xml.raiseError(QObject::tr("`%1` does not have a `<gameList>` root node!")
+        xml.raiseError(tr_log("`%1` does not have a `<gameList>` root node!")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
@@ -294,7 +295,7 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
     if (game_path.isEmpty()) {
         qWarning().noquote()
             << MSG_PREFIX
-            << QObject::tr("the `<game>` node in `%1` that ends at line %2 has no `<path>` parameter")
+            << tr_log("the `<game>` node in `%1` that ends at line %2 has no `<path>` parameter")
                .arg(static_cast<QFile*>(xml.device())->fileName())
                .arg(xml.lineNumber());
         return;

@@ -18,6 +18,7 @@
 #include "AppContext.h"
 
 #include "Api.h"
+#include "LocaleUtils.h"
 #include "ScriptRunner.h"
 
 #include <QDebug>
@@ -36,13 +37,13 @@ QString find_writable_config_dir()
     const QString dir_path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
         .replace(replace_regex, QStringLiteral("/pegasus-frontend"));
     if (dir_path.isEmpty()) {
-        qWarning() << QObject::tr("No writable location found to save logs, file logging disabled.");
+        qWarning() << tr_log("No writable location found to save logs, file logging disabled.");
         return QString();
     }
 
     QDir dir(dir_path);
     if (!dir.mkpath(QLatin1String("."))) { // also true if already exists
-        qWarning() << QObject::tr("Could create `%1`, file logging disabled.").arg(dir_path);
+        qWarning() << tr_log("Could create `%1`, file logging disabled.").arg(dir_path);
         return QString();
     }
 
@@ -85,7 +86,7 @@ void register_api_classes()
     //   as that may produce language change signals
 
     constexpr auto API_URI = "Pegasus.Model";
-    const QString error_msg = QObject::tr("Sorry, you cannot create this type in QML.");
+    const QString error_msg = tr_log("Sorry, you cannot create this type in QML.");
 
     qmlRegisterUncreatableType<Types::Collection>(API_URI, 0, 7, "Collection", error_msg);
     qmlRegisterUncreatableType<Types::CollectionList>(API_URI, 0, 7, "CollectionList", error_msg);
@@ -126,7 +127,7 @@ void AppContext::setup_logging()
 
     logfile.setFileName(logfile_path);
     if (!logfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << QObject::tr("Could not open `%1` for writing, file logging disabled.")
+        qWarning() << tr_log("Could not open `%1` for writing, file logging disabled.")
                       .arg(logfile.fileName());
         return;
     }

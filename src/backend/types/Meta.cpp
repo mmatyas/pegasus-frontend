@@ -17,6 +17,8 @@
 
 #include "Meta.h"
 
+#include "LocaleUtils.h"
+
 #include <QDebug>
 #include <QRegularExpression>
 #include <QStandardPaths>
@@ -68,7 +70,7 @@ void Meta::onScanCompleted(qint64 elapsedTime)
     emit scanningMetaChanged();
     emit scanningChanged();
 
-    qInfo().noquote() << tr("Data files loaded in %1ms").arg(elapsedTime);
+    qInfo().noquote() << tr_log("Data files loaded in %1ms").arg(elapsedTime);
 }
 
 void Meta::onLoadingCompleted()

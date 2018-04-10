@@ -33,6 +33,7 @@ HEADERS += \
     ProcessLauncher.h \
     ScriptRunner.h \
     Utils.h \
+    LocaleUtils.h
 
 include(platform/platform.pri)
 include(providers/providers.pri)

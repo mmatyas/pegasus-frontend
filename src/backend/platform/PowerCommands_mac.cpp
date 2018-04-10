@@ -15,8 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QDebug>
+#include "PowerCommands.h"
 
+#include "LocaleUtils.h"
+
+#include <QDebug>
 #include <Carbon/Carbon.h>
 #include <CoreServices/CoreServices.h>
 
@@ -64,13 +67,13 @@ namespace power {
 void reboot()
 {
     if (!send_apple_event(kAERestart))
-        qWarning().noquote() << "[error] Requesting reboot has failed.";
+        qWarning().noquote() << tr_log("[error] Requesting reboot has failed.");
 }
 
 void shutdown()
 {
     if (!send_apple_event(kAEShutDown))
-        qWarning().noquote() << "[error] Requesting shutdown has failed.";
+        qWarning().noquote() << tr_log("[error] Requesting shutdown has failed.");
 }
 
 } // namespace power

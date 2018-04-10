@@ -17,6 +17,8 @@
 
 #include "ConfigFile.h"
 
+#include "LocaleUtils.h"
+
 #include <QDebug>
 #include <QFile>
 #include <QRegularExpression>
@@ -41,7 +43,7 @@ void readStream(QTextStream& stream,
                 const std::function<void(const int, const QString, const QString)>& onAttributeFound,
                 const std::function<void(const int, const QString)>& onError)
 {
-    const QRegularExpression rx_keyval(R"(^([^:]+):(.*)$)"); // key = value
+    const QRegularExpression rx_keyval(QStringLiteral(R"(^([^:]+):(.*)$)")); // key = value
 
     QString last_key;
     QString last_val;
@@ -54,7 +56,7 @@ void readStream(QTextStream& stream,
             last_val = last_val.trimmed();
 
             if (last_val.isEmpty())
-                onError(linenum - 1, QStringLiteral("attribute value missing, entry ignored"));
+                onError(linenum - 1, tr_log("attribute value missing, entry ignored"));
             else
                 onAttributeFound(linenum - 1, last_key, last_val);
         }
@@ -80,7 +82,7 @@ void readStream(QTextStream& stream,
         // multiline (starts with whitespace but trimmed_line is not empty)
         if (line.at(0).isSpace()) {
             if (last_key.isEmpty()) {
-                onError(linenum, QStringLiteral("multiline value found, but no attribute has been defined yet"));
+                onError(linenum, tr_log("multiline value found, but no attribute has been defined yet"));
                 continue;
             }
             if (!last_val.isEmpty() && !last_val.endsWith('\n')) {
@@ -105,7 +107,7 @@ void readStream(QTextStream& stream,
         }
 
         // invalid line
-        onError(linenum, QStringLiteral("line invalid, skipped"));
+        onError(linenum, tr_log("line invalid, skipped"));
     }
 
     // the very last line

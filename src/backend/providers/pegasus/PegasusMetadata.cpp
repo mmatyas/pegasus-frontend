@@ -18,6 +18,7 @@
 #include "PegasusMetadata.h"
 
 #include "ConfigFile.h"
+#include "LocaleUtils.h"
 #include "PegasusAssets.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
@@ -93,8 +94,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
-            << QObject::tr("`%1`, line %2: %3")
-                           .arg(curr_config_path, QString::number(lineno), msg);
+            << tr_log("`%1`, line %2: %3").arg(curr_config_path, QString::number(lineno), msg);
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (key == QLatin1String("file")) {
@@ -104,7 +104,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
 
             if (!games.contains(fileinfo.canonicalFilePath())) {
                 on_error(lineno,
-                    QObject::tr("the game `%1` is either missing or excluded, values for it will be ignored").arg(val));
+                    tr_log("the game `%1` is either missing or excluded, values for it will be ignored").arg(val));
                 return;
             }
 
@@ -113,7 +113,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
             return;
         }
         if (!curr_game) {
-            on_error(lineno, QObject::tr("no file defined yet, entry ignored"));
+            on_error(lineno, tr_log("no file defined yet, entry ignored"));
             return;
         }
 
@@ -122,7 +122,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
             return;
         }
         if (!m_key_types.contains(key)) {
-            on_error(lineno, QObject::tr("unrecognized attribute name `%3`, ignored").arg(key));
+            on_error(lineno, tr_log("unrecognized attribute name `%3`, ignored").arg(key));
             return;
         }
 
@@ -159,7 +159,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                 {
                     const auto rx_match = m_release_regex.match(val);
                     if (!rx_match.hasMatch()) {
-                        on_error(lineno, QObject::tr("incorrect date format, should be YYYY(-MM(-DD))"));
+                        on_error(lineno, tr_log("incorrect date format, should be YYYY(-MM(-DD))"));
                         return;
                     }
 
@@ -181,7 +181,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                         curr_game->m_rating = qBound(0.f, val.toFloat() / 100.f, 1.f);
                         return;
                     }
-                    on_error(lineno, QObject::tr("failed to parse rating value"));
+                    on_error(lineno, tr_log("failed to parse rating value"));
                 }
                 break;
             case MetaAttribType::LAUNCH_CMD:
@@ -195,14 +195,14 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
 
     curr_config_path = dir_path + QStringLiteral("/metadata.pegasus.txt");
     if (::validFileQt(curr_config_path)) {
-        qInfo().noquote() << QObject::tr("Found `%1`").arg(curr_config_path);
+        qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
         config::readFile(curr_config_path,  on_attribute, on_error);
     }
     else {
         curr_config_path = dir_path + QStringLiteral("/metadata.txt");
         curr_game = nullptr;
         if (::validFileQt(curr_config_path)) {
-            qInfo().noquote() << QObject::tr("Found `%1`").arg(curr_config_path);
+            qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
             config::readFile(curr_config_path,  on_attribute, on_error);
         }
     }
