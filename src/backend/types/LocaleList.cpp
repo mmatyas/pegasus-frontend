@@ -55,7 +55,11 @@ void LocaleList::findAvailableLocales()
     // find the available languages
     QStringList qm_files = QDir(QStringLiteral(":/lang")).entryList(QStringList(QStringLiteral("*.qm")));
     qm_files.append(QStringLiteral("pegasus_en.qm")); // default placeholder
-    qm_files.sort();
+    std::sort(qm_files.begin(), qm_files.end(),
+        [](const QString& a, const QString& b) {
+            return a.leftRef(a.length() - 3) < b.leftRef(b.length() - 3);
+        }
+    );
 
     for (const QString& filename : qAsConst(qm_files)) {
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
