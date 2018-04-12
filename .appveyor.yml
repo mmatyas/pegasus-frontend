@@ -70,3 +70,5 @@ deploy:
     version: continuous
     artifact: /pegasus-fe_.*\.zip/
     publish: true
+    on:
+      branch: master
