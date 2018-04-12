@@ -107,10 +107,11 @@ Item {
             Layout.preferredHeight: parent.width * videoPreview.heightRatio
             Layout.bottomMargin: vpx(4)
 
-            visible: gameData && gameData.assets.videos.length
+            visible: gameData && (gameData.assets.videos.length || gameData.assets.screenshots.length)
 
             Video {
                 id: videoPreview
+                visible: playlist.itemCount > 0
 
                 property real preferredHeightRatio: {
                     if (api.currentCollection
@@ -132,6 +133,16 @@ Item {
                 playlist: Playlist {
                     playbackMode: Playlist.Loop
                 }
+            }
+
+            Image {
+                visible: !videoPreview.visible
+
+                anchors { fill: parent; margins: 1 }
+                fillMode: Image.PreserveAspectFit
+
+                source: (gameData && gameData.assets.screenshots.length && gameData.assets.screenshots[0]) || ""
+                sourceSize { width: 512; height: 512 }
             }
         }
     }
