@@ -171,7 +171,7 @@ void ThemeList::selectPreferredTheme()
 
 void ThemeList::printChangeMsg() const
 {
-    qInfo().noquote() << tr_log("Theme set to '%1' (%2)")
+    qInfo().noquote() << tr_log("Theme set to '%1' (`%2`)")
                          .arg(current()->name(), current()->dir());
 }
 
