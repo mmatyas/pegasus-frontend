@@ -91,7 +91,6 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
         return installdirs;
     }
 
-
     const QRegularExpression installdir_regex(QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")""));
 
     QTextStream stream(&configfile);
@@ -100,7 +99,7 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
         const auto match = installdir_regex.match(line);
         if (match.hasMatch()) {
             const QString path = match.captured(1) % QLatin1String("/steamapps");
-            if (!installdirs.contains(path))
+            if (!installdirs.contains(path) && QFileInfo(path).isDir())
                 installdirs << path;
         }
     }
@@ -149,15 +148,10 @@ void Gamelist::find(QHash<QString, Types::Game*>& games,
         return;
 
     QStringList installdirs = find_steam_installdirs(steamdir);
-    installdirs.erase(std::remove_if(
-        installdirs.begin(), installdirs.end(),
-            [](const QString& dir){ return !QFileInfo(dir).isDir(); }),
-        installdirs.end());
     if (installdirs.isEmpty()) {
         qWarning().noquote() << MSG_PREFIX << tr_log("no installation directories found");
         return;
     }
-
 
     const QString STEAM_TAG(QStringLiteral("Steam"));
     Types::Collection*& collection = collections[STEAM_TAG];
