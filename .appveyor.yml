@@ -72,3 +72,13 @@ deploy:
     publish: true
     on:
       branch: master
+  - provider: GitHub
+    tag: continuous
+    auth_token:
+      secure: CVaZqFcPrvYAVCGTNv1SRln6j+IAvv+J0Gaz0vUD3fsHMYm7Zuf+NivLxgWNkwNe
+    artifact: /pegasus-fe_.*\.zip/
+    prerelease: true
+    on:
+      branch: master
+      flavor: mingw
+      appveyor_repo_tag: true
