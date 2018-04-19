@@ -143,6 +143,7 @@ Item {
 
                 source: (gameData && gameData.assets.screenshots.length && gameData.assets.screenshots[0]) || ""
                 sourceSize { width: 512; height: 512 }
+                asynchronous: true
             }
         }
     }
