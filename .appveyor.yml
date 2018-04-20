@@ -60,18 +60,6 @@ artifacts:
   - path: pegasus-fe_*.zip
 
 deploy:
-  - provider: BinTray
-    username: mmatyas
-    api_key:
-      secure: rXX8Ajtqyi4+tL8B+RrQXj2j1YyOUWeYLYFrFRO2kY4MOazjoN7Zh27PYnIZ75aj
-    subject: mmatyas
-    repo: apps
-    package: pegasus-frontend
-    version: continuous
-    artifact: /pegasus-fe_.*\.zip/
-    publish: true
-    on:
-      branch: master
   - provider: GitHub
     tag: continuous
     auth_token:
