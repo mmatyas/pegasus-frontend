@@ -72,8 +72,9 @@ after_success:
       ../LICENSE.md
   - wget -c https://github.com/mmatyas/uploadtool/raw/master/upload.sh
   - bash ./upload.sh pegasus-fe_${SUFFIX}.zip
-  - if [[ "$TARGET" == "x11-static" ]]; then
-      export DEB_VER=$(echo $SUFFIX | sed -r 's/^alpha([0-9]+)-([0-9]+)-.*/0.\1.\2/');
+  - export DEB_REGEX='^alpha([0-9]+)-([0-9]+)-.*'
+  - if [[ "$TARGET" == "x11-static" && "$SUFFIX" =~ $DEB_REGEX ]]; then
+      export DEB_VER=$(echo $SUFFIX | sed -r "s/${DEB_REGEX}/0.\1.\2/");
       fpm -s dir -t deb
         --name pegasus-frontend
         --version ${DEB_VER}
