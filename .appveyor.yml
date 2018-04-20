@@ -69,4 +69,3 @@ deploy:
     on:
       branch: master
       flavor: mingw
-      appveyor_repo_tag: true
