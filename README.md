@@ -3,7 +3,7 @@
 
 # Pegasus Frontend
 
-A cross platform, customizable graphical frontend for launching emulators and managing your game collection.
+Pegasus is a graphical frontend for browsing your game library and launching all kinds of emulators from the same place. It's focusing on customizability, cross platform support (including embedded) and high performance.
 
 [![Linux (X11/RPi1/RPi2) build status](https://travis-ci.org/mmatyas/pegasus-frontend.svg?branch=master)](https://travis-ci.org/mmatyas/pegasus-frontend)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/mmatyas/pegasus-frontend?svg=true&branch=master)](https://ci.appveyor.com/project/mmatyas/pegasus-frontend)
@@ -12,9 +12,10 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.md)
 
 - [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
-- [Latest automatic builds for Linux (incl. Raspberry Pi)][gh ci builds]
-- [Latest automatic build for Windows][appveyor mingw build]
-- Debian/Ubuntu repository: see below
+- [Latest automatic builds][gh ci builds]
+  - Debian/Ubuntu repository: [see below](#installation)
+- [Main website](http://pegasus-frontend.org)
+
 
 ## Features
 
@@ -29,7 +30,7 @@ A cross platform, customizable graphical frontend for launching emulators and ma
 
 ## Installation
 
-At the moment, this project is still in alpha. You can find the current unstable releases and the latest automatic builds [here][gh ci builds] (for Linux) or [here][appveyor mingw build] (for Windows). You can also build the program manually from its source code.
+At the moment, this project is still in alpha. You can find the current unstable releases and the latest automatic builds [here][gh ci builds]. You can also build the program manually from its source code.
 
 **Debian/Ubuntu:** for 64-bit desktops, the latest version can be installed like this:
 
@@ -50,7 +51,8 @@ While the releases try to include most required dependencies, on some platforms 
 - Linux: a distro not older than Ubuntu 14.04 or Debian Wheezy is recommended. The dependencies are Fontconfig and GStreamer 1.x (`fontconfig gstreamer1.0-alsa gstreamer1.0-libav gstreamer1.0-plugins-good`).
 - Windows: all dependencies included, should work on anything between Windows 7 and 10.
 
-### Building from source
+
+## Building from source
 
 **Build dependencies**
 
@@ -61,7 +63,7 @@ While the releases try to include most required dependencies, on some platforms 
     - SVG
     - Gamepad
 
-For more information, please see the detailed [build guide](https://github.com/mmatyas/pegasus-frontend/wiki/Building).
+For more information, please see the detailed [build guide](http://pegasus-frontend.org/docs/dev/build).
 
 **Downloading the source**
 
@@ -89,7 +91,7 @@ Additional parameters are available for QMake:
 
 - `INSTALLDIR`: where to `make install` the program. Defaults to `/opt/pegasus-frontend` or `C:\pegasus-frontend`.
 
-**For more details**, see the [wiki page](https://github.com/mmatyas/pegasus-frontend/wiki/Building).
+**For more details**, see the [wiki page](http://pegasus-frontend.org/docs/dev/build).
 
 
 ## License
@@ -101,7 +103,7 @@ All trademarks, service marks, trade names, trade dress, product names and logos
 
 ## Donate
 
-Pegasus is a free and open source project, and will remain as one. If you would like to financially support me, you can use the following links. This is completely optional, but every contribution is much appreciated!
+Pegasus is a free and open source project, and will remain as one. If you would like to provide financial support, you can use the following links. This is completely optional, but every contribution is much appreciated!
 
 [![PayPal](https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png)](https://paypal.me/MatyasMustoha)
 [![Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/mmatyas/donate)
@@ -109,4 +111,3 @@ Pegasus is a free and open source project, and will remain as one. If you would 
 
 
 [gh ci builds]: https://github.com/mmatyas/pegasus-frontend/releases/tag/continuous
-[appveyor mingw build]: https://ci.appveyor.com/api/projects/mmatyas/pegasus-frontend/artifacts/build/pegasus_ci.zip?job=Environment%3A%20flavor%3Dmingw%2C%20QTDIR%3DC%3A%5CQt%5C5.9%5Cmingw53_32
