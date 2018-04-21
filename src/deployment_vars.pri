@@ -15,9 +15,3 @@ win32:isEmpty(INSTALLDIR): INSTALLDIR = C:/pegasus-frontend
 # Windows: installation should always be portable (one-dir)
 isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
 isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
-
-# X11 desktop and icon file location
-unix:!macx {
-    isEmpty(INSTALL_ICONDIR): INSTALL_ICONDIR = $${INSTALLDIR}
-    isEmpty(INSTALL_DESKTOPDIR): INSTALL_DESKTOPDIR = $${INSTALLDIR}
-}

@@ -66,16 +66,19 @@ include($${TOP_SRCDIR}/src/deployment_vars.pri)
 unix:!macx {
     target.path = $${INSTALL_BINDIR}
 
-    icon.files += $${TOP_SRCDIR}/etc/linux/pegasus-frontend.png
-    icon.path = $${INSTALL_ICONDIR}
-
-    desktop_file.input = $${TOP_SRCDIR}/etc/linux/pegasus-frontend.desktop.in
-    desktop_file.output = $${OUT_PWD}/pegasus-frontend.desktop
-    QMAKE_SUBSTITUTES += desktop_file
-    desktop.files += $$desktop_file.output
-    desktop.path = $${INSTALL_DESKTOPDIR}
-
-    INSTALLS += icon desktop
+    !isEmpty(INSTALL_ICONDIR) {
+        icon.files += $${TOP_SRCDIR}/etc/linux/pegasus-frontend.png
+        icon.path = $${INSTALL_ICONDIR}
+        INSTALLS += icon
+    }
+    !isEmpty(INSTALL_DESKTOPDIR) {
+        desktop_file.input = $${TOP_SRCDIR}/etc/linux/pegasus-frontend.desktop.in
+        desktop_file.output = $${OUT_PWD}/pegasus-frontend.desktop
+        QMAKE_SUBSTITUTES += desktop_file
+        desktop.files += $$desktop_file.output
+        desktop.path = $${INSTALL_DESKTOPDIR}
+        INSTALLS += desktop
+    }
 }
 win32 {
     QMAKE_TARGET_PRODUCT = "pegasus-frontend"
