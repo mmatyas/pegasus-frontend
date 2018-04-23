@@ -14,8 +14,8 @@ env:
   - PEGASUS_HOME=/hello/world
   matrix:
   - TARGET=x11-static
-  - TARGET=rpi1-static CROSS=1
-  - TARGET=rpi2-static CROSS=1
+  - TARGET=rpi1-static
+  - TARGET=rpi2-static
 
 git:
   depth: 100
@@ -23,8 +23,8 @@ git:
 before_install:
   - pushd /tmp
   - wget ${TOOLS_URL}/${QT_VER}_${TARGET}.txz
-  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-toolchain_483.txz; fi
-  - if [[ -n "$CROSS" ]]; then wget ${TOOLS_URL}/rpi-sysroot_jessie_2017-07-05.txz; fi
+  - if [[ $TARGET == rpi* ]]; then wget ${TOOLS_URL}/rpi-toolchain_483.txz; fi
+  - if [[ $TARGET == rpi* ]]; then wget ${TOOLS_URL}/rpi-sysroot_jessie_2017-07-05.txz; fi
   - for f in *.txz; do sudo tar xJf ${f} -C /opt/; done
   - if [[ "$TARGET" == "x11-static" ]]; then
       sudo ln -s ${QT_VER}_${TARGET} /opt/${QT_VER}_${TARGET}_hosttools;
