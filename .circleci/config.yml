@@ -19,6 +19,13 @@ jobs:
           --android-platform 19
           --gradle
           --verbose
+      # Deploy
+      - run: mkdir dist
+      - run: cp
+          installdir/build/outputs/apk/installdir-debug.apk
+          dist/pegasus-fe_$(git describe --always)-debug.apk
+      - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
+      - run: bash ./upload.sh dist/*.apk
   mingw:
     docker:
       - image: mmatyas/pegasus-qt-mingw
@@ -31,6 +38,14 @@ jobs:
       - run: /opt/${QT_TARGET}_hosttools/bin/qmake .
       - run: make
       - run: make install INSTALL_ROOT=${PWD}/installdir
+      # Deploy
+      - run: mkdir dist
+      - run: zip -j dist/pegasus-fe_$(git describe --always)_windows.zip
+          installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe
+          README.md
+          LICENSE.md
+      - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
+      - run: bash ./upload.sh dist/*.zip
 workflows:
   version: 2
   all:
