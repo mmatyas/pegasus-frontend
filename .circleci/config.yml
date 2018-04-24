@@ -40,7 +40,7 @@ jobs:
       - run: make install INSTALL_ROOT=${PWD}/installdir
       # Deploy
       - run: mkdir dist
-      - run: zip -j dist/pegasus-fe_$(git describe --always)_windows.zip
+      - run: zip -j dist/pegasus-fe_$(git describe --always)_win-mingw-static.zip
           installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe
           README.md
           LICENSE.md
