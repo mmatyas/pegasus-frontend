@@ -50,22 +50,9 @@ build_script:
 
   - copy ..\README.md C:\pegasus-frontend
   - copy ..\LICENSE.md C:\pegasus-frontend
-  - 7z a pegasus_ci.zip C:\pegasus-frontend
   - git describe --always > tmp_out.txt
   - set /p SUFFIX=<tmp_out.txt
-  - cp pegasus_ci.zip ../pegasus-fe_%SUFFIX%_win-%flavor%.zip
+  - 7z a pegasus-fe_%SUFFIX%_win-%flavor%.zip C:\pegasus-frontend
 
 artifacts:
-  - path: build\pegasus_ci.zip
-  - path: pegasus-fe_*.zip
-
-deploy:
-  - provider: GitHub
-    tag: continuous
-    auth_token:
-      secure: CVaZqFcPrvYAVCGTNv1SRln6j+IAvv+J0Gaz0vUD3fsHMYm7Zuf+NivLxgWNkwNe
-    artifact: /pegasus-fe_.*\.zip/
-    prerelease: true
-    on:
-      branch: master
-      flavor: mingw
+  - path: build\pegasus-fe_*.zip
