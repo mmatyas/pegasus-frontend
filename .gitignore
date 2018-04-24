@@ -9,6 +9,7 @@ build*
 !.qmake.conf
 !.travis.yml
 !.appveyor.yml
+!.circleci
 
 # ignore IDE project files
 *.pro.user

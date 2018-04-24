@@ -1,0 +1,39 @@
+version: 2
+jobs:
+  android:
+    docker:
+      - image: mmatyas/pegasus-qt-android
+    environment:
+      - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
+      - QT_TARGET: qt595_android
+      - ANDROID_NDK_ROOT: /opt/android-ndk
+    steps:
+      - run: git clone --recursive https://github.com/mmatyas/pegasus-frontend .
+      - run: curl -L ${TOOLS_URL}/${QT_TARGET}.txz | tar xJf - -C /opt/
+      - run: /opt/${QT_TARGET}_hosttools/bin/qmake .
+      - run: make
+      - run: make install INSTALL_ROOT=${PWD}/installdir
+      - run: /opt/${QT_TARGET}_hosttools/bin/androiddeployqt
+          --input src/app/android-libpegasus-fe.so-deployment-settings.json
+          --output ${PWD}/installdir
+          --android-platform 19
+          --gradle
+          --verbose
+  mingw:
+    docker:
+      - image: mmatyas/pegasus-qt-mingw
+    environment:
+      - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
+      - QT_TARGET: qt595_win32-mingw-static
+    steps:
+      - run: git clone --recursive https://github.com/mmatyas/pegasus-frontend .
+      - run: curl -L ${TOOLS_URL}/${QT_TARGET}.txz | tar xJf - -C /opt/
+      - run: /opt/${QT_TARGET}_hosttools/bin/qmake .
+      - run: make
+      - run: make install INSTALL_ROOT=${PWD}/installdir
+workflows:
+  version: 2
+  all:
+    jobs:
+      - android
+      - mingw
