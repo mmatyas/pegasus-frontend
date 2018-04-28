@@ -25,13 +25,13 @@ class test_Utils : public QObject
     Q_OBJECT
 
 private slots:
-    void validPath_data();
-    void validPath();
+    void validExtPath_data();
+    void validExtPath();
 
     void mathMod();
 };
 
-void test_Utils::validPath_data()
+void test_Utils::validExtPath_data()
 {
     QTest::addColumn<QString>("path");
     QTest::addColumn<bool>("result");
@@ -43,12 +43,12 @@ void test_Utils::validPath_data()
     QTest::newRow("not existing path") << "nonexistent" << false;
 }
 
-void test_Utils::validPath()
+void test_Utils::validExtPath()
 {
     QFETCH(QString, path);
     QFETCH(bool, result);
 
-    QCOMPARE(::validPath(path), result);
+    QCOMPARE(::validExtPath(path), result);
 }
 
 void test_Utils::mathMod()

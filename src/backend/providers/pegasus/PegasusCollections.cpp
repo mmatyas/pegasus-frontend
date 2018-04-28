@@ -188,7 +188,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
     // the actual reading
 
     curr_config_path = dir_path + QStringLiteral("/collections.pegasus.txt");
-    if (::validFileQt(curr_config_path)) {
+    if (::validFile(curr_config_path)) {
         qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
         config::readFile(curr_config_path,  on_attribute, on_error);
     }
@@ -196,7 +196,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
         curr_config_path = dir_path + QStringLiteral("/collections.txt");
         curr_coll = nullptr;
         // FIXME: duplicate
-        if (::validFileQt(curr_config_path)) {
+        if (::validFile(curr_config_path)) {
             qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
             config::readFile(curr_config_path,  on_attribute, on_error);
         }

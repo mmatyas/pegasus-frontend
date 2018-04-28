@@ -18,8 +18,8 @@
 #include "Es2Systems.h"
 
 #include "LocaleUtils.h"
-#include "Utils.h"
 #include "Paths.h"
+#include "Utils.h"
 #include "types/Collection.h"
 #include "types/Game.h"
 
@@ -46,7 +46,7 @@ QString findSystemsFile()
     };
 
     for (const auto& path : possible_paths) {
-        if (validPath(path)) {
+        if (::validFile(path)) {
             qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
             return path;
         }

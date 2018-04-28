@@ -26,19 +26,18 @@
 #endif
 
 
-bool validPath(const QString& path) {
+bool validExtPath(const QString& path) {
 #ifdef Q_OS_UNIX
     // fast posix check for unix systems
     static struct ::stat buffer;
     return (::stat(path.toUtf8().constData(), &buffer) == 0);
 #else
     // default Qt fallback
-    QFileInfo file(path);
-    return file.exists() && (file.isFile() || file.isDir());
+    return QFileInfo::exists(path);
 #endif
 }
 
-bool validFileQt(const QString& path)
+bool validFile(const QString& path)
 {
     QFileInfo file(path);
     return file.exists() && file.isFile();

@@ -20,8 +20,8 @@
 #include "ConfigFile.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
-#include "Utils.h"
 #include "Paths.h"
+#include "Utils.h"
 
 #include <QDebug>
 #include <QDir>
@@ -103,11 +103,11 @@ void ThemeList::findAvailableThemes()
             const QString meta_path = basedir % meta_filename;
             QString qml_path = basedir % qml_filename;
 
-            if (!validFileQt(meta_path)) {
+            if (!::validFile(meta_path)) {
                 qWarning().noquote() << warn_missingfile.arg(meta_filename, basedir);
                 continue;
             }
-            if (!validFileQt(qml_path)) {
+            if (!::validFile(qml_path)) {
                 qWarning().noquote() << warn_missingfile.arg(qml_filename, basedir);
                 continue;
             }

@@ -23,11 +23,11 @@ class QString;
 class QStringList;
 
 
-/// Returns true if the path is an existing regular file or directory
-bool validPath(const QString& path);
+/// Returns true if the path is an existing regular path (but not embedded)
+bool validExtPath(const QString& path);
 
-/// Returns true if the path is an existing regular file or an embedded resource
-bool validFileQt(const QString& path);
+/// Returns true if the path is an existing regular or embedded file
+bool validFile(const QString& path);
 
 
 /// Mathematical modulo -- the result has the same sign as the divisor

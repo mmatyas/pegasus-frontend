@@ -18,9 +18,9 @@
 #include "Es2Metadata.h"
 
 #include "LocaleUtils.h"
-#include "Utils.h"
 #include "Paths.h"
 #include "PegasusAssets.h"
+#include "Utils.h"
 #include "types/Collection.h"
 
 #include <QDebug>
@@ -56,7 +56,7 @@ QString findGamelistFile(const Types::Collection& collection)
     }
 
     for (const auto& path : possible_files) {
-        if (validPath(path)) {
+        if (::validFile(path)) {
             qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
             return path;
         }
@@ -153,19 +153,19 @@ void findAssets(Types::Game& game, QHash<MetaTypes, QString>& xml_props, const T
     if (assets.boxFront().isEmpty()) {
         QString& path = xml_props[MetaTypes::IMAGE];
         resolveShellChars(path, rom_dir);
-        if (!path.isEmpty() && validPath(path))
+        if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game, AssetType::BOX_FRONT, path);
     }
     if (assets.marquee().isEmpty()) {
         QString& path = xml_props[MetaTypes::MARQUEE];
         resolveShellChars(path, rom_dir);
-        if (!path.isEmpty() && validPath(path))
+        if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game, AssetType::ARCADE_MARQUEE, path);
     }
     {
         QString& path = xml_props[MetaTypes::VIDEO];
         resolveShellChars(path, rom_dir);
-        if (!path.isEmpty() && validPath(path))
+        if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game, AssetType::VIDEOS, path);
     }
 }
