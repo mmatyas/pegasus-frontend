@@ -17,6 +17,8 @@
 
 #include "Paths.h"
 
+#include "AppArgs.h"
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -34,9 +36,18 @@ QString get_writable_configdir(const QStandardPaths::StandardLocation type)
 {
     Q_ASSERT(type == QStandardPaths::AppConfigLocation || type == QStandardPaths::CacheLocation);
 
-    const QRegularExpression replace_regex(QStringLiteral("(/pegasus-frontend){2}$"));
-    const QString dir_path = QStandardPaths::writableLocation(type)
-        .replace(replace_regex, QStringLiteral("/pegasus-frontend"));
+    const QString dir_path = [type](){
+        if (AppArgs::portable_mode) {
+            QString path = QCoreApplication::applicationDirPath() + QStringLiteral("/config");
+            if (type == QStandardPaths::CacheLocation)
+                path += QStringLiteral("/cache");
+            return path;
+        }
+
+        const QRegularExpression replace_regex(QStringLiteral("(/pegasus-frontend){2}$"));
+        return QStandardPaths::writableLocation(type)
+            .replace(replace_regex, QStringLiteral("/pegasus-frontend"));
+    }();
 
     Q_ASSERT(!dir_path.isEmpty()); // as described in the Qt docs for AppConfigLocation/CacheLocation
     QDir(dir_path).mkpath(QLatin1String(".")); // does nothing if already exists
@@ -72,17 +83,20 @@ QStringList configDirs()
     static const QStringList config_dir_paths = [](){
         QStringList paths(QLatin1String(":"));
         paths << QCoreApplication::applicationDirPath();
-#ifdef INSTALL_DATADIR
-        if (QFileInfo::exists(INSTALL_DATADIR))
-            paths << QString(INSTALL_DATADIR);
-#endif
-        paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
-        paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-        paths.removeDuplicates();
 
-        // do not add the organization name to the search path
-        const QRegularExpression regex(QStringLiteral("(/pegasus-frontend){2}$"));
-        paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
+        if (!AppArgs::portable_mode) {
+#ifdef INSTALL_DATADIR
+            if (QFileInfo::exists(INSTALL_DATADIR))
+                paths << QString(INSTALL_DATADIR);
+#endif
+            paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
+            paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+            paths.removeDuplicates();
+
+            // do not add the organization name to the search path
+            const QRegularExpression regex(QStringLiteral("(/pegasus-frontend){2}$"));
+            paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
+        }
 
         return paths;
     }();
