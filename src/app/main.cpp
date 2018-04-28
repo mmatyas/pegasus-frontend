@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+#include "AppArgs.h"
 #include "AppContext.h"
 #include "Backend.h"
 #include "LocaleUtils.h"
@@ -52,12 +53,18 @@ void handleCommandLineArgs(QGuiApplication& app)
 {
     QCommandLineParser argparser;
 
-    //: try to make this less than 80 characters per line
-    argparser.setApplicationDescription("\n" + tr_log(
-        "A cross platform, customizable graphical frontend for launching emulators\n"
+    argparser.setApplicationDescription('\n' + tr_log(
+        "A cross platform, customizable graphical frontend for launching emulators "
         "and managing your game collection."));
+
+    const QCommandLineOption arg_portable(QStringLiteral("portable"),
+        tr_log("Do not read or write config files outside the program's directory"));
+    argparser.addOption(arg_portable);
 
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app);
+
+
+    AppArgs::portable_mode = argparser.isSet(arg_portable);
 }
