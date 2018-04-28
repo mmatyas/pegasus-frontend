@@ -17,6 +17,7 @@
 
 #include "Settings.h"
 
+#include "Paths.h"
 #include "ScriptRunner.h"
 
 #include <QSettings>
@@ -36,7 +37,8 @@ Settings::Settings(QObject* parent)
     , m_locales(this)
     , m_themes(this)
 {
-    m_fullscreen = QSettings().value(SETTINGSKEY_FULLSCREEN, true).toBool();
+    m_fullscreen = QSettings(paths::configIniPath(), QSettings::IniFormat)
+                   .value(SETTINGSKEY_FULLSCREEN, true).toBool();
 
     connect(&m_locales, &LocaleList::localeChanged,
             this, &Settings::callScripts);
@@ -52,7 +54,8 @@ void Settings::setFullscreen(bool new_val)
     if (new_val != m_fullscreen) {
         m_fullscreen = new_val;
 
-        QSettings().setValue(SETTINGSKEY_FULLSCREEN, m_fullscreen);
+        QSettings settings(paths::configIniPath(), QSettings::IniFormat);
+        settings.setValue(SETTINGSKEY_FULLSCREEN, m_fullscreen);
 
         emit fullscreenChanged();
     }

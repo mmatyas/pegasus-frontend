@@ -154,7 +154,8 @@ void ThemeList::selectPreferredTheme()
 
 
     // A. Try to use the saved config value
-    const QString requested_theme = QSettings().value(SETTINGSKEY_THEME).toString();
+    const QString requested_theme = QSettings(paths::configIniPath(), QSettings::IniFormat)
+                                    .value(SETTINGSKEY_THEME).toString();
     if (!requested_theme.isEmpty())
         m_theme_idx = indexOfTheme(requested_theme);
 
@@ -208,7 +209,8 @@ void ThemeList::setIndex(int idx)
     emit themeChanged();
 
     // remember
-    QSettings().setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
+    QSettings settings(paths::configIniPath(), QSettings::IniFormat);
+    settings.setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
 }
 
 QQmlListProperty<Theme> ThemeList::getListProp()

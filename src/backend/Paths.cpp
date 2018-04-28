@@ -116,4 +116,10 @@ QString writableCacheDir()
     return config_dir;
 }
 
+QString configIniPath()
+{
+    static const QString ini_path = writableConfigDir() + QStringLiteral("/pegasus-frontend.ini");
+    return ini_path;
+}
+
 } // namespace paths

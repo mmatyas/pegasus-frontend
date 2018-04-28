@@ -36,4 +36,8 @@ QString writableConfigDir();
 /// Returns a directory path where cache data could be stored
 QString writableCacheDir();
 
+/// A convenience function for returning the correct QSettings INI
+/// file path until the config system gets a redesign
+QString configIniPath();
+
 } // namespace paths

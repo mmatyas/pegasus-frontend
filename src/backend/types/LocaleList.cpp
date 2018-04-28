@@ -19,6 +19,7 @@
 
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
+#include "Paths.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -76,7 +77,8 @@ void LocaleList::findAvailableLocales()
 void LocaleList::selectPreferredLocale()
 {
     // A. Try to use the saved config value
-    const QString requested_tag = QSettings().value(SETTINGSKEY_LOCALE).toString();
+    const QString requested_tag = QSettings(paths::configIniPath(), QSettings::IniFormat)
+                                  .value(SETTINGSKEY_LOCALE).toString();
     if (!requested_tag.isEmpty())
         m_locale_idx = indexOfLocale(requested_tag);
 
@@ -135,7 +137,8 @@ void LocaleList::setIndex(int idx)
     emit localeChanged();
 
     // remember
-    QSettings().setValue(SETTINGSKEY_LOCALE, current()->tag());
+    QSettings settings(paths::configIniPath(), QSettings::IniFormat);
+    settings.setValue(SETTINGSKEY_LOCALE, current()->tag());
 }
 
 QQmlListProperty<Locale> LocaleList::getListProp()
