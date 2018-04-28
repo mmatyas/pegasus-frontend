@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "Utils.h"
+#include "Paths.h"
 #include "types/Collection.h"
 #include "types/Game.h"
 
@@ -40,7 +41,7 @@ QString findSystemsFile()
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
     const QVector<QString> possible_paths = {
-        homePath() % QStringLiteral("/.emulationstation/es_systems.cfg"),
+        paths::homePath() % QStringLiteral("/.emulationstation/es_systems.cfg"),
         QStringLiteral("/etc/emulationstation/es_systems.cfg"),
     };
 
@@ -193,7 +194,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     // do some path formatting
     xml_props[QLatin1String("path")]
         .replace("\\", "/")
-        .replace("~", homePath());
+        .replace("~", paths::homePath());
 
 
     // construct the new platform

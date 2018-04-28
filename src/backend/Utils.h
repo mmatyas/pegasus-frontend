@@ -29,13 +29,6 @@ bool validPath(const QString& path);
 /// Returns true if the path is an existing regular file or an embedded resource
 bool validFileQt(const QString& path);
 
-/// Returns $PEGASUS_HOME if defined, or $HOME if defined,
-/// otherwise QDir::homePath().
-QString homePath();
-
-/// Returns the directory paths where config files may be located
-QStringList configDirPaths();
-
 
 /// Mathematical modulo -- the result has the same sign as the divisor
 inline int mathMod(int a, int n) { return (a % n + n) % n; }

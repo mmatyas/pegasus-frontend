@@ -21,13 +21,12 @@
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Utils.h"
+#include "Paths.h"
 
-#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QStringBuilder>
 #include <QUrl>
 
@@ -38,7 +37,7 @@ const QString SETTINGSKEY_THEME(QStringLiteral("theme"));
 
 QStringList themeDirectories()
 {
-    QStringList theme_dirs = ::configDirPaths();
+    QStringList theme_dirs = paths::configDirs();
     for (QString& path : theme_dirs)
         path += "/themes/";
 

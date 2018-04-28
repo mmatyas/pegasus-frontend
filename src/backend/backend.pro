@@ -17,6 +17,7 @@ SOURCES += \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     Utils.cpp \
+    Paths.cpp
 
 HEADERS += \
     Api.h \
@@ -33,7 +34,8 @@ HEADERS += \
     ProcessLauncher.h \
     ScriptRunner.h \
     Utils.h \
-    LocaleUtils.h
+    LocaleUtils.h \
+    Paths.h
 
 include(platform/platform.pri)
 include(providers/providers.pri)

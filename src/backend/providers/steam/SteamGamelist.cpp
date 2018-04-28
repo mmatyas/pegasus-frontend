@@ -18,7 +18,7 @@
 #include "SteamGamelist.h"
 
 #include "LocaleUtils.h"
-#include "Utils.h"
+#include "Paths.h"
 #include "types/Collection.h"
 #include "types/Game.h"
 
@@ -40,17 +40,15 @@ QString find_steam_datadir()
     QStringList possible_dirs;
 
 #ifdef Q_OS_UNIX
-    using Paths = QStandardPaths;
-
     // Linux: ~/.local/share/Steam
     // macOS: ~/Library/Application Support/Steam
-    possible_dirs = Paths::standardLocations(Paths::GenericDataLocation);
+    possible_dirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
     for (QString& dir : possible_dirs)
         dir.append(QLatin1String("/Steam/"));
 
 #ifdef Q_OS_LINUX
     // in addition on Linux, ~/.steam/steam
-    possible_dirs << ::homePath() % QLatin1String("/.steam/steam/");
+    possible_dirs << paths::homePath() % QLatin1String("/.steam/steam/");
 #endif // linux
 #endif // unix
 

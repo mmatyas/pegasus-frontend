@@ -18,10 +18,9 @@
 #include "Meta.h"
 
 #include "LocaleUtils.h"
+#include "Paths.h"
 
 #include <QDebug>
-#include <QRegularExpression>
-#include <QStandardPaths>
 
 
 namespace Types {
@@ -30,19 +29,13 @@ const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 
 Meta::Meta(QObject* parent)
     : QObject(parent)
+    , m_log_path(paths::writableConfigDir() + QStringLiteral("/lastrun.log"))
     , m_loading(true)
     , m_scanning(false)
     , m_scanning_meta(false)
     , m_scanning_time_ms(0)
     , m_game_count(0)
 {
-    using regex = QRegularExpression;
-    using qsp = QStandardPaths;
-
-    Q_ASSERT(qsp::standardLocations(qsp::AppConfigLocation).length() > 0);
-    m_log_path = qsp::standardLocations(qsp::AppConfigLocation).constFirst();
-    m_log_path = m_log_path.replace(regex("(/pegasus-frontend){2}$"), "/pegasus-frontend");
-    m_log_path += "/lastrun.log";
 }
 
 void Meta::clearQMLCache()

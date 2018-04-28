@@ -18,6 +18,7 @@
 #include "SteamMetadata.h"
 
 #include "LocaleUtils.h"
+#include "Paths.h"
 #include "types/Collection.h"
 
 #include <QDebug>
@@ -31,7 +32,6 @@
 #include <QNetworkReply>
 #include <QRegularExpression>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QStringBuilder>
 #include <QTimer>
 
@@ -205,7 +205,7 @@ bool read_json(Types::Game& game, const QByteArray& bytes)
 
 QString cached_json_path(const SteamGameEntry& entry)
 {
-    auto cache_path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    auto cache_path = paths::writableCacheDir();
     Q_ASSERT(!cache_path.isEmpty()); // according to the Qt docs
 
     cache_path += QLatin1String("/steam");

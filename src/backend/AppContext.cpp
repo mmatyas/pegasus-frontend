@@ -19,40 +19,20 @@
 
 #include "Api.h"
 #include "LocaleUtils.h"
+#include "Paths.h"
 #include "ScriptRunner.h"
 
 #include <QDebug>
 #include <QDir>
 #include <QQmlEngine>
-#include <QRegularExpression>
-#include <QStandardPaths>
 #include <list>
 
 
 namespace {
 
-QString find_writable_config_dir()
-{
-    const QRegularExpression replace_regex(QStringLiteral("/pegasus-frontend/pegasus-frontend$"));
-    const QString dir_path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-        .replace(replace_regex, QStringLiteral("/pegasus-frontend"));
-    if (dir_path.isEmpty()) {
-        qWarning() << tr_log("No writable location found to save logs, file logging disabled.");
-        return QString();
-    }
-
-    QDir dir(dir_path);
-    if (!dir.mkpath(QLatin1String("."))) { // also true if already exists
-        qWarning() << tr_log("Could create `%1`, file logging disabled.").arg(dir_path);
-        return QString();
-    }
-
-    return dir_path;
-}
-
 QString find_writable_log_path()
 {
-    const QString log_path = find_writable_config_dir();
+    const QString log_path = paths::writableConfigDir();
     if (log_path.isEmpty())
         return QString();
 

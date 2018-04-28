@@ -19,8 +19,9 @@
 
 #include "LocaleUtils.h"
 #include "Utils.h"
-#include "types/Collection.h"
+#include "Paths.h"
 #include "PegasusAssets.h"
+#include "types/Collection.h"
 
 #include <QDebug>
 #include <QDir>
@@ -45,7 +46,7 @@ QString findGamelistFile(const Types::Collection& collection)
         possible_files.push_back(dir % GAMELISTFILE);
     }
     if (!collection.shortName().isEmpty()) {
-        possible_files.push_back(homePath()
+        possible_files.push_back(paths::homePath()
             % QStringLiteral("/.emulationstation/gamelists/")
             % collection.shortName()
             % GAMELISTFILE);
@@ -70,7 +71,7 @@ void resolveShellChars(QString& path, const QString& containing_dir)
     if (path.startsWith(QStringLiteral("./")))
         path.replace(0, 1, containing_dir);
     else if (path.startsWith(QStringLiteral("~/")))
-        path.replace(0, 1, homePath());
+        path.replace(0, 1, paths::homePath());
 }
 
 void convertToCanonicalPath(QString& path, const QString& containing_dir)
@@ -195,7 +196,7 @@ MetadataParser::MetadataParser(QObject* parent)
 void MetadataParser::enhance(const QHash<QString, Types::Game*>& games,
                              const QHash<QString, Types::Collection*>& collections)
 {
-    const QString imgdir_base = homePath()
+    const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
     // shortpath: dir name + extensionless filename
     QHash<QString, Types::Game*> games_by_shortpath;

@@ -17,20 +17,13 @@
 
 #include "Utils.h"
 
-#include <QCoreApplication>
-#include <QDir>
 #include <QFileInfo>
-#include <QProcessEnvironment>
-#include <QRegularExpression>
-#include <QStandardPaths>
-#include <QString>
-#include <QVector>
+
+#include <unordered_map>
 
 #ifdef Q_OS_UNIX
 #include <sys/stat.h>
 #endif
-
-#include <unordered_map>
 
 
 bool validPath(const QString& path) {
@@ -49,47 +42,6 @@ bool validFileQt(const QString& path)
 {
     QFileInfo file(path);
     return file.exists() && file.isFile();
-}
-
-QString homePath()
-{
-    static const QString home_path = [](){
-        const auto env = QProcessEnvironment::systemEnvironment();
-
-#ifdef Q_OS_WIN32
-        // allow overriding the home directory on Windows:
-        // QDir::homePath() checks the env vars last on this platform,
-        // but we want it to be the first
-        return env.value("PEGASUS_HOME", env.value("HOME", QDir::homePath()));
-#else
-        // on other platforms, QDir::homePath() returns $HOME first
-        return env.value(QStringLiteral("PEGASUS_HOME"), QDir::homePath());
-#endif
-    }();
-    return home_path;
-}
-
-QStringList configDirPaths()
-{
-    static const QStringList config_dir_paths = [](){
-        QStringList paths(QLatin1String(":"));
-        paths << QCoreApplication::applicationDirPath();
-#ifdef INSTALL_DATADIR
-        if (validPath(INSTALL_DATADIR))
-            paths << QString(INSTALL_DATADIR);
-#endif
-        paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
-        paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-        paths.removeDuplicates();
-
-        // do not add the organization name to the search path
-        const QRegularExpression regex(QStringLiteral("/pegasus-frontend/pegasus-frontend$"));
-        paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
-
-        return paths;
-    }();
-
-    return config_dir_paths;
 }
 
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)

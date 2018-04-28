@@ -18,7 +18,7 @@
 #include "ScriptRunner.h"
 
 #include "LocaleUtils.h"
-#include "Utils.h"
+#include "Paths.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -70,7 +70,7 @@ QVector<QString> ScriptRunner::findScripts(const QString& dirname)
 
     QVector<QString> scripts;
 
-    auto search_paths = ::configDirPaths();
+    auto search_paths = paths::configDirs();
     for (auto& path : search_paths) {
         path += "/scripts/" + dirname;
 

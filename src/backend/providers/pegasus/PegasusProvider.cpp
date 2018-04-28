@@ -18,7 +18,7 @@
 #include "PegasusProvider.h"
 
 #include "LocaleUtils.h"
-#include "Utils.h"
+#include "Paths.h"
 
 #include <QDebug>
 #include <QFile>
@@ -60,7 +60,7 @@ void PegasusProvider::load_game_dir_list()
 {
     constexpr int LINE_MAX_LEN = 4096;
 
-    for (QString& path : ::configDirPaths()) {
+    for (QString& path : paths::configDirs()) {
         path += QStringLiteral("/game_dirs.txt");
 
         QFile config_file(path);

@@ -62,7 +62,7 @@ signals:
 
 private:
     static const QString m_git_revision;
-    QString m_log_path;
+    const QString m_log_path;
 
     bool m_loading;
     bool m_scanning;

@@ -17,11 +17,12 @@
 
 #include "FrontendLayer.h"
 
+#include "Paths.h"
+
 #include <QNetworkAccessManager>
 #include <QNetworkDiskCache>
 #include <QQmlContext>
 #include <QQmlNetworkAccessManagerFactory>
-#include <QStandardPaths>
 
 
 namespace {
@@ -36,7 +37,7 @@ QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
     QNetworkAccessManager* nam = new QNetworkAccessManager(parent);
     QNetworkDiskCache* cache = new QNetworkDiskCache(nam);
 
-    QString cache_path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    QString cache_path = paths::writableCacheDir();
     cache_path += QLatin1String("/netcache");
     cache->setCacheDirectory(cache_path);
 
