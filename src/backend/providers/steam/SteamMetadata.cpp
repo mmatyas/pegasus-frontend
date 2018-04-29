@@ -273,7 +273,9 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
     for (size_t i = 0; i < entries.size(); i++) {
         const QUrl url(APPDETAILS_URL + entries[i].appid);
-        QNetworkReply* reply = netman.get(QNetworkRequest(url));
+        QNetworkRequest request(url);
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        QNetworkReply* reply = netman.get(request);
 
         QObject::connect(reply, &QNetworkReply::finished,
             [&, i, reply](){
