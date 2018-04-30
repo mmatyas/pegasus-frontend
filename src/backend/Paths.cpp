@@ -32,24 +32,21 @@
 
 namespace {
 
-QString get_writable_configdir(const QStandardPaths::StandardLocation type)
+QString get_writable_dir(const QStandardPaths::StandardLocation type)
 {
     Q_ASSERT(type == QStandardPaths::AppConfigLocation || type == QStandardPaths::CacheLocation);
 
     const QString dir_path = [type](){
-        if (AppArgs::portable_mode) {
-            QString path = QCoreApplication::applicationDirPath() + QStringLiteral("/config");
-            if (type == QStandardPaths::CacheLocation)
-                path += QStringLiteral("/cache");
-            return path;
-        }
+        if (type == QStandardPaths::AppConfigLocation && AppArgs::portable_mode)
+            return QCoreApplication::applicationDirPath() + QStringLiteral("/config");
 
         const QRegularExpression replace_regex(QStringLiteral("(/pegasus-frontend){2}$"));
         return QStandardPaths::writableLocation(type)
             .replace(replace_regex, QStringLiteral("/pegasus-frontend"));
     }();
 
-    Q_ASSERT(!dir_path.isEmpty()); // as described in the Qt docs for AppConfigLocation/CacheLocation
+    // the path is never empty for AppConfigLocation/CacheLocation, as per Qt docs
+    Q_ASSERT(!dir_path.isEmpty());
     QDir(dir_path).mkpath(QLatin1String(".")); // does nothing if already exists
 
     return dir_path;
@@ -106,14 +103,14 @@ QStringList configDirs()
 
 QString writableConfigDir()
 {
-    static const QString config_dir = get_writable_configdir(QStandardPaths::AppConfigLocation);
+    static const QString config_dir = get_writable_dir(QStandardPaths::AppConfigLocation);
     return config_dir;
 }
 
 QString writableCacheDir()
 {
-    static const QString config_dir = get_writable_configdir(QStandardPaths::CacheLocation);
-    return config_dir;
+    static const QString cache_dir = get_writable_dir(QStandardPaths::CacheLocation);
+    return cache_dir;
 }
 
 QString configIniPath()
