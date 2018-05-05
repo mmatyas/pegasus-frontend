@@ -81,6 +81,12 @@ QStringList configDirs()
         QStringList paths(QLatin1String(":"));
         paths << QCoreApplication::applicationDirPath();
 
+        const QString local_config_dir = QCoreApplication::applicationDirPath()
+                                       + QStringLiteral("/config");
+        if (QFileInfo::exists(local_config_dir))
+            paths << local_config_dir;
+
+
         if (!AppArgs::portable_mode) {
 #ifdef INSTALL_DATADIR
             if (QFileInfo::exists(INSTALL_DATADIR))
