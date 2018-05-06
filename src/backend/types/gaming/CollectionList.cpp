@@ -105,7 +105,7 @@ void CollectionList::onScanComplete()
     //       less than 2 million games, it will be enough
     int game_count = 0;
 
-    for (Collection* const coll : m_collections) {
+    for (Collection* const coll : qAsConst(m_collections)) {
         coll->setParent(this);
 
         connect(coll, &Collection::currentGameChanged,
