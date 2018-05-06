@@ -25,27 +25,27 @@ ApiObject::ApiObject(QObject* parent)
     , m_launch_collection(nullptr)
     , m_launch_game(nullptr)
 {
-    connect(m_settings.localesPtr(), &Types::LocaleList::localeChanged,
+    connect(m_settings.localesPtr(), &types::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
-    connect(&m_system, &Types::System::appCloseRequested,
+    connect(&m_system, &types::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
-    connect(&m_filters, &Types::Filters::filtersChanged,
+    connect(&m_filters, &types::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
 
-    connect(&m_collections, &Types::CollectionList::currentChanged,
+    connect(&m_collections, &types::CollectionList::currentChanged,
             this, &ApiObject::currentCollectionChanged);
-    connect(&m_collections, &Types::CollectionList::currentGameChanged,
+    connect(&m_collections, &types::CollectionList::currentGameChanged,
             this, &ApiObject::currentGameChanged);
-    connect(&m_collections, &Types::CollectionList::launchRequested,
+    connect(&m_collections, &types::CollectionList::launchRequested,
             this, &ApiObject::onLaunchRequested);
 
     connect(&m_datafinder, &DataFinder::totalCountChanged,
-            &m_meta, &Types::Meta::onGameCountUpdate);
+            &m_meta, &types::Meta::onGameCountUpdate);
     connect(&m_datafinder, &DataFinder::metadataSearchStarted,
-            &m_meta, &Types::Meta::onScanMetaStarted);
+            &m_meta, &types::Meta::onScanMetaStarted);
 
     // partial QML reload
-    connect(&m_meta, &Types::Meta::qmlClearCacheRequested,
+    connect(&m_meta, &types::Meta::qmlClearCacheRequested,
             this, &ApiObject::qmlClearCacheRequested);
 }
 
@@ -63,7 +63,7 @@ void ApiObject::startScanning()
         m_meta.onScanCompleted(timer.elapsed());
 
         // set the correct thread for the QObjects
-        for (Types::Collection* const coll : m_collections.elements()) {
+        for (types::Collection* const coll : m_collections.elements()) {
             coll->moveToThread(thread());
             coll->gameListMut().moveToThread(thread());
         }
@@ -72,12 +72,12 @@ void ApiObject::startScanning()
     m_loading_watcher.setFuture(future);
 
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            &m_collections, &Types::CollectionList::onScanComplete);
+            &m_collections, &types::CollectionList::onScanComplete);
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            &m_meta, &Types::Meta::onLoadingCompleted);
+            &m_meta, &types::Meta::onLoadingCompleted);
 }
 
-void ApiObject::onLaunchRequested(const Types::Collection* coll, const Types::Game* game)
+void ApiObject::onLaunchRequested(const types::Collection* coll, const types::Game* game)
 {
     // avoid launch spamming
     if (m_launch_game)
@@ -106,6 +106,6 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onFiltersChanged()
 {
-    for (Types::Collection* const collection : m_collections.elements())
+    for (types::Collection* const collection : m_collections.elements())
         collection->gameListMut().applyFilters(m_filters);
 }

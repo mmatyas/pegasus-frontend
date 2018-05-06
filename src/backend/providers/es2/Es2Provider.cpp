@@ -34,14 +34,14 @@ Es2Provider::Es2Provider(QObject* parent)
             Qt::DirectConnection);
 }
 
-void Es2Provider::find(QHash<QString, Types::Game*>& games,
-                       QHash<QString, Types::Collection*>& collections)
+void Es2Provider::find(QHash<QString, types::Game*>& games,
+                       QHash<QString, types::Collection*>& collections)
 {
     systems.find(games, collections);
 }
 
-void Es2Provider::enhance(const QHash<QString, Types::Game*>& games,
-                          const QHash<QString, Types::Collection*>& collections)
+void Es2Provider::enhance(const QHash<QString, types::Game*>& games,
+                          const QHash<QString, types::Collection*>& collections)
 {
     metadata.enhance(games, collections);
 }

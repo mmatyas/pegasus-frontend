@@ -31,7 +31,7 @@ private slots:
 
 void test_GameAssets::setSingle()
 {
-    Types::GameAssets assets;
+    types::GameAssets assets;
     QCOMPARE(assets.boxFront(), QString());
 
     assets.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
@@ -40,7 +40,7 @@ void test_GameAssets::setSingle()
 
 void test_GameAssets::appendMulti()
 {
-    Types::GameAssets assets;
+    types::GameAssets assets;
     QCOMPARE(assets.videos().count(), 0);
 
     assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile("/dummy").toString());

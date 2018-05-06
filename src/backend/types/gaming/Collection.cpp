@@ -22,7 +22,7 @@
 #include <QDebug>
 
 
-namespace Types {
+namespace types {
 
 Collection::Collection(QString name, QObject* parent)
     : QObject(parent)
@@ -53,4 +53,4 @@ void Collection::setCommonLaunchCmd(QString str)
     m_launch_cmd = str;
 }
 
-} // namespace Types
+} // namespace types

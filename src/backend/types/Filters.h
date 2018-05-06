@@ -20,7 +20,7 @@
 #include <QObject>
 
 
-namespace Types {
+namespace types {
 
 /// Stores parameters to filter the list of games
 class Filters : public QObject {
@@ -41,4 +41,4 @@ signals:
     void filtersChanged();
 };
 
-} // namespace Types
+} // namespace types

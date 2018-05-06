@@ -45,7 +45,7 @@ void addListToStrAndList(const QStringList& new_vals, QString& str, QStringList&
 } // namespace
 
 
-namespace Types {
+namespace types {
 
 Game::Game(QFileInfo fileinfo, QObject* parent)
     : QObject(parent)
@@ -103,4 +103,4 @@ void Game::launch()
     emit launchRequested(this);
 }
 
-} // namespace Types
+} // namespace types

@@ -31,10 +31,10 @@ class PegasusProvider : public Provider {
 public:
     explicit PegasusProvider(QObject* parent = nullptr);
 
-    void find(QHash<QString, Types::Game*>&,
-              QHash<QString, Types::Collection*>&) final;
-    void enhance(const QHash<QString, Types::Game*>&,
-                 const QHash<QString, Types::Collection*>&) final;
+    void find(QHash<QString, types::Game*>&,
+              QHash<QString, types::Collection*>&) final;
+    void enhance(const QHash<QString, types::Game*>&,
+                 const QHash<QString, types::Collection*>&) final;
 
     void add_game_dir(const QString&);
 

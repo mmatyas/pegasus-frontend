@@ -20,8 +20,8 @@
 #include <QHash>
 #include <QObject>
 
-namespace Types { class Collection; }
-namespace Types { class Game; }
+namespace types { class Collection; }
+namespace types { class Game; }
 
 
 namespace providers {
@@ -33,8 +33,8 @@ class Metadata : public QObject {
 public:
     explicit Metadata(QObject* parent);
 
-    void enhance(const QHash<QString, Types::Game*>& games,
-                 const QHash<QString, Types::Collection*>& collections);
+    void enhance(const QHash<QString, types::Game*>& games,
+                 const QHash<QString, types::Collection*>& collections);
 };
 
 } // namespace steam

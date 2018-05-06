@@ -22,7 +22,7 @@
 #include <QObject>
 
 
-namespace Types {
+namespace types {
 
 /// Provides a set of system calls for the frontend
 class System : public QObject {
@@ -39,4 +39,4 @@ signals:
     void appCloseRequested(AppCloseType);
 };
 
-} // namespace Types
+} // namespace types

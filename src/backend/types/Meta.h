@@ -20,7 +20,7 @@
 #include <QObject>
 
 
-namespace Types {
+namespace types {
 
 /// Provides information about the program for the frontend layer
 class Meta : public QObject {
@@ -72,4 +72,4 @@ private:
     int m_game_count;
 };
 
-} // namespace Types
+} // namespace types

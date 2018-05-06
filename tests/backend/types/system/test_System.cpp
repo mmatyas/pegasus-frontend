@@ -32,8 +32,8 @@ private slots:
 
 void test_System::appClose()
 {
-    Types::System system;
-    QSignalSpy spy(&system, &Types::System::appCloseRequested);
+    types::System system;
+    QSignalSpy spy(&system, &types::System::appCloseRequested);
     QVERIFY(spy.isValid());
 
     QFETCH(AppCloseType, close_type);

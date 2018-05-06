@@ -22,7 +22,7 @@
 #include <QString>
 
 enum class AssetType : unsigned char;
-namespace Types { class Game; }
+namespace types { class Game; }
 
 
 namespace pegasus_assets {
@@ -34,9 +34,9 @@ struct AssetCheckResult {
     bool isValid() const;
 };
 AssetCheckResult checkFile(const QFileInfo&);
-void addAssetToGame(Types::Game&, AssetType, const QString&);
+void addAssetToGame(types::Game&, AssetType, const QString&);
 
 void findAssets(const QStringList& asset_dirs,
-                const QHash<QString, Types::Game*>& games);
+                const QHash<QString, types::Game*>& games);
 
 } // namespace pegasus_assets

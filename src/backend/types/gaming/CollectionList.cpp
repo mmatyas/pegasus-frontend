@@ -24,7 +24,7 @@
 #include <QDebug>
 
 
-namespace Types {
+namespace types {
 
 CollectionList::CollectionList(QObject* parent)
     : QObject(parent)
@@ -113,7 +113,7 @@ void CollectionList::onScanComplete()
         connect(coll, &Collection::launchRequested,
                 this, &CollectionList::launchRequested);
 
-        Types::GameList& gamelist = coll->gameListMut();
+        types::GameList& gamelist = coll->gameListMut();
         gamelist.lockGameList();
         game_count += gamelist.allGames().count();
     }
@@ -131,4 +131,4 @@ void CollectionList::onGameChanged()
         emit currentGameChanged();
 }
 
-} // namespace Types
+} // namespace types

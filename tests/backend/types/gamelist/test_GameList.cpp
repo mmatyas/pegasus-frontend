@@ -41,14 +41,14 @@ private slots:
     void applyFilters_data();
 
 private:
-    const Types::Game* const null_game = static_cast<Types::Game*>(nullptr); // Qt 5.7
+    const types::Game* const null_game = static_cast<types::Game*>(nullptr); // Qt 5.7
 };
 
 void test_GameList::empty()
 {
-    Types::GameList list;
+    types::GameList list;
 
-    QCOMPARE(list.property("current").value<Types::Game*>(), null_game);
+    QCOMPARE(list.property("current").value<types::Game*>(), null_game);
     QCOMPARE(list.property("index").toInt(), -1);
     QCOMPARE(list.property("count").toInt(), 0);
     QCOMPARE(list.property("countAll").toInt(), 0);
@@ -56,14 +56,14 @@ void test_GameList::empty()
 
 void test_GameList::addGame()
 {
-    Types::GameList list;
+    types::GameList list;
 
     list.addGame("a");
     list.addGame("b");
     list.addGame("c");
     list.lockGameList();
 
-    QCOMPARE(list.property("current").value<Types::Game*>(), list.allGames().first());
+    QCOMPARE(list.property("current").value<types::Game*>(), list.allGames().first());
     QCOMPARE(list.property("index").toInt(), 0);
     QCOMPARE(list.property("count").toInt(), 3);
     QCOMPARE(list.property("countAll").toInt(), 3);
@@ -71,7 +71,7 @@ void test_GameList::addGame()
 
 void test_GameList::sortGames()
 {
-    Types::GameList gamelist;
+    types::GameList gamelist;
 
     gamelist.addGame("bbb");
     gamelist.addGame("aaa");
@@ -84,8 +84,8 @@ void test_GameList::sortGames()
 
 void test_GameList::indexChange()
 {
-    Types::GameList list;
-    QSignalSpy triggered(&list, &Types::GameList::currentChanged);
+    types::GameList list;
+    QSignalSpy triggered(&list, &types::GameList::currentChanged);
     QVERIFY(triggered.isValid());
 
     list.addGame("a");
@@ -105,7 +105,7 @@ void test_GameList::indexChange()
 
     QCOMPARE(list.property("index").toInt(), expected);
     QCOMPARE(triggered.count(), expected == 0 ? 1 : 2);
-    Types::Game* current_ptr = list.property("current").value<Types::Game*>();
+    types::Game* current_ptr = list.property("current").value<types::Game*>();
     if (expected == -1) {
         QCOMPARE(current_ptr, null_game);
     }
@@ -129,7 +129,7 @@ void test_GameList::indexChange_data()
 
 void test_GameList::indexIncDecEmpty()
 {
-    Types::GameList list;
+    types::GameList list;
     QVERIFY(list.index() == -1);
 
     // increment empty -> stays -1
@@ -159,7 +159,7 @@ void test_GameList::indexIncDec_data()
 
 void test_GameList::indexIncDec()
 {
-    Types::GameList list;
+    types::GameList list;
     list.addGame("aaa");
     list.addGame("bbb");
     list.lockGameList();
@@ -177,8 +177,8 @@ void test_GameList::indexIncDec()
 
 void test_GameList::applyFilters()
 {
-    Types::GameList gamelist;
-    QSignalSpy triggered(&gamelist, &Types::GameList::filteredGamesChanged);
+    types::GameList gamelist;
+    QSignalSpy triggered(&gamelist, &types::GameList::filteredGamesChanged);
     QVERIFY(triggered.isValid());
 
     gamelist.addGame("game0");
@@ -216,7 +216,7 @@ void test_GameList::applyFilters()
     QFETCH(int, player_cnt);
     QFETCH(int, matching_games_cnt);
 
-    Types::Filters filters;
+    types::Filters filters;
         filters.m_title = title;
         filters.m_favorite = favorite;
         filters.m_player_count = player_cnt;

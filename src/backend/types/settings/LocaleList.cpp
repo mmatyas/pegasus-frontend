@@ -34,7 +34,7 @@ const QString SETTINGSKEY_LOCALE(QStringLiteral("locale"));
 } // namespace
 
 
-namespace Types {
+namespace types {
 
 LocaleList::LocaleList(QObject* parent)
     : QObject(parent)
@@ -67,7 +67,7 @@ void LocaleList::findAvailableLocales()
         Q_ASSERT(locale_tag_len > 0);
 
         const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
-        m_locales.append(new Types::Locale(locale_tag, this));
+        m_locales.append(new types::Locale(locale_tag, this));
 
         qInfo().noquote() << tr_log("Found locale '%1' (`%2`)")
                              .arg(m_locales.last()->name(), m_locales.last()->tag());
@@ -149,4 +149,4 @@ QQmlListProperty<Locale> LocaleList::getListProp()
     return {this, &m_locales, count, at};
 }
 
-} // namespace Types
+} // namespace types

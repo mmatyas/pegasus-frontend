@@ -21,8 +21,8 @@
 #include <QObject>
 #include <QXmlStreamReader>
 
-namespace Types { class Collection; }
-namespace Types { class Game; }
+namespace types { class Collection; }
+namespace types { class Game; }
 
 
 namespace providers {
@@ -35,8 +35,8 @@ class SystemsParser : public QObject {
 public:
     SystemsParser(QObject* parent);
 
-    void find(QHash<QString, Types::Game*>& games,
-              QHash<QString, Types::Collection*>& collections);
+    void find(QHash<QString, types::Game*>& games,
+              QHash<QString, types::Collection*>& collections);
 
 signals:
     void gameCountChanged(int count);
@@ -44,11 +44,11 @@ signals:
 
 private:
     void readSystemsFile(QXmlStreamReader&,
-                         QHash<QString, Types::Game*>&,
-                         QHash<QString, Types::Collection*>&);
+                         QHash<QString, types::Game*>&,
+                         QHash<QString, types::Collection*>&);
     void readSystemEntry(QXmlStreamReader&,
-                         QHash<QString, Types::Game*>&,
-                         QHash<QString, Types::Collection*>&);
+                         QHash<QString, types::Game*>&,
+                         QHash<QString, types::Collection*>&);
 };
 
 } // namespace es2

@@ -36,35 +36,35 @@ private slots:
     void indexIncDec_data();
 
 private:
-    const Types::Collection* const null_coll = static_cast<Types::Collection*>(nullptr); // Qt 5.7
+    const types::Collection* const null_coll = static_cast<types::Collection*>(nullptr); // Qt 5.7
 };
 
 void test_CollectionList::empty()
 {
-    Types::CollectionList list;
+    types::CollectionList list;
 
-    QCOMPARE(list.property("current").value<Types::Collection*>(), null_coll);
+    QCOMPARE(list.property("current").value<types::Collection*>(), null_coll);
     QCOMPARE(list.property("index").toInt(), -1);
     QCOMPARE(list.property("count").toInt(), 0);
 }
 
 void test_CollectionList::addPlatform()
 {
-    Types::CollectionList list;
-    QSignalSpy spy_current(&list, &Types::CollectionList::currentChanged);
-    QSignalSpy spy_game(&list, &Types::CollectionList::currentGameChanged);
+    types::CollectionList list;
+    QSignalSpy spy_current(&list, &types::CollectionList::currentChanged);
+    QSignalSpy spy_game(&list, &types::CollectionList::currentGameChanged);
     QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new Types::Collection("coll1"));
+    list.elementsMut().append(new types::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection("coll2"));
+    list.elementsMut().append(new types::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
-    QCOMPARE(list.property("current").value<Types::Collection*>(), list.elements().first());
+    QCOMPARE(list.property("current").value<types::Collection*>(), list.elements().first());
     QCOMPARE(list.property("index").toInt(), 0);
     QCOMPARE(list.property("count").toInt(), 2);
     QCOMPARE(spy_current.count(), 1);
@@ -75,17 +75,17 @@ void test_CollectionList::indexChange()
 {
     // prepare
 
-    Types::CollectionList list;
-    QSignalSpy spy_current(&list, &Types::CollectionList::currentChanged);
-    QSignalSpy spy_game(&list, &Types::CollectionList::currentGameChanged);
+    types::CollectionList list;
+    QSignalSpy spy_current(&list, &types::CollectionList::currentChanged);
+    QSignalSpy spy_game(&list, &types::CollectionList::currentGameChanged);
     QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new Types::Collection("coll1"));
+    list.elementsMut().append(new types::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection("coll2"));
+    list.elementsMut().append(new types::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame("dummy2");
     list.onScanComplete();
 
@@ -108,7 +108,7 @@ void test_CollectionList::indexChange()
     QCOMPARE(spy_game.count(), expected == 0 ? 1 : 2);
 
     // check pointer
-    auto current_ptr = list.property("current").value<Types::Collection*>();
+    auto current_ptr = list.property("current").value<types::Collection*>();
     if (expected == -1) {
         QCOMPARE(current_ptr, null_coll);
     }
@@ -132,7 +132,7 @@ void test_CollectionList::indexChange_data()
 
 void test_CollectionList::indexIncDecEmpty()
 {
-    Types::CollectionList list;
+    types::CollectionList list;
     QVERIFY(list.index() == -1);
 
     // increment empty -> stays -1
@@ -162,10 +162,10 @@ void test_CollectionList::indexIncDec_data()
 
 void test_CollectionList::indexIncDec()
 {
-    Types::CollectionList list;
-    list.elementsMut().append(new Types::Collection("coll1"));
+    types::CollectionList list;
+    list.elementsMut().append(new types::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new Types::Collection("coll2"));
+    list.elementsMut().append(new types::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame("dummy1");
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
     list.onScanComplete();

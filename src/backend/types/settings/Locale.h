@@ -21,7 +21,7 @@
 #include <QString>
 
 
-namespace Types {
+namespace types {
 
 /// An utility class to contain language informations
 class Locale : public QObject {
@@ -41,4 +41,4 @@ private:
     const QString m_name;
 };
 
-} // namespace Types
+} // namespace types

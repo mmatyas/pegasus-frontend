@@ -22,8 +22,8 @@
 #include <QRegularExpression>
 #include <QXmlStreamReader>
 
-namespace Types { class Collection; }
-namespace Types { class Game; }
+namespace types { class Collection; }
+namespace types { class Game; }
 
 
 namespace providers {
@@ -37,8 +37,8 @@ class MetadataParser : public QObject {
 
 public:
     MetadataParser(QObject* parent);
-    void enhance(const QHash<QString, Types::Game*>& games,
-                 const QHash<QString, Types::Collection*>& collections);
+    void enhance(const QHash<QString, types::Game*>& games,
+                 const QHash<QString, types::Collection*>& collections);
 
 private:
     const QHash<QString, MetaTypes> m_key_types;
@@ -46,12 +46,12 @@ private:
     const QRegularExpression m_players_regex;
 
     void parseGamelistFile(QXmlStreamReader&,
-                           const Types::Collection&,
-                           const QHash<QString, Types::Game*>&) const;
+                           const types::Collection&,
+                           const QHash<QString, types::Game*>&) const;
     void parseGameEntry(QXmlStreamReader&,
-                        const Types::Collection&,
-                        const QHash<QString, Types::Game*>&) const;
-    void applyMetadata(Types::Game&, const QHash<MetaTypes, QString>&) const;
+                        const types::Collection&,
+                        const QHash<QString, types::Game*>&) const;
+    void applyMetadata(types::Game&, const QHash<MetaTypes, QString>&) const;
 };
 
 } // namespace es2

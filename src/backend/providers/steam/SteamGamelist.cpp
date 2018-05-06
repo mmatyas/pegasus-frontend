@@ -105,7 +105,7 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
     return installdirs;
 }
 
-void register_appmanifests(QHash<QString, Types::Game*>& games, Types::Collection* collection)
+void register_appmanifests(QHash<QString, types::Game*>& games, types::Collection* collection)
 {
     Q_ASSERT(collection);
 
@@ -119,9 +119,9 @@ void register_appmanifests(QHash<QString, Types::Game*>& games, Types::Collectio
             dir_it.next();
             QFileInfo fileinfo = dir_it.fileInfo();
 
-            Types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
+            types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr)
-                game_ptr = new Types::Game(fileinfo, collection);
+                game_ptr = new types::Game(fileinfo, collection);
 
             collection->gameListMut().addGame(game_ptr);
         }
@@ -138,8 +138,8 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(QHash<QString, Types::Game*>& games,
-                    QHash<QString, Types::Collection*>& collections)
+void Gamelist::find(QHash<QString, types::Game*>& games,
+                    QHash<QString, types::Collection*>& collections)
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())
@@ -152,9 +152,9 @@ void Gamelist::find(QHash<QString, Types::Game*>& games,
     }
 
     const QString STEAM_TAG(QStringLiteral("Steam"));
-    Types::Collection*& collection = collections[STEAM_TAG];
+    types::Collection*& collection = collections[STEAM_TAG];
     if (!collection)
-        collection = new Types::Collection(STEAM_TAG); // TODO: check for fail
+        collection = new types::Collection(STEAM_TAG); // TODO: check for fail
 
     collection->setShortName(QStringLiteral("steam"));
     collection->sourceDirsMut().append(installdirs);

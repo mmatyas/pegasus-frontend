@@ -22,12 +22,12 @@
 enum class IndexShiftDirection : unsigned char;
 
 
-namespace Types {
+namespace types {
 
 class CollectionList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(Types::Collection* current
+    Q_PROPERTY(types::Collection* current
                READ current
                NOTIFY currentChanged)
     Q_PROPERTY(int index
@@ -37,7 +37,7 @@ class CollectionList : public QObject {
     Q_PROPERTY(int count
                READ count
                NOTIFY modelChanged)
-    Q_PROPERTY(QQmlListProperty<Types::Collection> model
+    Q_PROPERTY(QQmlListProperty<types::Collection> model
                READ elementsProp
                NOTIFY modelChanged)
 
@@ -78,4 +78,4 @@ private:
     void shiftIndex(IndexShiftDirection);
 };
 
-} // namespace Types
+} // namespace types

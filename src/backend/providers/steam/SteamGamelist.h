@@ -20,8 +20,8 @@
 #include <QHash>
 #include <QObject>
 
-namespace Types { class Collection; }
-namespace Types { class Game; }
+namespace types { class Collection; }
+namespace types { class Game; }
 
 
 namespace providers {
@@ -33,8 +33,8 @@ class Gamelist : public QObject {
 public:
     explicit Gamelist(QObject* parent);
 
-    void find(QHash<QString, Types::Game*>& games,
-              QHash<QString, Types::Collection*>& collections);
+    void find(QHash<QString, types::Game*>& games,
+              QHash<QString, types::Collection*>& collections);
 
 signals:
     void gameCountChanged(int count);

@@ -18,7 +18,7 @@
 #include "System.h"
 
 
-namespace Types {
+namespace types {
 
 System::System(QObject* parent)
     : QObject(parent)
@@ -40,4 +40,4 @@ void System::shutdown()
     emit appCloseRequested(AppCloseType::SHUTDOWN);
 }
 
-} // namespace Types
+} // namespace types

@@ -23,7 +23,7 @@
 #include <QObject>
 
 
-namespace Types {
+namespace types {
 
 class GameAssets : public QObject {
     Q_OBJECT
@@ -89,4 +89,4 @@ public:
     QStringList videos() const { return m_multi_assets[AssetType::VIDEOS]; }
 };
 
-} // namespace Types
+} // namespace types

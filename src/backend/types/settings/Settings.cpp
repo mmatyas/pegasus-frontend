@@ -30,7 +30,7 @@ const QLatin1String SETTINGSKEY_FULLSCREEN("fullscreen");
 } // namespace
 
 
-namespace Types {
+namespace types {
 
 Settings::Settings(QObject* parent)
     : QObject(parent)
@@ -68,4 +68,4 @@ void Settings::callScripts()
     ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
-} // namespace Types
+} // namespace types

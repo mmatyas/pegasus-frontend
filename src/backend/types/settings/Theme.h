@@ -21,7 +21,7 @@
 #include <QString>
 
 
-namespace Types {
+namespace types {
 
 /// An utility class to contain theme informations
 class Theme : public QObject {
@@ -61,4 +61,4 @@ private:
     const QString m_description;
 };
 
-} // namespace Types
+} // namespace types

@@ -40,7 +40,7 @@ void test_ThemeList::initTestCase()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
-    Types::ThemeList themelist;
+    types::ThemeList themelist;
     QVERIFY(themelist.index() >= 0);
 
     initial_index = themelist.index();
@@ -55,15 +55,15 @@ void test_ThemeList::indexChange()
     if (testval != initial_index)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
 
-    Types::ThemeList themelist;
-    QSignalSpy triggered(&themelist, &Types::ThemeList::themeChanged);
+    types::ThemeList themelist;
+    QSignalSpy triggered(&themelist, &types::ThemeList::themeChanged);
     QVERIFY(triggered.isValid());
 
-    Types::Theme* before = themelist.current();
+    types::Theme* before = themelist.current();
     themelist.setProperty("index", testval);
 
     QCOMPARE(themelist.property("index").toInt(), initial_index);
-    QCOMPARE(themelist.property("current").value<Types::Theme*>(), before);
+    QCOMPARE(themelist.property("current").value<types::Theme*>(), before);
     QCOMPARE(triggered.count(), 0);
 }
 
@@ -82,7 +82,7 @@ void test_ThemeList::count()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
-    Types::ThemeList themelist;
+    types::ThemeList themelist;
     QCOMPARE(themelist.count(), themelist.property("count").toInt());
 }
 

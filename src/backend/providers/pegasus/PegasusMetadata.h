@@ -22,8 +22,8 @@
 #include <QStringList>
 #include <QRegularExpression>
 
-namespace Types { class Game; }
-namespace Types { class Collection; }
+namespace types { class Game; }
+namespace types { class Collection; }
 
 
 namespace providers {
@@ -36,8 +36,8 @@ public:
     PegasusMetadata();
 
     void enhance_in_dirs(const QStringList&,
-                         const QHash<QString, Types::Game*>&,
-                         const QHash<QString, Types::Collection*>&) const;
+                         const QHash<QString, types::Game*>&,
+                         const QHash<QString, types::Collection*>&) const;
 
 private:
     const QHash<QString, MetaAttribType> m_key_types;
@@ -46,7 +46,7 @@ private:
     const QRegularExpression m_rating_float_regex;
     const QRegularExpression m_release_regex;
 
-    void read_metadata_file(const QString&, const QHash<QString, Types::Game*>&) const;
+    void read_metadata_file(const QString&, const QHash<QString, types::Game*>&) const;
 };
 
 } // namespace pegasus

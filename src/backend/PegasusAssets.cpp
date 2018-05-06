@@ -140,7 +140,7 @@ AssetCheckResult checkFile(const QFileInfo& file)
     };
 }
 
-void addAssetToGame(Types::Game& game, AssetType asset_type, const QString& file_path)
+void addAssetToGame(types::Game& game, AssetType asset_type, const QString& file_path)
 {
     const bool is_multi = Assets::multiTypes.contains(asset_type);
     const QString url = QUrl::fromLocalFile(file_path).toString();
@@ -154,12 +154,12 @@ void addAssetToGame(Types::Game& game, AssetType asset_type, const QString& file
 }
 
 void findAssets(const QStringList& asset_dirs,
-                const QHash<QString, Types::Game*>& games)
+                const QHash<QString, types::Game*>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
-    QHash<QString, Types::Game*> games_by_shortpath;
+    QHash<QString, types::Game*> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
-    for (Types::Game* const game : games) {
+    for (types::Game* const game : games) {
         const QString shortpath = game->m_fileinfo.canonicalPath() % '/' % game->m_fileinfo.completeBaseName();
         games_by_shortpath.insert(shortpath, game);
     }
@@ -186,7 +186,7 @@ void findAssets(const QStringList& asset_dirs,
             if (!games_by_shortpath.contains(shortpath))
                 continue;
 
-            Types::Game* const game = games_by_shortpath[shortpath];
+            types::Game* const game = games_by_shortpath[shortpath];
             addAssetToGame(*game, detection_result.asset_type, dir_it.filePath());
         }
     }

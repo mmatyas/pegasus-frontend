@@ -25,7 +25,7 @@
 #include <QObject>
 
 
-namespace Types {
+namespace types {
 
 class Game : public QObject {
     Q_OBJECT
@@ -54,7 +54,7 @@ class Game : public QObject {
     Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
     Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
 
-    Q_PROPERTY(Types::GameAssets* assets READ assetsPtr CONSTANT)
+    Q_PROPERTY(types::GameAssets* assets READ assetsPtr CONSTANT)
 
 public:
     explicit Game(QFileInfo fileinfo, QObject* parent = nullptr);
@@ -106,4 +106,4 @@ private:
     GameAssets m_assets;
 };
 
-} // namespace Types
+} // namespace types
