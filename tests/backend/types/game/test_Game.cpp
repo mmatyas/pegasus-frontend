@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "types/Game.h"
+#include "types/gaming/Game.h"
 
 
 class test_Game : public QObject {

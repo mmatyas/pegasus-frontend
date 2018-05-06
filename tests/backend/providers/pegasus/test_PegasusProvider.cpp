@@ -17,9 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "types/Collection.h"
-#include "types/Game.h"
 #include "providers/pegasus/PegasusProvider.h"
+#include "types/gaming/Collection.h"
+#include "types/gaming/Game.h"
+
 #include <QHash>
 #include <QString>
 

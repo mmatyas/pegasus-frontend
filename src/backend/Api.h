@@ -21,9 +21,9 @@
 #include "DataFinder.h"
 #include "types/Filters.h"
 #include "types/Meta.h"
-#include "types/Settings.h"
 #include "types/System.h"
-#include "types/CollectionList.h"
+#include "types/gaming/CollectionList.h"
+#include "types/settings/Settings.h"
 
 #include <QFutureWatcher>
 #include <QObject>

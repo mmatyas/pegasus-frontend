@@ -22,7 +22,7 @@
 #include "PegasusAssets.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
-#include "types/Game.h"
+#include "types/gaming/Game.h"
 
 #include <QDebug>
 #include <QFileInfo>

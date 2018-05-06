@@ -19,7 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "ScriptRunner.h"
-#include "types/Collection.h"
+#include "types/gaming/Collection.h"
 
 #include <QDebug>
 #include <QFileInfo>

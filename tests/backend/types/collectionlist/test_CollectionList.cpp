@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "types/CollectionList.h"
+#include "types/gaming/CollectionList.h"
 
 
 class test_CollectionList : public QObject {

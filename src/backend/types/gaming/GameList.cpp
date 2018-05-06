@@ -17,10 +17,10 @@
 
 #include "GameList.h"
 
-#include "Filters.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Utils.h"
+#include "types/Filters.h"
 
 #include <QDebug>
 

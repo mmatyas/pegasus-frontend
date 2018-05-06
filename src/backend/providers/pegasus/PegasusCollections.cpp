@@ -21,8 +21,8 @@
 #include "LocaleUtils.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
-#include "types/Collection.h"
-#include "types/Game.h"
+#include "types/gaming/Collection.h"
+#include "types/gaming/Game.h"
 
 #include <QDebug>
 #include <QDirIterator>
