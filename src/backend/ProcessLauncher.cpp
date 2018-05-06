@@ -49,7 +49,7 @@ void ProcessLauncher::launchGame(const types::Collection* collection, const type
     if (launch_cmd.isEmpty() && collection != game->parent()) {
         auto main_coll = qobject_cast<const types::Collection*>(game->parent());
         if (main_coll)
-            launch_cmd = collection->launchCmd();
+            launch_cmd = main_coll->launchCmd();
     }
     if (!launch_cmd.isEmpty())
         prepareLaunchCommand(launch_cmd, *game);
