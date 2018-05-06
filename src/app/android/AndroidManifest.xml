@@ -57,7 +57,7 @@
                 * minimal - useful for Quick Controls 2 apps, it is much faster than "full"
                 * none - useful for apps that don't use any of the above Qt modules
                 -->
-            <meta-data android:name="android.app.extract_android_style" android:value="full"/>
+            <meta-data android:name="android.app.extract_android_style" android:value="none"/>
             <!-- extract android style -->
     </activity>
 
