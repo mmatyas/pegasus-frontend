@@ -116,7 +116,8 @@ void GameList::addGame(Game* game_ptr)
     Q_ASSERT(!m_gamelist_locked);
 #endif
     m_all_games.append(game_ptr);
-    connect(game_ptr, &Game::launchRequested, this, &GameList::launchRequested);
+    connect(game_ptr, &Game::launchRequested, this, &GameList::gameLaunchRequested);
+    connect(game_ptr, &Game::favoriteChanged, this, &GameList::gameFavoriteChanged);
 }
 
 void GameList::sortGames()

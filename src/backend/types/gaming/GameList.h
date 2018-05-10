@@ -89,7 +89,9 @@ signals:
     void currentChanged();
     void filteredGamesChanged();
     void allGamesChanged();
-    void launchRequested(const Game*);
+
+    void gameLaunchRequested(const Game*);
+    void gameFavoriteChanged();
 
 private:
     int m_game_idx;

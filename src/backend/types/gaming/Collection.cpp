@@ -32,8 +32,10 @@ Collection::Collection(QString name, QObject* parent)
 
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
-    connect(&m_gamelist, &GameList::launchRequested,
-            this, [this](const Game* game){ emit launchRequested(this, game); });
+    connect(&m_gamelist, &GameList::gameLaunchRequested,
+            this, [this](const Game* game){ emit gameLaunchRequested(this, game); });
+    connect(&m_gamelist, &GameList::gameFavoriteChanged,
+            this, &Collection::gameFavoriteChanged);
 }
 
 const QString& Collection::tag() const {

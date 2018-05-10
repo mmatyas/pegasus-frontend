@@ -36,8 +36,10 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::currentCollectionChanged);
     connect(&m_collections, &types::CollectionList::currentGameChanged,
             this, &ApiObject::currentGameChanged);
-    connect(&m_collections, &types::CollectionList::launchRequested,
+    connect(&m_collections, &types::CollectionList::gameLaunchRequested,
             this, &ApiObject::onLaunchRequested);
+    connect(&m_collections, &types::CollectionList::gameFavoriteChanged,
+            this, &ApiObject::onGameFavoriteChanged);
 
     connect(&m_datafinder, &DataFinder::totalCountChanged,
             &m_meta, &types::Meta::onGameCountUpdate);
@@ -102,6 +104,11 @@ void ApiObject::onGameFinished()
 
     m_launch_collection = nullptr;
     m_launch_game = nullptr;
+}
+
+void ApiObject::onGameFavoriteChanged()
+{
+    m_favorite_db.queueTask(m_collections);
 }
 
 void ApiObject::onFiltersChanged()

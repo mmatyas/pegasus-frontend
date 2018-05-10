@@ -18,7 +18,8 @@ SOURCES += \
     ScriptRunner.cpp \
     Utils.cpp \
     Paths.cpp \
-    AppArgs.cpp
+    AppArgs.cpp \
+    FavoriteDB.cpp
 
 HEADERS += \
     Api.h \
@@ -37,7 +38,8 @@ HEADERS += \
     Utils.h \
     LocaleUtils.h \
     Paths.h \
-    AppArgs.h
+    AppArgs.h \
+    FavoriteDB.h
 
 include(platform/platform.pri)
 include(providers/providers.pri)

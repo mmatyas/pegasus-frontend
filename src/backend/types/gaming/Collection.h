@@ -58,7 +58,8 @@ public:
 
 signals:
     void currentGameChanged();
-    void launchRequested(const Collection*, const Game*);
+    void gameLaunchRequested(const Collection*, const Game*);
+    void gameFavoriteChanged();
 
 private:
     const QString m_name;

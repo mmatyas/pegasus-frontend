@@ -19,6 +19,7 @@
 
 #include "AppCloseType.h"
 #include "DataFinder.h"
+#include "FavoriteDB.h"
 #include "types/Filters.h"
 #include "types/Meta.h"
 #include "types/System.h"
@@ -105,6 +106,7 @@ private slots:
     // internal communication
     void onLaunchRequested(const types::Collection*, const types::Game*);
     void onFiltersChanged();
+    void onGameFavoriteChanged();
 
 private:
     types::Meta m_meta;
@@ -120,6 +122,9 @@ private:
     // initialization
     DataFinder m_datafinder;
     QFutureWatcher<void> m_loading_watcher;
+
+    // favorite management
+    FavoriteDB m_favorite_db;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

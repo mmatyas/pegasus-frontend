@@ -110,8 +110,10 @@ void CollectionList::onScanComplete()
 
         connect(coll, &Collection::currentGameChanged,
                 this, &CollectionList::onGameChanged);
-        connect(coll, &Collection::launchRequested,
-                this, &CollectionList::launchRequested);
+        connect(coll, &Collection::gameLaunchRequested,
+                this, &CollectionList::gameLaunchRequested);
+        connect(coll, &Collection::gameFavoriteChanged,
+                this, &CollectionList::gameFavoriteChanged);
 
         types::GameList& gamelist = coll->gameListMut();
         gamelist.lockGameList();

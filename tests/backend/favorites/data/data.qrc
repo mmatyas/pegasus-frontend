@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>coll1dummy1</file>
+        <file alias="/a/b/coll1dummy2">coll1dummy2</file>
+        <file alias="/x/y/z/coll2dummy1">coll2dummy1</file>
+    </qresource>
+</RCC>

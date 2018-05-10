@@ -48,7 +48,7 @@ class Game : public QObject {
     Q_PROPERTY(int day MEMBER m_day CONSTANT)
 
     Q_PROPERTY(int players MEMBER m_players CONSTANT)
-    Q_PROPERTY(bool favorite MEMBER m_favorite CONSTANT)
+    Q_PROPERTY(bool favorite MEMBER m_favorite NOTIFY favoriteChanged)
     Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
 
     Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
@@ -89,6 +89,7 @@ public:
 
 signals:
     void launchRequested(const Game*);
+    void favoriteChanged();
 
 private:
     QString m_developer_str;
