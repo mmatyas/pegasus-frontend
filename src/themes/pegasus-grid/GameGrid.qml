@@ -22,11 +22,11 @@ GridView {
 
     property var platformData: api.currentCollection
 
-    model: platformData.gameList.model
+    model: platformData ? platformData.gameList.model : []
     onModelChanged: { firstImageLoaded = false; cellHeightRatio = 0.5; }
 
-    currentIndex: platformData.gameList.index
-    onCurrentIndexChanged: api.currentCollection.gameList.index = currentIndex
+    currentIndex: platformData ? platformData.gameList.index : 0
+    onCurrentIndexChanged: if (api.currentCollection) api.currentCollection.gameList.index = currentIndex
     Component.onCompleted: positionViewAtIndex(currentIndex, GridView.Center)
 
     // For better visibility, box arts should be displayed in five columns if
