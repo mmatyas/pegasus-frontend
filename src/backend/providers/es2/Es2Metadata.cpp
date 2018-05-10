@@ -342,7 +342,7 @@ void MetadataParser::applyMetadata(types::Game& game,
     if (favorite_val.compare(QLatin1String("yes"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("true"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("1")) == 0) {
-        game.m_favorite = true;
+        game.m_favorite |= true;
     }
 
     // then dates
