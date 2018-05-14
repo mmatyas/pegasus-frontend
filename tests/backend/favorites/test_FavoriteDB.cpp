@@ -56,10 +56,10 @@ void test_FavoriteDB::write()
     const QString db_path = tmp_file.fileName();
     tmp_file.close();
 
-    FavoriteDB favorite_db(db_path);
+    FavoriteWriter favorite_db(db_path);
 
-    QSignalSpy spy_start(&favorite_db, &FavoriteDB::startedWriting);
-    QSignalSpy spy_end(&favorite_db, &FavoriteDB::finishedWriting);
+    QSignalSpy spy_start(&favorite_db, &FavoriteWriter::startedWriting);
+    QSignalSpy spy_end(&favorite_db, &FavoriteWriter::finishedWriting);
     QVERIFY(spy_start.isValid());
     QVERIFY(spy_end.isValid());
 

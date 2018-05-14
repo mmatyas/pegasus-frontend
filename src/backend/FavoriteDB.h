@@ -26,12 +26,12 @@
 #include <mutex>
 
 
-class FavoriteDB : public QObject {
+class FavoriteWriter : public QObject {
     Q_OBJECT
 
 public:
-    explicit FavoriteDB(QObject* parent = nullptr);
-    explicit FavoriteDB(const QString& file, QObject* parent = nullptr);
+    explicit FavoriteWriter(QObject* parent = nullptr);
+    explicit FavoriteWriter(const QString& file, QObject* parent = nullptr);
 
     /// Prepares the list of favorites and starts writing it to the output
     /// as soon as there are no pending write operation.

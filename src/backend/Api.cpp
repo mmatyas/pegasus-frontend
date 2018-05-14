@@ -108,7 +108,7 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_favorite_db.queueTask(m_collections);
+    m_favorite_writer.queueTask(m_collections);
 }
 
 void ApiObject::onFiltersChanged()

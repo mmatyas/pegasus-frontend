@@ -124,7 +124,7 @@ private:
     QFutureWatcher<void> m_loading_watcher;
 
     // favorite management
-    FavoriteDB m_favorite_db;
+    FavoriteWriter m_favorite_writer;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

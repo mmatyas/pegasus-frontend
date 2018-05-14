@@ -34,21 +34,21 @@ QString default_db_path()
 } // namespace
 
 
-FavoriteDB::FavoriteDB(QObject* parent)
-    : FavoriteDB(default_db_path(), parent)
+FavoriteWriter::FavoriteWriter(QObject* parent)
+    : FavoriteWriter(default_db_path(), parent)
 {}
 
-FavoriteDB::FavoriteDB(const QString& file, QObject* parent)
+FavoriteWriter::FavoriteWriter(const QString& file, QObject* parent)
     : QObject(parent)
     , m_db_path(file)
 {
     connect(&m_write_watcher, &QFutureWatcher<void>::started,
-            this, &FavoriteDB::startedWriting);
+            this, &FavoriteWriter::startedWriting);
     connect(&m_write_watcher, &QFutureWatcher<void>::finished,
-            this, &FavoriteDB::finishedWriting);
+            this, &FavoriteWriter::finishedWriting);
 }
 
-void FavoriteDB::start_processing()
+void FavoriteWriter::start_processing()
 {
     QFuture<void> future = QtConcurrent::run([this]{
         while (true) {
@@ -79,7 +79,7 @@ void FavoriteDB::start_processing()
     m_write_watcher.setFuture(future);
 }
 
-void FavoriteDB::queueTask(const types::CollectionList& coll_list)
+void FavoriteWriter::queueTask(const types::CollectionList& coll_list)
 {
     std::unique_lock<std::mutex> lock(m_task_guard);
 
