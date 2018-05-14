@@ -25,6 +25,7 @@ class test_FavoriteDB : public QObject {
 
 private slots:
     void write();
+    void read();
 };
 
 
@@ -84,6 +85,43 @@ void test_FavoriteDB::write()
     QVERIFY(found_items.contains(":/x/y/z/coll2dummy1"));
 
     QFile::remove(db_path);
+}
+
+
+void test_FavoriteDB::read()
+{
+    QHash<QString, types::Game*> games;
+    const QStringList game_paths {
+        QStringLiteral(":/a/b/coll1dummy1"),
+        QStringLiteral(":/coll1dummy2"),
+        QStringLiteral(":/x/y/z/coll2dummy1"),
+    };
+    for (const QString& path : game_paths)
+        games[path] = new types::Game(path);
+
+    QTemporaryFile tmp_file;
+    tmp_file.setAutoRemove(false);
+    QVERIFY(tmp_file.open());
+    {
+        QTextStream tmp_stream(&tmp_file);
+        tmp_stream << QStringLiteral("# Favorite reader test") << endl;
+        tmp_stream << game_paths[2] << endl;
+        tmp_stream << game_paths[1] << endl;
+        tmp_stream << QStringLiteral(":/somethingfake") << endl;
+    }
+    const QString db_path = tmp_file.fileName();
+    tmp_file.close();
+
+    FavoriteReader::readDB(games, db_path);
+
+    QCOMPARE(games.count(), 3);
+    QVERIFY(games.contains(game_paths[0]) && !games.value(game_paths[0])->m_favorite);
+    QVERIFY(games.contains(game_paths[1]) && games.value(game_paths[1])->m_favorite);
+    QVERIFY(games.contains(game_paths[2]) && games.value(game_paths[2])->m_favorite);
+
+    QFile::remove(db_path);
+    for (const auto& game : qAsConst(games))
+        delete game;
 }
 
 

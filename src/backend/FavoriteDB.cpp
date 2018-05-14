@@ -94,3 +94,28 @@ void FavoriteDB::queueTask(const types::CollectionList& coll_list)
     if (m_current_task.isEmpty())
         start_processing();
 }
+
+void FavoriteReader::readDB(const QHash<QString, types::Game*>& games, const QString& db_path)
+{
+    const QString real_db_path = db_path.isEmpty() ? default_db_path() : db_path;
+    if (!QFileInfo::exists(real_db_path))
+        return;
+
+    QFile db_file(real_db_path);
+    if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << tr_log("Could not open `%1` for reading, favorites are not loaded.")
+                      .arg(real_db_path);
+        return;
+    }
+
+    QTextStream db_stream(&db_file);
+    QString line;
+    while (db_stream.readLineInto(&line)) {
+        if (line.startsWith('#'))
+            continue;
+
+        types::Game* const game = games.value(line, nullptr);
+        if (game)
+            game->m_favorite = true;
+    }
+}

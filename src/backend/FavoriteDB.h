@@ -51,3 +51,9 @@ private:
 
     void start_processing();
 };
+
+class FavoriteReader {
+public:
+    /// Reads the list of favorites and marks the matching games as favorite.
+    static void readDB(const QHash<QString, types::Game*>&, const QString& db_path = QString());
+};

@@ -17,6 +17,7 @@
 
 #include "DataFinder.h"
 
+#include "FavoriteDB.h"
 #include "LocaleUtils.h"
 #include "providers/es2/Es2Provider.h"
 #include "providers/pegasus/PegasusProvider.h"
@@ -94,6 +95,8 @@ void DataFinder::runMetadataProviders(const QHash<QString, types::Game*>& games,
 
     for (auto& provider : qAsConst(m_providers))
         provider->enhance(games, collections);
+
+    FavoriteReader::readDB(games);
 }
 
 QVector<types::Collection*> DataFinder::find()
