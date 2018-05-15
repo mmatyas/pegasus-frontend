@@ -62,10 +62,10 @@ FocusScope {
 
         GamePreview {
             z: 200
-            width: (parent.width * 0.35) - anchors.leftMargin
+            width: parent.width * 0.35 + vpx(48)
             anchors {
-                top: topbar.bottom; topMargin: vpx(32)
-                left: parent.left; leftMargin: vpx(16)
+                top: topbar.bottom
+                left: parent.left
                 bottom: parent.bottom
             }
         }
