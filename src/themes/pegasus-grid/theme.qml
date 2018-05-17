@@ -20,21 +20,57 @@ import "filter_panel"
 
 
 FocusScope {
-    Keys.onReleased: if (event.key === Qt.Key_Control && !event.isAutoRepeat) {
-        if (filter.focus)
-            content.focus = true
-        else
-            filter.focus = true
+    Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+
+        switch (event.key) {
+            // game data
+            case Qt.Key_Control:
+                if (gamepreview.focus)
+                    gamegrid.focus = true;
+                else if (gamegrid.focus)
+                    gamepreview.focus = true;
+                break;
+            // filtering
+            case Qt.Key_Shift:
+                if (filter.focus)
+                    content.focus = true;
+                else if (gamegrid.focus)
+                    filter.focus = true;
+                break;
+            default:
+                return;
+        }
+
+        event.accepted = true;
     }
 
-    Item {
+    FocusScope {
         id: content
-
-        focus: true
-        Keys.forwardTo: [topbar, gamegrid]
-        Keys.onReturnPressed: api.currentGame.launch()
-
         anchors.fill: parent
+        focus: true
+
+        Keys.onPressed: {
+            if (event.isAutoRepeat)
+                return;
+
+            switch (event.key) {
+                // platform bar -- QWERTx/AZERTY support
+                case Qt.Key_Q:
+                case Qt.Key_A:
+                    topbar.prev();
+                    break;
+                case Qt.Key_E:
+                case Qt.Key_D:
+                    topbar.next();
+                    break;
+                default:
+                    return;
+            }
+
+            event.accepted = true;
+        }
 
         PlatformBar {
             id: topbar
@@ -50,8 +86,11 @@ FocusScope {
         }
 
         GameGrid {
+            focus: true
+
+            Keys.onReturnPressed: api.currentGame.launch();
+
             id: gamegrid
-            z: 100
             width: (parent.width * 0.6) - vpx(32)
             anchors {
                 top: topbar.bottom; topMargin: vpx(32)
@@ -61,13 +100,13 @@ FocusScope {
         }
 
         GamePreview {
-            z: 200
-            width: parent.width * 0.35 + vpx(48)
-            anchors {
-                top: topbar.bottom
-                left: parent.left
-                bottom: parent.bottom
-            }
+            id: gamepreview
+            width: parent.width * 0.7 + vpx(72)
+            anchors.top: topbar.bottom
+            anchors.horizontalCenter: parent.left
+            anchors.bottom: parent.bottom
+
+            drawLeft: false
         }
     }
 
@@ -103,6 +142,14 @@ FocusScope {
                 anchors.left: parent.left
                 anchors.right: undefined
             }
+        },
+        State {
+            name: "gamedataOpen"; when: gamepreview.focus
+            AnchorChanges {
+                target: gamepreview
+                anchors.left: parent.left
+                anchors.horizontalCenter: undefined
+            }
         }
     ]
 
@@ -120,6 +167,22 @@ FocusScope {
             onRunningChanged: {
                 if (!running)
                     filterPanel.visible = false;
+            }
+            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
+        },
+        Transition {
+            to: "gamedataOpen"
+            onRunningChanged: {
+                if (running)
+                    gamepreview.drawLeft = true;
+            }
+            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
+        },
+        Transition {
+            from: "gamedataOpen"
+            onRunningChanged: {
+                if (!running)
+                    gamepreview.drawLeft = false;
             }
             AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
         }

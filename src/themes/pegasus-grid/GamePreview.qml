@@ -16,12 +16,17 @@
 
 
 import QtQuick 2.8
+import QtGraphicalEffects 1.0
 import QtMultimedia 5.8
+import "qrc:/qmlutils" as PegasusUtils
 
 
-Item {
+FocusScope {
+    id: root
+
+    property bool drawLeft: false
+
     property var gameData: api.currentGame
-
     onGameDataChanged: {
         videoPreview.playlist.clear();
         videoDelay.restart();
@@ -50,27 +55,103 @@ Item {
 
         Rectangle {
             color: "#333"
-            width: vpx(3)
+            width: vpx(2)
             height: parent.height
             anchors.left: parent.right
         }
     }
 
-    Column {
-        width: parent.width - vpx(16)
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing: vpx(16)
+    Item {
+        id: leftside
+        anchors {
+            left: parent.left; leftMargin: vpx(16)
+            right: parent.horizontalCenter; rightMargin: vpx(20)
+            top: parent.top; topMargin: vpx(40)
+            bottom: parent.bottom; bottomMargin: vpx(8)
+        }
 
-        // padding
-        Item {
+        visible: root.drawLeft
+
+        PegasusUtils.AutoScroll {
             width: parent.width
-            height: vpx(32)
+            anchors.top: parent.top
+            anchors.bottom: actionButtons.top
+            anchors.bottomMargin: vpx(16)
+
+            Text {
+                // description
+                color: "#eee"
+                text: (gameData && gameData.description) || ""
+                horizontalAlignment: Text.AlignJustify
+                width: parent.width
+                wrapMode: Text.WordWrap
+                font {
+                    pixelSize: vpx(16)
+                    family: globalFonts.sans
+                }
+            }
+        }
+
+        Column {
+            id: actionButtons
+            width: parent.width
+            anchors.bottom: parent.bottom
+            spacing: vpx(4)
+
+            GamePanelButton {
+                id: toggleFavBtn
+                text: "Toggle favorite on/off"
+
+                Keys.onUpPressed: launchBtn.focus = true
+                Keys.onDownPressed: launchBtn.focus = true
+
+                Image {
+                    id: favHeart
+                    source: (gameData && gameData.favorite && "assets/heart_filled.svg") || "assets/heart_empty.svg"
+                    sourceSize { width: 32; height: 32 }
+                    asynchronous: true
+                    fillMode: Image.PreserveAspectFit
+
+                    width: vpx(22)
+                    height: width
+                    anchors.left: parent.left
+                    anchors.leftMargin: (parent.height - height)
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    visible: false
+                }
+
+                ColorOverlay {
+                    anchors.fill: favHeart
+                    source: favHeart
+                    color: parent.focus ? "#eee" : "#666"
+                }
+            }
+            GamePanelButton {
+                id: launchBtn
+                text: "Launch"
+                lineHeight: 2.5
+
+                focus: true
+                Keys.onUpPressed: toggleFavBtn.focus = true
+                Keys.onDownPressed: toggleFavBtn.focus = true
+            }
+        }
+    }
+
+    Item {
+        id: rightside
+        anchors {
+            left: parent.horizontalCenter; leftMargin: vpx(20)
+            right: parent.right; rightMargin: vpx(20)
+            top: parent.top; topMargin: vpx(40)
+            bottom: parent.bottom; bottomMargin: vpx(8)
         }
 
         Image {
             id: logo
-            width: parent.width - vpx(8)
-            height: parent.width * 0.35
+            width: parent.width
+            height: width * 0.35
 
             asynchronous: true
             source: (gameData && gameData.assets.logo) || ""
@@ -100,9 +181,14 @@ Item {
 
         // year -- developer / publisher -- players
         Text {
+            id: releaseDetails
             width: parent.width
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
+
+            anchors.top: logo.bottom
+            topPadding: vpx(16)
+            bottomPadding: vpx(16)
 
             text: {
                 var text_tmp = "";
@@ -131,10 +217,14 @@ Item {
             visible: text
         }
 
-        // description
         Text {
+            id: summary
             width: parent.width
             wrapMode: Text.WordWrap
+
+            anchors.top: releaseDetails.bottom
+            topPadding: vpx(20)
+            bottomPadding: vpx(40)
 
             text: gameData ? (gameData.summary || gameData.description) : ""
             color: "#eee"
@@ -145,21 +235,18 @@ Item {
             maximumLineCount: 4
             elide: Text.ElideRight
 
-            topPadding: vpx(16)
-            leftPadding: vpx(8)
-            rightPadding: vpx(8)
-            bottomPadding: vpx(16)
-
             visible: text
         }
 
-        // video container
         Rectangle {
+            id: videoBox
             color: "#000"
             border { color: "#444"; width: 1 }
 
+            anchors.top: summary.bottom
+            anchors.bottom: parent.bottom
+
             width: parent.width
-            height: parent.width * 0.45
             radius: vpx(4)
 
             visible: gameData && (gameData.assets.videos.length || gameData.assets.screenshots.length)

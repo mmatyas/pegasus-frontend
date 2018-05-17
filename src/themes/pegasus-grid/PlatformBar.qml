@@ -23,7 +23,8 @@ Rectangle {
     color: "#333"
     height: vpx(54)
 
-    Keys.forwardTo: platformPath
+    function next() { platformPath.incrementCurrentIndex() }
+    function prev() { platformPath.decrementCurrentIndex() }
 
     PathView {
         id: platformPath
@@ -53,24 +54,6 @@ Rectangle {
         snapMode: PathView.SnapOneItem
         preferredHighlightBegin: 0.04
         preferredHighlightEnd: 0.05
-
-        Keys.onPressed: {
-            const qaed = [Qt.Key_Q, Qt.Key_A, Qt.Key_E, Qt.Key_D]; // QWERTx/AZERTY support
-            if (qaed.indexOf(event.key) >= 0) {
-                event.accepted = true;
-
-                switch (event.key) {
-                case Qt.Key_Q:
-                case Qt.Key_A:
-                    decrementCurrentIndex();
-                    break;
-                case Qt.Key_E:
-                case Qt.Key_D:
-                    incrementCurrentIndex();
-                    break;
-                }
-            }
-        }
 
         Component.onCompleted: currentIndex = api.collectionList.index
         onCurrentIndexChanged: api.collectionList.index = currentIndex
