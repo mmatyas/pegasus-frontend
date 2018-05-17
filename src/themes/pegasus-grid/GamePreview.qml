@@ -50,11 +50,12 @@ FocusScope {
     }
 
     Rectangle {
-        color: "#e8202020"
+        color: "#111"
         anchors.fill: parent
+        opacity: 0.85
 
         Rectangle {
-            color: "#333"
+            color: "#222"
             width: vpx(2)
             height: parent.height
             anchors.left: parent.right
