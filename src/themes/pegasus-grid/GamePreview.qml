@@ -103,8 +103,16 @@ FocusScope {
                 id: toggleFavBtn
                 text: "Toggle favorite on/off"
 
+                function toggleFav() {
+                    if (api.currentGame)
+                        api.currentGame.favorite = !api.currentGame.favorite;
+                }
+
                 Keys.onUpPressed: launchBtn.focus = true
                 Keys.onDownPressed: launchBtn.focus = true
+                Keys.onReturnPressed: toggleFav()
+                Keys.onEnterPressed: toggleFav()
+                Keys.onSpacePressed: toggleFav()
 
                 Image {
                     id: favHeart
@@ -136,6 +144,8 @@ FocusScope {
                 focus: true
                 Keys.onUpPressed: toggleFavBtn.focus = true
                 Keys.onDownPressed: toggleFavBtn.focus = true
+                Keys.onReturnPressed: api.currentGame.launch()
+                Keys.onEnterPressed: api.currentGame.launch()
             }
         }
     }
