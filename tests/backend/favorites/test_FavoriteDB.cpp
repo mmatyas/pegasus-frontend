@@ -25,6 +25,7 @@ class test_FavoriteDB : public QObject {
 
 private slots:
     void write();
+    void rewrite_empty();
     void read();
 };
 
@@ -87,6 +88,54 @@ void test_FavoriteDB::write()
     QFile::remove(db_path);
 }
 
+void test_FavoriteDB::rewrite_empty()
+{
+    types::CollectionList list;
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
+
+    // TODO: implement addPlatform
+    list.elementsMut().append(new types::Collection("coll1"));
+    list.elementsMut().last()->gameListMut().addGame(":/a/b/coll1dummy1");
+    list.elementsMut().last()->gameListMut().addGame(":/coll1dummy2");
+    list.elementsMut().append(new types::Collection("coll2"));
+    list.elementsMut().last()->gameListMut().addGame(":/x/y/z/coll2dummy1");
+    list.onScanComplete();
+
+    QTemporaryFile tmp_file;
+    tmp_file.setAutoRemove(false);
+    QVERIFY(tmp_file.open());
+
+    const QString db_path = tmp_file.fileName();
+    tmp_file.close();
+
+
+    FavoriteWriter favorite_db(db_path);
+    QSignalSpy spy_end(&favorite_db, &FavoriteWriter::finishedWriting);
+    QVERIFY(spy_end.isValid());
+
+    list.elements().at(0)->gameList().allGames().at(1)->m_favorite = true;
+    favorite_db.queueTask(list);
+    //QVERIFY(spy_end.count() || spy_end.wait());
+
+    list.elements().at(0)->gameList().allGames().at(1)->m_favorite = false;
+    favorite_db.queueTask(list);
+    QVERIFY(spy_end.count() == 2 || spy_end.wait());
+
+
+    QFile db_file(db_path);
+    QVERIFY(db_file.open(QFile::ReadOnly | QFile::Text));
+
+    QTextStream db_stream(&db_file);
+    QStringList found_items;
+    QString line;
+    while (db_stream.readLineInto(&line)) {
+        if (!line.startsWith('#'))
+            found_items << line;
+    }
+
+    QCOMPARE(found_items.count(), 0);
+    QFile::remove(db_path);
+}
 
 void test_FavoriteDB::read()
 {

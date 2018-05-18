@@ -50,19 +50,11 @@ FavoriteWriter::FavoriteWriter(const QString& file, QObject* parent)
 
 void FavoriteWriter::start_processing()
 {
+    m_current_task = m_pending_task;
+    m_pending_task.clear();
+
     QFuture<void> future = QtConcurrent::run([this]{
         while (true) {
-            {
-                std::unique_lock<std::mutex> lock(m_task_guard);
-                if (m_pending_task.isEmpty()) {
-                    m_current_task.clear();
-                    return;
-                }
-
-                m_current_task = m_pending_task;
-                m_pending_task.clear();
-            }
-
             QFile db_file(m_db_path);
             if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
                 qWarning() << tr_log("Could not open `%1` for writing, favorites are not saved.")
@@ -73,6 +65,14 @@ void FavoriteWriter::start_processing()
             QTextStream db_stream(&db_file);
             for (const QString& fav : qAsConst(m_current_task))
                 db_stream << fav << endl;
+
+            std::unique_lock<std::mutex> lock(m_task_guard);
+            m_current_task.clear();
+            if (m_pending_task.isEmpty())
+                return;
+
+            m_current_task = m_pending_task;
+            m_pending_task.clear();
         }
     });
 
@@ -84,6 +84,7 @@ void FavoriteWriter::queueTask(const types::CollectionList& coll_list)
     std::unique_lock<std::mutex> lock(m_task_guard);
 
     m_pending_task.clear();
+    m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const types::Collection* const coll : coll_list.elements()) {
         for (const types::Game* const game : coll->gameList().allGames()) {
             if (game->m_favorite)
