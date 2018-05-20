@@ -28,6 +28,10 @@ Flickable {
     property int scrollWaitDuration: 3000
     property int pixelsPerSecond: 26
 
+    function stopScroll() {
+        scrollAnimGroup.complete();
+    }
+
     clip: true
     flickableDirection: Flickable.VerticalFlick
     contentWidth: width

@@ -72,8 +72,10 @@ FocusScope {
         }
 
         visible: root.drawLeft
+        onVisibleChanged: if (!visible) scrollArea.stopScroll()
 
         PegasusUtils.AutoScroll {
+            id: scrollArea
             width: parent.width
             anchors.top: parent.top
             anchors.bottom: actionButtons.top
