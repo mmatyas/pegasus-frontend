@@ -21,6 +21,7 @@
 #include "Paths.h"
 
 #include <QFile>
+#include <QMutexLocker>
 #include <QTextStream>
 
 
@@ -66,7 +67,7 @@ void FavoriteWriter::start_processing()
             for (const QString& fav : qAsConst(m_current_task))
                 db_stream << fav << endl;
 
-            std::unique_lock<std::mutex> lock(m_task_guard);
+            QMutexLocker lock(&m_task_guard);
             m_current_task.clear();
             if (m_pending_task.isEmpty())
                 return;
@@ -81,7 +82,7 @@ void FavoriteWriter::start_processing()
 
 void FavoriteWriter::queueTask(const types::CollectionList& coll_list)
 {
-    std::unique_lock<std::mutex> lock(m_task_guard);
+    QMutexLocker lock(&m_task_guard);
 
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");

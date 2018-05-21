@@ -19,11 +19,11 @@
 
 #include "types/gaming/CollectionList.h"
 
+#include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QtConcurrent/QtConcurrent>
-#include <mutex>
 
 
 class FavoriteWriter : public QObject {
@@ -46,7 +46,7 @@ private:
     const QString m_db_path;
     QStringList m_pending_task;
     QStringList m_current_task;
-    std::mutex m_task_guard;
+    QMutex m_task_guard;
     QFutureWatcher<void> m_write_watcher;
 
     void start_processing();
