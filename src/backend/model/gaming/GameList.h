@@ -71,6 +71,8 @@ public:
     QQmlListProperty<Game> getFilteredGamesProp();
     QQmlListProperty<Game> getAllGamesProp();
 
+    Q_INVOKABLE void jumpToLetter(const QString&);
+
 public:
     // backend-side functions
 

@@ -52,7 +52,7 @@ FocusScope {
         focus: true
 
         Keys.onPressed: {
-            if (event.isAutoRepeat)
+            if (event.isAutoRepeat || event.modifiers)
                 return;
 
             switch (event.key) {

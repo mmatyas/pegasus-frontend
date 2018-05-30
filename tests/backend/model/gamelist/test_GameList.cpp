@@ -40,6 +40,8 @@ private slots:
     void applyFilters();
     void applyFilters_data();
 
+    void letterJump();
+
 private:
     const model::Game* const null_game = static_cast<model::Game*>(nullptr); // Qt 5.7
 };
@@ -247,6 +249,22 @@ void test_GameList::applyFilters_data()
     QTest::newRow("multiplayer") << "" << false << 2 << 1;
     QTest::newRow("title + favorite") << "Game" << true << 1 << 1;
     QTest::newRow("title + favorite + 2P") << "Game" << true << 2 << 0;
+}
+
+void test_GameList::letterJump()
+{
+    model::GameList list;
+    list.addGame("Alfa");
+    list.addGame("Beta");
+    list.addGame("Gamma");
+    list.lockGameList();
+    QVERIFY(list.index() == 0);
+
+    list.jumpToLetter("g");
+    QVERIFY(list.index() == 2);
+
+    list.jumpToLetter("b");
+    QVERIFY(list.index() == 1);
 }
 
 

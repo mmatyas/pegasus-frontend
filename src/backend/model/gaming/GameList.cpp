@@ -102,6 +102,26 @@ QQmlListProperty<Game> GameList::getAllGamesProp()
     return {this, &m_all_games, count, at};
 }
 
+/// Selects the first game in the list of filtered games whose title starts with
+/// the provided text's first character. If the text is empty or no such game exists,
+/// nothing happens.
+void GameList::jumpToLetter(const QString& text)
+{
+    if (text.isEmpty())
+        return;
+
+    const QChar query_char = text.at(0).toLower();
+    // NOTE: while this could be optimized for performance,
+    // the increase in memory usage might not worth it.
+    for (int i = 0; i < m_filtered_games.count(); i++) {
+        Q_ASSERT(!m_filtered_games[i]->m_title.isEmpty());
+        if (m_filtered_games[i]->m_title.at(0).toLower() == query_char) {
+            setIndex(i);
+            return;
+        }
+    }
+}
+
 void GameList::addGame(QString path)
 {
 #ifdef QT_DEBUG

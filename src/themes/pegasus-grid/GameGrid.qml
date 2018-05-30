@@ -63,7 +63,7 @@ GridView {
     cellHeight: cellWidth * cellHeightRatio;
 
 
-    Keys.onReleased: {
+    Keys.onPressed: {
         if (event.key === Qt.Key_PageUp || event.key === Qt.Key_PageDown) {
             var rows_to_skip = Math.max(1, Math.round(grid_root.height / cellHeight));
             var games_to_skip = rows_to_skip * columnCount;
@@ -72,6 +72,8 @@ GridView {
             else
                 currentIndex = Math.min(currentIndex + games_to_skip, model.length - 1);
         }
+        if (event.modifiers === Qt.AltModifier && event.text)
+            api.currentCollection.gameList.jumpToLetter(event.text);
     }
 
 
