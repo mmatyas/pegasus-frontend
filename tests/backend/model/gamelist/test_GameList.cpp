@@ -17,8 +17,8 @@
 
 #include <QtTest/QtTest>
 
-#include "types/Filters.h"
-#include "types/gaming/GameList.h"
+#include "model/Filters.h"
+#include "model/gaming/GameList.h"
 
 
 class test_GameList : public QObject {

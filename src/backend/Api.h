@@ -20,11 +20,11 @@
 #include "AppCloseType.h"
 #include "DataFinder.h"
 #include "FavoriteDB.h"
-#include "types/Filters.h"
-#include "types/Meta.h"
-#include "types/System.h"
-#include "types/gaming/CollectionList.h"
-#include "types/settings/Settings.h"
+#include "model/Filters.h"
+#include "model/Meta.h"
+#include "model/System.h"
+#include "model/gaming/CollectionList.h"
+#include "model/settings/Settings.h"
 
 #include <QFutureWatcher>
 #include <QObject>

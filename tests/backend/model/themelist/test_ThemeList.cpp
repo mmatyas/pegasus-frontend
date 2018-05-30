@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "types/settings/ThemeList.h"
+#include "model/settings/ThemeList.h"
 
 
 class test_ThemeList : public QObject {

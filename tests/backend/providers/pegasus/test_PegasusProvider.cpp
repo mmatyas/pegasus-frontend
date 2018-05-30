@@ -18,8 +18,8 @@
 #include <QtTest/QtTest>
 
 #include "providers/pegasus/PegasusProvider.h"
-#include "types/gaming/Collection.h"
-#include "types/gaming/Game.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 
 #include <QHash>
 #include <QString>

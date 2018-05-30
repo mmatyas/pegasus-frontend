@@ -43,7 +43,7 @@ HEADERS += \
 
 include(platform/platform.pri)
 include(providers/providers.pri)
-include(types/types.pri)
+include(model/model.pri)
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)

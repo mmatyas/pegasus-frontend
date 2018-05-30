@@ -21,7 +21,7 @@
 #include "Paths.h"
 #include "PegasusAssets.h"
 #include "Utils.h"
-#include "types/gaming/Collection.h"
+#include "model/gaming/Collection.h"
 
 #include <QDebug>
 #include <QDir>

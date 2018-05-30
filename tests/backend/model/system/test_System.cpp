@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "types/System.h"
+#include "model/System.h"
 
 Q_DECLARE_METATYPE(AppCloseType)
 

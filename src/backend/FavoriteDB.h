@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "types/gaming/CollectionList.h"
+#include "model/gaming/CollectionList.h"
 
 #include <QMutex>
 #include <QObject>

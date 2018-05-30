@@ -4,6 +4,6 @@ SUBDIRS += \
     api \
     configfile \
     favorites \
+    model \
     providers \
-    types \
     utils \

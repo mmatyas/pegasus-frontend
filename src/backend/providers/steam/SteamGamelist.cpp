@@ -19,8 +19,8 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "types/gaming/Collection.h"
-#include "types/gaming/Game.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 
 #include <QDebug>
 #include <QDir>

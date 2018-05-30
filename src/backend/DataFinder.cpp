@@ -21,7 +21,7 @@
 #include "LocaleUtils.h"
 #include "providers/es2/Es2Provider.h"
 #include "providers/pegasus/PegasusProvider.h"
-#include "types/gaming/Collection.h"
+#include "model/gaming/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
 #include "providers/steam/SteamProvider.h"

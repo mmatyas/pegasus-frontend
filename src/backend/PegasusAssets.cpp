@@ -17,7 +17,7 @@
 
 #include "PegasusAssets.h"
 
-#include "types/gaming/Game.h"
+#include "model/gaming/Game.h"
 
 #include <QDebug>
 #include <QDir>

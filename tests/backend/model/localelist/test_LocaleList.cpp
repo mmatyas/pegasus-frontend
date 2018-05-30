@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "types/settings/LocaleList.h"
+#include "model/settings/LocaleList.h"
 
 
 class test_LocaleList : public QObject {
