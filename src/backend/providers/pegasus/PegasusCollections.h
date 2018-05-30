@@ -21,8 +21,8 @@
 #include <QStringList>
 #include <functional>
 
-namespace types { class Game; }
-namespace types { class Collection; }
+namespace model { class Game; }
+namespace model { class Collection; }
 
 
 namespace providers {
@@ -35,8 +35,8 @@ public:
     PegasusCollections();
 
     void find_in_dirs(const QStringList&,
-                      QHash<QString, types::Game*>&,
-                      QHash<QString, types::Collection*>&,
+                      QHash<QString, model::Game*>&,
+                      QHash<QString, model::Collection*>&,
                       const std::function<void(int)>&) const;
 
 private:

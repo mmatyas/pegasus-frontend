@@ -20,7 +20,7 @@
 #include <QLocale>
 
 
-namespace types {
+namespace model {
 
 Locale::Locale(QString bcp47tag, QObject* parent)
     : QObject(parent)
@@ -30,4 +30,4 @@ Locale::Locale(QString bcp47tag, QObject* parent)
              : QLocale(m_bcp47tag).nativeLanguageName())
 {}
 
-} // namespace types
+} // namespace model

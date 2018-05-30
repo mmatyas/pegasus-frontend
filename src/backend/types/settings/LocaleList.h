@@ -25,12 +25,12 @@
 #include <QVector>
 
 
-namespace types {
+namespace model {
 
 class LocaleList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(types::Locale* current
+    Q_PROPERTY(model::Locale* current
                READ current
                NOTIFY localeChanged)
     Q_PROPERTY(int index
@@ -39,7 +39,7 @@ class LocaleList : public QObject {
                NOTIFY localeChanged)
     Q_PROPERTY(int count
                READ count CONSTANT)
-    Q_PROPERTY(QQmlListProperty<types::Locale> model
+    Q_PROPERTY(QQmlListProperty<model::Locale> model
                READ getListProp CONSTANT)
 
 public:
@@ -66,4 +66,4 @@ private:
     int indexOfLocale(const QString& tag) const;
 };
 
-} // namespace types
+} // namespace model

@@ -30,7 +30,7 @@ private slots:
 
 void test_Collection::names()
 {
-    types::Collection collection("myname");
+    model::Collection collection("myname");
     collection.setShortName("abbrev");
     collection.setCommonLaunchCmd("runner");
 
@@ -41,8 +41,8 @@ void test_Collection::names()
 
 void test_Collection::gameChanged()
 {
-    types::Collection collection("dummy");
-    QSignalSpy triggered(&collection, &types::Collection::currentGameChanged);
+    model::Collection collection("dummy");
+    QSignalSpy triggered(&collection, &model::Collection::currentGameChanged);
     QVERIFY(triggered.isValid());
 
     collection.gameListMut().addGame("dummy1");

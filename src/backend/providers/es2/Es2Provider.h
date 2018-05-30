@@ -31,10 +31,10 @@ class Es2Provider : public Provider {
 public:
     Es2Provider(QObject* parent = nullptr);
 
-    void find(QHash<QString, types::Game*>&,
-              QHash<QString, types::Collection*>&) final;
-    void enhance(const QHash<QString, types::Game*>&,
-                 const QHash<QString, types::Collection*>&) final;
+    void find(QHash<QString, model::Game*>&,
+              QHash<QString, model::Collection*>&) final;
+    void enhance(const QHash<QString, model::Game*>&,
+                 const QHash<QString, model::Collection*>&) final;
 
 private:
     SystemsParser systems;

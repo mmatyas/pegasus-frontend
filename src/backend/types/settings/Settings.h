@@ -23,7 +23,7 @@
 #include <QObject>
 
 
-namespace types {
+namespace model {
 
 /// Provides a settings interface for the frontend layer
 class Settings : public QObject {
@@ -33,8 +33,8 @@ class Settings : public QObject {
                READ fullscreen
                WRITE setFullscreen
                NOTIFY fullscreenChanged)
-    Q_PROPERTY(types::LocaleList* locales READ localesPtr CONSTANT)
-    Q_PROPERTY(types::ThemeList* themes READ themesPtr CONSTANT)
+    Q_PROPERTY(model::LocaleList* locales READ localesPtr CONSTANT)
+    Q_PROPERTY(model::ThemeList* themes READ themesPtr CONSTANT)
 
 public:
     explicit Settings(QObject* parent = nullptr);
@@ -58,4 +58,4 @@ private:
     ThemeList m_themes;
 };
 
-} // namespace types
+} // namespace model

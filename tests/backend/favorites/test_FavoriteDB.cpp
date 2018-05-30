@@ -32,14 +32,14 @@ private slots:
 
 void test_FavoriteDB::write()
 {
-    types::CollectionList list;
+    model::CollectionList list;
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new types::Collection("coll1"));
+    list.elementsMut().append(new model::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame(":/a/b/coll1dummy1");
     list.elementsMut().last()->gameListMut().addGame(":/coll1dummy2");
-    list.elementsMut().append(new types::Collection("coll2"));
+    list.elementsMut().append(new model::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame(":/x/y/z/coll2dummy1");
     list.onScanComplete();
 
@@ -90,14 +90,14 @@ void test_FavoriteDB::write()
 
 void test_FavoriteDB::rewrite_empty()
 {
-    types::CollectionList list;
+    model::CollectionList list;
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
 
     // TODO: implement addPlatform
-    list.elementsMut().append(new types::Collection("coll1"));
+    list.elementsMut().append(new model::Collection("coll1"));
     list.elementsMut().last()->gameListMut().addGame(":/a/b/coll1dummy1");
     list.elementsMut().last()->gameListMut().addGame(":/coll1dummy2");
-    list.elementsMut().append(new types::Collection("coll2"));
+    list.elementsMut().append(new model::Collection("coll2"));
     list.elementsMut().last()->gameListMut().addGame(":/x/y/z/coll2dummy1");
     list.onScanComplete();
 
@@ -139,14 +139,14 @@ void test_FavoriteDB::rewrite_empty()
 
 void test_FavoriteDB::read()
 {
-    QHash<QString, types::Game*> games;
+    QHash<QString, model::Game*> games;
     const QStringList game_paths {
         QStringLiteral(":/a/b/coll1dummy1"),
         QStringLiteral(":/coll1dummy2"),
         QStringLiteral(":/x/y/z/coll2dummy1"),
     };
     for (const QString& path : game_paths)
-        games[path] = new types::Game(path);
+        games[path] = new model::Game(path);
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);

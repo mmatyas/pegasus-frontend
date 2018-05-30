@@ -35,7 +35,7 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::launchGame(const types::Collection* collection, const types::Game* game)
+void ProcessLauncher::launchGame(const model::Collection* collection, const model::Game* game)
 {
     Q_ASSERT(game);
     // collection can be null!
@@ -47,7 +47,7 @@ void ProcessLauncher::launchGame(const types::Collection* collection, const type
         launch_cmd = collection->launchCmd();
     // then the primary collection's
     if (launch_cmd.isEmpty() && collection != game->parent()) {
-        auto main_coll = qobject_cast<const types::Collection*>(game->parent());
+        auto main_coll = qobject_cast<const model::Collection*>(game->parent());
         if (main_coll)
             launch_cmd = main_coll->launchCmd();
     }
@@ -69,7 +69,7 @@ void ProcessLauncher::launchGame(const types::Collection* collection, const type
     emit processFinished();
 }
 
-void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const types::Game& game) const
+void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const model::Game& game) const
 {
     launch_cmd
         .replace(QLatin1String("{file.path}"), game.m_fileinfo.absoluteFilePath())

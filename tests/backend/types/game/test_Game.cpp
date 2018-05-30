@@ -30,7 +30,7 @@ private slots:
     void release();
 };
 
-void testStrAndList(types::Game& game,
+void testStrAndList(model::Game& game,
                     std::function<void(const QString&)> fn_add,
                     const char* str_name, const char* list_name)
 {
@@ -60,28 +60,28 @@ void testStrAndList(types::Game& game,
 
 void test_Game::developers()
 {
-    types::Game game({});
+    model::Game game({});
     auto fn = [&game](const QString& val){ game.addDeveloper(val); };
     testStrAndList(game, fn, "developer", "developerList");
 }
 
 void test_Game::publishers()
 {
-    types::Game game({});
+    model::Game game({});
     auto fn = [&game](const QString& val){ game.addPublisher(val); };
     testStrAndList(game, fn, "publisher", "publisherList");
 }
 
 void test_Game::genres()
 {
-    types::Game game({});
+    model::Game game({});
     auto fn = [&game](const QString& val){ game.addGenre(val); };
     testStrAndList(game, fn, "genre", "genreList");
 }
 
 void test_Game::release()
 {
-    types::Game game({});
+    model::Game game({});
     game.setRelease(QDate(1999,1,2));
     QCOMPARE(game.property("year").toInt(), 1999);
     QCOMPARE(game.property("month").toInt(), 1);

@@ -40,7 +40,7 @@ void test_LocaleList::initTestCase()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
-    types::LocaleList localelist;
+    model::LocaleList localelist;
     QVERIFY(localelist.index() >= 0);
 
     initial_index = localelist.index();
@@ -55,15 +55,15 @@ void test_LocaleList::indexChange()
     if (testval != initial_index)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid locale index .*"));
 
-    types::LocaleList localelist;
-    QSignalSpy triggered(&localelist, &types::LocaleList::localeChanged);
+    model::LocaleList localelist;
+    QSignalSpy triggered(&localelist, &model::LocaleList::localeChanged);
     QVERIFY(triggered.isValid());
 
-    types::Locale* before = localelist.current();
+    model::Locale* before = localelist.current();
     localelist.setProperty("index", testval);
 
     QCOMPARE(localelist.property("index").toInt(), initial_index);
-    QCOMPARE(localelist.property("current").value<types::Locale*>(), before);
+    QCOMPARE(localelist.property("current").value<model::Locale*>(), before);
     QCOMPARE(triggered.count(), 0);
 }
 
@@ -82,7 +82,7 @@ void test_LocaleList::count()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
-    types::LocaleList localelist;
+    model::LocaleList localelist;
     QCOMPARE(localelist.count(), localelist.property("count").toInt());
 }
 

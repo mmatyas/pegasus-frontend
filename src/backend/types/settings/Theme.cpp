@@ -18,7 +18,7 @@
 #include "Theme.h"
 
 
-namespace types {
+namespace model {
 
 Theme::Theme(QString root_dir, QString root_qml, QString name,
              QString author, QString version, QString summary, QString description,
@@ -38,4 +38,4 @@ int Theme::compare(const Theme& other) const
     return QString::localeAwareCompare(m_name, other.m_name);
 }
 
-} // namespace types
+} // namespace model

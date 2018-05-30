@@ -44,8 +44,8 @@ struct GameFilter {
 
 void traverse_dir(const QString& dir_base_path,
                   const QHash<QString, GameFilter>& filter_config,
-                  const QHash<QString, types::Collection*>& collections,
-                  QHash<QString, types::Game*>& games)
+                  const QHash<QString, model::Collection*>& collections,
+                  QHash<QString, model::Game*>& games)
 {
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
@@ -92,10 +92,10 @@ void traverse_dir(const QString& dir_base_path,
                 if (!include)
                     continue;
 
-                types::Collection* const& collection_ptr = collections[config_it.key()];
-                types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
+                model::Collection* const& collection_ptr = collections[config_it.key()];
+                model::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
                 if (!game_ptr)
-                    game_ptr = new types::Game(fileinfo, collection_ptr);
+                    game_ptr = new model::Game(fileinfo, collection_ptr);
 
                 collection_ptr->gameListMut().addGame(game_ptr);
             }
@@ -119,7 +119,7 @@ enum class CollAttribType : unsigned char {
 
 QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttribType>& key_types,
                                                  const QString& dir_path,
-                                                 QHash<QString, types::Collection*>& collections)
+                                                 QHash<QString, model::Collection*>& collections)
 {
     // reminder: sections are collection names
     // including keys: extensions, files, regex
@@ -128,7 +128,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
 
     QString curr_config_path;
     QHash<QString, GameFilter> config;
-    types::Collection* curr_coll = nullptr;
+    model::Collection* curr_coll = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
@@ -140,7 +140,7 @@ QHash<QString, GameFilter> read_collections_file(const QHash<QString, CollAttrib
             curr_coll = nullptr;
 
             if (!collections.contains(val))
-                collections.insert(val, new types::Collection(val));
+                collections.insert(val, new model::Collection(val));
 
             curr_coll = collections[val];
             curr_coll->sourceDirsMut().append(dir_path);
@@ -236,8 +236,8 @@ PegasusCollections::PegasusCollections()
 }
 
 void PegasusCollections::find_in_dirs(const QStringList& dir_list,
-                                      QHash<QString, types::Game*>& games,
-                                      QHash<QString, types::Collection*>& collections,
+                                      QHash<QString, model::Game*>& games,
+                                      QHash<QString, model::Collection*>& collections,
                                       const std::function<void(int)>& update_gamecount_maybe) const
 {
     for (const QString& dir_path : dir_list) {

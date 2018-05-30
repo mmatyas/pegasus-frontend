@@ -21,8 +21,8 @@
 #include <QString>
 #include <QObject>
 
-namespace types { class Game; }
-namespace types { class Collection; }
+namespace model { class Game; }
+namespace model { class Collection; }
 
 
 namespace providers {
@@ -35,12 +35,12 @@ public:
     virtual ~Provider();
 
     /// Find all games and collections.
-    virtual void find(QHash<QString, types::Game*>& games,
-                      QHash<QString, types::Collection*>& collections) = 0;
+    virtual void find(QHash<QString, model::Game*>& games,
+                      QHash<QString, model::Collection*>& collections) = 0;
 
     /// Enhance the previously found games and collections with metadata and assets.
-    virtual void enhance(const QHash<QString, types::Game*>& games,
-                         const QHash<QString, types::Collection*>& collections) = 0;
+    virtual void enhance(const QHash<QString, model::Game*>& games,
+                         const QHash<QString, model::Collection*>& collections) = 0;
 
 signals:
     void gameCountChanged(int);

@@ -76,8 +76,8 @@ PegasusMetadata::PegasusMetadata()
 }
 
 void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
-                                      const QHash<QString, types::Game*>& games,
-                                      const QHash<QString, types::Collection*>&) const
+                                      const QHash<QString, model::Game*>& games,
+                                      const QHash<QString, model::Collection*>&) const
 {
     pegasus_assets::findAssets(dir_list, games);
 
@@ -87,10 +87,10 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
 
 
 void PegasusMetadata::read_metadata_file(const QString& dir_path,
-                                         const QHash<QString, types::Game*>& games) const
+                                         const QHash<QString, model::Game*>& games) const
 {
     QString curr_config_path;
-    types::Game* curr_game = nullptr;
+    model::Game* curr_game = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()

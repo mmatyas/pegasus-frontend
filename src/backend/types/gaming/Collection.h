@@ -22,17 +22,17 @@
 #include <QString>
 #include <QQmlListProperty>
 
-namespace types { class Filters; }
+namespace model { class Filters; }
 
 
-namespace types {
+namespace model {
 
 class Collection : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
-    Q_PROPERTY(types::GameList* gameList READ gameListPtr CONSTANT)
+    Q_PROPERTY(model::GameList* gameList READ gameListPtr CONSTANT)
 
     // deprecated
     Q_PROPERTY(QString tag READ tag CONSTANT)
@@ -71,4 +71,4 @@ private:
     GameList* gameListPtr() { return &m_gamelist; }
 };
 
-} // namespace types
+} // namespace model

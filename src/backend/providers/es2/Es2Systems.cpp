@@ -86,8 +86,8 @@ SystemsParser::SystemsParser(QObject* parent)
     : QObject(parent)
 {}
 
-void SystemsParser::find(QHash<QString, types::Game*>& games,
-                       QHash<QString, types::Collection*>& collections)
+void SystemsParser::find(QHash<QString, model::Game*>& games,
+                       QHash<QString, model::Collection*>& collections)
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -111,8 +111,8 @@ void SystemsParser::find(QHash<QString, types::Game*>& games,
 }
 
 void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
-                                    QHash<QString, types::Game*>& games,
-                                    QHash<QString, types::Collection*>& collections)
+                                    QHash<QString, model::Game*>& games,
+                                    QHash<QString, model::Collection*>& collections)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -143,8 +143,8 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
 }
 
 void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
-                                    QHash<QString, types::Game*>& games,
-                                    QHash<QString, types::Collection*>& collections)
+                                    QHash<QString, model::Game*>& games,
+                                    QHash<QString, model::Collection*>& collections)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -203,9 +203,9 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     const QString& fullname = xml_props[QLatin1String("fullname")];
     const QString& shortname = xml_props[QLatin1String("name")];
     const QString& collection_name = fullname.isEmpty() ? shortname : fullname;
-    types::Collection*& collection = collections[collection_name];
+    model::Collection*& collection = collections[collection_name];
     if (!collection)
-        collection = new types::Collection(collection_name); // TODO: check for fail
+        collection = new model::Collection(collection_name); // TODO: check for fail
 
     collection->setShortName(shortname);
     collection->sourceDirsMut().append(xml_props[QLatin1String("path")]);
@@ -246,9 +246,9 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
             files_it.next();
             const QFileInfo fileinfo = files_it.fileInfo();
 
-            types::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
+            model::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr) {
-                game_ptr = new types::Game(fileinfo, collection);
+                game_ptr = new model::Game(fileinfo, collection);
                 game_ptr->m_launch_cmd = collection->launchCmd();
             }
 

@@ -42,7 +42,7 @@ static constexpr auto MSG_PREFIX = "Steam:";
 struct SteamGameEntry {
     QString title;
     QString appid;
-    types::Game* game_ptr;
+    model::Game* game_ptr;
 
     SteamGameEntry() : game_ptr(nullptr) {}
 
@@ -95,7 +95,7 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     return entry;
 }
 
-bool read_json(types::Game& game, const QByteArray& bytes)
+bool read_json(model::Game& game, const QByteArray& bytes)
 {
     const auto json = QJsonDocument::fromJson(bytes);
     if (json.isNull())
@@ -119,7 +119,7 @@ bool read_json(types::Game& game, const QByteArray& bytes)
 
     // now the actual field reading
 
-    types::GameAssets& assets = game.assets();
+    model::GameAssets& assets = game.assets();
 
     game.m_title = app_data[QLatin1String("name")].toString();
 
@@ -331,21 +331,21 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(const QHash<QString, types::Game*>&,
-                       const QHash<QString, types::Collection*>& collections)
+void Metadata::enhance(const QHash<QString, model::Game*>&,
+                       const QHash<QString, model::Collection*>& collections)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
     if (!collections.contains(STEAM_TAG))
         return;
 
-    const types::Collection* const& collection = collections[STEAM_TAG];
+    const model::Collection* const& collection = collections[STEAM_TAG];
     const QString steamexe = find_steam_exe();
 
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
 
-    for (types::Game* const game_ptr : collection->gameList().allGames()) {
+    for (model::Game* const game_ptr : collection->gameList().allGames()) {
         Q_ASSERT(game_ptr);
         SteamGameEntry entry = read_manifest(game_ptr->m_fileinfo.filePath());
         if (!entry.appid.isEmpty()) {

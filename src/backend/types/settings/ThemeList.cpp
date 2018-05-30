@@ -66,7 +66,7 @@ QHash<QString, QString> read_metafile(const QString& config_file_path)
 } // namespace
 
 
-namespace types {
+namespace model {
 
 ThemeList::ThemeList(QObject* parent)
     : QObject(parent)
@@ -125,7 +125,7 @@ void ThemeList::findAvailableThemes()
             else
                 qml_path = QUrl::fromLocalFile(qml_path).toString();
 
-            m_themes.append(new types::Theme(
+            m_themes.append(new model::Theme(
                 basedir, qml_path,
                 metadata.value(META_KEY_NAME),
                 metadata.value(META_KEY_AUTHOR),
@@ -141,7 +141,7 @@ void ThemeList::findAvailableThemes()
     }
 
     std::sort(m_themes.begin(), m_themes.end(),
-        [](const types::Theme* const a, const types::Theme* const b) {
+        [](const model::Theme* const a, const model::Theme* const b) {
             return a->compare(*b) < 0;
         }
     );
@@ -221,4 +221,4 @@ QQmlListProperty<Theme> ThemeList::getListProp()
     return {this, &m_themes, count, at};
 }
 
-} // namespace types
+} // namespace model

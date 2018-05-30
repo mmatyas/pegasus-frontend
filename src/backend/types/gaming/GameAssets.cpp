@@ -18,7 +18,7 @@
 #include "GameAssets.h"
 
 
-namespace types {
+namespace model {
 
 GameAssets::GameAssets(QObject* parent)
     : QObject(parent)
@@ -36,4 +36,4 @@ void GameAssets::appendMulti(AssetType key, QString value)
     m_multi_assets[key].append(value);
 }
 
-} // namespace types
+} // namespace model

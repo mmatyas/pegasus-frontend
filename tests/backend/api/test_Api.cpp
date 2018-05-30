@@ -37,8 +37,8 @@ void test_Api::initialState()
 
     ApiObject api;
 
-    QCOMPARE(api.currentCollection(), static_cast<types::Collection*>(nullptr));
-    QCOMPARE(api.currentGame(), static_cast<types::Game*>(nullptr));
+    QCOMPARE(api.currentCollection(), static_cast<model::Collection*>(nullptr));
+    QCOMPARE(api.currentGame(), static_cast<model::Game*>(nullptr));
 }
 
 

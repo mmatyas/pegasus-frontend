@@ -35,8 +35,8 @@ private slots:
 
 void bench_PegasusProvider::find_in_empty_dir()
 {
-    QHash<QString, types::Game*> games;
-    QHash<QString, types::Collection*> collections;
+    QHash<QString, model::Game*> games;
+    QHash<QString, model::Collection*> collections;
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/empty"));
 
@@ -47,8 +47,8 @@ void bench_PegasusProvider::find_in_empty_dir()
 
 void bench_PegasusProvider::find_in_filled_dir()
 {
-    QHash<QString, types::Game*> games;
-    QHash<QString, types::Collection*> collections;
+    QHash<QString, model::Game*> games;
+    QHash<QString, model::Collection*> collections;
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/filled"));
 

@@ -35,7 +35,7 @@ public:
 
     /// Prepares the list of favorites and starts writing it to the output
     /// as soon as there are no pending write operation.
-    void queueTask(const types::CollectionList&);
+    void queueTask(const model::CollectionList&);
 
 
 signals:
@@ -55,5 +55,5 @@ private:
 class FavoriteReader {
 public:
     /// Reads the list of favorites and marks the matching games as favorite.
-    static void readDB(const QHash<QString, types::Game*>&, const QString& db_path = QString());
+    static void readDB(const QHash<QString, model::Game*>&, const QString& db_path = QString());
 };

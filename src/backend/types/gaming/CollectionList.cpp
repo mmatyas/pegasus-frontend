@@ -24,7 +24,7 @@
 #include <QDebug>
 
 
-namespace types {
+namespace model {
 
 CollectionList::CollectionList(QObject* parent)
     : QObject(parent)
@@ -115,7 +115,7 @@ void CollectionList::onScanComplete()
         connect(coll, &Collection::gameFavoriteChanged,
                 this, &CollectionList::gameFavoriteChanged);
 
-        types::GameList& gamelist = coll->gameListMut();
+        model::GameList& gamelist = coll->gameListMut();
         gamelist.lockGameList();
         game_count += gamelist.allGames().count();
     }
@@ -133,4 +133,4 @@ void CollectionList::onGameChanged()
         emit currentGameChanged();
 }
 
-} // namespace types
+} // namespace model

@@ -23,7 +23,7 @@
 #include <QDebug>
 
 
-namespace types {
+namespace model {
 
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 
@@ -80,4 +80,4 @@ void Meta::onGameCountUpdate(int game_count)
     }
 }
 
-} // namespace types
+} // namespace model

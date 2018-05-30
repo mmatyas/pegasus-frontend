@@ -80,14 +80,14 @@ void FavoriteWriter::start_processing()
     m_write_watcher.setFuture(future);
 }
 
-void FavoriteWriter::queueTask(const types::CollectionList& coll_list)
+void FavoriteWriter::queueTask(const model::CollectionList& coll_list)
 {
     QMutexLocker lock(&m_task_guard);
 
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
-    for (const types::Collection* const coll : coll_list.elements()) {
-        for (const types::Game* const game : coll->gameList().allGames()) {
+    for (const model::Collection* const coll : coll_list.elements()) {
+        for (const model::Game* const game : coll->gameList().allGames()) {
             if (game->m_favorite)
                 m_pending_task << game->m_fileinfo.canonicalFilePath();
         }
@@ -97,7 +97,7 @@ void FavoriteWriter::queueTask(const types::CollectionList& coll_list)
         start_processing();
 }
 
-void FavoriteReader::readDB(const QHash<QString, types::Game*>& games, const QString& db_path)
+void FavoriteReader::readDB(const QHash<QString, model::Game*>& games, const QString& db_path)
 {
     const QString real_db_path = db_path.isEmpty() ? default_db_path() : db_path;
     if (!QFileInfo::exists(real_db_path))
@@ -116,7 +116,7 @@ void FavoriteReader::readDB(const QHash<QString, types::Game*>& games, const QSt
         if (line.startsWith('#'))
             continue;
 
-        types::Game* const game = games.value(line, nullptr);
+        model::Game* const game = games.value(line, nullptr);
         if (game)
             game->m_favorite = true;
     }

@@ -25,15 +25,15 @@
 
 enum class IndexShiftDirection : unsigned char;
 
-namespace types { class Filters; }
+namespace model { class Filters; }
 
 
-namespace types {
+namespace model {
 
 class GameList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(types::Game* current
+    Q_PROPERTY(model::Game* current
                READ current
                NOTIFY currentChanged)
     Q_PROPERTY(int index
@@ -46,10 +46,10 @@ class GameList : public QObject {
     Q_PROPERTY(int countAll
                READ allCount
                NOTIFY allGamesChanged)
-    Q_PROPERTY(QQmlListProperty<types::Game> model
+    Q_PROPERTY(QQmlListProperty<model::Game> model
                READ getFilteredGamesProp
                NOTIFY filteredGamesChanged)
-    Q_PROPERTY(QQmlListProperty<types::Game> modelAll
+    Q_PROPERTY(QQmlListProperty<model::Game> modelAll
                READ getAllGamesProp
                NOTIFY allGamesChanged)
 
@@ -106,4 +106,4 @@ private:
 #endif
 };
 
-} // namespace types
+} // namespace model

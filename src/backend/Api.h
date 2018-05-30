@@ -40,18 +40,18 @@ class ApiObject : public QObject {
 
     // subcomponents
 
-    Q_PROPERTY(types::Filters* filters READ filters CONSTANT)
-    Q_PROPERTY(types::Meta* meta READ meta CONSTANT)
-    Q_PROPERTY(types::Settings* settings READ settings CONSTANT)
-    Q_PROPERTY(types::System* system READ system CONSTANT)
-    Q_PROPERTY(types::CollectionList* collectionList READ collectionList CONSTANT)
+    Q_PROPERTY(model::Filters* filters READ filters CONSTANT)
+    Q_PROPERTY(model::Meta* meta READ meta CONSTANT)
+    Q_PROPERTY(model::Settings* settings READ settings CONSTANT)
+    Q_PROPERTY(model::System* system READ system CONSTANT)
+    Q_PROPERTY(model::CollectionList* collectionList READ collectionList CONSTANT)
 
     // shortcuts
 
-    Q_PROPERTY(types::Collection* currentCollection
+    Q_PROPERTY(model::Collection* currentCollection
                READ currentCollection
                NOTIFY currentCollectionChanged)
-    Q_PROPERTY(types::Game* currentGame
+    Q_PROPERTY(model::Game* currentGame
                READ currentGame
                NOTIFY currentGameChanged)
 
@@ -65,23 +65,23 @@ public:
     void startScanning();
 
     // subcomponents
-    types::Filters* filters() { return &m_filters; }
-    types::Meta* meta() { return &m_meta; }
-    types::Settings* settings() { return &m_settings; }
-    types::System* system() { return &m_system; }
-    types::CollectionList* collectionList() { return &m_collections; }
+    model::Filters* filters() { return &m_filters; }
+    model::Meta* meta() { return &m_meta; }
+    model::Settings* settings() { return &m_settings; }
+    model::System* system() { return &m_system; }
+    model::CollectionList* collectionList() { return &m_collections; }
 
     // shortcuts
 
-    types::Collection* currentCollection() const { return m_collections.current(); }
-    types::Game* currentGame() const {
+    model::Collection* currentCollection() const { return m_collections.current(); }
+    model::Game* currentGame() const {
         return currentCollection() ? currentCollection()->gameList().current() : nullptr;
     }
 
 signals:
     // game launching
     void prepareLaunch();
-    void executeLaunch(const types::Collection*, const types::Game*);
+    void executeLaunch(const model::Collection*, const model::Game*);
     void restoreAfterGame(ApiObject*);
 
     // triggers translation update
@@ -104,20 +104,20 @@ public slots:
 
 private slots:
     // internal communication
-    void onLaunchRequested(const types::Collection*, const types::Game*);
+    void onLaunchRequested(const model::Collection*, const model::Game*);
     void onFiltersChanged();
     void onGameFavoriteChanged();
 
 private:
-    types::Meta m_meta;
-    types::System m_system;
-    types::Settings m_settings;
-    types::Filters m_filters;
-    types::CollectionList m_collections;
+    model::Meta m_meta;
+    model::System m_system;
+    model::Settings m_settings;
+    model::Filters m_filters;
+    model::CollectionList m_collections;
 
     // the collection and game that requested the game launch
-    const types::Collection* m_launch_collection;
-    const types::Game* m_launch_game;
+    const model::Collection* m_launch_collection;
+    const model::Game* m_launch_game;
 
     // initialization
     DataFinder m_datafinder;

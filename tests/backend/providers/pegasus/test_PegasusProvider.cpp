@@ -36,8 +36,8 @@ private slots:
 
 void test_PegasusProvider::find_in_empty_dir()
 {
-    QHash<QString, types::Game*> games;
-    QHash<QString, types::Collection*> collections;
+    QHash<QString, model::Game*> games;
+    QHash<QString, model::Collection*> collections;
 
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/empty"));
@@ -49,8 +49,8 @@ void test_PegasusProvider::find_in_empty_dir()
 
 void test_PegasusProvider::find_in_filled_dir()
 {
-    QHash<QString, types::Game*> games;
-    QHash<QString, types::Collection*> collections;
+    QHash<QString, model::Game*> games;
+    QHash<QString, model::Collection*> collections;
 
     QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
     providers::pegasus::PegasusProvider provider;
@@ -88,22 +88,22 @@ void test_PegasusProvider::find_in_filled_dir()
     const QStringList multi_paths {
         { ":/filled/9999-in-1.ext" },
     };
-    for (const types::Game* const game : collections[QStringLiteral("My Games")]->gameList().allGames()) {
+    for (const model::Game* const game : collections[QStringLiteral("My Games")]->gameList().allGames()) {
         QVERIFY(game != nullptr);
         QCOMPARE(mygames_paths.count(game->m_fileinfo.filePath()), 1);
     }
-    for (const types::Game* const game : collections[QStringLiteral("Favorite games")]->gameList().allGames()) {
+    for (const model::Game* const game : collections[QStringLiteral("Favorite games")]->gameList().allGames()) {
         QVERIFY(game != nullptr);
         QCOMPARE(faves_paths.count(game->m_fileinfo.filePath()), 1);
     }
-    for (const types::Game* const game : collections[QStringLiteral("Multi-game ROMs")]->gameList().allGames()) {
+    for (const model::Game* const game : collections[QStringLiteral("Multi-game ROMs")]->gameList().allGames()) {
         QVERIFY(game != nullptr);
         QCOMPARE(multi_paths.count(game->m_fileinfo.filePath()), 1);
     }
 
     // finds the correct games in general
     const QStringList all_game_paths = mygames_paths;
-    for (const types::Game* const game : games.values()) {
+    for (const model::Game* const game : games.values()) {
         QVERIFY(game != nullptr);
         QCOMPARE(all_game_paths.count(game->m_fileinfo.filePath()), 1);
     }
@@ -111,8 +111,8 @@ void test_PegasusProvider::find_in_filled_dir()
 
 void test_PegasusProvider::enhance()
 {
-    QHash<QString, types::Game*> games;
-    QHash<QString, types::Collection*> collections;
+    QHash<QString, model::Game*> games;
+    QHash<QString, model::Collection*> collections;
 
     QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/collections.txt`");
     QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/metadata.txt`");
@@ -125,7 +125,7 @@ void test_PegasusProvider::enhance()
     QCOMPARE(collections.count(), 1);
     QCOMPARE(games.count(), 4);
 
-    const types::Game* game;
+    const model::Game* game;
 
     game = games[QStringLiteral(":/with_meta/mygame1.ext")];
     QVERIFY(game);

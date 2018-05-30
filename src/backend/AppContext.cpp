@@ -68,15 +68,15 @@ void register_api_classes()
     constexpr auto API_URI = "Pegasus.Model";
     const QString error_msg = tr_log("Sorry, you cannot create this type in QML.");
 
-    qmlRegisterUncreatableType<types::Collection>(API_URI, 0, 7, "Collection", error_msg);
-    qmlRegisterUncreatableType<types::CollectionList>(API_URI, 0, 7, "CollectionList", error_msg);
-    qmlRegisterUncreatableType<types::Game>(API_URI, 0, 2, "Game", error_msg);
-    qmlRegisterUncreatableType<types::GameList>(API_URI, 0, 6, "GameList", error_msg);
-    qmlRegisterUncreatableType<types::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
-    qmlRegisterUncreatableType<types::Locale>(API_URI, 0, 6, "Locale", error_msg);
-    qmlRegisterUncreatableType<types::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
-    qmlRegisterUncreatableType<types::Theme>(API_URI, 0, 6, "Theme", error_msg);
-    qmlRegisterUncreatableType<types::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
+    qmlRegisterUncreatableType<model::Collection>(API_URI, 0, 7, "Collection", error_msg);
+    qmlRegisterUncreatableType<model::CollectionList>(API_URI, 0, 7, "CollectionList", error_msg);
+    qmlRegisterUncreatableType<model::Game>(API_URI, 0, 2, "Game", error_msg);
+    qmlRegisterUncreatableType<model::GameList>(API_URI, 0, 6, "GameList", error_msg);
+    qmlRegisterUncreatableType<model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
+    qmlRegisterUncreatableType<model::Locale>(API_URI, 0, 6, "Locale", error_msg);
+    qmlRegisterUncreatableType<model::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
+    qmlRegisterUncreatableType<model::Theme>(API_URI, 0, 6, "Theme", error_msg);
+    qmlRegisterUncreatableType<model::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
 }
 
 } // namespace

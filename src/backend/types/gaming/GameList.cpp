@@ -25,7 +25,7 @@
 #include <QDebug>
 
 
-namespace types {
+namespace model {
 
 GameList::GameList(QObject* parent)
     : QObject(parent)
@@ -185,4 +185,4 @@ void GameList::applyFilters(const Filters& filters)
         setIndex(-1);
 }
 
-} // namespace types
+} // namespace model

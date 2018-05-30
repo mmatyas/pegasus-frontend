@@ -24,8 +24,8 @@
 
 #include <memory>
 
-namespace types { class Collection; }
-namespace types { class Game; }
+namespace model { class Collection; }
+namespace model { class Game; }
 
 
 class DataFinder : public QObject {
@@ -34,17 +34,17 @@ class DataFinder : public QObject {
 public:
     explicit DataFinder(QObject* parent = nullptr);
 
-    QVector<types::Collection*> find();
+    QVector<model::Collection*> find();
 
 signals:
     void totalCountChanged(int);
     void metadataSearchStarted();
 
 private:
-    void runListProviders(QHash<QString, types::Game*>&,
-                          QHash<QString, types::Collection*>&);
-    void runMetadataProviders(const QHash<QString, types::Game*>&,
-                              const QHash<QString, types::Collection*>&);
+    void runListProviders(QHash<QString, model::Game*>&,
+                          QHash<QString, model::Collection*>&);
+    void runMetadataProviders(const QHash<QString, model::Game*>&,
+                              const QHash<QString, model::Collection*>&);
 
     using ProviderPtr = std::unique_ptr<providers::Provider>;
     std::vector<ProviderPtr> m_providers;

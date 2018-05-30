@@ -18,7 +18,7 @@
 #include "Filters.h"
 
 
-namespace types {
+namespace model {
 
 Filters::Filters(QObject* parent)
     : QObject(parent)
@@ -27,4 +27,4 @@ Filters::Filters(QObject* parent)
 {
 }
 
-} // namespace types
+} // namespace model

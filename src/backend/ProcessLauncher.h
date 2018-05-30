@@ -21,8 +21,8 @@
 #include <QPointer>
 #include <QProcess>
 
-namespace types { class Game; }
-namespace types { class Collection; }
+namespace model { class Game; }
+namespace model { class Collection; }
 
 
 /// Launches and manages external processes
@@ -38,7 +38,7 @@ signals:
     void processFinished();
 
 public slots:
-    void launchGame(const types::Collection*, const types::Game*);
+    void launchGame(const model::Collection*, const model::Game*);
 
 private slots:
     void onProcessStarted();
@@ -48,7 +48,7 @@ private slots:
 private:
     QPointer<QProcess> process;
 
-    void prepareLaunchCommand(QString&, const types::Game&) const;
+    void prepareLaunchCommand(QString&, const model::Game&) const;
     void runProcess(const QString&);
 
     void beforeRun() const;
