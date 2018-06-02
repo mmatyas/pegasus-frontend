@@ -29,6 +29,8 @@ private slots:
 
 void test_Filters::read_empty()
 {
+    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found \\d+ custom filters"));
+
     QTemporaryFile tmp_file;
     tmp_file.open();
 

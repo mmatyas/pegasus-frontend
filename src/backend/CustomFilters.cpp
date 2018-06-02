@@ -36,6 +36,25 @@ QString default_config_path()
     return paths::writableConfigDir() + QStringLiteral("/filters.txt");
 }
 
+QVector<model::Filter*> default_filters()
+{
+    QVector<model::Filter*> filters {
+        new model::Filter(QStringLiteral("Favorites")),
+        new model::Filter(QStringLiteral("Multiplayer")),
+    };
+    filters[0]->rulesMut().append(model::FilterRule {
+        QLatin1String("favorites"),
+        model::FilterRuleType::IS_TRUE,
+        QRegularExpression(),
+    });
+    filters[1]->rulesMut().append(model::FilterRule {
+        QLatin1String("players"),
+        model::FilterRuleType::NOT_EQUALS,
+        QRegularExpression("1"),
+    });
+    return filters;
+}
+
 } // namespace
 
 
@@ -43,15 +62,13 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
 {
     const QString config_path = path.isEmpty() ? default_config_path() : path;
     if (!QFileInfo::exists(config_path))
-        return {};
+        return default_filters();
 
     QFile db_file(config_path);
     if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << tr_log("Could not open `%1` for reading, custom filters are not loaded.")
                       .arg(config_path);
-        return {};
-
-        // defaultot betölteni itt
+        return default_filters();
     }
 
 
@@ -160,5 +177,6 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
         if (!entry->rules().isEmpty())
             out.append(entry);
     }
+    qInfo() << tr_log("Found %1 custom filters").arg(out.length());
     return out;
 }
