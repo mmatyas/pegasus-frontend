@@ -19,7 +19,8 @@ SOURCES += \
     Utils.cpp \
     Paths.cpp \
     AppArgs.cpp \
-    FavoriteDB.cpp
+    FavoriteDB.cpp \
+    CustomFilters.cpp
 
 HEADERS += \
     Api.h \
@@ -39,7 +40,8 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppArgs.h \
-    FavoriteDB.h
+    FavoriteDB.h \
+    CustomFilters.h
 
 include(platform/platform.pri)
 include(providers/providers.pri)
