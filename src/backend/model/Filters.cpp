@@ -17,14 +17,88 @@
 
 #include "Filters.h"
 
+#include "ListPropertyFn.h"
+#include "LocaleUtils.h"
+#include "Utils.h"
+
+#include <QDebug>
+
 
 namespace model {
 
+Filter::Filter(QString name, QObject* parent)
+    : QObject(parent)
+    , m_name(std::move(name))
+    , m_enabled(false)
+{}
+
+
 Filters::Filters(QObject* parent)
     : QObject(parent)
-    , m_favorite(false)
-    , m_player_count(1)
+    , m_filter_idx(-1)
+{}
+
+void Filters::lock()
 {
+    // törölni az üreseket
+    emit modelChanged();
+}
+
+Filter* Filters::current() const
+{
+    if (m_filter_idx < 0)
+        return nullptr;
+
+    Q_ASSERT(m_filter_idx < m_filters.length());
+    return m_filters.at(m_filter_idx);
+}
+
+void Filters::setIndex(int idx)
+{
+    if (idx == m_filter_idx)
+        return;
+
+    const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_filters.count());
+    if (!valid_idx) {
+        qWarning() << tr_log("Invalid filter index #%1").arg(idx);
+        return;
+    }
+
+    m_filter_idx = idx;
+    emit currentChanged();
+}
+
+void Filters::shiftIndex(IndexShiftDirection dir)
+{
+    if (m_filters.isEmpty())
+        return;
+
+    const int target_idx = shifterFn(dir)(m_filter_idx, m_filters.count());
+    setIndex(target_idx);
+}
+
+void Filters::incrementIndex() {
+    shiftIndex(IndexShiftDirection::INCREMENT);
+}
+
+void Filters::decrementIndex() {
+    shiftIndex(IndexShiftDirection::DECREMENT);
+}
+
+void Filters::incrementIndexNoWrap() {
+    shiftIndex(IndexShiftDirection::INCREMENT_NOWRAP);
+}
+
+void Filters::decrementIndexNoWrap() {
+    shiftIndex(IndexShiftDirection::DECREMENT_NOWRAP);
+}
+
+QQmlListProperty<Filter> Filters::elementsProp()
+{
+    static constexpr auto count = &listproperty_count<Filter>;
+    static constexpr auto at = &listproperty_at<Filter>;
+
+    return {this, &m_filters, count, at};
 }
 
 } // namespace model

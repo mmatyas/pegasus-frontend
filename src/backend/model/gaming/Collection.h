@@ -22,8 +22,6 @@
 #include <QString>
 #include <QQmlListProperty>
 
-namespace model { class Filters; }
-
 
 namespace model {
 

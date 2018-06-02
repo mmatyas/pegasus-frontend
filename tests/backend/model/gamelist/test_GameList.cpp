@@ -213,17 +213,10 @@ void test_GameList::applyFilters()
     QVERIFY(gamelist.property("countAll").toInt() == 5);
 
 
-    QFETCH(QString, title);
-    QFETCH(bool, favorite);
-    QFETCH(int, player_cnt);
+    QFETCH(model::Filters*, filters);
     QFETCH(int, matching_games_cnt);
 
-    model::Filters filters;
-        filters.m_title = title;
-        filters.m_favorite = favorite;
-        filters.m_player_count = player_cnt;
-
-    gamelist.applyFilters(filters);
+    gamelist.applyFilters(*filters);
     QCOMPARE(gamelist.property("count").toInt(), matching_games_cnt);
     QCOMPARE(gamelist.property("countAll").toInt(), 5);
 
@@ -233,22 +226,77 @@ void test_GameList::applyFilters()
         QCOMPARE(triggered.count(), 1);
     else
         QCOMPARE(triggered.count(), 2);
+
+    // turning off the filters restores the game count
+    filters->setProperty("gameTitle", QString());
+    for (model::Filter* const filter : filters->elements())
+        filter->setProperty("enabled", false);
+
+    gamelist.applyFilters(*filters);
+    QCOMPARE(gamelist.property("count").toInt(), 5);
+    QCOMPARE(gamelist.property("countAll").toInt(), 5);
 }
 
 void test_GameList::applyFilters_data()
 {
-    QTest::addColumn<QString>("title");
-    QTest::addColumn<bool>("favorite");
-    QTest::addColumn<int>("player_cnt");
+    QTest::addColumn<model::Filters*>("filters");
     QTest::addColumn<int>("matching_games_cnt");
 
-    QTest::newRow("empty") << QString("") << false << 1 << 5;
-    QTest::newRow("full title") << "My Game" << false << 1 << 1;
-    QTest::newRow("partial title") << "Game" << false << 1 << 2;
-    QTest::newRow("favorite") << "" << true << 1 << 2;
-    QTest::newRow("multiplayer") << "" << false << 2 << 1;
-    QTest::newRow("title + favorite") << "Game" << true << 1 << 1;
-    QTest::newRow("title + favorite + 2P") << "Game" << true << 2 << 0;
+    {
+        model::Filters* filters = new model::Filters(this);
+        filters->lock();
+
+        QTest::newRow("empty") << filters << 5;
+    }
+    {
+        model::Filters* filters = new model::Filters(this);
+        filters->setProperty("gameTitle", "My Game");
+        filters->lock();
+
+        QTest::newRow("full title") << filters << 1;
+    }
+    {
+        model::Filters* filters = new model::Filters(this);
+        filters->setProperty("gameTitle", "Game");
+        filters->lock();
+
+        QTest::newRow("partial title") << filters << 2;
+    }
+    {
+        model::Filters* filters = new model::Filters(this);
+        filters->elementsMut().append(new model::Filter("", filters));
+        filters->elements().last()->rulesMut().append(model::FilterRule {
+            QLatin1String("favorite"),
+            model::FilterRuleType::IS_TRUE,
+            QRegularExpression(),
+        });
+        filters->elements().last()->setProperty("enabled", true);
+        filters->lock();
+
+        QTest::newRow("favorite") << filters << 2;
+    }
+    {
+        model::Filters* filters = new model::Filters(this);
+
+        filters->elementsMut().append(new model::Filter("", filters));
+        filters->elements().last()->rulesMut().append(model::FilterRule {
+            QLatin1String("title"),
+            model::FilterRuleType::CONTAINS,
+            QRegularExpression("fav"),
+        });
+        filters->elements().last()->setProperty("enabled", true);
+
+        filters->elementsMut().append(new model::Filter("", filters));
+        filters->elements().last()->rulesMut().append(model::FilterRule {
+            QLatin1String("players"),
+            model::FilterRuleType::EQUALS,
+            QRegularExpression("2"),
+        });
+        filters->elements().last()->setProperty("enabled", true);
+        filters->lock();
+
+        QTest::newRow("title filter + players") << filters << 1;
+    }
 }
 
 void test_GameList::letterJump()

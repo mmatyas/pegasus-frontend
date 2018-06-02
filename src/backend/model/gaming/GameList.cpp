@@ -25,6 +25,126 @@
 #include <QDebug>
 
 
+namespace {
+
+bool game_property_is_true(const QVariant& property)
+{
+    switch (property.type()) {
+        case QMetaType::QString:
+            return !property.toString().isEmpty();
+        case QMetaType::QStringList:
+            return !property.toStringList().isEmpty();
+        case QMetaType::QDate:
+            return property.toDate().isValid();
+        case QMetaType::QDateTime:
+            return property.toDateTime().isValid();
+        default:
+            return property.toBool();
+    }
+}
+
+bool game_property_contains(const QVariant& property, const QRegularExpression& regex)
+{
+    QString str;
+
+    switch (property.type()) {
+        case QMetaType::QStringList: {
+            bool result = false;
+            const QStringList list = property.toStringList();
+            for (const QString& str : list)
+                result |= regex.match(str).hasMatch();
+
+            return result;
+        }
+        case QMetaType::QDate:
+            str = property.toDate().toString(Qt::ISODate);
+            break;
+        case QMetaType::QDateTime:
+            str = property.toDateTime().toString(Qt::ISODate);
+            break;
+        default:
+            str = property.toString();
+    }
+
+    return regex.match(str).hasMatch();
+}
+
+bool game_property_equals(const QVariant& property, const QRegularExpression& regex)
+{
+    QString str;
+
+    switch (property.type()) {
+        case QMetaType::QStringList:
+            return false; // disabled, TODO?
+        case QMetaType::QDate:
+            str = property.toDate().toString(Qt::ISODate);
+            break;
+        case QMetaType::QDateTime:
+            str = property.toDateTime().toString(Qt::ISODate);
+            break;
+        default:
+            str = property.toString();
+    }
+
+    const auto match = regex.match(str);
+    return match.hasMatch() && match.capturedLength(0) == str.length();
+}
+
+bool filter_rule_matches(const model::Game& game, const model::FilterRule& rule)
+{
+    const QVariant property = game.property(rule.game_property.data());
+
+    bool result;
+    switch (rule.type) {
+        case model::FilterRuleType::IS_TRUE:
+        case model::FilterRuleType::IS_FALSE:
+        case model::FilterRuleType::NOT_EMPTY:
+        case model::FilterRuleType::EMPTY:
+            result = game_property_is_true(property);
+            break;
+        case model::FilterRuleType::CONTAINS:
+        case model::FilterRuleType::NOT_CONTAINS:
+            result = game_property_contains(property, rule.regex);
+            break;
+        case model::FilterRuleType::EQUALS:
+        case model::FilterRuleType::NOT_EQUALS:
+            result = game_property_equals(property, rule.regex);
+            break;
+    }
+    switch (rule.type) {
+        case model::FilterRuleType::IS_FALSE:
+        case model::FilterRuleType::EMPTY:
+        case model::FilterRuleType::NOT_CONTAINS:
+        case model::FilterRuleType::NOT_EQUALS:
+            return !result;
+        default:
+            return result;
+    }
+
+}
+
+bool filter_matches(const model::Game& game, const model::Filter& filter)
+{
+    for (const model::FilterRule& rule : filter.rules()) {
+        if (!filter_rule_matches(game, rule))
+            return false;
+    }
+    return true;
+}
+
+bool all_filters_match(const model::Game& game, const std::vector<model::Filter*>& filters)
+{
+    for (const model::Filter* const filter_ptr : filters) {
+        Q_ASSERT(filter_ptr->enabled());
+        if (!filter_matches(game, *filter_ptr))
+            return false;
+    }
+    return true;
+}
+
+} // namespace
+
+
 namespace model {
 
 GameList::GameList(QObject* parent)
@@ -180,15 +300,19 @@ void GameList::applyFilters(const Filters& filters)
 {
     // TODO: use QtConcurrent::blockingFilter
 
+    std::vector<Filter*> enabled_filters;
+    std::copy_if(filters.elements().cbegin(),
+                 filters.elements().cend(),
+                 std::back_inserter(enabled_filters),
+                 [](Filter* filter){ return filter->enabled(); });
+
     QVector<Game*> filtered_games;
-    for (Game* const game_ptr : qAsConst(m_all_games)) {
+    for (Game* game_ptr :qAsConst(m_all_games)) {
         const Game& game = *game_ptr;
 
-        if (game.m_title.contains(filters.m_title, Qt::CaseInsensitive)
-            && game.m_players >= filters.m_player_count
-            && (!filters.m_favorite || game.m_favorite)) {
+        const bool title_matches = game.m_title.contains(filters.m_game_title, Qt::CaseInsensitive);
+        if (title_matches && all_filters_match(game, enabled_filters))
             filtered_games.append(game_ptr);
-        }
     }
 
     // only save the change and emit an event if there was an actual change
