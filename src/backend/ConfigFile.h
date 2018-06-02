@@ -18,8 +18,10 @@
 #pragma once
 
 #include <QString>
-#include <QTextStream>
 #include <functional>
+
+class QFile;
+class QTextStream;
 
 
 namespace config {
@@ -33,6 +35,11 @@ void readStream(QTextStream& stream,
 
 /// Opens the file at the path, then calls the stream reading on it
 void readFile(const QString& path,
+              const std::function<void(const int, const QString, const QString)>& onAttributeFound,
+              const std::function<void(const int, const QString)>& onError);
+
+/// Calls the stream reading on an already open, readable text file
+void readFile(QFile& file,
               const std::function<void(const int, const QString, const QString)>& onAttributeFound,
               const std::function<void(const int, const QString)>& onError);
 

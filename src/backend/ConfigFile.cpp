@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QRegularExpression>
 #include <QStringBuilder>
+#include <QTextStream>
 
 
 namespace config {
@@ -35,6 +36,15 @@ void readFile(const QString& path,
     if (!file.open(QFile::ReadOnly | QFile::Text))
         return;
 
+    QTextStream stream(&file);
+    return readStream(stream, onAttributeFound, onError);
+}
+
+void readFile(QFile& file,
+              const std::function<void(const int, const QString, const QString)>& onAttributeFound,
+              const std::function<void(const int, const QString)>& onError)
+{
+    Q_ASSERT(file.isOpen() && file.isReadable());
     QTextStream stream(&file);
     return readStream(stream, onAttributeFound, onError);
 }
