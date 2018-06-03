@@ -66,7 +66,7 @@ Row {
 
         color: "#eee"
         font {
-            bold: root.focus
+            bold: root.activeFocus
             family: globalFonts.sans
         }
     }

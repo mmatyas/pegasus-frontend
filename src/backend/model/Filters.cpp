@@ -38,7 +38,13 @@ Filters::Filters(QObject* parent)
     : QObject(parent)
     , m_filters(CustomFilters::read())
     , m_filter_idx(m_filters.isEmpty() ? -1 : 0)
-{}
+{
+    for (Filter* const filter : qAsConst(m_filters)) {
+        filter->setParent(this);
+        connect(filter, &Filter::selectionChanged,
+                this, &Filters::filtersChanged);
+    }
+}
 
 Filter* Filters::current() const
 {

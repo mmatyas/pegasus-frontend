@@ -40,16 +40,24 @@ FocusScope {
         radius: vpx(10)
     }
 
-    Column {
+    Item {
         id: content
 
         property int normalTextSize: vpx(20)
         property int selectedIndex: 0
+        property int padding: vpx(20)
+        property int spacing: vpx(8)
 
-        padding: vpx(20)
-        spacing: vpx(8)
+        width: vpx(250)
+        height: Math.min(vpx(600),
+            padding * 2
+            + itemHeader.height + spacing
+            + itemTitleFilter.height + spacing
+            + api.filters.count * (normalTextSize * 1.4 + spacing))
+
 
         Text {
+            id: itemHeader
             text: qsTr("Filters")
             color: root.textColor
             font {
@@ -58,45 +66,57 @@ FocusScope {
                 family: globalFonts.sans
             }
             height: font.pixelSize * 1.5
+
+            anchors {
+                top: parent.top; topMargin: parent.padding
+                left: parent.left; leftMargin: parent.padding
+            }
         }
 
         TextLine {
-            id: itemTitle
+            id: itemTitleFilter
 
             placeholder: qsTr("title")
             placeholderColor: "#bbb" // FIXME
             textColor: root.textColor
             fontSize: content.normalTextSize
-            onTextChanged: api.filters.title = text
-
-            width: vpx(200)
+            onTextChanged: api.filters.gameTitle = text
 
             focus: true
-            KeyNavigation.down: itemFavorites
+            KeyNavigation.down: itemFilterList
+
+            anchors {
+                top: itemHeader.bottom; topMargin: parent.spacing
+                left: parent.left; leftMargin: parent.padding
+                right: parent.right; rightMargin: parent.padding
+            }
         }
 
-        CheckBox {
-            id: itemFavorites
+        ListView {
+            id: itemFilterList
 
-            text: qsTr("Favorites")
-            textColor: root.textColor
-            fontSize: content.normalTextSize
+            anchors {
+                top: itemTitleFilter.bottom; topMargin: parent.spacing
+                bottom: parent.bottom; bottomMargin: parent.padding * 0.75
+                left: parent.left; leftMargin: parent.padding
+                right: parent.right; rightMargin: parent.padding
+            }
+            clip: true
 
-            checked: api.filters.favorite
-            onCheckedChanged: api.filters.favorite = checked
+            model: api.filters.model
+            delegate: CheckBox {
+                text: modelData.name
+                textColor: root.textColor
+                fontSize: content.normalTextSize
 
-            KeyNavigation.down: itemMultiplayer
-        }
+                checked: modelData.enabled
+                onCheckedChanged: api.filters.current.enabled = checked
 
-        CheckBox {
-            id: itemMultiplayer
+            }
+            spacing: parent.spacing
 
-            text: qsTr("Multiplayer")
-            textColor: root.textColor
-            fontSize: content.normalTextSize
-
-            checked: api.filters.playerCount > 1
-            onCheckedChanged: api.filters.playerCount = (checked ? 2 : 1)
+            Component.onCompleted: currentIndex = api.filters.index
+            onCurrentIndexChanged: api.filters.index = currentIndex
         }
     }
 }
