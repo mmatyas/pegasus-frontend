@@ -39,7 +39,7 @@ enum class FilterRuleType : unsigned char {
 };
 
 struct FilterRule {
-    QLatin1String game_property;
+    QString game_property;
     FilterRuleType type;
     QRegularExpression regex;
 };

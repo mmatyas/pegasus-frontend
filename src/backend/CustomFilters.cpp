@@ -43,14 +43,14 @@ QVector<model::Filter*> default_filters()
         new model::Filter(QStringLiteral("Multiplayer")),
     };
     filters[0]->rulesMut().append(model::FilterRule {
-        QLatin1String("favorites"),
+        QStringLiteral("favorites"),
         model::FilterRuleType::IS_TRUE,
         QRegularExpression(),
     });
     filters[1]->rulesMut().append(model::FilterRule {
-        QLatin1String("players"),
+        QStringLiteral("players"),
         model::FilterRuleType::NOT_EQUALS,
-        QRegularExpression("1"),
+        QRegularExpression(QStringLiteral("1")),
     });
     return filters;
 }
@@ -120,9 +120,9 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
             return;
         }
 
-        const QLatin1String property_str(rx_rule_match.capturedRef(1).toLatin1());
-        Q_ASSERT(property_str.size() != 0);
-        const bool prop_valid = (0 <= model::Game::staticMetaObject.indexOfProperty(property_str.data()));
+        const QString property_str = rx_rule_match.captured(1);
+        Q_ASSERT(!property_str.isEmpty());
+        const bool prop_valid = (0 <= model::Game::staticMetaObject.indexOfProperty(property_str.toLatin1().data()));
         if (!prop_valid) {
             on_error(lineno, tr_log("unrecognized game property `%1`, rule ignored").arg(property_str));
             return;
