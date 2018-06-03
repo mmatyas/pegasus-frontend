@@ -1,0 +1,11 @@
+rule: invalid rule
+
+filter: empty
+
+filter: bad prop
+rule: invalidprop is_true
+
+filter: test
+rule: favorite is_true
+rule: title contains abc
+rule: year not_equals 2000|2001

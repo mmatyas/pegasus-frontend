@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>filters.txt</file>
+    </qresource>
+</RCC>
