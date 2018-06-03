@@ -48,18 +48,19 @@ struct FilterRule {
 class Filter : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name MEMBER m_name CONSTANT)
-    Q_PROPERTY(bool enabled MEMBER m_enabled NOTIFY selectionCanged)
+    Q_PROPERTY(bool enabled MEMBER m_enabled NOTIFY selectionChanged)
 
 public:
     explicit Filter(QString name, QObject* parent = nullptr);
 
+    QString name() const { return m_name; }
     bool enabled() const { return m_enabled; }
 
     const QVector<FilterRule>& rules() const { return m_rules; }
     QVector<FilterRule>& rulesMut() { return m_rules; }
 
 signals:
-    void selectionCanged();
+    void selectionChanged();
 
 private:
     const QString m_name;
@@ -82,11 +83,9 @@ class Filters : public QObject {
                WRITE setIndex
                NOTIFY currentChanged)
     Q_PROPERTY(int count
-               READ count
-               NOTIFY modelChanged)
+               READ count CONSTANT)
     Q_PROPERTY(QQmlListProperty<model::Filter> model
-               READ elementsProp
-               NOTIFY modelChanged)
+               READ elementsProp CONSTANT)
 
 public:
     explicit Filters(QObject* parent = nullptr);
@@ -106,12 +105,9 @@ public:
     const QVector<Filter*>& elements() const { return m_filters; }
     QVector<Filter*>& elementsMut() { return m_filters; }
 
-    void lock();
-
 signals:
     void filtersChanged();
     void currentChanged();
-    void modelChanged();
 
 private:
     QVector<Filter*> m_filters;

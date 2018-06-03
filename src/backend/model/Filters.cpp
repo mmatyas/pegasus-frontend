@@ -17,6 +17,7 @@
 
 #include "Filters.h"
 
+#include "CustomFilters.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Utils.h"
@@ -35,14 +36,9 @@ Filter::Filter(QString name, QObject* parent)
 
 Filters::Filters(QObject* parent)
     : QObject(parent)
-    , m_filter_idx(-1)
+    , m_filters(CustomFilters::read())
+    , m_filter_idx(m_filters.isEmpty() ? -1 : 0)
 {}
-
-void Filters::lock()
-{
-    // törölni az üreseket
-    emit modelChanged();
-}
 
 Filter* Filters::current() const
 {

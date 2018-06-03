@@ -244,24 +244,23 @@ void test_GameList::applyFilters_data()
 
     {
         model::Filters* filters = new model::Filters(this);
-        filters->lock();
 
         QTest::newRow("empty") << filters << 5;
     }
     {
         model::Filters* filters = new model::Filters(this);
         filters->setProperty("gameTitle", "My Game");
-        filters->lock();
 
         QTest::newRow("full title") << filters << 1;
     }
     {
         model::Filters* filters = new model::Filters(this);
         filters->setProperty("gameTitle", "Game");
-        filters->lock();
 
         QTest::newRow("partial title") << filters << 2;
     }
+    // NOTE: inserting a filter outside the Filters ctor
+    // may not update/signal the Qt properties for the change
     {
         model::Filters* filters = new model::Filters(this);
         filters->elementsMut().append(new model::Filter("", filters));
@@ -271,7 +270,6 @@ void test_GameList::applyFilters_data()
             QRegularExpression(),
         });
         filters->elements().last()->setProperty("enabled", true);
-        filters->lock();
 
         QTest::newRow("favorite") << filters << 2;
     }
@@ -293,7 +291,6 @@ void test_GameList::applyFilters_data()
             QRegularExpression("2"),
         });
         filters->elements().last()->setProperty("enabled", true);
-        filters->lock();
 
         QTest::newRow("title filter + players") << filters << 1;
     }
