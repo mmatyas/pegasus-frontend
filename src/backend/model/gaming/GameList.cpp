@@ -94,7 +94,7 @@ bool filter_rule_matches(const model::Game& game, const model::FilterRule& rule)
 {
     const QVariant property = game.property(rule.game_property.toLatin1().data());
 
-    bool result;
+    bool result = false;
     switch (rule.type) {
         case model::FilterRuleType::IS_TRUE:
         case model::FilterRuleType::IS_FALSE:
