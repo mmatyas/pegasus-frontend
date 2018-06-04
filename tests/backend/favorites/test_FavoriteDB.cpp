@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "FavoriteDB.h"
+#include "configfiles/FavoriteDB.h"
 
 
 class test_FavoriteDB : public QObject {

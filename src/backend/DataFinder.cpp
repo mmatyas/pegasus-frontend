@@ -17,11 +17,11 @@
 
 #include "DataFinder.h"
 
-#include "FavoriteDB.h"
 #include "LocaleUtils.h"
+#include "configfiles/FavoriteDB.h"
+#include "model/gaming/Collection.h"
 #include "providers/es2/Es2Provider.h"
 #include "providers/pegasus/PegasusProvider.h"
-#include "model/gaming/Collection.h"
 
 #ifndef Q_PROCESSOR_ARM
 #include "providers/steam/SteamProvider.h"

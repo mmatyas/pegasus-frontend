@@ -19,7 +19,7 @@
 
 #include "AppCloseType.h"
 #include "DataFinder.h"
-#include "FavoriteDB.h"
+#include "configfiles/FavoriteDB.h" // FIXME
 #include "model/Filters.h"
 #include "model/Meta.h"
 #include "model/System.h"

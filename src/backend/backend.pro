@@ -19,8 +19,6 @@ SOURCES += \
     Utils.cpp \
     Paths.cpp \
     AppArgs.cpp \
-    FavoriteDB.cpp \
-    CustomFilters.cpp
 
 HEADERS += \
     Api.h \
@@ -40,9 +38,8 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppArgs.h \
-    FavoriteDB.h \
-    CustomFilters.h
 
+include(configfiles/configfiles.pri)
 include(platform/platform.pri)
 include(providers/providers.pri)
 include(model/model.pri)

@@ -17,10 +17,10 @@
 
 #include "Filters.h"
 
-#include "CustomFilters.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Utils.h"
+#include "configfiles/CustomFilters.h"
 
 #include <QDebug>
 

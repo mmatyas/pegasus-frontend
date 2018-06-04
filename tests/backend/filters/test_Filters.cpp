@@ -17,8 +17,8 @@
 
 #include <QtTest/QtTest>
 
-#include "CustomFilters.h"
 #include "model/Filters.h"
+#include "configfiles/CustomFilters.h"
 
 
 class test_Filters : public QObject {
