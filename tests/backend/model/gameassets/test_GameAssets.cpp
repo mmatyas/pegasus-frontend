@@ -31,19 +31,19 @@ private slots:
 
 void test_GameAssets::setSingle()
 {
-    model::GameAssets assets;
-    QCOMPARE(assets.boxFront(), QString());
+    modeldata::GameAssets modeldata;
+    modeldata.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
 
-    assets.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
+    model::GameAssets assets(&modeldata);
     QCOMPARE(assets.boxFront(), QLatin1String("file:///dummy"));
 }
 
 void test_GameAssets::appendMulti()
 {
-    model::GameAssets assets;
-    QCOMPARE(assets.videos().count(), 0);
+    modeldata::GameAssets modeldata;
+    modeldata.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile("/dummy").toString());
 
-    assets.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile("/dummy").toString());
+    model::GameAssets assets(&modeldata);
     QCOMPARE(assets.videos().count(), 1);
     QCOMPARE(assets.videos().constFirst(), QLatin1String("file:///dummy"));
 }

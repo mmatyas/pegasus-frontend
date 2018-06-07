@@ -50,19 +50,21 @@ void test_CollectionList::empty()
 
 void test_CollectionList::addPlatform()
 {
+    std::vector<modeldata::Collection> modeldata;
+    modeldata.emplace_back(modeldata::Collection("coll1"));
+    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy1")));
+    modeldata.emplace_back(modeldata::Collection("coll2"));
+    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy2")));
+
+
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
     QSignalSpy spy_game(&list, &model::CollectionList::currentGameChanged);
     QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
+    list.setModelData(std::move(modeldata));
 
-    // TODO: implement addPlatform
-    list.elementsMut().append(new model::Collection("coll1"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new model::Collection("coll2"));
-    list.elementsMut().last()->gameListMut().addGame("dummy2");
-    list.onScanComplete();
 
     QCOMPARE(list.property("current").value<model::Collection*>(), list.elements().first());
     QCOMPARE(list.property("index").toInt(), 0);
@@ -75,19 +77,19 @@ void test_CollectionList::indexChange()
 {
     // prepare
 
+    std::vector<modeldata::Collection> modeldata;
+    modeldata.emplace_back(modeldata::Collection("coll1"));
+    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy1")));
+    modeldata.emplace_back(modeldata::Collection("coll2"));
+    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy2")));
+
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
     QSignalSpy spy_game(&list, &model::CollectionList::currentGameChanged);
     QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-
-    // TODO: implement addPlatform
-    list.elementsMut().append(new model::Collection("coll1"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new model::Collection("coll2"));
-    list.elementsMut().last()->gameListMut().addGame("dummy2");
-    list.onScanComplete();
+    list.setModelData(std::move(modeldata));
 
     QVERIFY(list.count() == 2);
     QVERIFY(list.index() == 0);
@@ -162,13 +164,15 @@ void test_CollectionList::indexIncDec_data()
 
 void test_CollectionList::indexIncDec()
 {
+    std::vector<modeldata::Collection> modeldata;
+    modeldata.emplace_back(modeldata::Collection("coll1"));
+    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy1")));
+    modeldata.emplace_back(modeldata::Collection("coll2"));
+    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy2")));
+
     model::CollectionList list;
-    list.elementsMut().append(new model::Collection("coll1"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
-    list.elementsMut().append(new model::Collection("coll2"));
-    list.elementsMut().last()->gameListMut().addGame("dummy1");
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.onScanComplete();
+    list.setModelData(std::move(modeldata));
 
     QFETCH(int, start_idx);
     QFETCH(QString, metacall);

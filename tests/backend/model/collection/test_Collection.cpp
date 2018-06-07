@@ -30,9 +30,10 @@ private slots:
 
 void test_Collection::names()
 {
-    model::Collection collection("myname");
-    collection.setShortName("abbrev");
-    collection.setCommonLaunchCmd("runner");
+    modeldata::Collection modeldata("myname");
+    modeldata.setShortName("abbrev");
+    modeldata.setLaunchCmd("runner");
+    model::Collection collection(&modeldata);
 
     // the properties are read-only and should be called only after the initial setup
     QCOMPARE(collection.property("shortName").toString(), QStringLiteral("abbrev"));
@@ -41,18 +42,20 @@ void test_Collection::names()
 
 void test_Collection::gameChanged()
 {
-    model::Collection collection("dummy");
+    using GamePtr = QSharedPointer<modeldata::Game>;
+
+    modeldata::Collection modeldata("dummy");
+    modeldata.gamesMut().emplace_back(GamePtr::create(QFileInfo("dummy1")));
+    modeldata.gamesMut().emplace_back(GamePtr::create(QFileInfo("dummy2")));
+    model::Collection collection(&modeldata);
+
     QSignalSpy triggered(&collection, &model::Collection::currentGameChanged);
     QVERIFY(triggered.isValid());
-
-    collection.gameListMut().addGame("dummy1");
-    collection.gameListMut().addGame("dummy2");
-
-    collection.gameListMut().lockGameList();
-    QCOMPARE(triggered.count(), 1);
+    QVERIFY(collection.gameListMut().index() == 0);
+    QCOMPARE(triggered.count(), 0);
 
     collection.gameListMut().setIndex(1);
-    QCOMPARE(triggered.count(), 2);
+    QCOMPARE(triggered.count(), 1);
 }
 
 

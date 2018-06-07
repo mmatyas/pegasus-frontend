@@ -19,6 +19,7 @@
 
 #include "model/Filters.h"
 #include "model/gaming/GameList.h"
+#include "modeldata/gaming/Collection.h"
 
 
 class test_GameList : public QObject {
@@ -48,7 +49,8 @@ private:
 
 void test_GameList::empty()
 {
-    model::GameList list;
+    std::vector<QSharedPointer<modeldata::Game>> modeldata;
+    model::GameList list(modeldata);
 
     QCOMPARE(list.property("current").value<model::Game*>(), null_game);
     QCOMPARE(list.property("index").toInt(), -1);
@@ -58,12 +60,13 @@ void test_GameList::empty()
 
 void test_GameList::addGame()
 {
-    model::GameList list;
+    using GamePtr = QSharedPointer<modeldata::Game>;
 
-    list.addGame("a");
-    list.addGame("b");
-    list.addGame("c");
-    list.lockGameList();
+    std::vector<GamePtr> modeldata;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("a")));
+    modeldata.emplace_back(GamePtr::create(QFileInfo("b")));
+    modeldata.emplace_back(GamePtr::create(QFileInfo("c")));
+    model::GameList list(modeldata);
 
     QCOMPARE(list.property("current").value<model::Game*>(), list.allGames().first());
     QCOMPARE(list.property("index").toInt(), 0);
@@ -73,28 +76,29 @@ void test_GameList::addGame()
 
 void test_GameList::sortGames()
 {
-    model::GameList gamelist;
+    using GamePtr = QSharedPointer<modeldata::Game>;
 
-    gamelist.addGame("bbb");
-    gamelist.addGame("aaa");
-    gamelist.sortGames();
-    gamelist.lockGameList();
+    modeldata::Collection collection("dummy");
+    collection.gamesMut().emplace_back(GamePtr::create(QFileInfo("bbb")));
+    collection.gamesMut().emplace_back(GamePtr::create(QFileInfo("aaa")));
+    collection.sortGames();
 
-    QCOMPARE(gamelist.allGames().first()->m_fileinfo.filePath(), QLatin1String("aaa"));
-    QCOMPARE(gamelist.allGames().last()->m_fileinfo.filePath(), QLatin1String("bbb"));
+    QCOMPARE(collection.games().front()->fileinfo().filePath(), QLatin1String("aaa"));
+    QCOMPARE(collection.games().back()->fileinfo().filePath(), QLatin1String("bbb"));
 }
 
 void test_GameList::indexChange()
 {
-    model::GameList list;
+    using GamePtr = QSharedPointer<modeldata::Game>;
+
+    std::vector<GamePtr> modeldata;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("a")));
+    modeldata.emplace_back(GamePtr::create(QFileInfo("b")));
+    model::GameList list(modeldata);
+
     QSignalSpy triggered(&list, &model::GameList::currentChanged);
     QVERIFY(triggered.isValid());
-
-    list.addGame("a");
-    list.addGame("b");
-    list.lockGameList();
-
-    QVERIFY(triggered.count() == 1);
+    QVERIFY(triggered.count() == 0);
     QVERIFY(list.index() == 0);
 
 
@@ -106,7 +110,7 @@ void test_GameList::indexChange()
     list.setProperty("index", target);
 
     QCOMPARE(list.property("index").toInt(), expected);
-    QCOMPARE(triggered.count(), expected == 0 ? 1 : 2);
+    QCOMPARE(triggered.count(), expected == 0 ? 0 : 1);
     model::Game* current_ptr = list.property("current").value<model::Game*>();
     if (expected == -1) {
         QCOMPARE(current_ptr, null_game);
@@ -131,7 +135,10 @@ void test_GameList::indexChange_data()
 
 void test_GameList::indexIncDecEmpty()
 {
-    model::GameList list;
+    using GamePtr = QSharedPointer<modeldata::Game>;
+
+    std::vector<GamePtr> modeldata;
+    model::GameList list(modeldata);
     QVERIFY(list.index() == -1);
 
     // increment empty -> stays -1
@@ -161,10 +168,12 @@ void test_GameList::indexIncDec_data()
 
 void test_GameList::indexIncDec()
 {
-    model::GameList list;
-    list.addGame("aaa");
-    list.addGame("bbb");
-    list.lockGameList();
+    using GamePtr = QSharedPointer<modeldata::Game>;
+
+    std::vector<GamePtr> modeldata;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("aaa")));
+    modeldata.emplace_back(GamePtr::create(QFileInfo("bbb")));
+    model::GameList list(modeldata);
 
     QFETCH(int, start_idx);
     QFETCH(QString, metacall);
@@ -179,34 +188,34 @@ void test_GameList::indexIncDec()
 
 void test_GameList::applyFilters()
 {
-    model::GameList gamelist;
+    using GamePtr = QSharedPointer<modeldata::Game>;
+
+    std::vector<GamePtr> modeldata;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("game0")));
+        modeldata.back()->title = "not-fav, 1P";
+        modeldata.back()->is_favorite = false;
+        modeldata.back()->player_count = 1;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("game1")));
+        modeldata.back()->title = "not-fav, 2P";
+        modeldata.back()->is_favorite = false;
+        modeldata.back()->player_count = 2;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("game2")));
+        modeldata.back()->title = "fav, 1P";
+        modeldata.back()->is_favorite = true;
+        modeldata.back()->player_count = 1;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("game3")));
+        modeldata.back()->title = "My Game";
+        modeldata.back()->is_favorite = false;
+        modeldata.back()->player_count = 1;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("game4")));
+        modeldata.back()->title = "Another Game";
+        modeldata.back()->is_favorite = true;
+        modeldata.back()->player_count = 1;
+
+    model::GameList gamelist(modeldata);
     QSignalSpy triggered(&gamelist, &model::GameList::filteredGamesChanged);
     QVERIFY(triggered.isValid());
-
-    gamelist.addGame("game0");
-        gamelist.allGames().last()->m_title = "not-fav, 1P";
-        gamelist.allGames().last()->m_favorite = false;
-        gamelist.allGames().last()->m_players = 1;
-    gamelist.addGame("game1");
-        gamelist.allGames().last()->m_title = "not-fav, 2P";
-        gamelist.allGames().last()->m_favorite = false;
-        gamelist.allGames().last()->m_players = 2;
-    gamelist.addGame("game2");
-        gamelist.allGames().last()->m_title = "fav, 1P";
-        gamelist.allGames().last()->m_favorite = true;
-        gamelist.allGames().last()->m_players = 1;
-    gamelist.addGame("game3");
-        gamelist.allGames().last()->m_title = "My Game";
-        gamelist.allGames().last()->m_favorite = false;
-        gamelist.allGames().last()->m_players = 1;
-    gamelist.addGame("game4");
-        gamelist.allGames().last()->m_title = "Another Game";
-        gamelist.allGames().last()->m_favorite = true;
-        gamelist.allGames().last()->m_players = 1;
-
     QVERIFY(triggered.count() == 0);
-    gamelist.lockGameList();
-    QVERIFY(triggered.count() == 1);
 
     // just to make sure
     QVERIFY(gamelist.property("count").toInt() == 5);
@@ -223,9 +232,9 @@ void test_GameList::applyFilters()
     // if the filter didn't change the list of games, there should be
     // no new trigger -- we only check the count here for simplicity
     if (matching_games_cnt == gamelist.allGames().count())
-        QCOMPARE(triggered.count(), 1);
+        QCOMPARE(triggered.count(), 0);
     else
-        QCOMPARE(triggered.count(), 2);
+        QCOMPARE(triggered.count(), 1);
 
     // turning off the filters restores the game count
     filters->setProperty("gameTitle", QString());
@@ -298,11 +307,14 @@ void test_GameList::applyFilters_data()
 
 void test_GameList::letterJump()
 {
-    model::GameList list;
-    list.addGame("Alfa");
-    list.addGame("Beta");
-    list.addGame("Gamma");
-    list.lockGameList();
+    using GamePtr = QSharedPointer<modeldata::Game>;
+
+    std::vector<GamePtr> modeldata;
+    modeldata.emplace_back(GamePtr::create(QFileInfo("Alfa")));
+    modeldata.emplace_back(GamePtr::create(QFileInfo("Beta")));
+    modeldata.emplace_back(GamePtr::create(QFileInfo("Gamma")));
+
+    model::GameList list(modeldata);
     QVERIFY(list.index() == 0);
 
     list.jumpToLetter("g");

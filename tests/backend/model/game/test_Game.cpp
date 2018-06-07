@@ -30,10 +30,12 @@ private slots:
     void release();
 };
 
-void testStrAndList(model::Game& game,
+void testStrAndList(modeldata::Game& modeldata,
                     std::function<void(const QString&)> fn_add,
                     const char* str_name, const char* list_name)
 {
+    model::Game game(&modeldata);
+
     QVERIFY(game.property(str_name).toString().isEmpty());
     QVERIFY(game.property(list_name).toStringList().isEmpty());
 
@@ -60,29 +62,31 @@ void testStrAndList(model::Game& game,
 
 void test_Game::developers()
 {
-    model::Game game({});
+    modeldata::Game game({});
     auto fn = [&game](const QString& val){ game.addDeveloper(val); };
     testStrAndList(game, fn, "developer", "developerList");
 }
 
 void test_Game::publishers()
 {
-    model::Game game({});
+    modeldata::Game game({});
     auto fn = [&game](const QString& val){ game.addPublisher(val); };
     testStrAndList(game, fn, "publisher", "publisherList");
 }
 
 void test_Game::genres()
 {
-    model::Game game({});
+    modeldata::Game game({});
     auto fn = [&game](const QString& val){ game.addGenre(val); };
     testStrAndList(game, fn, "genre", "genreList");
 }
 
 void test_Game::release()
 {
-    model::Game game({});
-    game.setRelease(QDate(1999,1,2));
+    modeldata::Game modeldata({});
+    modeldata.setReleaseDate(QDate(1999,1,2));
+
+    model::Game game(&modeldata);
     QCOMPARE(game.property("year").toInt(), 1999);
     QCOMPARE(game.property("month").toInt(), 1);
     QCOMPARE(game.property("day").toInt(), 2);
