@@ -1,7 +1,7 @@
 TEMPLATE = lib
 
 QT += qml gamepad
-CONFIG += c++11 staticlib warn_on exceptions_off
+CONFIG += c++11 staticlib warn_on exceptions_off object_parallel_to_source
 
 
 SOURCES += \
@@ -43,6 +43,7 @@ include(configfiles/configfiles.pri)
 include(platform/platform.pri)
 include(providers/providers.pri)
 include(model/model.pri)
+include(modeldata/modeldata.pri)
 
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
