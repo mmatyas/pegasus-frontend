@@ -24,35 +24,19 @@
 
 namespace model {
 
-Collection::Collection(QString name, QObject* parent)
+Collection::Collection(const modeldata::Collection* const collection, QObject* parent)
     : QObject(parent)
-    , m_name(std::move(name))
+    , m_collection(std::move(collection))
+    , m_gamelist(m_collection->games())
 {
-    Q_ASSERT(!m_name.isEmpty());
+    Q_ASSERT(m_collection);
 
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
     connect(&m_gamelist, &GameList::gameLaunchRequested,
-            this, [this](const Game* game){ emit gameLaunchRequested(this, game); });
+            this, [this](const modeldata::Game* const game){ emit gameLaunchRequested(m_collection, game); });
     connect(&m_gamelist, &GameList::gameFavoriteChanged,
             this, &Collection::gameFavoriteChanged);
-}
-
-const QString& Collection::tag() const {
-    qWarning() << tr_log("Warning: `collection.tag` is deprecated and will be removed in the future. Do not use it in themes.");
-    return m_name;
-}
-
-void Collection::setShortName(QString str)
-{
-    Q_ASSERT(!str.isEmpty());
-    m_short_name = str.toLower();
-}
-
-void Collection::setCommonLaunchCmd(QString str)
-{
-    Q_ASSERT(!str.isEmpty());
-    m_launch_cmd = str;
 }
 
 } // namespace model

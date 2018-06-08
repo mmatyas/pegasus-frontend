@@ -17,9 +17,8 @@
 
 #pragma once
 
-#include "Assets.h"
+#include "modeldata/gaming/GameAssets.h"
 
-#include <QString>
 #include <QObject>
 
 
@@ -57,36 +56,33 @@ class GameAssets : public QObject {
     Q_PROPERTY(QStringList videos READ videos CONSTANT)
 
 public:
-    explicit GameAssets(QObject* parent = nullptr);
+    explicit GameAssets(modeldata::GameAssets* const, QObject* parent = nullptr);
 
-    QHash<AssetType, QString> m_single_assets;
-    QHash<AssetType, QStringList> m_multi_assets;
+    const QString& boxFront() { return m_assets->single(AssetType::BOX_FRONT); }
+    const QString& boxBack() { return m_assets->single(AssetType::BOX_BACK); }
+    const QString& boxSpine() { return m_assets->single(AssetType::BOX_SPINE); }
+    const QString& boxFull() { return m_assets->single(AssetType::BOX_FULL); }
+    const QString& cartridge() { return m_assets->single(AssetType::CARTRIDGE); }
+    const QString& logo() { return m_assets->single(AssetType::LOGO); }
+    const QString& poster() { return m_assets->single(AssetType::POSTER); }
 
-    void setSingle(AssetType, QString);
-    void appendMulti(AssetType, QString);
+    const QString& marquee() { return m_assets->single(AssetType::ARCADE_MARQUEE); }
+    const QString& bezel() { return m_assets->single(AssetType::ARCADE_BEZEL); }
+    const QString& panel() { return m_assets->single(AssetType::ARCADE_PANEL); }
+    const QString& cabinetLeft() { return m_assets->single(AssetType::ARCADE_CABINET_L); }
+    const QString& cabinetRight() { return m_assets->single(AssetType::ARCADE_CABINET_R); }
 
-    QString boxFront() const { return m_single_assets[AssetType::BOX_FRONT]; }
-    QString boxBack() const { return m_single_assets[AssetType::BOX_BACK]; }
-    QString boxSpine() const { return m_single_assets[AssetType::BOX_SPINE]; }
-    QString boxFull() const { return m_single_assets[AssetType::BOX_FULL]; }
-    QString cartridge() const { return m_single_assets[AssetType::CARTRIDGE]; }
-    QString logo() const { return m_single_assets[AssetType::LOGO]; }
-    QString poster() const { return m_single_assets[AssetType::POSTER]; }
+    const QString& tile() { return m_assets->single(AssetType::UI_TILE); }
+    const QString& banner() { return m_assets->single(AssetType::UI_BANNER); }
+    const QString& steam() { return m_assets->single(AssetType::UI_STEAMGRID); }
+    const QString& background() { return m_assets->single(AssetType::BACKGROUND); }
+    const QString& music() { return m_assets->single(AssetType::MUSIC); }
 
-    QString marquee() const { return m_single_assets[AssetType::ARCADE_MARQUEE]; }
-    QString bezel() const { return m_single_assets[AssetType::ARCADE_BEZEL]; }
-    QString panel() const { return m_single_assets[AssetType::ARCADE_PANEL]; }
-    QString cabinetLeft() const { return m_single_assets[AssetType::ARCADE_CABINET_L]; }
-    QString cabinetRight() const { return m_single_assets[AssetType::ARCADE_CABINET_R]; }
+    const QStringList& screenshots() { return m_assets->multi(AssetType::SCREENSHOTS); }
+    const QStringList& videos() { return m_assets->multi(AssetType::VIDEOS); }
 
-    QString tile() const { return m_single_assets[AssetType::UI_TILE]; }
-    QString banner() const { return m_single_assets[AssetType::UI_BANNER]; }
-    QString steam() const { return m_single_assets[AssetType::UI_STEAMGRID]; }
-    QString background() const { return m_single_assets[AssetType::BACKGROUND]; }
-    QString music() const { return m_single_assets[AssetType::MUSIC]; }
-
-    QStringList screenshots() const { return m_multi_assets[AssetType::SCREENSHOTS]; }
-    QStringList videos() const { return m_multi_assets[AssetType::VIDEOS]; }
+private:
+    modeldata::GameAssets* const m_assets;
 };
 
 } // namespace model

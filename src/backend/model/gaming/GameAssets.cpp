@@ -20,20 +20,9 @@
 
 namespace model {
 
-GameAssets::GameAssets(QObject* parent)
+GameAssets::GameAssets(modeldata::GameAssets* const assets, QObject* parent)
     : QObject(parent)
+    , m_assets(std::move(assets))
 {}
-
-void GameAssets::setSingle(AssetType key, QString value)
-{
-    Q_ASSERT(Assets::singleTypes.contains(key));
-    m_single_assets[key] = std::move(value);
-}
-
-void GameAssets::appendMulti(AssetType key, QString value)
-{
-    Q_ASSERT(Assets::multiTypes.contains(key));
-    m_multi_assets[key].append(value);
-}
 
 } // namespace model

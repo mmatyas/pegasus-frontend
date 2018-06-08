@@ -96,28 +96,27 @@ QQmlListProperty<Collection> CollectionList::elementsProp()
     return {this, &m_collections, count, at};
 }
 
-void CollectionList::onScanComplete()
+void CollectionList::setModelData(std::vector<modeldata::Collection> data)
 {
     // TODO: handle the locking and counting during searching
 
+    m_modeldata = std::move(data);
+    m_collections.clear();
+    m_collection_idx = -1;
 
-    // NOTE: `tr` (see below) uses `int`; assuming we have
-    //       less than 2 million games, it will be enough
+    // NOTE: assuming we have less than 2 million games
     int game_count = 0;
 
-    for (Collection* const coll : qAsConst(m_collections)) {
-        coll->setParent(this);
+    for (const modeldata::Collection& coll : m_modeldata) {
+        game_count += coll.games().size();
+        m_collections.append(new model::Collection(&coll, this));
 
-        connect(coll, &Collection::currentGameChanged,
+        connect(m_collections.last(), &Collection::currentGameChanged,
                 this, &CollectionList::onGameChanged);
-        connect(coll, &Collection::gameLaunchRequested,
+        connect(m_collections.last(), &Collection::gameLaunchRequested,
                 this, &CollectionList::gameLaunchRequested);
-        connect(coll, &Collection::gameFavoriteChanged,
+        connect(m_collections.last(), &Collection::gameFavoriteChanged,
                 this, &CollectionList::gameFavoriteChanged);
-
-        model::GameList& gamelist = coll->gameListMut();
-        gamelist.lockGameList();
-        game_count += gamelist.allGames().count();
     }
     qInfo().noquote() << tr_log("%1 games found").arg(game_count);
 

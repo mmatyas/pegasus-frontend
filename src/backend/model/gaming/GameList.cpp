@@ -21,6 +21,7 @@
 #include "LocaleUtils.h"
 #include "Utils.h"
 #include "model/Filters.h"
+#include "modeldata/gaming/Collection.h"
 
 #include <QDebug>
 
@@ -147,13 +148,21 @@ bool all_filters_match(const model::Game& game, const std::vector<model::Filter*
 
 namespace model {
 
-GameList::GameList(QObject* parent)
+GameList::GameList(const std::vector<QSharedPointer<modeldata::Game>>& data, QObject* parent)
     : QObject(parent)
     , m_game_idx(-1)
-#ifdef QT_DEBUG
-    , m_gamelist_locked(false)
-#endif
-{}
+{
+    for (const QSharedPointer<modeldata::Game>& game_ptr : data) {
+        m_all_games.append(new Game(game_ptr.data(), this));
+
+        connect(m_all_games.last(), &Game::launchRequested,
+                this, &GameList::gameLaunchRequested);
+        connect(m_all_games.last(), &Game::favoriteChanged,
+                this, &GameList::gameFavoriteChanged);
+    }
+
+    clearFilters();
+}
 
 GameList::~GameList() = default;
 
@@ -234,60 +243,19 @@ void GameList::jumpToLetter(const QString& text)
     // NOTE: while this could be optimized for performance,
     // the increase in memory usage might not worth it.
     for (int i = 0; i < m_filtered_games.count(); i++) {
-        Q_ASSERT(!m_filtered_games[i]->m_title.isEmpty());
-        if (m_filtered_games[i]->m_title.at(0).toLower() == query_char) {
+        Q_ASSERT(!m_filtered_games[i]->title().isEmpty());
+        if (m_filtered_games[i]->title().at(0).toLower() == query_char) {
             setIndex(i);
             return;
         }
     }
 }
 
-void GameList::addGame(QString path)
-{
-#ifdef QT_DEBUG
-    Q_ASSERT(!m_gamelist_locked);
-#endif
-    addGame(new Game(std::move(path)));
-}
-
-void GameList::addGame(Game* game_ptr)
-{
-#ifdef QT_DEBUG
-    Q_ASSERT(!m_gamelist_locked);
-#endif
-    m_all_games.append(game_ptr);
-    connect(game_ptr, &Game::launchRequested, this, &GameList::gameLaunchRequested);
-    connect(game_ptr, &Game::favoriteChanged, this, &GameList::gameFavoriteChanged);
-}
-
-void GameList::sortGames()
-{
-    // remove duplicates
-    std::sort(m_all_games.begin(), m_all_games.end());
-    m_all_games.erase(std::unique(m_all_games.begin(), m_all_games.end()), m_all_games.end());
-
-    // sort by name
-    std::sort(m_all_games.begin(), m_all_games.end(),
-        [](const Game* a, const Game* b) {
-            return QString::localeAwareCompare(a->m_fileinfo.completeBaseName(),
-                                               b->m_fileinfo.completeBaseName()) < 0;
-        }
-    );
-}
-
-void GameList::lockGameList()
-{
-#ifdef QT_DEBUG
-    Q_ASSERT(!m_gamelist_locked);
-    m_gamelist_locked = true;
-#endif
-
-    clearFilters();
-    emit allGamesChanged();
-}
-
 void GameList::clearFilters()
 {
+    if (m_all_games.isEmpty())
+        return;
+
     m_filtered_games = m_all_games;
     Q_ASSERT(!m_filtered_games.isEmpty());
     emit filteredGamesChanged();
@@ -310,7 +278,7 @@ void GameList::applyFilters(const Filters& filters)
     for (Game* game_ptr :qAsConst(m_all_games)) {
         const Game& game = *game_ptr;
 
-        const bool title_matches = game.m_title.contains(filters.m_game_title, Qt::CaseInsensitive);
+        const bool title_matches = game.title().contains(filters.m_game_title, Qt::CaseInsensitive);
         if (title_matches && all_filters_match(game, enabled_filters))
             filtered_games.append(game_ptr);
     }

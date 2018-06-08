@@ -45,6 +45,9 @@ public:
     explicit CollectionList(QObject* parent = nullptr);
     ~CollectionList();
 
+    void setModelData(std::vector<modeldata::Collection>);
+    const std::vector<modeldata::Collection>& modelData() const { return m_modeldata; }
+
     Collection* current() const;
     int count() const { return m_collections.count(); }
 
@@ -57,22 +60,20 @@ public:
 
     QQmlListProperty<Collection> elementsProp();
     const QVector<Collection*>& elements() const { return m_collections; }
-    QVector<Collection*>& elementsMut() { return m_collections; }
 
 signals:
     void modelChanged();
     void currentChanged();
     void currentGameChanged();
-    void gameLaunchRequested(const Collection*, const Game*);
+    void gameLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
     void gameFavoriteChanged();
-
-public slots:
-    void onScanComplete();
 
 private slots:
     void onGameChanged();
 
 private:
+    std::vector<modeldata::Collection> m_modeldata;
+
     QVector<Collection*> m_collections;
     int m_collection_idx;
 

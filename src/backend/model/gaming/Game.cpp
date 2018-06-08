@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,90 +17,26 @@
 
 #include "Game.h"
 
-#include <QFileInfo>
-#include <QStringBuilder>
-
-
-namespace {
-
-void addToStrAndList(const QString& new_val, QString& str, QStringList& list)
-{
-    if (new_val.isEmpty())
-        return;
-
-    if (str.isEmpty())
-        str = new_val;
-    else
-        str += QLatin1String(", ") % new_val;
-
-    list.append(new_val);
-}
-
-void addListToStrAndList(const QStringList& new_vals, QString& str, QStringList& list)
-{
-    for (const QString& new_val : new_vals)
-        addToStrAndList(new_val, str, list);
-}
-
-} // namespace
-
 
 namespace model {
 
-Game::Game(QFileInfo fileinfo, QObject* parent)
+Game::Game(modeldata::Game* const game, QObject* parent)
     : QObject(parent)
-    , m_fileinfo(std::move(fileinfo))
-    , m_title(m_fileinfo.completeBaseName())
-    , m_players(1)
-    , m_favorite(false)
-    , m_rating(0)
-    , m_playcount(0)
-    , m_year(0)
-    , m_month(0)
-    , m_day(0)
+    , m_game(std::move(game))
+    , m_assets(&m_game->assets)
 {
+    Q_ASSERT(m_game);
 }
 
-void Game::addDeveloper(const QString& val)
+void Game::setFavorite(bool new_val)
 {
-    addToStrAndList(val, m_developer_str, m_developer_list);
-}
-void Game::addPublisher(const QString& val)
-{
-    addToStrAndList(val, m_publisher_str, m_publisher_list);
-}
-void Game::addGenre(const QString& val)
-{
-    addToStrAndList(val, m_genre_str, m_genre_list);
-}
-
-void Game::addDevelopers(const QStringList& list)
-{
-    addListToStrAndList(list, m_developer_str, m_developer_list);
-}
-void Game::addPublishers(const QStringList& list)
-{
-    addListToStrAndList(list, m_publisher_str, m_publisher_list);
-}
-void Game::addGenres(const QStringList& list)
-{
-    addListToStrAndList(list, m_genre_str, m_genre_list);
-}
-
-void Game::setRelease(QDate date)
-{
-    if (!date.isValid())
-        return;
-
-    m_release = std::move(date);
-    m_year = m_release.year();
-    m_month = m_release.month();
-    m_day = m_release.day();
+    m_game->is_favorite = new_val;
+    emit favoriteChanged();
 }
 
 void Game::launch()
 {
-    emit launchRequested(this);
+    emit launchRequested(m_game);
 }
 
 } // namespace model

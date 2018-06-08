@@ -18,10 +18,8 @@
 #pragma once
 
 #include "GameAssets.h"
+#include "modeldata/gaming/Game.h"
 
-#include <QDateTime>
-#include <QFileInfo>
-#include <QString>
 #include <QObject>
 
 
@@ -30,80 +28,70 @@ namespace model {
 class Game : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QString title MEMBER m_title CONSTANT)
+    Q_PROPERTY(QString title READ title CONSTANT)
+    Q_PROPERTY(QString summary READ summary CONSTANT)
+    Q_PROPERTY(QString description READ description CONSTANT)
 
-    Q_PROPERTY(QString summary MEMBER m_summary CONSTANT)
-    Q_PROPERTY(QString description MEMBER m_description CONSTANT)
+    Q_PROPERTY(QString developer READ developer CONSTANT)
+    Q_PROPERTY(QString publisher READ publisher CONSTANT)
+    Q_PROPERTY(QString genre READ genre CONSTANT)
+    Q_PROPERTY(QStringList developerList READ developerList CONSTANT)
+    Q_PROPERTY(QStringList publisherList READ publisherList CONSTANT)
+    Q_PROPERTY(QStringList genreList READ genreList CONSTANT)
 
-    Q_PROPERTY(QString developer MEMBER m_developer_str CONSTANT)
-    Q_PROPERTY(QString publisher MEMBER m_publisher_str CONSTANT)
-    Q_PROPERTY(QString genre MEMBER m_genre_str CONSTANT)
-    Q_PROPERTY(QStringList developerList MEMBER m_developer_list CONSTANT)
-    Q_PROPERTY(QStringList publisherList MEMBER m_publisher_list CONSTANT)
-    Q_PROPERTY(QStringList genreList MEMBER m_genre_list CONSTANT)
+    Q_PROPERTY(QDate release READ release CONSTANT)
+    Q_PROPERTY(int year READ year CONSTANT)
+    Q_PROPERTY(int month READ month CONSTANT)
+    Q_PROPERTY(int day READ day CONSTANT)
 
-    Q_PROPERTY(QDate release MEMBER m_release CONSTANT)
-    Q_PROPERTY(int year MEMBER m_year CONSTANT)
-    Q_PROPERTY(int month MEMBER m_month CONSTANT)
-    Q_PROPERTY(int day MEMBER m_day CONSTANT)
+    Q_PROPERTY(int players READ players CONSTANT)
+    Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
+    Q_PROPERTY(float rating READ rating CONSTANT)
 
-    Q_PROPERTY(int players MEMBER m_players CONSTANT)
-    Q_PROPERTY(bool favorite MEMBER m_favorite NOTIFY favoriteChanged)
-    Q_PROPERTY(float rating MEMBER m_rating CONSTANT)
-
-    Q_PROPERTY(int playCount MEMBER m_playcount CONSTANT)
-    Q_PROPERTY(QDateTime lastPlayed MEMBER m_lastplayed CONSTANT)
+    Q_PROPERTY(int playCount READ playCount NOTIFY playCountChanged)
+    Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY lastPlayedChanged)
 
     Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
 
 public:
-    explicit Game(QFileInfo fileinfo, QObject* parent = nullptr);
+    explicit Game(modeldata::Game* const, QObject* parent = nullptr);
 
-    const QFileInfo m_fileinfo;
+    const QString& title() const { return m_game->title; }
+    const QString& summary() const { return m_game->summary; }
+    const QString& description() const { return m_game->description; }
 
-    QString m_title;
-    QString m_summary;
-    QString m_description;
+    const QString& developer() const { return m_game->developer_str; }
+    const QString& publisher() const { return m_game->publisher_str; }
+    const QString& genre() const { return m_game->genre_str; }
+    const QStringList& developerList() const { return m_game->developer_list; }
+    const QStringList& publisherList() const { return m_game->publisher_list; }
+    const QStringList& genreList() const { return m_game->genre_list; }
 
-    void addDeveloper(const QString&);
-    void addPublisher(const QString&);
-    void addGenre(const QString&);
-    void addDevelopers(const QStringList&);
-    void addPublishers(const QStringList&);
-    void addGenres(const QStringList&);
+    const QDate& release() const { return m_game->release_date; }
+    int year() const { return m_game->release_year; }
+    int month() const { return m_game->release_month; }
+    int day() const { return m_game->release_day; }
 
-    int m_players;
-    bool m_favorite;
-    float m_rating;
+    int players() const { return m_game->player_count; }
+    float rating() const { return m_game->rating; }
+    bool favorite() const { return m_game->is_favorite; }
+    void setFavorite(bool);
 
-    void setRelease(QDate);
+    int playCount() const { return m_game->playcount; }
+    const QDateTime& lastPlayed() const { return m_game->lastplayed; }
 
-    int m_playcount;
-    QDateTime m_lastplayed;
-
-    QString m_launch_cmd;
-    Q_INVOKABLE void launch();
-
-    GameAssets& assets() { return m_assets; }
     GameAssets* assetsPtr() { return &m_assets; }
 
+    Q_INVOKABLE void launch();
+
 signals:
-    void launchRequested(const Game*);
+    void launchRequested(const modeldata::Game* const);
     void favoriteChanged();
+    void playCountChanged();
+    void lastPlayedChanged();
 
 private:
-    QString m_developer_str;
-    QString m_publisher_str;
-    QString m_genre_str;
-    QStringList m_developer_list;
-    QStringList m_publisher_list;
-    QStringList m_genre_list;
-
-    int m_year;
-    int m_month;
-    int m_day;
-    QDate m_release;
-
+    modeldata::Game* const m_game;
     GameAssets m_assets;
 };
 

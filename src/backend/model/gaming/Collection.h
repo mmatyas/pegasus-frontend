@@ -18,6 +18,7 @@
 #pragma once
 
 #include "GameList.h"
+#include "modeldata/gaming/Collection.h"
 
 #include <QString>
 #include <QQmlListProperty>
@@ -32,41 +33,27 @@ class Collection : public QObject {
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(model::GameList* gameList READ gameListPtr CONSTANT)
 
-    // deprecated
-    Q_PROPERTY(QString tag READ tag CONSTANT)
-
 public:
-    explicit Collection(QString name, QObject* parent = nullptr);
-
-    void setShortName(QString);
-    void setCommonLaunchCmd(QString);
-
-    const QString& name() const { return m_name; }
-    const QString& shortName() const { return m_short_name; }
-    const QString& launchCmd() const { return m_launch_cmd; }
-
-    const QStringList& sourceDirs() const { return m_source_dirs; }
-    QStringList& sourceDirsMut() { return m_source_dirs; }
+    explicit Collection(const modeldata::Collection* const, QObject* parent = nullptr);
 
     const GameList& gameList() const { return m_gamelist; }
     GameList& gameListMut() { return m_gamelist; }
 
-    // deprecated
-    const QString& tag() const;
+    const modeldata::Collection& modelData() const { return *m_collection; }
 
 signals:
     void currentGameChanged();
-    void gameLaunchRequested(const Collection*, const Game*);
+    void gameLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
     void gameFavoriteChanged();
 
 private:
-    const QString m_name;
-    QString m_short_name;
-    QString m_launch_cmd;
-    QStringList m_source_dirs;
+    const modeldata::Collection* const m_collection;
 
     GameList m_gamelist;
     GameList* gameListPtr() { return &m_gamelist; }
+
+    const QString& name() const { return m_collection->name(); }
+    const QString& shortName() const { return m_collection->shortName(); }
 };
 
 } // namespace model
