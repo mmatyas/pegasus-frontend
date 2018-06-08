@@ -45,8 +45,7 @@ public:
     explicit CollectionList(QObject* parent = nullptr);
     ~CollectionList();
 
-    void setModelData(std::vector<modeldata::Collection>);
-    const std::vector<modeldata::Collection>& modelData() const { return m_modeldata; }
+    void setModelData(const std::vector<modeldata::Collection>&);
 
     Collection* current() const;
     int count() const { return m_collections.count(); }
@@ -72,8 +71,6 @@ private slots:
     void onGameChanged();
 
 private:
-    std::vector<modeldata::Collection> m_modeldata;
-
     QVector<Collection*> m_collections;
     int m_collection_idx;
 

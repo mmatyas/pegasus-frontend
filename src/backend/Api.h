@@ -104,6 +104,7 @@ public slots:
 
 private slots:
     // internal communication
+    void onScanComplete();
     void onLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
     void onFiltersChanged();
     void onGameFavoriteChanged();
@@ -128,4 +129,7 @@ private:
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
+
+    // model data
+    std::vector<modeldata::Collection> m_gaming_data;
 };

@@ -96,18 +96,17 @@ QQmlListProperty<Collection> CollectionList::elementsProp()
     return {this, &m_collections, count, at};
 }
 
-void CollectionList::setModelData(std::vector<modeldata::Collection> data)
+void CollectionList::setModelData(const std::vector<modeldata::Collection>& data)
 {
     // TODO: handle the locking and counting during searching
 
-    m_modeldata = std::move(data);
     m_collections.clear();
     m_collection_idx = -1;
 
     // NOTE: assuming we have less than 2 million games
     int game_count = 0;
 
-    for (const modeldata::Collection& coll : m_modeldata) {
+    for (const modeldata::Collection& coll : data) {
         game_count += coll.games().size();
         m_collections.append(new model::Collection(&coll, this));
 
