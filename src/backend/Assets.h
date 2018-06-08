@@ -61,3 +61,10 @@ inline uint qHash(const AssetType& key, uint seed) {
 inline uint qHash(const AssetType& key) {
     return ::qHash(static_cast<unsigned char>(key));
 }
+namespace std {
+template<> struct hash<AssetType> {
+    std::size_t operator()(const AssetType& key) const {
+        return static_cast<std::size_t>(key);
+    }
+};
+} // namespace std

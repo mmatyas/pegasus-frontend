@@ -2,9 +2,9 @@
 
 #include "Assets.h"
 
-#include <QHash>
 #include <QString>
 #include <QStringList>
+#include <unordered_map>
 
 
 namespace modeldata {
@@ -26,8 +26,8 @@ struct GameAssets {
     GameAssets& operator=(GameAssets&&) = default;
 
 private:
-    QHash<AssetType, QString> m_single_assets;
-    QHash<AssetType, QStringList> m_multi_assets;
+    std::unordered_map<AssetType, QString> m_single_assets;
+    std::unordered_map<AssetType, QStringList> m_multi_assets;
 };
 
 } // namespace modeldata
