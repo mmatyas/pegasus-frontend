@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,26 +18,10 @@
 #include "Assets.h"
 
 
-const QVector<AssetType> Assets::singleTypes = {
-    AssetType::BOX_FRONT,
-    AssetType::BOX_BACK,
-    AssetType::BOX_SPINE,
-    AssetType::BOX_FULL,
-    AssetType::CARTRIDGE,
-    AssetType::LOGO,
-    AssetType::POSTER,
-    AssetType::ARCADE_MARQUEE,
-    AssetType::ARCADE_BEZEL,
-    AssetType::ARCADE_PANEL,
-    AssetType::ARCADE_CABINET_L,
-    AssetType::ARCADE_CABINET_R,
-    AssetType::UI_TILE,
-    AssetType::UI_BANNER,
-    AssetType::UI_STEAMGRID,
-    AssetType::BACKGROUND,
-    AssetType::MUSIC,
-};
-const QVector<AssetType> Assets::multiTypes = {
-    AssetType::SCREENSHOTS,
-    AssetType::VIDEOS,
+bool asset_is_single(AssetType type)
+{
+    if(type == AssetType::SCREENSHOTS || type == AssetType::VIDEOS)
+        return false;
+
+    return true;
 };

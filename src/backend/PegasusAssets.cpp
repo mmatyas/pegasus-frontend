@@ -143,7 +143,7 @@ AssetCheckResult checkFile(const QFileInfo& file)
 
 void addAssetToGame(modeldata::GameAssets& gameassets, AssetType asset_type, const QString& file_path)
 {
-    const bool is_single = Assets::singleTypes.contains(asset_type);
+    const bool is_single = asset_is_single(asset_type);
     const QString url = QUrl::fromLocalFile(file_path).toString();
 
     if (is_single && gameassets.single(asset_type).isEmpty()) {

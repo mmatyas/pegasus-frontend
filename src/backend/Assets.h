@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <QHash>
 #include <QVector>
 
 
@@ -48,19 +47,8 @@ enum class AssetType : unsigned char {
     VIDEOS,
 };
 
-/// Definitions of supported asset types and file formats
-class Assets {
-public:
-    static const QVector<AssetType> singleTypes;
-    static const QVector<AssetType> multiTypes;
-};
+bool asset_is_single(AssetType);
 
-inline uint qHash(const AssetType& key, uint seed) {
-    return ::qHash(static_cast<unsigned char>(key), seed);
-}
-inline uint qHash(const AssetType& key) {
-    return ::qHash(static_cast<unsigned char>(key));
-}
 namespace std {
 template<> struct hash<AssetType> {
     std::size_t operator()(const AssetType& key) const {
