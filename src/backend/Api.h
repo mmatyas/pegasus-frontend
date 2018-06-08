@@ -81,7 +81,7 @@ public:
 signals:
     // game launching
     void prepareLaunch();
-    void executeLaunch(const model::Collection*, const model::Game*);
+    void executeLaunch(const modeldata::Collection* const, const modeldata::Game* const);
     void restoreAfterGame(ApiObject*);
 
     // triggers translation update
@@ -104,7 +104,7 @@ public slots:
 
 private slots:
     // internal communication
-    void onLaunchRequested(const model::Collection*, const model::Game*);
+    void onLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
     void onFiltersChanged();
     void onGameFavoriteChanged();
 
@@ -116,8 +116,8 @@ private:
     model::CollectionList m_collections;
 
     // the collection and game that requested the game launch
-    const model::Collection* m_launch_collection;
-    const model::Game* m_launch_game;
+    const modeldata::Collection* m_launch_collection;
+    const modeldata::Game* m_launch_game;
 
     // initialization
     DataFinder m_datafinder;

@@ -38,6 +38,7 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppArgs.h \
+    QStringHash.h
 
 include(configfiles/configfiles.pri)
 include(platform/platform.pri)

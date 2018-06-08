@@ -18,11 +18,12 @@
 #pragma once
 
 #include <QFileInfo>
-#include <QHash>
 #include <QString>
+#include <unordered_map>
 
 enum class AssetType : unsigned char;
-namespace model { class Game; }
+namespace modeldata { struct Game; }
+namespace modeldata { struct GameAssets; }
 
 
 namespace pegasus_assets {
@@ -34,9 +35,9 @@ struct AssetCheckResult {
     bool isValid() const;
 };
 AssetCheckResult checkFile(const QFileInfo&);
-void addAssetToGame(model::Game&, AssetType, const QString&);
+void addAssetToGame(modeldata::GameAssets&, AssetType, const QString&);
 
 void findAssets(const QStringList& asset_dirs,
-                const QHash<QString, model::Game*>& games);
+                const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games);
 
 } // namespace pegasus_assets

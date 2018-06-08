@@ -19,7 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "configfiles/FavoriteDB.h"
-#include "model/gaming/Collection.h"
+#include "modeldata/gaming/Collection.h"
 #include "providers/es2/Es2Provider.h"
 #include "providers/pegasus/PegasusProvider.h"
 
@@ -32,17 +32,16 @@
 
 namespace {
 
-void removeEmptyCollections(QHash<QString, model::Collection*>& collections)
+void removeEmptyCollections(std::unordered_map<QString, modeldata::Collection>& collections)
 {
-    // NOTE: if this turns out to be slow, STL iterators
-    // could be used here
-    QMutableHashIterator<QString, model::Collection*> it(collections);
-    while (it.hasNext()) {
-        if (it.next().value()->gameList().allGames().isEmpty()) {
-            qWarning().noquote() << tr_log("No games found for collection '%1', ignored").arg(it.value()->name());
-            delete it.value();
-            it.remove();
+    auto it = collections.begin();
+    while (it != collections.end()) {
+        if (it->second.games().empty()) {
+            qWarning().noquote() << tr_log("No games found for collection '%1', ignored").arg(it->second.name());
+            it = collections.erase(it);
+            continue;
         }
+        ++it;
     }
 }
 
@@ -69,8 +68,8 @@ DataFinder::DataFinder(QObject* parent)
 
 // Providers can add new games, new collections and further directories
 // to check for metadata info.
-void DataFinder::runListProviders(QHash<QString, model::Game*>& games,
-                                  QHash<QString, model::Collection*>& collections)
+void DataFinder::runListProviders(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                                  std::unordered_map<QString, modeldata::Collection>& collections)
 {
     for (size_t i = 1; i < m_providers.size(); i++)
         m_providers[i]->find(games, collections);
@@ -85,11 +84,11 @@ void DataFinder::runListProviders(QHash<QString, model::Game*>& games,
 void DataFinder::onRomDirFound(QString dir_path)
 {
     static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
-        ->add_game_dir(dir_path);
+        ->add_game_dir(std::move(dir_path));
 }
 
-void DataFinder::runMetadataProviders(const QHash<QString, model::Game*>& games,
-                                      const QHash<QString, model::Collection*>& collections)
+void DataFinder::runMetadataProviders(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                                      const std::unordered_map<QString, modeldata::Collection>& collections)
 {
     emit metadataSearchStarted();
 
@@ -99,22 +98,22 @@ void DataFinder::runMetadataProviders(const QHash<QString, model::Game*>& games,
     FavoriteReader::readDB(games);
 }
 
-QVector<model::Collection*> DataFinder::find()
+std::vector<modeldata::Collection> DataFinder::find()
 {
-    QHash<QString, model::Game*> games;
-    QHash<QString, model::Collection*> collections;
+    std::unordered_map<QString, modeldata::Collection> collections;
+    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
 
     runListProviders(games, collections);
     runMetadataProviders(games, collections);
 
-    QVector<model::Collection*> result;
-    for (model::Collection* const coll : qAsConst(collections)) {
-        coll->gameListMut().sortGames();
-        result << coll;
+    std::vector<modeldata::Collection> result;
+    for (auto it = collections.begin(); it != collections.end(); ++it) {
+        it->second.sortGames();
+        result.emplace_back(std::move(it->second));
     }
     std::sort(result.begin(), result.end(),
-        [](const model::Collection* a, const model::Collection* b) {
-            return QString::localeAwareCompare(a->name(), b->name()) < 0;
+        [](const modeldata::Collection& a, const modeldata::Collection& b) {
+            return QString::localeAwareCompare(a.name(), b.name()) < 0;
         }
     );
 

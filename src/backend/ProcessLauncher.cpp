@@ -35,29 +35,25 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::launchGame(const model::Collection* collection, const model::Game* game)
+void ProcessLauncher::launchGame(const modeldata::Collection* const collection,
+                                 const modeldata::Game* const game)
 {
     Q_ASSERT(game);
     // collection can be null!
 
     // first, check the game's custom launch command
-    QString launch_cmd = game->m_launch_cmd;
+    QString launch_cmd = game->launch_cmd;
     // then the lauching collection's
     if (launch_cmd.isEmpty() && collection)
         launch_cmd = collection->launchCmd();
-    // then the primary collection's
-    if (launch_cmd.isEmpty() && collection != game->parent()) {
-        auto main_coll = qobject_cast<const model::Collection*>(game->parent());
-        if (main_coll)
-            launch_cmd = main_coll->launchCmd();
-    }
+
     if (!launch_cmd.isEmpty())
         prepareLaunchCommand(launch_cmd, *game);
 
     if (launch_cmd.isEmpty()) {
         qInfo().noquote()
             << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
-               .arg(game->m_title);
+               .arg(game->title);
     }
     else {
         beforeRun();
@@ -69,13 +65,13 @@ void ProcessLauncher::launchGame(const model::Collection* collection, const mode
     emit processFinished();
 }
 
-void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const model::Game& game) const
+void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const modeldata::Game& game) const
 {
     launch_cmd
-        .replace(QLatin1String("{file.path}"), game.m_fileinfo.absoluteFilePath())
-        .replace(QLatin1String("{file.name}"), game.m_fileinfo.fileName())
-        .replace(QLatin1String("{file.basename}"), game.m_fileinfo.completeBaseName())
-        .replace(QLatin1String("{file.dir}"), game.m_fileinfo.absolutePath());
+        .replace(QLatin1String("{file.path}"), game.fileinfo().absoluteFilePath())
+        .replace(QLatin1String("{file.name}"), game.fileinfo().fileName())
+        .replace(QLatin1String("{file.basename}"), game.fileinfo().completeBaseName())
+        .replace(QLatin1String("{file.dir}"), game.fileinfo().absolutePath());
 }
 
 void ProcessLauncher::runProcess(const QString& command)

@@ -17,6 +17,7 @@
 
 #include "PegasusAssets.h"
 
+#include "QStringHash.h"
 #include "model/gaming/Game.h"
 
 #include <QDebug>
@@ -140,28 +141,28 @@ AssetCheckResult checkFile(const QFileInfo& file)
     };
 }
 
-void addAssetToGame(model::Game& game, AssetType asset_type, const QString& file_path)
+void addAssetToGame(modeldata::GameAssets& gameassets, AssetType asset_type, const QString& file_path)
 {
-    const bool is_multi = Assets::multiTypes.contains(asset_type);
+    const bool is_single = Assets::singleTypes.contains(asset_type);
     const QString url = QUrl::fromLocalFile(file_path).toString();
 
-    if (is_multi && !game.assets().m_multi_assets[asset_type].contains(url)) {
-        game.assets().appendMulti(asset_type, std::move(url));
+    if (is_single && gameassets.single(asset_type).isEmpty()) {
+        gameassets.setSingle(asset_type, std::move(url));
     }
-    else if (!is_multi && game.assets().m_single_assets[asset_type].isEmpty()) {
-        game.assets().setSingle(asset_type, std::move(url));
+    else if (!is_single && !gameassets.multi(asset_type).contains(url)) {
+        gameassets.appendMulti(asset_type, std::move(url));
     }
 }
 
 void findAssets(const QStringList& asset_dirs,
-                const QHash<QString, model::Game*>& games)
+                const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
-    QHash<QString, model::Game*> games_by_shortpath;
+    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
-    for (model::Game* const game : games) {
-        const QString shortpath = game->m_fileinfo.canonicalPath() % '/' % game->m_fileinfo.completeBaseName();
-        games_by_shortpath.insert(shortpath, game);
+    for (const auto& pair : games) {
+        const QString shortpath = pair.second->fileinfo().canonicalPath() % '/' % pair.second->fileinfo().completeBaseName();
+        games_by_shortpath.emplace(shortpath, std::move(pair.second));
     }
 
 
@@ -183,11 +184,11 @@ void findAssets(const QStringList& asset_dirs,
                                     % fileinfo.canonicalPath().midRef(dir_base.length() + 6) // len of `/media`
                                     % '/'
                                     % detection_result.basename;
-            if (!games_by_shortpath.contains(shortpath))
+            if (!games_by_shortpath.count(shortpath))
                 continue;
 
-            model::Game* const game = games_by_shortpath[shortpath];
-            addAssetToGame(*game, detection_result.asset_type, dir_it.filePath());
+            const QSharedPointer<modeldata::Game>& game = games_by_shortpath[shortpath];
+            addAssetToGame(game->assets, detection_result.asset_type, dir_it.filePath());
         }
     }
 }

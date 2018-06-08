@@ -23,9 +23,10 @@
 #include <QVector>
 
 #include <memory>
+#include <unordered_map>
 
-namespace model { class Collection; }
-namespace model { class Game; }
+namespace modeldata { struct Collection; }
+namespace modeldata { struct Game; }
 
 
 class DataFinder : public QObject {
@@ -34,17 +35,17 @@ class DataFinder : public QObject {
 public:
     explicit DataFinder(QObject* parent = nullptr);
 
-    QVector<model::Collection*> find();
+    std::vector<modeldata::Collection> find();
 
 signals:
     void totalCountChanged(int);
     void metadataSearchStarted();
 
 private:
-    void runListProviders(QHash<QString, model::Game*>&,
-                          QHash<QString, model::Collection*>&);
-    void runMetadataProviders(const QHash<QString, model::Game*>&,
-                              const QHash<QString, model::Collection*>&);
+    void runListProviders(std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+                          std::unordered_map<QString, modeldata::Collection>&);
+    void runMetadataProviders(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+                              const std::unordered_map<QString, modeldata::Collection>&);
 
     using ProviderPtr = std::unique_ptr<providers::Provider>;
     std::vector<ProviderPtr> m_providers;

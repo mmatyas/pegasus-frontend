@@ -61,7 +61,7 @@ void ApiObject::startScanning()
         timer.start();
 
         m_meta.onScanStarted();
-        m_collections.elementsMut() = m_datafinder.find();
+        m_collections.setModelData(m_datafinder.find());
         m_meta.onScanCompleted(timer.elapsed());
 
         // set the correct thread for the QObjects
@@ -74,12 +74,10 @@ void ApiObject::startScanning()
     m_loading_watcher.setFuture(future);
 
     connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            &m_collections, &model::CollectionList::onScanComplete);
-    connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
             &m_meta, &model::Meta::onLoadingCompleted);
 }
 
-void ApiObject::onLaunchRequested(const model::Collection* coll, const model::Game* game)
+void ApiObject::onLaunchRequested(const modeldata::Collection* const coll, const modeldata::Game* const game)
 {
     // avoid launch spamming
     if (m_launch_game)
@@ -108,7 +106,7 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_favorite_writer.queueTask(m_collections);
+    m_favorite_writer.queueTask(m_collections.modelData());
 }
 
 void ApiObject::onFiltersChanged()
