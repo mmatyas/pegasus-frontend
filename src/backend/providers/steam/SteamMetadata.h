@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include <QHash>
 #include <QObject>
+#include <unordered_map>
 
-namespace model { class Collection; }
-namespace model { class Game; }
+namespace modeldata { class Collection; }
+namespace modeldata { class Game; }
 
 
 namespace providers {
@@ -33,8 +33,8 @@ class Metadata : public QObject {
 public:
     explicit Metadata(QObject* parent);
 
-    void enhance(const QHash<QString, model::Game*>& games,
-                 const QHash<QString, model::Collection*>& collections);
+    void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+                 const std::unordered_map<QString, modeldata::Collection>&);
 };
 
 } // namespace steam

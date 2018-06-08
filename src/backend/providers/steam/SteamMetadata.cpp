@@ -19,7 +19,9 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "model/gaming/Collection.h"
+#include "QStringHash.h"
+#include "modeldata/gaming/Collection.h"
+#include "modeldata/gaming/Game.h"
 
 #include <QDebug>
 #include <QDir>
@@ -42,7 +44,7 @@ static constexpr auto MSG_PREFIX = "Steam:";
 struct SteamGameEntry {
     QString title;
     QString appid;
-    model::Game* game_ptr;
+    QSharedPointer<modeldata::Game> game_ptr;
 
     SteamGameEntry() : game_ptr(nullptr) {}
 
@@ -95,7 +97,7 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     return entry;
 }
 
-bool read_json(model::Game& game, const QByteArray& bytes)
+bool read_json(modeldata::Game& game, const QByteArray& bytes)
 {
     const auto json = QJsonDocument::fromJson(bytes);
     if (json.isNull())
@@ -119,12 +121,12 @@ bool read_json(model::Game& game, const QByteArray& bytes)
 
     // now the actual field reading
 
-    model::GameAssets& assets = game.assets();
+    modeldata::GameAssets& assets = game.assets;
 
-    game.m_title = app_data[QLatin1String("name")].toString();
+    game.title = app_data[QLatin1String("name")].toString();
 
-    game.m_summary = app_data[QLatin1String("short_description")].toString();
-    game.m_description = app_data[QLatin1String("about_the_game")].toString();
+    game.summary = app_data[QLatin1String("short_description")].toString();
+    game.description = app_data[QLatin1String("about_the_game")].toString();
 
     const auto reldate_obj = app_data[QLatin1String("release_date")].toObject();
     if (!reldate_obj.isEmpty()) {
@@ -133,7 +135,7 @@ bool read_json(model::Game& game, const QByteArray& bytes)
         // FIXME: the date format will likely fail for non-English locales (see Qt docs)
         const QDateTime datetime(QDateTime::fromString(date_str, QLatin1String("d MMM, yyyy")));
         if (datetime.isValid())
-            game.setRelease(datetime.date());
+            game.setReleaseDate(datetime.date());
     }
 
     const QString header_image = app_data[QLatin1String("header_image")].toString();
@@ -156,7 +158,7 @@ bool read_json(model::Game& game, const QByteArray& bytes)
     if (!metacritic_obj.isEmpty()) {
         const double score = metacritic_obj[QLatin1String("score")].toDouble(-1);
         if (0.0 <= score && score <= 100.0)
-            game.m_rating = static_cast<float>(score / 100.0);
+            game.rating = static_cast<float>(score / 100.0);
     }
 
     const auto genre_arr = app_data[QLatin1String("genres")].toArray();
@@ -331,29 +333,28 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(const QHash<QString, model::Game*>&,
-                       const QHash<QString, model::Collection*>& collections)
+void Metadata::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+                       const std::unordered_map<QString, modeldata::Collection>& collections)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
-    if (!collections.contains(STEAM_TAG))
+    if (!collections.count(STEAM_TAG))
         return;
 
-    const model::Collection* const& collection = collections[STEAM_TAG];
+    const modeldata::Collection& collection = collections.at(STEAM_TAG);
     const QString steamexe = find_steam_exe();
 
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
 
-    for (model::Game* const game_ptr : collection->gameList().allGames()) {
-        Q_ASSERT(game_ptr);
-        SteamGameEntry entry = read_manifest(game_ptr->m_fileinfo.filePath());
+    for (const QSharedPointer<modeldata::Game>& game_ptr : collection.games()) {
+        SteamGameEntry entry = read_manifest(game_ptr->fileinfo().filePath());
         if (!entry.appid.isEmpty()) {
             if (entry.title.isEmpty())
                 entry.title = QLatin1String("App #") % entry.appid;
 
-            game_ptr->m_title = entry.title;
-            game_ptr->m_launch_cmd = steamexe % QLatin1String(" steam://rungameid/") % entry.appid;
+            game_ptr->title = entry.title;
+            game_ptr->launch_cmd = steamexe % QLatin1String(" steam://rungameid/") % entry.appid;
             entry.game_ptr = game_ptr;
 
             entries.push_back(std::move(entry));

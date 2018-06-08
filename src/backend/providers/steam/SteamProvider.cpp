@@ -30,14 +30,14 @@ SteamProvider::SteamProvider(QObject* parent)
             this, &SteamProvider::gameCountChanged);
 }
 
-void SteamProvider::find(QHash<QString, model::Game*>& games,
-                         QHash<QString, model::Collection*>& collections)
+void SteamProvider::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                         std::unordered_map<QString, modeldata::Collection>& collections)
 {
     gamelist.find(games, collections);
 }
 
-void SteamProvider::enhance(const QHash<QString, model::Game*>& games,
-                            const QHash<QString, model::Collection*>& collections)
+void SteamProvider::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                            const std::unordered_map<QString, modeldata::Collection>& collections)
 {
     metadata.enhance(games, collections);
 }
