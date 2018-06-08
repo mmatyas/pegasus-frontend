@@ -51,10 +51,10 @@ void test_Collection::gameChanged()
 
     QSignalSpy triggered(&collection, &model::Collection::currentGameChanged);
     QVERIFY(triggered.isValid());
-    QVERIFY(collection.gameListMut().index() == 0);
+    QVERIFY(collection.gameListMut().property("index").toInt() == 0);
     QCOMPARE(triggered.count(), 0);
 
-    collection.gameListMut().setIndex(1);
+    collection.gameListMut().setProperty("index", 1);
     QCOMPARE(triggered.count(), 1);
 }
 

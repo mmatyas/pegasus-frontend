@@ -99,7 +99,7 @@ void test_GameList::indexChange()
     QSignalSpy triggered(&list, &model::GameList::currentChanged);
     QVERIFY(triggered.isValid());
     QVERIFY(triggered.count() == 0);
-    QVERIFY(list.index() == 0);
+    QVERIFY(list.property("index").toInt() == 0);
 
 
     QFETCH(int, target);
@@ -139,15 +139,15 @@ void test_GameList::indexIncDecEmpty()
 
     std::vector<GamePtr> modeldata;
     model::GameList list(modeldata);
-    QVERIFY(list.index() == -1);
+    QVERIFY(list.property("index").toInt() == -1);
 
     // increment empty -> stays -1
-    list.incrementIndex();
-    QCOMPARE(list.index(), -1);
+    QMetaObject::invokeMethod(&list, "incrementIndex", Qt::DirectConnection);;
+    QCOMPARE(list.property("index").toInt(), -1);
 
     // decrement empty -> stays -1
-    list.decrementIndex();
-    QCOMPARE(list.index(), -1);
+    QMetaObject::invokeMethod(&list, "decrementIndex", Qt::DirectConnection);
+    QCOMPARE(list.property("index").toInt(), -1);
 }
 
 void test_GameList::indexIncDec_data()
@@ -179,11 +179,11 @@ void test_GameList::indexIncDec()
     QFETCH(QString, metacall);
     QFETCH(int, expected_idx);
 
-    list.setIndex(start_idx);
-    QVERIFY(list.index() == start_idx);
+    list.setProperty("index", start_idx);
+    QVERIFY(list.property("index").toInt() == start_idx);
 
     QMetaObject::invokeMethod(&list, metacall.toStdString().c_str(), Qt::DirectConnection);
-    QCOMPARE(list.index(), expected_idx);
+    QCOMPARE(list.property("index").toInt(), expected_idx);
 }
 
 void test_GameList::applyFilters()
@@ -315,13 +315,13 @@ void test_GameList::letterJump()
     modeldata.emplace_back(GamePtr::create(QFileInfo("Gamma")));
 
     model::GameList list(modeldata);
-    QVERIFY(list.index() == 0);
+    QVERIFY(list.property("index").toInt() == 0);
 
-    list.jumpToLetter("g");
-    QVERIFY(list.index() == 2);
+    QMetaObject::invokeMethod(&list, "jumpToLetter", Q_ARG(QString, "g"));
+    QVERIFY(list.property("index").toInt() == 2);
 
-    list.jumpToLetter("b");
-    QVERIFY(list.index() == 1);
+    QMetaObject::invokeMethod(&list, "jumpToLetter", Q_ARG(QString, "b"));
+    QVERIFY(list.property("index").toInt() == 1);
 }
 
 

@@ -35,7 +35,7 @@ void test_GameAssets::setSingle()
     modeldata.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
 
     model::GameAssets assets(&modeldata);
-    QCOMPARE(assets.boxFront(), QLatin1String("file:///dummy"));
+    QCOMPARE(assets.property("boxFront").toString(), QLatin1String("file:///dummy"));
 }
 
 void test_GameAssets::appendMulti()
@@ -44,8 +44,8 @@ void test_GameAssets::appendMulti()
     modeldata.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile("/dummy").toString());
 
     model::GameAssets assets(&modeldata);
-    QCOMPARE(assets.videos().count(), 1);
-    QCOMPARE(assets.videos().constFirst(), QLatin1String("file:///dummy"));
+    QCOMPARE(assets.property("videos").toStringList().count(), 1);
+    QCOMPARE(assets.property("videos").toStringList().constFirst(), QLatin1String("file:///dummy"));
 }
 
 

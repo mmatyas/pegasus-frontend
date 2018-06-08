@@ -91,8 +91,8 @@ void test_CollectionList::indexChange()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
     list.setModelData(std::move(modeldata));
 
-    QVERIFY(list.count() == 2);
-    QVERIFY(list.index() == 0);
+    QVERIFY(list.property("count").toInt() == 2);
+    QVERIFY(list.property("index").toInt() == 0);
     QVERIFY(spy_current.count() == 1);
     QVERIFY(spy_game.count() == 1);
 
@@ -135,15 +135,15 @@ void test_CollectionList::indexChange_data()
 void test_CollectionList::indexIncDecEmpty()
 {
     model::CollectionList list;
-    QVERIFY(list.index() == -1);
+    QVERIFY(list.property("index").toInt() == -1);
 
     // increment empty -> stays -1
     QMetaObject::invokeMethod(&list, "incrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.index(), -1);
+    QCOMPARE(list.property("index").toInt(), -1);
 
     // decrement empty -> stays -1
     QMetaObject::invokeMethod(&list, "decrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.index(), -1);
+    QCOMPARE(list.property("index").toInt(), -1);
 }
 
 void test_CollectionList::indexIncDec_data()
@@ -178,11 +178,11 @@ void test_CollectionList::indexIncDec()
     QFETCH(QString, metacall);
     QFETCH(int, expected_idx);
 
-    list.setIndex(start_idx);
-    QVERIFY(list.index() == start_idx);
+    list.setProperty("index", start_idx);
+    QVERIFY(list.property("index").toInt() == start_idx);
 
     QMetaObject::invokeMethod(&list, metacall.toStdString().c_str(), Qt::DirectConnection);
-    QCOMPARE(list.index(), expected_idx);
+    QCOMPARE(list.property("index").toInt(), expected_idx);
 }
 
 

@@ -43,21 +43,10 @@ class CollectionList : public QObject {
 
 public:
     explicit CollectionList(QObject* parent = nullptr);
-    ~CollectionList();
 
     void setModelData(const std::vector<modeldata::Collection>&);
 
     Collection* current() const;
-    int count() const { return m_collections.count(); }
-
-    int index() const { return m_collection_idx; }
-    void setIndex(int);
-    Q_INVOKABLE void incrementIndex();
-    Q_INVOKABLE void decrementIndex();
-    Q_INVOKABLE void incrementIndexNoWrap();
-    Q_INVOKABLE void decrementIndexNoWrap();
-
-    QQmlListProperty<Collection> elementsProp();
     const QVector<Collection*>& elements() const { return m_collections; }
 
 signals:
@@ -69,6 +58,18 @@ signals:
 
 private slots:
     void onGameChanged();
+
+private:
+    int count() const { return m_collections.count(); }
+    int index() const { return m_collection_idx; }
+    void setIndex(int);
+
+    QQmlListProperty<Collection> elementsProp();
+
+    Q_INVOKABLE void incrementIndex();
+    Q_INVOKABLE void decrementIndex();
+    Q_INVOKABLE void incrementIndexNoWrap();
+    Q_INVOKABLE void decrementIndexNoWrap();
 
 private:
     QVector<Collection*> m_collections;

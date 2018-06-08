@@ -20,6 +20,7 @@
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Utils.h"
+#include "model/gaming/Collection.h"
 
 #include <QDebug>
 
@@ -31,8 +32,6 @@ CollectionList::CollectionList(QObject* parent)
     , m_collection_idx(-1)
 {
 }
-
-CollectionList::~CollectionList() = default;
 
 Collection* CollectionList::current() const
 {

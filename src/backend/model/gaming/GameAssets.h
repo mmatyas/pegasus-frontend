@@ -58,6 +58,7 @@ class GameAssets : public QObject {
 public:
     explicit GameAssets(modeldata::GameAssets* const, QObject* parent = nullptr);
 
+private:
     const QString& boxFront() { return m_assets->single(AssetType::BOX_FRONT); }
     const QString& boxBack() { return m_assets->single(AssetType::BOX_BACK); }
     const QString& boxSpine() { return m_assets->single(AssetType::BOX_SPINE); }

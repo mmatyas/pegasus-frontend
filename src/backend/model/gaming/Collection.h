@@ -39,21 +39,19 @@ public:
     const GameList& gameList() const { return m_gamelist; }
     GameList& gameListMut() { return m_gamelist; }
 
-    const modeldata::Collection& modelData() const { return *m_collection; }
-
 signals:
     void currentGameChanged();
     void gameLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
     void gameFavoriteChanged();
 
 private:
-    const modeldata::Collection* const m_collection;
-
-    GameList m_gamelist;
-    GameList* gameListPtr() { return &m_gamelist; }
-
     const QString& name() const { return m_collection->name(); }
     const QString& shortName() const { return m_collection->shortName(); }
+    GameList* gameListPtr() { return &m_gamelist; }
+
+private:
+    const modeldata::Collection* const m_collection;
+    GameList m_gamelist;
 };
 
 } // namespace model

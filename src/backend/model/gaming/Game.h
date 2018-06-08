@@ -57,6 +57,14 @@ public:
     explicit Game(modeldata::Game* const, QObject* parent = nullptr);
 
     const QString& title() const { return m_game->title; }
+
+signals:
+    void launchRequested(const modeldata::Game* const);
+    void favoriteChanged();
+    void playCountChanged();
+    void lastPlayedChanged();
+
+private:
     const QString& summary() const { return m_game->summary; }
     const QString& description() const { return m_game->description; }
 
@@ -83,12 +91,6 @@ public:
     GameAssets* assetsPtr() { return &m_assets; }
 
     Q_INVOKABLE void launch();
-
-signals:
-    void launchRequested(const modeldata::Game* const);
-    void favoriteChanged();
-    void playCountChanged();
-    void lastPlayedChanged();
 
 private:
     modeldata::Game* const m_game;

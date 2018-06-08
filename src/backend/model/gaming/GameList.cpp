@@ -164,8 +164,6 @@ GameList::GameList(const std::vector<QSharedPointer<modeldata::Game>>& data, QOb
     clearFilters();
 }
 
-GameList::~GameList() = default;
-
 Game* GameList::current() const
 {
     if (m_game_idx < 0)

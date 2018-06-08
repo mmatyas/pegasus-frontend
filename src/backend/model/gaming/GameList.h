@@ -26,7 +26,7 @@
 enum class IndexShiftDirection : unsigned char;
 
 namespace model { class Filters; }
-namespace modeldata { class Collection; }
+namespace modeldata { struct Collection; }
 
 
 namespace model {
@@ -56,9 +56,18 @@ class GameList : public QObject {
 
 public:
     explicit GameList(const std::vector<QSharedPointer<modeldata::Game>>&, QObject* parent = nullptr);
-    ~GameList();
 
     Game* current() const;
+
+signals:
+    void currentChanged();
+    void filteredGamesChanged();
+    void allGamesChanged();
+
+    void gameLaunchRequested(const modeldata::Game* const);
+    void gameFavoriteChanged();
+
+private:
     int filteredCount() const { return m_filtered_games.count(); }
     int allCount() const { return m_all_games.count(); }
 
@@ -83,14 +92,6 @@ public:
     const QVector<Game*>& filteredGames() const { return m_filtered_games; }
     const QVector<Game*>& allGames() const { return m_all_games; }
 
-signals:
-    void currentChanged();
-    void filteredGamesChanged();
-    void allGamesChanged();
-
-    void gameLaunchRequested(const modeldata::Game* const);
-    void gameFavoriteChanged();
-
 private:
     int m_game_idx;
 
@@ -98,10 +99,6 @@ private:
     QVector<Game*> m_filtered_games;
 
     void shiftIndex(IndexShiftDirection);
-
-#ifdef QT_DEBUG
-    bool m_gamelist_locked;
-#endif
 };
 
 } // namespace model
