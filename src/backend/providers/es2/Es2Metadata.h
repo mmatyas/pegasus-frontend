@@ -21,9 +21,10 @@
 #include <QObject>
 #include <QRegularExpression>
 #include <QXmlStreamReader>
+#include <unordered_map>
 
-namespace model { class Collection; }
-namespace model { class Game; }
+namespace modeldata { class Collection; }
+namespace modeldata { class Game; }
 
 
 namespace providers {
@@ -37,8 +38,8 @@ class MetadataParser : public QObject {
 
 public:
     MetadataParser(QObject* parent);
-    void enhance(const QHash<QString, model::Game*>& games,
-                 const QHash<QString, model::Collection*>& collections);
+    void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                 const std::unordered_map<QString, modeldata::Collection>& collections);
 
 private:
     const QHash<QString, MetaTypes> m_key_types;
@@ -46,12 +47,12 @@ private:
     const QRegularExpression m_players_regex;
 
     void parseGamelistFile(QXmlStreamReader&,
-                           const model::Collection&,
-                           const QHash<QString, model::Game*>&) const;
+                           const modeldata::Collection&,
+                           const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&) const;
     void parseGameEntry(QXmlStreamReader&,
-                        const model::Collection&,
-                        const QHash<QString, model::Game*>&) const;
-    void applyMetadata(model::Game&, const QHash<MetaTypes, QString>&) const;
+                        const modeldata::Collection&,
+                        const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&) const;
+    void applyMetadata(const QSharedPointer<modeldata::Game>&, const QHash<MetaTypes, QString>&) const;
 };
 
 } // namespace es2

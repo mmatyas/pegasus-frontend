@@ -17,6 +17,8 @@
 
 #include "Es2Provider.h"
 
+//#include "QStringHash.h"
+
 
 namespace providers {
 namespace es2 {
@@ -34,14 +36,14 @@ Es2Provider::Es2Provider(QObject* parent)
             Qt::DirectConnection);
 }
 
-void Es2Provider::find(QHash<QString, model::Game*>& games,
-                       QHash<QString, model::Collection*>& collections)
+void Es2Provider::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                       std::unordered_map<QString, modeldata::Collection>& collections)
 {
     systems.find(games, collections);
 }
 
-void Es2Provider::enhance(const QHash<QString, model::Game*>& games,
-                          const QHash<QString, model::Collection*>& collections)
+void Es2Provider::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                          const std::unordered_map<QString, modeldata::Collection>& collections)
 {
     metadata.enhance(games, collections);
 }

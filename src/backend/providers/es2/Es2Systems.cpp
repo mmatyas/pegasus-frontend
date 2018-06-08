@@ -20,8 +20,9 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "Utils.h"
-#include "model/gaming/Collection.h"
-#include "model/gaming/Game.h"
+#include "QStringHash.h"
+#include "modeldata/gaming/Collection.h"
+#include "modeldata/gaming/Game.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -86,8 +87,8 @@ SystemsParser::SystemsParser(QObject* parent)
     : QObject(parent)
 {}
 
-void SystemsParser::find(QHash<QString, model::Game*>& games,
-                       QHash<QString, model::Collection*>& collections)
+void SystemsParser::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                         std::unordered_map<QString, modeldata::Collection>& collections)
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -111,8 +112,8 @@ void SystemsParser::find(QHash<QString, model::Game*>& games,
 }
 
 void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
-                                    QHash<QString, model::Game*>& games,
-                                    QHash<QString, model::Collection*>& collections)
+                                    std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                                    std::unordered_map<QString, modeldata::Collection>& collections)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -127,7 +128,7 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
     }
 
     // read all <system> nodes
-    int game_count = games.count();
+    size_t game_count = games.size();
     while (xml.readNextStartElement()) {
         if (xml.name() != QLatin1String("system")) {
             xml.skipCurrentElement();
@@ -135,16 +136,16 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
         }
 
         readSystemEntry(xml, games, collections);
-        if (game_count != games.count()) {
-            game_count = games.count();
-            emit gameCountChanged(game_count);
+        if (game_count != games.size()) {
+            game_count = games.size();
+            emit gameCountChanged(static_cast<int>(game_count));
         }
     }
 }
 
 void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
-                                    QHash<QString, model::Game*>& games,
-                                    QHash<QString, model::Collection*>& collections)
+                                    std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                                    std::unordered_map<QString, modeldata::Collection>& collections)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -203,19 +204,21 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     const QString& fullname = xml_props[QLatin1String("fullname")];
     const QString& shortname = xml_props[QLatin1String("name")];
     const QString& collection_name = fullname.isEmpty() ? shortname : fullname;
-    model::Collection*& collection = collections[collection_name];
-    if (!collection)
-        collection = new model::Collection(collection_name); // TODO: check for fail
 
-    collection->setShortName(shortname);
-    collection->sourceDirsMut().append(xml_props[QLatin1String("path")]);
+    if (!collections.count(collection_name))
+        collections.emplace(collection_name, modeldata::Collection(collection_name));
+
+    modeldata::Collection& collection = collections.at(collection_name);
+
+    collection.setShortName(shortname);
+    collection.source_dirs.append(xml_props[QLatin1String("path")]);
 
     const QString launch_cmd = xml_props[QLatin1String("command")]
         .replace(QLatin1String("\"%ROM%\""), QLatin1String("\"{file.path}\"")) // make sure we don't double quote
         .replace(QLatin1String("%ROM%"), QLatin1String("\"{file.path}\""))
         .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"));
-    collection->setCommonLaunchCmd(launch_cmd);
+    collection.setLaunchCmd(launch_cmd);
 
     // add the games
 
@@ -246,13 +249,13 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
             files_it.next();
             const QFileInfo fileinfo = files_it.fileInfo();
 
-            model::Game*& game_ptr = games[fileinfo.canonicalFilePath()];
+            QSharedPointer<modeldata::Game>& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr) {
-                game_ptr = new model::Game(fileinfo, collection);
-                game_ptr->m_launch_cmd = collection->launchCmd();
+                game_ptr = QSharedPointer<modeldata::Game>::create(fileinfo);
+                game_ptr->launch_cmd = collection.launchCmd();
             }
 
-            collection->gameListMut().addGame(game_ptr);
+            collection.gamesMut().emplace_back(game_ptr);
         }
     }
 
