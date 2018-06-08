@@ -17,13 +17,15 @@
 
 #pragma once
 
-#include "model/gaming/CollectionList.h"
-
 #include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QtConcurrent/QtConcurrent>
+#include <unordered_map>
+
+namespace modeldata { class Game; }
+namespace modeldata { class Collection; }
 
 
 class FavoriteWriter : public QObject {
@@ -34,8 +36,8 @@ public:
     explicit FavoriteWriter(const QString& file, QObject* parent = nullptr);
 
     /// Prepares the list of favorites and starts writing it to the output
-    /// as soon as there are no pending write operation.
-    void queueTask(const model::CollectionList&);
+    /// as soon as there are no pending write operations.
+    void queueTask(const std::vector<modeldata::Collection>& coll_list);
 
 
 signals:
@@ -55,5 +57,6 @@ private:
 class FavoriteReader {
 public:
     /// Reads the list of favorites and marks the matching games as favorite.
-    static void readDB(const QHash<QString, model::Game*>&, const QString& db_path = QString());
+    static void readDB(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+                       const QString& db_path = QString());
 };

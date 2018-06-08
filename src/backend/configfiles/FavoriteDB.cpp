@@ -19,6 +19,9 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "QStringHash.h"
+#include "modeldata/gaming/Collection.h"
+#include "modeldata/gaming/Game.h"
 
 #include <QFile>
 #include <QMutexLocker>
@@ -80,16 +83,16 @@ void FavoriteWriter::start_processing()
     m_write_watcher.setFuture(future);
 }
 
-void FavoriteWriter::queueTask(const model::CollectionList& coll_list)
+void FavoriteWriter::queueTask(const std::vector<modeldata::Collection>& coll_list)
 {
     QMutexLocker lock(&m_task_guard);
 
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
-    for (const model::Collection* const coll : coll_list.elements()) {
-        for (const model::Game* const game : coll->gameList().allGames()) {
-            if (game->m_favorite)
-                m_pending_task << game->m_fileinfo.canonicalFilePath();
+    for (const modeldata::Collection& coll : coll_list) {
+        for (const QSharedPointer<modeldata::Game>& game : coll.games()) {
+            if (game->is_favorite)
+                m_pending_task << game->fileinfo().canonicalFilePath();
         }
     }
 
@@ -97,7 +100,8 @@ void FavoriteWriter::queueTask(const model::CollectionList& coll_list)
         start_processing();
 }
 
-void FavoriteReader::readDB(const QHash<QString, model::Game*>& games, const QString& db_path)
+void FavoriteReader::readDB(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                            const QString& db_path)
 {
     const QString real_db_path = db_path.isEmpty() ? default_db_path() : db_path;
     if (!QFileInfo::exists(real_db_path))
@@ -116,8 +120,7 @@ void FavoriteReader::readDB(const QHash<QString, model::Game*>& games, const QSt
         if (line.startsWith('#'))
             continue;
 
-        model::Game* const game = games.value(line, nullptr);
-        if (game)
-            game->m_favorite = true;
+        if (games.count(line))
+            games.at(line)->is_favorite = true;
     }
 }
