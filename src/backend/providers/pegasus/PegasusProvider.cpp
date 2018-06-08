@@ -35,16 +35,16 @@ PegasusProvider::PegasusProvider(QObject* parent)
     load_game_dir_list();
 }
 
-void PegasusProvider::find(QHash<QString, model::Game*>& games,
-                           QHash<QString, model::Collection*>& collections)
+void PegasusProvider::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                           std::unordered_map<QString, modeldata::Collection>& collections)
 {
     m_game_dirs.removeDuplicates();
     collection_finder.find_in_dirs(m_game_dirs, games, collections,
                                    [this](int game_count){ emit gameCountChanged(game_count); });
 }
 
-void PegasusProvider::enhance(const QHash<QString, model::Game*>& games,
-                              const QHash<QString, model::Collection*>& collections)
+void PegasusProvider::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                              const std::unordered_map<QString, modeldata::Collection>& collections)
 {
     metadata_finder.enhance_in_dirs(m_game_dirs, games, collections);
 }

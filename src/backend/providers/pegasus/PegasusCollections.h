@@ -17,12 +17,16 @@
 
 #pragma once
 
+#include "QStringHash.h"
+
 #include <QHash>
+#include <QSharedPointer>
 #include <QStringList>
 #include <functional>
+#include <unordered_map>
 
-namespace model { class Game; }
-namespace model { class Collection; }
+namespace modeldata { class Game; }
+namespace modeldata { class Collection; }
 
 
 namespace providers {
@@ -35,8 +39,8 @@ public:
     PegasusCollections();
 
     void find_in_dirs(const QStringList&,
-                      QHash<QString, model::Game*>&,
-                      QHash<QString, model::Collection*>&,
+                      std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+                      std::unordered_map<QString, modeldata::Collection>&,
                       const std::function<void(int)>&) const;
 
 private:

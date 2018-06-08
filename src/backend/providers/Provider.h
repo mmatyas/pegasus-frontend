@@ -17,12 +17,13 @@
 
 #pragma once
 
-#include <QHash>
+#include <QSharedPointer>
 #include <QString>
 #include <QObject>
+#include <unordered_map>
 
-namespace model { class Game; }
-namespace model { class Collection; }
+namespace modeldata { struct Game; }
+namespace modeldata { struct Collection; }
 
 
 namespace providers {
@@ -35,12 +36,12 @@ public:
     virtual ~Provider();
 
     /// Find all games and collections.
-    virtual void find(QHash<QString, model::Game*>& games,
-                      QHash<QString, model::Collection*>& collections) = 0;
+    virtual void find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                      std::unordered_map<QString, modeldata::Collection>& collections) = 0;
 
     /// Enhance the previously found games and collections with metadata and assets.
-    virtual void enhance(const QHash<QString, model::Game*>& games,
-                         const QHash<QString, model::Collection*>& collections) = 0;
+    virtual void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+                         const std::unordered_map<QString, modeldata::Collection>& collections) = 0;
 
 signals:
     void gameCountChanged(int);
