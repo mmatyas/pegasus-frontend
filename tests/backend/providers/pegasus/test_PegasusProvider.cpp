@@ -17,10 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "QStringHash.h"
 #include "providers/pegasus/PegasusProvider.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
+#include "utils/HashMap.h"
 
 #include <QString>
 
@@ -36,8 +36,8 @@ private slots:
 
 void test_PegasusProvider::find_in_empty_dir()
 {
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
-    std::unordered_map<QString, modeldata::Collection> collections;
+    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Collection> collections;
 
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/empty"));
@@ -49,8 +49,8 @@ void test_PegasusProvider::find_in_empty_dir()
 
 void test_PegasusProvider::find_in_filled_dir()
 {
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
-    std::unordered_map<QString, modeldata::Collection> collections;
+    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Collection> collections;
 
     QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
     providers::pegasus::PegasusProvider provider;
@@ -88,15 +88,15 @@ void test_PegasusProvider::find_in_filled_dir()
     const QStringList multi_paths {
         { ":/filled/9999-in-1.ext" },
     };
-    for (const QSharedPointer<modeldata::Game>& game : collections.at(QStringLiteral("My Games")).games()) {
+    for (const modeldata::GamePtr& game : collections.at(QStringLiteral("My Games")).games()) {
         QVERIFY(game);
         QCOMPARE(mygames_paths.count(game->fileinfo().filePath()), 1);
     }
-    for (const QSharedPointer<modeldata::Game>& game : collections.at(QStringLiteral("Favorite games")).games()) {
+    for (const modeldata::GamePtr& game : collections.at(QStringLiteral("Favorite games")).games()) {
         QVERIFY(game);
         QCOMPARE(faves_paths.count(game->fileinfo().filePath()), 1);
     }
-    for (const QSharedPointer<modeldata::Game>& game : collections.at(QStringLiteral("Multi-game ROMs")).games()) {
+    for (const modeldata::GamePtr& game : collections.at(QStringLiteral("Multi-game ROMs")).games()) {
         QVERIFY(game);
         QCOMPARE(multi_paths.count(game->fileinfo().filePath()), 1);
     }
@@ -110,8 +110,8 @@ void test_PegasusProvider::find_in_filled_dir()
 
 void test_PegasusProvider::enhance()
 {
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
-    std::unordered_map<QString, modeldata::Collection> collections;
+    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Collection> collections;
 
     QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/collections.txt`");
     QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/metadata.txt`");
@@ -124,7 +124,7 @@ void test_PegasusProvider::enhance()
     QCOMPARE(collections.size(), 1ul);
     QCOMPARE(games.size(), 4ul);
 
-    QSharedPointer<modeldata::Game> game;
+    modeldata::GamePtr game;
 
     game = games[QStringLiteral(":/with_meta/mygame1.ext")];
     QVERIFY(game);

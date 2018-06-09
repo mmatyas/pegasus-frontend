@@ -22,6 +22,7 @@
 #include "Paths.h"
 #include "model/Filters.h"
 #include "model/gaming/Game.h"
+#include "utils/HashMap.h"
 
 #include <QDebug>
 #include <QFile>
@@ -72,11 +73,11 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
     }
 
 
-    QMap<QString, model::Filter*> filters;
+    HashMap<QString, model::Filter*> filters;
     model::Filter* current_filter = nullptr;
 
     const QRegularExpression rx_rule(QStringLiteral(R"(^([a-zA-Z\.]+) +([a-z_]+)( +.+)?$)"));
-    const QHash<QString, model::FilterRuleType> possible_comparisons {
+    const HashMap<QString, model::FilterRuleType> possible_comparisons {
         { QStringLiteral("is_true"), model::FilterRuleType::IS_TRUE },
         { QStringLiteral("is_false"), model::FilterRuleType::IS_FALSE },
         { QStringLiteral("empty"), model::FilterRuleType::EMPTY },
@@ -94,10 +95,10 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (key == QLatin1String("filter")) {
-            if (!filters.contains(val))
-                filters.insert(val, new model::Filter(val));
+            if (!filters.count(val))
+                filters.emplace(val, new model::Filter(val));
 
-            current_filter = filters.value(val);
+            current_filter = filters.at(val);
             Q_ASSERT(current_filter);
             return;
         }
@@ -130,13 +131,13 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
 
         const QString comparison_str = rx_rule_match.captured(2);
         Q_ASSERT(!comparison_str.isEmpty());
-        const bool comparison_valid = possible_comparisons.contains(comparison_str);
+        const bool comparison_valid = possible_comparisons.count(comparison_str);
         if (!comparison_valid) {
             on_error(lineno, tr_log("unrecognized comparison `%1`, rule ignored").arg(comparison_str));
             return;
         }
 
-        const model::FilterRuleType comparison = possible_comparisons.value(comparison_str);
+        const model::FilterRuleType comparison = possible_comparisons.at(comparison_str);
         QString comparison_arg;
 
         switch (comparison) {
@@ -173,9 +174,9 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
 
 
     QVector<model::Filter*> out;
-    for (model::Filter* entry : filters) {
-        if (!entry->rules().isEmpty())
-            out.append(entry);
+    for (const auto& entry : filters) {
+        if (!entry.second->rules().isEmpty())
+            out.push_back(entry.second);
     }
     qInfo() << tr_log("Found %1 custom filters").arg(out.length());
     return out;

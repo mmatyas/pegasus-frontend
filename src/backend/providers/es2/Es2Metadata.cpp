@@ -21,7 +21,6 @@
 #include "Paths.h"
 #include "PegasusAssets.h"
 #include "Utils.h"
-#include "QStringHash.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 
@@ -43,16 +42,16 @@ QString findGamelistFile(const modeldata::Collection& collection)
 
     const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
 
-    QVector<QString> possible_files;
+    std::vector<QString> possible_files;
     for (const QString& dir : collection.source_dirs) {
-        possible_files.push_back(dir % GAMELISTFILE);
+        possible_files.emplace_back(dir % GAMELISTFILE);
     }
     if (!collection.shortName().isEmpty()) {
-        possible_files.push_back(paths::homePath()
+        possible_files.emplace_back(paths::homePath()
             % QStringLiteral("/.emulationstation/gamelists/")
             % collection.shortName()
             % GAMELISTFILE);
-        possible_files.push_back(QStringLiteral("/etc/emulationstation/gamelists/")
+        possible_files.emplace_back(QStringLiteral("/etc/emulationstation/gamelists/")
             % collection.shortName()
             % GAMELISTFILE);
     }
@@ -83,7 +82,7 @@ void convertToCanonicalPath(QString& path, const QString& containing_dir)
 }
 
 void findPegasusAssetsInScrapedir(const QDir& scrapedir,
-                                  const QHash<QString, QSharedPointer<modeldata::Game>>& games_by_shortpath)
+                                  const HashMap<QString, modeldata::GamePtr>& games_by_shortpath)
 {
     // FIXME: except the short path, this function is the same as the Pegasus asset code
     if (!scrapedir.exists())
@@ -101,7 +100,7 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir,
         if (!games_by_shortpath.count(shortpath))
             continue;
 
-        const QSharedPointer<modeldata::Game>& game = games_by_shortpath[shortpath];
+        const modeldata::GamePtr& game = games_by_shortpath.at(shortpath);
         pegasus_assets::addAssetToGame(game->assets, detection_result.asset_type, dir_it.filePath());
     }
 }
@@ -130,45 +129,38 @@ enum class MetaTypes : unsigned char {
     FAVORITE,
 };
 
-inline uint qHash(const MetaTypes& key, uint seed) {
-    return ::qHash(static_cast<unsigned char>(key), seed);
-}
-inline uint qHash(const MetaTypes& key) {
-    return ::qHash(static_cast<unsigned char>(key));
-}
-
-QHash<QString, MetaTypes>::const_iterator find_by_strref(const QHash<QString, MetaTypes>& map,
-                                                         const QStringRef& str)
+HashMap<QString, MetaTypes>::const_iterator find_by_strref(const HashMap<QString, MetaTypes>& map,
+                                                           const QStringRef& str)
 {
-    QHash<QString, MetaTypes>::const_iterator it;
+    HashMap<QString, MetaTypes>::const_iterator it;
     for (it = map.cbegin(); it != map.cend(); ++it)
-        if (it.key() == str)
+        if (it->first == str)
             break;
 
     return it;
 }
 
-void findAssets(const QSharedPointer<modeldata::Game>& game_ptr,
-                QHash<MetaTypes, QString>& xml_props,
+void findAssets(const modeldata::GamePtr& game_ptr,
+                HashMap<MetaTypes, QString, EnumHash>& xml_props,
                 const modeldata::Collection& collection)
 {
     modeldata::Game& game = *game_ptr;
     const QString rom_dir = collection.source_dirs.constFirst() % '/';
 
-    if (game.assets.single(AssetType::BOX_FRONT).isEmpty()) {
-        QString& path = xml_props[MetaTypes::IMAGE];
+    if (game.assets.single(AssetType::BOX_FRONT).isEmpty() && xml_props.count(MetaTypes::IMAGE)) {
+        QString& path = xml_props.at(MetaTypes::IMAGE);
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game.assets, AssetType::BOX_FRONT, path);
     }
-    if (game.assets.single(AssetType::ARCADE_MARQUEE).isEmpty()) {
-        QString& path = xml_props[MetaTypes::MARQUEE];
+    if (game.assets.single(AssetType::ARCADE_MARQUEE).isEmpty() && xml_props.count(MetaTypes::MARQUEE)) {
+        QString& path = xml_props.at(MetaTypes::MARQUEE);
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game.assets, AssetType::ARCADE_MARQUEE, path);
     }
-    {
-        QString& path = xml_props[MetaTypes::VIDEO];
+    if (xml_props.count(MetaTypes::VIDEO)) {
+        QString& path = xml_props.at(MetaTypes::VIDEO);
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game.assets, AssetType::VIDEOS, path);
@@ -198,17 +190,17 @@ MetadataParser::MetadataParser(QObject* parent)
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
 {}
 
-void MetadataParser::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                             const std::unordered_map<QString, modeldata::Collection>& collections)
+void MetadataParser::enhance(const HashMap<QString, modeldata::GamePtr>& games,
+                             const HashMap<QString, modeldata::Collection>& collections)
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
     // shortpath: dir name + extensionless filename
-    QHash<QString, QSharedPointer<modeldata::Game>> games_by_shortpath;
+    HashMap<QString, modeldata::GamePtr> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
     for (const auto& pair : games) {
         const QString shortpath = pair.second->fileinfo().dir().dirName() % '/' % pair.second->fileinfo().completeBaseName();
-        games_by_shortpath.insert(shortpath, pair.second);
+        games_by_shortpath.emplace(shortpath, pair.second);
     }
 
 
@@ -249,7 +241,7 @@ void MetadataParser::enhance(const std::unordered_map<QString, QSharedPointer<mo
 
 void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
                                        const modeldata::Collection& collection,
-                                       const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games) const
+                                       const HashMap<QString, modeldata::GamePtr>& games) const
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
@@ -276,12 +268,12 @@ void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
 
 void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
                                     const modeldata::Collection& collection,
-                                    const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games) const
+                                    const HashMap<QString, modeldata::GamePtr>& games) const
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
     // read all XML fields into a key-value map
-    QHash<MetaTypes, QString> xml_props;
+    HashMap<MetaTypes, QString, EnumHash> xml_props;
     while (xml.readNextStartElement()) {
         const auto map_iter = find_by_strref(m_key_types, xml.name());
         if (map_iter == m_key_types.cend()) {
@@ -289,7 +281,7 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
             continue;
         }
 
-        xml_props[map_iter.value()] = xml.readElementText();
+        xml_props[map_iter->second] = xml.readElementText();
     }
     if (xml.error()) {
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
@@ -313,29 +305,29 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
     if (!games.count(game_path))
         return;
 
-    const QSharedPointer<modeldata::Game>& game = games.at(game_path);
+    const modeldata::GamePtr& game = games.at(game_path);
     applyMetadata(game, xml_props);
     findAssets(game, xml_props, collection);
 }
 
-void MetadataParser::applyMetadata(const QSharedPointer<modeldata::Game>& game_ptr,
-                                   const QHash<MetaTypes, QString>& xml_props) const
+void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
+                                   const HashMap<MetaTypes, QString, EnumHash>& xml_props) const
 {
     modeldata::Game& game = *game_ptr;
 
     // first, the simple strings
-    game.title = xml_props[MetaTypes::NAME];
-    game.description = xml_props[MetaTypes::DESC];
-    game.addDeveloper(xml_props[MetaTypes::DEVELOPER]);
-    game.addPublisher(xml_props[MetaTypes::PUBLISHER]);
-    game.addGenre(xml_props[MetaTypes::GENRE]);
+    game.title = xml_props.at(MetaTypes::NAME);
+    game.description = xml_props.at(MetaTypes::DESC);
+    game.addDeveloper(xml_props.at(MetaTypes::DEVELOPER));
+    game.addPublisher(xml_props.at(MetaTypes::PUBLISHER));
+    game.addGenre(xml_props.at(MetaTypes::GENRE));
 
     // then the numbers
-    game.playcount = xml_props[MetaTypes::PLAYCOUNT].toInt();
-    game.rating = qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f);
+    game.playcount = xml_props.at(MetaTypes::PLAYCOUNT).toInt();
+    game.rating = qBound(0.f, xml_props.at(MetaTypes::RATING).toFloat(), 1.f);
 
     // the player count can be a range
-    const QString players_field = xml_props[MetaTypes::PLAYERS];
+    const QString players_field = xml_props.at(MetaTypes::PLAYERS);
     const auto players_match = m_players_regex.match(players_field);
     if (players_match.hasMatch()) {
         int a = 0, b = 0;
@@ -345,7 +337,7 @@ void MetadataParser::applyMetadata(const QSharedPointer<modeldata::Game>& game_p
     }
 
     // then the bools
-    const QString& favorite_val = xml_props[MetaTypes::FAVORITE];
+    const QString& favorite_val = xml_props.at(MetaTypes::FAVORITE);
     if (favorite_val.compare(QLatin1String("yes"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("true"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("1")) == 0) {
@@ -355,9 +347,9 @@ void MetadataParser::applyMetadata(const QSharedPointer<modeldata::Game>& game_p
     // then dates
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
 
-    game.lastplayed = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
+    game.lastplayed = QDateTime::fromString(xml_props.at(MetaTypes::LASTPLAYED), m_date_format);
 
-    const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
+    const QDateTime release_time(QDateTime::fromString(xml_props.at(MetaTypes::RELEASE), m_date_format));
     game.setReleaseDate(release_time.date());
 }
 

@@ -20,7 +20,6 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "Utils.h"
-#include "QStringHash.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 
@@ -32,10 +31,6 @@
 
 namespace {
 static constexpr auto MSG_PREFIX = "ES2:"; // TODO: don't duplicate
-
-QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QString>&, const QStringRef&);
-QStringList parseFilters(const QString& filters_raw);
-
 
 QString findSystemsFile()
 {
@@ -57,11 +52,12 @@ QString findSystemsFile()
     return QString();
 }
 
-QHash<QLatin1String, QString>::iterator findByStrRef(QHash<QLatin1String, QString>& map, const QStringRef& str)
+HashMap<QLatin1String, QString>::iterator
+findByStrRef(HashMap<QLatin1String, QString>& map, const QStringRef& str)
 {
-    QHash<QLatin1String, QString>::iterator it;
+    HashMap<QLatin1String, QString>::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
-        if (it.key() == str)
+        if (it->first == str)
             break;
 
     return it;
@@ -87,8 +83,8 @@ SystemsParser::SystemsParser(QObject* parent)
     : QObject(parent)
 {}
 
-void SystemsParser::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                         std::unordered_map<QString, modeldata::Collection>& collections)
+void SystemsParser::find(HashMap<QString, modeldata::GamePtr>& games,
+                         HashMap<QString, modeldata::Collection>& collections)
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -112,8 +108,8 @@ void SystemsParser::find(std::unordered_map<QString, QSharedPointer<modeldata::G
 }
 
 void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
-                                    std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                                    std::unordered_map<QString, modeldata::Collection>& collections)
+                                    HashMap<QString, modeldata::GamePtr>& games,
+                                    HashMap<QString, modeldata::Collection>& collections)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -144,8 +140,8 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
 }
 
 void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
-                                    std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                                    std::unordered_map<QString, modeldata::Collection>& collections)
+                                    HashMap<QString, modeldata::GamePtr>& games,
+                                    HashMap<QString, modeldata::Collection>& collections)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -159,7 +155,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         QLatin1String("command"),
     }};
     // all supported properties
-    QHash<QLatin1String, QString> xml_props {
+    HashMap<QLatin1String, QString> xml_props {
         { QLatin1String("name"), QString() },
         { QLatin1String("fullname"), QString() },
         { QLatin1String("path"), QString() },
@@ -170,7 +166,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     while (xml.readNextStartElement()) {
         auto it = findByStrRef(xml_props, xml.name());
         if (it != xml_props.end())
-            it.value() = xml.readElementText();
+            it->second = xml.readElementText();
         else
             xml.skipCurrentElement();
     }
@@ -249,9 +245,9 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
             files_it.next();
             const QFileInfo fileinfo = files_it.fileInfo();
 
-            QSharedPointer<modeldata::Game>& game_ptr = games[fileinfo.canonicalFilePath()];
+            modeldata::GamePtr& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr) {
-                game_ptr = QSharedPointer<modeldata::Game>::create(fileinfo);
+                game_ptr = modeldata::GamePtr::create(fileinfo);
                 game_ptr->launch_cmd = collection.launchCmd();
             }
 

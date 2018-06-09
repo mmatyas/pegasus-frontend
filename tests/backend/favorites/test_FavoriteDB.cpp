@@ -17,10 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "QStringHash.h"
 #include "configfiles/FavoriteDB.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
+#include "utils/HashMap.h"
 
 
 class test_FavoriteDB : public QObject {
@@ -35,15 +35,13 @@ private slots:
 
 void test_FavoriteDB::write()
 {
-    using GamePtr = QSharedPointer<modeldata::Game>;
-
     std::vector<modeldata::Collection> list;
     list.emplace_back(modeldata::Collection("coll1"));
-    list.back().gamesMut().emplace_back(GamePtr::create(QFileInfo(":/a/b/coll1dummy1")));
-    list.back().gamesMut().emplace_back(GamePtr::create(QFileInfo(":/coll1dummy2")));
+    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/a/b/coll1dummy1")));
+    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/coll1dummy2")));
         list.back().games().back()->is_favorite = true;
     list.emplace_back(modeldata::Collection("coll2"));
-    list.back().gamesMut().emplace_back(GamePtr::create(QFileInfo(":/x/y/z/coll2dummy1")));
+    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/x/y/z/coll2dummy1")));
         list.back().games().back()->is_favorite = true;
 
     QTemporaryFile tmp_file;
@@ -88,14 +86,12 @@ void test_FavoriteDB::write()
 
 void test_FavoriteDB::rewrite_empty()
 {
-    using GamePtr = QSharedPointer<modeldata::Game>;
-
     std::vector<modeldata::Collection> list;
     list.emplace_back(modeldata::Collection("coll1"));
-    list.back().gamesMut().emplace_back(GamePtr::create(QFileInfo(":/a/b/coll1dummy1")));
-    list.back().gamesMut().emplace_back(GamePtr::create(QFileInfo(":/coll1dummy2")));
+    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/a/b/coll1dummy1")));
+    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/coll1dummy2")));
     list.emplace_back(modeldata::Collection("coll2"));
-    list.back().gamesMut().emplace_back(GamePtr::create(QFileInfo(":/x/y/z/coll2dummy1")));
+    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/x/y/z/coll2dummy1")));
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -134,14 +130,14 @@ void test_FavoriteDB::rewrite_empty()
 
 void test_FavoriteDB::read()
 {
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
+    HashMap<QString, modeldata::GamePtr> games;
     const QStringList game_paths {
         QStringLiteral(":/a/b/coll1dummy1"),
         QStringLiteral(":/coll1dummy2"),
         QStringLiteral(":/x/y/z/coll2dummy1"),
     };
     for (const QString& path : game_paths)
-        games[path] = QSharedPointer<modeldata::Game>::create(path);
+        games[path] = modeldata::GamePtr::create(path);
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);

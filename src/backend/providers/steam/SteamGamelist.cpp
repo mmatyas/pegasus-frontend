@@ -19,7 +19,6 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "QStringHash.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 
@@ -106,7 +105,7 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
     return installdirs;
 }
 
-void register_appmanifests(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+void register_appmanifests(HashMap<QString, modeldata::GamePtr>& games,
                            modeldata::Collection& collection)
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
@@ -119,9 +118,9 @@ void register_appmanifests(std::unordered_map<QString, QSharedPointer<modeldata:
             dir_it.next();
             QFileInfo fileinfo = dir_it.fileInfo();
 
-            QSharedPointer<modeldata::Game>& game_ptr = games[fileinfo.canonicalFilePath()];
+            modeldata::GamePtr& game_ptr = games[fileinfo.canonicalFilePath()];
             if (!game_ptr)
-                game_ptr = QSharedPointer<modeldata::Game>::create(fileinfo);
+                game_ptr = modeldata::GamePtr::create(fileinfo);
 
             collection.gamesMut().emplace_back(game_ptr);
         }
@@ -138,8 +137,8 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                    std::unordered_map<QString, modeldata::Collection>& collections)
+void Gamelist::find(HashMap<QString, modeldata::GamePtr>& games,
+                    HashMap<QString, modeldata::Collection>& collections)
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())

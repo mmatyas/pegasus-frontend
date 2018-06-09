@@ -17,14 +17,12 @@
 
 #pragma once
 
-#include <QHash>
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
 #include <QString>
 #include <QStringList>
 #include <QRegularExpression>
-#include <unordered_map>
-
-namespace modeldata { class Game; }
-namespace modeldata { class Collection; }
 
 
 namespace providers {
@@ -37,17 +35,17 @@ public:
     PegasusMetadata();
 
     void enhance_in_dirs(const QStringList&,
-                         const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                         const std::unordered_map<QString, modeldata::Collection>&) const;
+                         const HashMap<QString, modeldata::GamePtr>&,
+                         const HashMap<QString, modeldata::Collection>&) const;
 
 private:
-    const QHash<QString, MetaAttribType> m_key_types;
+    const HashMap<QString, MetaAttribType> m_key_types;
     const QRegularExpression m_player_regex;
     const QRegularExpression m_rating_percent_regex;
     const QRegularExpression m_rating_float_regex;
     const QRegularExpression m_release_regex;
 
-    void read_metadata_file(const QString&, const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&) const;
+    void read_metadata_file(const QString&, const HashMap<QString, modeldata::GamePtr>&) const;
 };
 
 } // namespace pegasus

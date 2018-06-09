@@ -17,12 +17,11 @@
 
 #pragma once
 
+#include "utils/FwdDeclModelData.h"
+
 #include <QObject>
 #include <QPointer>
 #include <QProcess>
-
-namespace modeldata { class Game; }
-namespace modeldata { class Collection; }
 
 
 /// Launches and manages external processes

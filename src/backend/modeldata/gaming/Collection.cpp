@@ -29,7 +29,7 @@ void Collection::sortGames()
 
     // sort by name
     std::sort(m_games.begin(), m_games.end(),
-        [](const QSharedPointer<Game>& a, QSharedPointer<Game>& b) {
+        [](const GamePtr& a, const GamePtr& b) {
             return QString::localeAwareCompare(a->fileinfo().completeBaseName(),
                                                b->fileinfo().completeBaseName()) < 0;
         }

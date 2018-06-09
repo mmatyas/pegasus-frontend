@@ -36,14 +36,14 @@ Es2Provider::Es2Provider(QObject* parent)
             Qt::DirectConnection);
 }
 
-void Es2Provider::find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                       std::unordered_map<QString, modeldata::Collection>& collections)
+void Es2Provider::find(HashMap<QString, modeldata::GamePtr>& games,
+                       HashMap<QString, modeldata::Collection>& collections)
 {
     systems.find(games, collections);
 }
 
-void Es2Provider::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                          const std::unordered_map<QString, modeldata::Collection>& collections)
+void Es2Provider::enhance(const HashMap<QString, modeldata::GamePtr>& games,
+                          const HashMap<QString, modeldata::Collection>& collections)
 {
     metadata.enhance(games, collections);
 }

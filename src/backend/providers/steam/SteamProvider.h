@@ -31,10 +31,10 @@ class SteamProvider : public Provider {
 public:
     SteamProvider(QObject* parent = nullptr);
 
-    void find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-              std::unordered_map<QString, modeldata::Collection>&) final;
-    void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                 const std::unordered_map<QString, modeldata::Collection>&) final;
+    void find(HashMap<QString, modeldata::GamePtr>&,
+              HashMap<QString, modeldata::Collection>&) final;
+    void enhance(const HashMap<QString, modeldata::GamePtr>&,
+                 const HashMap<QString, modeldata::Collection>&) final;
 
 private:
     Gamelist gamelist;

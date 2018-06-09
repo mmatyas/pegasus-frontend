@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
 
 #pragma once
 
-#include <QObject>
-#include <unordered_map>
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
 
-namespace modeldata { class Collection; }
-namespace modeldata { class Game; }
+#include <QObject>
 
 
 namespace providers {
@@ -33,8 +32,8 @@ class Gamelist : public QObject {
 public:
     explicit Gamelist(QObject* parent);
 
-    void find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-              std::unordered_map<QString, modeldata::Collection>& collections);
+    void find(HashMap<QString, modeldata::GamePtr>& games,
+              HashMap<QString, modeldata::Collection>& collections);
 
 signals:
     void gameCountChanged(int count);

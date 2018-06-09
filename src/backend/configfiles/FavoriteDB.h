@@ -17,15 +17,14 @@
 
 #pragma once
 
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
 #include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QtConcurrent/QtConcurrent>
-#include <unordered_map>
-
-namespace modeldata { class Game; }
-namespace modeldata { class Collection; }
 
 
 class FavoriteWriter : public QObject {
@@ -57,6 +56,6 @@ private:
 class FavoriteReader {
 public:
     /// Reads the list of favorites and marks the matching games as favorite.
-    static void readDB(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
+    static void readDB(const HashMap<QString, modeldata::GamePtr>&,
                        const QString& db_path = QString());
 };

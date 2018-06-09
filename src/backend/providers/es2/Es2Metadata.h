@@ -17,14 +17,12 @@
 
 #pragma once
 
-#include <QHash>
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
 #include <QObject>
 #include <QRegularExpression>
 #include <QXmlStreamReader>
-#include <unordered_map>
-
-namespace modeldata { class Collection; }
-namespace modeldata { class Game; }
 
 
 namespace providers {
@@ -34,25 +32,25 @@ enum class MetaTypes : unsigned char;
 
 class MetadataParser : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(MetadataParser)
 
 public:
     MetadataParser(QObject* parent);
-    void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                 const std::unordered_map<QString, modeldata::Collection>& collections);
+    void enhance(const HashMap<QString, modeldata::GamePtr>& games,
+                 const HashMap<QString, modeldata::Collection>& collections);
 
 private:
-    const QHash<QString, MetaTypes> m_key_types;
+    const HashMap<QString, MetaTypes> m_key_types;
     const QString m_date_format;
     const QRegularExpression m_players_regex;
 
     void parseGamelistFile(QXmlStreamReader&,
                            const modeldata::Collection&,
-                           const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&) const;
+                           const HashMap<QString, modeldata::GamePtr>&) const;
     void parseGameEntry(QXmlStreamReader&,
                         const modeldata::Collection&,
-                        const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&) const;
-    void applyMetadata(const QSharedPointer<modeldata::Game>&, const QHash<MetaTypes, QString>&) const;
+                        const HashMap<QString, modeldata::GamePtr>&) const;
+    void applyMetadata(const modeldata::GamePtr&,
+                       const HashMap<MetaTypes, QString, EnumHash>&) const;
 };
 
 } // namespace es2

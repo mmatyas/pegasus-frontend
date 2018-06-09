@@ -22,7 +22,6 @@
 #include "PegasusAssets.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
-#include "QStringHash.h"
 #include "modeldata/gaming/Game.h"
 
 #include <QDebug>
@@ -77,8 +76,8 @@ PegasusMetadata::PegasusMetadata()
 }
 
 void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
-                                      const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                                      const std::unordered_map<QString, modeldata::Collection>&) const
+                                      const HashMap<QString, modeldata::GamePtr>& games,
+                                      const HashMap<QString, modeldata::Collection>&) const
 {
     pegasus_assets::findAssets(dir_list, games);
 
@@ -88,10 +87,10 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
 
 
 void PegasusMetadata::read_metadata_file(const QString& dir_path,
-                                         const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games) const
+                                         const HashMap<QString, modeldata::GamePtr>& games) const
 {
     QString curr_config_path;
-    QSharedPointer<modeldata::Game> curr_game = nullptr;
+    modeldata::GamePtr curr_game = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
@@ -122,12 +121,12 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
             // TODO: unimplemented
             return;
         }
-        if (!m_key_types.contains(key)) {
+        if (!m_key_types.count(key)) {
             on_error(lineno, tr_log("unrecognized attribute name `%3`, ignored").arg(key));
             return;
         }
 
-        switch (m_key_types[key]) {
+        switch (m_key_types.at(key)) {
             case MetaAttribType::TITLE:
                 curr_game->title = val;
                 break;

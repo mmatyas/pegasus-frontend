@@ -148,11 +148,11 @@ bool all_filters_match(const model::Game& game, const std::vector<model::Filter*
 
 namespace model {
 
-GameList::GameList(const std::vector<QSharedPointer<modeldata::Game>>& data, QObject* parent)
+GameList::GameList(const std::vector<modeldata::GamePtr>& data, QObject* parent)
     : QObject(parent)
     , m_game_idx(-1)
 {
-    for (const QSharedPointer<modeldata::Game>& game_ptr : data) {
+    for (const modeldata::GamePtr& game_ptr : data) {
         m_all_games.append(new Game(game_ptr.data(), this));
 
         connect(m_all_games.last(), &Game::launchRequested,

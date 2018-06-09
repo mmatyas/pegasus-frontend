@@ -17,13 +17,11 @@
 
 #pragma once
 
-#include <QSharedPointer>
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
 #include <QString>
 #include <QObject>
-#include <unordered_map>
-
-namespace modeldata { struct Game; }
-namespace modeldata { struct Collection; }
 
 
 namespace providers {
@@ -36,12 +34,12 @@ public:
     virtual ~Provider();
 
     /// Find all games and collections.
-    virtual void find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                      std::unordered_map<QString, modeldata::Collection>& collections) = 0;
+    virtual void find(HashMap<QString, modeldata::GamePtr>& games,
+                      HashMap<QString, modeldata::Collection>& collections) = 0;
 
     /// Enhance the previously found games and collections with metadata and assets.
-    virtual void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                         const std::unordered_map<QString, modeldata::Collection>& collections) = 0;
+    virtual void enhance(const HashMap<QString, modeldata::GamePtr>& games,
+                         const HashMap<QString, modeldata::Collection>& collections) = 0;
 
 signals:
     void gameCountChanged(int);

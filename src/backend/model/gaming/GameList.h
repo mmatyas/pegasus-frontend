@@ -18,15 +18,14 @@
 #pragma once
 
 #include "Game.h"
+#include "utils/FwdDeclModelData.h"
 
 #include <QObject>
 #include <QQmlListProperty>
 #include <QVector>
 
 enum class IndexShiftDirection : unsigned char;
-
 namespace model { class Filters; }
-namespace modeldata { struct Collection; }
 
 
 namespace model {
@@ -55,7 +54,7 @@ class GameList : public QObject {
                NOTIFY allGamesChanged)
 
 public:
-    explicit GameList(const std::vector<QSharedPointer<modeldata::Game>>&, QObject* parent = nullptr);
+    explicit GameList(const std::vector<modeldata::GamePtr>&, QObject* parent = nullptr);
 
     Game* current() const;
 

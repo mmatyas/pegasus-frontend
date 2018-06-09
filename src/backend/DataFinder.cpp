@@ -32,7 +32,7 @@
 
 namespace {
 
-void removeEmptyCollections(std::unordered_map<QString, modeldata::Collection>& collections)
+void removeEmptyCollections(HashMap<QString, modeldata::Collection>& collections)
 {
     auto it = collections.begin();
     while (it != collections.end()) {
@@ -68,8 +68,8 @@ DataFinder::DataFinder(QObject* parent)
 
 // Providers can add new games, new collections and further directories
 // to check for metadata info.
-void DataFinder::runListProviders(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                                  std::unordered_map<QString, modeldata::Collection>& collections)
+void DataFinder::runListProviders(HashMap<QString, modeldata::GamePtr>& games,
+                                  HashMap<QString, modeldata::Collection>& collections)
 {
     for (size_t i = 1; i < m_providers.size(); i++)
         m_providers[i]->find(games, collections);
@@ -87,8 +87,8 @@ void DataFinder::onRomDirFound(QString dir_path)
         ->add_game_dir(std::move(dir_path));
 }
 
-void DataFinder::runMetadataProviders(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                                      const std::unordered_map<QString, modeldata::Collection>& collections)
+void DataFinder::runMetadataProviders(const HashMap<QString, modeldata::GamePtr>& games,
+                                      const HashMap<QString, modeldata::Collection>& collections)
 {
     emit metadataSearchStarted();
 
@@ -100,8 +100,8 @@ void DataFinder::runMetadataProviders(const std::unordered_map<QString, QSharedP
 
 std::vector<modeldata::Collection> DataFinder::find()
 {
-    std::unordered_map<QString, modeldata::Collection> collections;
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
+    HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, modeldata::GamePtr> games;
 
     runListProviders(games, collections);
     runMetadataProviders(games, collections);

@@ -19,7 +19,6 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "QStringHash.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 
@@ -44,7 +43,7 @@ static constexpr auto MSG_PREFIX = "Steam:";
 struct SteamGameEntry {
     QString title;
     QString appid;
-    QSharedPointer<modeldata::Game> game_ptr;
+    modeldata::GamePtr game_ptr;
 
     SteamGameEntry() : game_ptr(nullptr) {}
 
@@ -333,8 +332,8 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                       const std::unordered_map<QString, modeldata::Collection>& collections)
+void Metadata::enhance(const HashMap<QString, modeldata::GamePtr>&,
+                       const HashMap<QString, modeldata::Collection>& collections)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
     if (!collections.count(STEAM_TAG))
@@ -347,7 +346,7 @@ void Metadata::enhance(const std::unordered_map<QString, QSharedPointer<modeldat
 
     std::vector<SteamGameEntry> entries;
 
-    for (const QSharedPointer<modeldata::Game>& game_ptr : collection.games()) {
+    for (const modeldata::GamePtr& game_ptr : collection.games()) {
         SteamGameEntry entry = read_manifest(game_ptr->fileinfo().filePath());
         if (!entry.appid.isEmpty()) {
             if (entry.title.isEmpty())

@@ -17,12 +17,11 @@
 
 #pragma once
 
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
 #include <QObject>
 #include <QXmlStreamReader>
-#include <unordered_map>
-
-namespace modeldata { class Collection; }
-namespace modeldata { class Game; }
 
 
 namespace providers {
@@ -35,8 +34,8 @@ class SystemsParser : public QObject {
 public:
     SystemsParser(QObject* parent);
 
-    void find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-              std::unordered_map<QString, modeldata::Collection>& collections);
+    void find(HashMap<QString, modeldata::GamePtr>& games,
+              HashMap<QString, modeldata::Collection>& collections);
 
 signals:
     void gameCountChanged(int count);
@@ -44,11 +43,11 @@ signals:
 
 private:
     void readSystemsFile(QXmlStreamReader&,
-                         std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                         std::unordered_map<QString, modeldata::Collection>&);
+                         HashMap<QString, modeldata::GamePtr>&,
+                         HashMap<QString, modeldata::Collection>&);
     void readSystemEntry(QXmlStreamReader&,
-                         std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                         std::unordered_map<QString, modeldata::Collection>&);
+                         HashMap<QString, modeldata::GamePtr>&,
+                         HashMap<QString, modeldata::Collection>&);
 };
 
 } // namespace es2

@@ -18,15 +18,12 @@
 #pragma once
 
 #include "providers/Provider.h"
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
 
 #include <QObject>
 #include <QVector>
-
 #include <memory>
-#include <unordered_map>
-
-namespace modeldata { struct Collection; }
-namespace modeldata { struct Game; }
 
 
 class DataFinder : public QObject {
@@ -42,10 +39,10 @@ signals:
     void metadataSearchStarted();
 
 private:
-    void runListProviders(std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                          std::unordered_map<QString, modeldata::Collection>&);
-    void runMetadataProviders(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                              const std::unordered_map<QString, modeldata::Collection>&);
+    void runListProviders(HashMap<QString, modeldata::GamePtr>&,
+                          HashMap<QString, modeldata::Collection>&);
+    void runMetadataProviders(const HashMap<QString, modeldata::GamePtr>&,
+                              const HashMap<QString, modeldata::Collection>&);
 
     using ProviderPtr = std::unique_ptr<providers::Provider>;
     std::vector<ProviderPtr> m_providers;

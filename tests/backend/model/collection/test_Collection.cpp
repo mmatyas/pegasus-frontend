@@ -42,11 +42,9 @@ void test_Collection::names()
 
 void test_Collection::gameChanged()
 {
-    using GamePtr = QSharedPointer<modeldata::Game>;
-
     modeldata::Collection modeldata("dummy");
-    modeldata.gamesMut().emplace_back(GamePtr::create(QFileInfo("dummy1")));
-    modeldata.gamesMut().emplace_back(GamePtr::create(QFileInfo("dummy2")));
+    modeldata.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
+    modeldata.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
     model::Collection collection(&modeldata);
 
     QSignalSpy triggered(&collection, &model::Collection::currentGameChanged);

@@ -17,9 +17,9 @@
 
 #include "Utils.h"
 
-#include <QFileInfo>
+#include "utils/HashMap.h"
 
-#include <unordered_map>
+#include <QFileInfo>
 
 #ifdef Q_OS_UNIX
 #include <sys/stat.h>
@@ -45,7 +45,7 @@ bool validFile(const QString& path)
 
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)
 {
-    static const std::unordered_map<IndexShiftDirection, std::function<int(int,int)>, EnumClassHash> fn_table {
+    static const HashMap<IndexShiftDirection, std::function<int(int,int)>, EnumHash> fn_table {
         { IndexShiftDirection::INCREMENT,        [](int idx, int count){ return mathMod(idx + 1, count); } },
         { IndexShiftDirection::DECREMENT,        [](int idx, int count){ return mathMod(idx - 1, count); } },
         { IndexShiftDirection::INCREMENT_NOWRAP, [](int idx, int count){ return std::min(idx + 1, count - 1); } },

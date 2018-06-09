@@ -17,7 +17,6 @@
 
 #include "PegasusAssets.h"
 
-#include "QStringHash.h"
 #include "model/gaming/Game.h"
 
 #include <QDebug>
@@ -29,7 +28,7 @@
 
 namespace {
 
-static const QHash<QString, AssetType> TYPE_BY_SUFFIX = {
+static const HashMap<QString, AssetType> TYPE_BY_SUFFIX = {
     { QStringLiteral("-boxFront"), AssetType::BOX_FRONT },
     { QStringLiteral("-box_front"), AssetType::BOX_FRONT },
     { QStringLiteral("-boxart2D"), AssetType::BOX_FRONT },
@@ -68,7 +67,7 @@ static const QHash<QString, AssetType> TYPE_BY_SUFFIX = {
     { QStringLiteral("-screenshot"), AssetType::SCREENSHOTS },
     { QStringLiteral("-video"), AssetType::VIDEOS },
 };
-static const QHash<QString, AssetType> TYPE_BY_EXT = {
+static const HashMap<QString, AssetType> TYPE_BY_EXT = {
     { QStringLiteral("png"), AssetType::BOX_FRONT },
     { QStringLiteral("jpg"), AssetType::BOX_FRONT },
     { QStringLiteral("webm"), AssetType::VIDEOS },
@@ -116,16 +115,18 @@ AssetCheckResult checkFile(const QFileInfo& file)
         ? QString()
         : basename.mid(last_dash);
 
-    if (!TYPE_BY_SUFFIX.contains(suffix)) {
+    if (!TYPE_BY_SUFFIX.count(suffix)) {
         // missing/unknown suffix -> guess by extension
         return {
             basename,
-            TYPE_BY_EXT.value(file.suffix(), AssetType::UNKNOWN),
+            TYPE_BY_EXT.count(file.suffix())
+                ? TYPE_BY_EXT.at(file.suffix())
+                : AssetType::UNKNOWN,
         };
     }
 
     const QString game_basename = basename.left(last_dash);
-    const AssetType type = TYPE_BY_SUFFIX[suffix];
+    const AssetType type = TYPE_BY_SUFFIX.at(suffix);
     if (!allowedAssetExts(type).contains(file.suffix())) {
         // known suffix but wrong extension -> invalid
         return {
@@ -155,10 +156,10 @@ void addAssetToGame(modeldata::GameAssets& gameassets, AssetType asset_type, con
 }
 
 void findAssets(const QStringList& asset_dirs,
-                const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games)
+                const HashMap<QString, modeldata::GamePtr>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games_by_shortpath;
+    HashMap<QString, modeldata::GamePtr> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
     for (const auto& pair : games) {
         const QString shortpath = pair.second->fileinfo().canonicalPath() % '/' % pair.second->fileinfo().completeBaseName();
@@ -187,7 +188,7 @@ void findAssets(const QStringList& asset_dirs,
             if (!games_by_shortpath.count(shortpath))
                 continue;
 
-            const QSharedPointer<modeldata::Game>& game = games_by_shortpath[shortpath];
+            const modeldata::GamePtr& game = games_by_shortpath[shortpath];
             addAssetToGame(game->assets, detection_result.asset_type, dir_it.filePath());
         }
     }

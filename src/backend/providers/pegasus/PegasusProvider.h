@@ -31,10 +31,10 @@ class PegasusProvider : public Provider {
 public:
     explicit PegasusProvider(QObject* parent = nullptr);
 
-    void find(std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-              std::unordered_map<QString, modeldata::Collection>&) final;
-    void enhance(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                 const std::unordered_map<QString, modeldata::Collection>&) final;
+    void find(HashMap<QString, modeldata::GamePtr>&,
+              HashMap<QString, modeldata::Collection>&) final;
+    void enhance(const HashMap<QString, modeldata::GamePtr>&,
+                 const HashMap<QString, modeldata::Collection>&) final;
 
     void add_game_dir(const QString&);
 

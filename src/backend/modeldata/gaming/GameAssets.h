@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Assets.h"
+#include "utils/HashMap.h"
 
 #include <QString>
 #include <QStringList>
-#include <unordered_map>
 
 
 namespace modeldata {
@@ -26,8 +26,8 @@ struct GameAssets {
     GameAssets& operator=(GameAssets&&) = default;
 
 private:
-    std::unordered_map<AssetType, QString> m_single_assets;
-    std::unordered_map<AssetType, QStringList> m_multi_assets;
+    HashMap<AssetType, QString> m_single_assets;
+    HashMap<AssetType, QStringList> m_multi_assets;
 };
 
 } // namespace modeldata

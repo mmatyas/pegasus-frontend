@@ -17,6 +17,8 @@
 
 #include "ThemeList.h"
 
+#include "utils/HashMap.h"
+
 #include "ConfigFile.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
@@ -44,9 +46,9 @@ QStringList themeDirectories()
     return theme_dirs;
 }
 
-QHash<QString, QString> read_metafile(const QString& config_file_path)
+HashMap<QString, QString> read_metafile(const QString& config_file_path)
 {
-    QHash<QString, QString> result;
+    HashMap<QString, QString> result;
 
     config::readFile(
         config_file_path,
@@ -54,7 +56,7 @@ QHash<QString, QString> read_metafile(const QString& config_file_path)
             if (result.count(key))
                 result[key] += QStringLiteral(", ") % val;
             else
-                result.insert(key, val);
+                result.emplace(key, val);
         },
         [&](const int linenum, const QString msg){
             qWarning().noquote() << tr_log("`%1`, line %2: %3")
@@ -112,8 +114,8 @@ void ThemeList::findAvailableThemes()
                 continue;
             }
 
-            const QHash<QString, QString> metadata = read_metafile(meta_path);
-            if (!metadata.contains(META_KEY_NAME)) {
+            HashMap<QString, QString> metadata = read_metafile(meta_path);
+            if (!metadata.count(META_KEY_NAME)) {
                 qWarning().noquote() << warn_missingentry.arg(META_KEY_NAME, meta_path);
                 continue;
             }
@@ -127,11 +129,11 @@ void ThemeList::findAvailableThemes()
 
             m_themes.append(new model::Theme(
                 basedir, qml_path,
-                metadata.value(META_KEY_NAME),
-                metadata.value(META_KEY_AUTHOR),
-                metadata.value(META_KEY_VERSION),
-                metadata.value(META_KEY_SUMMARY),
-                metadata.value(META_KEY_DESC),
+                metadata[META_KEY_NAME],
+                metadata[META_KEY_AUTHOR],
+                metadata[META_KEY_VERSION],
+                metadata[META_KEY_SUMMARY],
+                metadata[META_KEY_DESC],
                 this
             ));
 

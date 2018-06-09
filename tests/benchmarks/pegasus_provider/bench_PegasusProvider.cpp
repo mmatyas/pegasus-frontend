@@ -34,8 +34,8 @@ private slots:
 
 void bench_PegasusProvider::find_in_empty_dir()
 {
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
-    std::unordered_map<QString, modeldata::Collection> collections;
+    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Collection> collections;
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/empty"));
 
@@ -46,8 +46,8 @@ void bench_PegasusProvider::find_in_empty_dir()
 
 void bench_PegasusProvider::find_in_filled_dir()
 {
-    std::unordered_map<QString, QSharedPointer<modeldata::Game>> games;
-    std::unordered_map<QString, modeldata::Collection> collections;
+    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Collection> collections;
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/filled"));
 

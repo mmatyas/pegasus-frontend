@@ -43,9 +43,9 @@ struct GameFilter {
 };
 
 void traverse_dir(const QString& dir_base_path,
-                  const std::unordered_map<QString, GameFilter>& filter_config,
-                  std::unordered_map<QString, modeldata::Collection>& collections,
-                  std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games)
+                  const HashMap<QString, GameFilter>& filter_config,
+                  HashMap<QString, modeldata::Collection>& collections,
+                  HashMap<QString, modeldata::GamePtr>& games)
 {
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
@@ -93,9 +93,9 @@ void traverse_dir(const QString& dir_base_path,
 
 
                 modeldata::Collection& collection = collections.at(config_it.first);
-                QSharedPointer<modeldata::Game>& game_ptr = games[fileinfo.canonicalFilePath()];
+                modeldata::GamePtr& game_ptr = games[fileinfo.canonicalFilePath()];
                 if (!game_ptr) {
-                    game_ptr = QSharedPointer<modeldata::Game>::create(fileinfo);
+                    game_ptr = modeldata::GamePtr::create(fileinfo);
                     game_ptr->launch_cmd = collection.launchCmd();
                 }
 
@@ -119,9 +119,9 @@ enum class CollAttribType : unsigned char {
     REGEX,
 };
 
-std::unordered_map<QString, GameFilter> read_collections_file(const QHash<QString, CollAttribType>& key_types,
-                                                 const QString& dir_path,
-                                                 std::unordered_map<QString, modeldata::Collection>& collections)
+HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAttribType>& key_types,
+                                                   const QString& dir_path,
+                                                   HashMap<QString, modeldata::Collection>& collections)
 {
     // reminder: sections are collection names
     // including keys: extensions, files, regex
@@ -129,7 +129,7 @@ std::unordered_map<QString, GameFilter> read_collections_file(const QHash<QStrin
     // optional: name, launch
 
     QString curr_config_path;
-    std::unordered_map<QString, GameFilter> config;
+    HashMap<QString, GameFilter> config;
     modeldata::Collection* curr_coll = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
@@ -166,7 +166,7 @@ std::unordered_map<QString, GameFilter> read_collections_file(const QHash<QStrin
         GameFilterGroup& filter_group = key.startsWith(QLatin1String("ignore-"))
             ? filter.exclude
             : filter.include;
-        switch (key_types[key]) {
+        switch (key_types.at(key)) {
             case CollAttribType::SHORT_NAME:
                 curr_coll->setShortName(val);
                 break;
@@ -237,8 +237,8 @@ PegasusCollections::PegasusCollections()
 }
 
 void PegasusCollections::find_in_dirs(const QStringList& dir_list,
-                                      std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
-                                      std::unordered_map<QString, modeldata::Collection>& collections,
+                                      HashMap<QString, modeldata::GamePtr>& games,
+                                      HashMap<QString, modeldata::Collection>& collections,
                                       const std::function<void(int)>& update_gamecount_maybe) const
 {
     for (const QString& dir_path : dir_list) {

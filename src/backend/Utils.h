@@ -34,14 +34,6 @@ bool validFile(const QString& path);
 inline int mathMod(int a, int n) { return (a % n + n) % n; }
 
 
-// hash for enum classes
-struct EnumClassHash {
-    template <typename T>
-    std::size_t operator()(T key) const {
-        return static_cast<std::size_t>(key);
-    }
-};
-
 // Index shifting
 enum class IndexShiftDirection : unsigned char {
     INCREMENT,

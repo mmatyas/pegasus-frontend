@@ -17,13 +17,13 @@
 
 #pragma once
 
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
 #include <QFileInfo>
 #include <QString>
-#include <unordered_map>
 
 enum class AssetType : unsigned char;
-namespace modeldata { struct Game; }
-namespace modeldata { struct GameAssets; }
 
 
 namespace pegasus_assets {
@@ -38,6 +38,6 @@ AssetCheckResult checkFile(const QFileInfo&);
 void addAssetToGame(modeldata::GameAssets&, AssetType, const QString&);
 
 void findAssets(const QStringList& asset_dirs,
-                const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games);
+                const HashMap<QString, modeldata::GamePtr>& games);
 
 } // namespace pegasus_assets

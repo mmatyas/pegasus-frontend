@@ -17,8 +17,9 @@
 
 #pragma once
 
+#include "utils/HashMap.h"
+
 #include <QGamepadManager>
-#include <QHash>
 #include <QObject>
 
 
@@ -47,6 +48,6 @@ private:
         AxisState();
     };
 
-    using DeviceAxes = QHash<QGamepadManager::GamepadAxis, AxisState>;
-    QHash<int, DeviceAxes> devices;
+    using DeviceAxes = HashMap<QGamepadManager::GamepadAxis, AxisState, EnumHash>;
+    HashMap<int, DeviceAxes> devices;
 };

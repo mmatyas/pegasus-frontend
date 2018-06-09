@@ -52,9 +52,9 @@ void test_CollectionList::addPlatform()
 {
     std::vector<modeldata::Collection> modeldata;
     modeldata.emplace_back(modeldata::Collection("coll1"));
-    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy1")));
+    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
     modeldata.emplace_back(modeldata::Collection("coll2"));
-    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy2")));
+    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
 
 
     model::CollectionList list;
@@ -79,9 +79,9 @@ void test_CollectionList::indexChange()
 
     std::vector<modeldata::Collection> modeldata;
     modeldata.emplace_back(modeldata::Collection("coll1"));
-    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy1")));
+    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
     modeldata.emplace_back(modeldata::Collection("coll2"));
-    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy2")));
+    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
 
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
@@ -166,9 +166,9 @@ void test_CollectionList::indexIncDec()
 {
     std::vector<modeldata::Collection> modeldata;
     modeldata.emplace_back(modeldata::Collection("coll1"));
-    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy1")));
+    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
     modeldata.emplace_back(modeldata::Collection("coll2"));
-    modeldata.back().gamesMut().emplace_back(QSharedPointer<modeldata::Game>::create(QFileInfo("dummy2")));
+    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
 
     model::CollectionList list;
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));

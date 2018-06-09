@@ -19,7 +19,6 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "QStringHash.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 
@@ -90,7 +89,7 @@ void FavoriteWriter::queueTask(const std::vector<modeldata::Collection>& coll_li
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const modeldata::Collection& coll : coll_list) {
-        for (const QSharedPointer<modeldata::Game>& game : coll.games()) {
+        for (const modeldata::GamePtr& game : coll.games()) {
             if (game->is_favorite)
                 m_pending_task << game->fileinfo().canonicalFilePath();
         }
@@ -100,7 +99,7 @@ void FavoriteWriter::queueTask(const std::vector<modeldata::Collection>& coll_li
         start_processing();
 }
 
-void FavoriteReader::readDB(const std::unordered_map<QString, QSharedPointer<modeldata::Game>>& games,
+void FavoriteReader::readDB(const HashMap<QString, modeldata::GamePtr>& games,
                             const QString& db_path)
 {
     const QString real_db_path = db_path.isEmpty() ? default_db_path() : db_path;

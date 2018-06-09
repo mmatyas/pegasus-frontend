@@ -17,16 +17,11 @@
 
 #pragma once
 
-#include "QStringHash.h"
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
 
-#include <QHash>
-#include <QSharedPointer>
 #include <QStringList>
 #include <functional>
-#include <unordered_map>
-
-namespace modeldata { class Game; }
-namespace modeldata { class Collection; }
 
 
 namespace providers {
@@ -39,12 +34,12 @@ public:
     PegasusCollections();
 
     void find_in_dirs(const QStringList&,
-                      std::unordered_map<QString, QSharedPointer<modeldata::Game>>&,
-                      std::unordered_map<QString, modeldata::Collection>&,
+                      HashMap<QString, modeldata::GamePtr>&,
+                      HashMap<QString, modeldata::Collection>&,
                       const std::function<void(int)>&) const;
 
 private:
-    const QHash<QString, CollAttribType> m_key_types;
+    const HashMap<QString, CollAttribType> m_key_types;
 };
 
 } // namespace pegasus
