@@ -9,6 +9,7 @@
 namespace modeldata {
 
 struct Game;
+using GamePtr = QSharedPointer<modeldata::Game>;
 
 struct Collection {
     explicit Collection(QString name);
@@ -19,8 +20,8 @@ struct Collection {
     void setShortName(const QString&);
     void setLaunchCmd(QString);
 
-    const std::vector<QSharedPointer<modeldata::Game>>& games() const { return m_games; }
-    std::vector<QSharedPointer<modeldata::Game>>& gamesMut() { return m_games; }
+    const std::vector<GamePtr>& games() const { return m_games; }
+    std::vector<GamePtr>& gamesMut() { return m_games; }
     void sortGames();
 
     QStringList source_dirs; // TODO: remove
@@ -36,7 +37,7 @@ private:
     QString m_short_name;
     QString m_launch_cmd;
 
-    std::vector<QSharedPointer<modeldata::Game>> m_games;
+    std::vector<GamePtr> m_games;
 };
 
 } // namespace modeldata
