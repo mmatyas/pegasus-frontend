@@ -27,8 +27,8 @@ class test_GameList : public QObject {
 
 private slots:
     void empty();
+    void nonempty();
 
-    void addGame();
     void sortGames();
 
     void indexChange();
@@ -58,14 +58,12 @@ void test_GameList::empty()
     QCOMPARE(list.property("countAll").toInt(), 0);
 }
 
-void test_GameList::addGame()
+void test_GameList::nonempty()
 {
-    using GamePtr = modeldata::GamePtr;
-
-    std::vector<GamePtr> modeldata;
-    modeldata.emplace_back(GamePtr::create(QFileInfo("a")));
-    modeldata.emplace_back(GamePtr::create(QFileInfo("b")));
-    modeldata.emplace_back(GamePtr::create(QFileInfo("c")));
+    std::vector<modeldata::GamePtr> modeldata;
+    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("a")));
+    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("b")));
+    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("c")));
     model::GameList list(modeldata);
 
     QCOMPARE(list.property("current").value<model::Game*>(), list.allGames().first());
@@ -80,9 +78,10 @@ void test_GameList::sortGames()
     collection.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("bbb")));
     collection.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("aaa")));
     collection.sortGames();
+    model::GameList list(collection.games());
 
-    QCOMPARE(collection.games().front()->fileinfo().filePath(), QLatin1String("aaa"));
-    QCOMPARE(collection.games().back()->fileinfo().filePath(), QLatin1String("bbb"));
+    QCOMPARE(list.allGames().front()->property("title").toString(), QLatin1String("aaa"));
+    QCOMPARE(list.allGames().back()->property("title").toString(), QLatin1String("bbb"));
 }
 
 void test_GameList::indexChange()
@@ -162,11 +161,9 @@ void test_GameList::indexIncDec_data()
 
 void test_GameList::indexIncDec()
 {
-    using GamePtr = modeldata::GamePtr;
-
-    std::vector<GamePtr> modeldata;
-    modeldata.emplace_back(GamePtr::create(QFileInfo("aaa")));
-    modeldata.emplace_back(GamePtr::create(QFileInfo("bbb")));
+    std::vector<modeldata::GamePtr> modeldata;
+    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("aaa")));
+    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("bbb")));
     model::GameList list(modeldata);
 
     QFETCH(int, start_idx);

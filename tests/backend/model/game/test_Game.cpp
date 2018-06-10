@@ -47,7 +47,7 @@ void testStrAndList(modeldata::Game& modeldata,
     // first
     fn_add("test1");
     QCOMPARE(game.property(str_name).toString(), QStringLiteral("test1"));
-    QCOMPARE(game.property(list_name).toStringList(), {"test1"});
+    QCOMPARE(game.property(list_name).toStringList(), QStringList({"test1"}));
 
     // second
     fn_add("test2");
