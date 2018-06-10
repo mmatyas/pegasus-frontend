@@ -90,7 +90,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                                          const HashMap<QString, modeldata::GamePtr>& games) const
 {
     QString curr_config_path;
-    modeldata::GamePtr curr_game = nullptr;
+    modeldata::GamePtr curr_game;
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
@@ -100,7 +100,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
         if (key == QLatin1String("file")) {
             const QString curr_game_path = dir_path % '/' % val;
             const QFileInfo fileinfo(curr_game_path);
-            curr_game = nullptr;
+            curr_game.clear();
 
             if (!games.count(fileinfo.canonicalFilePath())) {
                 on_error(lineno,
@@ -200,7 +200,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
     }
     else {
         curr_config_path = dir_path + QStringLiteral("/metadata.txt");
-        curr_game = nullptr;
+        curr_game.clear();
         if (::validFile(curr_config_path)) {
             qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
             config::readFile(curr_config_path,  on_attribute, on_error);
