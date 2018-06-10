@@ -43,8 +43,8 @@ void test_PegasusProvider::find_in_empty_dir()
     provider.add_game_dir(QStringLiteral(":/empty"));
     provider.find(games, collections);
 
-    QCOMPARE(collections.size(), 0ul);
-    QCOMPARE(games.size(), 0ul);
+    QVERIFY(collections.size() == 0);
+    QVERIFY(games.size() == 0);
 }
 
 void test_PegasusProvider::find_in_filled_dir()
@@ -58,16 +58,16 @@ void test_PegasusProvider::find_in_filled_dir()
     provider.find(games, collections);
 
     // finds the correct collections
-    QCOMPARE(collections.size(), 3ul);
+    QVERIFY(collections.size() == 3);
     QVERIFY(collections.count(QStringLiteral("My Games")));
     QVERIFY(collections.count(QStringLiteral("Favorite games")));
     QVERIFY(collections.count(QStringLiteral("Multi-game ROMs")));
 
     // finds the correct amount of games
-    QCOMPARE(games.size(), 8ul);
-    QCOMPARE(collections.at(QStringLiteral("My Games")).games().size(), 8ul);
-    QCOMPARE(collections.at(QStringLiteral("Favorite games")).games().size(), 3ul);
-    QCOMPARE(collections.at(QStringLiteral("Multi-game ROMs")).games().size(), 1ul);
+    QVERIFY(games.size() == 8);
+    QVERIFY(collections.at(QStringLiteral("My Games")).games().size() == 8);
+    QVERIFY(collections.at(QStringLiteral("Favorite games")).games().size() == 3);
+    QVERIFY(collections.at(QStringLiteral("Multi-game ROMs")).games().size() == 1);
 
     // finds the correct files for the collections
     const QStringList mygames_paths {
@@ -121,8 +121,8 @@ void test_PegasusProvider::enhance()
     provider.find(games, collections);
     provider.enhance(games, collections);
 
-    QCOMPARE(collections.size(), 1ul);
-    QCOMPARE(games.size(), 4ul);
+    QVERIFY(collections.size() == 1);
+    QVERIFY(games.size() == 4);
 
     modeldata::GamePtr game;
 
