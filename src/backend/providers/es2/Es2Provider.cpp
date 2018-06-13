@@ -17,8 +17,6 @@
 
 #include "Es2Provider.h"
 
-//#include "QStringHash.h"
-
 
 namespace providers {
 namespace es2 {

@@ -50,7 +50,7 @@ private:
                         const modeldata::Collection&,
                         const HashMap<QString, modeldata::GamePtr>&) const;
     void applyMetadata(const modeldata::GamePtr&,
-                       const HashMap<MetaTypes, QString, EnumHash>&) const;
+                       HashMap<MetaTypes, QString, EnumHash>&) const;
 };
 
 } // namespace es2

@@ -147,20 +147,20 @@ void findAssets(const modeldata::GamePtr& game_ptr,
     modeldata::Game& game = *game_ptr;
     const QString rom_dir = collection.source_dirs.constFirst() % '/';
 
-    if (game.assets.single(AssetType::BOX_FRONT).isEmpty() && xml_props.count(MetaTypes::IMAGE)) {
-        QString& path = xml_props.at(MetaTypes::IMAGE);
+    if (game.assets.single(AssetType::BOX_FRONT).isEmpty()) {
+        QString& path = xml_props[MetaTypes::IMAGE];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game.assets, AssetType::BOX_FRONT, path);
     }
-    if (game.assets.single(AssetType::ARCADE_MARQUEE).isEmpty() && xml_props.count(MetaTypes::MARQUEE)) {
-        QString& path = xml_props.at(MetaTypes::MARQUEE);
+    if (game.assets.single(AssetType::ARCADE_MARQUEE).isEmpty()) {
+        QString& path = xml_props[MetaTypes::MARQUEE];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game.assets, AssetType::ARCADE_MARQUEE, path);
     }
     if (xml_props.count(MetaTypes::VIDEO)) {
-        QString& path = xml_props.at(MetaTypes::VIDEO);
+        QString& path = xml_props[MetaTypes::VIDEO];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
             pegasus_assets::addAssetToGame(game.assets, AssetType::VIDEOS, path);
@@ -311,23 +311,23 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
 }
 
 void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
-                                   const HashMap<MetaTypes, QString, EnumHash>& xml_props) const
+                                   HashMap<MetaTypes, QString, EnumHash>& xml_props) const
 {
     modeldata::Game& game = *game_ptr;
 
     // first, the simple strings
-    game.title = xml_props.at(MetaTypes::NAME);
-    game.description = xml_props.at(MetaTypes::DESC);
-    game.addDeveloper(xml_props.at(MetaTypes::DEVELOPER));
-    game.addPublisher(xml_props.at(MetaTypes::PUBLISHER));
-    game.addGenre(xml_props.at(MetaTypes::GENRE));
+    game.title = xml_props[MetaTypes::NAME];
+    game.description = xml_props[MetaTypes::DESC];
+    game.addDeveloper(xml_props[MetaTypes::DEVELOPER]);
+    game.addPublisher(xml_props[MetaTypes::PUBLISHER]);
+    game.addGenre(xml_props[MetaTypes::GENRE]);
 
     // then the numbers
-    game.playcount = xml_props.at(MetaTypes::PLAYCOUNT).toInt();
-    game.rating = qBound(0.f, xml_props.at(MetaTypes::RATING).toFloat(), 1.f);
+    game.playcount = xml_props[MetaTypes::PLAYCOUNT].toInt();
+    game.rating = qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f);
 
     // the player count can be a range
-    const QString players_field = xml_props.at(MetaTypes::PLAYERS);
+    const QString players_field = xml_props[MetaTypes::PLAYERS];
     const auto players_match = m_players_regex.match(players_field);
     if (players_match.hasMatch()) {
         int a = 0, b = 0;
@@ -337,7 +337,7 @@ void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
     }
 
     // then the bools
-    const QString& favorite_val = xml_props.at(MetaTypes::FAVORITE);
+    const QString& favorite_val = xml_props[MetaTypes::FAVORITE];
     if (favorite_val.compare(QLatin1String("yes"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("true"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("1")) == 0) {
@@ -347,9 +347,9 @@ void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
     // then dates
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
 
-    game.lastplayed = QDateTime::fromString(xml_props.at(MetaTypes::LASTPLAYED), m_date_format);
+    game.lastplayed = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
 
-    const QDateTime release_time(QDateTime::fromString(xml_props.at(MetaTypes::RELEASE), m_date_format));
+    const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
     game.setReleaseDate(release_time.date());
 }
 
