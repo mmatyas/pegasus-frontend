@@ -81,7 +81,6 @@ Window {
                 }
             }
 
-            source: api.settings.themes.current.qmlPath
             asynchronous: true
             onStatusChanged: {
                 if (status == Loader.Error)
@@ -123,18 +122,28 @@ Window {
     SplashScreen {
         id: splashScreen
 
-        property bool loading: themeContent.status === Loader.Loading || api.meta.isLoading
+        property bool dataLoading: api.meta.isLoading
+        property bool skinLoading: themeContent.status === Loader.Null || themeContent.status === Loader.Loading
 
-        onLoadingChanged: {
-            if (!loading) {
-                // break bindings
-                loading = false;
+        onDataLoadingChanged: {
+            if (enabled && !dataLoading) {
+                if (api.collectionList.count === 0)
+                    themeContent.source = "messages/NoGamesError.qml";
+                else
+                    themeContent.source = api.settings.themes.current.qmlPath;
+            }
+        }
+
+        onSkinLoadingChanged: {
+            // when ready
+            if (enabled && !dataLoading && !skinLoading) {
                 visible = false;
                 enabled = false;
                 content.focus = true;
 
-                if (api.collectionList.count === 0)
-                    themeContent.source = "messages/NoGamesError.qml";
+                // break bindings
+                dataLoading = false;
+                skinLoading = false;
             }
         }
     }
