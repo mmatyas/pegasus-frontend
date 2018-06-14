@@ -18,10 +18,6 @@
 import QtQuick 2.8
 import QtQuick.Window 2.2
 
-// FIXME: without this include, QtGamepad is
-// not included in the static build... Qt bug?
-import QtGamepad 1.0
-
 
 Window {
     id: appWindow
@@ -123,6 +119,28 @@ Window {
             onRequestQuit: {
                 themeContent.source = "";
                 api.system.quit();
+            }
+            onStateChanged: {
+                menuSwipe.enabled = (target.state === "" || target.state === "menuOpen");
+            }
+        }
+        HorizSwipeArea {
+            id: menuSwipe
+
+            width: mainMenu.focus ? vpx(80) : vpx(40)
+            height: parent.height
+            anchors.right: parent.right
+            anchors.rightMargin: mainMenu.focus ? vpx(310) : 0
+
+            onSwipeLeft: {
+                if (!mainMenu.focus) {
+                    themeContent.enabled = false;
+                    mainMenu.focus = true;
+                }
+            }
+            onSwipeRight: {
+                themeContent.enabled = true;
+                themeContent.focus = true;
             }
         }
     }
