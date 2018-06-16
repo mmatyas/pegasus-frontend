@@ -113,6 +113,7 @@ FocusScope {
             gamepadPanel.visible = true;
         }
 
+        onClose: stepBack()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
         onRequestQuit: root.requestQuit()

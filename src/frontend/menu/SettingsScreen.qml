@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import ".."
 import "settings"
 import QtQuick 2.8
 
@@ -135,6 +136,11 @@ FocusScope {
         }
     }
 
+    HorizSwipeArea {
+        anchors.fill: parent
+        onSwipeRight: screenClosed()
+    }
+
 
     Rectangle {
         // shade for MultivalueBox
@@ -147,7 +153,6 @@ FocusScope {
 
         Behavior on opacity { PropertyAnimation { duration: 150 } }
     }
-
     MultivalueBox {
         id: multivalbox
 

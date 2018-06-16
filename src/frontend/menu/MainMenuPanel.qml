@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import ".."
 import "mainmenu"
 import QtQuick 2.8
 
@@ -28,6 +29,7 @@ FocusScope {
 
     signal showGamepadScreen()
     signal showSettingsScreen()
+    signal close()
 
     signal requestShutdown()
     signal requestReboot()
@@ -95,5 +97,10 @@ FocusScope {
                 }
             ]
         }
+    }
+
+    HorizSwipeArea {
+        anchors.fill: parent
+        onSwipeRight: close()
     }
 }

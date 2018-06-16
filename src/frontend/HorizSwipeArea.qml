@@ -28,6 +28,8 @@ MouseArea {
     signal swipeLeft()
     signal swipeRight()
 
+    propagateComposedEvents: true
+
     onPressed: {
         startX = mouse.x;
         lastX = startX;

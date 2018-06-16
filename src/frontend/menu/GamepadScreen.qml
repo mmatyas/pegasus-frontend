@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import ".."
 import "gamepad/preview" as GamepadPreview
 import "gamepad"
 import QtQuick 2.8
@@ -652,5 +653,10 @@ FocusScope {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: screenClosed()
+    }
+
+    HorizSwipeArea {
+        anchors.fill: parent
+        onSwipeRight: screenClosed()
     }
 }

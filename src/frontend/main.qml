@@ -120,27 +120,19 @@ Window {
                 themeContent.source = "";
                 api.system.quit();
             }
-            onStateChanged: {
-                menuSwipe.enabled = (target.state === "" || target.state === "menuOpen");
-            }
         }
         HorizSwipeArea {
             id: menuSwipe
 
-            width: mainMenu.focus ? vpx(80) : vpx(40)
+            width: vpx(40)
             height: parent.height
             anchors.right: parent.right
-            anchors.rightMargin: mainMenu.focus ? vpx(310) : 0
 
             onSwipeLeft: {
                 if (!mainMenu.focus) {
                     themeContent.enabled = false;
                     mainMenu.focus = true;
                 }
-            }
-            onSwipeRight: {
-                themeContent.enabled = true;
-                themeContent.focus = true;
             }
         }
     }
