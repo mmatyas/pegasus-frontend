@@ -1,4 +1,4 @@
-CONFIG += testcase
+CONFIG += testcase no_testcase_installs
 
 QT += qml testlib
 CONFIG += c++11 warn_on exceptions_off

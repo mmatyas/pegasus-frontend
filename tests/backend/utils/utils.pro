@@ -1,4 +1,4 @@
-CONFIG += testcase
+CONFIG += testcase no_testcase_installs
 TARGET = test_Utils
 
 QT += testlib
