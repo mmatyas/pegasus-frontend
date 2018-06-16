@@ -92,10 +92,17 @@ win32 {
 android {
     DISTFILES += \
         android/AndroidManifest.xml \
+        android/res/drawable-hdpi/icon.png \
+        android/res/drawable-ldpi/icon.png \
+        android/res/drawable-mdpi/icon.png \
         android/res/values/libs.xml \
-        android/build.gradle
 
-    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+    # TODO: make this cross-platform
+    QMAKE_POST_LINK += \
+        $${QMAKE_COPY_DIR} $$shell_path($$PWD/android) $$shell_path($$OUT_PWD) && \
+        sed -i s/@GIT_REVISION@/$${GIT_REVISION}/ $$shell_path($${OUT_PWD}/android/AndroidManifest.xml)
+
+    ANDROID_PACKAGE_SOURCE_DIR = $${OUT_PWD}/android
 }
 
 !isEmpty(target.path): INSTALLS += target
