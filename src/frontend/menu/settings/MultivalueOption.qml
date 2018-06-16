@@ -44,7 +44,7 @@ FocusScope {
         anchors.bottom: parent.bottom
 
         color: "#3aa"
-        visible: parent.focus
+        visible: parent.focus || mouseArea.containsMouse
     }
 
     Text {
@@ -69,5 +69,13 @@ FocusScope {
         color: "#c0c0c0"
         font.pixelSize: fontSize
         font.family: globalFonts.sans
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: activate()
     }
 }

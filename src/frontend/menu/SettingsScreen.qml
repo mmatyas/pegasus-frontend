@@ -91,6 +91,7 @@ FocusScope {
                 value: api.settings.locales.current.name
 
                 onActivate: {
+                    focus = true;
                     multivalbox.model = api.settings.locales.model;
                     multivalbox.index = api.settings.locales.index;
                     multivalbox.onChangeCallback = function() {
@@ -111,6 +112,7 @@ FocusScope {
                 value: api.settings.themes.current.name
 
                 onActivate: {
+                    focus = true;
                     multivalbox.model = api.settings.themes.model;
                     multivalbox.index = api.settings.themes.index;
                     multivalbox.onChangeCallback = function() {
@@ -131,7 +133,10 @@ FocusScope {
                 note: qsTr("On some platforms this setting may have no effect") + api.tr
 
                 checked: api.settings.fullscreen
-                onCheckedChanged: api.settings.fullscreen = checked
+                onCheckedChanged: {
+                    focus = true;
+                    api.settings.fullscreen = checked;
+                }
             }
         }
     }

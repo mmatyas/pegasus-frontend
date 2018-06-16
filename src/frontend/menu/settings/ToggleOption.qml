@@ -40,7 +40,7 @@ FocusScope {
         anchors.bottom: parent.bottom
 
         color: "#3aa"
-        visible: parent.focus
+        visible: parent.focus || mouseArea.containsMouse
     }
 
     Column {
@@ -82,5 +82,13 @@ FocusScope {
         anchors.verticalCenter: parent.verticalCenter
 
         height: fontSize * 1.15
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: toggle.checked = !toggle.checked
     }
 }
