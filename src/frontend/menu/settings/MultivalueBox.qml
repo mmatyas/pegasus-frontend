@@ -29,6 +29,14 @@ FocusScope {
     property var onChangeCallback: function(){}
 
     signal closed()
+    function chooseCurrent() {
+        onChangeCallback();
+        closed();
+    }
+    Keys.onEscapePressed: closed()
+    Keys.onReturnPressed: chooseCurrent()
+    Keys.onEnterPressed: chooseCurrent()
+
 
     width: vpx(280)
     height: parent.height
@@ -36,11 +44,6 @@ FocusScope {
     anchors.left: parent.right
     anchors.rightMargin: height * 0.04
     visible: x < parent.width
-
-    Keys.onEscapePressed: closed()
-    Keys.onReturnPressed: { onChangeCallback(); closed(); }
-    Keys.onEnterPressed: { onChangeCallback(); closed(); }
-
 
     property real textSize: vpx(22)
     property real itemHeight: 2.25 * textSize
@@ -63,15 +66,21 @@ FocusScope {
     }
 
 
+    MouseArea {
+        // do not "leak" mouse events from the panel
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: if (mouse.button == Qt.RightButton) closed();
+    }
+
     Rectangle {
         id: listContainer
         color: "#eee"
 
         width: parent.width
         height: parent.height * 0.84
+        radius: vpx(8)
         anchors.centerIn: parent
-
-        visible: false
 
         ListView {
             id: list
@@ -85,51 +94,51 @@ FocusScope {
             delegate: listItem
             snapMode: ListView.SnapOneItem
             highlightMoveDuration: 175
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                onClicked: {
+                    list.currentIndex = list.indexAt(mouse.x, mouse.y);
+                    chooseCurrent();
+                }
+            }
         }
-    }
 
+        Component {
+            id: listItem
 
-    Component {
-        id: listItem
+            Rectangle {
+                property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
 
-        Rectangle {
-            width: ListView.view.width
-            height: root.itemHeight
-            color: ListView.isCurrentItem ? "#dedede" : "#eee"
+                width: ListView.view.width
+                height: root.itemHeight
+                color: highlighted ? "#dedede" : "#eee"
 
-            Text {
-                id: label
+                Text {
+                    id: label
 
-                anchors.right: parent.right
-                anchors.rightMargin: vpx(24)
-                anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: vpx(24)
+                    anchors.verticalCenter: parent.verticalCenter
 
-                text: modelData.name
-                color: "#444"
-                font.pixelSize: root.textSize
-                font.family: globalFonts.sans
-                horizontalAlignment: Text.AlignRight
+                    text: modelData.name
+                    color: "#444"
+                    font.pixelSize: root.textSize
+                    font.family: globalFonts.sans
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                }
             }
         }
     }
 
-    Rectangle {
-        id: boxMask
-
-        radius: vpx(8)
-        anchors.fill: listContainer
-
-        visible: false
-    }
-
-    OpacityMask {
-        id: opacityMask
-
-        anchors.fill: listContainer
-        source: listContainer
-        maskSource: boxMask
-        cached: true
-    }
 
     states: State {
         name: "open"

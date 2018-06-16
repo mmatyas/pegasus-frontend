@@ -147,6 +147,10 @@ FocusScope {
     }
 
 
+    function closeMultibox() {
+        content.enabled = true;
+        content.focus = true;
+    }
     Rectangle {
         // shade for MultivalueBox
 
@@ -157,13 +161,15 @@ FocusScope {
         visible: opacity > 0.0
 
         Behavior on opacity { PropertyAnimation { duration: 150 } }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: closeMultibox()
+        }
     }
     MultivalueBox {
         id: multivalbox
-
-        onClosed: {
-            content.enabled = true;
-            content.focus = true;
-        }
+        onClosed: closeMultibox()
     }
 }
