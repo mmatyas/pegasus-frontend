@@ -97,12 +97,18 @@ android {
         android/res/drawable-mdpi/icon.png \
         android/res/values/libs.xml \
 
+    ANDROID_CFGDIR_IN = $$PWD/android
+    ANDROID_CFGDIR_OUT = $$OUT_PWD/android
+    equals(ANDROID_CFGDIR_IN, $${ANDROID_CFGDIR_OUT}) {
+        ANDROID_CFGDIR_OUT = $$OUT_PWD/android.out
+    }
+
     # TODO: make this cross-platform
     QMAKE_POST_LINK += \
-        $${QMAKE_COPY_DIR} $$shell_path($$PWD/android) $$shell_path($$OUT_PWD) && \
-        sed -i s/@GIT_REVISION@/$${GIT_REVISION}/ $$shell_path($${OUT_PWD}/android/AndroidManifest.xml)
+        $${QMAKE_COPY_DIR} $$shell_path($$ANDROID_CFGDIR_IN) $$shell_path($$ANDROID_CFGDIR_OUT) && \
+        sed -i s/@GIT_REVISION@/$${GIT_REVISION}/ $$shell_path($${ANDROID_CFGDIR_OUT}/AndroidManifest.xml)
 
-    ANDROID_PACKAGE_SOURCE_DIR = $${OUT_PWD}/android
+    ANDROID_PACKAGE_SOURCE_DIR = $${ANDROID_CFGDIR_OUT}
 }
 
 !isEmpty(target.path): INSTALLS += target
