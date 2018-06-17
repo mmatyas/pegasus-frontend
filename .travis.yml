@@ -13,8 +13,13 @@ env:
   - QT_VER=qt595
   matrix:
   - TARGET=x11-static
-  - TARGET=rpi1-static
-  - TARGET=rpi2-static
+
+jobs:
+  include:
+    - stage: Other targets
+      env: TARGET=rpi1-static
+    - stage: Other targets
+      env: TARGET=rpi2-static
 
 git:
   depth: 100
