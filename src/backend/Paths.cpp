@@ -31,24 +31,40 @@
 
 
 namespace {
+using QSP = QStandardPaths;
 
-QString get_writable_dir(const QStandardPaths::StandardLocation type)
+void remove_orgname(QString& str)
 {
-    Q_ASSERT(type == QStandardPaths::AppConfigLocation || type == QStandardPaths::CacheLocation);
+    const QRegularExpression replace_regex(QStringLiteral("(/pegasus-frontend){2}$"));
+    str.replace(replace_regex, QStringLiteral("/pegasus-frontend"));
+}
 
-    const QString dir_path = [type](){
-        if (type == QStandardPaths::AppConfigLocation && AppArgs::portable_mode)
-            return QCoreApplication::applicationDirPath() + QStringLiteral("/config");
-
-        const QRegularExpression replace_regex(QStringLiteral("(/pegasus-frontend){2}$"));
-        return QStandardPaths::writableLocation(type)
-            .replace(replace_regex, QStringLiteral("/pegasus-frontend"));
-    }();
-
-    // the path is never empty for AppConfigLocation/CacheLocation, as per Qt docs
+void create_dir_if_not_exists(const QString& dir_path)
+{
     Q_ASSERT(!dir_path.isEmpty());
     QDir(dir_path).mkpath(QLatin1String(".")); // does nothing if already exists
+}
 
+QString get_appconfig_dir()
+{
+#ifdef Q_OS_ANDROID
+    const QString dir_path = QSP::writableLocation(QSP::GenericDataLocation)
+                           + QStringLiteral("/pegasus-frontend");
+#else
+    QString dir_path = AppArgs::portable_mode
+        ? QCoreApplication::applicationDirPath() + QStringLiteral("/config")
+        : QSP::writableLocation(QSP::AppConfigLocation);
+    remove_orgname(dir_path);
+#endif
+    create_dir_if_not_exists(dir_path);
+    return dir_path;
+}
+
+QString get_cache_dir()
+{
+    QString dir_path = QSP::writableLocation(QSP::CacheLocation);
+    remove_orgname(dir_path);
+    create_dir_if_not_exists(dir_path);
     return dir_path;
 }
 
@@ -92,8 +108,9 @@ QStringList configDirs()
             if (QFileInfo::exists(INSTALL_DATADIR))
                 paths << QString(INSTALL_DATADIR);
 #endif
-            paths << QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
-            paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+            paths << writableConfigDir();
+            paths << QSP::standardLocations(QSP::AppConfigLocation);
+            paths << QSP::standardLocations(QSP::AppDataLocation);
             paths.removeDuplicates();
 
             // do not add the organization name to the search path
@@ -109,13 +126,13 @@ QStringList configDirs()
 
 QString writableConfigDir()
 {
-    static const QString config_dir = get_writable_dir(QStandardPaths::AppConfigLocation);
+    static const QString config_dir = get_appconfig_dir();
     return config_dir;
 }
 
 QString writableCacheDir()
 {
-    static const QString cache_dir = get_writable_dir(QStandardPaths::CacheLocation);
+    static const QString cache_dir = get_cache_dir();
     return cache_dir;
 }
 
