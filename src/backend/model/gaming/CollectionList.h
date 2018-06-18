@@ -49,6 +49,11 @@ public:
     Collection* current() const;
     const QVector<Collection*>& elements() const { return m_collections; }
 
+    Q_INVOKABLE void incrementIndex();
+    Q_INVOKABLE void decrementIndex();
+    Q_INVOKABLE void incrementIndexNoWrap();
+    Q_INVOKABLE void decrementIndexNoWrap();
+
 signals:
     void modelChanged();
     void currentChanged();
@@ -65,11 +70,6 @@ private:
     void setIndex(int);
 
     QQmlListProperty<Collection> elementsProp();
-
-    Q_INVOKABLE void incrementIndex();
-    Q_INVOKABLE void decrementIndex();
-    Q_INVOKABLE void incrementIndexNoWrap();
-    Q_INVOKABLE void decrementIndexNoWrap();
 
 private:
     QVector<Collection*> m_collections;

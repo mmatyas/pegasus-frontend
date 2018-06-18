@@ -58,6 +58,12 @@ public:
 
     Game* current() const;
 
+    Q_INVOKABLE void incrementIndex();
+    Q_INVOKABLE void decrementIndex();
+    Q_INVOKABLE void incrementIndexNoWrap();
+    Q_INVOKABLE void decrementIndexNoWrap();
+    Q_INVOKABLE void jumpToLetter(const QString&);
+
 signals:
     void currentChanged();
     void filteredGamesChanged();
@@ -72,15 +78,9 @@ private:
 
     int index() const { return m_game_idx; }
     void setIndex(int);
-    Q_INVOKABLE void incrementIndex();
-    Q_INVOKABLE void decrementIndex();
-    Q_INVOKABLE void incrementIndexNoWrap();
-    Q_INVOKABLE void decrementIndexNoWrap();
 
     QQmlListProperty<Game> getFilteredGamesProp();
     QQmlListProperty<Game> getAllGamesProp();
-
-    Q_INVOKABLE void jumpToLetter(const QString&);
 
 public:
     // backend-side functions

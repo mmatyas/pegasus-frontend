@@ -58,6 +58,8 @@ public:
 
     const QString& title() const { return m_game->title; }
 
+    Q_INVOKABLE void launch();
+
 signals:
     void launchRequested(const modeldata::Game* const);
     void favoriteChanged();
@@ -89,8 +91,6 @@ private:
     const QDateTime& lastPlayed() const { return m_game->lastplayed; }
 
     GameAssets* assetsPtr() { return &m_assets; }
-
-    Q_INVOKABLE void launch();
 
 private:
     modeldata::Game* const m_game;
