@@ -81,6 +81,14 @@ Window {
                 }
             }
 
+            source: {
+                if (api.meta.isLoading)
+                    return "";
+                if (api.collectionList.count === 0)
+                    return "messages/NoGamesError.qml";
+
+                return api.settings.themes.current.qmlPath;
+            }
             asynchronous: true
             onStatusChanged: {
                 if (status == Loader.Error)
@@ -124,15 +132,6 @@ Window {
 
         property bool dataLoading: api.meta.isLoading
         property bool skinLoading: themeContent.status === Loader.Null || themeContent.status === Loader.Loading
-
-        onDataLoadingChanged: {
-            if (enabled && !dataLoading) {
-                if (api.collectionList.count === 0)
-                    themeContent.source = "messages/NoGamesError.qml";
-                else
-                    themeContent.source = api.settings.themes.current.qmlPath;
-            }
-        }
 
         onSkinLoadingChanged: {
             // when ready
