@@ -28,6 +28,8 @@ private slots:
     void publishers();
     void genres();
     void release();
+
+    void launch();
 };
 
 void testStrAndList(modeldata::Game& modeldata,
@@ -90,6 +92,18 @@ void test_Game::release()
     QCOMPARE(game.property("year").toInt(), 1999);
     QCOMPARE(game.property("month").toInt(), 1);
     QCOMPARE(game.property("day").toInt(), 2);
+}
+
+void test_Game::launch()
+{
+    modeldata::Game modeldata({});
+    model::Game game(&modeldata);
+
+    QSignalSpy spy_launch(&game, &model::Game::launchRequested);
+    QVERIFY(spy_launch.isValid());
+
+    QMetaObject::invokeMethod(&game, "launch");
+    QVERIFY(spy_launch.count() == 1 || spy_launch.wait());
 }
 
 

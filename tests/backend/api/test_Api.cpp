@@ -20,8 +20,7 @@
 #include "Api.h"
 
 
-class test_Api : public QObject
-{
+class test_Api : public QObject {
     Q_OBJECT
 
 private slots:
