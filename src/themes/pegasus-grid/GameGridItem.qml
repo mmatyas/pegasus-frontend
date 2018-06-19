@@ -33,6 +33,7 @@ Item {
     height: width * imageHeightRatio
 
     signal clicked()
+    signal doubleClicked()
     signal imageLoaded(int imgWidth, int imgHeight)
 
     scale: selected ? 1.20 : 1.0
@@ -91,5 +92,6 @@ Item {
     MouseArea {
         anchors.fill: parent
         onClicked: root.clicked()
+        onDoubleClicked: root.doubleClicked()
     }
 }

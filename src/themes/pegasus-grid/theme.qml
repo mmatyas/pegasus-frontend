@@ -88,7 +88,8 @@ FocusScope {
         GameGrid {
             focus: true
 
-            Keys.onReturnPressed: api.currentGame.launch();
+            onLaunchRequested: api.currentGame.launch()
+            onDetailsRequested: gamepreview.focus = true
 
             id: gamegrid
             width: (parent.width * 0.6) - vpx(32)
@@ -107,6 +108,8 @@ FocusScope {
             anchors.bottom: parent.bottom
 
             drawLeft: false
+            onOpenRequested: gamepreview.focus = true
+            onCloseRequested: gamegrid.focus = true
         }
     }
 

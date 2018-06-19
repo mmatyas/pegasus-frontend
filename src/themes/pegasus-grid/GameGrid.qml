@@ -29,6 +29,11 @@ GridView {
     onCurrentIndexChanged: if (api.currentCollection) api.currentCollection.gameList.index = currentIndex
     Component.onCompleted: positionViewAtIndex(currentIndex, GridView.Center)
 
+    signal launchRequested()
+    signal detailsRequested()
+
+    Keys.onReturnPressed: launchRequested()
+
     // For better visibility, box arts should be displayed in five columns if
     // the boxes are "tall", and four if they are "wide". There are two issues:
     //
@@ -96,12 +101,15 @@ GridView {
         game: modelData
 
         onClicked: GridView.view.currentIndex = index
+        onDoubleClicked: {
+            GridView.view.currentIndex = index;
+            grid_root.detailsRequested();
+        }
+
         imageHeightRatio: {
             if (firstImageLoaded) return cellHeightRatio;
             return 0.5;
         }
-
-
         onImageLoaded: {
             // NOTE: because images are loaded asynchronously,
             // firstImageLoaded may appear false multiple times!

@@ -32,6 +32,9 @@ FocusScope {
         videoDelay.restart();
     }
 
+    signal openRequested()
+    signal closeRequested()
+
     visible: gameData
 
     Timer {
@@ -47,6 +50,16 @@ FocusScope {
                 videoPreview.play();
             }
         }
+    }
+
+    PegasusUtils.HorizSwipeArea {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: drawLeft ? parent.left : parent.horizontalCenter
+
+        onSwipeRight: openRequested()
+        onSwipeLeft: closeRequested()
     }
 
     Rectangle {
