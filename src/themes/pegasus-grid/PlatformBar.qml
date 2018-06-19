@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
 
 Rectangle {
@@ -83,5 +84,11 @@ Rectangle {
             else
                 platformPath.decrementCurrentIndex();
         }
+    }
+    PegasusUtils.HorizSwipeArea {
+        anchors.fill: parent
+        swipePercent: 0.1
+        onSwipeLeft: platformPath.incrementCurrentIndex()
+        onSwipeRight: platformPath.decrementCurrentIndex()
     }
 }
