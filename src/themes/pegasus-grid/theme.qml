@@ -107,7 +107,7 @@ FocusScope {
             anchors.horizontalCenter: parent.left
             anchors.bottom: parent.bottom
 
-            drawLeft: false
+            drawLeftside: false
             onOpenRequested: gamepreview.focus = true
             onCloseRequested: gamegrid.focus = true
         }
@@ -177,7 +177,7 @@ FocusScope {
             to: "gamedataOpen"
             onRunningChanged: {
                 if (running)
-                    gamepreview.drawLeft = true;
+                    gamepreview.drawLeftside = true;
             }
             AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
         },
@@ -185,7 +185,7 @@ FocusScope {
             from: "gamedataOpen"
             onRunningChanged: {
                 if (!running)
-                    gamepreview.drawLeft = false;
+                    gamepreview.drawLeftside = false;
             }
             AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
         }

@@ -24,7 +24,7 @@ import "qrc:/qmlutils" as PegasusUtils
 FocusScope {
     id: root
 
-    property bool drawLeft: false
+    property bool drawLeftside: false
 
     property var gameData: api.currentGame
     onGameDataChanged: {
@@ -56,7 +56,7 @@ FocusScope {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.left: drawLeft ? parent.left : parent.horizontalCenter
+        anchors.left: drawLeftside ? parent.left : parent.horizontalCenter
 
         onSwipeRight: openRequested()
         onSwipeLeft: closeRequested()
@@ -84,7 +84,7 @@ FocusScope {
             bottom: parent.bottom; bottomMargin: vpx(8)
         }
 
-        visible: root.drawLeft
+        visible: root.drawLeftside
         onVisibleChanged: if (!visible) scrollArea.stopScroll()
 
         PegasusUtils.AutoScroll {
