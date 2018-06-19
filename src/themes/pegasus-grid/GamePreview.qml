@@ -43,6 +43,7 @@ FocusScope {
         interval: 50
         onTriggered: {
             if (gameData && gameData.assets.videos.length > 0) {
+                videoPreview.stop();
                 for (var i = 0; i < gameData.assets.videos.length; i++) {
                     if (gameData.assets.videos[i])
                         videoPreview.playlist.addItem(gameData.assets.videos[i]);
@@ -294,7 +295,6 @@ FocusScope {
                 anchors { fill: parent; margins: 1 }
                 fillMode: VideoOutput.PreserveAspectFit
 
-                autoPlay: true
                 playlist: Playlist {
                     playbackMode: Playlist.Loop
                 }
