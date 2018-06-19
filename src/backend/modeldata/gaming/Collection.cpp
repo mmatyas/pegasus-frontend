@@ -24,6 +24,7 @@ namespace modeldata {
 
 Collection::Collection(QString name)
     : m_name(std::move(name))
+    , m_short_name(m_name.toLower())
 {}
 
 void Collection::setShortName(const QString& str)
