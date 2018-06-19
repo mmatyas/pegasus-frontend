@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/qmlutils">
         <file>AutoScroll.qml</file>
+        <file>HorizSwipeArea.qml</file>
     </qresource>
 </RCC>

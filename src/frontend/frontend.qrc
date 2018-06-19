@@ -30,6 +30,5 @@
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
-        <file>HorizSwipeArea.qml</file>
     </qresource>
 </RCC>

@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
 import QtQuick.Window 2.2
 
@@ -121,7 +122,7 @@ Window {
                 api.system.quit();
             }
         }
-        HorizSwipeArea {
+        PegasusUtils.HorizSwipeArea {
             id: menuSwipe
 
             width: vpx(40)

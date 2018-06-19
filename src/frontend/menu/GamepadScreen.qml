@@ -15,9 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import ".."
 import "gamepad/preview" as GamepadPreview
 import "gamepad"
+import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
 import QtGamepad 1.0
 
@@ -655,7 +655,7 @@ FocusScope {
         onClicked: screenClosed()
     }
 
-    HorizSwipeArea {
+    PegasusUtils.HorizSwipeArea {
         anchors.fill: parent
         onSwipeRight: screenClosed()
     }
