@@ -21,15 +21,24 @@ import QtQuick 2.8
 Rectangle {
     id: root
 
+    signal clicked()
+
     property alias text: label.text
     property double lineHeight: 1.75
 
-    color: focus ? "#4ae" : "#aaa"
+    color: focus ? "#4ae" : (mouseArea.containsMouse ? "#999" : "#aaa")
     width: parent.width
     height: label.height * lineHeight
     radius: vpx(3)
     //border.color: "#0870aa"
     border.width: vpx(1)
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        onClicked: root.clicked()
+        hoverEnabled: true
+    }
 
     Text {
         id: label

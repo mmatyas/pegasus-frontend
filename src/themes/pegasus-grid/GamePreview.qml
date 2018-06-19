@@ -128,6 +128,10 @@ FocusScope {
                 Keys.onReturnPressed: toggleFav()
                 Keys.onEnterPressed: toggleFav()
                 Keys.onSpacePressed: toggleFav()
+                onClicked: {
+                    focus = true;
+                    toggleFav();
+                }
 
                 Image {
                     id: favHeart
@@ -161,6 +165,10 @@ FocusScope {
                 Keys.onDownPressed: toggleFavBtn.focus = true
                 Keys.onReturnPressed: api.currentGame.launch()
                 Keys.onEnterPressed: api.currentGame.launch()
+                onClicked: {
+                    focus = true;
+                    api.currentGame.launch();
+                }
             }
         }
     }
