@@ -31,6 +31,9 @@ Flickable {
     function stopScroll() {
         scrollAnimGroup.complete();
     }
+    function restartScroll() {
+        scrollAnimGroup.restart();
+    }
 
     clip: true
     flickableDirection: Flickable.VerticalFlick

@@ -86,7 +86,12 @@ FocusScope {
         }
 
         visible: root.drawLeftside
-        onVisibleChanged: if (!visible) scrollArea.stopScroll()
+        onVisibleChanged: {
+            if (visible)
+                scrollArea.restartScroll();
+            else
+                scrollArea.stopScroll();
+        }
 
         PegasusUtils.AutoScroll {
             id: scrollArea
