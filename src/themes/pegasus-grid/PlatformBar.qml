@@ -87,7 +87,6 @@ Rectangle {
     }
     PegasusUtils.HorizSwipeArea {
         anchors.fill: parent
-        swipePercent: 0.1
         onSwipeLeft: platformPath.incrementCurrentIndex()
         onSwipeRight: platformPath.decrementCurrentIndex()
     }

@@ -21,7 +21,7 @@ import QtQuick 2.0
 MouseArea {
     id: root
 
-    property real swipePercent: 0.5
+    property real minSwipeLength: vpx(20)
 
     property real startX: 0
     property real lastX: 0
@@ -44,11 +44,11 @@ MouseArea {
 
         var diff = mouse.x - startX;
 
-        if (diff < root.width * -swipePercent) {
+        if (diff < -minSwipeLength) {
             active = false;
             swipeLeft();
         }
-        else if (root.width * swipePercent < diff) {
+        else if (minSwipeLength < diff) {
             active = false;
             swipeRight();
         }

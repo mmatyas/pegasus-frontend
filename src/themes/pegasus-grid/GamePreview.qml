@@ -59,8 +59,6 @@ FocusScope {
         anchors.bottom: parent.bottom
         anchors.left: drawLeftside ? parent.left : parent.horizontalCenter
 
-        swipePercent: drawLeftside ? 0.25 : 0.5
-
         onSwipeRight: openRequested()
         onSwipeLeft: closeRequested()
     }
