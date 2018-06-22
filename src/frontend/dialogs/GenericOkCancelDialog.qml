@@ -68,6 +68,11 @@ FocusScope {
     }
 
     // actual dialog
+    MouseArea {
+        anchors.centerIn: parent
+        width: dialogBox.width
+        height: dialogBox.height
+    }
     Column {
         id: dialogBox
 
