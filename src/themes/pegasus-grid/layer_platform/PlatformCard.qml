@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ Item {
     }
 
     Image {
-        source: "assets/platform_logo/" + platformShortName + ".svg"
+        source: "../assets/logos/" + platformShortName + ".svg"
         sourceSize.height: 100
         fillMode: Image.PreserveAspectFit
 

@@ -16,178 +16,67 @@
 
 
 import QtQuick 2.8
-import "filter_panel"
+import "layer_filter"
+import "layer_gameinfo"
+import "layer_grid"
+import "layer_platform"
 
 
 FocusScope {
-    Keys.onPressed: {
-        if (event.isAutoRepeat)
-            return;
-
-        switch (event.key) {
-            // game data
-            case Qt.Key_Control:
-                if (gamepreview.focus)
-                    gamegrid.focus = true;
-                else if (gamegrid.focus)
-                    gamepreview.focus = true;
-                break;
-            // filtering
-            case Qt.Key_Shift:
-                if (filter.focus)
-                    content.focus = true;
-                else if (gamegrid.focus)
-                    filter.focus = true;
-                break;
-            default:
-                return;
+    PlatformBar {
+        id: topbar
+        z: 300
+        anchors {
+            top: parent.top;
+            left: parent.left; right: parent.right
         }
-
-        event.accepted = true;
     }
 
-    FocusScope {
-        id: content
-        anchors.fill: parent
+    BackgroundImage {
+        anchors {
+            top: topbar.bottom; bottom: parent.bottom
+            left: parent.left; right: parent.right
+        }
+    }
+
+    GameGrid {
+        id: gamegrid
+
         focus: true
 
-        Keys.onPressed: {
-            if (event.isAutoRepeat || event.modifiers)
-                return;
-
-            switch (event.key) {
-                // platform bar -- QWERTx/AZERTY support
-                case Qt.Key_Q:
-                case Qt.Key_A:
-                    topbar.prev();
-                    break;
-                case Qt.Key_E:
-                case Qt.Key_D:
-                    topbar.next();
-                    break;
-                default:
-                    return;
-            }
-
-            event.accepted = true;
+        gridWidth: (parent.width * 0.6) - vpx(32)
+        gridMarginTop: vpx(32)
+        gridMarginRight: vpx(6)
+        anchors {
+            top: topbar.bottom; bottom: parent.bottom
+            left: parent.left; right: parent.right
         }
 
-        PlatformBar {
-            id: topbar
-            z: 300
-            width: parent.width
-        }
-
-        BackgroundImage {
-            anchors {
-                top: topbar.bottom; bottom: parent.bottom
-                left: parent.left; right: parent.right
-            }
-        }
-
-        GameGrid {
-            focus: true
-
-            onLaunchRequested: api.currentGame.launch()
-            onDetailsRequested: gamepreview.focus = true
-
-            id: gamegrid
-            width: (parent.width * 0.6) - vpx(32)
-            anchors {
-                top: topbar.bottom; topMargin: vpx(32)
-                right: parent.right; rightMargin: vpx(6)
-                bottom: parent.bottom
-            }
-        }
-
-        GamePreview {
-            id: gamepreview
-            width: parent.width * 0.7 + vpx(72)
-            anchors.top: topbar.bottom
-            anchors.horizontalCenter: parent.left
-            anchors.bottom: parent.bottom
-
-            drawLeftside: false
-            onOpenRequested: gamepreview.focus = true
-            onCloseRequested: gamegrid.focus = true
-        }
+        onLaunchRequested: api.currentGame.launch()
+        onDetailsRequested: gamepreview.focus = true
+        onFiltersRequested: filter.focus = true
+        onNextPlatformRequested: topbar.next()
+        onPrevPlatformRequested: topbar.prev()
     }
 
-    FocusScope {
+    GamePreview {
+        id: gamepreview
+
+        panelWidth: parent.width * 0.7 + vpx(72)
+        anchors {
+            top: topbar.bottom; bottom: parent.bottom
+            left: parent.left; right: parent.right
+        }
+
+        onOpenRequested: gamepreview.focus = true
+        onCloseRequested: gamegrid.focus = true
+        onFiltersRequested: filter.focus = true
+    }
+
+    FilterLayer {
         id: filter
         anchors.fill: parent
 
-        Rectangle {
-            id: filterShade
-            anchors.fill: parent
-            color: "black"
-            opacity: 0
-
-            Behavior on opacity { NumberAnimation { duration: 500 } }
-        }
-
-        FilterPanel {
-            id: filterPanel
-            z: 400
-            focus: true
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.left
-            visible: false
-        }
+        onCloseRequested: gamegrid.focus = true;
     }
-
-    states: [
-        State {
-            name: "filtersOpen"; when: filter.focus
-            PropertyChanges { target: filterShade; opacity: 0.2 }
-            AnchorChanges {
-                target: filterPanel
-                anchors.left: parent.left
-                anchors.right: undefined
-            }
-        },
-        State {
-            name: "gamedataOpen"; when: gamepreview.focus
-            AnchorChanges {
-                target: gamepreview
-                anchors.left: parent.left
-                anchors.horizontalCenter: undefined
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            to: "filtersOpen"
-            onRunningChanged: {
-                if (running)
-                    filterPanel.visible = true;
-            }
-            AnchorAnimation { duration: 500; easing.type: Easing.OutCubic }
-        },
-        Transition {
-            from: "filtersOpen"
-            onRunningChanged: {
-                if (!running)
-                    filterPanel.visible = false;
-            }
-            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
-        },
-        Transition {
-            to: "gamedataOpen"
-            onRunningChanged: {
-                if (running)
-                    gamepreview.drawLeftside = true;
-            }
-            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
-        },
-        Transition {
-            from: "gamedataOpen"
-            onRunningChanged: {
-                if (!running)
-                    gamepreview.drawLeftside = false;
-            }
-            AnchorAnimation { duration: 300; easing.type: Easing.OutCubic }
-        }
-    ]
 }
