@@ -70,7 +70,7 @@ FocusScope {
         // do not "leak" mouse events from the panel
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: if (mouse.button == Qt.RightButton) closed();
+        onClicked: if (mouse.button === Qt.RightButton) closed();
     }
 
     Rectangle {
@@ -133,7 +133,6 @@ FocusScope {
                     id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
                 }
             }
         }

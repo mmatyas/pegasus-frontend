@@ -88,7 +88,6 @@ FocusScope {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
         onClicked: toggle.checked = !toggle.checked
     }
 }
