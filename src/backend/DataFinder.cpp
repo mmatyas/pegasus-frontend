@@ -20,11 +20,13 @@
 #include "LocaleUtils.h"
 #include "configfiles/FavoriteDB.h"
 #include "modeldata/gaming/Collection.h"
-#include "providers/es2/Es2Provider.h"
 #include "providers/pegasus/PegasusProvider.h"
 
-#ifndef Q_PROCESSOR_ARM
-#include "providers/steam/SteamProvider.h"
+#ifdef WITH_COMPAT_ES2
+  #include "providers/es2/Es2Provider.h"
+#endif
+#ifdef WITH_COMPAT_STEAM
+  #include "providers/steam/SteamProvider.h"
 #endif
 
 #include <QDebug>
@@ -52,8 +54,10 @@ DataFinder::DataFinder(QObject* parent)
     : QObject(parent)
 {
     m_providers.emplace_back(new providers::pegasus::PegasusProvider());
+#ifdef WITH_COMPAT_ES2
     m_providers.emplace_back(new providers::es2::Es2Provider());
-#ifndef Q_PROCESSOR_ARM
+#endif
+#ifdef WITH_COMPAT_STEAM
     m_providers.emplace_back(new providers::steam::SteamProvider());
 #endif
 
