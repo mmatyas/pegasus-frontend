@@ -14,17 +14,21 @@ jobs:
       - run: /opt/${QT_TARGET}/bin/qmake .
       - run: make
       - run: make install INSTALL_ROOT=${PWD}/installdir
+      - run: curl -LO ${TOOLS_URL}/aks.enc
+      - run: openssl aes-256-cbc -k "${AKS_ENC_KEY}" -in aks.enc -out aks -d
       - run: /opt/${QT_TARGET}/bin/androiddeployqt
           --input src/app/android-libpegasus-fe.so-deployment-settings.json
           --output ${PWD}/installdir
           --android-platform 19
           --gradle
-          --verbose
+          --sign ./aks "${AKS_ALIAS}"
+          --storepass "${AKS_STOREPASS}"
+          --keypass "${AKS_KEYPASS}"
       # Deploy
       - run: mkdir dist
       - run: cp
-          installdir/build/outputs/apk/installdir-debug.apk
-          dist/pegasus-fe_$(git describe --always)-debug.apk
+          installdir/build/outputs/apk/installdir-release-signed.apk
+          dist/pegasus-fe_$(git describe --always)_android.apk
       - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
       - run: bash ./upload.sh dist/*.apk
   mingw:
