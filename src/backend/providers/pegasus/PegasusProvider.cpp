@@ -52,8 +52,12 @@ void PegasusProvider::enhance(const HashMap<QString, modeldata::GamePtr>& games,
 void PegasusProvider::add_game_dir(const QString& dir_path)
 {
     const QFileInfo entry(dir_path);
-    if (entry.exists() && entry.isDir())
-        m_game_dirs << entry.canonicalFilePath();
+    if (!entry.exists() || !entry.isDir()) {
+        qWarning().noquote() << tr_log("Game directory `%1` not found, ignored").arg(dir_path);
+        return;
+    }
+
+    m_game_dirs << entry.canonicalFilePath();
 }
 
 void PegasusProvider::load_game_dir_list()
