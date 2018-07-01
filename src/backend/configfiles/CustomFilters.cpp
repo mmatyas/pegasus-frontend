@@ -44,7 +44,7 @@ QVector<model::Filter*> default_filters()
         new model::Filter(QStringLiteral("Multiplayer")),
     };
     filters[0]->rulesMut().append(model::FilterRule {
-        QStringLiteral("favorites"),
+        QStringLiteral("favorite"),
         model::FilterRuleType::IS_TRUE,
         QRegularExpression(),
     });
