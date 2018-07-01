@@ -102,11 +102,13 @@ android {
     equals(ANDROID_CFGDIR_IN, $${ANDROID_CFGDIR_OUT}) {
         ANDROID_CFGDIR_OUT = $$OUT_PWD/android.out
     }
+    ANDROID_MANIFEST_OUT = $${ANDROID_CFGDIR_OUT}/AndroidManifest.xml
 
     # TODO: make this cross-platform
     QMAKE_POST_LINK += \
         $${QMAKE_COPY_DIR} $$shell_path($$ANDROID_CFGDIR_IN) $$shell_path($$ANDROID_CFGDIR_OUT) && \
-        sed -i s/@GIT_REVISION@/$${GIT_REVISION}/ $$shell_path($${ANDROID_CFGDIR_OUT}/AndroidManifest.xml)
+        sed -i s/@GIT_REVISION@/$${GIT_REVISION}/ $$shell_path($$ANDROID_MANIFEST_OUT) && \
+        sed -i s/@GIT_COMMIT_CNT@/$${GIT_COMMIT_CNT}/ $$shell_path($$ANDROID_MANIFEST_OUT)
 
     ANDROID_PACKAGE_SOURCE_DIR = $${ANDROID_CFGDIR_OUT}
 }
