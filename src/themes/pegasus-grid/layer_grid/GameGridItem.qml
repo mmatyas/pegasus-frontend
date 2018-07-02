@@ -16,14 +16,13 @@
 
 
 import QtQuick 2.7
-import Pegasus.Model 0.2
 
 
 Item {
     id: root
 
     property bool selected: false
-    property Game game
+    property var game
 
     property alias imageWidth: boxFront.paintedWidth
     property alias imageHeight: boxFront.paintedHeight
