@@ -33,8 +33,11 @@ void readFile(const QString& path,
               const std::function<void(const int, const QString)>& onError)
 {
     QFile file(path);
-    if (!file.open(QFile::ReadOnly | QFile::Text))
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        qWarning().noquote() << tr_log("Warning: Could not open file `%1` for reading. %2")
+                                .arg(path, file.errorString());
         return;
+    }
 
     QTextStream stream(&file);
     return readStream(stream, onAttributeFound, onError);

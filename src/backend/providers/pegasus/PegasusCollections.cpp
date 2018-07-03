@@ -201,6 +201,10 @@ HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAt
             qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
             config::readFile(curr_config_path,  on_attribute, on_error);
         }
+        else {
+            qWarning().noquote() << tr_log("No collection file found in `%1`, directory ignored.")
+                                    .arg(dir_path);
+        }
     }
 
     // cleanup and return
@@ -242,8 +246,14 @@ void PegasusCollections::find_in_dirs(const QStringList& dir_list,
                                       const std::function<void(int)>& update_gamecount_maybe) const
 {
     for (const QString& dir_path : dir_list) {
+        const auto game_cnt_before = games.size();
+
         const auto filter_config = read_collections_file(m_key_types, dir_path, collections);
         traverse_dir(dir_path, filter_config, collections, games);
+
+        if (game_cnt_before == games.size())
+            qInfo().noquote() << tr_log("No new games found in `%1`").arg(dir_path);
+
         update_gamecount_maybe(games.size());
     }
 }
