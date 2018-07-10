@@ -10,7 +10,7 @@ branches:
 env:
   global:
   - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-  - QT_VER=qt595
+  - QT_VER=qt5111
 
 git:
   depth: 100
