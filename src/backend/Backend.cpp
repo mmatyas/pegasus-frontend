@@ -62,25 +62,37 @@ void on_app_close(AppCloseType type)
 namespace backend {
 
 Backend::Backend()
+    : frontend(&api)
 {
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
     // see the relevant classes
 
-    QObject::connect(&api, &ApiObject::prepareLaunch,
+    // the Api asks the Launcher to start the game
+    QObject::connect(&api, &ApiObject::launchGame,
+                     &launcher, &ProcessLauncher::onLaunchRequested);
+
+    // the Launcher tries to start the game, ask the Frontend
+    // to tear down the UI, then report back to the Api
+    QObject::connect(&launcher, &ProcessLauncher::processLaunchOk,
+                     &api, &ApiObject::onGameLaunchOk);
+
+    QObject::connect(&launcher, &ProcessLauncher::processLaunchError,
+                     &api, &ApiObject::onGameLaunchError);
+
+    QObject::connect(&launcher, &ProcessLauncher::processLaunchOk,
                      &frontend, &FrontendLayer::teardown);
 
     QObject::connect(&frontend, &FrontendLayer::teardownComplete,
-                     &api, &ApiObject::onReadyToLaunch);
+                     &launcher, &ProcessLauncher::onTeardownComplete);
 
-    QObject::connect(&api, &ApiObject::executeLaunch,
-                     &launcher, &ProcessLauncher::launchGame);
-
+    // when the game ends, the Launcher wakes up the Api and the Frontend
     QObject::connect(&launcher, &ProcessLauncher::processFinished,
                      &api, &ApiObject::onGameFinished);
 
-    QObject::connect(&api, &ApiObject::restoreAfterGame,
+    QObject::connect(&launcher, &ProcessLauncher::processFinished,
                      &frontend, &FrontendLayer::rebuild);
+
 
     // special commands
     QObject::connect(&api, &ApiObject::qmlClearCacheRequested,
@@ -92,7 +104,7 @@ Backend::Backend()
 
 void Backend::start()
 {
-    frontend.rebuild(&api);
+    frontend.rebuild();
     api.startScanning();
 }
 

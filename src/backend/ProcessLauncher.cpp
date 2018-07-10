@@ -22,8 +22,18 @@
 #include "model/gaming/Collection.h"
 
 #include <QDebug>
-#include <QFileInfo>
-#include <QRegularExpression>
+
+
+namespace {
+void format_launch_command(QString& launch_cmd, const modeldata::Game& game)
+{
+    launch_cmd
+        .replace(QLatin1String("{file.path}"), game.fileinfo().absoluteFilePath())
+        .replace(QLatin1String("{file.name}"), game.fileinfo().fileName())
+        .replace(QLatin1String("{file.basename}"), game.fileinfo().completeBaseName())
+        .replace(QLatin1String("{file.dir}"), game.fileinfo().absolutePath());
+}
+} // namespace
 
 
 namespace {
@@ -35,8 +45,8 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::launchGame(const modeldata::Collection* const collection,
-                                 const modeldata::Game* const game)
+void ProcessLauncher::onLaunchRequested(const modeldata::Collection* const collection,
+                                        const modeldata::Game* const game)
 {
     Q_ASSERT(game);
     // collection can be null!
@@ -48,30 +58,19 @@ void ProcessLauncher::launchGame(const modeldata::Collection* const collection,
         launch_cmd = collection->launchCmd();
 
     if (!launch_cmd.isEmpty())
-        prepareLaunchCommand(launch_cmd, *game);
+        format_launch_command(launch_cmd, *game);
 
     if (launch_cmd.isEmpty()) {
         qInfo().noquote()
             << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
                .arg(game->title);
-    }
-    else {
-        beforeRun();
-        runProcess(launch_cmd);
-        afterRun();
+        emit processLaunchError();
+        return;
     }
 
-    // TODO: report error to the caller
-    emit processFinished();
-}
-
-void ProcessLauncher::prepareLaunchCommand(QString& launch_cmd, const modeldata::Game& game) const
-{
-    launch_cmd
-        .replace(QLatin1String("{file.path}"), game.fileinfo().absoluteFilePath())
-        .replace(QLatin1String("{file.name}"), game.fileinfo().fileName())
-        .replace(QLatin1String("{file.basename}"), game.fileinfo().completeBaseName())
-        .replace(QLatin1String("{file.dir}"), game.fileinfo().absolutePath());
+    beforeRun();
+    runProcess(launch_cmd);
+    afterRun();
 }
 
 void ProcessLauncher::runProcess(const QString& command)
@@ -93,9 +92,23 @@ void ProcessLauncher::runProcess(const QString& command)
     process->start(command, QProcess::ReadOnly);
 
     // wait
+    const bool started_successfully = process->waitForStarted(-1);
+    if (started_successfully) {
+        emit processLaunchOk();
+    }
+    else {
+        emit processLaunchError();
+        process->deleteLater();
+    }
+}
+
+void ProcessLauncher::onTeardownComplete()
+{
+    Q_ASSERT(process);
+
     process->waitForFinished(-1);
-    process->terminate(); // TODO: `terminate` is probably unnecessary
     process->deleteLater();
+    emit processFinished();
 }
 
 void ProcessLauncher::onProcessStarted()

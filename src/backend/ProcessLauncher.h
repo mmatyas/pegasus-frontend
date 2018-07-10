@@ -34,10 +34,13 @@ public:
     explicit ProcessLauncher(QObject* parent = nullptr);
 
 signals:
+    void processLaunchOk();
+    void processLaunchError();
     void processFinished();
 
 public slots:
-    void launchGame(const modeldata::Collection* const, const modeldata::Game* const);
+    void onLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
+    void onTeardownComplete();
 
 private slots:
     void onProcessStarted();
@@ -47,7 +50,6 @@ private slots:
 private:
     QPointer<QProcess> process;
 
-    void prepareLaunchCommand(QString&, const modeldata::Game&) const;
     void runProcess(const QString&);
 
     void beforeRun() const;

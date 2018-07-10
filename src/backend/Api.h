@@ -80,9 +80,7 @@ public:
 
 signals:
     // game launching
-    void prepareLaunch();
-    void executeLaunch(const modeldata::Collection* const, const modeldata::Game* const);
-    void restoreAfterGame(ApiObject*);
+    void launchGame(const modeldata::Collection* const, const modeldata::Game* const);
 
     // triggers translation update
     void localeChanged();
@@ -99,8 +97,9 @@ signals:
 
 public slots:
     // game launch communication
-    void onReadyToLaunch();
     void onGameFinished();
+    void onGameLaunchOk();
+    void onGameLaunchError();
 
 private slots:
     // internal communication

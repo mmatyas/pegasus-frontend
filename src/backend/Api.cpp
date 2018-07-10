@@ -85,20 +85,26 @@ void ApiObject::onLaunchRequested(const modeldata::Collection* const coll, const
     m_launch_collection = coll;
     m_launch_game = game;
 
-    emit prepareLaunch();
+    emit launchGame(m_launch_collection, m_launch_game);
 }
 
-void ApiObject::onReadyToLaunch()
+void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game);
-    emit executeLaunch(m_launch_collection, m_launch_game);
+
+    // TODO: start play timer here and increase play count
+}
+
+void ApiObject::onGameLaunchError()
+{
+    Q_ASSERT(m_launch_game);
+
+    // TODO: show error
+    onGameFinished();
 }
 
 void ApiObject::onGameFinished()
 {
-    // TODO: this is where play count could be increased
-    emit restoreAfterGame(this);
-
     m_launch_collection = nullptr;
     m_launch_game = nullptr;
 }

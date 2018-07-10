@@ -35,9 +35,9 @@ class FrontendLayer : public QObject {
     Q_OBJECT
 
 public:
-    explicit FrontendLayer(QObject* parent = nullptr);
+    explicit FrontendLayer(QObject* const api, QObject* parent = nullptr);
 
-    void rebuild(QObject* api);
+    void rebuild();
     void teardown();
 
     void clearCache();
@@ -47,5 +47,6 @@ signals:
     void teardownComplete();
 
 private:
-    QPointer<QQmlApplicationEngine> engine;
+    QObject* const m_api;
+    QPointer<QQmlApplicationEngine> m_engine;
 };

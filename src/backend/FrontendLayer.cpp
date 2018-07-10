@@ -48,39 +48,40 @@ QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
 } // namespace
 
 
-FrontendLayer::FrontendLayer(QObject* parent)
+FrontendLayer::FrontendLayer(QObject* const api, QObject* parent)
     : QObject(parent)
+    , m_api(api)
 {
+    // Note: the pointer to the Api is non-owning and constant during the runtime
 }
 
-void FrontendLayer::rebuild(QObject* api)
+void FrontendLayer::rebuild()
 {
-    Q_ASSERT(api);
-    Q_ASSERT(!engine);
+    Q_ASSERT(!m_engine);
 
-    engine = new QQmlApplicationEngine();
-    engine->addImportPath(QStringLiteral("lib/qml"));
-    engine->addImportPath(QStringLiteral("qml"));
-    engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
-    engine->rootContext()->setContextProperty(QStringLiteral("api"), api);
-    engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
+    m_engine = new QQmlApplicationEngine();
+    m_engine->addImportPath(QStringLiteral("lib/qml"));
+    m_engine->addImportPath(QStringLiteral("qml"));
+    m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
+    m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
+    m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 
     emit rebuildComplete();
 }
 
 void FrontendLayer::teardown()
 {
-    Q_ASSERT(engine);
+    Q_ASSERT(m_engine);
 
     // signal forwarding
-    connect(engine.data(), &QQmlApplicationEngine::destroyed,
+    connect(m_engine.data(), &QQmlApplicationEngine::destroyed,
             this, &FrontendLayer::teardownComplete);
 
-    engine->deleteLater();
+    m_engine->deleteLater();
 }
 
 void FrontendLayer::clearCache()
 {
-    Q_ASSERT(engine);
-    engine->clearComponentCache();
+    Q_ASSERT(m_engine);
+    m_engine->clearComponentCache();
 }
