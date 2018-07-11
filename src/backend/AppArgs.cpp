@@ -19,3 +19,4 @@
 
 
 bool AppArgs::portable_mode = false;
+bool AppArgs::silent = false;

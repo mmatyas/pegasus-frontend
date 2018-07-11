@@ -18,6 +18,7 @@
 #include "AppContext.h"
 
 #include "Api.h"
+#include "AppArgs.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
@@ -100,7 +101,9 @@ AppContext::~AppContext()
 
 void AppContext::setup_logging()
 {
-    g_log_streams.emplace_back(stdout);
+    if (!AppArgs::silent)
+        g_log_streams.emplace_back(stdout);
+
     qInstallMessageHandler(on_log_message);
 
     const QString logfile_path = find_writable_log_path();

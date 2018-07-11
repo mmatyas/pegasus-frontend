@@ -61,10 +61,15 @@ void handleCommandLineArgs(QGuiApplication& app)
         tr_log("Do not read or write config files outside the program's directory"));
     argparser.addOption(arg_portable);
 
+    const QCommandLineOption arg_silent(QStringLiteral("silent"),
+        tr_log("Do not print log messages to the terminal"));
+    argparser.addOption(arg_silent);
+
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app);
 
 
     AppArgs::portable_mode = argparser.isSet(arg_portable);
+    AppArgs::silent = argparser.isSet(arg_silent);
 }
