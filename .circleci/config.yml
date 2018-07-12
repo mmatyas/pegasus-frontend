@@ -36,7 +36,7 @@ jobs:
       - image: mmatyas/pegasus-qt-mingw
     environment:
       - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-      - QT_TARGET: qt595_win32-mingw-static
+      - QT_TARGET: qt5111_win32-mingw-static
     steps:
       - run: git clone --recursive https://github.com/mmatyas/pegasus-frontend .
       - run: git checkout -qf ${CIRCLE_SHA1}
