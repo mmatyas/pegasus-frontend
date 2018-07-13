@@ -42,7 +42,7 @@ struct Game {
     float rating;
 
     int playcount;
-    QTime playtime;
+    qint64 playtime;
     QDateTime lastplayed;
 
     QStringList developer_list;
