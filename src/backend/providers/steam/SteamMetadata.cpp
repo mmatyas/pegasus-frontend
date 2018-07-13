@@ -134,7 +134,7 @@ bool read_json(modeldata::Game& game, const QByteArray& bytes)
         // FIXME: the date format will likely fail for non-English locales (see Qt docs)
         const QDateTime datetime(QDateTime::fromString(date_str, QLatin1String("d MMM, yyyy")));
         if (datetime.isValid())
-            game.setReleaseDate(datetime.date());
+            game.release_date = datetime.date();
     }
 
     const QString header_image = app_data[QLatin1String("header_image")].toString();
@@ -145,12 +145,12 @@ bool read_json(modeldata::Game& game, const QByteArray& bytes)
     const QJsonArray developer_arr = app_data[QLatin1String("developers")].toArray();
     if (!developer_arr.isEmpty()) {
         for (int i = 0; i < developer_arr.count(); i++)
-            game.addDeveloper(developer_arr[i].toString());
+            game.developers.append(developer_arr[i].toString());
     }
     const QJsonArray publisher_arr = app_data[QLatin1String("publishers")].toArray();
     if (!publisher_arr.isEmpty()) {
         for (int i = 0; i < publisher_arr.count(); i++)
-            game.addPublisher(publisher_arr[i].toString());
+            game.publishers.append(publisher_arr[i].toString());
     }
 
     const auto metacritic_obj = app_data[QLatin1String("metacritic")].toObject();
@@ -168,7 +168,7 @@ bool read_json(modeldata::Game& game, const QByteArray& bytes)
 
         const QString genre = genre_obj[QLatin1String("description")].toString();
         if (!genre.isEmpty())
-            game.addGenre(genre);
+            game.genres.append(genre);
     }
 
     const QString background_image = app_data[QLatin1String("background")].toString();

@@ -129,20 +129,17 @@ void test_PegasusProvider::enhance()
     game = games[QStringLiteral(":/with_meta/mygame1.ext")];
     QVERIFY(game);
     QCOMPARE(game->title, QStringLiteral("My Game 1"));
-    QCOMPARE(game->developer_str, QStringLiteral("Dev1, Dev2"));
-    QCOMPARE(game->developer_list, QStringList({"Dev1", "Dev2"}));
+    QCOMPARE(game->developers, QStringList({"Dev1", "Dev2"}));
 
     game = games[QStringLiteral(":/with_meta/mygame2.ext")];
     QVERIFY(game);
     QCOMPARE(game->title, QStringLiteral("My Game 2"));
-    QCOMPARE(game->publisher_str, QStringLiteral("Publisher with Spaces, Another Publisher"));
-    QCOMPARE(game->publisher_list, QStringList({"Publisher with Spaces", "Another Publisher"}));
+    QCOMPARE(game->publishers, QStringList({"Publisher with Spaces", "Another Publisher"}));
 
     game = games[QStringLiteral(":/with_meta/mygame3.ext")];
     QVERIFY(game);
     QCOMPARE(game->title, QStringLiteral("mygame3"));
-    QCOMPARE(game->genre_str, QStringLiteral("genre1, genre2, genre with spaces"));
-    QCOMPARE(game->genre_list, QStringList({"genre1", "genre2", "genre with spaces"}));
+    QCOMPARE(game->genres, QStringList({"genre1", "genre2", "genre with spaces"}));
     QCOMPARE(game->player_count, 4);
 
     game = games[QStringLiteral(":/with_meta/subdir/game_in_subdir.ext")];

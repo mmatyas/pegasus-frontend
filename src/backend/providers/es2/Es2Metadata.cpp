@@ -318,9 +318,9 @@ void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
     // first, the simple strings
     game.title = xml_props[MetaTypes::NAME];
     game.description = xml_props[MetaTypes::DESC];
-    game.addDeveloper(xml_props[MetaTypes::DEVELOPER]);
-    game.addPublisher(xml_props[MetaTypes::PUBLISHER]);
-    game.addGenre(xml_props[MetaTypes::GENRE]);
+    game.developers.append(xml_props[MetaTypes::DEVELOPER]);
+    game.publishers.append(xml_props[MetaTypes::PUBLISHER]);
+    game.genres.append(xml_props[MetaTypes::GENRE]);
 
     // then the numbers
     game.playcount = xml_props[MetaTypes::PLAYCOUNT].toInt();
@@ -350,7 +350,7 @@ void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
     game.lastplayed = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
 
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
-    game.setReleaseDate(release_time.date());
+    game.release_date = release_time.date();
 }
 
 } // namespace es2

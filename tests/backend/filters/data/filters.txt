@@ -8,4 +8,4 @@ rule: invalidprop is_true
 filter: test
 rule: favorite is_true
 rule: title contains abc
-rule: year not_equals 2000|2001
+rule: releaseYear not_equals 2000|2001

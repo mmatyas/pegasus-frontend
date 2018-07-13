@@ -40,29 +40,15 @@ struct Game {
     int player_count;
     bool is_favorite;
     float rating;
+    QDate release_date;
 
     int playcount;
     qint64 playtime;
     QDateTime lastplayed;
 
-    QStringList developer_list;
-    QStringList publisher_list;
-    QStringList genre_list;
-    QString developer_str;
-    QString publisher_str;
-    QString genre_str;
-    void addDeveloper(const QString&);
-    void addPublisher(const QString&);
-    void addGenre(const QString&);
-    void addDevelopers(const QStringList&);
-    void addPublishers(const QStringList&);
-    void addGenres(const QStringList&);
-
-    void setReleaseDate(QDate);
-    int release_year;
-    int release_month;
-    int release_day;
-    QDate release_date;
+    QStringList developers;
+    QStringList publishers;
+    QStringList genres;
 
     GameAssets assets;
 

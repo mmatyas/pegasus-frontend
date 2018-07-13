@@ -131,13 +131,13 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                 curr_game->title = val;
                 break;
             case MetaAttribType::DEVELOPER:
-                curr_game->addDeveloper(val);
+                curr_game->developers.append(val);
                 break;
             case MetaAttribType::PUBLISHER:
-                curr_game->addPublisher(val);
+                curr_game->publishers.append(val);
                 break;
             case MetaAttribType::GENRE:
-                curr_game->addGenres(tokenize(val));
+                curr_game->genres.append(tokenize(val));
                 break;
             case MetaAttribType::PLAYER_COUNT:
                 {
@@ -166,7 +166,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                     const int y = qMax(1, rx_match.captured(1).toInt());
                     const int m = qBound(1, rx_match.captured(3).toInt(), 12);
                     const int d = qBound(1, rx_match.captured(5).toInt(), 31);
-                    curr_game->setReleaseDate(QDate(y, m, d));
+                    curr_game->release_date = QDate(y, m, d);
                 }
                 break;
             case MetaAttribType::RATING:

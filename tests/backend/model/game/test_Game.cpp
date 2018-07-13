@@ -41,23 +41,10 @@ void testStrAndList(modeldata::Game& modeldata,
     QVERIFY(game.property(str_name).toString().isEmpty());
     QVERIFY(game.property(list_name).toStringList().isEmpty());
 
-    // empty
-    fn_add({});
-    QVERIFY(game.property(str_name).toString().isEmpty());
-    QVERIFY(game.property(list_name).toStringList().isEmpty());
-
-    // first
     fn_add("test1");
-    QCOMPARE(game.property(str_name).toString(), QStringLiteral("test1"));
-    QCOMPARE(game.property(list_name).toStringList(), QStringList({"test1"}));
-
-    // second
     fn_add("test2");
-    QCOMPARE(game.property(str_name).toString(), QStringLiteral("test1, test2"));
-    QCOMPARE(game.property(list_name).toStringList(), QStringList({"test1", "test2"}));
-
-    // third
     fn_add("test3");
+
     QCOMPARE(game.property(str_name).toString(), QStringLiteral("test1, test2, test3"));
     QCOMPARE(game.property(list_name).toStringList(), QStringList({"test1", "test2", "test3"}));
 }
@@ -65,33 +52,33 @@ void testStrAndList(modeldata::Game& modeldata,
 void test_Game::developers()
 {
     modeldata::Game game({});
-    auto fn = [&game](const QString& val){ game.addDeveloper(val); };
+    auto fn = [&game](const QString& val){ game.developers.append(val); };
     testStrAndList(game, fn, "developer", "developerList");
 }
 
 void test_Game::publishers()
 {
     modeldata::Game game({});
-    auto fn = [&game](const QString& val){ game.addPublisher(val); };
+    auto fn = [&game](const QString& val){ game.publishers.append(val); };
     testStrAndList(game, fn, "publisher", "publisherList");
 }
 
 void test_Game::genres()
 {
     modeldata::Game game({});
-    auto fn = [&game](const QString& val){ game.addGenre(val); };
+    auto fn = [&game](const QString& val){ game.genres.append(val); };
     testStrAndList(game, fn, "genre", "genreList");
 }
 
 void test_Game::release()
 {
     modeldata::Game modeldata({});
-    modeldata.setReleaseDate(QDate(1999,1,2));
+    modeldata.release_date = QDate(1999,1,2);
 
     model::Game game(&modeldata);
-    QCOMPARE(game.property("year").toInt(), 1999);
-    QCOMPARE(game.property("month").toInt(), 1);
-    QCOMPARE(game.property("day").toInt(), 2);
+    QCOMPARE(game.property("releaseYear").toInt(), 1999);
+    QCOMPARE(game.property("releaseMonth").toInt(), 1);
+    QCOMPARE(game.property("releaseDay").toInt(), 2);
 }
 
 void test_Game::launch()

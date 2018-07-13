@@ -39,20 +39,20 @@ class Game : public QObject {
     DATA_CONST_PROP(QString, summary, summary)
     DATA_CONST_PROP(QString, description, description)
 
-    DATA_CONST_PROP(QString, developer, developer_str)
-    DATA_CONST_PROP(QString, publisher, publisher_str)
-    DATA_CONST_PROP(QString, genre, genre_str)
-    DATA_CONST_PROP(QStringList, developerList, developer_list)
-    DATA_CONST_PROP(QStringList, publisherList, publisher_list)
-    DATA_CONST_PROP(QStringList, genreList, genre_list)
-
-    DATA_CONST_PROP(QDate, release, release_date)
-    DATA_CONST_PROP(int, year, release_year)
-    DATA_CONST_PROP(int, month, release_month)
-    DATA_CONST_PROP(int, day, release_day)
+    Q_PROPERTY(QString developer READ developerString CONSTANT)
+    Q_PROPERTY(QString publisher READ publisherString CONSTANT)
+    Q_PROPERTY(QString genre READ genreString CONSTANT)
+    DATA_CONST_PROP(QStringList, developerList, developers)
+    DATA_CONST_PROP(QStringList, publisherList, publishers)
+    DATA_CONST_PROP(QStringList, genreList, genres)
 
     DATA_CONST_PROP(int, players, player_count)
     DATA_CONST_PROP(float, rating, rating)
+    DATA_CONST_PROP(QDate, release, release_date)
+
+    Q_PROPERTY(int releaseYear READ releaseYear CONSTANT)
+    Q_PROPERTY(int releaseMonth READ releaseMonth CONSTANT)
+    Q_PROPERTY(int releaseDay READ releaseDay CONSTANT)
 
     Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
     Q_PROPERTY(int playCount READ playCount NOTIFY playCountChanged)
@@ -60,6 +60,11 @@ class Game : public QObject {
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY lastPlayedChanged)
 
     Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
+
+    // deprecated
+    Q_PROPERTY(int year READ releaseYear CONSTANT)
+    Q_PROPERTY(int month READ releaseMonth CONSTANT)
+    Q_PROPERTY(int day READ releaseDay CONSTANT)
 
 public:
     explicit Game(modeldata::Game* const, QObject* parent = nullptr);
@@ -82,11 +87,21 @@ private:
     qint64 playTime() const { return m_game->playtime; }
     const QDateTime& lastPlayed() const { return m_game->lastplayed; }
 
+    int releaseYear() const { return m_game->release_date.year(); }
+    int releaseMonth() const { return m_game->release_date.month(); }
+    int releaseDay() const { return m_game->release_date.day(); }
+
+    QString developerString() const { return joined_list(m_game->developers); }
+    QString publisherString() const { return joined_list(m_game->publishers); }
+    QString genreString() const { return joined_list(m_game->genres); }
+
     GameAssets* assetsPtr() { return &m_assets; }
 
 private:
     modeldata::Game* const m_game;
     GameAssets m_assets;
+
+    QString joined_list(const QStringList& list) const { return list.join(QLatin1String(", ")); }
 };
 
 } // namespace model

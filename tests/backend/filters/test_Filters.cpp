@@ -57,7 +57,7 @@ void test_Filters::read()
     QCOMPARE(result.first()->rules().at(1).game_property, QStringLiteral("title"));
     QCOMPARE(result.first()->rules().at(1).type, model::FilterRuleType::CONTAINS);
     QCOMPARE(result.first()->rules().at(1).regex.pattern(), QStringLiteral("abc"));
-    QCOMPARE(result.first()->rules().at(2).game_property, QStringLiteral("year"));
+    QCOMPARE(result.first()->rules().at(2).game_property, QStringLiteral("releaseYear"));
     QCOMPARE(result.first()->rules().at(2).type, model::FilterRuleType::NOT_EQUALS);
     QCOMPARE(result.first()->rules().at(2).regex.pattern(), QStringLiteral("2000|2001"));
 }
