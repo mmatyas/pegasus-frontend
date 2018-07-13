@@ -50,12 +50,12 @@ bool game_property_contains(const QVariant& property, const QRegularExpression& 
 
     switch (property.type()) {
         case QMetaType::QStringList: {
-            bool result = false;
             const QStringList list = property.toStringList();
-            for (const QString& str : list)
-                result |= regex.match(str).hasMatch();
-
-            return result;
+            for (const QString& str : list) {
+                if (regex.match(str).hasMatch())
+                    return true;
+            }
+            return false;
         }
         case QMetaType::QDate:
             str = property.toDate().toString(Qt::ISODate);
