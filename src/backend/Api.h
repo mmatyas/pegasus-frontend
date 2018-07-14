@@ -20,6 +20,7 @@
 #include "AppCloseType.h"
 #include "DataFinder.h"
 #include "configfiles/FavoriteDB.h" // FIXME
+#include "configfiles/StatsDB.h"
 #include "model/Filters.h"
 #include "model/Meta.h"
 #include "model/System.h"
@@ -115,16 +116,18 @@ private:
     model::Filters m_filters;
     model::CollectionList m_collections;
 
-    // the collection and game that requested the game launch
+    // game launching
     const modeldata::Collection* m_launch_collection;
     const modeldata::Game* m_launch_game;
+    QDateTime m_launch_time;
 
     // initialization
     DataFinder m_datafinder;
     QFutureWatcher<void> m_loading_watcher;
 
-    // favorite management
+    // persistence
     FavoriteWriter m_favorite_writer;
+    StatsWriter m_stats;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

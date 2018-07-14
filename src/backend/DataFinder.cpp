@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "configfiles/FavoriteDB.h"
+#include "configfiles/StatsDB.h"
 #include "modeldata/gaming/Collection.h"
 #include "providers/pegasus/PegasusProvider.h"
 
@@ -100,6 +101,7 @@ void DataFinder::runMetadataProviders(const HashMap<QString, modeldata::GamePtr>
         provider->enhance(games, collections);
 
     FavoriteReader::readDB(games);
+    StatsReader::readDB(games);
 }
 
 std::vector<modeldata::Collection> DataFinder::find()

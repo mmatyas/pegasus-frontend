@@ -1,7 +1,9 @@
 HEADERS += \
-    $$PWD/FavoriteDB.h \
     $$PWD/CustomFilters.h \
+    $$PWD/FavoriteDB.h \
+    $$PWD/StatsDB.h \
 
 SOURCES += \
-    $$PWD/FavoriteDB.cpp \
     $$PWD/CustomFilters.cpp \
+    $$PWD/FavoriteDB.cpp \
+    $$PWD/StatsDB.cpp \

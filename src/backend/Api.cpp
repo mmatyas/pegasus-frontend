@@ -92,19 +92,31 @@ void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game);
 
-    // TODO: start play timer here and increase play count
+    m_launch_time = QDateTime::currentDateTimeUtc();
 }
 
 void ApiObject::onGameLaunchError()
 {
+    Q_ASSERT(m_launch_collection);
     Q_ASSERT(m_launch_game);
 
     // TODO: show error
-    onGameFinished();
+    m_launch_collection = nullptr;
+    m_launch_game = nullptr;
 }
 
 void ApiObject::onGameFinished()
 {
+    Q_ASSERT(m_launch_collection);
+    Q_ASSERT(m_launch_game);
+    Q_ASSERT(m_launch_time.isValid());
+
+    const auto now = QDateTime::currentDateTimeUtc();
+    const auto duration = m_launch_time.secsTo(now);
+
+    m_stats.storePlay(m_launch_collection, m_launch_game,
+                      m_launch_time, duration);
+
     m_launch_collection = nullptr;
     m_launch_game = nullptr;
 }
