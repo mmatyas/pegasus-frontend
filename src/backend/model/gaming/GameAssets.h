@@ -22,6 +22,11 @@
 #include <QObject>
 
 
+#define SINGLE_ASSET_PROP(api_name, asset_type) \
+    Q_PROPERTY(QString api_name READ api_name CONSTANT) \
+    const QString& api_name() const { return m_assets->single(AssetType::asset_type); }
+
+
 namespace model {
 
 class GameAssets : public QObject {
@@ -30,25 +35,25 @@ class GameAssets : public QObject {
     // NOTE: by manually listing the properties (instead of eg. a Map),
     //       it is also possible to refer the same data by a different name
 
-    Q_PROPERTY(QString boxFront READ boxFront CONSTANT)
-    Q_PROPERTY(QString boxBack READ boxBack CONSTANT)
-    Q_PROPERTY(QString boxSpine READ boxSpine CONSTANT)
-    Q_PROPERTY(QString boxFull READ boxFull CONSTANT)
-    Q_PROPERTY(QString cartridge READ cartridge CONSTANT)
-    Q_PROPERTY(QString logo READ logo CONSTANT)
-    Q_PROPERTY(QString poster READ poster CONSTANT)
+    SINGLE_ASSET_PROP(boxFront, BOX_FRONT)
+    SINGLE_ASSET_PROP(boxBack, BOX_BACK)
+    SINGLE_ASSET_PROP(boxSpine, BOX_SPINE)
+    SINGLE_ASSET_PROP(boxFull, BOX_FULL)
+    SINGLE_ASSET_PROP(cartridge, CARTRIDGE)
+    SINGLE_ASSET_PROP(logo, LOGO)
+    SINGLE_ASSET_PROP(poster, POSTER)
 
-    Q_PROPERTY(QString marquee READ marquee CONSTANT)
-    Q_PROPERTY(QString bezel READ bezel CONSTANT)
-    Q_PROPERTY(QString panel READ panel CONSTANT)
-    Q_PROPERTY(QString cabinetLeft READ cabinetLeft CONSTANT)
-    Q_PROPERTY(QString cabinetRight READ cabinetRight CONSTANT)
+    SINGLE_ASSET_PROP(marquee, ARCADE_MARQUEE)
+    SINGLE_ASSET_PROP(bezel, ARCADE_BEZEL)
+    SINGLE_ASSET_PROP(panel, ARCADE_PANEL)
+    SINGLE_ASSET_PROP(cabinetLeft, ARCADE_CABINET_L)
+    SINGLE_ASSET_PROP(cabinetRight, ARCADE_CABINET_R)
 
-    Q_PROPERTY(QString tile READ tile CONSTANT)
-    Q_PROPERTY(QString banner READ banner CONSTANT)
-    Q_PROPERTY(QString steam READ steam CONSTANT)
-    Q_PROPERTY(QString background READ background CONSTANT)
-    Q_PROPERTY(QString music READ music CONSTANT)
+    SINGLE_ASSET_PROP(tile, UI_TILE)
+    SINGLE_ASSET_PROP(banner, UI_BANNER)
+    SINGLE_ASSET_PROP(steam, UI_STEAMGRID)
+    SINGLE_ASSET_PROP(background, BACKGROUND)
+    SINGLE_ASSET_PROP(music, MUSIC)
 
     // TODO: these could be optimized, see
     // https://doc.qt.io/qt-5/qtqml-cppintegration-data.html (Sequence Type to JavaScript Array)
@@ -59,26 +64,6 @@ public:
     explicit GameAssets(modeldata::GameAssets* const, QObject* parent = nullptr);
 
 private:
-    const QString& boxFront() { return m_assets->single(AssetType::BOX_FRONT); }
-    const QString& boxBack() { return m_assets->single(AssetType::BOX_BACK); }
-    const QString& boxSpine() { return m_assets->single(AssetType::BOX_SPINE); }
-    const QString& boxFull() { return m_assets->single(AssetType::BOX_FULL); }
-    const QString& cartridge() { return m_assets->single(AssetType::CARTRIDGE); }
-    const QString& logo() { return m_assets->single(AssetType::LOGO); }
-    const QString& poster() { return m_assets->single(AssetType::POSTER); }
-
-    const QString& marquee() { return m_assets->single(AssetType::ARCADE_MARQUEE); }
-    const QString& bezel() { return m_assets->single(AssetType::ARCADE_BEZEL); }
-    const QString& panel() { return m_assets->single(AssetType::ARCADE_PANEL); }
-    const QString& cabinetLeft() { return m_assets->single(AssetType::ARCADE_CABINET_L); }
-    const QString& cabinetRight() { return m_assets->single(AssetType::ARCADE_CABINET_R); }
-
-    const QString& tile() { return m_assets->single(AssetType::UI_TILE); }
-    const QString& banner() { return m_assets->single(AssetType::UI_BANNER); }
-    const QString& steam() { return m_assets->single(AssetType::UI_STEAMGRID); }
-    const QString& background() { return m_assets->single(AssetType::BACKGROUND); }
-    const QString& music() { return m_assets->single(AssetType::MUSIC); }
-
     const QStringList& screenshots() { return m_assets->multi(AssetType::SCREENSHOTS); }
     const QStringList& videos() { return m_assets->multi(AssetType::VIDEOS); }
 
