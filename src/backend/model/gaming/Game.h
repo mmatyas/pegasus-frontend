@@ -46,8 +46,8 @@ class Game : public QObject {
     DATA_CONST_PROP(QStringList, publisherList, publishers)
     DATA_CONST_PROP(QStringList, genreList, genres)
 
-    DATA_CONST_PROP(int, players, player_count)
-    DATA_CONST_PROP(float, rating, rating)
+    Q_PROPERTY(int players READ players CONSTANT)
+    Q_PROPERTY(float rating READ rating CONSTANT)
     DATA_CONST_PROP(QDate, release, release_date)
 
     Q_PROPERTY(int releaseYear READ releaseYear CONSTANT)
@@ -80,20 +80,23 @@ signals:
     void lastPlayedChanged();
 
 private:
-    bool favorite() const { return m_game->is_favorite; }
-    void setFavorite(bool);
+    QString developerString() const { return joined_list(m_game->developers); }
+    QString publisherString() const { return joined_list(m_game->publishers); }
+    QString genreString() const { return joined_list(m_game->genres); }
 
-    int playCount() const { return m_game->playcount; }
-    qint64 playTime() const { return m_game->playtime; }
-    const QDateTime& lastPlayed() const { return m_game->lastplayed; }
+    int players() const { return m_game->player_count; }
+    float rating() const { return m_game->rating; }
 
     int releaseYear() const { return m_game->release_date.year(); }
     int releaseMonth() const { return m_game->release_date.month(); }
     int releaseDay() const { return m_game->release_date.day(); }
 
-    QString developerString() const { return joined_list(m_game->developers); }
-    QString publisherString() const { return joined_list(m_game->publishers); }
-    QString genreString() const { return joined_list(m_game->genres); }
+    bool favorite() const { return m_game->is_favorite; }
+    void setFavorite(bool);
+
+    int playCount() const { return m_game->playcount; }
+    qint64 playTime() const { return m_game->playtime; }
+    const QDateTime& lastPlayed() const { return m_game->last_played; }
 
     GameAssets* assetsPtr() { return &m_assets; }
 
