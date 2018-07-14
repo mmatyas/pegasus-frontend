@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-QT += qml gamepad
+QT += qml gamepad sql
 CONFIG += c++11 staticlib warn_on exceptions_off object_parallel_to_source
 
 

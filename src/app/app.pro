@@ -2,7 +2,7 @@ TEMPLATE = app
 
 TARGET = pegasus-fe
 
-QT += qml quick multimedia gamepad svg
+QT += qml quick multimedia gamepad svg sql
 CONFIG += c++11 warn_on exceptions_off
 greaterThan(QT_MINOR_VERSION, 10): CONFIG += qtquickcompiler
 

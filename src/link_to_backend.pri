@@ -8,6 +8,7 @@ else:unix: LIBS += -L$${TOP_BUILDDIR}/src/backend/ -lbackend
 
 INCLUDEPATH += $${TOP_SRCDIR}/src/backend
 DEPENDPATH += $${TOP_SRCDIR}/src/backend
+QT *= qml sql
 
 win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${TOP_BUILDDIR}/src/backend/release/libbackend.a
 else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${TOP_BUILDDIR}/src/backend/debug/libbackend.a
