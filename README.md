@@ -58,11 +58,12 @@ While the releases try to include most required dependencies, on some platforms 
 **Build dependencies**
 
 - C++11 compatible compiler
-- Qt 5.7 or later (5.9 recommended), with the following modules:
+- Qt 5.8 or later (5.9 recommended), with the following modules:
     - QML and QtQuick2
     - Multimedia
     - SVG
     - Gamepad
+    - SQL (SQLite v3)
 
 For more information, please see the detailed [build guide](http://pegasus-frontend.org/docs/dev/build).
 

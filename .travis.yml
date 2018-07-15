@@ -129,19 +129,20 @@ jobs:
   - stage: test
     env: QT_QPA_PLATFORM=minimal
     before_install:
-      - sudo add-apt-repository -y ppa:beineri/opt-qt571-trusty
+      - sudo add-apt-repository -y ppa:beineri/opt-qt58-trusty
       - sudo apt-get update
     install:
       - sudo apt-get install -y
           lcov
-          qt57declarative
-          qt57graphicaleffects
-          qt57gamepad
-          qt57imageformats
-          qt57multimedia
-          qt57svg
-          qt57tools
-      - source /opt/qt57/bin/qt57-env.sh
+          qt58declarative
+          qt58graphicaleffects
+          qt58gamepad
+          qt58imageformats
+          qt58multimedia
+          qt58svg
+          qt58tools
+          libpulse-dev
+      - source /opt/qt58/bin/qt58-env.sh
       - qmake -v
       - gem install coveralls-lcov
     script:

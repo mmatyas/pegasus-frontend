@@ -1,6 +1,6 @@
-lessThan(QT_MAJOR_VERSION, 5) | lessThan(QT_MINOR_VERSION, 7) {
+lessThan(QT_MAJOR_VERSION, 5) | lessThan(QT_MINOR_VERSION, 8) {
     message("Cannot build this project using Qt $$[QT_VERSION]")
-    error("This project requires at least Qt 5.7 or newer")
+    error("This project requires at least Qt 5.8 or newer")
 }
 lessThan(QT_MINOR_VERSION, 9) {
     warning("Qt 5.9 or later is recommended for the best performance")
