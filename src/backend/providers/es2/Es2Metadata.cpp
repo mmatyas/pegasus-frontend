@@ -323,7 +323,7 @@ void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
     game.genres.append(xml_props[MetaTypes::GENRE]);
 
     // then the numbers
-    game.playcount = xml_props[MetaTypes::PLAYCOUNT].toInt();
+    game.playcount += xml_props[MetaTypes::PLAYCOUNT].toInt();
     game.rating = qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f);
 
     // the player count can be a range
@@ -347,7 +347,7 @@ void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
     // then dates
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
 
-    game.lastplayed = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
+    game.last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
 
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
     game.release_date = release_time.date();

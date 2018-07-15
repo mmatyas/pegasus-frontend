@@ -26,6 +26,7 @@ Game::Game(QFileInfo fileinfo)
     , is_favorite(false)
     , rating(0.f)
     , playcount(0)
+    , playtime(0)
     , m_fileinfo(std::move(fileinfo))
 {
 }

@@ -44,7 +44,7 @@ struct Game {
 
     int playcount;
     qint64 playtime;
-    QDateTime lastplayed;
+    QDateTime last_played;
 
     QStringList developers;
     QStringList publishers;
