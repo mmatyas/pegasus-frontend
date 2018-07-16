@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.8
 import QtGraphicalEffects 1.0
 import "qrc:/qmlutils" as PegasusUtils
 
@@ -36,8 +36,7 @@ Item {
         id: scrollArea
         width: parent.width
         anchors.top: parent.top
-        anchors.bottom: actionButtons.top
-        anchors.bottomMargin: vpx(16)
+        anchors.bottom: playtimes.top
 
         Text {
             color: "#eee"
@@ -48,6 +47,94 @@ Item {
             font {
                 pixelSize: vpx(16)
                 family: globalFonts.sans
+            }
+        }
+    }
+
+    Column {
+        id: playtimes
+        width: parent.width
+        anchors.bottom: actionButtons.top
+
+        topPadding: labelFontSize * 1.5
+        bottomPadding: topPadding
+        spacing: vpx(4)
+
+        readonly property color labelColor: "#4ae";
+        readonly property int labelSpacing: labelFontSize / 2
+        readonly property int labelFontSize: vpx(17)
+
+        Row {
+            width: parent.width
+            spacing: playtimes.labelSpacing
+
+            Text {
+                text: "last played:"
+                width: parent.width * 0.5
+                color: playtimes.labelColor;
+                font {
+                    pixelSize: playtimes.labelFontSize
+                    family: globalFonts.sans
+                    capitalization: Font.AllUppercase
+                }
+                horizontalAlignment: Text.AlignRight
+            }
+
+            Text {
+                text: {
+                    if (isNaN(gameData.lastPlayed))
+                        return "never";
+
+                    var now = new Date();
+
+                    var diffHours = (now.getTime() - gameData.lastPlayed.getTime()) / 1000 / 60 / 60;
+                    if (diffHours < 24 && now.getDate() === gameData.lastPlayed.getDate())
+                        return "today";
+
+                    var diffDays = Math.round(diffHours / 24);
+                    if (diffDays <= 1)
+                        return "yesterday";
+
+                    return diffDays + " days ago"
+                }
+                color: "#eee"
+                font {
+                    pixelSize: playtimes.labelFontSize
+                    family: globalFonts.sans
+                }
+            }
+        }
+
+        Row {
+            width: parent.width
+            spacing: playtimes.labelSpacing
+
+            Text {
+                text: "play time:"
+                width: parent.width * 0.5
+                color: playtimes.labelColor;
+                font {
+                    pixelSize: playtimes.labelFontSize
+                    family: globalFonts.sans
+                    capitalization: Font.AllUppercase
+                }
+                horizontalAlignment: Text.AlignRight
+            }
+
+            Text {
+                text: {
+                    var minutes = Math.ceil(gameData.playTime / 60)
+                    if (minutes > 120)
+                        return Math.round(minutes / 60) + " hours"
+
+                    return Math.round(minutes) + " minutes";
+
+                }
+                color: "#eee"
+                font {
+                    pixelSize: playtimes.labelFontSize
+                    family: globalFonts.sans
+                }
             }
         }
     }
