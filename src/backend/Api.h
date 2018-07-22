@@ -106,7 +106,7 @@ private slots:
 
     void onStaticDataLoaded(QVector<model::Collection*>, QVector<model::Game*>);
 
-    void onLaunchRequested(const model::Collection* const, const model::Game* const);
+    void onLaunchRequested(model::Collection* const, model::Game* const);
     void onFiltersChanged();
     void onGameFavoriteChanged();
 
@@ -118,8 +118,8 @@ private:
     model::CollectionList m_collections;
 
     // game launching
-    const model::Collection* m_launch_collection;
-    const model::Game* m_launch_game;
+    model::Collection* m_launch_collection;
+    model::Game* m_launch_game;
 
     // initialization
     ProviderManager m_providerman;

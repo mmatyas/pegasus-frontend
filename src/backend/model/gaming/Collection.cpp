@@ -32,7 +32,7 @@ Collection::Collection(modeldata::Collection collection, QObject* parent)
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
     connect(&m_gamelist, &GameList::gameLaunchRequested,
-            this, [this](const model::Game* const game){ emit gameLaunchRequested(this, game); });
+            this, [this](model::Game* const game){ emit gameLaunchRequested(this, game); });
     connect(&m_gamelist, &GameList::gameFavoriteChanged,
             this, &Collection::gameFavoriteChanged);
 }

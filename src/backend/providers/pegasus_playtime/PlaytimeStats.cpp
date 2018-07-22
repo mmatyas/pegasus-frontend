@@ -254,8 +254,8 @@ void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
     }
 }
 
-void PlaytimeStats::onGameLaunched(const model::Collection* const collection,
-                                   const model::Game* const game)
+void PlaytimeStats::onGameLaunched(model::Collection* const collection,
+                                   model::Game* const game)
 {
     Q_ASSERT(game);
     Q_ASSERT(collection);
@@ -267,8 +267,8 @@ void PlaytimeStats::onGameLaunched(const model::Collection* const collection,
     m_last_launch_time = QDateTime::currentDateTimeUtc();
 }
 
-void PlaytimeStats::onGameFinished(const model::Collection* const collection,
-                                   const model::Game* const game)
+void PlaytimeStats::onGameFinished(model::Collection* const collection,
+                                   model::Game* const game)
 {
     Q_ASSERT(game);
     Q_ASSERT(collection);

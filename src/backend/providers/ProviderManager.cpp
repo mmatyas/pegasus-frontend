@@ -182,7 +182,7 @@ void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_gam
         provider->onGameFavoriteChanged(all_games);
 }
 
-void ProviderManager::onGameLaunched(const model::Collection* const collection, const model::Game* const game)
+void ProviderManager::onGameLaunched(model::Collection* const collection, model::Game* const game)
 {
     if (m_init_seq.isRunning())
         return;
@@ -191,7 +191,7 @@ void ProviderManager::onGameLaunched(const model::Collection* const collection, 
         provider->onGameLaunched(collection, game);
 }
 
-void ProviderManager::onGameFinished(const model::Collection* const collection, const model::Game* const game)
+void ProviderManager::onGameFinished(model::Collection* const collection, model::Game* const game)
 {
     if (m_init_seq.isRunning())
         return;

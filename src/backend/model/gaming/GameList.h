@@ -71,7 +71,7 @@ signals:
     void filteredGamesChanged();
     void allGamesChanged();
 
-    void gameLaunchRequested(const model::Game* const);
+    void gameLaunchRequested(model::Game* const);
     void gameFavoriteChanged();
 
 private:
