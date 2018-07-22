@@ -94,8 +94,8 @@ void ThemeList::findAvailableThemes()
     const QString META_KEY_VERSION(QStringLiteral("version"));
     const QString META_KEY_SUMMARY(QStringLiteral("summary"));
     const QString META_KEY_DESC(QStringLiteral("description"));
-    const QString META_KEY_KEYWORDS(QStringLiteral("keywords"));
-    const QString META_KEY_HOMEPAGE(QStringLiteral("homepage"));
+    //const QString META_KEY_KEYWORDS(QStringLiteral("keywords"));
+    //const QString META_KEY_HOMEPAGE(QStringLiteral("homepage"));
 
     QStringList search_paths = themeDirectories();
     for (auto& path : search_paths) {

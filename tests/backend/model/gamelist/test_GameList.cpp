@@ -254,18 +254,18 @@ void test_GameList::applyFilters_data()
     QTest::addColumn<int>("matching_games_cnt");
 
     {
-        model::Filters* filters = new model::Filters(this);
+        auto filters = new model::Filters(this);
 
         QTest::newRow("empty") << filters << 5;
     }
     {
-        model::Filters* filters = new model::Filters(this);
+        auto filters = new model::Filters(this);
         filters->setProperty("gameTitle", "My Game");
 
         QTest::newRow("full title") << filters << 1;
     }
     {
-        model::Filters* filters = new model::Filters(this);
+        auto filters = new model::Filters(this);
         filters->setProperty("gameTitle", "Game");
 
         QTest::newRow("partial title") << filters << 2;
@@ -273,7 +273,7 @@ void test_GameList::applyFilters_data()
     // NOTE: inserting a filter outside the Filters ctor
     // may not update/signal the Qt properties for the change
     {
-        model::Filters* filters = new model::Filters(this);
+        auto filters = new model::Filters(this);
         filters->elementsMut().append(new model::Filter("", filters));
         filters->elements().last()->rulesMut().append(model::FilterRule {
             QLatin1String("favorite"),
@@ -285,7 +285,7 @@ void test_GameList::applyFilters_data()
         QTest::newRow("favorite") << filters << 2;
     }
     {
-        model::Filters* filters = new model::Filters(this);
+        auto filters = new model::Filters(this);
 
         filters->elementsMut().append(new model::Filter("", filters));
         filters->elements().last()->rulesMut().append(model::FilterRule {

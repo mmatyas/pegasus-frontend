@@ -24,7 +24,7 @@ class test_LocaleList : public QObject {
     Q_OBJECT
 
 private:
-    int initial_index;
+    int initial_index { 0 };
 
 private slots:
     void initTestCase();

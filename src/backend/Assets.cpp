@@ -20,7 +20,7 @@
 
 bool asset_is_single(AssetType type)
 {
-    if(type == AssetType::SCREENSHOTS || type == AssetType::VIDEOS)
+    if (type == AssetType::SCREENSHOTS || type == AssetType::VIDEOS)
         return false;
 
     return true;

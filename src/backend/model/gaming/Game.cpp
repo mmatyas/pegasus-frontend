@@ -34,7 +34,7 @@ void Game::setFavorite(bool new_val)
 }
 
 // This one is for summing the play times provided by multiple Providers.
-void Game::addPlayStats(int playcount, qint64 playtime, QDateTime last_played)
+void Game::addPlayStats(int playcount, qint64 playtime, const QDateTime& last_played)
 {
     m_game.last_played = std::max(m_game.last_played, last_played);
     m_game.playtime += playtime;
@@ -45,7 +45,7 @@ void Game::addPlayStats(int playcount, qint64 playtime, QDateTime last_played)
 // This one is a single update for playtime when the game finishes.
 void Game::updatePlayStats(qint64 duration, QDateTime time_finished)
 {
-    m_game.last_played = time_finished;
+    m_game.last_played = std::move(time_finished);
     m_game.playtime += duration;
     m_game.playcount++;
     emit playStatsChanged();

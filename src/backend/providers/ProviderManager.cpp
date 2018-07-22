@@ -77,13 +77,13 @@ void build_ui_layer(HashMap<QString, modeldata::Game>& games,
     game_vec.reserve(static_cast<int>(games.size()));
     modelgame_map.reserve(games.size());
 
-    for (auto it = games.begin(); it != games.end(); ++it) {
-        game_vec.append(new model::Game(std::move(it->second)));
-        modelgame_map.emplace(it->first, game_vec.last());
+    for (auto& keyval : games) {
+        game_vec.append(new model::Game(std::move(keyval.second)));
+        modelgame_map.emplace(keyval.first, game_vec.last());
     }
 
-    for (auto it = collections.begin(); it != collections.end(); ++it)
-        collection_vec.append(new model::Collection(std::move(it->second)));
+    for (auto& keyval : collections)
+        collection_vec.append(new model::Collection(std::move(keyval.second)));
 
     for (model::Collection* const coll : collection_vec) {
         QVector<model::Game*> childs;

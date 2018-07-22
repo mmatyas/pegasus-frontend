@@ -34,8 +34,8 @@ public:
 
 QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
 {
-    QNetworkAccessManager* nam = new QNetworkAccessManager(parent);
-    QNetworkDiskCache* cache = new QNetworkDiskCache(nam);
+    auto nam = new QNetworkAccessManager(parent);
+    auto cache = new QNetworkDiskCache(nam);
 
     QString cache_path = paths::writableCacheDir();
     cache_path += QLatin1String("/netcache");

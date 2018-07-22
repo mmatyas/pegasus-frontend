@@ -74,7 +74,7 @@ public:
 
     const modeldata::Game& data() const { return m_game; }
     void setFavorite(bool);
-    void addPlayStats(int playcount, qint64 playtime, QDateTime last_played);
+    void addPlayStats(int playcount, qint64 playtime, const QDateTime& last_played);
     void updatePlayStats(qint64 duration, QDateTime time_finished);
 
 signals:

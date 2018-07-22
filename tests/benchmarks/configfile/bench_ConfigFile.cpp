@@ -30,19 +30,19 @@ private slots:
 private:
     QVector<QPair<QString, QString>> m_entries;
 
-    void onAttributeFound(const QString, const QString);
-    void onError(const int, const QString);
+    void onAttributeFound(const QString&, const QString&);
+    void onError(int, const QString&);
 
     void readStream(QTextStream&);
 };
 
 
-void bench_ConfigFile::onAttributeFound(const QString key, const QString val)
+void bench_ConfigFile::onAttributeFound(const QString& key, const QString& val)
 {
     m_entries.push_back(qMakePair(key, val));
 }
 
-void bench_ConfigFile::onError(const int linenum, const QString msg)
+void bench_ConfigFile::onError(int linenum, const QString& msg)
 {
     qWarning().noquote() << QObject::tr("line %1: %2")
         .arg(QString::number(linenum), msg);

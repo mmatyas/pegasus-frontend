@@ -24,7 +24,7 @@ class test_ThemeList : public QObject {
     Q_OBJECT
 
 private:
-    int initial_index;
+    int initial_index { -1 };
 
 private slots:
     void initTestCase();

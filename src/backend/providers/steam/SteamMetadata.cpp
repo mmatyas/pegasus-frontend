@@ -43,9 +43,7 @@ static constexpr auto MSG_PREFIX = "Steam:";
 struct SteamGameEntry {
     QString title;
     QString appid;
-    modeldata::Game* game_ptr;
-
-    SteamGameEntry() : game_ptr(nullptr) {}
+    modeldata::Game* game_ptr { nullptr };
 
     bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
 };

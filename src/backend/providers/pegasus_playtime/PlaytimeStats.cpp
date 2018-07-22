@@ -55,6 +55,8 @@ struct SqlDefaultConnection {
         m_db = QSqlDatabase();
         QSqlDatabase::removeDatabase(connection);
     }
+    SqlDefaultConnection(const SqlDefaultConnection&) = delete;
+    SqlDefaultConnection& operator=(const SqlDefaultConnection&) = delete;
 
     bool open() { return m_db.open(); }
     bool startTransaction() { return m_db.transaction(); }
@@ -225,11 +227,9 @@ void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
     }
 
     struct Stats {
-        int playcount;
-        qint64 playtime;
+        int playcount { 0 };
+        qint64 playtime { 0 };
         QDateTime last_played;
-
-        Stats() : playcount(0), playtime(0) {}
     };
     HashMap<QString, Stats> stat_map;
 

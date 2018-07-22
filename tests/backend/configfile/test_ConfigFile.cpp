@@ -34,19 +34,19 @@ private slots:
 private:
     std::vector<std::tuple<int, QString, QString>> m_entries;
 
-    void onAttributeFound(const int, const QString, const QString);
-    void onError(const int, const QString);
+    void onAttributeFound(int, const QString&, const QString&);
+    void onError(int, const QString&);
 
     void readStream(QTextStream&);
 };
 
 
-void test_ConfigFile::onAttributeFound(const int line, const QString key, const QString val)
+void test_ConfigFile::onAttributeFound(int line, const QString& key, const QString& val)
 {
     m_entries.emplace_back(line, key, val);
 }
 
-void test_ConfigFile::onError(const int linenum, const QString msg)
+void test_ConfigFile::onError(int linenum, const QString& msg)
 {
     qWarning().noquote() << QObject::tr("line %1: %2")
         .arg(QString::number(linenum), msg);

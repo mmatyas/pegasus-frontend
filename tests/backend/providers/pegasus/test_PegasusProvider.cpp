@@ -44,9 +44,9 @@ void test_PegasusProvider::find_in_empty_dir()
     provider.add_game_dir(QStringLiteral(":/empty"));
     provider.findLists(games, collections, collection_childs);
 
-    QVERIFY(games.size() == 0);
-    QVERIFY(collections.size() == 0);
-    QVERIFY(collection_childs.size() == 0);
+    QVERIFY(games.empty());
+    QVERIFY(collections.empty());
+    QVERIFY(collection_childs.empty());
 }
 
 void test_PegasusProvider::find_in_filled_dir()

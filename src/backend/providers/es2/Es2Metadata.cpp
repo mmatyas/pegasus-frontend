@@ -191,7 +191,7 @@ MetadataParser::MetadataParser(QObject* parent)
 
 void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
                              const HashMap<QString, modeldata::Collection>& collections,
-                             const HashMap<QString, std::vector<QString>>& collection_childs)
+                             const HashMap<QString, std::vector<QString>>&)
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
