@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,27 +17,25 @@
 
 #pragma once
 
-#include "utils/FwdDeclModelData.h"
-#include "utils/HashMap.h"
+#include "providers/Provider.h"
 
 #include <QMutex>
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QtConcurrent/QtConcurrent>
 
 
-class FavoriteWriter : public QObject {
+namespace providers {
+namespace favorites {
+
+class Favorites : public Provider {
     Q_OBJECT
 
 public:
-    explicit FavoriteWriter(QObject* parent = nullptr);
-    explicit FavoriteWriter(const QString& file, QObject* parent = nullptr);
+    explicit Favorites(QObject* parent = nullptr);
+    explicit Favorites(QString db_path, QObject* parent = nullptr);
 
-    /// Prepares the list of favorites and starts writing it to the output
-    /// as soon as there are no pending write operations.
-    void queueTask(const std::vector<modeldata::Collection>& coll_list);
-
+    void findDynamicData(const QVector<model::Game*>&,
+                         const QVector<model::Collection*>&,
+                         const HashMap<QString, model::Game*>&) final;
+    void onGameFavoriteChanged(const QVector<model::Game*>&) final;
 
 signals:
     void startedWriting();
@@ -45,17 +43,13 @@ signals:
 
 private:
     const QString m_db_path;
+
     QStringList m_pending_task;
-    QStringList m_current_task;
+    QStringList m_active_task;
     QMutex m_task_guard;
-    QFutureWatcher<void> m_write_watcher;
 
     void start_processing();
 };
 
-class FavoriteReader {
-public:
-    /// Reads the list of favorites and marks the matching games as favorite.
-    static void readDB(const HashMap<QString, modeldata::GamePtr>&,
-                       const QString& db_path = QString());
-};
+} // namespace favorites
+} // namespace providers
