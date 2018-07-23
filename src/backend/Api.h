@@ -80,7 +80,7 @@ public:
 
 signals:
     // game launching
-    void launchGame(const model::Collection* const, const model::Game* const);
+    void launchGame(const model::Collection*, const model::Game*);
 
     // triggers translation update
     void localeChanged();
@@ -106,7 +106,7 @@ private slots:
 
     void onStaticDataLoaded(QVector<model::Collection*>, QVector<model::Game*>);
 
-    void onLaunchRequested(model::Collection* const, model::Game* const);
+    void onLaunchRequested(model::Collection*, model::Game*);
     void onFiltersChanged();
     void onGameFavoriteChanged();
 

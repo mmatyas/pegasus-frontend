@@ -78,7 +78,7 @@ public:
     void updatePlayStats(qint64 duration, QDateTime time_finished);
 
 signals:
-    void launchRequested(model::Game* const);
+    void launchRequested(model::Game*);
 
     void favoriteChanged();
     void playStatsChanged();

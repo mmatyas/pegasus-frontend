@@ -63,7 +63,7 @@ signals:
     void modelChanged();
     void currentChanged();
     void currentGameChanged();
-    void gameLaunchRequested(model::Collection* const, model::Game* const);
+    void gameLaunchRequested(model::Collection*, model::Game*);
     void gameFavoriteChanged();
 
 private slots:

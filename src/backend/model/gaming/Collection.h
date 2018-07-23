@@ -45,7 +45,7 @@ public:
 
 signals:
     void currentGameChanged();
-    void gameLaunchRequested(model::Collection* const, model::Game* const);
+    void gameLaunchRequested(model::Collection*, model::Game*);
     void gameFavoriteChanged();
 
 private:

@@ -46,8 +46,8 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::onLaunchRequested(const model::Collection* const collection,
-                                        const model::Game* const game)
+void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
+                                        const model::Game* game)
 {
     Q_ASSERT(game);
     // collection can be null!

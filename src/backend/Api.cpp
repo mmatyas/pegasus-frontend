@@ -68,7 +68,7 @@ void ApiObject::onStaticDataLoaded(QVector<model::Collection*> collections, QVec
     m_meta.onUiReady();
 }
 
-void ApiObject::onLaunchRequested(model::Collection* const coll, model::Game* const game)
+void ApiObject::onLaunchRequested(model::Collection* coll, model::Game* game)
 {
     // avoid launch spamming
     if (m_launch_game)

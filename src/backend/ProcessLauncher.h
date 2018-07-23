@@ -39,7 +39,7 @@ signals:
     void processFinished();
 
 public slots:
-    void onLaunchRequested(const model::Collection* const, const model::Game* const);
+    void onLaunchRequested(const model::Collection*, const model::Game*);
     void onTeardownComplete();
 
 private slots:
