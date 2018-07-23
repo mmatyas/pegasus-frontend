@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,19 +15,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "StatsDB.h"
+#include "PlaytimeStats.h"
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "modeldata/gaming/Collection.h"
-#include "modeldata/gaming/Game.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 
+#include <QDebug>
+#include <QFileInfo>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QtConcurrent/QtConcurrent>
 
 
 namespace {
+
+QString default_db_path()
+{
+    return paths::writableConfigDir() + QStringLiteral("/stats.db");
+}
 
 // Wrapper above Qt for auto-closing and freeing the connection
 struct SqlDefaultConnection {
@@ -59,11 +67,6 @@ struct SqlDefaultConnection {
 private:
     QSqlDatabase m_db;
 };
-
-QString default_db_path()
-{
-    return paths::writableConfigDir() + QStringLiteral("/stats.db");
-}
 
 void print_query_error(const QSqlQuery& query)
 {
@@ -112,12 +115,12 @@ bool create_missing_tables(SqlDefaultConnection& channel)
     return true;
 }
 
-int get_path_id(const modeldata::Game* const game)
+int get_path_id(const QString& game_key)
 {
     {
         QSqlQuery query;
         query.prepare(QStringLiteral("SELECT id FROM paths WHERE path = ?;"));
-        query.addBindValue(game->fileinfo().canonicalFilePath());
+        query.addBindValue(game_key);
         if (!query.exec()) {
             print_query_error(query);
             return -1;
@@ -129,7 +132,7 @@ int get_path_id(const modeldata::Game* const game)
     {
         QSqlQuery query;
         query.prepare(QStringLiteral("INSERT INTO paths VALUES(null, ?);"));
-        query.addBindValue(game->fileinfo().canonicalFilePath());
+        query.addBindValue(game_key);
         if (!query.exec()) {
             print_query_error(query);
             return -1;
@@ -164,64 +167,45 @@ void save_play_entry(const int path_id, const QDateTime& start_time, const qint6
         print_query_error(query);
 }
 
+void update_modelgame(model::Game* const game, const QDateTime& start_time, const qint64 duration)
+{
+    Q_ASSERT(game);
+
+    game->updatePlayStats(duration, start_time.addSecs(duration));
+}
+
+
+bool collection_is_steam(const model::Collection* const collection)
+{
+    return collection->data().name() == QLatin1String("Steam");
+}
+
 } // namespace
 
 
-StatsWriter::StatsWriter(QObject* parent)
-    : StatsWriter(default_db_path(), parent)
+namespace providers {
+namespace playtime {
+
+PlaytimeStats::PlaytimeStats(QObject* parent)
+    : PlaytimeStats(default_db_path(), parent)
 {}
 
-StatsWriter::StatsWriter(QString db_path, QObject* parent)
-    : QObject(parent)
+PlaytimeStats::PlaytimeStats(QString db_path, QObject* parent)
+    : Provider(parent)
     , m_db_path(std::move(db_path))
 {}
 
-void StatsWriter::storePlay(const modeldata::Collection* const collection,
-                            const modeldata::Game* const game,
-                            const QDateTime& start_time, const qint64 duration)
+void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
+                                    const QVector<model::Collection*>&,
+                                    const HashMap<QString, model::Game*>& modelgame_map)
 {
-    Q_ASSERT(game);
-    Q_ASSERT(collection);
-
-    // Steam saves play time in its own files
-    if (collection->name() == QLatin1String("Steam"))
+    if (!QFileInfo::exists(m_db_path))
         return;
-
 
     SqlDefaultConnection channel(m_db_path);
     if (!channel.open()) {
-        qWarning().noquote() << tr_log("Could not open or create `%1`, play time will not be saved")
-                                .arg(m_db_path);
-        return;
-    }
-
-
-    channel.startTransaction();
-
-    if (!create_missing_tables(channel))
-        return;
-
-    const int path_id = get_path_id(game);
-    if (path_id == -1)
-        return;
-
-    save_play_entry(path_id, start_time, duration);
-    channel.commit();
-}
-
-void StatsReader::readDB(const HashMap<QString, modeldata::GamePtr>& games,
-                         const QString& db_path)
-{
-    const QString real_db_path = db_path.isEmpty() ? default_db_path() : db_path;
-    if (!QFileInfo::exists(real_db_path)) {
-        // Database does not exists yet
-        return;
-    }
-
-    SqlDefaultConnection channel(real_db_path);
-    if (!channel.open()) {
         qWarning().noquote() << tr_log("Could not open `%1`, play times will not be loaded")
-                                .arg(real_db_path);
+                                .arg(m_db_path);
         return;
     }
     // No entries yet
@@ -239,17 +223,118 @@ void StatsReader::readDB(const HashMap<QString, modeldata::GamePtr>& games,
         print_query_error(query);
         return;
     }
+
+    struct Stats {
+        int playcount;
+        qint64 playtime;
+        QDateTime last_played;
+
+        Stats() : playcount(0), playtime(0) {}
+    };
+    HashMap<QString, Stats> stat_map;
+
     while (query.next()) {
         const QString path = query.value(0).toString();
-        if (!games.count(path))
+        if (!modelgame_map.count(path))
             continue;
 
         const qint64 start_epoch = query.value(1).toLongLong();
         const qint64 duration = query.value(2).toLongLong();
 
-        const modeldata::GamePtr& game = games.at(path);
-        game->last_played = QDateTime::fromSecsSinceEpoch(start_epoch + duration);
-        game->playtime += std::max(static_cast<qint64>(0), duration);
-        game->playcount++;
+        Stats& stats = stat_map[path];
+        stats.last_played = QDateTime::fromSecsSinceEpoch(start_epoch + duration);
+        stats.playtime += std::max(static_cast<qint64>(0), duration);
+        stats.playcount++;
+    }
+    // trigger update only once
+    for (const auto& pair : stat_map) {
+        model::Game* game = modelgame_map.at(pair.first);
+        const Stats& stats = stat_map.at(pair.first);
+        game->addPlayStats(stats.playcount, stats.playtime, stats.last_played);
     }
 }
+
+void PlaytimeStats::onGameLaunched(const model::Collection* const collection,
+                                   const model::Game* const game)
+{
+    Q_ASSERT(game);
+    Q_ASSERT(collection);
+
+    // Steam saves play time in its own files
+    if (collection_is_steam(collection))
+        return;
+
+    m_last_launch_time = QDateTime::currentDateTimeUtc();
+}
+
+void PlaytimeStats::onGameFinished(const model::Collection* const collection,
+                                   const model::Game* const game)
+{
+    Q_ASSERT(game);
+    Q_ASSERT(collection);
+    Q_ASSERT(m_last_launch_time.isValid());
+
+    // again, Steam
+    if (collection_is_steam(collection))
+        return;
+
+    QMutexLocker lock(&m_queue_guard);
+
+    const auto now = QDateTime::currentDateTimeUtc();
+    const auto duration = m_last_launch_time.secsTo(now);
+
+    m_pending_tasks.emplace_back(
+        game,
+        m_last_launch_time,
+        duration
+    );
+
+    if (m_active_tasks.empty())
+        start_processing();
+}
+
+void PlaytimeStats::start_processing()
+{
+    Q_ASSERT(m_active_tasks.empty());
+
+    m_active_tasks.swap(m_pending_tasks);
+
+    QtConcurrent::run([this]{
+        emit startedWriting();
+
+        while (!m_active_tasks.empty()) {
+            SqlDefaultConnection channel(m_db_path);
+            if (!channel.open()) {
+                qWarning().noquote() << tr_log("Could not open or create `%1`, play time will not be saved")
+                                        .arg(m_db_path);
+                break;
+            }
+
+            channel.startTransaction();
+
+            if (!create_missing_tables(channel))
+                break;
+
+            for (const QueueEntry& entry : m_active_tasks) {
+                const int path_id = get_path_id(entry.game->data().fileinfo().canonicalFilePath());
+                if (path_id == -1)
+                    continue;
+
+                save_play_entry(path_id, entry.launch_time, entry.duration);
+                update_modelgame(entry.game, entry.launch_time, entry.duration);
+            }
+
+            channel.commit();
+            m_active_tasks.clear();
+
+            // pick up new tasks
+            QMutexLocker lock(&m_queue_guard);
+            m_active_tasks.swap(m_pending_tasks);
+        }
+
+        emit finishedWriting();
+    });
+}
+
+} // namespace playtime
+} // namespace providers
