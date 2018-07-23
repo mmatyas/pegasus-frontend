@@ -32,8 +32,9 @@ class Metadata : public QObject {
 public:
     explicit Metadata(QObject* parent);
 
-    void enhance(const HashMap<QString, modeldata::GamePtr>&,
-                 const HashMap<QString, modeldata::Collection>&);
+    void enhance(HashMap<QString, modeldata::Game>&,
+                 const HashMap<QString, modeldata::Collection>&,
+                 const HashMap<QString, std::vector<QString>>&);
 };
 
 } // namespace steam

@@ -43,7 +43,7 @@ static constexpr auto MSG_PREFIX = "Steam:";
 struct SteamGameEntry {
     QString title;
     QString appid;
-    modeldata::GamePtr game_ptr;
+    modeldata::Game* game_ptr;
 
     SteamGameEntry() : game_ptr(nullptr) {}
 
@@ -332,29 +332,32 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(const HashMap<QString, modeldata::GamePtr>&,
-                       const HashMap<QString, modeldata::Collection>& collections)
+void Metadata::enhance(HashMap<QString, modeldata::Game>& games,
+                       const HashMap<QString, modeldata::Collection>&,
+                       const HashMap<QString, std::vector<QString>>& collection_childs)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
-    if (!collections.count(STEAM_TAG))
+    if (!collection_childs.count(STEAM_TAG))
         return;
 
-    const modeldata::Collection& collection = collections.at(STEAM_TAG);
+    const std::vector<QString>& childs = collection_childs.at(STEAM_TAG);
     const QString steamexe = find_steam_exe();
 
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
 
-    for (const modeldata::GamePtr& game_ptr : collection.games()) {
-        SteamGameEntry entry = read_manifest(game_ptr->fileinfo().filePath());
+    for (const QString& game_key : childs) {
+        modeldata::Game& game = games.at(game_key);
+
+        SteamGameEntry entry = read_manifest(game.fileinfo().filePath());
         if (!entry.appid.isEmpty()) {
             if (entry.title.isEmpty())
                 entry.title = QLatin1String("App #") % entry.appid;
 
-            game_ptr->title = entry.title;
-            game_ptr->launch_cmd = steamexe % QLatin1String(" steam://rungameid/") % entry.appid;
-            entry.game_ptr = game_ptr;
+            game.title = entry.title;
+            game.launch_cmd = steamexe % QLatin1String(" steam://rungameid/") % entry.appid;
+            entry.game_ptr = &game;
 
             entries.push_back(std::move(entry));
         }

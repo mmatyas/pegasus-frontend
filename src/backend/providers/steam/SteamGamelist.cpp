@@ -105,8 +105,9 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
     return installdirs;
 }
 
-void register_appmanifests(HashMap<QString, modeldata::GamePtr>& games,
-                           modeldata::Collection& collection)
+void register_appmanifests(HashMap<QString, modeldata::Game>& games,
+                           modeldata::Collection& collection,
+                           std::vector<QString>& childs)
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     const auto dir_flags = QDirIterator::FollowSymlinks;
@@ -117,12 +118,12 @@ void register_appmanifests(HashMap<QString, modeldata::GamePtr>& games,
         while (dir_it.hasNext()) {
             dir_it.next();
             QFileInfo fileinfo = dir_it.fileInfo();
+            const QString game_key = fileinfo.canonicalFilePath();
 
-            modeldata::GamePtr& game_ptr = games[fileinfo.canonicalFilePath()];
-            if (!game_ptr)
-                game_ptr = modeldata::GamePtr::create(fileinfo);
+            if (!games.count(game_key))
+                games.emplace(game_key, modeldata::Game(std::move(fileinfo)));
 
-            collection.gamesMut().emplace_back(game_ptr);
+            childs.emplace_back(game_key);
         }
     }
 }
@@ -137,8 +138,9 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(HashMap<QString, modeldata::GamePtr>& games,
-                    HashMap<QString, modeldata::Collection>& collections)
+void Gamelist::find(HashMap<QString, modeldata::Game>& games,
+                    HashMap<QString, modeldata::Collection>& collections,
+                    HashMap<QString, std::vector<QString>>& collection_childs)
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())
@@ -158,9 +160,11 @@ void Gamelist::find(HashMap<QString, modeldata::GamePtr>& games,
     collection.setShortName(STEAM_TAG);
     collection.source_dirs.append(installdirs);
 
+    std::vector<QString>& childs = collection_childs[STEAM_TAG];
+
 
     const size_t game_count_before = games.size();
-    register_appmanifests(games, collection);
+    register_appmanifests(games, collection, childs);
     if (game_count_before != games.size())
         emit gameCountChanged(static_cast<int>(games.size()));
 }
