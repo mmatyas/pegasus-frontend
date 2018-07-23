@@ -150,11 +150,11 @@ void ProviderManager::startSearch()
 
 
         run_list_providers(m_providers, games, collections, collection_childs);
-        emit firstPhaseComplete(timer.elapsed());
+        emit firstPhaseComplete(timer.restart());
 
         for (const auto& provider : m_providers)
             provider->findStaticData(games, collections, collection_childs);
-        emit secondPhaseComplete(timer.elapsed());
+        emit secondPhaseComplete(timer.restart());
 
 
         QVector<model::Collection*> collection_vec;

@@ -31,9 +31,7 @@ Meta::Meta(QObject* parent)
     : QObject(parent)
     , m_log_path(paths::writableConfigDir() + QStringLiteral("/lastrun.log"))
     , m_loading(true)
-    , m_scanning(false)
-    , m_scanning_meta(false)
-    , m_scanning_time_ms(0)
+    , m_loading_progress(0.f)
     , m_game_count(0)
 {
 }
@@ -43,30 +41,23 @@ void Meta::clearQMLCache()
     emit qmlClearCacheRequested();
 }
 
-void Meta::onScanStarted()
+void Meta::onFirstPhaseCompleted(qint64 elapsedTime)
 {
-    m_scanning = true;
-    emit scanningChanged();
+    qInfo().noquote() << tr_log("Games found in %1ms").arg(elapsedTime);
+
+    m_loading_progress = 0.5f;
+    emit loadingProgressChanged();
 }
 
-void Meta::onScanMetaStarted()
+void Meta::onSecondPhaseCompleted(qint64 elapsedTime)
 {
-    m_scanning_meta = true;
-    emit scanningMetaChanged();
+    qInfo().noquote() << tr_log("Assets and metadata found in %1ms").arg(elapsedTime);
+
+    m_loading_progress = 1.0f;
+    emit loadingProgressChanged();
 }
 
-void Meta::onScanCompleted(qint64 elapsedTime)
-{
-    m_scanning_time_ms = elapsedTime;
-    m_scanning = false;
-    m_scanning_meta = false;
-    emit scanningMetaChanged();
-    emit scanningChanged();
-
-    qInfo().noquote() << tr_log("Data files loaded in %1ms").arg(elapsedTime);
-}
-
-void Meta::onLoadingCompleted()
+void Meta::onUiReady()
 {
     m_loading = false;
     emit loadingChanged();

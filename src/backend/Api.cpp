@@ -33,6 +33,13 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_filters, &model::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
 
+    connect(&m_providerman, &ProviderManager::gameCountChanged,
+            &m_meta, &model::Meta::onGameCountUpdate);
+    connect(&m_providerman, &ProviderManager::firstPhaseComplete,
+            &m_meta, &model::Meta::onFirstPhaseCompleted);
+    connect(&m_providerman, &ProviderManager::secondPhaseComplete,
+            &m_meta, &model::Meta::onSecondPhaseCompleted);
+
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
 
@@ -58,7 +65,7 @@ void ApiObject::startScanning()
 void ApiObject::onStaticDataLoaded(QVector<model::Collection*> collections, QVector<model::Game*> games)
 {
     m_collections.setModelData(std::move(collections), std::move(games));
-    m_meta.onLoadingCompleted();
+    m_meta.onUiReady();
 }
 
 void ApiObject::onLaunchRequested(model::Collection* const coll, model::Game* const game)

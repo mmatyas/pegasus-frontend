@@ -141,7 +141,7 @@ Window {
     SplashScreen {
         id: splashScreen
 
-        property bool dataLoading: api.meta.isLoading
+        property bool dataLoading: api.meta.loading
         property bool skinLoading: themeContent.status === Loader.Null || themeContent.status === Loader.Loading
 
         onSkinLoadingChanged: {
