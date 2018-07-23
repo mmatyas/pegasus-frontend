@@ -18,11 +18,11 @@
 #pragma once
 
 #include "AppCloseType.h"
-#include "model/Filters.h"
 #include "model/Meta.h"
 #include "model/System.h"
 #include "model/gaming/CollectionList.h"
 #include "model/gaming/Collection.h"
+#include "model/gaming/Filters.h"
 #include "model/settings/Settings.h"
 #include "providers/ProviderManager.h"
 

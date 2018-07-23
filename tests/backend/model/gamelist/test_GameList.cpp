@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "model/Filters.h"
+#include "model/gaming/Filters.h"
 #include "model/gaming/GameList.h"
 #include "modeldata/gaming/Collection.h"
 

@@ -20,7 +20,7 @@
 #include "ConfigFile.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "model/Filters.h"
+#include "model/gaming/Filters.h"
 #include "model/gaming/Game.h"
 #include "utils/HashMap.h"
 

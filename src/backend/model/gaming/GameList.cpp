@@ -20,7 +20,7 @@
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Utils.h"
-#include "model/Filters.h"
+#include "model/gaming/Filters.h"
 #include "modeldata/gaming/Collection.h"
 
 #include <QDebug>

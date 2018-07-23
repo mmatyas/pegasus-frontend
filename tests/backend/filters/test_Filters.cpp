@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "model/Filters.h"
+#include "model/gaming/Filters.h"
 #include "configfiles/CustomFilters.h"
 
 
