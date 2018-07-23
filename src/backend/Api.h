@@ -18,14 +18,13 @@
 #pragma once
 
 #include "AppCloseType.h"
-#include "DataFinder.h"
-#include "configfiles/FavoriteDB.h" // FIXME
-#include "configfiles/StatsDB.h"
 #include "model/Filters.h"
 #include "model/Meta.h"
 #include "model/System.h"
 #include "model/gaming/CollectionList.h"
+#include "model/gaming/Collection.h"
 #include "model/settings/Settings.h"
+#include "providers/ProviderManager.h"
 
 #include <QFutureWatcher>
 #include <QObject>
@@ -65,6 +64,7 @@ public:
     // scanning
     void startScanning();
 
+public:
     // subcomponents
     model::Filters* filters() { return &m_filters; }
     model::Meta* meta() { return &m_meta; }
@@ -73,7 +73,6 @@ public:
     model::CollectionList* collectionList() { return &m_collections; }
 
     // shortcuts
-
     model::Collection* currentCollection() const { return m_collections.current(); }
     model::Game* currentGame() const {
         return currentCollection() ? currentCollection()->gameList().current() : nullptr;
@@ -81,7 +80,7 @@ public:
 
 signals:
     // game launching
-    void launchGame(const modeldata::Collection* const, const modeldata::Game* const);
+    void launchGame(const model::Collection* const, const model::Game* const);
 
     // triggers translation update
     void localeChanged();
@@ -104,8 +103,10 @@ public slots:
 
 private slots:
     // internal communication
-    void onScanComplete();
-    void onLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
+
+    void onStaticDataLoaded(QVector<model::Collection*>, QVector<model::Game*>);
+
+    void onLaunchRequested(const model::Collection* const, const model::Game* const);
     void onFiltersChanged();
     void onGameFavoriteChanged();
 
@@ -117,21 +118,12 @@ private:
     model::CollectionList m_collections;
 
     // game launching
-    const modeldata::Collection* m_launch_collection;
-    const modeldata::Game* m_launch_game;
-    QDateTime m_launch_time;
+    const model::Collection* m_launch_collection;
+    const model::Game* m_launch_game;
 
     // initialization
-    DataFinder m_datafinder;
-    QFutureWatcher<void> m_loading_watcher;
-
-    // persistence
-    FavoriteWriter m_favorite_writer;
-    StatsWriter m_stats;
+    ProviderManager m_providerman;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
-
-    // model data
-    std::vector<modeldata::Collection> m_gaming_data;
 };

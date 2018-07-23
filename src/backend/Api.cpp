@@ -24,6 +24,7 @@ ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
     , m_launch_collection(nullptr)
     , m_launch_game(nullptr)
+    , m_providerman(this)
 {
     connect(m_settings.localesPtr(), &model::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
@@ -31,6 +32,9 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::appCloseRequested);
     connect(&m_filters, &model::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
+
+    connect(&m_providerman, &ProviderManager::staticDataReady,
+            this, &ApiObject::onStaticDataLoaded);
 
     connect(&m_collections, &model::CollectionList::currentChanged,
             this, &ApiObject::currentCollectionChanged);
@@ -41,11 +45,6 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_collections, &model::CollectionList::gameFavoriteChanged,
             this, &ApiObject::onGameFavoriteChanged);
 
-    connect(&m_datafinder, &DataFinder::totalCountChanged,
-            &m_meta, &model::Meta::onGameCountUpdate);
-    connect(&m_datafinder, &DataFinder::metadataSearchStarted,
-            &m_meta, &model::Meta::onScanMetaStarted);
-
     // partial QML reload
     connect(&m_meta, &model::Meta::qmlClearCacheRequested,
             this, &ApiObject::qmlClearCacheRequested);
@@ -53,30 +52,16 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::startScanning()
 {
-    // TODO: reorganize the scanning workflow
-
-    // launch the game search on a parallel thread
-    QFuture<void> future = QtConcurrent::run([this]{
-        QElapsedTimer timer;
-        timer.start();
-
-        m_meta.onScanStarted();
-        m_gaming_data = m_datafinder.find();
-        m_meta.onScanCompleted(timer.elapsed());
-    });
-    m_loading_watcher.setFuture(future);
-
-    connect(&m_loading_watcher, &QFutureWatcher<void>::finished,
-            this, &ApiObject::onScanComplete);
+    m_providerman.startSearch();
 }
 
-void ApiObject::onScanComplete()
+void ApiObject::onStaticDataLoaded(QVector<model::Collection*> collections, QVector<model::Game*> games)
 {
-    m_collections.setModelData(m_gaming_data);
+    m_collections.setModelData(std::move(collections), std::move(games));
     m_meta.onLoadingCompleted();
 }
 
-void ApiObject::onLaunchRequested(const modeldata::Collection* const coll, const modeldata::Game* const game)
+void ApiObject::onLaunchRequested(const model::Collection* const coll, const model::Game* const game)
 {
     // avoid launch spamming
     if (m_launch_game)
@@ -92,7 +77,7 @@ void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game);
 
-    m_launch_time = QDateTime::currentDateTimeUtc();
+    m_providerman.onGameLaunched(m_launch_collection, m_launch_game);
 }
 
 void ApiObject::onGameLaunchError()
@@ -109,13 +94,8 @@ void ApiObject::onGameFinished()
 {
     Q_ASSERT(m_launch_collection);
     Q_ASSERT(m_launch_game);
-    Q_ASSERT(m_launch_time.isValid());
 
-    const auto now = QDateTime::currentDateTimeUtc();
-    const auto duration = m_launch_time.secsTo(now);
-
-    m_stats.storePlay(m_launch_collection, m_launch_game,
-                      m_launch_time, duration);
+    m_providerman.onGameFinished(m_launch_collection, m_launch_game);
 
     m_launch_collection = nullptr;
     m_launch_game = nullptr;
@@ -123,11 +103,11 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_favorite_writer.queueTask(m_gaming_data);
+    m_providerman.onGameFavoriteChanged(m_collections.allGames());
 }
 
 void ApiObject::onFiltersChanged()
 {
-    for (model::Collection* const collection : m_collections.elements())
+    for (model::Collection* const collection : m_collections.collections())
         collection->gameListMut().applyFilters(m_filters);
 }
