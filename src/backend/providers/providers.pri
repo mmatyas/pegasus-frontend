@@ -1,38 +1,44 @@
 HEADERS += \
-    providers/Provider.h \
-    providers/pegasus/PegasusCollections.h \
-    providers/pegasus/PegasusCommon.h \
-    providers/pegasus/PegasusMetadata.h \
-    providers/pegasus/PegasusProvider.h \
+    $$PWD/Provider.h \
+    $$PWD/ProviderManager.h \
+    $$PWD/pegasus/PegasusCollections.h \
+    $$PWD/pegasus/PegasusCommon.h \
+    $$PWD/pegasus/PegasusMetadata.h \
+    $$PWD/pegasus/PegasusProvider.h \
+    $$PWD/pegasus_favorites/Favorites.h \
+    $$PWD/pegasus_playtime/PlaytimeStats.h \
 
 SOURCES += \
-    providers/Provider.cpp \
-    providers/pegasus/PegasusCollections.cpp \
-    providers/pegasus/PegasusCommon.cpp \
-    providers/pegasus/PegasusMetadata.cpp \
-    providers/pegasus/PegasusProvider.cpp \
+    $$PWD/Provider.cpp \
+    $$PWD/ProviderManager.cpp \
+    $$PWD/pegasus/PegasusCollections.cpp \
+    $$PWD/pegasus/PegasusCommon.cpp \
+    $$PWD/pegasus/PegasusMetadata.cpp \
+    $$PWD/pegasus/PegasusProvider.cpp \
+    $$PWD/pegasus_favorites/Favorites.cpp \
+    $$PWD/pegasus_playtime/PlaytimeStats.cpp \
 
 !android:!contains(QMAKE_CXX, ".*arm.*"):!contains(QMAKE_CXX, ".*aarch.*") {
     DEFINES *= WITH_COMPAT_STEAM
     HEADERS += \
-        providers/steam/SteamGamelist.h \
-        providers/steam/SteamMetadata.h \
-        providers/steam/SteamProvider.h \
+        $$PWD/steam/SteamGamelist.h \
+        $$PWD/steam/SteamMetadata.h \
+        $$PWD/steam/SteamProvider.h \
 
     SOURCES += \
-        providers/steam/SteamGamelist.cpp \
-        providers/steam/SteamMetadata.cpp \
-        providers/steam/SteamProvider.cpp \
+        $$PWD/steam/SteamGamelist.cpp \
+        $$PWD/steam/SteamMetadata.cpp \
+        $$PWD/steam/SteamProvider.cpp \
 }
 !android {
     DEFINES *= WITH_COMPAT_ES2
     HEADERS += \
-        providers/es2/Es2Metadata.h \
-        providers/es2/Es2Provider.h \
-        providers/es2/Es2Systems.h \
+        $$PWD/es2/Es2Metadata.h \
+        $$PWD/es2/Es2Provider.h \
+        $$PWD/es2/Es2Systems.h \
 
     SOURCES += \
-        providers/es2/Es2Metadata.cpp \
-        providers/es2/Es2Provider.cpp \
-        providers/es2/Es2Systems.cpp \
+        $$PWD/es2/Es2Metadata.cpp \
+        $$PWD/es2/Es2Provider.cpp \
+        $$PWD/es2/Es2Systems.cpp \
 }
