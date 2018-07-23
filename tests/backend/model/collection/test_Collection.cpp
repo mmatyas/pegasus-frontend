@@ -33,7 +33,8 @@ void test_Collection::names()
     modeldata::Collection modeldata("myname");
     modeldata.setShortName("abbrev");
     modeldata.setLaunchCmd("runner");
-    model::Collection collection(&modeldata);
+    model::Collection collection(std::move(modeldata));
+    collection.setGameList({});
 
     // the properties are read-only and should be called only after the initial setup
     QCOMPARE(collection.property("shortName").toString(), QStringLiteral("abbrev"));
@@ -43,9 +44,14 @@ void test_Collection::names()
 void test_Collection::gameChanged()
 {
     modeldata::Collection modeldata("dummy");
-    modeldata.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
-    modeldata.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
-    model::Collection collection(&modeldata);
+    model::Collection collection(std::move(modeldata));
+
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("dummy1")), this),
+        new model::Game(modeldata::Game(QFileInfo("dummy2")), this),
+    };
+    collection.setGameList(std::move(games));
+
 
     QSignalSpy triggered(&collection, &model::Collection::currentGameChanged);
     QVERIFY(triggered.isValid());

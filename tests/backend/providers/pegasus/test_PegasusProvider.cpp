@@ -36,26 +36,29 @@ private slots:
 
 void test_PegasusProvider::find_in_empty_dir()
 {
-    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Game> games;
     HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
 
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/empty"));
-    provider.find(games, collections);
+    provider.findLists(games, collections, collection_childs);
 
-    QVERIFY(collections.size() == 0);
     QVERIFY(games.size() == 0);
+    QVERIFY(collections.size() == 0);
+    QVERIFY(collection_childs.size() == 0);
 }
 
 void test_PegasusProvider::find_in_filled_dir()
 {
-    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Game> games;
     HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
 
     QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/filled"));
-    provider.find(games, collections);
+    provider.findLists(games, collections, collection_childs);
 
     // finds the correct collections
     QVERIFY(collections.size() == 3);
@@ -65,9 +68,9 @@ void test_PegasusProvider::find_in_filled_dir()
 
     // finds the correct amount of games
     QVERIFY(games.size() == 8);
-    QVERIFY(collections.at(QStringLiteral("My Games")).games().size() == 8);
-    QVERIFY(collections.at(QStringLiteral("Favorite games")).games().size() == 3);
-    QVERIFY(collections.at(QStringLiteral("Multi-game ROMs")).games().size() == 1);
+    QVERIFY(collection_childs.at(QStringLiteral("My Games")).size() == 8);
+    QVERIFY(collection_childs.at(QStringLiteral("Favorite games")).size() == 3);
+    QVERIFY(collection_childs.at(QStringLiteral("Multi-game ROMs")).size() == 1);
 
     // finds the correct files for the collections
     const QStringList mygames_paths {
@@ -88,65 +91,60 @@ void test_PegasusProvider::find_in_filled_dir()
     const QStringList multi_paths {
         { ":/filled/9999-in-1.ext" },
     };
-    for (const modeldata::GamePtr& game : collections.at(QStringLiteral("My Games")).games()) {
-        QVERIFY(game);
-        QCOMPARE(mygames_paths.count(game->fileinfo().filePath()), 1);
+    for (const QString& game_key : collection_childs.at(QStringLiteral("My Games"))) {
+        const modeldata::Game& game = games.at(game_key);
+        QCOMPARE(mygames_paths.contains(game.fileinfo().filePath()), true);
     }
-    for (const modeldata::GamePtr& game : collections.at(QStringLiteral("Favorite games")).games()) {
-        QVERIFY(game);
-        QCOMPARE(faves_paths.count(game->fileinfo().filePath()), 1);
+    for (const QString& game_key : collection_childs.at(QStringLiteral("Favorite games"))) {
+        const modeldata::Game& game = games.at(game_key);
+        QCOMPARE(faves_paths.contains(game.fileinfo().filePath()), true);
     }
-    for (const modeldata::GamePtr& game : collections.at(QStringLiteral("Multi-game ROMs")).games()) {
-        QVERIFY(game);
-        QCOMPARE(multi_paths.count(game->fileinfo().filePath()), 1);
-    }
-
-    // finds the correct games in general
-    for (const auto& pair : games) {
-        QCOMPARE(pair.second.isNull(), false);
-        //QCOMPARE(mygames_paths.count(pair.second->fileinfo().filePath()), 1);
+    for (const QString& game_key : collection_childs.at(QStringLiteral("Multi-game ROMs"))) {
+        const modeldata::Game& game = games.at(game_key);
+        QCOMPARE(multi_paths.contains(game.fileinfo().filePath()), true);
     }
 }
 
 void test_PegasusProvider::enhance()
 {
-    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Game> games;
     HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
 
     QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/collections.txt`");
     QTest::ignoreMessage(QtInfoMsg, "Found `:/with_meta/metadata.txt`");
     QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/with_meta/metadata.txt`, line \\d: no file defined yet.*"));
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/with_meta"));
-    provider.find(games, collections);
-    provider.enhance(games, collections);
+    provider.findLists(games, collections, collection_childs);
+    provider.findStaticData(games, collections, collection_childs);
 
     QVERIFY(collections.size() == 1);
     QVERIFY(games.size() == 4);
 
-    modeldata::GamePtr game;
+    QString game_key;
 
-    game = games[QStringLiteral(":/with_meta/mygame1.ext")];
-    QVERIFY(game);
-    QCOMPARE(game->title, QStringLiteral("My Game 1"));
-    QCOMPARE(game->developers, QStringList({"Dev1", "Dev2"}));
+    game_key = QStringLiteral(":/with_meta/mygame1.ext");
+    QCOMPARE(games.count(game_key) > 0, true);
+    QCOMPARE(games.at(game_key).title, QStringLiteral("My Game 1"));
+    QCOMPARE(games.at(game_key).developers, QStringList({"Dev1", "Dev2"}));
 
-    game = games[QStringLiteral(":/with_meta/mygame2.ext")];
-    QVERIFY(game);
-    QCOMPARE(game->title, QStringLiteral("My Game 2"));
-    QCOMPARE(game->publishers, QStringList({"Publisher with Spaces", "Another Publisher"}));
+    game_key = QStringLiteral(":/with_meta/mygame2.ext");
+    QCOMPARE(games.count(game_key) > 0, true);
+    QCOMPARE(games.at(game_key).title, QStringLiteral("My Game 2"));
+    QCOMPARE(games.at(game_key).publishers, QStringList({"Publisher with Spaces", "Another Publisher"}));
 
-    game = games[QStringLiteral(":/with_meta/mygame3.ext")];
-    QVERIFY(game);
-    QCOMPARE(game->title, QStringLiteral("mygame3"));
-    QCOMPARE(game->genres, QStringList({"genre1", "genre2", "genre with spaces"}));
-    QCOMPARE(game->player_count, 4);
+    game_key = QStringLiteral(":/with_meta/mygame3.ext");
+    QCOMPARE(games.count(game_key) > 0, true);
+    QCOMPARE(games.at(game_key).title, QStringLiteral("mygame3"));
+    QCOMPARE(games.at(game_key).genres, QStringList({"genre1", "genre2", "genre with spaces"}));
+    QCOMPARE(games.at(game_key).player_count, 4);
 
-    game = games[QStringLiteral(":/with_meta/subdir/game_in_subdir.ext")];
-    QVERIFY(game);
-    QCOMPARE(game->title, QStringLiteral("game_in_subdir"));
-    QCOMPARE(game->rating, 0.8f);
-    QCOMPARE(game->release_date, QDate(1998, 5, 1));
+    game_key = QStringLiteral(":/with_meta/subdir/game_in_subdir.ext");
+    QCOMPARE(games.count(game_key) > 0, true);
+    QCOMPARE(games.at(game_key).title, QStringLiteral("game_in_subdir"));
+    QCOMPARE(games.at(game_key).rating, 0.8f);
+    QCOMPARE(games.at(game_key).release_date, QDate(1998, 5, 1));
 }
 
 

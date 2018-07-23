@@ -34,26 +34,30 @@ private slots:
 
 void bench_PegasusProvider::find_in_empty_dir()
 {
-    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Game> games;
     HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
+
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/empty"));
 
     QBENCHMARK {
-        provider.find(games, collections);
+        provider.findLists(games, collections, collection_childs);
     }
 }
 
 void bench_PegasusProvider::find_in_filled_dir()
 {
-    HashMap<QString, modeldata::GamePtr> games;
+    HashMap<QString, modeldata::Game> games;
     HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
+
     providers::pegasus::PegasusProvider provider;
     provider.add_game_dir(QStringLiteral(":/filled"));
 
     QBENCHMARK {
         QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
-        provider.find(games, collections);
+        provider.findLists(games, collections, collection_childs);
     }
 }
 

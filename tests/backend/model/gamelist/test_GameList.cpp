@@ -49,8 +49,8 @@ private:
 
 void test_GameList::empty()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    model::GameList list(modeldata);
+    model::GameList list;
+    list.setModelData({});
 
     QCOMPARE(list.property("current").value<model::Game*>(), null_game);
     QCOMPARE(list.property("index").toInt(), -1);
@@ -60,11 +60,13 @@ void test_GameList::empty()
 
 void test_GameList::nonempty()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("a")));
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("b")));
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("c")));
-    model::GameList list(modeldata);
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("a")), this),
+        new model::Game(modeldata::Game(QFileInfo("b")), this),
+        new model::Game(modeldata::Game(QFileInfo("c")), this),
+    };
+    model::GameList list;
+    list.setModelData(std::move(games));
 
     QCOMPARE(list.property("current").value<model::Game*>(), list.allGames().first());
     QCOMPARE(list.property("index").toInt(), 0);
@@ -74,11 +76,12 @@ void test_GameList::nonempty()
 
 void test_GameList::sortGames()
 {
-    modeldata::Collection collection("dummy");
-    collection.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("bbb")));
-    collection.gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("aaa")));
-    collection.sortGames();
-    model::GameList list(collection.games());
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("bbb")), this),
+        new model::Game(modeldata::Game(QFileInfo("aaa")), this),
+    };
+    model::GameList list;
+    list.setModelData(std::move(games));
 
     QCOMPARE(list.allGames().front()->property("title").toString(), QLatin1String("aaa"));
     QCOMPARE(list.allGames().back()->property("title").toString(), QLatin1String("bbb"));
@@ -86,10 +89,12 @@ void test_GameList::sortGames()
 
 void test_GameList::indexChange()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("a")));
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("b")));
-    model::GameList list(modeldata);
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("a")), this),
+        new model::Game(modeldata::Game(QFileInfo("b")), this),
+    };
+    model::GameList list;
+    list.setModelData(std::move(games));
 
     QSignalSpy triggered(&list, &model::GameList::currentChanged);
     QVERIFY(triggered.isValid());
@@ -130,8 +135,8 @@ void test_GameList::indexChange_data()
 
 void test_GameList::indexIncDecEmpty()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    model::GameList list(modeldata);
+    model::GameList list;
+    list.setModelData({});
     QVERIFY(list.property("index").toInt() == -1);
 
     // increment empty -> stays -1
@@ -161,10 +166,12 @@ void test_GameList::indexIncDec_data()
 
 void test_GameList::indexIncDec()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("aaa")));
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("bbb")));
-    model::GameList list(modeldata);
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("aaa")), this),
+        new model::Game(modeldata::Game(QFileInfo("bbb")), this),
+    };
+    model::GameList list;
+    list.setModelData(std::move(games));
 
     QFETCH(int, start_idx);
     QFETCH(QString, metacall);
@@ -179,29 +186,35 @@ void test_GameList::indexIncDec()
 
 void test_GameList::applyFilters()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("game0")));
-        modeldata.back()->title = "not-fav, 1P";
-        modeldata.back()->is_favorite = false;
-        modeldata.back()->player_count = 1;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("game1")));
-        modeldata.back()->title = "not-fav, 2P";
-        modeldata.back()->is_favorite = false;
-        modeldata.back()->player_count = 2;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("game2")));
-        modeldata.back()->title = "fav, 1P";
-        modeldata.back()->is_favorite = true;
-        modeldata.back()->player_count = 1;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("game3")));
-        modeldata.back()->title = "My Game";
-        modeldata.back()->is_favorite = false;
-        modeldata.back()->player_count = 1;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("game4")));
-        modeldata.back()->title = "Another Game";
-        modeldata.back()->is_favorite = true;
-        modeldata.back()->player_count = 1;
+    std::vector<modeldata::Game> modeldata;
+    modeldata.emplace_back(QFileInfo("game0"));
+        modeldata.back().title = "not-fav, 1P";
+        modeldata.back().is_favorite = false;
+        modeldata.back().player_count = 1;
+    modeldata.emplace_back(QFileInfo("game1"));
+        modeldata.back().title = "not-fav, 2P";
+        modeldata.back().is_favorite = false;
+        modeldata.back().player_count = 2;
+    modeldata.emplace_back(QFileInfo("game2"));
+        modeldata.back().title = "fav, 1P";
+        modeldata.back().is_favorite = true;
+        modeldata.back().player_count = 1;
+    modeldata.emplace_back(QFileInfo("game3"));
+        modeldata.back().title = "My Game";
+        modeldata.back().is_favorite = false;
+        modeldata.back().player_count = 1;
+    modeldata.emplace_back(QFileInfo("game4"));
+        modeldata.back().title = "Another Game";
+        modeldata.back().is_favorite = true;
+        modeldata.back().player_count = 1;
 
-    model::GameList gamelist(modeldata);
+    QVector<model::Game*> games;
+    for (modeldata::Game& game : modeldata)
+        games.append(new model::Game(std::move(game), this));
+
+    model::GameList gamelist;
+    gamelist.setModelData(std::move(games));
+
     QSignalSpy triggered(&gamelist, &model::GameList::filteredGamesChanged);
     QVERIFY(triggered.isValid());
     QVERIFY(triggered.count() == 0);
@@ -296,12 +309,13 @@ void test_GameList::applyFilters_data()
 
 void test_GameList::letterJump()
 {
-    std::vector<modeldata::GamePtr> modeldata;
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("Alfa")));
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("Beta")));
-    modeldata.emplace_back(modeldata::GamePtr::create(QFileInfo("Gamma")));
-
-    model::GameList list(modeldata);
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("Alpha")), this),
+        new model::Game(modeldata::Game(QFileInfo("Beta")), this),
+        new model::Game(modeldata::Game(QFileInfo("Gamma")), this),
+    };
+    model::GameList list;
+    list.setModelData(std::move(games));
     QVERIFY(list.property("index").toInt() == 0);
 
     QMetaObject::invokeMethod(&list, "jumpToLetter", Q_ARG(QString, "g"));

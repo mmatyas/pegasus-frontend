@@ -17,9 +17,9 @@
 
 #include <QtTest/QtTest>
 
-#include "configfiles/FavoriteDB.h"
-#include "modeldata/gaming/Collection.h"
-#include "modeldata/gaming/Game.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
+#include "providers/pegasus_favorites/Favorites.h"
 #include "utils/HashMap.h"
 
 
@@ -35,14 +35,20 @@ private slots:
 
 void test_FavoriteDB::write()
 {
-    std::vector<modeldata::Collection> list;
-    list.emplace_back(modeldata::Collection("coll1"));
-    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/a/b/coll1dummy1")));
-    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/coll1dummy2")));
-        list.back().games().back()->is_favorite = true;
-    list.emplace_back(modeldata::Collection("coll2"));
-    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/x/y/z/coll2dummy1")));
-        list.back().games().back()->is_favorite = true;
+    QVector<model::Collection*> collections = {
+        new model::Collection(modeldata::Collection("coll1"), this),
+        new model::Collection(modeldata::Collection("coll2"), this),
+    };
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo(":/a/b/coll1dummy1")), this),
+        new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
+        new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
+    };
+    games.at(1)->setFavorite(true);
+    games.at(2)->setFavorite(true);
+
+    collections.at(0)->setGameList({ games.at(0), games.at(1) });
+    collections.at(1)->setGameList({ games.at(2) });
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -52,14 +58,15 @@ void test_FavoriteDB::write()
     tmp_file.close();
 
 
-    FavoriteWriter favorite_db(db_path);
+    providers::favorites::Favorites favorite_db(db_path);
 
-    QSignalSpy spy_start(&favorite_db, &FavoriteWriter::startedWriting);
-    QSignalSpy spy_end(&favorite_db, &FavoriteWriter::finishedWriting);
+    QSignalSpy spy_start(&favorite_db, &providers::favorites::Favorites::startedWriting);
+    QSignalSpy spy_end(&favorite_db, &providers::favorites::Favorites::finishedWriting);
     QVERIFY(spy_start.isValid());
     QVERIFY(spy_end.isValid());
 
-    favorite_db.queueTask(list);
+    favorite_db.onGameFavoriteChanged(games);
+
     QVERIFY(spy_start.count() || spy_start.wait());
     QVERIFY(spy_end.count() || spy_end.wait());
     QCOMPARE(spy_start.count(), 1);
@@ -86,12 +93,17 @@ void test_FavoriteDB::write()
 
 void test_FavoriteDB::rewrite_empty()
 {
-    std::vector<modeldata::Collection> list;
-    list.emplace_back(modeldata::Collection("coll1"));
-    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/a/b/coll1dummy1")));
-    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/coll1dummy2")));
-    list.emplace_back(modeldata::Collection("coll2"));
-    list.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo(":/x/y/z/coll2dummy1")));
+    QVector<model::Collection*> collections = {
+        new model::Collection(modeldata::Collection("coll1"), this),
+        new model::Collection(modeldata::Collection("coll2"), this),
+    };
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo(":/a/b/coll1dummy1")), this),
+        new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
+        new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
+    };
+    collections.at(0)->setGameList({ games.at(0), games.at(1) });
+    collections.at(1)->setGameList({ games.at(2) });
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -101,15 +113,16 @@ void test_FavoriteDB::rewrite_empty()
     tmp_file.close();
 
 
-    FavoriteWriter favorite_db(db_path);
-    QSignalSpy spy_end(&favorite_db, &FavoriteWriter::finishedWriting);
+    providers::favorites::Favorites favorite_db(db_path);
+    QSignalSpy spy_end(&favorite_db, &providers::favorites::Favorites::finishedWriting);
     QVERIFY(spy_end.isValid());
 
-    list.at(0).games().at(1)->is_favorite = true;
-    favorite_db.queueTask(list);
+    games.at(1)->setFavorite(true);
+    favorite_db.onGameFavoriteChanged(games);
 
-    list.at(0).games().at(1)->is_favorite = false;
-    favorite_db.queueTask(list);
+    games.at(1)->setFavorite(false);
+    favorite_db.onGameFavoriteChanged(games);
+
     QVERIFY(spy_end.count() == 2 || spy_end.wait());
 
 
@@ -130,14 +143,11 @@ void test_FavoriteDB::rewrite_empty()
 
 void test_FavoriteDB::read()
 {
-    HashMap<QString, modeldata::GamePtr> games;
-    const QStringList game_paths {
-        QStringLiteral(":/a/b/coll1dummy1"),
-        QStringLiteral(":/coll1dummy2"),
-        QStringLiteral(":/x/y/z/coll2dummy1"),
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo(":/a/b/coll1dummy1")), this),
+        new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
+        new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
     };
-    for (const QString& path : game_paths)
-        games[path] = modeldata::GamePtr::create(path);
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -145,19 +155,25 @@ void test_FavoriteDB::read()
     {
         QTextStream tmp_stream(&tmp_file);
         tmp_stream << QStringLiteral("# Favorite reader test") << endl;
-        tmp_stream << game_paths[2] << endl;
-        tmp_stream << game_paths[1] << endl;
+        tmp_stream << games[2]->data().fileinfo().canonicalFilePath() << endl;
+        tmp_stream << games[1]->data().fileinfo().canonicalFilePath() << endl;
         tmp_stream << QStringLiteral(":/somethingfake") << endl;
     }
     const QString db_path = tmp_file.fileName();
     tmp_file.close();
 
-    FavoriteReader::readDB(games, db_path);
+    providers::favorites::Favorites favorite_db(db_path);
 
-    QVERIFY(games.size() == 3);
-    QVERIFY(games.count(game_paths[0]) && !games.at(game_paths[0])->is_favorite);
-    QVERIFY(games.count(game_paths[1]) && games.at(game_paths[1])->is_favorite);
-    QVERIFY(games.count(game_paths[2]) && games.at(game_paths[2])->is_favorite);
+    QVector<model::Collection*> collections;
+    HashMap<QString, model::Game*> modelgame_map;
+    for (model::Game* const game : games)
+        modelgame_map.emplace(game->data().fileinfo().canonicalFilePath(), game);
+
+    favorite_db.findDynamicData(games, collections, modelgame_map);
+
+    QVERIFY(!games[0]->data().is_favorite);
+    QVERIFY(games[1]->data().is_favorite);
+    QVERIFY(games[2]->data().is_favorite);
 
     QFile::remove(db_path);
 }

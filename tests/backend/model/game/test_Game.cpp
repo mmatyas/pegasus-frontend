@@ -32,18 +32,16 @@ private slots:
     void launch();
 };
 
-void testStrAndList(modeldata::Game& modeldata,
-                    std::function<void(const QString&)> fn_add,
-                    const char* str_name, const char* list_name)
+void testStrAndList(std::function<void(modeldata::Game&, const QString&)> fn_add,
+                    const char* str_name,
+                    const char* list_name)
 {
-    model::Game game(&modeldata);
+    modeldata::Game modeldata({});
+    fn_add(modeldata, "test1");
+    fn_add(modeldata, "test2");
+    fn_add(modeldata, "test3");
 
-    QVERIFY(game.property(str_name).toString().isEmpty());
-    QVERIFY(game.property(list_name).toStringList().isEmpty());
-
-    fn_add("test1");
-    fn_add("test2");
-    fn_add("test3");
+    model::Game game(std::move(modeldata));
 
     QCOMPARE(game.property(str_name).toString(), QStringLiteral("test1, test2, test3"));
     QCOMPARE(game.property(list_name).toStringList(), QStringList({"test1", "test2", "test3"}));
@@ -51,23 +49,20 @@ void testStrAndList(modeldata::Game& modeldata,
 
 void test_Game::developers()
 {
-    modeldata::Game game({});
-    auto fn = [&game](const QString& val){ game.developers.append(val); };
-    testStrAndList(game, fn, "developer", "developerList");
+    auto fn = [](modeldata::Game& game, const QString& val){ game.developers.append(val); };
+    testStrAndList(fn, "developer", "developerList");
 }
 
 void test_Game::publishers()
 {
-    modeldata::Game game({});
-    auto fn = [&game](const QString& val){ game.publishers.append(val); };
-    testStrAndList(game, fn, "publisher", "publisherList");
+    auto fn = [](modeldata::Game& game, const QString& val){ game.publishers.append(val); };
+    testStrAndList(fn, "publisher", "publisherList");
 }
 
 void test_Game::genres()
 {
-    modeldata::Game game({});
-    auto fn = [&game](const QString& val){ game.genres.append(val); };
-    testStrAndList(game, fn, "genre", "genreList");
+    auto fn = [](modeldata::Game& game, const QString& val){ game.genres.append(val); };
+    testStrAndList(fn, "genre", "genreList");
 }
 
 void test_Game::release()
@@ -75,7 +70,7 @@ void test_Game::release()
     modeldata::Game modeldata({});
     modeldata.release_date = QDate(1999,1,2);
 
-    model::Game game(&modeldata);
+    model::Game game(std::move(modeldata));
     QCOMPARE(game.property("releaseYear").toInt(), 1999);
     QCOMPARE(game.property("releaseMonth").toInt(), 1);
     QCOMPARE(game.property("releaseDay").toInt(), 2);
@@ -83,12 +78,12 @@ void test_Game::release()
 
 void test_Game::launch()
 {
-    modeldata::Game modeldata({});
-    model::Game game(&modeldata);
+    model::Game game(modeldata::Game({}));
 
     QSignalSpy spy_launch(&game, &model::Game::launchRequested);
     QVERIFY(spy_launch.isValid());
 
+    // FIXME: "Unable to handle parameter '' of type ..."
     QMetaObject::invokeMethod(&game, "launch");
     QVERIFY(spy_launch.count() == 1 || spy_launch.wait());
 }

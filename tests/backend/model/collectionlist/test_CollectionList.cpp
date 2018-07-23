@@ -17,6 +17,8 @@
 
 #include <QtTest/QtTest>
 
+#include "model/gaming/Game.h"
+#include "model/gaming/Collection.h"
 #include "model/gaming/CollectionList.h"
 
 
@@ -50,11 +52,16 @@ void test_CollectionList::empty()
 
 void test_CollectionList::addPlatform()
 {
-    std::vector<modeldata::Collection> modeldata;
-    modeldata.emplace_back(modeldata::Collection("coll1"));
-    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
-    modeldata.emplace_back(modeldata::Collection("coll2"));
-    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
+    QVector<model::Collection*> collections = {
+        new model::Collection(modeldata::Collection("coll1")),
+        new model::Collection(modeldata::Collection("coll2")),
+    };
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("dummy1"))),
+        new model::Game(modeldata::Game(QFileInfo("dummy2"))),
+    };
+    collections.at(0)->setGameList({ games.at(0) });
+    collections.at(1)->setGameList({ games.at(1) });
 
 
     model::CollectionList list;
@@ -63,10 +70,10 @@ void test_CollectionList::addPlatform()
     QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.setModelData(std::move(modeldata));
+    list.setModelData(std::move(collections), std::move(games));
 
 
-    QCOMPARE(list.property("current").value<model::Collection*>(), list.elements().first());
+    QCOMPARE(list.property("current").value<model::Collection*>(), list.collections().first());
     QCOMPARE(list.property("index").toInt(), 0);
     QCOMPARE(list.property("count").toInt(), 2);
     QCOMPARE(spy_current.count(), 1);
@@ -77,11 +84,16 @@ void test_CollectionList::indexChange()
 {
     // prepare
 
-    std::vector<modeldata::Collection> modeldata;
-    modeldata.emplace_back(modeldata::Collection("coll1"));
-    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
-    modeldata.emplace_back(modeldata::Collection("coll2"));
-    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
+    QVector<model::Collection*> collections = {
+        new model::Collection(modeldata::Collection("coll1")),
+        new model::Collection(modeldata::Collection("coll2")),
+    };
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("dummy1"))),
+        new model::Game(modeldata::Game(QFileInfo("dummy2"))),
+    };
+    collections.at(0)->setGameList({ games.at(0) });
+    collections.at(1)->setGameList({ games.at(1) });
 
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
@@ -89,7 +101,7 @@ void test_CollectionList::indexChange()
     QVERIFY(spy_current.isValid());
     QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.setModelData(std::move(modeldata));
+    list.setModelData(std::move(collections), std::move(games));
 
     QVERIFY(list.property("count").toInt() == 2);
     QVERIFY(list.property("index").toInt() == 0);
@@ -115,8 +127,8 @@ void test_CollectionList::indexChange()
         QCOMPARE(current_ptr, null_coll);
     }
     else {
-        Q_ASSERT(0 <= expected && expected < list.elements().count());
-        QCOMPARE(current_ptr, list.elements().at(expected));
+        Q_ASSERT(0 <= expected && expected < list.collections().count());
+        QCOMPARE(current_ptr, list.collections().at(expected));
     }
 }
 
@@ -164,15 +176,20 @@ void test_CollectionList::indexIncDec_data()
 
 void test_CollectionList::indexIncDec()
 {
-    std::vector<modeldata::Collection> modeldata;
-    modeldata.emplace_back(modeldata::Collection("coll1"));
-    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy1")));
-    modeldata.emplace_back(modeldata::Collection("coll2"));
-    modeldata.back().gamesMut().emplace_back(modeldata::GamePtr::create(QFileInfo("dummy2")));
+    QVector<model::Collection*> collections = {
+        new model::Collection(modeldata::Collection("coll1")),
+        new model::Collection(modeldata::Collection("coll2")),
+    };
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("dummy1"))),
+        new model::Game(modeldata::Game(QFileInfo("dummy2"))),
+    };
+    collections.at(0)->setGameList({ games.at(0) });
+    collections.at(1)->setGameList({ games.at(1) });
 
     model::CollectionList list;
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.setModelData(std::move(modeldata));
+    list.setModelData(std::move(collections), std::move(games));
 
     QFETCH(int, start_idx);
     QFETCH(QString, metacall);
