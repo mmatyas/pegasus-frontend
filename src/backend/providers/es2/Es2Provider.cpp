@@ -34,16 +34,18 @@ Es2Provider::Es2Provider(QObject* parent)
             Qt::DirectConnection);
 }
 
-void Es2Provider::find(HashMap<QString, modeldata::GamePtr>& games,
-                       HashMap<QString, modeldata::Collection>& collections)
+void Es2Provider::findLists(HashMap<QString, modeldata::Game>& games,
+                            HashMap<QString, modeldata::Collection>& collections,
+                            HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    systems.find(games, collections);
+    systems.find(games, collections, collection_childs);
 }
 
-void Es2Provider::enhance(const HashMap<QString, modeldata::GamePtr>& games,
-                          const HashMap<QString, modeldata::Collection>& collections)
+void Es2Provider::findStaticData(HashMap<QString, modeldata::Game>& games,
+                                 const HashMap<QString, modeldata::Collection>& collections,
+                                 const HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    metadata.enhance(games, collections);
+    metadata.enhance(games, collections, collection_childs);
 }
 
 } // namespace es2

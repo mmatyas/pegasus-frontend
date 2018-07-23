@@ -82,7 +82,7 @@ void convertToCanonicalPath(QString& path, const QString& containing_dir)
 }
 
 void findPegasusAssetsInScrapedir(const QDir& scrapedir,
-                                  const HashMap<QString, modeldata::GamePtr>& games_by_shortpath)
+                                  const HashMap<QString, modeldata::Game* const>& games_by_shortpath)
 {
     // FIXME: except the short path, this function is the same as the Pegasus asset code
     if (!scrapedir.exists())
@@ -100,7 +100,7 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir,
         if (!games_by_shortpath.count(shortpath))
             continue;
 
-        const modeldata::GamePtr& game = games_by_shortpath.at(shortpath);
+        modeldata::Game* const game = games_by_shortpath.at(shortpath);
         pegasus_assets::addAssetToGame(game->assets, detection_result.asset_type, dir_it.filePath());
     }
 }
@@ -140,11 +140,10 @@ HashMap<QString, MetaTypes>::const_iterator find_by_strref(const HashMap<QString
     return it;
 }
 
-void findAssets(const modeldata::GamePtr& game_ptr,
+void findAssets(modeldata::Game& game,
                 HashMap<MetaTypes, QString, EnumHash>& xml_props,
                 const modeldata::Collection& collection)
 {
-    modeldata::Game& game = *game_ptr;
     const QString rom_dir = collection.source_dirs.constFirst() % '/';
 
     if (game.assets.single(AssetType::BOX_FRONT).isEmpty()) {
@@ -190,17 +189,20 @@ MetadataParser::MetadataParser(QObject* parent)
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
 {}
 
-void MetadataParser::enhance(const HashMap<QString, modeldata::GamePtr>& games,
-                             const HashMap<QString, modeldata::Collection>& collections)
+void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
+                             const HashMap<QString, modeldata::Collection>& collections,
+                             const HashMap<QString, std::vector<QString>>& collection_childs)
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
     // shortpath: dir name + extensionless filename
-    HashMap<QString, modeldata::GamePtr> games_by_shortpath;
+    HashMap<QString, modeldata::Game* const> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
-    for (const auto& pair : games) {
-        const QString shortpath = pair.second->fileinfo().dir().dirName() % '/' % pair.second->fileinfo().completeBaseName();
-        games_by_shortpath.emplace(shortpath, pair.second);
+    for (auto& pair : games) {
+        const QString shortpath = pair.second.fileinfo().dir().dirName()
+                                % '/'
+                                % pair.second.fileinfo().completeBaseName();
+        games_by_shortpath.emplace(shortpath, &pair.second);
     }
 
 
@@ -226,7 +228,7 @@ void MetadataParser::enhance(const HashMap<QString, modeldata::GamePtr>& games,
 
         // parse the file
         QXmlStreamReader xml(&xml_file);
-        parseGamelistFile(xml, collection, games);
+        parseGamelistFile(xml, games, collection);
         if (xml.error())
             qWarning().noquote() << MSG_PREFIX << xml.errorString();
 
@@ -240,8 +242,8 @@ void MetadataParser::enhance(const HashMap<QString, modeldata::GamePtr>& games,
 }
 
 void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
-                                       const modeldata::Collection& collection,
-                                       const HashMap<QString, modeldata::GamePtr>& games) const
+                                       HashMap<QString, modeldata::Game>& games,
+                                       const modeldata::Collection& collection) const
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
@@ -262,13 +264,13 @@ void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
             continue;
         }
 
-        parseGameEntry(xml, collection, games);
+        parseGameEntry(xml, games, collection);
     }
 }
 
 void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
-                                    const modeldata::Collection& collection,
-                                    const HashMap<QString, modeldata::GamePtr>& games) const
+                                    HashMap<QString, modeldata::Game>& games,
+                                    const modeldata::Collection& collection) const
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
@@ -305,16 +307,14 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
     if (!games.count(game_path))
         return;
 
-    const modeldata::GamePtr& game = games.at(game_path);
+    modeldata::Game& game = games.at(game_path);
     applyMetadata(game, xml_props);
     findAssets(game, xml_props, collection);
 }
 
-void MetadataParser::applyMetadata(const modeldata::GamePtr& game_ptr,
+void MetadataParser::applyMetadata(modeldata::Game& game,
                                    HashMap<MetaTypes, QString, EnumHash>& xml_props) const
 {
-    modeldata::Game& game = *game_ptr;
-
     // first, the simple strings
     game.title = xml_props[MetaTypes::NAME];
     game.description = xml_props[MetaTypes::DESC];

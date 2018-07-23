@@ -34,8 +34,9 @@ class SystemsParser : public QObject {
 public:
     SystemsParser(QObject* parent);
 
-    void find(HashMap<QString, modeldata::GamePtr>& games,
-              HashMap<QString, modeldata::Collection>& collections);
+    void find(HashMap<QString, modeldata::Game>& games,
+              HashMap<QString, modeldata::Collection>& collections,
+              HashMap<QString, std::vector<QString>>& collection_childs);
 
 signals:
     void gameCountChanged(int count);
@@ -43,11 +44,13 @@ signals:
 
 private:
     void readSystemsFile(QXmlStreamReader&,
-                         HashMap<QString, modeldata::GamePtr>&,
-                         HashMap<QString, modeldata::Collection>&);
+                         HashMap<QString, modeldata::Game>&,
+                         HashMap<QString, modeldata::Collection>&,
+                         HashMap<QString, std::vector<QString>>&);
     void readSystemEntry(QXmlStreamReader&,
-                         HashMap<QString, modeldata::GamePtr>&,
-                         HashMap<QString, modeldata::Collection>&);
+                         HashMap<QString, modeldata::Game>&,
+                         HashMap<QString, modeldata::Collection>&,
+                         HashMap<QString, std::vector<QString>>&);
 };
 
 } // namespace es2

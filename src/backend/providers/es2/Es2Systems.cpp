@@ -83,8 +83,9 @@ SystemsParser::SystemsParser(QObject* parent)
     : QObject(parent)
 {}
 
-void SystemsParser::find(HashMap<QString, modeldata::GamePtr>& games,
-                         HashMap<QString, modeldata::Collection>& collections)
+void SystemsParser::find(HashMap<QString, modeldata::Game>& games,
+                         HashMap<QString, modeldata::Collection>& collections,
+                         HashMap<QString, std::vector<QString>>& collection_childs)
 {
     // find the systems file
     const QString xml_path = findSystemsFile();
@@ -102,14 +103,15 @@ void SystemsParser::find(HashMap<QString, modeldata::GamePtr>& games,
 
     // parse the systems file
     QXmlStreamReader xml(&xml_file);
-    readSystemsFile(xml, games, collections);
+    readSystemsFile(xml, games, collections, collection_childs);
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }
 
 void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
-                                    HashMap<QString, modeldata::GamePtr>& games,
-                                    HashMap<QString, modeldata::Collection>& collections)
+                                    HashMap<QString, modeldata::Game>& games,
+                                    HashMap<QString, modeldata::Collection>& collections,
+                                    HashMap<QString, std::vector<QString>>& collection_childs)
 {
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -131,7 +133,7 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
             continue;
         }
 
-        readSystemEntry(xml, games, collections);
+        readSystemEntry(xml, games, collections, collection_childs);
         if (game_count != games.size()) {
             game_count = games.size();
             emit gameCountChanged(static_cast<int>(game_count));
@@ -140,8 +142,9 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
 }
 
 void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
-                                    HashMap<QString, modeldata::GamePtr>& games,
-                                    HashMap<QString, modeldata::Collection>& collections)
+                                    HashMap<QString, modeldata::Game>& games,
+                                    HashMap<QString, modeldata::Collection>& collections,
+                                    HashMap<QString, std::vector<QString>>& collection_childs)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -243,15 +246,15 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         QDirIterator files_it(dir_path, name_filters, entry_filters, entry_flags);
         while (files_it.hasNext()) {
             files_it.next();
-            const QFileInfo fileinfo = files_it.fileInfo();
+            QFileInfo fileinfo = files_it.fileInfo();
+            const QString game_key = fileinfo.canonicalFilePath();
 
-            modeldata::GamePtr& game_ptr = games[fileinfo.canonicalFilePath()];
-            if (!game_ptr) {
-                game_ptr = modeldata::GamePtr::create(fileinfo);
-                game_ptr->launch_cmd = collection.launchCmd();
+            if (!games.count(game_key)) {
+                modeldata::Game game(std::move(fileinfo));
+                game.launch_cmd = collection.launchCmd();
+                games.emplace(game_key, std::move(game));
             }
-
-            collection.gamesMut().emplace_back(game_ptr);
+            collection_childs[collection_name].emplace_back(game_key);
         }
     }
 
