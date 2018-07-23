@@ -39,19 +39,4 @@ void Collection::setLaunchCmd(QString str)
     m_launch_cmd = std::move(str);
 }
 
-void Collection::sortGames()
-{
-    // remove duplicates
-    std::sort(m_games.begin(), m_games.end());
-    m_games.erase(std::unique(m_games.begin(), m_games.end()), m_games.end());
-
-    // sort by name
-    std::sort(m_games.begin(), m_games.end(),
-        [](const GamePtr& a, const GamePtr& b) {
-            return QString::localeAwareCompare(a->fileinfo().completeBaseName(),
-                                               b->fileinfo().completeBaseName()) < 0;
-        }
-    );
-}
-
 } // namespace modeldata
