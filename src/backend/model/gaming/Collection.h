@@ -34,23 +34,27 @@ class Collection : public QObject {
     Q_PROPERTY(model::GameList* gameList READ gameListPtr CONSTANT)
 
 public:
-    explicit Collection(const modeldata::Collection* const, QObject* parent = nullptr);
+    explicit Collection(modeldata::Collection, QObject* parent = nullptr);
 
+    void setGameList(QVector<Game*>);
+    const modeldata::Collection& data() const { return m_collection; }
+
+public:
     const GameList& gameList() const { return m_gamelist; }
     GameList& gameListMut() { return m_gamelist; }
 
 signals:
     void currentGameChanged();
-    void gameLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
+    void gameLaunchRequested(const model::Collection* const, const model::Game* const);
     void gameFavoriteChanged();
 
 private:
-    const QString& name() const { return m_collection->name(); }
-    const QString& shortName() const { return m_collection->shortName(); }
+    const QString& name() const { return m_collection.name(); }
+    const QString& shortName() const { return m_collection.shortName(); }
     GameList* gameListPtr() { return &m_gamelist; }
 
 private:
-    const modeldata::Collection* const m_collection;
+    const modeldata::Collection m_collection;
     GameList m_gamelist;
 };
 

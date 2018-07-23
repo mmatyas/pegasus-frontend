@@ -17,7 +17,11 @@
 
 #pragma once
 
-#include "Collection.h"
+#include "model/gaming/Collection.h"
+
+#include <QObject>
+#include <QQmlListProperty>
+#include <QVector>
 
 enum class IndexShiftDirection : unsigned char;
 
@@ -44,10 +48,11 @@ class CollectionList : public QObject {
 public:
     explicit CollectionList(QObject* parent = nullptr);
 
-    void setModelData(const std::vector<modeldata::Collection>&);
+    void setModelData(QVector<Collection*>&&, QVector<Game*>&&);
 
     Collection* current() const;
-    const QVector<Collection*>& elements() const { return m_collections; }
+    const QVector<Collection*>& collections() const { return m_collections; }
+    const QVector<Game*>& allGames() const { return m_all_games; }
 
     Q_INVOKABLE void incrementIndex();
     Q_INVOKABLE void decrementIndex();
@@ -58,7 +63,7 @@ signals:
     void modelChanged();
     void currentChanged();
     void currentGameChanged();
-    void gameLaunchRequested(const modeldata::Collection* const, const modeldata::Game* const);
+    void gameLaunchRequested(const model::Collection* const, const model::Game* const);
     void gameFavoriteChanged();
 
 private slots:
@@ -76,6 +81,8 @@ private:
     int m_collection_idx;
 
     void shiftIndex(IndexShiftDirection);
+
+    QVector<Game*> m_all_games;
 };
 
 } // namespace model

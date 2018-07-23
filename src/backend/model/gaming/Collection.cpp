@@ -24,19 +24,22 @@
 
 namespace model {
 
-Collection::Collection(const modeldata::Collection* const collection, QObject* parent)
+Collection::Collection(modeldata::Collection collection, QObject* parent)
     : QObject(parent)
     , m_collection(std::move(collection))
-    , m_gamelist(m_collection->games())
+    , m_gamelist(this)
 {
-    Q_ASSERT(m_collection);
-
     connect(&m_gamelist, &GameList::currentChanged,
             this, &Collection::currentGameChanged);
     connect(&m_gamelist, &GameList::gameLaunchRequested,
-            this, [this](const modeldata::Game* const game){ emit gameLaunchRequested(m_collection, game); });
+            this, [this](const model::Game* const game){ emit gameLaunchRequested(this, game); });
     connect(&m_gamelist, &GameList::gameFavoriteChanged,
             this, &Collection::gameFavoriteChanged);
+}
+
+void Collection::setGameList(QVector<Game*> games)
+{
+    m_gamelist.setModelData(std::move(games));
 }
 
 } // namespace model

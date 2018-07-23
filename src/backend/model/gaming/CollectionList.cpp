@@ -25,6 +25,20 @@
 #include <QDebug>
 
 
+namespace {
+
+void sort_collections(QVector<model::Collection*>& collections)
+{
+    std::sort(collections.begin(), collections.end(),
+        [](const model::Collection* const a, const model::Collection* const b) {
+            return QString::localeAwareCompare(a->data().name(), b->data().name()) < 0;
+        }
+    );
+}
+
+} // namespace
+
+
 namespace model {
 
 CollectionList::CollectionList(QObject* parent)
@@ -95,28 +109,30 @@ QQmlListProperty<Collection> CollectionList::elementsProp()
     return {this, &m_collections, count, at};
 }
 
-void CollectionList::setModelData(const std::vector<modeldata::Collection>& data)
+void CollectionList::setModelData(QVector<Collection*>&& collections, QVector<Game*>&& games)
 {
-    // TODO: handle the locking and counting during searching
+    Q_ASSERT(m_collections.isEmpty());
+    Q_ASSERT(m_collection_idx == -1);
 
-    m_collections.clear();
-    m_collection_idx = -1;
+    qInfo().noquote() << tr_log("%1 games found").arg(games.count());
 
-    // NOTE: assuming we have less than 2 million games
-    int game_count = 0;
+    m_all_games = std::move(games);
+    for (Game* const game : m_all_games)
+        game->setParent(this);
 
-    for (const modeldata::Collection& coll : data) {
-        game_count += coll.games().size();
-        m_collections.append(new model::Collection(&coll, this));
+    sort_collections(collections);
+    m_collections = std::move(collections);
 
-        connect(m_collections.last(), &Collection::currentGameChanged,
+    for (Collection* const coll : m_collections) {
+        coll->setParent(this);
+
+        connect(coll, &Collection::currentGameChanged,
                 this, &CollectionList::onGameChanged);
-        connect(m_collections.last(), &Collection::gameLaunchRequested,
+        connect(coll, &Collection::gameLaunchRequested,
                 this, &CollectionList::gameLaunchRequested);
-        connect(m_collections.last(), &Collection::gameFavoriteChanged,
+        connect(coll, &Collection::gameFavoriteChanged,
                 this, &CollectionList::gameFavoriteChanged);
     }
-    qInfo().noquote() << tr_log("%1 games found").arg(game_count);
 
     if (!m_collections.isEmpty()) {
         setIndex(0);
