@@ -18,6 +18,7 @@
 #pragma once
 
 #include "GameAssets.h"
+#include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 
 #include <QObject>
@@ -25,7 +26,7 @@
 
 #define DATA_CONST_PROP(type, api_name, member_name) \
     public: \
-        const type& api_name() const { return m_game->member_name; } \
+        const type& api_name() const { return m_game.member_name; } \
     private: \
         Q_PROPERTY(type api_name READ api_name CONSTANT)
 
@@ -55,9 +56,9 @@ class Game : public QObject {
     Q_PROPERTY(int releaseDay READ releaseDay CONSTANT)
 
     Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
-    Q_PROPERTY(int playCount READ playCount NOTIFY playCountChanged)
-    Q_PROPERTY(int playTime READ playTime NOTIFY playTimeChanged)
-    Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY lastPlayedChanged)
+    Q_PROPERTY(int playCount READ playCount NOTIFY playStatsChanged)
+    Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
+    Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
 
     Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
 
@@ -67,41 +68,43 @@ class Game : public QObject {
     Q_PROPERTY(int day READ releaseDay CONSTANT)
 
 public:
-    explicit Game(modeldata::Game* const, QObject* parent = nullptr);
+    explicit Game(modeldata::Game, QObject* parent = nullptr);
 
     Q_INVOKABLE void launch();
 
+    const modeldata::Game& data() const { return m_game; }
+    void setFavorite(bool);
+    void addPlayStats(int playcount, qint64 playtime, QDateTime last_played);
+    void updatePlayStats(qint64 duration, QDateTime time_finished);
+
 signals:
-    void launchRequested(const modeldata::Game* const);
+    void launchRequested(const model::Game* const);
 
     void favoriteChanged();
-    void playCountChanged();
-    void playTimeChanged();
-    void lastPlayedChanged();
+    void playStatsChanged();
 
 private:
-    QString developerString() const { return joined_list(m_game->developers); }
-    QString publisherString() const { return joined_list(m_game->publishers); }
-    QString genreString() const { return joined_list(m_game->genres); }
+    QString developerString() const { return joined_list(m_game.developers); }
+    QString publisherString() const { return joined_list(m_game.publishers); }
+    QString genreString() const { return joined_list(m_game.genres); }
 
-    int players() const { return m_game->player_count; }
-    float rating() const { return m_game->rating; }
+    int players() const { return m_game.player_count; }
+    float rating() const { return m_game.rating; }
+    bool favorite() const { return m_game.is_favorite; }
 
-    int releaseYear() const { return m_game->release_date.year(); }
-    int releaseMonth() const { return m_game->release_date.month(); }
-    int releaseDay() const { return m_game->release_date.day(); }
+    int releaseYear() const { return m_game.release_date.year(); }
+    int releaseMonth() const { return m_game.release_date.month(); }
+    int releaseDay() const { return m_game.release_date.day(); }
 
-    bool favorite() const { return m_game->is_favorite; }
-    void setFavorite(bool);
 
-    int playCount() const { return m_game->playcount; }
-    qint64 playTime() const { return m_game->playtime; }
-    const QDateTime& lastPlayed() const { return m_game->last_played; }
+    int playCount() const { return m_game.playcount; }
+    qint64 playTime() const { return m_game.playtime; }
+    const QDateTime& lastPlayed() const { return m_game.last_played; }
 
     GameAssets* assetsPtr() { return &m_assets; }
 
 private:
-    modeldata::Game* const m_game;
+    modeldata::Game m_game;
     GameAssets m_assets;
 
     QString joined_list(const QStringList& list) const { return list.join(QLatin1String(", ")); }

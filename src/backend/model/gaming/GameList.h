@@ -17,8 +17,7 @@
 
 #pragma once
 
-#include "Game.h"
-#include "utils/FwdDeclModelData.h"
+#include "model/gaming/Game.h"
 
 #include <QObject>
 #include <QQmlListProperty>
@@ -54,8 +53,11 @@ class GameList : public QObject {
                NOTIFY allGamesChanged)
 
 public:
-    explicit GameList(const std::vector<modeldata::GamePtr>&, QObject* parent = nullptr);
+    explicit GameList(QObject* parent = nullptr);
 
+    void setModelData(QVector<model::Game*>);
+
+public:
     Game* current() const;
 
     Q_INVOKABLE void incrementIndex();
@@ -69,7 +71,7 @@ signals:
     void filteredGamesChanged();
     void allGamesChanged();
 
-    void gameLaunchRequested(const modeldata::Game* const);
+    void gameLaunchRequested(const model::Game* const);
     void gameFavoriteChanged();
 
 private:

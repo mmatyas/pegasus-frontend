@@ -143,21 +143,42 @@ bool all_filters_match(const model::Game& game, const std::vector<model::Filter*
     return true;
 }
 
+void sort_game_vec(QVector<model::Game*>& games)
+{
+    // remove duplicates
+    std::sort(games.begin(), games.end());
+    games.erase(std::unique(games.begin(), games.end()), games.end());
+
+    // sort by name
+    std::sort(games.begin(), games.end(),
+        [](const model::Game* const a, const model::Game* const b) {
+            return QString::localeAwareCompare(a->data().fileinfo().completeBaseName(),
+                                               b->data().fileinfo().completeBaseName()) < 0;
+        }
+    );
+}
+
 } // namespace
 
 
 namespace model {
 
-GameList::GameList(const std::vector<modeldata::GamePtr>& data, QObject* parent)
+GameList::GameList(QObject* parent)
     : QObject(parent)
     , m_game_idx(-1)
-{
-    for (const modeldata::GamePtr& game_ptr : data) {
-        m_all_games.append(new Game(game_ptr.data(), this));
+{}
 
-        connect(m_all_games.last(), &Game::launchRequested,
+void GameList::setModelData(QVector<Game*> games)
+{
+    Q_ASSERT(m_all_games.isEmpty());
+
+    sort_game_vec(games);
+    m_all_games = std::move(games);
+
+    for (Game* const game : qAsConst(m_all_games)) {
+        connect(game, &Game::launchRequested,
                 this, &GameList::gameLaunchRequested);
-        connect(m_all_games.last(), &Game::favoriteChanged,
+        connect(game, &Game::favoriteChanged,
                 this, &GameList::gameFavoriteChanged);
     }
 
