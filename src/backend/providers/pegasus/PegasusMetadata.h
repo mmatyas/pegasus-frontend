@@ -35,8 +35,9 @@ public:
     PegasusMetadata();
 
     void enhance_in_dirs(const QStringList&,
-                         const HashMap<QString, modeldata::GamePtr>&,
-                         const HashMap<QString, modeldata::Collection>&) const;
+                         HashMap<QString, modeldata::Game>&,
+                         const HashMap<QString, modeldata::Collection>&,
+                         const HashMap<QString, std::vector<QString>>&) const;
 
 private:
     const HashMap<QString, MetaAttribType> m_key_types;
@@ -45,7 +46,7 @@ private:
     const QRegularExpression m_rating_float_regex;
     const QRegularExpression m_release_regex;
 
-    void read_metadata_file(const QString&, const HashMap<QString, modeldata::GamePtr>&) const;
+    void read_metadata_file(const QString&, HashMap<QString, modeldata::Game>&) const;
 };
 
 } // namespace pegasus

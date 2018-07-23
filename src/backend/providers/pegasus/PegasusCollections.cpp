@@ -44,8 +44,9 @@ struct GameFilter {
 
 void traverse_dir(const QString& dir_base_path,
                   const HashMap<QString, GameFilter>& filter_config,
+                  HashMap<QString, modeldata::Game>& games,
                   HashMap<QString, modeldata::Collection>& collections,
-                  HashMap<QString, modeldata::GamePtr>& games)
+                  HashMap<QString, std::vector<QString>>& collection_childs)
 {
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
@@ -76,7 +77,7 @@ void traverse_dir(const QString& dir_base_path,
             QDirIterator dir_it(dir, entry_filters, entry_flags);
             while (dir_it.hasNext()) {
                 dir_it.next();
-                const QFileInfo fileinfo = dir_it.fileInfo();
+                QFileInfo fileinfo = dir_it.fileInfo();
                 const QString relative_path = fileinfo.filePath().mid(dir_base_path.length() + 1);
 
                 const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
@@ -92,14 +93,14 @@ void traverse_dir(const QString& dir_base_path,
                     continue;
 
 
-                modeldata::Collection& collection = collections.at(config_it.first);
-                modeldata::GamePtr& game_ptr = games[fileinfo.canonicalFilePath()];
-                if (!game_ptr) {
-                    game_ptr = modeldata::GamePtr::create(fileinfo);
-                    game_ptr->launch_cmd = collection.launchCmd();
+                const QString coll_key = config_it.first;
+                const QString game_key = fileinfo.canonicalFilePath();
+                if (!games.count(game_key)) {
+                    modeldata::Game game(std::move(fileinfo));
+                    game.launch_cmd = collections.at(coll_key).launchCmd();
+                    games.emplace(game_key, std::move(game));
                 }
-
-                collection.gamesMut().emplace_back(game_ptr);
+                collection_childs[coll_key].emplace_back(game_key);
             }
         }
     }
@@ -237,14 +238,15 @@ PegasusCollections::PegasusCollections()
 }
 
 void PegasusCollections::find_in_dirs(const QStringList& dir_list,
-                                      HashMap<QString, modeldata::GamePtr>& games,
+                                      HashMap<QString, modeldata::Game>& games,
                                       HashMap<QString, modeldata::Collection>& collections,
+                                      HashMap<QString, std::vector<QString>>& collection_childs,
                                       const std::function<void(int)>& update_gamecount_maybe) const
 {
     for (const QString& dir_path : dir_list) {
         const auto filter_config = read_collections_file(m_key_types, dir_path, collections);
-        traverse_dir(dir_path, filter_config, collections, games);
-        update_gamecount_maybe(games.size());
+        traverse_dir(dir_path, filter_config, games, collections, collection_childs);
+        update_gamecount_maybe(static_cast<int>(games.size()));
     }
 }
 

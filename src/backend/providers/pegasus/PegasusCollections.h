@@ -22,6 +22,7 @@
 
 #include <QStringList>
 #include <functional>
+#include <vector>
 
 
 namespace providers {
@@ -34,8 +35,9 @@ public:
     PegasusCollections();
 
     void find_in_dirs(const QStringList&,
-                      HashMap<QString, modeldata::GamePtr>&,
+                      HashMap<QString, modeldata::Game>&,
                       HashMap<QString, modeldata::Collection>&,
+                      HashMap<QString, std::vector<QString>>&,
                       const std::function<void(int)>&) const;
 
 private:
