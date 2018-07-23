@@ -156,14 +156,16 @@ void addAssetToGame(modeldata::GameAssets& gameassets, AssetType asset_type, con
 }
 
 void findAssets(const QStringList& asset_dirs,
-                const HashMap<QString, modeldata::GamePtr>& games)
+                HashMap<QString, modeldata::Game>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
-    HashMap<QString, modeldata::GamePtr> games_by_shortpath;
+    HashMap<QString, modeldata::Game*> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
-    for (const auto& pair : games) {
-        const QString shortpath = pair.second->fileinfo().canonicalPath() % '/' % pair.second->fileinfo().completeBaseName();
-        games_by_shortpath.emplace(shortpath, std::move(pair.second));
+    for (auto& pair : games) {
+        const QString shortpath = pair.second.fileinfo().canonicalPath()
+                                % '/'
+                                % pair.second.fileinfo().completeBaseName();
+        games_by_shortpath.emplace(shortpath, &pair.second);
     }
 
 
@@ -188,7 +190,7 @@ void findAssets(const QStringList& asset_dirs,
             if (!games_by_shortpath.count(shortpath))
                 continue;
 
-            const modeldata::GamePtr& game = games_by_shortpath[shortpath];
+            modeldata::Game* const game = games_by_shortpath[shortpath];
             addAssetToGame(game->assets, detection_result.asset_type, dir_it.filePath());
         }
     }

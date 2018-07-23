@@ -38,6 +38,6 @@ AssetCheckResult checkFile(const QFileInfo&);
 void addAssetToGame(modeldata::GameAssets&, AssetType, const QString&);
 
 void findAssets(const QStringList& asset_dirs,
-                const HashMap<QString, modeldata::GamePtr>& games);
+                HashMap<QString, modeldata::Game>& games);
 
 } // namespace pegasus_assets
