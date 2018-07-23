@@ -30,5 +30,9 @@
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
+        <file>assets/logo.png</file>
+        <file>assets/pbar.png</file>
+        <file>assets/pbar-right.png</file>
+        <file>assets/pbar-left.png</file>
     </qresource>
 </RCC>

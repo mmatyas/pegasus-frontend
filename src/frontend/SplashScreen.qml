@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,131 +19,111 @@ import QtQuick 2.0
 
 
 Rectangle {
+    id: root
     color: "#222"
     anchors.fill: parent
 
-    property bool scanningMeta: api.meta.isScanningMeta
-    onScanningMetaChanged: {
-        label_gamesState.text += "  \u2713"
-        label_metaState.opacity = 1.0;
-        loading_dots.anchors.left = label_metaState.right
-        loading_dots.anchors.baseline = label_metaState.baseline
-        scanningMeta = true;
-    }
+    property real progress: api.meta.loadingProgress
+
+    Behavior on progress { NumberAnimation {} }
+
 
     Image {
         id: logo
-        source: "/loading.svg"
-        sourceSize.height: parent.height * 0.85
-        opacity: 0.25
+        source: "assets/logo.png"
+        width: Math.min(parent.width, parent.height)
+        fillMode: Image.PreserveAspectFit
+        verticalAlignment: Image.AlignBottom
 
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.bottom: parent.verticalCenter
+        anchors.bottomMargin: vpx(-45)
     }
 
-    Item {
-        anchors.left: parent.left
-        anchors.leftMargin: parent.width * 0.61
-        anchors.verticalCenter: parent.verticalCenter
-        width: childrenRect.width
-        height: childrenRect.height
+    Rectangle {
+        id: progressRoot
 
-        Text {
-            id: label_found
-            text: qsTr("games\nfound") + api.tr
-            color: "#888"
-            font {
-                pixelSize: vpx(20)
-                family: globalFonts.sans
-                italic: true
+        property int padding: vpx(5)
+
+        width: logo.width * 0.94
+        height: vpx(30)
+        radius: vpx(10)
+        color: "#181818"
+
+        anchors.top: logo.bottom
+        anchors.topMargin: height * 1.0
+        anchors.horizontalCenter: parent.horizontalCenter
+        clip: true
+
+        Image {
+            source: "assets/pbar.png"
+
+            width: vpx(720)
+            height: parent.height - progressRoot.padding * 2
+
+            fillMode: Image.Tile
+            horizontalAlignment: Image.AlignLeft
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: parent.width * (1.0 - root.progress)
+
+
+            SequentialAnimation on width {
+                loops: Animation.Infinite
+                PropertyAnimation { duration: 500; to: vpx(720 + 68) }
+                PropertyAnimation { duration: 0; to: vpx(720) }
             }
 
-            anchors.left: counter.right
-            anchors.bottom: counter.baseline
-            anchors.leftMargin: vpx(8)
-            anchors.bottomMargin: -vpx(6)
+
+            Image {
+                source: "assets/pbar-right.png"
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                fillMode: Image.PreserveAspectFit
+            }
         }
 
-        Text {
-            id: counter
-
-            text: api.meta.gameCount
-            color: "#eaeaea"
-            font {
-                pixelSize: vpx(110)
-                family: globalFonts.sans
-            }
-        }
-
-        Text {
-            id: label_gamesState
-
-            property int leftMarginOffset: vpx(50)
-            PropertyAnimation on leftMarginOffset {
-                duration: 300; to: 0
-                easing.type: Easing.OutQuad
-            }
-
-            text: qsTr("looking for games") + api.tr
-            color: "#aaa"
-            font {
-                pixelSize: vpx(24)
-                family: globalFonts.sans
-                italic: true
-            }
-
+        Image {
+            source: "assets/pbar-left.png"
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
             anchors.left: parent.left
-            anchors.top: counter.baseline
-            anchors.topMargin: vpx(24)
-            anchors.leftMargin: vpx(18) + leftMarginOffset
+            fillMode: Image.PreserveAspectFit
+        }
+        Image {
+            source: "assets/pbar-right.png"
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            fillMode: Image.PreserveAspectFit
+        }
+        Rectangle {
+            // inner border above the image
+            anchors.fill: parent
+            color: "transparent"
 
-            opacity: 1.0
-            Behavior on opacity { PropertyAnimation { duration: 100 } }
+            radius: vpx(10)
+            border.width: parent.padding
+            border.color: parent.color
+        }
+    }
+
+    Text {
+        id: gameCounter
+
+        text: qsTr("%1 games found").arg(api.meta.gameCount)
+        color: "#999"
+        font {
+            pixelSize: vpx(16)
+            family: globalFonts.sans
         }
 
-        Text {
-            id: label_metaState
-
-            property int leftMarginOffset: vpx(50)
-            PropertyAnimation on leftMarginOffset {
-                duration: 400; to: 0
-                easing.type: Easing.OutQuad
-            }
-
-            text: qsTr("looking for metadata") + api.tr
-            color: "#aaa"
-            font {
-                pixelSize: vpx(24)
-                family: globalFonts.sans
-                italic: true
-            }
-
-            anchors.left: parent.left
-            anchors.top: label_gamesState.bottom
-            anchors.topMargin: vpx(4)
-            anchors.leftMargin: vpx(18) + leftMarginOffset
-
-            opacity: 0.33
-            Behavior on opacity { PropertyAnimation { duration: 100 } }
-        }
-
-        Timer {
-            interval: 250; running: true; repeat: true
-            onTriggered: loading_dots.text = loading_dots.text.length === 3
-                         ? "." : loading_dots.text + "."
-        }
-
-        Text {
-            id: loading_dots
-            text: "."
-            color: "#aaa"
-            font {
-                pixelSize: vpx(24)
-                family: globalFonts.sans
-                italic: true
-            }
-            anchors.left: label_gamesState.right
-            anchors.baseline: label_gamesState.baseline
-        }
+        anchors.top: progressRoot.bottom
+        anchors.topMargin: vpx(8)
+        anchors.right: progressRoot.right
+        anchors.rightMargin: vpx(5)
     }
 }
