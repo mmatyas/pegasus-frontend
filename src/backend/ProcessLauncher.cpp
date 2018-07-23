@@ -20,6 +20,7 @@
 #include "LocaleUtils.h"
 #include "ScriptRunner.h"
 #include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 
 #include <QDebug>
 
@@ -45,25 +46,25 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , process(nullptr)
 {}
 
-void ProcessLauncher::onLaunchRequested(const modeldata::Collection* const collection,
-                                        const modeldata::Game* const game)
+void ProcessLauncher::onLaunchRequested(const model::Collection* const collection,
+                                        const model::Game* const game)
 {
     Q_ASSERT(game);
     // collection can be null!
 
     // first, check the game's custom launch command
-    QString launch_cmd = game->launch_cmd;
+    QString launch_cmd = game->data().launch_cmd;
     // then the lauching collection's
     if (launch_cmd.isEmpty() && collection)
-        launch_cmd = collection->launchCmd();
+        launch_cmd = collection->data().launchCmd();
 
     if (!launch_cmd.isEmpty())
-        format_launch_command(launch_cmd, *game);
+        format_launch_command(launch_cmd, game->data());
 
     if (launch_cmd.isEmpty()) {
         qInfo().noquote()
             << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
-               .arg(game->title);
+               .arg(game->data().title);
         emit processLaunchError();
         return;
     }
