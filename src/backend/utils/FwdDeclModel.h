@@ -17,6 +17,5 @@
 
 #pragma once
 
-namespace modeldata { struct Collection; }
-namespace modeldata { struct Game; }
-namespace modeldata { struct GameAssets; }
+namespace model { struct Collection; }
+namespace model { struct Game; }

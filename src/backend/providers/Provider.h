@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "utils/FwdDeclModel.h"
 #include "utils/FwdDeclModelData.h"
 #include "utils/HashMap.h"
 
@@ -33,13 +34,32 @@ public:
     explicit Provider(QObject* parent = nullptr);
     virtual ~Provider();
 
+    /// Initialization first stage:
     /// Find all games and collections.
-    virtual void find(HashMap<QString, modeldata::GamePtr>& games,
-                      HashMap<QString, modeldata::Collection>& collections) = 0;
+    virtual void findLists(HashMap<QString, modeldata::Game>&,
+                           HashMap<QString, modeldata::Collection>&,
+                           HashMap<QString, std::vector<QString>>&)
+    {}
 
+    /// Initialization second stage:
     /// Enhance the previously found games and collections with metadata and assets.
-    virtual void enhance(const HashMap<QString, modeldata::GamePtr>& games,
-                         const HashMap<QString, modeldata::Collection>& collections) = 0;
+    virtual void findStaticData(HashMap<QString, modeldata::Game>&,
+                                const HashMap<QString, modeldata::Collection>&,
+                                const HashMap<QString, std::vector<QString>>&)
+    {}
+
+    /// Initialization third stage:
+    /// Find data that may change during the runtime for all games
+    virtual void findDynamicData(const QVector<model::Game*>&,
+                                 const QVector<model::Collection*>&,
+                                 const HashMap<QString, model::Game*>&)
+    {}
+
+
+    // events
+    virtual void onGameFavoriteChanged(const QVector<model::Game*>&) {}
+    virtual void onGameLaunched(const model::Collection* const, const model::Game* const) {}
+    virtual void onGameFinished(const model::Collection* const, const model::Game* const) {}
 
 signals:
     void gameCountChanged(int);
