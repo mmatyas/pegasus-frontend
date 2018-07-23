@@ -80,6 +80,10 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
     qmlRegisterUncreatableType<model::Filter>(API_URI, 0, 8, "Filter", error_msg);
     qmlRegisterUncreatableType<model::Filters>(API_URI, 0, 8, "Filters", error_msg);
+
+    // backend classes
+    qRegisterMetaType<QVector<model::Collection*>>();
+    qRegisterMetaType<QVector<model::Game*>>();
 }
 
 } // namespace

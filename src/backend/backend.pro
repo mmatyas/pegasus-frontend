@@ -10,7 +10,6 @@ SOURCES += \
     Assets.cpp \
     Backend.cpp \
     ConfigFile.cpp \
-    DataFinder.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
@@ -27,7 +26,6 @@ HEADERS += \
     Assets.h \
     Backend.h \
     ConfigFile.h \
-    DataFinder.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     ListPropertyFn.h \
