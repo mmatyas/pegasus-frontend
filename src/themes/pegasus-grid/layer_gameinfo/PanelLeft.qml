@@ -71,7 +71,7 @@ Item {
             Text {
                 text: "last played:"
                 width: parent.width * 0.5
-                color: playtimes.labelColor;
+                color: playtimes.labelColor
                 font {
                     pixelSize: playtimes.labelFontSize
                     family: globalFonts.sans
@@ -124,11 +124,10 @@ Item {
             Text {
                 text: {
                     var minutes = Math.ceil(gameData.playTime / 60)
-                    if (minutes > 120)
-                        return Math.round(minutes / 60) + " hours"
+                    if (minutes <= 90)
+                        return Math.round(minutes) + " minutes";
 
-                    return Math.round(minutes) + " minutes";
-
+                    return parseFloat((minutes / 60).toFixed(1)) + " hours"
                 }
                 color: "#eee"
                 font {
