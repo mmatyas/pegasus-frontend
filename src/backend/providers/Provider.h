@@ -23,6 +23,8 @@
 
 #include <QString>
 #include <QObject>
+#include <QVector>
+#include <vector>
 
 
 namespace providers {
