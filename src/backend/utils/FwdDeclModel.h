@@ -17,5 +17,5 @@
 
 #pragma once
 
-namespace model { struct Collection; }
-namespace model { struct Game; }
+namespace model { class Collection; }
+namespace model { class Game; }
