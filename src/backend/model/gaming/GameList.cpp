@@ -152,8 +152,7 @@ void sort_game_vec(QVector<model::Game*>& games)
     // sort by name
     std::sort(games.begin(), games.end(),
         [](const model::Game* const a, const model::Game* const b) {
-            return QString::localeAwareCompare(a->data().fileinfo().completeBaseName(),
-                                               b->data().fileinfo().completeBaseName()) < 0;
+            return QString::localeAwareCompare(a->data().title, b->data().title) < 0;
         }
     );
 }

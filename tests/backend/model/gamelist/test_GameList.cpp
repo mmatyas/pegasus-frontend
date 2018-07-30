@@ -77,14 +77,16 @@ void test_GameList::nonempty()
 void test_GameList::sortGames()
 {
     QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("aaa 3")), this),
         new model::Game(modeldata::Game(QFileInfo("bbb")), this),
         new model::Game(modeldata::Game(QFileInfo("aaa")), this),
     };
     model::GameList list;
     list.setModelData(std::move(games));
 
-    QCOMPARE(list.allGames().front()->property("title").toString(), QLatin1String("aaa"));
-    QCOMPARE(list.allGames().back()->property("title").toString(), QLatin1String("bbb"));
+    QCOMPARE(list.allGames().at(0)->property("title").toString(), QLatin1String("aaa"));
+    QCOMPARE(list.allGames().at(1)->property("title").toString(), QLatin1String("aaa 3"));
+    QCOMPARE(list.allGames().at(2)->property("title").toString(), QLatin1String("bbb"));
 }
 
 void test_GameList::indexChange()
