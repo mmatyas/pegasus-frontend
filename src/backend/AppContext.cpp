@@ -129,6 +129,7 @@ void AppContext::setup_gamepad()
     padkeynav.setButtonAKey(Qt::Key_Return);
     padkeynav.setButtonBKey(Qt::Key_Escape);
     padkeynav.setButtonXKey(Qt::Key_Control);
+    padkeynav.setButtonYKey(Qt::Key_Shift);
     padkeynav.setButtonL1Key(Qt::Key_A);
     padkeynav.setButtonR1Key(Qt::Key_D);
     padkeynav.setButtonL2Key(Qt::Key_PageUp);
