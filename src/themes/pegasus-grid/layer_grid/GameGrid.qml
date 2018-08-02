@@ -32,7 +32,8 @@ FocusScope {
     signal nextPlatformRequested
     signal prevPlatformRequested
 
-    Keys.onPressed: {
+    // NOTE: apparently keyNavigationWraps eats the input... QTBUG?
+    function onKeyPress(event) {
         if (event.isAutoRepeat)
             return;
 
@@ -116,6 +117,10 @@ FocusScope {
 
 
         Keys.onPressed: {
+            root.onKeyPress(event);
+            if (event.accepted)
+                return;
+
             if (event.key === Qt.Key_PageUp || event.key === Qt.Key_PageDown) {
                 var rows_to_skip = Math.max(1, Math.round(grid.height / cellHeight));
                 var games_to_skip = rows_to_skip * columnCount;
@@ -140,6 +145,7 @@ FocusScope {
         }
 
         highlightMoveDuration: 0
+        keyNavigationWraps: true
 
         delegate: GameGridItem {
             width: GridView.view.cellWidth
