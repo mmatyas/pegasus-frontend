@@ -26,6 +26,7 @@
 namespace model {
 
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
+const QString Meta::m_git_date(QStringLiteral(GIT_DATE));
 
 Meta::Meta(QObject* parent)
     : QObject(parent)

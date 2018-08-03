@@ -80,7 +80,7 @@ FocusScope {
 
         Text {
             id: revision
-            text: api.meta.gitRevision
+            text: api.meta.gitRevision + ", " + api.meta.gitDate
             color: "#eee"
             font {
                 pixelSize: vpx(12)

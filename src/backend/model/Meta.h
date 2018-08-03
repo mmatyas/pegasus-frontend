@@ -32,6 +32,7 @@ class Meta : public QObject {
     Q_PROPERTY(int gameCount READ gameCount NOTIFY gameCountChanged)
 
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
+    Q_PROPERTY(QString gitDate MEMBER m_git_date CONSTANT)
     Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
 
 public:
@@ -62,6 +63,7 @@ signals:
 
 private:
     static const QString m_git_revision;
+    static const QString m_git_date;
     const QString m_log_path;
 
     bool m_loading;
