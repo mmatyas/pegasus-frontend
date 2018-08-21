@@ -3,8 +3,6 @@
         <file>main.qml</file>
         <file>MenuLayer.qml</file>
         <file>SplashLayer.qml</file>
-        <file>messages/NoGamesError.qml</file>
-        <file>messages/ThemeError.qml</file>
         <file>menu/GamepadScreen.qml</file>
         <file>menu/MainMenuPanel.qml</file>
         <file>menu/MenuScreen.qml</file>
@@ -28,6 +26,9 @@
         <file>menu/settings/MultivalueOption.qml</file>
         <file>menu/settings/ToggleOption.qml</file>
         <file>menu/settings/Switch.qml</file>
+        <file>messages/Error.qml</file>
+        <file>messages/NoGamesError.qml</file>
+        <file>messages/ThemeError.qml</file>
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
