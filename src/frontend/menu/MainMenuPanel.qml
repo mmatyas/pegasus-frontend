@@ -35,6 +35,8 @@ FocusScope {
     signal requestReboot()
     signal requestQuit()
 
+    Keys.onEscapePressed: if (!event.isAutoRepeat) close()
+
 
     Rectangle {
         color: "#333"

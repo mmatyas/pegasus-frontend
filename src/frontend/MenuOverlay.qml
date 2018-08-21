@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,54 +16,41 @@
 
 
 import "menu"
-import QtQuick 2.8
+import QtQuick 2.0
 
 
 FocusScope {
     id: root
+
+    function open() {
+        root.state = "menu";
+    }
 
     signal close()
     signal requestShutdown()
     signal requestReboot()
     signal requestQuit()
 
+    function triggerClose() {
+        root.state = "";
+        root.close();
+    }
+
     anchors.fill: parent
     visible: shade.opacity > 0
 
-    Keys.onEscapePressed: if (!event.isAutoRepeat) stepBack()
-    onActiveFocusChanged: state = activeFocus ? "menuOpen" : ""
-
-
-    // return to the main menu from a panel, or close the overlay
-    function stepBack() {
-        if (state == "menuOpen" || state == "") {
-            close();
-            return;
-        }
-
-        state = "menuOpen";
-        menuPanel.enabled = true;
-        menuPanel.focus = true;
-    }
-
-    // panel visibility is handled manually in order to
-    // 1. control their visibility during transitions, and
-    // 2. make sure only one of them is visible at a time (ie. no overlap)
-    function hideAllSubpanels() {
-        gamepadPanel.visible = false;
-        settingsPanel.visible = false;
-    }
+    Keys.onEscapePressed: triggerClose()
 
 
     // capture right mouse button
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: root.stepBack()
+        onClicked: root.triggerClose()
     }
 
-    // background
     Rectangle {
+        // background
         id: shade
         anchors {
             left: parent.left
@@ -94,55 +81,61 @@ FocusScope {
         }
 
         MouseArea {
+            // capture left mouse button
             anchors.fill: parent
-            onClicked: root.stepBack()
+            onClicked: root.triggerClose()
         }
     }
 
     MainMenuPanel {
         id: menuPanel
-        focus: true
         anchors.left: parent.right
 
-        onShowSettingsScreen: {
-            parent.state = "settings";
-            settingsPanel.visible = true;
-        }
-        onShowGamepadScreen: {
-            parent.state = "gamepad";
-            gamepadPanel.visible = true;
+        function openScreen(url) {
+            subscreen.source = url;
+            root.state = "sub";
         }
 
-        onClose: stepBack()
+        onShowSettingsScreen: openScreen("menu/SettingsScreen.qml")
+        onShowGamepadScreen: openScreen("menu/GamepadScreen.qml")
+
+        onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
         onRequestQuit: root.requestQuit()
     }
 
-    SettingsScreen {
-        id: settingsPanel
+    Loader {
+        id: subscreen
         anchors.left: menuPanel.right
 
-        onScreenClosed: stepBack()
+        width: parent.width
+        height: parent.height
+
+        enabled: false
     }
-
-    GamepadScreen {
-        id: gamepadPanel
-        anchors.left: menuPanel.right
-
-        onScreenClosed: stepBack()
+    Connections {
+        target: subscreen.item
+        onClose: root.state = "menu"
     }
 
 
     states: [
         State {
             // the shade should be visible in every state
-            name: "_overlayOpen"
-            PropertyChanges { target: shade; opacity: 0.75 }
+            name: "_shade"
+            PropertyChanges {
+                target: shade
+                opacity: 0.75
+            }
         },
         State {
-            name: "menuOpen"; extend: "_overlayOpen"
-            PropertyChanges { target: revision; visible: true }
+            name: "menu"; extend: "_shade"
+            PropertyChanges {
+                target: menuPanel
+                focus: true
+                enabled: true
+            }
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
@@ -150,29 +143,23 @@ FocusScope {
             }
         },
         State {
-            // the main menu panel should not receive input
-            // while any of the subpanel is open
-            name: "_submenuOpen"; extend: "_overlayOpen"
+            name: "sub"; extend: "_shade"
             PropertyChanges {
                 target: menuPanel
                 enabled: false
+            }
+            PropertyChanges {
+                target: subscreen
+                enabled: true
+                focus: true
             }
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
                 anchors.right: parent.left
             }
-        },
-        State {
-            name: "settings"; extend: "_submenuOpen"
-            PropertyChanges { target: settingsPanel; focus: true }
-        },
-        State {
-            name: "gamepad"; extend: "_submenuOpen"
-            PropertyChanges { target: gamepadPanel; focus: true }
         }
     ]
-
 
     // fancy easing curves, a la material design
     readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
@@ -180,56 +167,34 @@ FocusScope {
     readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
 
     transitions: [
-        // main panel
         Transition {
-            from: ""; to: "menuOpen"
+            from: ""; to: "menu"
             AnchorAnimation {
                 duration: 225
                 easing { type: Easing.Bezier; bezierCurve: bezierDecelerate }
             }
         },
         Transition {
-            from: "menuOpen"; to: ""
+            from: "menu"; to: ""
             AnchorAnimation {
                 duration: 200
                 easing { type: Easing.Bezier; bezierCurve: bezierSharp }
             }
+            onRunningChanged: if (!running) subscreen.source = ""
         },
-
-        // non-fullscreen panels (shorter animations)
         Transition {
-            from: "menuOpen"; to: "settings"
+            from: "menu"; to: "sub"
             AnchorAnimation {
                 duration: 425
                 easing { type: Easing.Bezier; bezierCurve: bezierStandard }
             }
         },
         Transition {
-            from: "settings"; to: "menuOpen"
+            from: "sub"; to: "menu"
             AnchorAnimation {
                 duration: 425
                 easing { type: Easing.Bezier; bezierCurve: bezierStandard }
             }
-
-            onRunningChanged: if (!running) hideAllSubpanels()
-        },
-
-        // full-screen panels (longer animations)
-        Transition {
-            from: "menuOpen"; to: "gamepad"
-            AnchorAnimation {
-                duration: 500
-                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
-            }
-        },
-        Transition {
-            from: "gamepad"; to: "menuOpen"
-            AnchorAnimation {
-                duration: 500
-                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
-            }
-
-            onRunningChanged: if (!running) hideAllSubpanels()
         }
     ]
 }

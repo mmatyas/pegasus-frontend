@@ -7,6 +7,7 @@
         <file>messages/ThemeError.qml</file>
         <file>menu/GamepadScreen.qml</file>
         <file>menu/MainMenuPanel.qml</file>
+        <file>menu/MenuScreen.qml</file>
         <file>menu/SettingsScreen.qml</file>
         <file>menu/mainmenu/GenericMenuItem.qml</file>
         <file>menu/mainmenu/PrimaryMenuItem.qml</file>

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@ Window {
             Keys.onEscapePressed: {
                 themeContent.enabled = false;
                 mainMenu.focus = true;
+                mainMenu.item.open();
             }
             Keys.onPressed: {
                 if (event.key === Qt.Key_F5) {
@@ -133,6 +134,7 @@ Window {
                 if (!mainMenu.focus) {
                     themeContent.enabled = false;
                     mainMenu.focus = true;
+                    mainMenu.item.open();
                 }
             }
         }

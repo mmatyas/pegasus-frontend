@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,14 +22,11 @@ import QtQuick 2.8
 import QtGamepad 1.0
 
 
-FocusScope {
+MenuScreen {
+    id: root
+
     property bool hasGamepads: GamepadManager.connectedGamepads.length > 0
 
-    signal screenClosed()
-
-    width: parent.width
-    height: parent.height
-    visible: false
 
     property ConfigField recordingField: null
     function recordConfig(configField) {
@@ -57,7 +54,7 @@ FocusScope {
 
             if (escapeProgress > 1.0) {
                 stopEscapeTimer();
-                screenClosed();
+                root.close();
             }
         }
     }
@@ -652,11 +649,11 @@ FocusScope {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: screenClosed()
+        onClicked: root.close()
     }
 
     PegasusUtils.HorizSwipeArea {
         anchors.fill: parent
-        onSwipeRight: screenClosed()
+        onSwipeRight: root.close()
     }
 }

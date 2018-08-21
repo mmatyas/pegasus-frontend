@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,23 +20,11 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
 
 
-FocusScope {
+MenuScreen {
     id: root
 
-    signal screenClosed()
+    Keys.onEscapePressed: close()
 
-    width: parent.width
-    height: parent.height
-    visible: false
-
-    Keys.onEscapePressed: screenClosed()
-
-
-    Rectangle {
-        // background
-        anchors.fill: parent
-        color: "#222"
-    }
 
     Item {
         id: header
@@ -143,7 +131,7 @@ FocusScope {
 
     PegasusUtils.HorizSwipeArea {
         anchors.fill: parent
-        onSwipeRight: screenClosed()
+        onSwipeRight: close()
     }
 
 
