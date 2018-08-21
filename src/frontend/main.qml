@@ -99,7 +99,7 @@ Window {
         Loader {
             id: mainMenu
             anchors.fill: parent
-            sourceComponent: MenuOverlay { focus: true }
+            sourceComponent: MenuLayer { focus: true }
             asynchronous: true
         }
         Connections {
@@ -140,7 +140,19 @@ Window {
         }
     }
 
-    SplashScreen {
+    Loader {
+        id: powerDialog
+        anchors.fill: parent
+    }
+    Connections {
+        target: powerDialog.item
+        onCancel: {
+            content.enabled = true;
+            content.focus = true;
+        }
+    }
+
+    SplashLayer {
         id: splashScreen
 
         property bool dataLoading: api.meta.loading
@@ -157,18 +169,6 @@ Window {
                 dataLoading = false;
                 skinLoading = false;
             }
-        }
-    }
-
-    Loader {
-        id: powerDialog
-        anchors.fill: parent
-    }
-    Connections {
-        target: powerDialog.item
-        onCancel: {
-            content.enabled = true;
-            content.focus = true;
         }
     }
 }

@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/frontend">
         <file>main.qml</file>
-        <file>MenuOverlay.qml</file>
-        <file>SplashScreen.qml</file>
+        <file>MenuLayer.qml</file>
+        <file>SplashLayer.qml</file>
         <file>messages/NoGamesError.qml</file>
         <file>messages/ThemeError.qml</file>
         <file>menu/GamepadScreen.qml</file>
