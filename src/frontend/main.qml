@@ -158,8 +158,7 @@ Window {
         property bool dataLoading: api.meta.loading
         property bool skinLoading: themeContent.status === Loader.Null || themeContent.status === Loader.Loading
 
-        onSkinLoadingChanged: {
-            // when ready
+        function hideMaybe() {
             if (enabled && !dataLoading && !skinLoading) {
                 visible = false;
                 enabled = false;
@@ -170,5 +169,8 @@ Window {
                 skinLoading = false;
             }
         }
+
+        onSkinLoadingChanged: hideMaybe()
+        onDataLoadingChanged: hideMaybe()
     }
 }
