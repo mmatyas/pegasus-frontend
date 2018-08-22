@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ FocusScope {
 
     signal showGamepadScreen()
     signal showSettingsScreen()
+    signal showHelpScreen()
     signal close()
 
     signal requestShutdown()
@@ -65,6 +66,17 @@ FocusScope {
             onActivated: {
                 focus = true;
                 root.showGamepadScreen();
+            }
+            selected: focus
+
+            KeyNavigation.down: mbHelp
+        }
+        PrimaryMenuItem {
+            id: mbHelp
+            text: qsTr("Help") + api.tr
+            onActivated: {
+                focus = true;
+                root.showHelpScreen();
             }
             selected: focus
 

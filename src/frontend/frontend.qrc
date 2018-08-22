@@ -4,6 +4,7 @@
         <file>MenuLayer.qml</file>
         <file>SplashLayer.qml</file>
         <file>menu/GamepadScreen.qml</file>
+        <file>menu/HelpScreen.qml</file>
         <file>menu/MainMenuPanel.qml</file>
         <file>menu/MenuScreen.qml</file>
         <file>menu/SettingsScreen.qml</file>
@@ -22,6 +23,8 @@
         <file>menu/gamepad/preview/PadTrigger.qml</file>
         <file>menu/gamepad/preview/PadShoulder.qml</file>
         <file>menu/gamepad/ConfigGroupLabel.qml</file>
+        <file>menu/help/QrBox.qml</file>
+        <file>menu/help/SectionTitle.qml</file>
         <file>menu/settings/MultivalueBox.qml</file>
         <file>menu/settings/MultivalueOption.qml</file>
         <file>menu/settings/ToggleOption.qml</file>
@@ -36,5 +39,6 @@
         <file>assets/pbar.png</file>
         <file>assets/pbar-right.png</file>
         <file>assets/pbar-left.png</file>
+        <file>assets/qr-docs.png</file>
     </qresource>
 </RCC>

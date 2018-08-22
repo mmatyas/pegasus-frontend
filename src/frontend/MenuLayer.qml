@@ -98,6 +98,7 @@ FocusScope {
 
         onShowSettingsScreen: openScreen("menu/SettingsScreen.qml")
         onShowGamepadScreen: openScreen("menu/GamepadScreen.qml")
+        onShowHelpScreen: openScreen("menu/HelpScreen.qml")
 
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
