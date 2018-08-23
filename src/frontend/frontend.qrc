@@ -25,6 +25,7 @@
         <file>menu/gamepad/ConfigGroupLabel.qml</file>
         <file>menu/help/QrBox.qml</file>
         <file>menu/help/SectionTitle.qml</file>
+        <file>menu/settings/FilePicker.qml</file>
         <file>menu/settings/MultivalueBox.qml</file>
         <file>menu/settings/MultivalueOption.qml</file>
         <file>menu/settings/ToggleOption.qml</file>
@@ -41,5 +42,6 @@
         <file>assets/pbar-left.png</file>
         <file>assets/qr-docs.png</file>
         <file>assets/qt-logo.png</file>
+        <file>assets/dir-icon.png</file>
     </qresource>
 </RCC>

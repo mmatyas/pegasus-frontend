@@ -65,7 +65,7 @@ MenuScreen {
     FocusScope {
         id: content
 
-        focus: true
+        //focus: true
 
         anchors.top: header.bottom
         anchors.topMargin: vpx(30)
@@ -162,5 +162,10 @@ MenuScreen {
     MultivalueBox {
         id: multivalbox
         onClosed: closeMultibox()
+    }
+
+
+    FilePicker {
+        focus: true
     }
 }
