@@ -44,11 +44,18 @@ MenuScreen {
         contentHeight: content.height
         clip: true
 
+        readonly property real maxContentY: Math.max(0, contentHeight - height)
+
+        focus: true
+        Keys.onUpPressed: if (0 < contentY) flick(0, 500)
+        Keys.onDownPressed: if (contentY < maxContentY) flick(0, -500)
+
         Column {
             id: content
             width: vpx(800)
 
             Column {
+                id: about
                 width: parent.width
 
                 SectionTitle {
@@ -70,6 +77,7 @@ MenuScreen {
             }
 
             Column {
+                id: help
                 width: parent.width
 
                 SectionTitle {
