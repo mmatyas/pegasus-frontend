@@ -76,5 +76,6 @@ FocusScope {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: activate()
+        cursorShape: Qt.PointingHandCursor
     }
 }

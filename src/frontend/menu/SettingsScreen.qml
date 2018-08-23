@@ -26,6 +26,12 @@ MenuScreen {
     Keys.onEscapePressed: close()
 
 
+    PegasusUtils.HorizSwipeArea {
+        anchors.fill: parent
+        onSwipeRight: close()
+    }
+
+
     Item {
         id: header
 
@@ -126,12 +132,9 @@ MenuScreen {
                     api.settings.fullscreen = checked;
                 }
             }
-        }
-    }
 
-    PegasusUtils.HorizSwipeArea {
-        anchors.fill: parent
-        onSwipeRight: close()
+
+        }
     }
 
 
