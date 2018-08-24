@@ -17,15 +17,36 @@
 
 #include "Settings.h"
 
+#include "GlobalSettings.h"
+#include "LocaleUtils.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
 
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QSet>
 #include <QSettings>
 
 
 namespace {
 
 const QLatin1String SETTINGSKEY_FULLSCREEN("fullscreen");
+
+void rewrite_gamedircfg(const std::function<void(QTextStream&)>& callback)
+{
+    const QString config_file_path = paths::writableConfigDir() + QStringLiteral("/game_dirs.txt");
+
+    QFile config_file(config_file_path);
+    if (!config_file.open(QFile::WriteOnly | QFile::Text)) {
+        qWarning().noquote() << tr_log("Failed to save game directory settings to `%1`")
+                                .arg(config_file_path);
+        return;
+    }
+
+    QTextStream stream(&config_file);
+    callback(stream);
+}
 
 } // namespace
 
@@ -66,6 +87,75 @@ void Settings::callScripts()
     using ScriptEvent = ScriptRunner::EventType;
     ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
+}
+
+QStringList Settings::gameDirs() const
+{
+    QSet<QString> dirset;
+    GlobalSettings::parse_gamedirs([&dirset](const QString& line){
+        dirset.insert(line);
+    });
+
+    QStringList dirlist;
+    for (const QString& dir : qAsConst(dirset))
+        dirlist.append(dir);
+
+    dirlist.sort();
+    return dirlist;
+}
+
+void Settings::addGameDir(QString path)
+{
+    const QFileInfo finfo(path);
+    if (!finfo.exists() || !finfo.isDir()) {
+        qWarning().noquote() << tr_log("Game directory `%1` not found, ignored").arg(path);
+        return;
+    }
+
+    QSet<QString> dirset;
+    GlobalSettings::parse_gamedirs([&dirset](const QString& line){
+        dirset.insert(line);
+    });
+
+
+    const auto count_before = dirset.count();
+    dirset << finfo.canonicalFilePath();
+    const auto count_after = dirset.count();
+
+    if (count_before == count_after) {
+        qWarning().noquote() << tr_log("Game directory `%1` already known, ignored").arg(path);
+        return;
+    }
+
+
+    rewrite_gamedircfg([&dirset](QTextStream& stream){
+        for (const QString& dir : qAsConst(dirset)) {
+            stream << dir << '\n';
+        }
+    });
+
+    emit gameDirsChanged();
+}
+
+void Settings::delGameDir(int idx)
+{
+    if (idx < 0)
+        return;
+
+    auto dirlist = gameDirs();
+    if (idx >= dirlist.count())
+        return;
+
+    dirlist.removeAt(idx);
+
+
+    rewrite_gamedircfg([&dirlist](QTextStream& stream){
+        for (const QString& dir : qAsConst(dirlist)) {
+            stream << dir << '\n';
+        }
+    });
+
+    emit gameDirsChanged();
 }
 
 } // namespace model

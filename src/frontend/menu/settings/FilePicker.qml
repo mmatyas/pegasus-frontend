@@ -23,7 +23,7 @@ FocusScope {
     id: root
 
     signal cancel
-    signal pick(string url)
+    signal pick(string dir_path)
 
     anchors.fill: parent
 
@@ -176,7 +176,7 @@ FocusScope {
 
             function pickItem() {
                 if (!fileIsDir) {
-                    root.pick(fileURL);
+                    root.pick(currentPathStr);
                     return;
                 }
 

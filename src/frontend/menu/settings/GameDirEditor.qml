@@ -86,7 +86,7 @@ FocusScope {
                 anchors.fill: parent
                 clip: true
 
-                model: 10
+                model: api.settings.gameDirs
                 delegate: listEntry
 
                 focus: true
@@ -188,7 +188,7 @@ FocusScope {
 
         onCancel: list.focus = true
         onPick: {
-            console.log(url);
+            api.settings.addGameDir(dir_path);
             list.focus = true;
         }
     }

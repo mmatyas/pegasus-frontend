@@ -44,8 +44,6 @@ private:
     QStringList m_game_dirs;
     const PegasusCollections collection_finder;
     const PegasusMetadata metadata_finder;
-
-    void load_game_dir_list();
 };
 
 } // namespace pegasus

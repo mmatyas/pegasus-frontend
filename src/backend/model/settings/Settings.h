@@ -35,6 +35,7 @@ class Settings : public QObject {
                NOTIFY fullscreenChanged)
     Q_PROPERTY(model::LocaleList* locales READ localesPtr CONSTANT)
     Q_PROPERTY(model::ThemeList* themes READ themesPtr CONSTANT)
+    Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
 
 public:
     explicit Settings(QObject* parent = nullptr);
@@ -42,11 +43,16 @@ public:
     bool fullscreen() const { return m_fullscreen; }
     void setFullscreen(bool);
 
+    QStringList gameDirs() const;
     LocaleList* localesPtr() { return &m_locales; }
     ThemeList* themesPtr() { return &m_themes; }
 
+    Q_INVOKABLE void addGameDir(QString);
+    Q_INVOKABLE void delGameDir(int idx);
+
 signals:
     void fullscreenChanged();
+    void gameDirsChanged();
 
 private slots:
     void callScripts();

@@ -18,6 +18,7 @@ SOURCES += \
     Utils.cpp \
     Paths.cpp \
     AppArgs.cpp \
+    GlobalSettings.cpp
 
 HEADERS += \
     Api.h \
@@ -36,6 +37,7 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppArgs.h \
+    GlobalSettings.h
 
 include(configfiles/configfiles.pri)
 include(platform/platform.pri)

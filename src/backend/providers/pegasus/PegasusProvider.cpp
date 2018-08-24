@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "GlobalSettings.h"
 
 #include <QDebug>
 #include <QFile>
@@ -32,29 +33,9 @@ namespace pegasus {
 PegasusProvider::PegasusProvider(QObject* parent)
     : Provider(parent)
 {
-    load_game_dir_list();
-}
-
-void PegasusProvider::load_game_dir_list()
-{
-    constexpr int LINE_MAX_LEN = 4096;
-
-    for (QString& path : paths::configDirs()) {
-        path += QStringLiteral("/game_dirs.txt");
-
-        QFile config_file(path);
-        if (!config_file.open(QFile::ReadOnly | QFile::Text))
-            continue;
-
-        qInfo().noquote() << tr_log("Found `%1`").arg(path);
-
-        QTextStream stream(&config_file);
-        QString line;
-        while (stream.readLineInto(&line, LINE_MAX_LEN)) {
-            if (!line.startsWith('#'))
-                add_game_dir(line);
-        }
-    }
+    GlobalSettings::parse_gamedirs([this](const QString& line){
+        add_game_dir(line);
+    });
 }
 
 void PegasusProvider::add_game_dir(const QString& dir_path)
@@ -66,6 +47,8 @@ void PegasusProvider::add_game_dir(const QString& dir_path)
     }
 
     m_game_dirs << entry.canonicalFilePath();
+
+    qInfo().noquote() << tr_log("Found `%1`").arg(m_game_dirs.last());
 }
 
 void PegasusProvider::findLists(HashMap<QString, modeldata::Game>& games,
