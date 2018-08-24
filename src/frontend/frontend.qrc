@@ -43,5 +43,8 @@
         <file>assets/qr-docs.png</file>
         <file>assets/qt-logo.png</file>
         <file>assets/dir-icon.png</file>
+        <file>menu/settings/SimpleButton.qml</file>
+        <file>menu/settings/GameDirEditor.qml</file>
+        <file>menu/settings/GameDirEditorButton.qml</file>
     </qresource>
 </RCC>

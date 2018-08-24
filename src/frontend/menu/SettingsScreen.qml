@@ -66,6 +66,7 @@ MenuScreen {
         id: content
 
         //focus: true
+        enabled: focus
 
         anchors.top: header.bottom
         anchors.topMargin: vpx(30)
@@ -131,9 +132,16 @@ MenuScreen {
                     focus = true;
                     api.settings.fullscreen = checked;
                 }
+
+                KeyNavigation.down: optEditGameDirs
             }
 
+            SimpleButton {
+                id: optEditGameDirs
 
+                label: qsTr("Set game directories...") + api.tr
+                onActivate: filePicker.focus = true
+            }
         }
     }
 
@@ -165,7 +173,12 @@ MenuScreen {
     }
 
 
-    FilePicker {
+    GameDirEditor {
+        id: gameDirEditor
         focus: true
+        /*visible: opacity > 0.01
+        opacity: focus ? 1.0 : 0.0
+        Behavior on opacity { PropertyAnimation { duration: 300 } }*/
+        onClose: optEditGameDirs.focus = true
     }
 }
