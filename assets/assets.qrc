@@ -18,5 +18,13 @@
         <file>fonts/Roboto.ttf</file>
         <file>fonts/RobotoCondensed.ttf</file>
         <file>icon.png</file>
+        <file>buttons/ps_circle.png</file>
+        <file>buttons/ps_cross.png</file>
+        <file>buttons/ps_square.png</file>
+        <file>buttons/ps_triangle.png</file>
+        <file>buttons/xb_a.png</file>
+        <file>buttons/xb_b.png</file>
+        <file>buttons/xb_x.png</file>
+        <file>buttons/xb_y.png</file>
     </qresource>
 </RCC>
