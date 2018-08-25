@@ -65,7 +65,7 @@ MenuScreen {
     FocusScope {
         id: content
 
-        //focus: true
+        focus: true
         enabled: focus
 
         anchors.top: header.bottom
@@ -140,7 +140,7 @@ MenuScreen {
                 id: optEditGameDirs
 
                 label: qsTr("Set game directories...") + api.tr
-                onActivate: filePicker.focus = true
+                onActivate: gameDirEditor.focus = true
             }
         }
     }
@@ -175,10 +175,12 @@ MenuScreen {
 
     GameDirEditor {
         id: gameDirEditor
-        focus: true
-        /*visible: opacity > 0.01
+
+        enabled: focus
+        visible: opacity > 0.01
         opacity: focus ? 1.0 : 0.0
-        Behavior on opacity { PropertyAnimation { duration: 300 } }*/
-        onClose: optEditGameDirs.focus = true
+        Behavior on opacity { PropertyAnimation { duration: 200 } }
+
+        onClose: content.focus = true
     }
 }
