@@ -47,8 +47,8 @@ public:
     LocaleList* localesPtr() { return &m_locales; }
     ThemeList* themesPtr() { return &m_themes; }
 
-    Q_INVOKABLE void addGameDir(QString);
-    Q_INVOKABLE void delGameDir(int idx);
+    Q_INVOKABLE void addGameDir(const QString&);
+    Q_INVOKABLE void removeGameDirs(const QVariantList&);
 
 signals:
     void fullscreenChanged();

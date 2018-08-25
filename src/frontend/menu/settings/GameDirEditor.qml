@@ -26,6 +26,49 @@ FocusScope {
     anchors.fill: parent
 
 
+    property var selectedIndices: [] // we don't have Set yet
+    function isSelected(index) {
+        return selectedIndices.indexOf(index) >= 0;
+    }
+    function toggleIndex(idx) {
+        var arrayIdx = selectedIndices.indexOf(idx);
+        if (arrayIdx > -1)
+            selectedIndices.splice(arrayIdx, 1);
+        else
+            selectedIndices.push(idx);
+
+        selectedIndicesChanged();
+    }
+
+
+    Timer {
+        readonly property real step: interval / 1000
+
+        id: deleteTimer
+        interval: 16
+        repeat: true
+        onTriggered: deletionPercent += step
+    }
+    property real deletionPercent: 0.0
+
+    function startDeletion() {
+        deletionPercent = 0.0;
+        deleteTimer.start();
+    }
+    function stopDeletion() {
+        deleteTimer.stop();
+        deletionPercent = 0.0;
+    }
+    onDeletionPercentChanged: {
+        if (deletionPercent < 1.0)
+            return;
+
+        stopDeletion();
+        api.settings.removeGameDirs(selectedIndices);
+        selectedIndices = [];
+    }
+
+
     Rectangle {
         id: shade
 
@@ -55,7 +98,6 @@ FocusScope {
             anchors.fill: parent
         }
 
-
         Text {
             id: info
 
@@ -81,6 +123,27 @@ FocusScope {
             width: parent.width - vpx(40)
             anchors.horizontalCenter: parent.horizontalCenter
 
+
+            Keys.onDeletePressed: {
+                if (event.isAutoRepeat)
+                    return;
+
+                if (list.focus && !root.isSelected(list.currentIndex))
+                    root.toggleIndex(list.currentIndex);
+
+                root.startDeletion();
+            }
+            Keys.onReleased: {
+                if (event.key !== Qt.Key_Delete)
+                    return;
+
+                event.accepted = true;
+                if (event.isAutoRepeat)
+                    return;
+
+                root.stopDeletion();
+            }
+
             ListView {
                 id: list
                 anchors.fill: parent
@@ -96,6 +159,18 @@ FocusScope {
                 highlightMoveDuration: 0
 
                 KeyNavigation.down: buttonAdd
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
+                        if (new_idx < 0)
+                            return;
+
+                        list.currentIndex = new_idx;
+                        root.toggleIndex(new_idx);
+                    }
+                }
             }
 
             Rectangle {
@@ -136,6 +211,9 @@ FocusScope {
                     image: "qrc:/buttons/ps_square.png"
                     text: qsTr("Remove selected") + api.tr
 
+                    onPress: root.startDeletion();
+                    onRelease: root.stopDeletion();
+
                     KeyNavigation.up: list
                 }
             }
@@ -146,11 +224,30 @@ FocusScope {
         id: listEntry
 
         Rectangle {
-            readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
+            readonly property bool highlighted: ListView.view.focus
+                                                && (ListView.isCurrentItem || mouseArea.containsMouse)
+            readonly property bool selected: root.isSelected(index)
 
             width: parent.width
             height: label.height
             color: highlighted ? "#585858" : "transparent"
+
+            Keys.onEnterPressed: root.toggleIndex(index)
+            Keys.onReturnPressed: root.toggleIndex(index)
+
+
+            Rectangle {
+                anchors.fill: parent
+                color: "#d55"
+                visible: parent.selected
+            }
+            Rectangle {
+                id: deleteFill
+                height: parent.height
+                width: parent.width * deletionPercent
+                color: "#924"
+                visible: parent.selected && deleteTimer.running && width > 0
+            }
 
             Text {
                 id: label

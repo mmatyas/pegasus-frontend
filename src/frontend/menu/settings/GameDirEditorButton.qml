@@ -30,6 +30,7 @@ Item {
     readonly property bool highlighted: focus || mMouse.containsMouse
 
     signal press
+    signal release
 
     width: mImage.width + mText.width + textSize
     height: textSize * 2.5
@@ -75,6 +76,7 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.press()
+        onPressed: root.press()
+        onReleased: root.release()
     }
 }

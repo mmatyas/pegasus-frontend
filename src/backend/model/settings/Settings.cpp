@@ -46,6 +46,7 @@ void rewrite_gamedircfg(const std::function<void(QTextStream&)>& callback)
 
     QTextStream stream(&config_file);
     callback(stream);
+    qInfo().noquote() << tr_log("Game directory list saved");
 }
 
 } // namespace
@@ -104,7 +105,7 @@ QStringList Settings::gameDirs() const
     return dirlist;
 }
 
-void Settings::addGameDir(QString path)
+void Settings::addGameDir(const QString& path)
 {
     const QFileInfo finfo(path);
     if (!finfo.exists() || !finfo.isDir()) {
@@ -137,16 +138,32 @@ void Settings::addGameDir(QString path)
     emit gameDirsChanged();
 }
 
-void Settings::delGameDir(int idx)
+void Settings::removeGameDirs(const QVariantList& idx_var_list)
 {
-    if (idx < 0)
-        return;
+    bool changed = false;
+
+    std::vector<int> idx_list;
+    for (const QVariant& idx_var : idx_var_list) {
+        bool valid_int = false;
+        const int idx = idx_var.toInt(&valid_int);
+        if (valid_int)
+            idx_list.push_back(idx);
+    }
+
+    idx_list.erase(std::unique(idx_list.begin(), idx_list.end()), idx_list.end());
+    std::sort(idx_list.rbegin(), idx_list.rend()); // to remove the largest index first
+
 
     auto dirlist = gameDirs();
-    if (idx >= dirlist.count())
-        return;
+    for (const int idx : idx_list) {
+        if (idx < 0 || dirlist.count() <= idx)
+            continue;
 
-    dirlist.removeAt(idx);
+        dirlist.removeAt(idx);
+        changed = true;
+    }
+    if (!changed)
+        return;
 
 
     rewrite_gamedircfg([&dirlist](QTextStream& stream){
