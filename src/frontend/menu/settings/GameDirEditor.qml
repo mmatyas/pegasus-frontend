@@ -93,6 +93,37 @@ FocusScope {
 
         anchors.centerIn: parent
 
+        // TODO: proper gamepad button mapping
+        Keys.onPressed: {
+            var do_remove = event.key === Qt.Key_Delete || event.key === Qt.Key_Control;
+            var do_add = event.key === Qt.Key_Shift;
+            if (!do_add && !do_remove)
+                return;
+
+            event.accepted = true;
+            if (event.isAutoRepeat)
+                return;
+
+            if (do_remove) {
+                if (list.focus && !root.isSelected(list.currentIndex))
+                    root.toggleIndex(list.currentIndex);
+
+                root.startDeletion();
+            }
+            if (do_add)
+                filePicker.focus = true;
+        }
+        Keys.onReleased: {
+            if (event.key !== Qt.Key_Delete && event.key !== Qt.Key_Control)
+                return;
+
+            event.accepted = true;
+            if (event.isAutoRepeat)
+                return;
+
+            root.stopDeletion();
+        }
+
 
         MouseArea {
             anchors.fill: parent
@@ -122,27 +153,6 @@ FocusScope {
             anchors.bottom: footer.top
             width: parent.width - vpx(40)
             anchors.horizontalCenter: parent.horizontalCenter
-
-
-            Keys.onDeletePressed: {
-                if (event.isAutoRepeat)
-                    return;
-
-                if (list.focus && !root.isSelected(list.currentIndex))
-                    root.toggleIndex(list.currentIndex);
-
-                root.startDeletion();
-            }
-            Keys.onReleased: {
-                if (event.key !== Qt.Key_Delete)
-                    return;
-
-                event.accepted = true;
-                if (event.isAutoRepeat)
-                    return;
-
-                root.stopDeletion();
-            }
 
             ListView {
                 id: list
