@@ -21,18 +21,19 @@ import QtQuick 2.6
 Item {
     id: root
 
-    property alias image: mImage.source
+    property alias image1: mImage1.source
+    property alias image2: mImage2.source
     property alias text: mText.text
 
     readonly property color textColor: "#fff"
     readonly property int textSize: vpx(20)
-    readonly property int textHPadding: textSize * 0.2
+    readonly property int textHPadding: textSize * 0.3
     readonly property bool highlighted: focus || mMouse.containsMouse
 
     signal press
     signal release
 
-    width: mImage.width + mText.width + textSize
+    width: mImage1.width * 2 + mText.width + textSize
     height: textSize * 2.5
 
     Keys.onEnterPressed: press()
@@ -50,13 +51,19 @@ Item {
         anchors.centerIn: parent
 
         Image {
-            id: mImage
+            id: mImage1
 
-            height: textSize * 1.75
+            height: textSize * 1.6
             width: height
             anchors.verticalCenter: parent.verticalCenter
         }
+        Image {
+            id: mImage2
 
+            height: mImage1.height
+            width: height
+            anchors.verticalCenter: parent.verticalCenter
+        }
         Text {
             id: mText
 

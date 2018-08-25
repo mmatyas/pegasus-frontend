@@ -208,7 +208,8 @@ FocusScope {
                 GameDirEditorButton {
                     id: buttonAdd
 
-                    image: "qrc:/buttons/ps_triangle.png"
+                    image1: "qrc:/buttons/xb_y.png"
+                    image2: "qrc:/buttons/ps_triangle.png"
                     text: qsTr("Add new") + api.tr
 
                     onPress: filePicker.focus = true
@@ -218,7 +219,8 @@ FocusScope {
                 GameDirEditorButton {
                     id: buttonDel
 
-                    image: "qrc:/buttons/ps_square.png"
+                    image1: "qrc:/buttons/xb_x.png"
+                    image2: "qrc:/buttons/ps_square.png"
                     text: qsTr("Remove selected") + api.tr
 
                     onPress: root.startDeletion();
