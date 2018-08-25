@@ -67,10 +67,11 @@ FocusScope {
 
 
     Rectangle {
+        id: shade
         anchors.fill: parent
         color: "#000"
 
-        opacity: 0.75
+        opacity: 0.3
 
         MouseArea {
             anchors.fill: parent
@@ -81,13 +82,10 @@ FocusScope {
 
 
     Rectangle {
-        height: parent.height * 0.95
+        height: parent.height * 0.9
         width: height * 1.5
-        color: "#222"
-
+        color: "#444"
         radius: vpx(8)
-        //border.width: vpx(2)
-        //border.color: "#ccc"
 
         anchors.centerIn: parent
 
@@ -113,54 +111,55 @@ FocusScope {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
-        Rectangle {
-            id: path
-            width: parent.width
-            height: pathText.height
-            color: "#111"
-
-            anchors.top: info.bottom
-
-            Text {
-                id: pathText
-                text: root.currentPathStr
-                width: parent.width
-
-                color: "#bbb"
-                font.family: globalFonts.sans
-                font.pixelSize: vpx(20)
-
-                lineHeight: 2.5
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: font.pixelSize; rightPadding: leftPadding
-                elide: Text.ElideMiddle
-            }
-        }
-        Rectangle {
-            width: parent.width
-            anchors.top: path.bottom
-            anchors.bottom: buttonHelp.top
-            color: "#333"
-            clip: true
-
-            ListView {
-                id: list
-                anchors.fill: parent
-
-                model: folderModel
-                delegate: fileDelegate
-
-                focus: true
-                highlightRangeMode: ListView.ApplyRange
-                preferredHighlightBegin: height * 0.5 - vpx(18) * 1.25
-                preferredHighlightEnd: height * 0.5 + vpx(18) * 1.25
-                highlightMoveDuration: 0
-            }
-        }
         Item {
-            id: buttonHelp
+            anchors.top: info.bottom
             anchors.bottom: parent.bottom
-            height: info.height
+            width: parent.width - vpx(30)
+            anchors.bottomMargin: vpx(15)
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Rectangle {
+                id: path
+                width: parent.width
+                height: pathText.height
+                color: "#222"
+
+                Text {
+                    id: pathText
+                    text: root.currentPathStr
+                    width: parent.width
+
+                    color: "#bbb"
+                    font.family: globalFonts.sans
+                    font.pixelSize: vpx(18)
+
+                    lineHeight: 2.5
+                    verticalAlignment: Text.AlignVCenter
+                    leftPadding: font.pixelSize; rightPadding: leftPadding
+                    elide: Text.ElideMiddle
+                }
+            }
+            Rectangle {
+                width: parent.width
+                anchors.top: path.bottom
+                anchors.bottom: parent.bottom
+                color: "#333"
+
+                ListView {
+                    id: list
+                    anchors.fill: parent
+                    clip: true
+
+                    model: folderModel
+                    delegate: fileDelegate
+
+                    focus: true
+                    highlightRangeMode: ListView.ApplyRange
+                    preferredHighlightBegin: height * 0.5 - vpx(18) * 1.25
+                    preferredHighlightEnd: height * 0.5 + vpx(18) * 1.25
+                    highlightMoveDuration: 0
+                }
+            }
         }
     }
 
@@ -170,7 +169,7 @@ FocusScope {
         Rectangle {
             readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
 
-            color: highlighted ? "#484848" : "transparent"
+            color: highlighted ? "#566" : "transparent"
             width: parent.width
             height: label.height
 
@@ -195,6 +194,7 @@ FocusScope {
                 }
 
                 folderModel.folder = fileURL;
+                list.currentIndex = 0;
             }
 
             Keys.onReturnPressed: pickItem()
@@ -202,16 +202,16 @@ FocusScope {
 
             Image {
                 id: icon
-                source: fileIsDir ? "qrc:/frontend/assets/dir-icon.png" : ""
+                source: fileIsDir ? "qrc:/frontend/assets/dir-icon.png" : "";
 
                 fillMode: Image.PreserveAspectFit
-                height: parent.height * 0.8
+                height: parent.height * 0.75
                 width: height
 
                 anchors.left: parent.left
                 anchors.leftMargin: parent.height * 0.5
                 anchors.top: parent.top
-                anchors.topMargin: parent.height * 0.06
+                anchors.topMargin: parent.height * 0.08
             }
 
             Text {
@@ -237,6 +237,7 @@ FocusScope {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: pickItem()
+                cursorShape: Qt.PointingHandCursor
             }
         }
     }
