@@ -148,11 +148,12 @@ FocusScope {
             wrapMode: Text.WordWrap
         }
 
-        Item {
+        Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
             width: parent.width - vpx(40)
             anchors.horizontalCenter: parent.horizontalCenter
+            color: "#333"
 
             ListView {
                 id: list
@@ -181,14 +182,6 @@ FocusScope {
                         root.toggleIndex(new_idx);
                     }
                 }
-            }
-
-            Rectangle {
-                color: "transparent"
-                border.width: vpx(1)
-                border.color: "#aaa"
-
-                anchors.fill: parent
             }
         }
 

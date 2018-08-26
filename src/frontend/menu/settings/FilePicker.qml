@@ -98,7 +98,7 @@ FocusScope {
             id: info
             text: "Select a collection file below (collections.pegasus.txt or collections.txt).\n"
                 + "The directory of the file will then be added to the list."
-            color: "#ee8"
+            color: "#ee4"
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
             lineHeight: 1.15
