@@ -1,6 +1,6 @@
 #include "FolderListModel.h"
 
-#include <QDebug>
+#include <QStandardPaths>
 
 
 namespace {
@@ -9,6 +9,12 @@ void remove_if(QFileInfoList& list, const std::function<bool(const QFileInfo&)>&
     const auto start_it = std::remove_if(list.begin(), list.end(), predicate);
     list.erase(start_it, list.end());
 }
+#ifdef Q_OS_ANDROID
+QString android_sdcard_path()
+{
+    return QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).constFirst();
+}
+#endif
 } // namespace
 
 
@@ -20,7 +26,12 @@ FolderListEntry::FolderListEntry(QString name, bool is_dir)
 
 FolderListModel::FolderListModel(QObject* parent)
     : QAbstractListModel(parent)
-    , m_dir(QDir::root())
+#ifdef Q_OS_ANDROID
+    // it seems on Android the root is not readable
+    , m_dir(android_sdcard_path())
+#else
+    , m_dir(QDir::home())
+#endif
     , m_role_names({
         { EntryName, "name" },
         { EntryIsDir, "isDir" },
@@ -71,7 +82,10 @@ void FolderListModel::cd(const QString& dirName)
         });
 
         // adding dotdot manually to avoid getting stuck in the file system
-        m_files.emplace_back(QStringLiteral(".."), true);
+#ifdef Q_OS_ANDROID
+        if (m_dir_path != android_sdcard_path())
+#endif
+            m_files.emplace_back(QStringLiteral(".."), true);
 
         for (const auto& fi : qAsConst(filist))
             m_files.emplace_back(fi.fileName(), fi.isDir());
