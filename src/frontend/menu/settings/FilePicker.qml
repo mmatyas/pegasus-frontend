@@ -16,7 +16,7 @@
 
 
 import QtQuick 2.8
-import Qt.labs.folderlistmodel 2.2
+import Pegasus.FolderListModel 1.0
 
 
 FocusScope {
@@ -27,42 +27,13 @@ FocusScope {
 
     anchors.fill: parent
 
-    property string currentPathStr: ""
-    function setCurrentPathStr(path) {
-        var begin = 0;
-        var end = path.length;
-
-        var filePrefix = "file://";
-        if (path.startsWith(filePrefix))
-            begin += filePrefix.length;
-
-        if (path.endsWith("/."))
-            end -= 2;
-
-        if (path.endsWith("/..")) {
-            var lastSlash = path.lastIndexOf("/");
-            end = path.lastIndexOf("/", lastSlash - 1);
-        }
-
-        currentPathStr = path.substring(begin, end);
-    }
-
 
     FolderListModel {
         id: folderModel
-
-        showDirs: true
-        showDirsFirst: true
-        showDotAndDotDot: true
-        showOnlyReadable: true
-
         nameFilters: [
             "collections.pegasus.txt",
             "collections.txt",
         ]
-
-        Component.onCompleted: setCurrentPathStr(folder.toString())
-        onFolderChanged: setCurrentPathStr(folder.toString())
     }
 
 
@@ -126,7 +97,7 @@ FocusScope {
 
                 Text {
                     id: pathText
-                    text: root.currentPathStr
+                    text: folderModel.folder
                     width: parent.width
 
                     color: "#bbb"
@@ -174,27 +145,12 @@ FocusScope {
             height: label.height
 
             function pickItem() {
-                if (!fileIsDir) {
-                    root.pick(currentPathStr);
+                if (!isDir) {
+                    root.pick(folderModel.folder);
                     return;
                 }
 
-                if (fileName == ".")
-                    return;
-
-                if (fileName == "..") {
-                    var path = folderModel.parentFolder;
-
-                    var pathStr = path.toString();
-                    if (pathStr.length === 0 || pathStr === "file:")
-                        return;
-
-                    folderModel.folder = path;
-                    return;
-                }
-
-                folderModel.folder = fileURL;
-                list.currentIndex = 0;
+                folderModel.cd(name);
             }
 
             Keys.onReturnPressed: pickItem()
@@ -202,7 +158,7 @@ FocusScope {
 
             Image {
                 id: icon
-                source: fileIsDir ? "qrc:/frontend/assets/dir-icon.png" : "";
+                source: isDir ? "qrc:/frontend/assets/dir-icon.png" : "";
 
                 fillMode: Image.PreserveAspectFit
                 height: parent.height * 0.75
@@ -216,12 +172,12 @@ FocusScope {
 
             Text {
                 id: label
-                text: fileName
+                text: name
                 verticalAlignment: Text.AlignVCenter
                 lineHeight: 2.5
 
                 color: "#eee"
-                font.bold: !fileIsDir
+                font.bold: !isDir
                 font.family: globalFonts.sans
                 font.pixelSize: vpx(18)
 

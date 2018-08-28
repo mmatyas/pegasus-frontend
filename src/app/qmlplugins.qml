@@ -30,7 +30,5 @@ import QtGamepad 1.0
 import QtGraphicalEffects 1.0
 import QtMultimedia 5.8
 
-import Qt.labs.folderlistmodel 2.2
-
 
 Item {}

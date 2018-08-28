@@ -22,6 +22,7 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
+#include "utils/FolderListModel.h"
 
 #include <QDebug>
 #include <QDir>
@@ -84,6 +85,9 @@ void register_api_classes()
     // backend classes
     qRegisterMetaType<QVector<model::Collection*>>();
     qRegisterMetaType<QVector<model::Game*>>();
+
+    // QML utilities
+    qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
 }
 
 } // namespace
