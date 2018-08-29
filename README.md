@@ -109,6 +109,7 @@ Pegasus is a free and open source project, and will remain as one. If you would 
 
 [![PayPal](https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png)](https://paypal.me/MatyasMustoha)
 [![Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/mmatyas/donate)
+[![Patreon](etc/promo/patreon.png)](https://www.patreon.com/mmatyas)
 
 
 
