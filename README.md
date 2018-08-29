@@ -12,10 +12,10 @@ Pegasus is a graphical frontend for browsing your game library and launching all
 [![Codacy status](https://api.codacy.com/project/badge/Grade/716566e918a64b0fb20959c02779bbd2)](https://www.codacy.com/app/mmatyas/pegasus-frontend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mmatyas/pegasus-frontend&amp;utm_campaign=Badge_Grade)
 [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.md)
 
+- [**Main website**](http://pegasus-frontend.org)
 - [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
 - [Latest automatic builds][gh ci builds]
   - Debian/Ubuntu repository: [see below](#installation)
-- [Main website](http://pegasus-frontend.org)
 
 
 ## Features
@@ -78,7 +78,7 @@ git submodule update --init
 
 **Building**
 
-You can use any Qt-compatible IDEs, eg. Qt Creator to build the project, or you can manually invoke
+You can use any Qt-compatible IDEs, eg. Qt Creator to build the project, or you can manually invoke:
 
 ```sh
 mkdir build && cd build
