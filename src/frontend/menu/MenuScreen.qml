@@ -23,7 +23,7 @@ FocusScope {
 
     signal close()
 
-    visible: x < parent.width
+    visible: x < globalWidth
 
 
     Rectangle {

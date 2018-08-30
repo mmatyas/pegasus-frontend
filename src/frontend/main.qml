@@ -36,8 +36,10 @@ Window {
         api.system.quit();
     }
 
+    readonly property int globalWidth: appWindow.width
+    readonly property int globalHeight: appWindow.height
     // provide relative pixel value calculation, for convenience
-    property real winScale: Math.min(width / 1280.0, height / 720.0)
+    readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
     function vpx(value) {
         return winScale * value;
     }
