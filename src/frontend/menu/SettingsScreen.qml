@@ -153,12 +153,6 @@ MenuScreen {
 
     GameDirEditor {
         id: gameDirEditor
-
-        enabled: focus
-        visible: opacity > 0.01
-        opacity: focus ? 1.0 : 0.0
-        Behavior on opacity { PropertyAnimation { duration: 200 } }
-
         onClose: content.focus = true
     }
 }

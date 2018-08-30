@@ -25,6 +25,11 @@ FocusScope {
 
     anchors.fill: parent
 
+    enabled: focus
+    visible: opacity > 0.001
+    opacity: focus ? 1.0 : 0.0
+    Behavior on opacity { PropertyAnimation { duration: 150 } }
+
 
     property var selectedIndices: [] // we don't have Set yet
     function isSelected(index) {
