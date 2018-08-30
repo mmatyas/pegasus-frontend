@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtGraphicalEffects 1.0
-import QtQuick 2.7
+import QtQuick 2.6
 
 
 FocusScope {
@@ -24,116 +23,125 @@ FocusScope {
 
     property alias model: list.model
     property alias index: list.currentIndex
-    // seems like I can't disconnect anonymous functions from signals,
-    // so I'm using some old-fashioned callbacks here -- it just works
-    property var onChangeCallback: function(){}
 
-    signal closed()
-    function chooseCurrent() {
-        onChangeCallback();
-        closed();
-    }
-    Keys.onEscapePressed: closed()
-    Keys.onReturnPressed: chooseCurrent()
-    Keys.onEnterPressed: chooseCurrent()
+    readonly property int textSize: vpx(22)
+    readonly property int itemHeight: 2.25 * textSize
 
+    signal close
+    signal select(int index)
 
-    width: vpx(280)
-    height: parent.height
+    anchors.fill: parent
+    enabled: focus
+    visible: focus || animClosing.running
 
-    anchors.left: parent.right
-    anchors.rightMargin: height * 0.04
-    visible: x < parent.width
+    Keys.onEscapePressed: close()
+    Keys.onReturnPressed: { select(index); close(); }
+    Keys.onEnterPressed: { select(index); close(); }
 
-    property real textSize: vpx(22)
-    property real itemHeight: 2.25 * textSize
-
-    // center the list on the initially selected item
-    onIndexChanged: {
-        if (index > 0) {
-            list.positionViewAtIndex(index, ListView.Center);
-        }
+    Component.onCompleted: {
+        if (list.currentIndex > 0)
+            list.positionViewAtIndex(list.currentIndex, ListView.Center);
     }
 
-    // to make the list items visible during the transition,
-    // this is called at the animation's end only
-    function reset() {
-        if (!visible) {
-            model = undefined;
-            index = -1;
-            onChangeCallback = function(){}
-        }
-    }
-
-
-    MouseArea {
-        // do not "leak" mouse events from the panel
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: if (mouse.button === Qt.RightButton) closed();
-    }
 
     Rectangle {
-        id: listContainer
-        color: "#eee"
+        id: shade
 
-        width: parent.width
+        anchors.fill: parent
+        color: "#000"
+
+        opacity: parent.focus ? 0.3 : 0.0
+        Behavior on opacity { PropertyAnimation { duration: 150 } }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: root.close()
+        }
+    }
+
+
+    Rectangle {
+        id: box
+
+        width: vpx(280)
         height: parent.height * 0.84
+        anchors.verticalCenter: parent.verticalCenter
+
+        anchors.left: parent.right
+        anchors.rightMargin: height * 0.04
+        visible: x < parent.width
+
+        color: "#eee"
         radius: vpx(8)
-        anchors.centerIn: parent
 
-        ListView {
-            id: list
+        MouseArea {
+            anchors.fill: parent
+        }
 
-            focus: true
+        Item {
+            anchors.fill: parent
+            anchors.topMargin: parent.radius
+            anchors.bottomMargin: parent.radius
+            clip: true
 
-            width: parent.width
-            height: Math.min(count * itemHeight, parent.height)
-            anchors.centerIn: parent
+            ListView {
+                id: list
+                focus: true
 
-            delegate: listItem
-            snapMode: ListView.SnapOneItem
-            highlightMoveDuration: 175
+                width: parent.width
+                height: Math.min(count * itemHeight, parent.height)
+                anchors.verticalCenter: parent.verticalCenter
 
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton
-                onClicked: {
-                    list.currentIndex = list.indexAt(mouse.x, mouse.y);
-                    chooseCurrent();
+                delegate: listItem
+
+                snapMode: ListView.SnapOneItem
+                highlightMoveDuration: 150
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
+                        if (new_idx < 0)
+                            return;
+
+                        list.currentIndex = new_idx;
+                        root.select(new_idx);
+                    }
+                    cursorShape: Qt.PointingHandCursor
                 }
             }
         }
 
-        Component {
-            id: listItem
+    }
 
-            Rectangle {
-                property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
+    Component {
+        id: listItem
 
-                width: ListView.view.width
-                height: root.itemHeight
-                color: highlighted ? "#dedede" : "#eee"
+        Rectangle {
+            readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
 
-                Text {
-                    id: label
+            width: ListView.view.width
+            height: root.itemHeight
+            color: highlighted ? "#dedede" : "#eee"
 
-                    anchors.right: parent.right
-                    anchors.rightMargin: vpx(24)
-                    anchors.verticalCenter: parent.verticalCenter
+            Text {
+                id: label
 
-                    text: modelData.name
-                    color: "#444"
-                    font.pixelSize: root.textSize
-                    font.family: globalFonts.sans
-                    horizontalAlignment: Text.AlignRight
-                }
+                anchors.right: parent.right
+                anchors.rightMargin: vpx(24)
+                anchors.verticalCenter: parent.verticalCenter
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                }
+                text: modelData.name
+                color: "#444"
+                font.pixelSize: root.textSize
+                font.family: globalFonts.sans
+            }
+
+            MouseArea {
+                id: mouseArea
+                anchors.fill: parent
+                hoverEnabled: true
             }
         }
     }
@@ -143,9 +151,9 @@ FocusScope {
         name: "open"
         when: root.activeFocus
         AnchorChanges {
-            target: root
+            target: box
             anchors.left: undefined
-            anchors.right: root.parent.right
+            anchors.right: root.right
         }
     }
 
@@ -161,13 +169,12 @@ FocusScope {
             }
         },
         Transition {
+            id: animClosing
             from: "open"; to: ""
             AnchorAnimation {
                 duration: 150
                 easing { type: Easing.Bezier; bezierCurve: bezierSharp }
             }
-
-            onRunningChanged: if (!running) reset()
         }
     ]
 }

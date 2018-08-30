@@ -87,14 +87,7 @@ MenuScreen {
 
                 onActivate: {
                     focus = true;
-                    multivalbox.model = api.settings.locales.model;
-                    multivalbox.index = api.settings.locales.index;
-                    multivalbox.onChangeCallback = function() {
-                        api.settings.locales.index = multivalbox.index;
-                    };
-
-                    content.enabled = false;
-                    multivalbox.focus = true;
+                    localeBox.focus = true;
                 }
 
                 KeyNavigation.down: optTheme
@@ -108,14 +101,7 @@ MenuScreen {
 
                 onActivate: {
                     focus = true;
-                    multivalbox.model = api.settings.themes.model;
-                    multivalbox.index = api.settings.themes.index;
-                    multivalbox.onChangeCallback = function() {
-                        api.settings.themes.index = multivalbox.index;
-                    };
-
-                    content.enabled = false;
-                    multivalbox.focus = true;
+                    themeBox.focus = true;
                 }
 
                 KeyNavigation.down: optFullscreen
@@ -146,32 +132,24 @@ MenuScreen {
     }
 
 
-    function closeMultibox() {
-        content.enabled = true;
-        content.focus = true;
-    }
-    Rectangle {
-        // shade for MultivalueBox
+    MultivalueBox {
+        id: localeBox
 
-        anchors.fill: parent
-        color: "#000"
+        model: api.settings.locales.model
+        index: api.settings.locales.index
 
-        opacity: multivalbox.visible ? 0.3 : 0.0
-        visible: opacity > 0.0
-
-        Behavior on opacity { PropertyAnimation { duration: 150 } }
-
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onClicked: closeMultibox()
-        }
+        onClose: content.focus = true
+        onSelect: api.settings.locales.index = index
     }
     MultivalueBox {
-        id: multivalbox
-        onClosed: closeMultibox()
-    }
+        id: themeBox
 
+        model: api.settings.themes.model
+        index: api.settings.themes.index
+
+        onClose: content.focus = true
+        onSelect: api.settings.themes.index = index
+    }
 
     GameDirEditor {
         id: gameDirEditor
