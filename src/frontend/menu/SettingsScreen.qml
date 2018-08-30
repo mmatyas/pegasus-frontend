@@ -73,9 +73,15 @@ MenuScreen {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width * 0.7
 
+
         Column {
             anchors.fill: parent
             spacing: vpx(5)
+
+            SectionTitle {
+                text: qsTr("General") + api.tr
+                first: true
+            }
 
             MultivalueOption {
                 id: optLanguage
@@ -120,6 +126,10 @@ MenuScreen {
                 }
 
                 KeyNavigation.down: optEditGameDirs
+            }
+
+            SectionTitle {
+                text: qsTr("Gaming") + api.tr
             }
 
             SimpleButton {

@@ -46,5 +46,6 @@
         <file>menu/settings/SimpleButton.qml</file>
         <file>menu/settings/GameDirEditor.qml</file>
         <file>menu/settings/GameDirEditorButton.qml</file>
+        <file>menu/settings/SectionTitle.qml</file>
     </qresource>
 </RCC>
