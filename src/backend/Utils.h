@@ -33,6 +33,9 @@ bool validFile(const QString& path);
 /// Mathematical modulo -- the result has the same sign as the divisor
 inline int mathMod(int a, int n) { return (a % n + n) % n; }
 
+bool is_str_bool(const QString&);
+bool str_to_bool(const QString&, const bool default_val = false);
+
 
 // Index shifting
 enum class IndexShiftDirection : unsigned char {

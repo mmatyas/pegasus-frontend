@@ -26,6 +26,18 @@
 #endif
 
 
+namespace {
+const HashMap<QString, const bool> str_to_bool_map {
+    { QStringLiteral("yes"), true },
+    { QStringLiteral("on"), true },
+    { QStringLiteral("true"), true },
+    { QStringLiteral("no"), false },
+    { QStringLiteral("off"), false },
+    { QStringLiteral("false"), false },
+};
+} // namespace
+
+
 bool validExtPath(const QString& path) {
 #ifdef Q_OS_UNIX
     // fast posix check for unix systems
@@ -41,6 +53,20 @@ bool validFile(const QString& path)
 {
     QFileInfo file(path);
     return file.exists() && file.isFile();
+}
+
+bool is_str_bool(const QString& str)
+{
+    return str_to_bool_map.count(str.toLower());
+}
+
+bool str_to_bool(const QString& str, const bool default_val)
+{
+    const auto it = str_to_bool_map.find(str.toLower());
+    if (it != str_to_bool_map.cend())
+        return it->second;
+
+    return default_val;
 }
 
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)

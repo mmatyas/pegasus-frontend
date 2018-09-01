@@ -23,4 +23,16 @@ struct AppArgs {
     static bool portable_mode;
     /// Do not write to stdout
     static bool silent;
+
+    /// Run in full screen mode
+    static bool fullscreen;
+
+    /// Enable EmulationStation 2 support
+    static bool enable_provider_es2;
+    /// Enable Steam support
+    static bool enable_provider_steam;
+
+
+    static void load_config();
+    static void save_config();
 };

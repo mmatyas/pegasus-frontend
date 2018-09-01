@@ -40,6 +40,8 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("pegasus-frontend"));
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
+
+    AppArgs::load_config();
     handleCommandLineArgs(app);
 
     backend::AppContext context;

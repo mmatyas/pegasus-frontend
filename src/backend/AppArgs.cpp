@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,122 @@
 
 #include "AppArgs.h"
 
+#include "ConfigFile.h"
+#include "LocaleUtils.h"
+#include "Paths.h"
+#include "Utils.h"
+#include "utils/HashMap.h"
+
+#include <QDebug>
+#include <QFile>
+#include <QTextStream>
+
+
+namespace {
+QString config_path()
+{
+    return paths::writableConfigDir() + QStringLiteral("/settings.txt");
+}
+
+enum class ConfigEntryType : unsigned char {
+    FULLSCREEN,
+    ENABLE_ES2,
+    ENABLE_STEAM,
+};
+struct ConfigEntryMap {
+    const HashMap<const ConfigEntryType, const QString> type_to_str {
+        { ConfigEntryType::FULLSCREEN, QStringLiteral("general.fullscreen") },
+        { ConfigEntryType::ENABLE_ES2, QStringLiteral("providers.enable-es2") },
+        { ConfigEntryType::ENABLE_STEAM, QStringLiteral("providers.enable-steam") },
+    };
+    HashMap<QString, const ConfigEntryType> str_to_type;
+
+    ConfigEntryMap() {
+        for (const auto& entry : type_to_str)
+            str_to_type.emplace(entry.second, entry.first);
+    }
+};
+} // namespace
+
 
 bool AppArgs::portable_mode = false;
 bool AppArgs::silent = false;
+bool AppArgs::fullscreen = true;
+bool AppArgs::enable_provider_es2 = true;
+bool AppArgs::enable_provider_steam = true;
+
+
+void AppArgs::load_config()
+{
+    const auto config_path = ::config_path();
+    const ConfigEntryMap config_entry_map;
+
+
+    const auto on_error = [&](const int lineno, const QString msg){
+        qWarning().noquote()
+            << tr_log("`%1`, line %2: %3").arg(config_path, QString::number(lineno), msg);
+    };
+
+    const auto on_attribute = [&](const int lineno, const QString key, const QString val){
+        const auto entry_type = config_entry_map.str_to_type.find(key);
+        if (entry_type == config_entry_map.str_to_type.cend()) {
+            on_error(lineno, tr_log("unrecognized option `%1`, ignored").arg(key));
+            return;
+        }
+        switch (entry_type->second) {
+            case ConfigEntryType::FULLSCREEN:
+            case ConfigEntryType::ENABLE_ES2:
+            case ConfigEntryType::ENABLE_STEAM:
+                if (!::is_str_bool(val)) {
+                    on_error(lineno, QStringLiteral("this option requires a boolean (true/false) value"));
+                    return;
+                }
+        }
+        switch (entry_type->second) {
+            case ConfigEntryType::FULLSCREEN:
+                fullscreen = ::str_to_bool(val, fullscreen);
+                break;
+            case ConfigEntryType::ENABLE_ES2:
+                enable_provider_es2 = ::str_to_bool(val, enable_provider_es2);
+                break;
+            case ConfigEntryType::ENABLE_STEAM:
+                enable_provider_steam = ::str_to_bool(val, enable_provider_steam);
+                break;
+        }
+    };
+
+    config::readFile(config_path, on_attribute, on_error);
+    qInfo().noquote() << tr_log("Program settings loaded");
+}
+
+void AppArgs::save_config()
+{
+    const auto config_path = ::config_path();
+    const ConfigEntryMap config_entry_map;
+
+    constexpr auto TRUE_STR = "true";
+    constexpr auto FALSE_STR = "false";
+
+    QFile config_file(config_path);
+    if (!config_file.open(QFile::WriteOnly | QFile::Text)) {
+        qWarning().noquote() << tr_log("Failed to save program settings to `%1`")
+                                .arg(config_path);
+        return;
+    }
+
+    const HashMap<ConfigEntryType, bool> bool_map {
+        { ConfigEntryType::FULLSCREEN, fullscreen },
+        { ConfigEntryType::ENABLE_ES2, enable_provider_es2 },
+        { ConfigEntryType::ENABLE_STEAM, enable_provider_steam },
+    };
+
+    QTextStream stream(&config_file);
+    for (const auto& entry : bool_map) {
+        stream << config_entry_map.type_to_str.at(entry.first)
+               << QLatin1String(": ")
+               << (entry.second ? TRUE_STR : FALSE_STR)
+               << '\n';
+    }
+
+    qInfo().noquote() << tr_log("Program settings saved");
+}
