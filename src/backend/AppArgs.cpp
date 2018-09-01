@@ -41,7 +41,7 @@ enum class ConfigEntryType : unsigned char {
     ENABLE_STEAM,
 };
 struct ConfigEntryMap {
-    const HashMap<const ConfigEntryType, const QString> type_to_str {
+    const HashMap<const ConfigEntryType, const QString, EnumHash> type_to_str {
         { ConfigEntryType::FULLSCREEN, QStringLiteral("general.fullscreen") },
         { ConfigEntryType::ENABLE_ES2, QStringLiteral("providers.enable-es2") },
         { ConfigEntryType::ENABLE_STEAM, QStringLiteral("providers.enable-steam") },
@@ -122,7 +122,7 @@ void AppArgs::save_config()
     constexpr auto TRUE_STR = "true";
     constexpr auto FALSE_STR = "false";
 
-    const HashMap<ConfigEntryType, bool> bool_map {
+    const HashMap<ConfigEntryType, const bool, EnumHash> bool_map {
         { ConfigEntryType::FULLSCREEN, fullscreen },
         { ConfigEntryType::ENABLE_ES2, enable_provider_es2 },
         { ConfigEntryType::ENABLE_STEAM, enable_provider_steam },
