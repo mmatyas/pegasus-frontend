@@ -31,8 +31,6 @@
 
 namespace {
 
-const QLatin1String SETTINGSKEY_FULLSCREEN("fullscreen");
-
 void rewrite_gamedircfg(const std::function<void(QTextStream&)>& callback)
 {
     const QString config_file_path = paths::writableConfigDir() + QStringLiteral("/game_dirs.txt");
@@ -59,9 +57,6 @@ Settings::Settings(QObject* parent)
     , m_locales(this)
     , m_themes(this)
 {
-    m_fullscreen = QSettings(paths::configIniPath(), QSettings::IniFormat)
-                   .value(SETTINGSKEY_FULLSCREEN, true).toBool();
-
     connect(&m_locales, &LocaleList::localeChanged,
             this, &Settings::callScripts);
     connect(&m_themes, &ThemeList::themeChanged,
@@ -73,14 +68,13 @@ Settings::Settings(QObject* parent)
 
 void Settings::setFullscreen(bool new_val)
 {
-    if (new_val != m_fullscreen) {
-        m_fullscreen = new_val;
+    if (new_val == AppArgs::fullscreen)
+        return;
 
-        QSettings settings(paths::configIniPath(), QSettings::IniFormat);
-        settings.setValue(SETTINGSKEY_FULLSCREEN, m_fullscreen);
+    AppArgs::fullscreen = new_val;
+    AppArgs::save_config();
 
-        emit fullscreenChanged();
-    }
+    emit fullscreenChanged();
 }
 
 void Settings::callScripts()

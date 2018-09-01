@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "AppArgs.h"
 #include "LocaleList.h"
 #include "ThemeList.h"
 
@@ -40,7 +41,7 @@ class Settings : public QObject {
 public:
     explicit Settings(QObject* parent = nullptr);
 
-    bool fullscreen() const { return m_fullscreen; }
+    bool fullscreen() const { return AppArgs::fullscreen; }
     void setFullscreen(bool);
 
     QStringList gameDirs() const;
@@ -58,8 +59,6 @@ private slots:
     void callScripts();
 
 private:
-    bool m_fullscreen;
-
     LocaleList m_locales;
     ThemeList m_themes;
 };
