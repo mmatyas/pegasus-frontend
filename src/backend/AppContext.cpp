@@ -79,6 +79,8 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);
     qmlRegisterUncreatableType<model::Theme>(API_URI, 0, 6, "Theme", error_msg);
     qmlRegisterUncreatableType<model::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
+    qmlRegisterUncreatableType<model::Provider>(API_URI, 0, 9, "Provider", error_msg);
+    qmlRegisterUncreatableType<model::ProviderList>(API_URI, 0, 9, "ProviderList", error_msg);
     qmlRegisterUncreatableType<model::Filter>(API_URI, 0, 8, "Filter", error_msg);
     qmlRegisterUncreatableType<model::Filters>(API_URI, 0, 8, "Filters", error_msg);
 

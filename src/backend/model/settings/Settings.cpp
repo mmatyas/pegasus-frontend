@@ -56,6 +56,7 @@ Settings::Settings(QObject* parent)
     : QObject(parent)
     , m_locales(this)
     , m_themes(this)
+    , m_providers(this)
 {
     connect(&m_locales, &LocaleList::localeChanged,
             this, &Settings::callScripts);

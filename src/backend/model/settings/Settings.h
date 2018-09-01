@@ -20,6 +20,7 @@
 #include "AppArgs.h"
 #include "LocaleList.h"
 #include "ThemeList.h"
+#include "ProviderList.h"
 
 #include <QObject>
 
@@ -31,11 +32,11 @@ class Settings : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(bool fullscreen
-               READ fullscreen
-               WRITE setFullscreen
+               READ fullscreen WRITE setFullscreen
                NOTIFY fullscreenChanged)
     Q_PROPERTY(model::LocaleList* locales READ localesPtr CONSTANT)
     Q_PROPERTY(model::ThemeList* themes READ themesPtr CONSTANT)
+    Q_PROPERTY(model::ProviderList* providers READ providersPtr CONSTANT)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
 
 public:
@@ -47,6 +48,7 @@ public:
     QStringList gameDirs() const;
     LocaleList* localesPtr() { return &m_locales; }
     ThemeList* themesPtr() { return &m_themes; }
+    ProviderList* providersPtr() { return &m_providers; }
 
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
@@ -61,6 +63,7 @@ private slots:
 private:
     LocaleList m_locales;
     ThemeList m_themes;
+    ProviderList m_providers;
 };
 
 } // namespace model

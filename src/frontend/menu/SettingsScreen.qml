@@ -138,6 +138,13 @@ MenuScreen {
                 label: qsTr("Set game directories...") + api.tr
                 onActivate: gameDirEditor.focus = true
             }
+
+            SimpleButton {
+                id: optEditProviders
+
+                label: qsTr("Data sources...") + api.tr
+                onActivate: providerEditor.focus = true
+            }
         }
     }
 
@@ -163,6 +170,10 @@ MenuScreen {
 
     GameDirEditor {
         id: gameDirEditor
+        onClose: content.focus = true
+    }
+    ProviderEditor {
+        id: providerEditor
         onClose: content.focus = true
     }
 }
