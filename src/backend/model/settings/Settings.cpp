@@ -62,9 +62,6 @@ Settings::Settings(QObject* parent)
             this, &Settings::callScripts);
     connect(&m_themes, &ThemeList::themeChanged,
             this, &Settings::callScripts);
-
-    connect(this, &Settings::fullscreenChanged,
-            this, &Settings::callScripts);
 }
 
 void Settings::setFullscreen(bool new_val)

@@ -20,6 +20,7 @@
 #include "ConfigFile.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "ScriptRunner.h"
 #include "Utils.h"
 #include "utils/HashMap.h"
 
@@ -108,10 +109,6 @@ void AppArgs::load_config()
 void AppArgs::save_config()
 {
     const auto config_path = ::config_path();
-    const ConfigEntryMap config_entry_map;
-
-    constexpr auto TRUE_STR = "true";
-    constexpr auto FALSE_STR = "false";
 
     QFile config_file(config_path);
     if (!config_file.open(QFile::WriteOnly | QFile::Text)) {
@@ -119,6 +116,11 @@ void AppArgs::save_config()
                                 .arg(config_path);
         return;
     }
+
+
+    const ConfigEntryMap config_entry_map;
+    constexpr auto TRUE_STR = "true";
+    constexpr auto FALSE_STR = "false";
 
     const HashMap<ConfigEntryType, bool> bool_map {
         { ConfigEntryType::FULLSCREEN, fullscreen },
@@ -135,6 +137,11 @@ void AppArgs::save_config()
     }
 
     qInfo().noquote() << tr_log("Program settings saved");
+
+
+    using ScriptEvent = ScriptRunner::EventType;
+    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
 void AppArgs::parse_gamedirs(const std::function<void(const QString&)>& callback)
