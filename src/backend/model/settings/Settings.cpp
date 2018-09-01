@@ -17,7 +17,7 @@
 
 #include "Settings.h"
 
-#include "GlobalSettings.h"
+#include "AppArgs.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
@@ -87,7 +87,7 @@ void Settings::callScripts()
 QStringList Settings::gameDirs() const
 {
     QSet<QString> dirset;
-    GlobalSettings::parse_gamedirs([&dirset](const QString& line){
+    AppArgs::parse_gamedirs([&dirset](const QString& line){
         dirset.insert(line);
     });
 
@@ -108,7 +108,7 @@ void Settings::addGameDir(const QString& path)
     }
 
     QSet<QString> dirset;
-    GlobalSettings::parse_gamedirs([&dirset](const QString& line){
+    AppArgs::parse_gamedirs([&dirset](const QString& line){
         dirset.insert(line);
     });
 

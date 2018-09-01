@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <QString>
+#include <functional>
+
 
 struct AppArgs {
     /// Do not read or write config files outside the program's directory
@@ -35,4 +38,5 @@ struct AppArgs {
 
     static void load_config();
     static void save_config();
+    static void parse_gamedirs(const std::function<void(const QString&)>&);
 };

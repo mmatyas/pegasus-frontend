@@ -17,8 +17,7 @@ SOURCES += \
     ScriptRunner.cpp \
     Utils.cpp \
     Paths.cpp \
-    AppArgs.cpp \
-    GlobalSettings.cpp
+    AppArgs.cpp
 
 HEADERS += \
     Api.h \
@@ -36,8 +35,7 @@ HEADERS += \
     Utils.h \
     LocaleUtils.h \
     Paths.h \
-    AppArgs.h \
-    GlobalSettings.h
+    AppArgs.h
 
 include(configfiles/configfiles.pri)
 include(platform/platform.pri)

@@ -17,9 +17,9 @@
 
 #include "PegasusProvider.h"
 
+#include "AppArgs.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "GlobalSettings.h"
 
 #include <QDebug>
 #include <QFile>
@@ -33,7 +33,7 @@ namespace pegasus {
 PegasusProvider::PegasusProvider(QObject* parent)
     : Provider(parent)
 {
-    GlobalSettings::parse_gamedirs([this](const QString& line){
+    AppArgs::parse_gamedirs([this](const QString& line){
         add_game_dir(line);
     });
 }
