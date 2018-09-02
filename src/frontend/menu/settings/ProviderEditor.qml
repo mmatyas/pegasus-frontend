@@ -181,4 +181,6 @@ FocusScope {
             }
         }
     }
+
+    NeedsRestartNotice {}
 }

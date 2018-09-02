@@ -48,5 +48,6 @@
         <file>menu/settings/GameDirEditorButton.qml</file>
         <file>menu/settings/SectionTitle.qml</file>
         <file>menu/settings/ProviderEditor.qml</file>
+        <file>menu/settings/NeedsRestartNotice.qml</file>
     </qresource>
 </RCC>

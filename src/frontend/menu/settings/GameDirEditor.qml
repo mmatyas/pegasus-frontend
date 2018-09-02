@@ -283,6 +283,8 @@ FocusScope {
         }
     }
 
+    NeedsRestartNotice {}
+
 
     FilePicker {
         id: filePicker
