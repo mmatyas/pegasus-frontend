@@ -142,7 +142,7 @@ MenuScreen {
             SimpleButton {
                 id: optEditProviders
 
-                label: qsTr("Data sources...") + api.tr
+                label: qsTr("Enable/disable data sources...") + api.tr
                 onActivate: providerEditor.focus = true
             }
         }

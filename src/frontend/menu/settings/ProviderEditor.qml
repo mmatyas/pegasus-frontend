@@ -47,7 +47,7 @@ FocusScope {
 
 
     Rectangle {
-        height: parent.height * 0.8
+        height: parent.height * 0.7
         width: height
         color: "#444"
 
@@ -63,7 +63,7 @@ FocusScope {
         Text {
             id: info
 
-            text: "Pegasus can use the following data sources when looking for games:"
+            text: qsTr("When looking for games, Pegasus can use the following data sources, if enabled:") + api.tr
             color: "#eee"
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
@@ -71,7 +71,7 @@ FocusScope {
 
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width * 0.75
+            width: parent.width * 0.85
             padding: font.pixelSize * lineHeight
 
             horizontalAlignment: Text.AlignHCenter
@@ -82,9 +82,23 @@ FocusScope {
         Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
-            width: parent.width - vpx(40)
+            width: parent.width - vpx(30)
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#333"
+
+            Text {
+                text: qsTr("(nothing on this platform)") + api.tr
+                font.family: globalFonts.sans
+                font.pixelSize: vpx(18)
+                color: "#ccc"
+
+                width: parent.width * 0.88
+                anchors.centerIn: parent
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+
+                visible: api.settings.providers.count === 0
+            }
 
             ListView {
                 id: list
@@ -118,7 +132,7 @@ FocusScope {
             id: footer
 
             width: parent.width
-            height: vpx(20)
+            height: vpx(15)
             anchors.bottom: parent.bottom
         }
     }
