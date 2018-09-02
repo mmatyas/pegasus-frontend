@@ -20,7 +20,6 @@
 #include "AppArgs.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "ScriptRunner.h"
 
 #include <QDebug>
 #include <QDir>
@@ -56,12 +55,7 @@ Settings::Settings(QObject* parent)
     , m_locales(this)
     , m_themes(this)
     , m_providers(this)
-{
-    connect(&m_locales, &LocaleList::localeChanged,
-            this, &Settings::callScripts);
-    connect(&m_themes, &ThemeList::themeChanged,
-            this, &Settings::callScripts);
-}
+{}
 
 void Settings::setFullscreen(bool new_val)
 {
@@ -72,13 +66,6 @@ void Settings::setFullscreen(bool new_val)
     AppArgs::save_config();
 
     emit fullscreenChanged();
-}
-
-void Settings::callScripts()
-{
-    using ScriptEvent = ScriptRunner::EventType;
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
 QStringList Settings::gameDirs() const

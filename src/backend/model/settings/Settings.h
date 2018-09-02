@@ -57,9 +57,6 @@ signals:
     void fullscreenChanged();
     void gameDirsChanged();
 
-private slots:
-    void callScripts();
-
 private:
     LocaleList m_locales;
     ThemeList m_themes;
