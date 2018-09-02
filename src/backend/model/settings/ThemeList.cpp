@@ -19,6 +19,7 @@
 
 #include "utils/HashMap.h"
 
+#include "AppArgs.h"
 #include "ConfigFile.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
@@ -28,14 +29,11 @@
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
-#include <QSettings>
 #include <QStringBuilder>
 #include <QUrl>
 
 
 namespace {
-
-const QString SETTINGSKEY_THEME(QStringLiteral("theme"));
 
 QStringList themeDirectories()
 {
@@ -156,16 +154,14 @@ void ThemeList::selectPreferredTheme()
 
 
     // A. Try to use the saved config value
-    const QString requested_theme = QSettings(paths::configIniPath(), QSettings::IniFormat)
-                                    .value(SETTINGSKEY_THEME).toString();
-    if (!requested_theme.isEmpty())
-        m_theme_idx = indexOfTheme(requested_theme);
+    if (!AppArgs::theme.isEmpty())
+        m_theme_idx = indexOfTheme(AppArgs::theme);
 
     // B. Fall back to the built-in theme
     //    Either the config value is invalid, or has missing files,
     //    thus not present in `m_themes`.
     if (m_theme_idx < 0)
-        m_theme_idx = indexOfTheme(":/themes/pegasus-grid/");
+        m_theme_idx = indexOfTheme(AppArgs::DEFAULT_THEME);
 
 
     Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
@@ -211,8 +207,8 @@ void ThemeList::setIndex(int idx)
     emit themeChanged();
 
     // remember
-    QSettings settings(paths::configIniPath(), QSettings::IniFormat);
-    settings.setValue(SETTINGSKEY_THEME, m_themes.at(idx)->dir());
+    AppArgs::theme = current()->dir();
+    AppArgs::save_config();
 }
 
 QQmlListProperty<Theme> ThemeList::getListProp()

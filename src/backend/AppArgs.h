@@ -29,6 +29,12 @@ struct AppArgs {
 
     /// Run in full screen mode
     static bool fullscreen;
+    /// Program language
+    static QString locale;
+    static const QString DEFAULT_LOCALE;
+    /// Current theme path
+    static QString theme;
+    static const QString DEFAULT_THEME;
 
     /// Enable EmulationStation 2 support
     static bool enable_provider_es2;

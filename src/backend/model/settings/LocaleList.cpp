@@ -17,6 +17,7 @@
 
 #include "LocaleList.h"
 
+#include "AppArgs.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
@@ -24,14 +25,6 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
-#include <QSettings>
-
-
-namespace {
-
-const QString SETTINGSKEY_LOCALE(QStringLiteral("locale"));
-
-} // namespace
 
 
 namespace model {
@@ -77,10 +70,8 @@ void LocaleList::findAvailableLocales()
 void LocaleList::selectPreferredLocale()
 {
     // A. Try to use the saved config value
-    const QString requested_tag = QSettings(paths::configIniPath(), QSettings::IniFormat)
-                                  .value(SETTINGSKEY_LOCALE).toString();
-    if (!requested_tag.isEmpty())
-        m_locale_idx = indexOfLocale(requested_tag);
+    if (!AppArgs::locale.isEmpty())
+        m_locale_idx = indexOfLocale(AppArgs::locale);
 
     // B. Try to use the system default language
     if (m_locale_idx < 0)
@@ -88,7 +79,7 @@ void LocaleList::selectPreferredLocale()
 
     // C. Fall back to the default
     if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(QStringLiteral("en"));
+        m_locale_idx = indexOfLocale(AppArgs::DEFAULT_LOCALE);
 
 
     Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
@@ -137,8 +128,8 @@ void LocaleList::setIndex(int idx)
     emit localeChanged();
 
     // remember
-    QSettings settings(paths::configIniPath(), QSettings::IniFormat);
-    settings.setValue(SETTINGSKEY_LOCALE, current()->tag());
+    AppArgs::locale = current()->tag();
+    AppArgs::save_config();
 }
 
 QQmlListProperty<Locale> LocaleList::getListProp()

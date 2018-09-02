@@ -37,12 +37,16 @@ QString config_path()
 
 enum class ConfigEntryType : unsigned char {
     FULLSCREEN,
+    LOCALE,
+    THEME,
     ENABLE_ES2,
     ENABLE_STEAM,
 };
 struct ConfigEntryMap {
     const HashMap<const ConfigEntryType, const QString, EnumHash> type_to_str {
         { ConfigEntryType::FULLSCREEN, QStringLiteral("general.fullscreen") },
+        { ConfigEntryType::LOCALE, QStringLiteral("general.locale") },
+        { ConfigEntryType::THEME, QStringLiteral("general.theme") },
         { ConfigEntryType::ENABLE_ES2, QStringLiteral("providers.enable-es2") },
         { ConfigEntryType::ENABLE_STEAM, QStringLiteral("providers.enable-steam") },
     };
@@ -61,6 +65,10 @@ bool AppArgs::silent = false;
 bool AppArgs::fullscreen = true;
 bool AppArgs::enable_provider_es2 = true;
 bool AppArgs::enable_provider_steam = true;
+const QString AppArgs::DEFAULT_LOCALE(QStringLiteral("en"));
+const QString AppArgs::DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"));
+QString AppArgs::locale(DEFAULT_LOCALE);
+QString AppArgs::theme(DEFAULT_THEME);
 
 
 void AppArgs::load_config()
@@ -88,10 +96,19 @@ void AppArgs::load_config()
                     on_error(lineno, QStringLiteral("this option requires a boolean (true/false) value"));
                     return;
                 }
+                break;
+            default:
+                break;
         }
         switch (entry_type->second) {
             case ConfigEntryType::FULLSCREEN:
                 fullscreen = ::str_to_bool(val, fullscreen);
+                break;
+            case ConfigEntryType::LOCALE:
+                locale = val;
+                break;
+            case ConfigEntryType::THEME:
+                theme = val;
                 break;
             case ConfigEntryType::ENABLE_ES2:
                 enable_provider_es2 = ::str_to_bool(val, enable_provider_es2);
@@ -118,21 +135,28 @@ void AppArgs::save_config()
     }
 
 
-    const ConfigEntryMap config_entry_map;
-    constexpr auto TRUE_STR = "true";
-    constexpr auto FALSE_STR = "false";
+    if (locale.isEmpty())
+        locale = DEFAULT_LOCALE;
+    if (theme.isEmpty())
+        theme = DEFAULT_THEME;
 
-    const HashMap<ConfigEntryType, const bool, EnumHash> bool_map {
-        { ConfigEntryType::FULLSCREEN, fullscreen },
-        { ConfigEntryType::ENABLE_ES2, enable_provider_es2 },
-        { ConfigEntryType::ENABLE_STEAM, enable_provider_steam },
+    const auto str_true(QStringLiteral("true"));
+    const auto str_false(QStringLiteral("false"));
+    const std::vector<std::pair<const ConfigEntryType, const QString>> entries {
+        { ConfigEntryType::FULLSCREEN, fullscreen ? str_true : str_false },
+        { ConfigEntryType::LOCALE, locale },
+        { ConfigEntryType::THEME, theme },
+        { ConfigEntryType::ENABLE_ES2, enable_provider_es2 ? str_true : str_false },
+        { ConfigEntryType::ENABLE_STEAM, enable_provider_steam ? str_true : str_false },
     };
 
+
+    const ConfigEntryMap config_entry_map;
     QTextStream stream(&config_file);
-    for (const auto& entry : bool_map) {
+    for (const auto& entry : entries) {
         stream << config_entry_map.type_to_str.at(entry.first)
                << QLatin1String(": ")
-               << (entry.second ? TRUE_STR : FALSE_STR)
+               << entry.second
                << '\n';
     }
 
