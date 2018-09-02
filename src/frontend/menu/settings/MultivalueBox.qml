@@ -30,13 +30,20 @@ FocusScope {
     signal close
     signal select(int index)
 
+    onFocusChanged: if (focus) root.state = "open";
+    function triggerClose() {
+        root.state = "";
+        root.close();
+    }
+
+
     anchors.fill: parent
     enabled: focus
     visible: focus || animClosing.running
 
-    Keys.onEscapePressed: close()
-    Keys.onReturnPressed: { select(index); close(); }
-    Keys.onEnterPressed: { select(index); close(); }
+    Keys.onEscapePressed: triggerClose()
+    Keys.onReturnPressed: { select(index); triggerClose(); }
+    Keys.onEnterPressed: { select(index); triggerClose(); }
 
     Component.onCompleted: {
         if (list.currentIndex > 0)
@@ -56,7 +63,7 @@ FocusScope {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onClicked: root.close()
+            onClicked: root.triggerClose()
         }
     }
 
@@ -149,7 +156,6 @@ FocusScope {
 
     states: State {
         name: "open"
-        when: root.activeFocus
         AnchorChanges {
             target: box
             anchors.left: undefined
