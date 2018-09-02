@@ -26,7 +26,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QSet>
-#include <QSettings>
 
 
 namespace {
