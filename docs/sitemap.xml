@@ -2,87 +2,87 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>http://www.pegasus-frontend.org/docs/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://www.pegasus-frontend.org/docs/user-guide/installation/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <loc>http://www.pegasus-frontend.org/docs/user-guide/getting-started/</loc>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/user-guide/controls/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/user-guide/config-files/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/user-guide/platform-android/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/user-guide/scripting/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/dev/install-qt/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/dev/cross-compile-qt/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/dev/build/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/dev/deploy/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/dev/translate/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/themes/overview/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/themes/qml-tutorials/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/themes/qml-modules/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/themes/example-simple/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/themes/example-flixnet/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://www.pegasus-frontend.org/docs/themes/api/</loc>
-     <lastmod>2018-08-31</lastmod>
+     <lastmod>2018-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
