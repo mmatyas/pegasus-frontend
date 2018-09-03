@@ -189,19 +189,20 @@ HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAt
 
     // the actual reading
 
-    curr_config_path = dir_path + QStringLiteral("/collections.pegasus.txt");
-    if (::validFile(curr_config_path)) {
-        qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
-        config::readFile(curr_config_path,  on_attribute, on_error);
-    }
-    else {
-        curr_config_path = dir_path + QStringLiteral("/collections.txt");
+    const QStringList possible_paths {
+        dir_path + QStringLiteral("/collections.pegasus.txt"),
+        dir_path + QStringLiteral("/collections.txt"),
+    };
+    for (const QString& path : possible_paths) {
+        if (!::validFile(path))
+            continue;
+
+        qInfo().noquote() << tr_log("Found `%1`").arg(path);
+
         curr_coll = nullptr;
-        // FIXME: duplicate
-        if (::validFile(curr_config_path)) {
-            qInfo().noquote() << tr_log("Found `%1`").arg(curr_config_path);
-            config::readFile(curr_config_path,  on_attribute, on_error);
-        }
+        curr_config_path = path;
+        config::readFile(path,  on_attribute, on_error);
+        break; // if the first file exists, don't check the other
     }
 
     // cleanup and return
