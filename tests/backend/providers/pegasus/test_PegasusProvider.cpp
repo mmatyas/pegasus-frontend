@@ -32,6 +32,7 @@ private slots:
     void find_in_empty_dir();
     void find_in_filled_dir();
     void enhance();
+    void custom_assets();
 };
 
 void test_PegasusProvider::find_in_empty_dir()
@@ -145,6 +146,28 @@ void test_PegasusProvider::enhance()
     QCOMPARE(games.at(game_key).title, QStringLiteral("game_in_subdir"));
     QCOMPARE(games.at(game_key).rating, 0.8f);
     QCOMPARE(games.at(game_key).release_date, QDate(1998, 5, 1));
+}
+
+void test_PegasusProvider::custom_assets()
+{
+    HashMap<QString, modeldata::Game> games;
+    HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
+
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/custom_assets/collections.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/custom_assets/metadata.txt`");
+    providers::pegasus::PegasusProvider provider;
+    provider.add_game_dir(QStringLiteral(":/custom_assets"));
+    provider.findLists(games, collections, collection_childs);
+    provider.findStaticData(games, collections, collection_childs);
+
+    QVERIFY(collections.size() == 1);
+    QVERIFY(games.size() == 1);
+
+    const QString game_key = QStringLiteral(":/custom_assets/mygame1.ext");
+    QCOMPARE(games.count(game_key) > 0, true);
+    QCOMPARE(games.at(game_key).assets.single(AssetType::BOX_FRONT),
+             QStringLiteral("file::/custom_assets/different_dir/whatever.png"));
 }
 
 

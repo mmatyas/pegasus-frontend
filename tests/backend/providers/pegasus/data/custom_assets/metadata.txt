@@ -1,0 +1,2 @@
+file: mygame1.ext
+assets.boxFront: different_dir/whatever.png

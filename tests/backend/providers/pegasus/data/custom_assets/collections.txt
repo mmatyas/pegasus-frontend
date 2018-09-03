@@ -1,0 +1,2 @@
+collection: mygames
+extensions: ext

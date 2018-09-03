@@ -28,45 +28,6 @@
 
 namespace {
 
-static const HashMap<QString, AssetType> TYPE_BY_SUFFIX = {
-    { QStringLiteral("-boxFront"), AssetType::BOX_FRONT },
-    { QStringLiteral("-box_front"), AssetType::BOX_FRONT },
-    { QStringLiteral("-boxart2D"), AssetType::BOX_FRONT },
-    { QStringLiteral("-boxBack"), AssetType::BOX_BACK },
-    { QStringLiteral("-box_back"), AssetType::BOX_BACK },
-    { QStringLiteral("-boxSpine"), AssetType::BOX_SPINE },
-    { QStringLiteral("-box_spine"), AssetType::BOX_SPINE },
-    { QStringLiteral("-boxSide"), AssetType::BOX_SPINE },
-    { QStringLiteral("-box_side"), AssetType::BOX_SPINE },
-    { QStringLiteral("-boxFull"), AssetType::BOX_FULL },
-    { QStringLiteral("-box_full"), AssetType::BOX_FULL },
-    { QStringLiteral("-box"), AssetType::BOX_FULL },
-    { QStringLiteral("-cartridge"), AssetType::CARTRIDGE },
-    { QStringLiteral("-disc"), AssetType::CARTRIDGE },
-    { QStringLiteral("-cart"), AssetType::CARTRIDGE },
-    { QStringLiteral("-logo"), AssetType::LOGO },
-    { QStringLiteral("-wheel"), AssetType::LOGO },
-    { QStringLiteral("-marquee"), AssetType::ARCADE_MARQUEE },
-    { QStringLiteral("-bezel"), AssetType::ARCADE_BEZEL },
-    { QStringLiteral("-screenmarquee"), AssetType::ARCADE_BEZEL },
-    { QStringLiteral("-border"), AssetType::ARCADE_BEZEL },
-    { QStringLiteral("-panel"), AssetType::ARCADE_PANEL },
-    { QStringLiteral("-cabinetLeft"), AssetType::ARCADE_CABINET_L },
-    { QStringLiteral("-cabinet_left"), AssetType::ARCADE_CABINET_L },
-    { QStringLiteral("-cabinetRight"), AssetType::ARCADE_CABINET_R },
-    { QStringLiteral("-cabinet_right"), AssetType::ARCADE_CABINET_R },
-    { QStringLiteral("-tile"), AssetType::UI_TILE },
-    { QStringLiteral("-banner"), AssetType::UI_BANNER },
-    { QStringLiteral("-steam"), AssetType::UI_STEAMGRID },
-    { QStringLiteral("-steamgrid"), AssetType::UI_STEAMGRID },
-    { QStringLiteral("-grid"), AssetType::UI_STEAMGRID },
-    { QStringLiteral("-poster"), AssetType::POSTER },
-    { QStringLiteral("-flyer"), AssetType::POSTER },
-    { QStringLiteral("-background"), AssetType::BACKGROUND },
-    { QStringLiteral("-music"), AssetType::MUSIC },
-    { QStringLiteral("-screenshot"), AssetType::SCREENSHOTS },
-    { QStringLiteral("-video"), AssetType::VIDEOS },
-};
 static const HashMap<QString, AssetType> TYPE_BY_EXT = {
     { QStringLiteral("png"), AssetType::BOX_FRONT },
     { QStringLiteral("jpg"), AssetType::BOX_FRONT },
@@ -102,6 +63,71 @@ const QStringList& allowedAssetExts(AssetType type)
 
 namespace pegasus_assets {
 
+AssetType type_by_suffix(const QString& suffix)
+{
+    static const HashMap<QString, const AssetType> map {
+        { QStringLiteral("boxfront"), AssetType::BOX_FRONT },
+        { QStringLiteral("boxFront"), AssetType::BOX_FRONT },
+        { QStringLiteral("box_front"), AssetType::BOX_FRONT },
+        { QStringLiteral("boxart2D"), AssetType::BOX_FRONT },
+        { QStringLiteral("boxart2d"), AssetType::BOX_FRONT },
+
+        { QStringLiteral("boxback"), AssetType::BOX_BACK },
+        { QStringLiteral("boxBack"), AssetType::BOX_BACK },
+        { QStringLiteral("box_back"), AssetType::BOX_BACK },
+
+        { QStringLiteral("boxspine"), AssetType::BOX_SPINE },
+        { QStringLiteral("boxSpine"), AssetType::BOX_SPINE },
+        { QStringLiteral("box_spine"), AssetType::BOX_SPINE },
+
+        { QStringLiteral("boxside"), AssetType::BOX_SPINE },
+        { QStringLiteral("boxSide"), AssetType::BOX_SPINE },
+        { QStringLiteral("box_side"), AssetType::BOX_SPINE },
+
+        { QStringLiteral("boxfull"), AssetType::BOX_FULL },
+        { QStringLiteral("boxFull"), AssetType::BOX_FULL },
+        { QStringLiteral("box_full"), AssetType::BOX_FULL },
+        { QStringLiteral("box"), AssetType::BOX_FULL },
+
+        { QStringLiteral("cartridge"), AssetType::CARTRIDGE },
+        { QStringLiteral("disc"), AssetType::CARTRIDGE },
+        { QStringLiteral("cart"), AssetType::CARTRIDGE },
+        { QStringLiteral("logo"), AssetType::LOGO },
+        { QStringLiteral("wheel"), AssetType::LOGO },
+        { QStringLiteral("marquee"), AssetType::ARCADE_MARQUEE },
+        { QStringLiteral("bezel"), AssetType::ARCADE_BEZEL },
+        { QStringLiteral("screenmarquee"), AssetType::ARCADE_BEZEL },
+        { QStringLiteral("border"), AssetType::ARCADE_BEZEL },
+        { QStringLiteral("panel"), AssetType::ARCADE_PANEL },
+
+        { QStringLiteral("cabinetleft"), AssetType::ARCADE_CABINET_L },
+        { QStringLiteral("cabinetLeft"), AssetType::ARCADE_CABINET_L },
+        { QStringLiteral("cabinet_left"), AssetType::ARCADE_CABINET_L },
+
+        { QStringLiteral("cabinetright"), AssetType::ARCADE_CABINET_R },
+        { QStringLiteral("cabinetRight"), AssetType::ARCADE_CABINET_R },
+        { QStringLiteral("cabinet_right"), AssetType::ARCADE_CABINET_R },
+
+        { QStringLiteral("tile"), AssetType::UI_TILE },
+        { QStringLiteral("banner"), AssetType::UI_BANNER },
+        { QStringLiteral("steam"), AssetType::UI_STEAMGRID },
+        { QStringLiteral("steamgrid"), AssetType::UI_STEAMGRID },
+        { QStringLiteral("grid"), AssetType::UI_STEAMGRID },
+        { QStringLiteral("poster"), AssetType::POSTER },
+        { QStringLiteral("flyer"), AssetType::POSTER },
+        { QStringLiteral("background"), AssetType::BACKGROUND },
+        { QStringLiteral("music"), AssetType::MUSIC },
+        { QStringLiteral("screenshot"), AssetType::SCREENSHOTS },
+        { QStringLiteral("video"), AssetType::VIDEOS },
+    };
+
+    const auto it = map.find(suffix);
+    if (it != map.cend())
+        return it->second;
+
+    return AssetType::UNKNOWN;
+}
+
 bool AssetCheckResult::isValid() const
 {
     return asset_type != AssetType::UNKNOWN && !basename.isEmpty();
@@ -113,9 +139,10 @@ AssetCheckResult checkFile(const QFileInfo& file)
     const int last_dash = basename.lastIndexOf(QChar('-'));
     const QString suffix = (last_dash == -1)
         ? QString()
-        : basename.mid(last_dash);
+        : basename.mid(last_dash + 1);
 
-    if (!TYPE_BY_SUFFIX.count(suffix)) {
+    const AssetType type = type_by_suffix(suffix);
+    if (type == AssetType::UNKNOWN) {
         // missing/unknown suffix -> guess by extension
         return {
             basename,
@@ -126,7 +153,6 @@ AssetCheckResult checkFile(const QFileInfo& file)
     }
 
     const QString game_basename = basename.left(last_dash);
-    const AssetType type = TYPE_BY_SUFFIX.at(suffix);
     if (!allowedAssetExts(type).contains(file.suffix())) {
         // known suffix but wrong extension -> invalid
         return {

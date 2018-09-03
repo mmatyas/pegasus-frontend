@@ -13,6 +13,7 @@
         <file>filled/collections.txt</file>
         <file>filled/favgame1.ext</file>
         <file>filled/favgame2.ext</file>
+        <file>filled/game with spaces.ext</file>
         <file>with_meta/mygame1.ext</file>
         <file>with_meta/mygame2.ext</file>
         <file>with_meta/mygame3.ext</file>
@@ -20,6 +21,10 @@
         <file>with_meta/subdir/game_in_subdir.ext</file>
         <file>with_meta/collections.txt</file>
         <file>with_meta/metadata.txt</file>
-        <file>filled/game with spaces.ext</file>
+        <file>custom_assets/collections.txt</file>
+        <file>custom_assets/metadata.txt</file>
+        <file>custom_assets/mygame1.ext</file>
+        <file>custom_assets/media/mygame1-boxFront.png</file>
+        <file>custom_assets/different_dir/whatever.png</file>
     </qresource>
 </RCC>

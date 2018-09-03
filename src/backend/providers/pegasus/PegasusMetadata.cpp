@@ -19,6 +19,7 @@
 
 #include "ConfigFile.h"
 #include "LocaleUtils.h"
+#include "Paths.h"
 #include "PegasusAssets.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
@@ -27,9 +28,31 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QStringBuilder>
+#include <QUrl>
 
 
 namespace {
+
+void add_asset(modeldata::GameAssets& game_assets, const AssetType asset_type, const QString& value,
+               const QString& relative_dir)
+{
+    Q_ASSERT(asset_type != AssetType::UNKNOWN);
+
+    QFileInfo finfo(value);
+    if (finfo.isRelative())
+        finfo.setFile(relative_dir + '/' + value);
+
+    // FIXME: reduce duplication with pegasus_assets::addAssetToGame
+
+    QString url = QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
+    const bool is_single = asset_is_single(asset_type);
+    if (is_single) {
+        game_assets.setSingle(asset_type, std::move(url));
+    }
+    else if (!game_assets.multi(asset_type).contains(url)) {
+        game_assets.appendMulti(asset_type, std::move(url));
+    }
+}
 
 } // namespace
 
@@ -121,11 +144,23 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
             // TODO: unimplemented
             return;
         }
+
+        if (key.startsWith(QStringLiteral("assets."))) {
+            const QString& asset_key = key.mid(7); // len of "assets."
+            const AssetType asset_type = pegasus_assets::type_by_suffix(asset_key);
+            if (asset_type == AssetType::UNKNOWN) {
+                on_error(lineno, tr_log("unknown asset type '%1', entry ignored").arg(asset_key));
+                return;
+            }
+
+            add_asset(curr_game->assets, asset_type, val, dir_path);
+            return;
+        }
+
         if (!m_key_types.count(key)) {
             on_error(lineno, tr_log("unrecognized attribute name `%3`, ignored").arg(key));
             return;
         }
-
         switch (m_key_types.at(key)) {
             case MetaAttribType::TITLE:
                 curr_game->title = val;

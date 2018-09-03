@@ -28,6 +28,8 @@ enum class AssetType : unsigned char;
 
 namespace pegasus_assets {
 
+AssetType type_by_suffix(const QString&);
+
 struct AssetCheckResult {
     const QString basename;
     const AssetType asset_type;
