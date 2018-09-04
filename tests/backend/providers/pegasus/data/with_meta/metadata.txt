@@ -14,7 +14,7 @@ name: My Game 2
 publisher: Publisher with Spaces
 publisher: Another Publisher
 
-file: mygame3.ext
+file: :/with_meta/mygame3.ext
 genres: genre1, genre2,
   genre with spaces
 players: 2-4

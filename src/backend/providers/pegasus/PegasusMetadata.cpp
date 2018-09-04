@@ -122,17 +122,20 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
         if (key == QLatin1String("file")) {
-            const QString curr_game_path = dir_path % '/' % val;
-            const QFileInfo fileinfo(curr_game_path);
+            QFileInfo finfo(val);
+            if (finfo.isRelative())
+                finfo.setFile(dir_path % '/' % val);
+
             curr_game = nullptr;
 
-            if (!games.count(fileinfo.canonicalFilePath())) {
+            const auto it = games.find(finfo.canonicalFilePath());
+            if (it == games.cend()) {
                 on_error(lineno,
                     tr_log("the game `%1` is either missing or excluded, values for it will be ignored").arg(val));
                 return;
             }
 
-            curr_game = &games.at(fileinfo.canonicalFilePath());
+            curr_game = &it->second;
             return;
         }
         if (!curr_game) {
