@@ -58,17 +58,16 @@ void readStream(QTextStream& stream,
     QString last_key;
     QString last_val;
     int linenum = 0;
+    int last_key_linenum = 0;
 
     const auto close_current_attrib = [&](){
-        // linenum is decrased by 1 because this function
-        // is called in the line *after* the attribute ends
         if (!last_key.isEmpty()) {
             last_val = last_val.trimmed();
 
             if (last_val.isEmpty())
-                onError(linenum - 1, tr_log("attribute value missing, entry ignored"));
+                onError(last_key_linenum, tr_log("attribute value missing, entry ignored"));
             else
-                onAttributeFound(linenum - 1, last_key, last_val);
+                onAttributeFound(last_key_linenum, last_key, last_val);
         }
 
         last_key.clear();
@@ -84,8 +83,7 @@ void readStream(QTextStream& stream,
 
         const QStringRef trimmed_line = line.leftRef(-1).trimmed();
         if (trimmed_line.isEmpty()) {
-            if (!last_key.isEmpty())
-                last_val.append('\n');
+            last_val.append('\n');
             continue;
         }
 
@@ -95,9 +93,10 @@ void readStream(QTextStream& stream,
                 onError(linenum, tr_log("multiline value found, but no attribute has been defined yet"));
                 continue;
             }
-            if (!last_val.isEmpty() && !last_val.endsWith('\n')) {
+
+            if (!last_val.endsWith('\n'))
                 last_val.append(' ');
-            }
+
             last_val.append(trimmed_line);
             continue;
         }
@@ -111,6 +110,7 @@ void readStream(QTextStream& stream,
             // the key is never empty if the regex matches the *trimmed* line
             last_key = rx_keyval_match.capturedRef(1).trimmed().toString().toLower();
             Q_ASSERT(!last_key.isEmpty());
+            last_key_linenum = linenum;
             // the value can be empty here, if it's purely multiline
             last_val = rx_keyval_match.capturedRef(2).trimmed().toString();
             continue;

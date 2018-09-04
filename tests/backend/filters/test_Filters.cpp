@@ -42,8 +42,8 @@ void test_Filters::read_empty()
 
 void test_Filters::read()
 {
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 2: no filter defined yet, entry ignored"));
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 7: unrecognized game property `invalidprop`, rule ignored"));
+    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 1: no filter defined yet, entry ignored"));
+    QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 6: unrecognized game property `invalidprop`, rule ignored"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found 1 custom filters"));
 
     const auto result = CustomFilters::read(":/filters.txt");

@@ -94,11 +94,13 @@ void test_ConfigFile::file()
         std::make_tuple(5, QStringLiteral("key1"), QStringLiteral("val")),
         std::make_tuple(6, QStringLiteral("key2"), QStringLiteral("val")),
         std::make_tuple(7, QStringLiteral("key with spaces"), QStringLiteral("val with spaces")),
-        std::make_tuple(12, QStringLiteral("multiline1"), QStringLiteral("hello world!")),
-        std::make_tuple(16, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break")),
-        std::make_tuple(19, QStringLiteral("multiline3"), QStringLiteral("purely multiline")),
+        std::make_tuple(11, QStringLiteral("multiline1"), QStringLiteral("hello world!")),
+        std::make_tuple(13, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break")),
+        std::make_tuple(17, QStringLiteral("multiline3"), QStringLiteral("purely multiline")),
     };
-    //qDebug() << m_entries;
+    /*for (const auto& entry : m_entries) {
+        qDebug() << "line" << std::get<0>(entry) << "key" << std::get<1>(entry) << "val" << std::get<2>(entry);
+    }*/
     QCOMPARE(m_entries, expected);
 }
 
