@@ -33,16 +33,19 @@ namespace pegasus {
 PegasusProvider::PegasusProvider(QObject* parent)
     : Provider(parent)
 {
+    add_game_dir(paths::writableConfigDir() + QStringLiteral("/global_collection"), true);
+
     AppArgs::parse_gamedirs([this](const QString& line){
         add_game_dir(line);
     });
 }
 
-void PegasusProvider::add_game_dir(const QString& dir_path)
+void PegasusProvider::add_game_dir(const QString& dir_path, bool silent)
 {
     const QFileInfo entry(dir_path);
     if (!entry.exists() || !entry.isDir()) {
-        qWarning().noquote() << tr_log("Game directory `%1` not found, ignored").arg(dir_path);
+        if (!silent)
+            qWarning().noquote() << tr_log("Game directory `%1` not found, ignored").arg(dir_path);
         return;
     }
 

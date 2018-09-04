@@ -38,7 +38,7 @@ public:
                         const HashMap<QString, modeldata::Collection>&,
                         const HashMap<QString, std::vector<QString>>&) final;
 
-    void add_game_dir(const QString&);
+    void add_game_dir(const QString&, bool silent = false);
 
 private:
     QStringList m_game_dirs;
