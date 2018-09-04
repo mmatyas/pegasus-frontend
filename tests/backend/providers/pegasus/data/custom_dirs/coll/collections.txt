@@ -1,0 +1,9 @@
+collection: x-files
+extension: x
+directory: ../a
+directories: ../b
+directory: :/custom_dirs/c
+
+collection: y-files
+extension: y
+directory: ../b

@@ -19,6 +19,7 @@
 
 #include "ConfigFile.h"
 #include "LocaleUtils.h"
+#include "Paths.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
 #include "modeldata/gaming/Collection.h"
@@ -27,86 +28,7 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QRegularExpression>
-
-
-namespace {
-
-struct GameFilterGroup {
-    QStringList extensions;
-    QStringList files;
-    QString regex;
-};
-struct GameFilter {
-    GameFilterGroup include;
-    GameFilterGroup exclude;
-    QStringList extra;
-};
-
-void traverse_dir(const QString& dir_base_path,
-                  const HashMap<QString, GameFilter>& filter_config,
-                  HashMap<QString, modeldata::Game>& games,
-                  HashMap<QString, modeldata::Collection>& collections,
-                  HashMap<QString, std::vector<QString>>& collection_childs)
-{
-    constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    constexpr auto entry_flags = QDirIterator::FollowSymlinks;
-
-    for (auto& config_it : filter_config) {
-        const GameFilter& filter = config_it.second;
-        const QRegularExpression include_regex(filter.include.regex);
-        const QRegularExpression exclude_regex(filter.exclude.regex);
-
-        // find all dirs and subdirectories, but ignore 'media'
-
-        QStringList subdirs;
-        {
-            constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-            constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
-
-            QDirIterator dirs_it(dir_base_path, subdir_filters, subdir_flags);
-            while (dirs_it.hasNext()) {
-                subdirs << dirs_it.next();
-            }
-            subdirs.removeOne(dir_base_path + QStringLiteral("/media"));
-            subdirs.append(dir_base_path + QStringLiteral("/")); // added "/" so all entries have base + 1 length
-        }
-
-        // run through the main dir and all valid subdirs
-
-        for (const QString& dir : qAsConst(subdirs)) {
-            QDirIterator dir_it(dir, entry_filters, entry_flags);
-            while (dir_it.hasNext()) {
-                dir_it.next();
-                QFileInfo fileinfo = dir_it.fileInfo();
-                const QString relative_path = fileinfo.filePath().mid(dir_base_path.length() + 1);
-
-                const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
-                    || filter.exclude.files.contains(relative_path)
-                    || (!filter.exclude.regex.isEmpty() && exclude_regex.match(fileinfo.filePath()).hasMatch());
-                if (exclude)
-                    continue;
-
-                const bool include = filter.include.extensions.contains(fileinfo.suffix())
-                    || filter.include.files.contains(relative_path)
-                    || (!filter.include.regex.isEmpty() && include_regex.match(fileinfo.filePath()).hasMatch());
-                if (!include)
-                    continue;
-
-
-                const QString coll_key = config_it.first;
-                const QString game_key = fileinfo.canonicalFilePath();
-                if (!games.count(game_key)) {
-                    modeldata::Game game(std::move(fileinfo));
-                    game.launch_cmd = collections.at(coll_key).launchCmd();
-                    games.emplace(game_key, std::move(game));
-                }
-                collection_childs[coll_key].emplace_back(game_key);
-            }
-        }
-    }
-}
-
-} // namespace
+#include <QStringBuilder>
 
 
 namespace providers {
@@ -115,22 +37,49 @@ namespace pegasus {
 enum class CollAttribType : unsigned char {
     SHORT_NAME,
     LAUNCH_CMD,
+    DIRECTORIES,
     EXTENSIONS,
     FILES,
     REGEX,
 };
 
-HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAttribType>& key_types,
-                                                   const QString& dir_path,
-                                                   HashMap<QString, modeldata::Collection>& collections)
+} // namespace providers
+} //namespace pegasus
+
+
+namespace {
+
+using AttribType = providers::pegasus::CollAttribType;
+
+struct GameFilterGroup {
+    QStringList extensions;
+    QStringList files;
+    QString regex;
+};
+struct GameFilter {
+    QString parent_collection;
+    QStringList directories;
+    GameFilterGroup include;
+    GameFilterGroup exclude;
+    QStringList extra;
+
+    GameFilter(QString parent, QString base_dir)
+        : parent_collection(parent)
+        , directories(base_dir)
+    {}
+};
+
+std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>& key_types,
+                                              const QString& dir_path,
+                                              HashMap<QString, modeldata::Collection>& collections)
 {
     // reminder: sections are collection names
     // including keys: extensions, files, regex
     // excluding keys: ignore-extensions, ignore-files, ignore-regex
-    // optional: name, launch
+    // optional: name, launch, directories
 
     QString curr_config_path;
-    HashMap<QString, GameFilter> config;
+    std::vector<GameFilter> filters;
     modeldata::Collection* curr_coll = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
@@ -146,6 +95,8 @@ HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAt
 
             curr_coll = &collections.at(val);
             curr_coll->source_dirs.append(dir_path);
+
+            filters.emplace_back(val, dir_path);
             return;
         }
 
@@ -153,7 +104,6 @@ HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAt
             on_error(lineno, tr_log("no collection defined yet, entry ignored"));
             return;
         }
-
         if (key.startsWith(QLatin1String("x-"))) {
             // TODO: unimplemented
             return;
@@ -163,24 +113,35 @@ HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAt
             return;
         }
 
-        GameFilter& filter = config[curr_coll->name()];
+        GameFilter& filter = filters.back();
         GameFilterGroup& filter_group = key.startsWith(QLatin1String("ignore-"))
             ? filter.exclude
             : filter.include;
+
         switch (key_types.at(key)) {
-            case CollAttribType::SHORT_NAME:
+            case AttribType::SHORT_NAME:
                 curr_coll->setShortName(val);
                 break;
-            case CollAttribType::LAUNCH_CMD:
+            case AttribType::LAUNCH_CMD:
                 curr_coll->setLaunchCmd(val);
                 break;
-            case CollAttribType::EXTENSIONS:
-                filter_group.extensions.append(tokenize(val.toLower()));
+            case AttribType::DIRECTORIES:
+                {
+                    QFileInfo finfo(val);
+                    if (finfo.isRelative())
+                        finfo.setFile(dir_path % '/' % val);
+
+                    curr_coll->source_dirs.append(finfo.canonicalFilePath());
+                    filter.directories.append(finfo.canonicalFilePath());
+                }
                 break;
-            case CollAttribType::FILES:
+            case AttribType::EXTENSIONS:
+                filter_group.extensions.append(providers::pegasus::tokenize(val.toLower()));
+                break;
+            case AttribType::FILES:
                 filter_group.files.append(val);
                 break;
-            case CollAttribType::REGEX:
+            case AttribType::REGEX:
                 filter_group.regex = val;
                 break;
         }
@@ -207,33 +168,99 @@ HashMap<QString, GameFilter> read_collections_file(const HashMap<QString, CollAt
 
     // cleanup and return
 
-    auto config_it = config.begin();
-    for (; config_it != config.end(); ++config_it) {
-        GameFilter& filter = config_it->second;
+    for (GameFilter& filter : filters) {
+        filter.directories.removeDuplicates();
         filter.include.extensions.removeDuplicates();
         filter.include.files.removeDuplicates();
         filter.exclude.extensions.removeDuplicates();
         filter.exclude.files.removeDuplicates();
         filter.extra.removeDuplicates();
     }
-    return config;
+    return filters;
 }
+
+void process_filter(const GameFilter& filter,
+                    HashMap<QString, modeldata::Game>& games,
+                    HashMap<QString, modeldata::Collection>& collections,
+                    HashMap<QString, std::vector<QString>>& collection_childs)
+{
+    constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto entry_flags = QDirIterator::FollowSymlinks;
+    constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
+
+    const QRegularExpression include_regex(filter.include.regex);
+    const QRegularExpression exclude_regex(filter.exclude.regex);
+
+
+    for (const QString& filter_dir : filter.directories)
+    {
+        // find all dirs and subdirectories, but ignore 'media'
+        QStringList dirs_to_check;
+        {
+            QDirIterator dirs_it(filter_dir, subdir_filters, subdir_flags);
+            while (dirs_it.hasNext())
+                dirs_to_check << dirs_it.next();
+
+            dirs_to_check.removeOne(filter_dir + QStringLiteral("/media"));
+            dirs_to_check.append(filter_dir + QStringLiteral("/")); // added "/" so all entries have base + 1 length
+        }
+
+        // run through the directories
+        for (const QString& subdir : qAsConst(dirs_to_check)) {
+            QDirIterator subdir_it(subdir, entry_filters, entry_flags);
+            while (subdir_it.hasNext()) {
+                subdir_it.next();
+                QFileInfo fileinfo = subdir_it.fileInfo();
+                const QString relative_path = fileinfo.filePath().mid(filter_dir.length() + 1);
+
+                const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
+                    || filter.exclude.files.contains(relative_path)
+                    || (!filter.exclude.regex.isEmpty() && exclude_regex.match(fileinfo.filePath()).hasMatch());
+                if (exclude)
+                    continue;
+
+                const bool include = filter.include.extensions.contains(fileinfo.suffix())
+                    || filter.include.files.contains(relative_path)
+                    || (!filter.include.regex.isEmpty() && include_regex.match(fileinfo.filePath()).hasMatch());
+                if (!include)
+                    continue;
+
+                const QString game_key = fileinfo.canonicalFilePath();
+                if (!games.count(game_key)) {
+                    modeldata::Game game(std::move(fileinfo));
+                    game.launch_cmd = collections.at(filter.parent_collection).launchCmd();
+                    games.emplace(game_key, std::move(game));
+                }
+                collection_childs[filter.parent_collection].emplace_back(game_key);
+            }
+        }
+    }
+}
+
+} // namespace
+
+
+namespace providers {
+namespace pegasus {
 
 PegasusCollections::PegasusCollections()
     : m_key_types {
-        { QStringLiteral("shortname"), CollAttribType::SHORT_NAME },
-        { QStringLiteral("launch"), CollAttribType::LAUNCH_CMD },
-        { QStringLiteral("command"), CollAttribType::LAUNCH_CMD },
-        { QStringLiteral("extension"), CollAttribType::EXTENSIONS },
-        { QStringLiteral("extensions"), CollAttribType::EXTENSIONS },
-        { QStringLiteral("file"), CollAttribType::FILES },
-        { QStringLiteral("files"), CollAttribType::FILES },
-        { QStringLiteral("regex"), CollAttribType::REGEX },
-        { QStringLiteral("ignore-extension"), CollAttribType::EXTENSIONS },
-        { QStringLiteral("ignore-extensions"), CollAttribType::EXTENSIONS },
-        { QStringLiteral("ignore-file"), CollAttribType::FILES },
-        { QStringLiteral("ignore-files"), CollAttribType::FILES },
-        { QStringLiteral("ignore-regex"), CollAttribType::REGEX },
+        { QStringLiteral("shortname"), AttribType::SHORT_NAME },
+        { QStringLiteral("launch"), AttribType::LAUNCH_CMD },
+        { QStringLiteral("command"), AttribType::LAUNCH_CMD },
+        { QStringLiteral("directory"), AttribType::DIRECTORIES },
+        { QStringLiteral("directories"), AttribType::DIRECTORIES },
+        { QStringLiteral("extension"), AttribType::EXTENSIONS },
+        { QStringLiteral("extensions"), AttribType::EXTENSIONS },
+        { QStringLiteral("file"), AttribType::FILES },
+        { QStringLiteral("files"), AttribType::FILES },
+        { QStringLiteral("regex"), AttribType::REGEX },
+        { QStringLiteral("ignore-extension"), AttribType::EXTENSIONS },
+        { QStringLiteral("ignore-extensions"), AttribType::EXTENSIONS },
+        { QStringLiteral("ignore-file"), AttribType::FILES },
+        { QStringLiteral("ignore-files"), AttribType::FILES },
+        { QStringLiteral("ignore-regex"), AttribType::REGEX },
     }
 {
 }
@@ -244,11 +271,19 @@ void PegasusCollections::find_in_dirs(const QStringList& dir_list,
                                       HashMap<QString, std::vector<QString>>& collection_childs,
                                       const std::function<void(int)>& update_gamecount_maybe) const
 {
+    std::vector<GameFilter> all_filters;
+
     for (const QString& dir_path : dir_list) {
-        const auto filter_config = read_collections_file(m_key_types, dir_path, collections);
-        traverse_dir(dir_path, filter_config, games, collections, collection_childs);
-        update_gamecount_maybe(static_cast<int>(games.size()));
+        auto filters = read_collections_file(m_key_types, dir_path, collections);
+        all_filters.reserve(all_filters.size() + filters.size());
+        all_filters.insert(all_filters.end(),
+                           std::make_move_iterator(filters.begin()),
+                           std::make_move_iterator(filters.end()));
     }
+    for (const GameFilter& filter : all_filters)
+        process_filter(filter, games, collections, collection_childs);
+
+    update_gamecount_maybe(static_cast<int>(games.size()));
 }
 
 } // namespace pegasus

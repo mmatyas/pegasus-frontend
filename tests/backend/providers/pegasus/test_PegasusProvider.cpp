@@ -33,6 +33,7 @@ private slots:
     void find_in_filled_dir();
     void enhance();
     void custom_assets();
+    void custom_directories();
 };
 
 void test_PegasusProvider::find_in_empty_dir()
@@ -168,6 +169,46 @@ void test_PegasusProvider::custom_assets()
     QCOMPARE(games.count(game_key) > 0, true);
     QCOMPARE(games.at(game_key).assets.single(AssetType::BOX_FRONT),
              QStringLiteral("file::/custom_assets/different_dir/whatever.png"));
+}
+
+void test_PegasusProvider::custom_directories()
+{
+    HashMap<QString, modeldata::Game> games;
+    HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
+
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/custom_dirs/coll/collections.txt`");
+    providers::pegasus::PegasusProvider provider;
+    provider.add_game_dir(QStringLiteral(":/custom_dirs/coll"));
+    provider.findLists(games, collections, collection_childs);
+    provider.findStaticData(games, collections, collection_childs);
+
+    QVERIFY(collections.size() == 2);
+    QVERIFY(collections.count(QStringLiteral("x-files")) == 1);
+    QVERIFY(collections.count(QStringLiteral("y-files")) == 1);
+    QVERIFY(games.size() == 5);
+    QVERIFY(collection_childs.at(QStringLiteral("x-files")).size() == 4);
+    QVERIFY(collection_childs.at(QStringLiteral("y-files")).size() == 1);
+
+    // NOTE: Apparently canonicalFilePath doesn't work with QRC resources...
+    const QStringList xfiles {
+        { ":/custom_dirs/coll/../a/mygame.x" },
+        { ":/custom_dirs/coll/../b/mygame.x" },
+        { ":/custom_dirs/c/mygame.x" },
+        { ":/custom_dirs/coll/mygame.x" },
+    };
+    const QStringList yfiles {
+        { ":/custom_dirs/coll/../b/mygame.y" },
+    };
+
+    for (const QString& game_key : collection_childs.at(QStringLiteral("x-files"))) {
+        const modeldata::Game& game = games.at(game_key);
+        QCOMPARE(xfiles.contains(game.fileinfo().canonicalFilePath()), true);
+    }
+    for (const QString& game_key : collection_childs.at(QStringLiteral("y-files"))) {
+        const modeldata::Game& game = games.at(game_key);
+        QCOMPARE(yfiles.contains(game.fileinfo().canonicalFilePath()), true);
+    }
 }
 
 

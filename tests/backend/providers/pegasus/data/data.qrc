@@ -26,5 +26,13 @@
         <file>custom_assets/mygame1.ext</file>
         <file>custom_assets/media/mygame1-boxFront.png</file>
         <file>custom_assets/different_dir/whatever.png</file>
+        <file>custom_dirs/a/mygame.x</file>
+        <file>custom_dirs/a/mygame.y</file>
+        <file>custom_dirs/b/mygame.x</file>
+        <file>custom_dirs/b/mygame.y</file>
+        <file>custom_dirs/c/mygame.x</file>
+        <file>custom_dirs/c/mygame.y</file>
+        <file>custom_dirs/coll/collections.txt</file>
+        <file>custom_dirs/coll/mygame.x</file>
     </qresource>
 </RCC>
