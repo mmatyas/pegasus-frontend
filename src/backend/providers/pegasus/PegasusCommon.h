@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "modeldata/gaming/GameAssets.h"
+
 #include <QString>
 #include <QStringList>
 
@@ -25,6 +27,7 @@ namespace providers {
 namespace pegasus {
 
 QStringList tokenize(const QString& str);
+void add_asset(modeldata::GameAssets&, const AssetType, const QString&, const QString&);
 
 } // namespace pegasus
 } // namespace providers

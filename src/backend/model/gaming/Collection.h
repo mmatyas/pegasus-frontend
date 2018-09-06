@@ -31,6 +31,7 @@ class Collection : public QObject {
 
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
+    Q_PROPERTY(model::GameAssets* defaultAssets READ defaultAssetsPtr CONSTANT)
     Q_PROPERTY(model::GameList* gameList READ gameListPtr CONSTANT)
 
 public:
@@ -43,6 +44,8 @@ public:
     const GameList& gameList() const { return m_gamelist; }
     GameList& gameListMut() { return m_gamelist; }
 
+    GameAssets* defaultAssetsPtr() { return &m_default_assets; }
+
 signals:
     void currentGameChanged();
     void gameLaunchRequested(model::Collection*, model::Game*);
@@ -54,8 +57,9 @@ private:
     GameList* gameListPtr() { return &m_gamelist; }
 
 private:
-    const modeldata::Collection m_collection;
+    modeldata::Collection m_collection;
     GameList m_gamelist;
+    GameAssets m_default_assets;
 };
 
 } // namespace model

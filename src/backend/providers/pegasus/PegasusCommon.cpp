@@ -17,6 +17,9 @@
 
 #include "PegasusCommon.h"
 
+#include <QFileInfo>
+#include <QUrl>
+
 
 namespace providers {
 namespace pegasus {
@@ -28,6 +31,27 @@ QStringList tokenize(const QString& str)
         item = item.trimmed();
 
     return list;
+}
+
+void add_asset(modeldata::GameAssets& game_assets, const AssetType asset_type, const QString& value,
+               const QString& relative_dir)
+{
+    Q_ASSERT(asset_type != AssetType::UNKNOWN);
+
+    QFileInfo finfo(value);
+    if (finfo.isRelative())
+        finfo.setFile(relative_dir + '/' + value);
+
+    // FIXME: reduce duplication with pegasus_assets::addAssetToGame
+
+    QString url = QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
+    const bool is_single = asset_is_single(asset_type);
+    if (is_single) {
+        game_assets.setSingle(asset_type, std::move(url));
+    }
+    else if (!game_assets.multi(asset_type).contains(url)) {
+        game_assets.appendMulti(asset_type, std::move(url));
+    }
 }
 
 } // namespace pegasus

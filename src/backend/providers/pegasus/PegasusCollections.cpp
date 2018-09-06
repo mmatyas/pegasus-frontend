@@ -20,6 +20,7 @@
 #include "ConfigFile.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "PegasusAssets.h"
 #include "PegasusCommon.h"
 #include "Utils.h"
 #include "modeldata/gaming/Collection.h"
@@ -106,6 +107,18 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
         }
         if (key.startsWith(QLatin1String("x-"))) {
             // TODO: unimplemented
+            return;
+        }
+
+        if (key.startsWith(QStringLiteral("assets.default-"))) {
+            const QString& asset_key = key.mid(15); // len of "assets.default-"
+            const AssetType asset_type = pegasus_assets::type_by_suffix(asset_key);
+            if (asset_type == AssetType::UNKNOWN) {
+                on_error(lineno, tr_log("unknown asset type '%1', entry ignored").arg(asset_key));
+                return;
+            }
+
+            providers::pegasus::add_asset(curr_coll->default_assets, asset_type, val, dir_path);
             return;
         }
         if (!key_types.count(key)) {

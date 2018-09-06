@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "GameAssets.h"
+
 #include <QSharedPointer>
 #include <QString>
 #include <QStringList>
@@ -37,6 +39,8 @@ struct Collection {
     void setLaunchCmd(QString);
 
     QStringList source_dirs; // TODO: remove
+
+    GameAssets default_assets;
 
 
     Collection(const Collection&) = delete;
