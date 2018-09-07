@@ -86,6 +86,8 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
 void PegasusMetadata::read_metadata_file(const QString& dir_path,
                                          HashMap<QString, modeldata::Game>& games) const
 {
+    const QRegularExpression rx_asset_key(QStringLiteral(R"(^assets?\.(.+)$)"));
+
     QString curr_config_path;
     modeldata::Game* curr_game = nullptr;
 
@@ -121,8 +123,9 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
             return;
         }
 
-        if (key.startsWith(QStringLiteral("assets."))) {
-            const QString& asset_key = key.mid(7); // len of "assets."
+        const auto rx_asset = rx_asset_key.match(key);
+        if (rx_asset.hasMatch()) {
+            const QString asset_key = rx_asset.captured(1);
             const AssetType asset_type = pegasus_assets::type_by_suffix(asset_key);
             if (asset_type == AssetType::UNKNOWN) {
                 on_error(lineno, tr_log("unknown asset type '%1', entry ignored").arg(asset_key));

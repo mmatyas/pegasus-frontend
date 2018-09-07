@@ -81,6 +81,8 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
     // excluding keys: ignore-extensions, ignore-files, ignore-regex
     // optional: name, launch, directories
 
+    const QRegularExpression rx_asset_key(QStringLiteral(R"(^assets?\.default-?(.+)$)"));
+
     QString curr_config_path;
     std::vector<GameFilter> filters;
     modeldata::Collection* curr_coll = nullptr;
@@ -112,8 +114,9 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
             return;
         }
 
-        if (key.startsWith(QStringLiteral("assets.default-"))) {
-            const QString& asset_key = key.mid(15); // len of "assets.default-"
+        const auto rx_asset = rx_asset_key.match(key);
+        if (rx_asset.hasMatch()) {
+            const QString asset_key = rx_asset.captured(1);
             const AssetType asset_type = pegasus_assets::type_by_suffix(asset_key);
             if (asset_type == AssetType::UNKNOWN) {
                 on_error(lineno, tr_log("unknown asset type '%1', entry ignored").arg(asset_key));
