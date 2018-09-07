@@ -42,6 +42,8 @@ enum class CollAttribType : unsigned char {
     EXTENSIONS,
     FILES,
     REGEX,
+    SHORT_DESC,
+    LONG_DESC,
 };
 
 } // namespace providers
@@ -156,6 +158,12 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
                 break;
             case AttribType::REGEX:
                 filter_group.regex = val;
+                break;
+            case AttribType::SHORT_DESC:
+                curr_coll->summary = val;
+                break;
+            case AttribType::LONG_DESC:
+                curr_coll->description = val;
                 break;
         }
     };
@@ -274,6 +282,8 @@ PegasusCollections::PegasusCollections()
         { QStringLiteral("ignore-file"), AttribType::FILES },
         { QStringLiteral("ignore-files"), AttribType::FILES },
         { QStringLiteral("ignore-regex"), AttribType::REGEX },
+        { QStringLiteral("summary"), AttribType::SHORT_DESC },
+        { QStringLiteral("description"), AttribType::LONG_DESC },
     }
 {
 }

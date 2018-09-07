@@ -38,6 +38,8 @@ struct Collection {
     void setShortName(const QString&);
     void setLaunchCmd(QString);
 
+    QString summary;
+    QString description;
     QStringList source_dirs; // TODO: remove
 
     GameAssets default_assets;

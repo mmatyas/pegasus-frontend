@@ -121,9 +121,13 @@ void test_PegasusProvider::enhance()
     provider.findLists(games, collections, collection_childs);
     provider.findStaticData(games, collections, collection_childs);
 
+    const QString collection_name(QStringLiteral("mygames"));
     QVERIFY(collections.size() == 1);
-    QVERIFY(games.size() == 4);
+    QVERIFY(collections.count(collection_name) == 1);
+    QCOMPARE(collections.at(collection_name).summary, QStringLiteral("this is the summary"));
+    QCOMPARE(collections.at(collection_name).description, QStringLiteral("this is the description"));
 
+    QVERIFY(games.size() == 4);
     QString game_key;
 
     game_key = QStringLiteral(":/with_meta/mygame1.ext");

@@ -31,6 +31,8 @@ class Collection : public QObject {
 
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
+    Q_PROPERTY(QString summary READ summary CONSTANT)
+    Q_PROPERTY(QString description READ description CONSTANT)
     Q_PROPERTY(model::GameAssets* defaultAssets READ defaultAssetsPtr CONSTANT)
     Q_PROPERTY(model::GameList* gameList READ gameListPtr CONSTANT)
 
@@ -54,6 +56,8 @@ signals:
 private:
     const QString& name() const { return m_collection.name(); }
     const QString& shortName() const { return m_collection.shortName(); }
+    const QString& summary() const { return m_collection.summary; }
+    const QString& description() const { return m_collection.description; }
     GameList* gameListPtr() { return &m_gamelist; }
 
 private:
