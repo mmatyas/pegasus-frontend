@@ -41,6 +41,7 @@ enum class ConfigEntryType : unsigned char {
     THEME,
     ENABLE_ES2,
     ENABLE_STEAM,
+    ENABLE_GOG,
 };
 struct ConfigEntryMap {
     const HashMap<const ConfigEntryType, const QString, EnumHash> type_to_str {
@@ -49,6 +50,7 @@ struct ConfigEntryMap {
         { ConfigEntryType::THEME, QStringLiteral("general.theme") },
         { ConfigEntryType::ENABLE_ES2, QStringLiteral("providers.enable-es2") },
         { ConfigEntryType::ENABLE_STEAM, QStringLiteral("providers.enable-steam") },
+        { ConfigEntryType::ENABLE_GOG, QStringLiteral("providers.enable-gog") },
     };
     HashMap<QString, const ConfigEntryType> str_to_type;
 
@@ -63,8 +65,11 @@ struct ConfigEntryMap {
 bool AppArgs::portable_mode = false;
 bool AppArgs::silent = false;
 bool AppArgs::fullscreen = true;
+
 bool AppArgs::enable_provider_es2 = true;
 bool AppArgs::enable_provider_steam = true;
+bool AppArgs::enable_provider_gog = true;
+
 const QString AppArgs::DEFAULT_LOCALE(QStringLiteral("en"));
 const QString AppArgs::DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"));
 QString AppArgs::locale(DEFAULT_LOCALE);
@@ -116,6 +121,9 @@ void AppArgs::load_config()
             case ConfigEntryType::ENABLE_STEAM:
                 enable_provider_steam = ::str_to_bool(val, enable_provider_steam);
                 break;
+            case ConfigEntryType::ENABLE_GOG:
+                enable_provider_gog = ::str_to_bool(val, enable_provider_gog);
+                break;
         }
     };
 
@@ -148,6 +156,7 @@ void AppArgs::save_config()
         { ConfigEntryType::THEME, theme },
         { ConfigEntryType::ENABLE_ES2, enable_provider_es2 ? str_true : str_false },
         { ConfigEntryType::ENABLE_STEAM, enable_provider_steam ? str_true : str_false },
+        { ConfigEntryType::ENABLE_GOG, enable_provider_gog ? str_true : str_false },
     };
 
 

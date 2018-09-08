@@ -32,6 +32,9 @@
 #ifdef WITH_COMPAT_STEAM
   #include "providers/steam/SteamProvider.h"
 #endif
+#ifdef WITH_COMPAT_GOG
+  #include "providers/gog/GogProvider.h"
+#endif
 
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
@@ -120,6 +123,10 @@ ProviderManager::ProviderManager(QObject* parent)
 #ifdef WITH_COMPAT_STEAM
     if (AppArgs::enable_provider_steam)
         m_providers.emplace_back(new providers::steam::SteamProvider());
+#endif
+#ifdef WITH_COMPAT_GOG
+    if (AppArgs::enable_provider_gog)
+        m_providers.emplace_back(new providers::gog::GogProvider());
 #endif
 #ifdef WITH_COMPAT_ES2
     if (AppArgs::enable_provider_es2)

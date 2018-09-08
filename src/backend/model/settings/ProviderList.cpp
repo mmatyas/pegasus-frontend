@@ -56,6 +56,11 @@ ProviderList::ProviderList(QObject* parent)
                                       &AppArgs::enable_provider_steam,
                                       this));
 #endif
+#ifdef WITH_COMPAT_GOG
+    m_data.append(new model::Provider(QStringLiteral("GOG"),
+                                      &AppArgs::enable_provider_gog,
+                                      this));
+#endif
 }
 
 QQmlListProperty<Provider> ProviderList::getListProp()

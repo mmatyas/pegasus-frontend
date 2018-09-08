@@ -40,6 +40,8 @@ struct AppArgs {
     static bool enable_provider_es2;
     /// Enable Steam support
     static bool enable_provider_steam;
+    /// Enable GOG support
+    static bool enable_provider_gog;
 
 
     static void load_config();
