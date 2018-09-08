@@ -52,9 +52,7 @@ void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
     Q_ASSERT(game);
     // collection can be null!
 
-    // first, check the game's custom launch command
     QString launch_cmd = game->data().launch_cmd;
-    // then the lauching collection's
     if (launch_cmd.isEmpty() && collection)
         launch_cmd = collection->data().launchCmd();
 
@@ -69,12 +67,20 @@ void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
         return;
     }
 
+
+    QString workdir = game->data().launch_workdir;
+    if (workdir.isEmpty() && collection)
+        workdir = collection->data().launch_workdir;
+    if (workdir.isEmpty())
+        workdir = game->data().fileinfo().absolutePath();
+
+
     beforeRun();
-    runProcess(launch_cmd);
+    runProcess(launch_cmd, workdir);
     afterRun();
 }
 
-void ProcessLauncher::runProcess(const QString& command)
+void ProcessLauncher::runProcess(const QString& command, const QString& workdir)
 {
     qInfo().noquote() << tr_log("Executing command: `%1`").arg(command);
 
@@ -90,6 +96,7 @@ void ProcessLauncher::runProcess(const QString& command)
     // run the command
     process->setProcessChannelMode(QProcess::ForwardedChannels);
     process->setInputChannelMode(QProcess::ForwardedInputChannel);
+    process->setWorkingDirectory(workdir);
     process->start(command, QProcess::ReadOnly);
 
     // wait

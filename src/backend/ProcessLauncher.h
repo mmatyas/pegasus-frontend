@@ -50,7 +50,7 @@ private slots:
 private:
     QPointer<QProcess> process;
 
-    void runProcess(const QString&);
+    void runProcess(const QString&, const QString&);
 
     void beforeRun() const;
     void afterRun() const;

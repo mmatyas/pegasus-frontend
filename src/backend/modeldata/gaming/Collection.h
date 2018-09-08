@@ -38,6 +38,8 @@ struct Collection {
     void setShortName(const QString&);
     void setLaunchCmd(QString);
 
+    QString launch_workdir;
+
     QString summary;
     QString description;
     QStringList source_dirs; // TODO: remove
@@ -54,8 +56,6 @@ private:
     QString m_name;
     QString m_short_name;
     QString m_launch_cmd;
-
-    //std::vector<Game*> m_games;
 };
 
 } // namespace modeldata

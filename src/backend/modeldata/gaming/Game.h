@@ -36,6 +36,7 @@ struct Game {
     QString summary;
     QString description;
     QString launch_cmd;
+    QString launch_workdir;
 
     int player_count;
     bool is_favorite;
