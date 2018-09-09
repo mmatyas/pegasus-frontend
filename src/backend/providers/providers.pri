@@ -6,7 +6,8 @@ HEADERS += \
     $$PWD/pegasus/PegasusMetadata.h \
     $$PWD/pegasus/PegasusProvider.h \
     $$PWD/pegasus_favorites/Favorites.h \
-    $$PWD/pegasus_playtime/PlaytimeStats.h
+    $$PWD/pegasus_playtime/PlaytimeStats.h \
+    $$PWD/JsonCacheUtils.h
 
 SOURCES += \
     $$PWD/Provider.cpp \
@@ -16,7 +17,8 @@ SOURCES += \
     $$PWD/pegasus/PegasusMetadata.cpp \
     $$PWD/pegasus/PegasusProvider.cpp \
     $$PWD/pegasus_favorites/Favorites.cpp \
-    $$PWD/pegasus_playtime/PlaytimeStats.cpp
+    $$PWD/pegasus_playtime/PlaytimeStats.cpp \
+    $$PWD/JsonCacheUtils.cpp
 
 
 !android:!contains(QMAKE_CXX, ".*arm.*"):!contains(QMAKE_CXX, ".*aarch.*") {
@@ -33,9 +35,11 @@ SOURCES += \
     DEFINES *= WITH_COMPAT_GOG
     HEADERS += \
         $$PWD/gog/GogGamelist.h \
+        $$PWD/gog/GogMetadata.h \
         $$PWD/gog/GogProvider.h
     SOURCES += \
         $$PWD/gog/GogGamelist.cpp \
+        $$PWD/gog/GogMetadata.cpp \
         $$PWD/gog/GogProvider.cpp
 }
 

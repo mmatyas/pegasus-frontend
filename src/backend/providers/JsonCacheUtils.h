@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,31 +17,21 @@
 
 #pragma once
 
-#include "GogGamelist.h"
-#include "GogMetadata.h"
-#include "providers/Provider.h"
+#include <QString>
+#include <QJsonDocument>
 
 
 namespace providers {
-namespace gog {
 
-class GogProvider : public Provider {
-    Q_OBJECT
+void cache_json(const QString& provider_prefix,
+                const QString& provider_dir,
+                const QString& entryname,
+                const QByteArray& bytes);
+QJsonDocument read_json_from_cache(const QString& provider_prefix,
+                                   const QString& provider_dir,
+                                   const QString& entryname);
+void delete_cached_json(const QString& provider_prefix,
+                        const QString& provider_dir,
+                        const QString& entryname);
 
-public:
-    GogProvider(QObject* parent = nullptr);
-
-    void findLists(HashMap<QString, modeldata::Game>&,
-                   HashMap<QString, modeldata::Collection>&,
-                   HashMap<QString, std::vector<QString>>&) final;
-    void findStaticData(HashMap<QString, modeldata::Game>&,
-                        const HashMap<QString, modeldata::Collection>&,
-                        const HashMap<QString, std::vector<QString>>&) final;
-
-private:
-    Gamelist gamelist;
-    Metadata metadata;
-};
-
-} // namespace gog
 } // namespace providers

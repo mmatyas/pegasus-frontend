@@ -21,6 +21,7 @@
 #include "Paths.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
+#include "providers/JsonCacheUtils.h"
 
 #include <QDebug>
 #include <QDir>
@@ -39,6 +40,7 @@
 
 namespace {
 static constexpr auto MSG_PREFIX = "Steam:";
+static constexpr auto JSON_CACHE_DIR = "steam";
 
 struct SteamGameEntry {
     QString title;
@@ -94,9 +96,8 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     return entry;
 }
 
-bool read_json(modeldata::Game& game, const QByteArray& bytes)
+bool read_json(modeldata::Game& game, const QJsonDocument& json)
 {
-    const auto json = QJsonDocument::fromJson(bytes);
     if (json.isNull())
         return false;
 
@@ -141,15 +142,12 @@ bool read_json(modeldata::Game& game, const QByteArray& bytes)
     assets.setSingle(AssetType::BOX_FRONT, header_image);
 
     const QJsonArray developer_arr = app_data[QLatin1String("developers")].toArray();
-    if (!developer_arr.isEmpty()) {
-        for (int i = 0; i < developer_arr.count(); i++)
-            game.developers.append(developer_arr[i].toString());
-    }
+    for (const auto& arr_entry : developer_arr)
+        game.developers.append(arr_entry.toString());
+
     const QJsonArray publisher_arr = app_data[QLatin1String("publishers")].toArray();
-    if (!publisher_arr.isEmpty()) {
-        for (int i = 0; i < publisher_arr.count(); i++)
-            game.publishers.append(publisher_arr[i].toString());
-    }
+    for (const auto& arr_entry : developer_arr)
+        game.publishers.append(arr_entry.toString());
 
     const auto metacritic_obj = app_data[QLatin1String("metacritic")].toObject();
     if (!metacritic_obj.isEmpty()) {
@@ -202,52 +200,15 @@ bool read_json(modeldata::Game& game, const QByteArray& bytes)
     return true;
 }
 
-QString cached_json_path(const SteamGameEntry& entry)
-{
-    auto cache_path = paths::writableCacheDir();
-    Q_ASSERT(!cache_path.isEmpty()); // according to the Qt docs
-
-    cache_path += QLatin1String("/steam");
-    QDir cache_dir(cache_path);
-    if (!cache_dir.mkpath(QLatin1String("."))) {
-        // NOTE: mkpath() returns true if the dir already exists
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("could not create cache directory `%1`").arg(cache_path);
-        return QString();
-    }
-
-    return cache_path % QLatin1Char('/') % entry.appid % QLatin1String(".json");
-}
-
-void cache_json(const SteamGameEntry& entry, const QByteArray& bytes)
-{
-    const QString json_path = cached_json_path(entry);
-    QFile json_file(json_path);
-    if (!json_file.open(QIODevice::WriteOnly)) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("could not create cache file `%1` for game `%2`")
-               .arg(json_path, entry.title);
-        return;
-    }
-
-    if (json_file.write(bytes) != bytes.length()) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("writing cache file `%1` was not successful")
-               .arg(json_path, entry.title);
-        json_file.remove();
-    }
-}
-
 bool fill_from_cache(const SteamGameEntry& entry)
 {
-    const QString json_path = cached_json_path(entry);
-    QFile json_file(json_path);
-    if (!json_file.open(QIODevice::ReadOnly))
-        return false;
+    const QString message_prefix = QLatin1String(MSG_PREFIX);
+    const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
-    const bool json_success = read_json(*entry.game_ptr, json_file.readAll());
+    const auto json = providers::read_json_from_cache(message_prefix, cache_dir, entry.appid);
+    const bool json_success = read_json(*entry.game_ptr, json);
     if (!json_success) {
-        json_file.remove();
+        providers::delete_cached_json(message_prefix, cache_dir, entry.appid);
         return false;
     }
 
@@ -256,8 +217,12 @@ bool fill_from_cache(const SteamGameEntry& entry)
 
 void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAccessManager& netman)
 {
-    const int TIMEOUT_MS(10000);
+    const int TIMEOUT_MS(5000);
     const QString APPDETAILS_URL(QLatin1String("http://store.steampowered.com/api/appdetails/?appids="));
+
+    const QString message_prefix = QLatin1String(MSG_PREFIX);
+    const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
+
 
     QVector<QNetworkReply*> listeners;
     int completed_transfers = 0;
@@ -290,9 +255,9 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
                 }
                 else {
                     const auto raw_data = reply->readAll();
-                    const bool json_success = read_json(*entries[i].game_ptr, raw_data);
+                    const bool json_success = read_json(*entries[i].game_ptr, QJsonDocument::fromJson(raw_data));
                     if (json_success) {
-                        cache_json(entries[i], raw_data);
+                        providers::cache_json(message_prefix, cache_dir, entries[i].appid, raw_data);
                     }
                     else {
                         qWarning().noquote() << MSG_PREFIX

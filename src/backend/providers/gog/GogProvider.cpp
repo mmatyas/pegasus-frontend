@@ -24,6 +24,7 @@ namespace gog {
 GogProvider::GogProvider(QObject* parent)
     : Provider(parent)
     , gamelist(this)
+    , metadata(this)
 {
     connect(&gamelist, &Gamelist::gameCountChanged,
             this, &GogProvider::gameCountChanged);
@@ -34,6 +35,13 @@ void GogProvider::findLists(HashMap<QString, modeldata::Game>& games,
                             HashMap<QString, std::vector<QString>>& collection_childs)
 {
     gamelist.find(games, collections, collection_childs);
+}
+
+void GogProvider::findStaticData(HashMap<QString, modeldata::Game>& games,
+                                 const HashMap<QString, modeldata::Collection>& collections,
+                                 const HashMap<QString, std::vector<QString>>& collection_childs)
+{
+    metadata.enhance(games, collections, collection_childs);
 }
 
 } // namespace gog

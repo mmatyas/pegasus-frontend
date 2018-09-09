@@ -17,30 +17,24 @@
 
 #pragma once
 
-#include "GogGamelist.h"
-#include "GogMetadata.h"
-#include "providers/Provider.h"
+#include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
+
+#include <QObject>
 
 
 namespace providers {
 namespace gog {
 
-class GogProvider : public Provider {
+class Metadata : public QObject {
     Q_OBJECT
 
 public:
-    GogProvider(QObject* parent = nullptr);
+    explicit Metadata(QObject* parent);
 
-    void findLists(HashMap<QString, modeldata::Game>&,
-                   HashMap<QString, modeldata::Collection>&,
-                   HashMap<QString, std::vector<QString>>&) final;
-    void findStaticData(HashMap<QString, modeldata::Game>&,
-                        const HashMap<QString, modeldata::Collection>&,
-                        const HashMap<QString, std::vector<QString>>&) final;
-
-private:
-    Gamelist gamelist;
-    Metadata metadata;
+    void enhance(HashMap<QString, modeldata::Game>&,
+                 const HashMap<QString, modeldata::Collection>&,
+                 const HashMap<QString, std::vector<QString>>&);
 };
 
 } // namespace gog

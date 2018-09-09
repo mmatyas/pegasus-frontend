@@ -91,6 +91,7 @@ void register_entries(const std::vector<GogEntry>& entries,
             game.title = entry.name;
             game.launch_cmd = '"' % entry.launch_cmd % '"';
             game.launch_workdir = entry.workdir;
+            game.extra.emplace(QStringLiteral("gog.id"), entry.id);
 
             games.emplace(game_key, std::move(game));
         }

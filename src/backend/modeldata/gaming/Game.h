@@ -18,6 +18,8 @@
 #pragma once
 
 #include "GameAssets.h"
+#include "utils/HashMap.h"
+#include "utils/MoveOnly.h"
 
 #include <QDateTime>
 #include <QFileInfo>
@@ -51,13 +53,10 @@ struct Game {
     QStringList publishers;
     QStringList genres;
 
+    HashMap<QString, QString> extra;
     GameAssets assets;
 
-
-    Game(const Game&) = delete;
-    Game& operator=(const Game&) = delete;
-    Game(Game&&) = default;
-    Game& operator=(Game&&) = default;
+    MOVE_ONLY(Game)
 
 private:
     QFileInfo m_fileinfo;
