@@ -23,7 +23,6 @@ Item {
 
     Image {
         anchors.fill: parent
-        horizontalAlignment: Image.AlignLeft
         visible: gameData
 
         asynchronous: true
@@ -31,7 +30,7 @@ Item {
 
         source: gameData ? gameData.assets.background || gameData.assets.screenshots[0] || "" : ""
         sourceSize { width: 512; height: 512 }
-        fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectCrop
         smooth: false
     }
 
@@ -47,7 +46,7 @@ Item {
         end: Qt.point(width, 0)
         gradient: Gradient {
             GradientStop { position: 0.0; color: "#00000000" }
-            GradientStop { position: 0.5; color: "#FF000000" }
+            GradientStop { position: 0.5; color: "#cc000000" }
         }
     }
 }
