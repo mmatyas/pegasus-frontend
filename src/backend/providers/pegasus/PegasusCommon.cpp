@@ -38,13 +38,20 @@ void add_asset(modeldata::GameAssets& game_assets, const AssetType asset_type, c
 {
     Q_ASSERT(asset_type != AssetType::UNKNOWN);
 
-    QFileInfo finfo(value);
-    if (finfo.isRelative())
-        finfo.setFile(relative_dir + '/' + value);
+    QString url;
+    if (value.startsWith(QStringLiteral("http://")) || value.startsWith(QStringLiteral("https://"))) {
+        url = value;
+    }
+    else {
+        QFileInfo finfo(value);
+        if (finfo.isRelative())
+            finfo.setFile(relative_dir + '/' + value);
+
+        url = QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
+    }
 
     // FIXME: reduce duplication with pegasus_assets::addAssetToGame
 
-    QString url = QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
     const bool is_single = asset_is_single(asset_type);
     if (is_single) {
         game_assets.setSingle(asset_type, std::move(url));
