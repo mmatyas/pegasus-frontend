@@ -17,14 +17,18 @@
 
 #include "GogGamelist.h"
 
+#include "GogCommon.h"
 #include "LocaleUtils.h"
+#include "Paths.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
 #include "utils/MoveOnly.h"
 
+#include <QDebug>
+#include <QDirIterator>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QStringBuilder>
-#include <QDebug>
 
 
 namespace {
@@ -66,13 +70,57 @@ std::vector<GogEntry> find_game_entries()
     }
 #endif
 
+#ifdef Q_OS_LINUX
+    const QString gogdir = paths::homePath() + QStringLiteral("/GOG Games");
+
+    constexpr auto dir_filters = QDir::Dirs | QDir::NoDotAndDotDot;
+    constexpr auto dir_flags = QDirIterator::FollowSymlinks;
+    const QRegularExpression re_numeric(QStringLiteral("^\\d+$"));
+
+    QDirIterator dir_it(gogdir, dir_filters, dir_flags);
+    while (dir_it.hasNext()) {
+        const QString gamedir(dir_it.next());
+
+        const QString launcher_path(gamedir + QStringLiteral("/start.sh"));
+        const QFileInfo launcher_file(launcher_path);
+        if (!launcher_file.exists() || !launcher_file.isFile() || !launcher_file.isExecutable())
+            continue;
+
+        GogEntry entry {
+            QString(),
+            dir_it.fileName(),
+            launcher_path,
+            launcher_path,
+            dir_it.filePath(),
+        };
+
+        const QString gameinfo_path(gamedir + QStringLiteral("/gameinfo"));
+        QFile config_file(gameinfo_path);
+        if (config_file.open(QFile::ReadOnly | QFile::Text)) {
+            QTextStream stream(&config_file);
+            QString line;
+            unsigned short lineno = 0;
+            while (stream.readLineInto(&line, 256) && lineno <= 3) {
+                if (lineno == 0 && !line.isEmpty())
+                    entry.name = line;
+
+                if (lineno == 3 && re_numeric.match(line).hasMatch())
+                    entry.id = line;
+
+                lineno++;
+            }
+        }
+
+        entries.emplace_back(std::move(entry));
+    }
+#endif
+
     return entries;
 }
 
 bool invalid_entry(const GogEntry& entry)
 {
-    return entry.id.isEmpty()
-        || entry.name.isEmpty()
+    return entry.name.isEmpty()
         || entry.launch_cmd.isEmpty()
         || entry.exe.isEmpty()
         || !QFileInfo::exists(entry.exe);
@@ -91,7 +139,9 @@ void register_entries(const std::vector<GogEntry>& entries,
             game.title = entry.name;
             game.launch_cmd = '"' % entry.launch_cmd % '"';
             game.launch_workdir = entry.workdir;
-            game.extra.emplace(QStringLiteral("gog.id"), entry.id);
+
+            if (!entry.id.isEmpty())
+                game.extra.emplace(providers::gog::gog_id_key(), entry.id);
 
             games.emplace(game_key, std::move(game));
         }
@@ -119,10 +169,10 @@ void Gamelist::find(HashMap<QString, modeldata::Game>& games,
 
     std::vector<GogEntry> entries(find_game_entries());
     entries.erase(std::remove_if(entries.begin(), entries.end(), invalid_entry), entries.end());
-    if (entries.empty()) {
-        qInfo().noquote() << MSG_PREFIX << tr_log("no games found");
+
+    qInfo().noquote() << MSG_PREFIX << tr_log("%1 games found").arg(entries.size());
+    if (entries.empty())
         return;
-    }
 
 
     if (!collections.count(GOG_TAG)) {

@@ -17,6 +17,7 @@
 
 #include "GogMetadata.h"
 
+#include "GogCommon.h"
 #include "LocaleUtils.h"
 #include "providers/JsonCacheUtils.h"
 #include "modeldata/gaming/Game.h"
@@ -73,9 +74,12 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
 bool fill_from_cache(modeldata::Game& entry)
 {
+    if (!entry.extra.count(providers::gog::gog_id_key()))
+        return false;
+
     const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
-    const QString entry_name = entry.extra.at(QStringLiteral("gog.id"));
+    const QString entry_name = entry.extra.at(providers::gog::gog_id_key());
 
     const auto json = providers::read_json_from_cache(message_prefix, cache_dir, entry_name);
     const bool json_success = read_json(entry, json);
@@ -90,7 +94,7 @@ bool fill_from_cache(modeldata::Game& entry)
 void download_metadata(std::vector<modeldata::Game*>& entries, QNetworkAccessManager& netman)
 {
     const int TIMEOUT_MS(5000);
-    const QString API_URL(QStringLiteral("http://api.gog.com/products/%1?expand=description,screenshots,videos"));
+    const auto API_URL(QStringLiteral("https://api.gog.com/products/%1?expand=description,screenshots,videos"));
 
     const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
@@ -108,7 +112,7 @@ void download_metadata(std::vector<modeldata::Game*>& entries, QNetworkAccessMan
                      &loop, &QEventLoop::quit);
 
     for (size_t i = 0; i < entries.size(); i++) {
-        const QString gog_id = entries[i]->extra.at(QStringLiteral("gog.id"));
+        const QString gog_id = entries[i]->extra.at(providers::gog::gog_id_key());
 
         const QUrl url(API_URL.arg(gog_id));
         QNetworkRequest request(url);
@@ -179,8 +183,11 @@ void Metadata::enhance(HashMap<QString, modeldata::Game>& games,
     std::vector<modeldata::Game*> entries;
 
     const std::vector<QString>& childs = collection_childs.at(GOG_TAG);
-    for (const QString& game_key : childs)
-        entries.emplace_back(&games.at(game_key));
+    for (const QString& game_key : childs) {
+        modeldata::Game* game = &games.at(game_key);
+        if (game->extra.count(gog_id_key()))
+            entries.emplace_back(game);
+    }
 
     // try to fill using cached jsons
 

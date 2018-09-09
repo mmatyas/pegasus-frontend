@@ -44,10 +44,12 @@ win32|defined(pclinux,var) {
     ENABLED_COMPATS += GOG
     DEFINES *= WITH_COMPAT_GOG
     HEADERS += \
+        $$PWD/gog/GogCommon.h \
         $$PWD/gog/GogGamelist.h \
         $$PWD/gog/GogMetadata.h \
         $$PWD/gog/GogProvider.h
     SOURCES += \
+        $$PWD/gog/GogCommon.cpp \
         $$PWD/gog/GogGamelist.cpp \
         $$PWD/gog/GogMetadata.cpp \
         $$PWD/gog/GogProvider.cpp
