@@ -21,7 +21,11 @@ SOURCES += \
     $$PWD/JsonCacheUtils.cpp
 
 
-!android:!contains(QMAKE_CXX, ".*arm.*"):!contains(QMAKE_CXX, ".*aarch.*") {
+contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = yes
+unix:!macx:!android:!defined(target_arm, var): pclinux = yes
+
+
+win32|macx|defined(pclinux,var) {
     DEFINES *= WITH_COMPAT_STEAM
     HEADERS += \
         $$PWD/steam/SteamGamelist.h \
@@ -31,7 +35,9 @@ SOURCES += \
         $$PWD/steam/SteamGamelist.cpp \
         $$PWD/steam/SteamMetadata.cpp \
         $$PWD/steam/SteamProvider.cpp
+}
 
+win32|defined(pclinux,var) {
     DEFINES *= WITH_COMPAT_GOG
     HEADERS += \
         $$PWD/gog/GogGamelist.h \
@@ -43,7 +49,7 @@ SOURCES += \
         $$PWD/gog/GogProvider.cpp
 }
 
-!android {
+win32|macx|defined(pclinux,var) {
     DEFINES *= WITH_COMPAT_ES2
     HEADERS += \
         $$PWD/es2/Es2Metadata.h \
