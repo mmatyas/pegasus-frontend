@@ -44,6 +44,7 @@ enum class MetaAttribType : unsigned char {
     RELEASE,
     RATING,
     LAUNCH_CMD,
+    LAUNCH_WORKDIR,
 };
 
 PegasusMetadata::PegasusMetadata()
@@ -63,6 +64,9 @@ PegasusMetadata::PegasusMetadata()
         { QStringLiteral("rating"), MetaAttribType::RATING },
         { QStringLiteral("launch"), MetaAttribType::LAUNCH_CMD },
         { QStringLiteral("command"), MetaAttribType::LAUNCH_CMD },
+        { QStringLiteral("workdir"), MetaAttribType::LAUNCH_WORKDIR },
+        { QStringLiteral("working-directory"), MetaAttribType::LAUNCH_WORKDIR },
+        { QStringLiteral("cwd"), MetaAttribType::LAUNCH_WORKDIR },
     }
     , m_player_regex(QStringLiteral("^(\\d+)(-(\\d+))?$"))
     , m_rating_percent_regex(QStringLiteral("^\\d+%$"))
@@ -200,6 +204,9 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
                 break;
             case MetaAttribType::LAUNCH_CMD:
                 curr_game->launch_cmd = val;
+                break;
+            case MetaAttribType::LAUNCH_WORKDIR:
+                curr_game->launch_workdir = val;
                 break;
         }
     };

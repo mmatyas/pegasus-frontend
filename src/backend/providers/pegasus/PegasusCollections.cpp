@@ -37,13 +37,14 @@ namespace pegasus {
 
 enum class CollAttribType : unsigned char {
     SHORT_NAME,
-    LAUNCH_CMD,
     DIRECTORIES,
     EXTENSIONS,
     FILES,
     REGEX,
     SHORT_DESC,
     LONG_DESC,
+    LAUNCH_CMD,
+    LAUNCH_WORKDIR,
 };
 
 } // namespace providers
@@ -168,6 +169,9 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
             case AttribType::LONG_DESC:
                 curr_coll->description = val;
                 break;
+            case AttribType::LAUNCH_WORKDIR:
+                curr_coll->launch_workdir = val;
+                break;
         }
     };
 
@@ -287,6 +291,9 @@ PegasusCollections::PegasusCollections()
         { QStringLiteral("ignore-regex"), AttribType::REGEX },
         { QStringLiteral("summary"), AttribType::SHORT_DESC },
         { QStringLiteral("description"), AttribType::LONG_DESC },
+        { QStringLiteral("workdir"), AttribType::LAUNCH_WORKDIR },
+        { QStringLiteral("working-directory"), AttribType::LAUNCH_WORKDIR },
+        { QStringLiteral("cwd"), AttribType::LAUNCH_WORKDIR },
     }
 {
 }
