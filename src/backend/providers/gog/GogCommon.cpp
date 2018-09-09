@@ -26,5 +26,15 @@ QString gog_id_key()
     return QStringLiteral("gog.id");
 }
 
+QString json_api_suffix()
+{
+    return QStringLiteral("_api");
+}
+
+QString json_embed_suffix()
+{
+    return QStringLiteral("_embed");
+}
+
 } // namespace gog
 } // namespace providers
