@@ -59,9 +59,17 @@ bool read_api_json(modeldata::Game& game, const QJsonDocument& json)
     const auto images = json_root[QLatin1String("images")].toObject();
     if (!images.isEmpty()) {
         const QString prefix(QStringLiteral("https:"));
-        assets.setSingle(AssetType::BOX_FRONT, prefix + images[QLatin1String("logo2x")].toString());
-        assets.setSingle(AssetType::BACKGROUND, prefix + images[QLatin1String("background")].toString());
-        assets.setSingle(AssetType::LOGO, prefix + images[QLatin1String("icon")].toString());
+
+        const QString box_front = images[QLatin1String("logo2x")].toString();
+        const QString background = images[QLatin1String("background")].toString();
+        const QString logo = images[QLatin1String("icon")].toString();
+
+        if (!box_front.isEmpty())
+            assets.setSingle(AssetType::BOX_FRONT, prefix + box_front);
+        if (!background.isEmpty())
+            assets.setSingle(AssetType::BACKGROUND, prefix + background);
+        if (!logo.isEmpty())
+            assets.setSingle(AssetType::LOGO, prefix + logo);
     }
 
     const auto screenshots = json_root[QLatin1String("screenshots")].toArray();
