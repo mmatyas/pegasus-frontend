@@ -25,7 +25,10 @@ contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = ye
 unix:!macx:!android:!defined(target_arm, var): pclinux = yes
 
 
+ENABLED_COMPATS =
+
 win32|macx|defined(pclinux,var) {
+    ENABLED_COMPATS += Steam
     DEFINES *= WITH_COMPAT_STEAM
     HEADERS += \
         $$PWD/steam/SteamGamelist.h \
@@ -38,6 +41,7 @@ win32|macx|defined(pclinux,var) {
 }
 
 win32|defined(pclinux,var) {
+    ENABLED_COMPATS += GOG
     DEFINES *= WITH_COMPAT_GOG
     HEADERS += \
         $$PWD/gog/GogGamelist.h \
@@ -50,6 +54,7 @@ win32|defined(pclinux,var) {
 }
 
 win32|macx|defined(pclinux,var) {
+    ENABLED_COMPATS += EmulationStation
     DEFINES *= WITH_COMPAT_ES2
     HEADERS += \
         $$PWD/es2/Es2Metadata.h \
@@ -61,3 +66,9 @@ win32|macx|defined(pclinux,var) {
         $$PWD/es2/Es2Provider.cpp \
         $$PWD/es2/Es2Systems.cpp \
 }
+
+# Print configuration
+ENABLED_COMPATS = $$sorted(ENABLED_COMPATS)
+message("Enabled third-party data sources:")
+for(name, ENABLED_COMPATS): message("  - $$name")
+isEmpty(ENABLED_COMPATS): message("  - (none)")
