@@ -21,6 +21,7 @@ SOURCES += \
 
 contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = yes
 unix:!macx:!android:!defined(target_arm, var): pclinux = yes
+unix:!android:defined(target_arm, var): armlinux = yes
 
 
 ENABLED_COMPATS =
@@ -53,7 +54,7 @@ win32|defined(pclinux,var) {
         $$PWD/gog/GogProvider.cpp
 }
 
-win32|macx|defined(pclinux,var) {
+win32|macx|defined(pclinux,var)|defined(armlinux,var) {
     ENABLED_COMPATS += EmulationStation
     DEFINES *= WITH_COMPAT_ES2
     HEADERS += \
