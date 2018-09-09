@@ -43,11 +43,16 @@ bool read_api_json(modeldata::Game& game, const QJsonDocument& json)
     if (json_root.isEmpty())
         return false;
 
+
     const auto desc = json_root[QLatin1String("description")].toObject();
     if (!desc.isEmpty()) {
         game.summary = desc[QLatin1String("lead")].toString().replace('\n', ' ');
         game.description = desc[QLatin1String("full")].toString().replace('\n', ' ');
     }
+
+    const auto date_raw = json_root[QLatin1String("release_date")].toString();
+    game.release_date = QDate::fromString(date_raw, Qt::ISODate);
+
 
     modeldata::GameAssets& assets = game.assets;
 
