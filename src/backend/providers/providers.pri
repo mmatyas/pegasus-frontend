@@ -6,8 +6,7 @@ HEADERS += \
     $$PWD/pegasus/PegasusMetadata.h \
     $$PWD/pegasus/PegasusProvider.h \
     $$PWD/pegasus_favorites/Favorites.h \
-    $$PWD/pegasus_playtime/PlaytimeStats.h \
-    $$PWD/JsonCacheUtils.h
+    $$PWD/pegasus_playtime/PlaytimeStats.h
 
 SOURCES += \
     $$PWD/Provider.cpp \
@@ -17,8 +16,7 @@ SOURCES += \
     $$PWD/pegasus/PegasusMetadata.cpp \
     $$PWD/pegasus/PegasusProvider.cpp \
     $$PWD/pegasus_favorites/Favorites.cpp \
-    $$PWD/pegasus_playtime/PlaytimeStats.cpp \
-    $$PWD/JsonCacheUtils.cpp
+    $$PWD/pegasus_playtime/PlaytimeStats.cpp
 
 
 contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = yes
@@ -68,6 +66,15 @@ win32|macx|defined(pclinux,var) {
         $$PWD/es2/Es2Provider.cpp \
         $$PWD/es2/Es2Systems.cpp \
 }
+
+
+contains(ENABLED_COMPATS,Steam)|contains(ENABLED_COMPATS,GOG) {
+    HEADERS += \
+        $$PWD/JsonCacheUtils.h
+    SOURCES += \
+        $$PWD/JsonCacheUtils.cpp
+}
+
 
 # Print configuration
 ENABLED_COMPATS = $$sorted(ENABLED_COMPATS)
