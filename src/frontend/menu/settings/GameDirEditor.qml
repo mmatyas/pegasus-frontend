@@ -100,8 +100,8 @@ FocusScope {
 
         // TODO: proper gamepad button mapping
         Keys.onPressed: {
-            var do_remove = event.key === Qt.Key_Delete || event.key === Qt.Key_Control;
-            var do_add = event.key === Qt.Key_Shift;
+            var do_remove = event.key === Qt.Key_Delete || event.key === Qt.Key_I;
+            var do_add = event.key === Qt.Key_F;
             if (!do_add && !do_remove)
                 return;
 
@@ -119,7 +119,7 @@ FocusScope {
                 filePicker.focus = true;
         }
         Keys.onReleased: {
-            if (event.key !== Qt.Key_Delete && event.key !== Qt.Key_Control)
+            if (event.key !== Qt.Key_Delete && event.key !== Qt.Key_I)
                 return;
 
             event.accepted = true;

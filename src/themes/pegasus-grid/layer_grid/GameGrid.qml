@@ -47,11 +47,11 @@ FocusScope {
                 nextPlatformRequested();
                 break;
             // game data
-            case Qt.Key_Control:
+            case Qt.Key_I:
                 detailsRequested();
                 break;
             // filtering
-            case Qt.Key_Shift:
+            case Qt.Key_F:
                 filtersRequested();
                 break;
             default:

@@ -28,7 +28,7 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
-        if (event.key === Qt.Key_Shift) {
+        if (event.key === Qt.Key_F || event.key === Qt.Key_Escape) {
             closeRequested();
             event.accepted = true;
         }

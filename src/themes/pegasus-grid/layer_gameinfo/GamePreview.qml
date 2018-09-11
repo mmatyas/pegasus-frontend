@@ -36,11 +36,12 @@ FocusScope {
             return;
 
         switch (event.key) {
-            case Qt.Key_Control:
+            case Qt.Key_Escape:
+            case Qt.Key_I:
                 closeRequested();
                 break;
             // filtering
-            case Qt.Key_Shift:
+            case Qt.Key_F:
                 filtersRequested();
                 break;
             default:
