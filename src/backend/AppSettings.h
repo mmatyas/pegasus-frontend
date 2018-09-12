@@ -21,7 +21,7 @@
 #include <functional>
 
 
-struct AppArgs {
+struct AppSettings {
     /// Do not read or write config files outside the program's directory
     static bool portable_mode;
     /// Do not write to stdout

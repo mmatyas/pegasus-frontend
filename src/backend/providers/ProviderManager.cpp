@@ -17,7 +17,7 @@
 
 #include "ProviderManager.h"
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
@@ -121,15 +121,15 @@ ProviderManager::ProviderManager(QObject* parent)
     m_providers.emplace_back(new providers::favorites::Favorites());
     m_providers.emplace_back(new providers::playtime::PlaytimeStats());
 #ifdef WITH_COMPAT_STEAM
-    if (AppArgs::enable_provider_steam)
+    if (AppSettings::enable_provider_steam)
         m_providers.emplace_back(new providers::steam::SteamProvider());
 #endif
 #ifdef WITH_COMPAT_GOG
-    if (AppArgs::enable_provider_gog)
+    if (AppSettings::enable_provider_gog)
         m_providers.emplace_back(new providers::gog::GogProvider());
 #endif
 #ifdef WITH_COMPAT_ES2
-    if (AppArgs::enable_provider_es2)
+    if (AppSettings::enable_provider_es2)
         m_providers.emplace_back(new providers::es2::Es2Provider());
 #endif
 

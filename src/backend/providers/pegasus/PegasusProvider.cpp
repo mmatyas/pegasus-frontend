@@ -17,7 +17,7 @@
 
 #include "PegasusProvider.h"
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
 
@@ -35,7 +35,7 @@ PegasusProvider::PegasusProvider(QObject* parent)
 {
     add_game_dir(paths::writableConfigDir() + QStringLiteral("/global_collection"), true);
 
-    AppArgs::parse_gamedirs([this](const QString& line){
+    AppSettings::parse_gamedirs([this](const QString& line){
         add_game_dir(line);
     });
 }

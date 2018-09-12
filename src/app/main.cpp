@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "AppContext.h"
 #include "Backend.h"
 #include "LocaleUtils.h"
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
-    AppArgs::load_config();
+    AppSettings::load_config();
     handleCommandLineArgs(app);
 
     backend::AppContext context;
@@ -72,6 +72,6 @@ void handleCommandLineArgs(QGuiApplication& app)
     argparser.process(app);
 
 
-    AppArgs::portable_mode = argparser.isSet(arg_portable);
-    AppArgs::silent = argparser.isSet(arg_silent);
+    AppSettings::portable_mode = argparser.isSet(arg_portable);
+    AppSettings::silent = argparser.isSet(arg_silent);
 }

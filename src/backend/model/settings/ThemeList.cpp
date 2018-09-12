@@ -19,7 +19,7 @@
 
 #include "utils/HashMap.h"
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "ConfigFile.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
@@ -154,14 +154,14 @@ void ThemeList::selectPreferredTheme()
 
 
     // A. Try to use the saved config value
-    if (!AppArgs::theme.isEmpty())
-        m_theme_idx = indexOfTheme(AppArgs::theme);
+    if (!AppSettings::theme.isEmpty())
+        m_theme_idx = indexOfTheme(AppSettings::theme);
 
     // B. Fall back to the built-in theme
     //    Either the config value is invalid, or has missing files,
     //    thus not present in `m_themes`.
     if (m_theme_idx < 0)
-        m_theme_idx = indexOfTheme(AppArgs::DEFAULT_THEME);
+        m_theme_idx = indexOfTheme(AppSettings::DEFAULT_THEME);
 
 
     Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
@@ -207,8 +207,8 @@ void ThemeList::setIndex(int idx)
     emit themeChanged();
 
     // remember
-    AppArgs::theme = current()->dir();
-    AppArgs::save_config();
+    AppSettings::theme = current()->dir();
+    AppSettings::save_config();
 }
 
 QQmlListProperty<Theme> ThemeList::getListProp()

@@ -17,7 +17,7 @@
 
 #include "Settings.h"
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
 
@@ -59,11 +59,11 @@ Settings::Settings(QObject* parent)
 
 void Settings::setFullscreen(bool new_val)
 {
-    if (new_val == AppArgs::fullscreen)
+    if (new_val == AppSettings::fullscreen)
         return;
 
-    AppArgs::fullscreen = new_val;
-    AppArgs::save_config();
+    AppSettings::fullscreen = new_val;
+    AppSettings::save_config();
 
     emit fullscreenChanged();
 }
@@ -71,7 +71,7 @@ void Settings::setFullscreen(bool new_val)
 QStringList Settings::gameDirs() const
 {
     QSet<QString> dirset;
-    AppArgs::parse_gamedirs([&dirset](const QString& line){
+    AppSettings::parse_gamedirs([&dirset](const QString& line){
         dirset.insert(line);
     });
 
@@ -92,7 +92,7 @@ void Settings::addGameDir(const QString& path)
     }
 
     QSet<QString> dirset;
-    AppArgs::parse_gamedirs([&dirset](const QString& line){
+    AppSettings::parse_gamedirs([&dirset](const QString& line){
         dirset.insert(line);
     });
 

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "LocaleList.h"
 #include "ThemeList.h"
 #include "ProviderList.h"
@@ -42,7 +42,7 @@ class Settings : public QObject {
 public:
     explicit Settings(QObject* parent = nullptr);
 
-    bool fullscreen() const { return AppArgs::fullscreen; }
+    bool fullscreen() const { return AppSettings::fullscreen; }
     void setFullscreen(bool);
 
     QStringList gameDirs() const;

@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 
 #include "ConfigFile.h"
 #include "LocaleUtils.h"
@@ -62,21 +62,21 @@ struct ConfigEntryMap {
 } // namespace
 
 
-bool AppArgs::portable_mode = false;
-bool AppArgs::silent = false;
-bool AppArgs::fullscreen = true;
+bool AppSettings::portable_mode = false;
+bool AppSettings::silent = false;
+bool AppSettings::fullscreen = true;
 
-bool AppArgs::enable_provider_es2 = true;
-bool AppArgs::enable_provider_steam = true;
-bool AppArgs::enable_provider_gog = true;
+bool AppSettings::enable_provider_es2 = true;
+bool AppSettings::enable_provider_steam = true;
+bool AppSettings::enable_provider_gog = true;
 
-const QString AppArgs::DEFAULT_LOCALE(QStringLiteral("en"));
-const QString AppArgs::DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"));
-QString AppArgs::locale(DEFAULT_LOCALE);
-QString AppArgs::theme(DEFAULT_THEME);
+const QString AppSettings::DEFAULT_LOCALE(QStringLiteral("en"));
+const QString AppSettings::DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"));
+QString AppSettings::locale(DEFAULT_LOCALE);
+QString AppSettings::theme(DEFAULT_THEME);
 
 
-void AppArgs::load_config()
+void AppSettings::load_config()
 {
     const auto config_path = ::config_path();
     const ConfigEntryMap config_entry_map;
@@ -131,7 +131,7 @@ void AppArgs::load_config()
     qInfo().noquote() << tr_log("Program settings loaded");
 }
 
-void AppArgs::save_config()
+void AppSettings::save_config()
 {
     const auto config_path = ::config_path();
 
@@ -177,7 +177,7 @@ void AppArgs::save_config()
     ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
 }
 
-void AppArgs::parse_gamedirs(const std::function<void(const QString&)>& callback)
+void AppSettings::parse_gamedirs(const std::function<void(const QString&)>& callback)
 {
     constexpr int LINE_MAX_LEN = 4096;
 

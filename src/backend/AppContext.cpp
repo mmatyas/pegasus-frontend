@@ -18,7 +18,7 @@
 #include "AppContext.h"
 
 #include "Api.h"
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
@@ -111,7 +111,7 @@ AppContext::~AppContext()
 
 void AppContext::setup_logging()
 {
-    if (!AppArgs::silent)
+    if (!AppSettings::silent)
         g_log_streams.emplace_back(stdout);
 
     qInstallMessageHandler(on_log_message);

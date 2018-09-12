@@ -17,7 +17,7 @@
 
 #include "ProviderList.h"
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "ListPropertyFn.h"
 
 #include <QDebug>
@@ -39,7 +39,7 @@ void Provider::setEnabled(bool val)
     *m_value_ptr = val;
     enabledChanged();
 
-    AppArgs::save_config();
+    AppSettings::save_config();
 }
 
 
@@ -48,17 +48,17 @@ ProviderList::ProviderList(QObject* parent)
 {
 #ifdef WITH_COMPAT_ES2
     m_data.append(new model::Provider(QStringLiteral("EmulationStation"),
-                                      &AppArgs::enable_provider_es2,
+                                      &AppSettings::enable_provider_es2,
                                       this));
 #endif
 #ifdef WITH_COMPAT_STEAM
     m_data.append(new model::Provider(QStringLiteral("Steam"),
-                                      &AppArgs::enable_provider_steam,
+                                      &AppSettings::enable_provider_steam,
                                       this));
 #endif
 #ifdef WITH_COMPAT_GOG
     m_data.append(new model::Provider(QStringLiteral("GOG"),
-                                      &AppArgs::enable_provider_gog,
+                                      &AppSettings::enable_provider_gog,
                                       this));
 #endif
 }

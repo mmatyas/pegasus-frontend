@@ -17,7 +17,7 @@
 
 #include "LocaleList.h"
 
-#include "AppArgs.h"
+#include "AppSettings.h"
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
@@ -70,8 +70,8 @@ void LocaleList::findAvailableLocales()
 void LocaleList::selectPreferredLocale()
 {
     // A. Try to use the saved config value
-    if (!AppArgs::locale.isEmpty())
-        m_locale_idx = indexOfLocale(AppArgs::locale);
+    if (!AppSettings::locale.isEmpty())
+        m_locale_idx = indexOfLocale(AppSettings::locale);
 
     // B. Try to use the system default language
     if (m_locale_idx < 0)
@@ -79,7 +79,7 @@ void LocaleList::selectPreferredLocale()
 
     // C. Fall back to the default
     if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(AppArgs::DEFAULT_LOCALE);
+        m_locale_idx = indexOfLocale(AppSettings::DEFAULT_LOCALE);
 
 
     Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
@@ -128,8 +128,8 @@ void LocaleList::setIndex(int idx)
     emit localeChanged();
 
     // remember
-    AppArgs::locale = current()->tag();
-    AppArgs::save_config();
+    AppSettings::locale = current()->tag();
+    AppSettings::save_config();
 }
 
 QQmlListProperty<Locale> LocaleList::getListProp()
