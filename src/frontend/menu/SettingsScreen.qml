@@ -32,34 +32,9 @@ MenuScreen {
     }
 
 
-    Item {
+    ScreenHeader {
         id: header
-
-        width: parent.width
-        height: vpx(80)
-
-        Text {
-            id: title
-
-            text: qsTr("Settings") + api.tr
-            color: "#eee"
-            font.pixelSize: vpx(40)
-            font.family: globalFonts.sans
-
-            anchors.left: parent.horizontalCenter
-            anchors.leftMargin: parent.width * -0.4
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: vpx(10)
-        }
-
-        Rectangle {
-            width: parent.width * 0.97
-            height: vpx(1)
-            color: "#555"
-
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
+        text: qsTr("Settings") + api.tr
     }
 
     FocusScope {
@@ -125,20 +100,31 @@ MenuScreen {
                     api.settings.fullscreen = checked;
                 }
 
+                KeyNavigation.down: optKeyboardConfig
+            }
+
+            SectionTitle {
+                text: qsTr("Controls") + api.tr
+            }
+
+            SimpleButton {
+                id: optKeyboardConfig
+
+                label: qsTr("Edit keyboard mapping...") + api.tr
+                onActivate: keyboardEditor.focus = true
+
                 KeyNavigation.down: optEditGameDirs
             }
 
             SectionTitle {
                 text: qsTr("Gaming") + api.tr
             }
-
             SimpleButton {
                 id: optEditGameDirs
 
                 label: qsTr("Set game directories...") + api.tr
                 onActivate: gameDirEditor.focus = true
             }
-
             SimpleButton {
                 id: optEditProviders
 
@@ -174,6 +160,10 @@ MenuScreen {
     }
     ProviderEditor {
         id: providerEditor
+        onClose: content.focus = true
+    }
+    KeyEditor {
+        id: keyboardEditor
         onClose: content.focus = true
     }
 }

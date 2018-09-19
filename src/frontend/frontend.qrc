@@ -49,5 +49,10 @@
         <file>menu/settings/SectionTitle.qml</file>
         <file>menu/settings/ProviderEditor.qml</file>
         <file>menu/settings/NeedsRestartNotice.qml</file>
+        <file>menu/settings/ScreenHeader.qml</file>
+        <file>menu/settings/KeyEditor.qml</file>
+        <file>menu/settings/KeyEditorEntry.qml</file>
+        <file>menu/settings/KeyEditorEntryButton.qml</file>
+        <file>menu/settings/KeyEditorRecorder.qml</file>
     </qresource>
 </RCC>
