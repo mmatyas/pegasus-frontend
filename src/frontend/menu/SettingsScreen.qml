@@ -30,6 +30,11 @@ FocusScope {
         subscreen.focus = true;
         root.state = "sub";
     }
+    function openModal(url) {
+        modal.source = url;
+        modal.focus = true;
+        root.state = "modal";
+    }
 
     anchors.fill: parent
     enabled: focus
@@ -43,17 +48,27 @@ FocusScope {
 
         onClose: root.close()
         onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
-        onOpenGameDirSettings: gameDirEditor.focus = true
-        onOpenProviderSettings: providerEditor.focus = true
+        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
+        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
     }
 
-    GameDirEditor {
-        id: gameDirEditor
-        onClose: main.focus = true
+
+    Loader {
+        id: modal
+        asynchronous: true
+
+        anchors.fill: parent
+
+        enabled: focus
+        onLoaded: item.focus = focus
+        onFocusChanged: if (item) item.focus = focus
     }
-    ProviderEditor {
-        id: providerEditor
-        onClose: main.focus = true
+    Connections {
+        target: modal.item
+        onClose: {
+            main.focus = true;
+            root.state = "";
+        }
     }
 
 
@@ -83,12 +98,12 @@ FocusScope {
             name: "sub"
             AnchorChanges {
                 target: main
-                anchors.right: subscreen.left;
+                anchors.right: subscreen.left
             }
             AnchorChanges {
                 target: subscreen
                 anchors.left: undefined
-                anchors.right: parent.right;
+                anchors.right: parent.right
             }
         }
     ]
