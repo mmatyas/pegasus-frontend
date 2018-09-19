@@ -35,51 +35,142 @@ QString config_path()
     return paths::writableConfigDir() + QStringLiteral("/settings.txt");
 }
 
-enum class ConfigEntryType : unsigned char {
+enum class ConfigEntryCategory : unsigned char {
+    GENERAL,
+    PROVIDERS,
+    KEYS,
+};
+enum class ConfigEntryGeneralOption : unsigned char {
+    PORTABLE,
+    SILENT,
     FULLSCREEN,
     LOCALE,
     THEME,
-    ENABLE_ES2,
-    ENABLE_STEAM,
-    ENABLE_GOG,
 };
-struct ConfigEntryMap {
-    const HashMap<const ConfigEntryType, const QString, EnumHash> type_to_str {
-        { ConfigEntryType::FULLSCREEN, QStringLiteral("general.fullscreen") },
-        { ConfigEntryType::LOCALE, QStringLiteral("general.locale") },
-        { ConfigEntryType::THEME, QStringLiteral("general.theme") },
-        { ConfigEntryType::ENABLE_ES2, QStringLiteral("providers.enable-es2") },
-        { ConfigEntryType::ENABLE_STEAM, QStringLiteral("providers.enable-steam") },
-        { ConfigEntryType::ENABLE_GOG, QStringLiteral("providers.enable-gog") },
-    };
-    HashMap<QString, const ConfigEntryType> str_to_type;
+struct ConfigEntryMaps {
+    using Category = ConfigEntryCategory;
+    using GeneralOption = ConfigEntryGeneralOption;
 
-    ConfigEntryMap() {
-        for (const auto& entry : type_to_str)
-            str_to_type.emplace(entry.second, entry.first);
-    }
+    const HashMap<QString, Category> str_to_category {
+        { QStringLiteral("general"), Category::GENERAL },
+        { QStringLiteral("providers"), Category::PROVIDERS },
+        { QStringLiteral("keys"), Category::KEYS },
+    };
+    const HashMap<QString, GeneralOption> str_to_general_opt {
+        { QStringLiteral("portable"), GeneralOption::PORTABLE },
+        { QStringLiteral("silent"), GeneralOption::SILENT },
+        { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
+        { QStringLiteral("locale"), GeneralOption::LOCALE },
+        { QStringLiteral("theme"), GeneralOption::THEME },
+    };
+    const HashMap<QString, ExtProvider> str_to_extprovider {
+        { QStringLiteral("es2"), ExtProvider::ES2 },
+        { QStringLiteral("steam"), ExtProvider::STEAM },
+        { QStringLiteral("gog"), ExtProvider::GOG },
+    };
+    const HashMap<QString, KeyEvent> str_to_key_opt {
+        { QStringLiteral("accept"), KeyEvent::ACCEPT },
+        { QStringLiteral("cancel"), KeyEvent::CANCEL },
+        { QStringLiteral("details"), KeyEvent::DETAILS },
+        { QStringLiteral("filters"), KeyEvent::FILTERS },
+        { QStringLiteral("next-page"), KeyEvent::NEXT_PAGE },
+        { QStringLiteral("prev-page"), KeyEvent::PREV_PAGE },
+        { QStringLiteral("page-up"), KeyEvent::PAGE_UP },
+        { QStringLiteral("page-down"), KeyEvent::PAGE_DOWN },
+    };
 };
+
 } // namespace
 
 
-bool AppSettings::portable_mode = false;
-bool AppSettings::silent = false;
-bool AppSettings::fullscreen = true;
+namespace appsettings {
+General::General()
+    : DEFAULT_LOCALE(QStringLiteral("en"))
+    , DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"))
+    , portable(false)
+    , silent(false)
+    , fullscreen(true)
+    , locale(DEFAULT_LOCALE)
+    , theme(DEFAULT_THEME)
+{}
 
-bool AppSettings::enable_provider_es2 = true;
-bool AppSettings::enable_provider_steam = true;
-bool AppSettings::enable_provider_gog = true;
 
-const QString AppSettings::DEFAULT_LOCALE(QStringLiteral("en"));
-const QString AppSettings::DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"));
-QString AppSettings::locale(DEFAULT_LOCALE);
-QString AppSettings::theme(DEFAULT_THEME);
+Keys::Keys()
+    : m_event_keyboard {
+        { KeyEvent::ACCEPT, { Qt::Key_Return, Qt::Key_Enter }},
+        { KeyEvent::CANCEL, { Qt::Key_Escape, Qt::Key_Backspace }},
+        { KeyEvent::DETAILS, { Qt::Key_I }},
+        { KeyEvent::FILTERS, { Qt::Key_F }},
+        { KeyEvent::NEXT_PAGE, { Qt::Key_E, Qt::Key_D }},
+        { KeyEvent::PREV_PAGE, { Qt::Key_Q, Qt::Key_A }},
+        { KeyEvent::PAGE_UP, { Qt::Key_PageUp }},
+        { KeyEvent::PAGE_DOWN, { Qt::Key_PageDown }},
+    }
+    , m_event_gamepad {
+        { KeyEvent::ACCEPT, static_cast<int>(GamepadKeyId::A) },
+        { KeyEvent::CANCEL, static_cast<int>(GamepadKeyId::B) },
+        { KeyEvent::DETAILS, static_cast<int>(GamepadKeyId::X) },
+        { KeyEvent::FILTERS, static_cast<int>(GamepadKeyId::Y) },
+        { KeyEvent::NEXT_PAGE, static_cast<int>(GamepadKeyId::R1) },
+        { KeyEvent::PREV_PAGE, static_cast<int>(GamepadKeyId::L1) },
+        { KeyEvent::PAGE_UP, static_cast<int>(GamepadKeyId::L2) },
+        { KeyEvent::PAGE_DOWN, static_cast<int>(GamepadKeyId::R2) },
+    }
+{}
+void Keys::add_key(KeyEvent event, int key)
+{
+    for (auto& entry : m_event_keyboard)
+        entry.second.removeOne(key);
+
+    m_event_keyboard.at(event).append(key);
+}
+void Keys::del_key(KeyEvent event, int key)
+{
+    m_event_keyboard.at(event).removeOne(key);
+}
+void Keys::clear(KeyEvent event)
+{
+    m_event_keyboard.at(event).clear();
+}
+const QVector<int>& Keys::at(KeyEvent event) const {
+    return m_event_keyboard.at(event);
+}
+const QVector<int>& Keys::operator[](KeyEvent event) const {
+    return at(event);
+}
+int Keys::gamepadKey(KeyEvent event) const {
+    return m_event_gamepad.at(event);
+}
+
+
+Providers::Providers()
+    : m_providers {
+        { ExtProvider::ES2, { true } },
+        { ExtProvider::STEAM, { true } },
+        { ExtProvider::GOG, { true } },
+    }
+{}
+Providers::ExtProviderInfo& Providers::mut(ExtProvider key) {
+    return m_providers.at(key);
+}
+const Providers::ExtProviderInfo& Providers::at(ExtProvider key) const {
+    return m_providers.at(key);
+}
+const Providers::ExtProviderInfo& Providers::operator[](ExtProvider key) const {
+    return at(key);
+}
+} // namespace appsettings
+
+
+appsettings::General AppSettings::general;
+appsettings::Keys AppSettings::keys;
+appsettings::Providers AppSettings::ext_providers;
 
 
 void AppSettings::load_config()
 {
     const auto config_path = ::config_path();
-    const ConfigEntryMap config_entry_map;
+    const ConfigEntryMaps maps;
 
 
     const auto on_error = [&](const int lineno, const QString msg){
@@ -88,42 +179,91 @@ void AppSettings::load_config()
     };
 
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
-        const auto entry_type = config_entry_map.str_to_type.find(key);
-        if (entry_type == config_entry_map.str_to_type.cend()) {
+        const auto on_error_unknown_opt = [&](){
             on_error(lineno, tr_log("unrecognized option `%1`, ignored").arg(key));
+        };
+
+        QStringList sections = key.split('.');
+        if (sections.size() < 2) {
+            on_error_unknown_opt();
             return;
         }
-        switch (entry_type->second) {
-            case ConfigEntryType::FULLSCREEN:
-            case ConfigEntryType::ENABLE_ES2:
-            case ConfigEntryType::ENABLE_STEAM:
-                if (!::is_str_bool(val)) {
-                    on_error(lineno, QStringLiteral("this option requires a boolean (true/false) value"));
+        const QString category_str = sections.takeFirst();
+        const auto category_it = maps.str_to_category.find(category_str);
+        if (category_it == maps.str_to_category.cend()) {
+            on_error_unknown_opt();
+            return;
+        }
+
+        const auto on_error_needs_bool = [&](){
+            on_error(lineno, tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
+        };
+
+        switch (category_it->second) {
+            case ConfigEntryCategory::GENERAL: {
+                const auto option_it = maps.str_to_general_opt.find(sections.constFirst());
+                if (option_it == maps.str_to_general_opt.cend()) {
+                    on_error_unknown_opt();
                     return;
                 }
+                switch (option_it->second) {
+                    case ConfigEntryGeneralOption::PORTABLE:
+                        general.portable = ::str_to_bool(val, general.portable, on_error_needs_bool);
+                        break;
+                    case ConfigEntryGeneralOption::SILENT:
+                        general.silent = ::str_to_bool(val, general.silent, on_error_needs_bool);
+                        break;
+                    case ConfigEntryGeneralOption::FULLSCREEN:
+                        general.fullscreen = ::str_to_bool(val, general.fullscreen, on_error_needs_bool);
+                        break;
+                    case ConfigEntryGeneralOption::LOCALE:
+                        general.locale = val;
+                        break;
+                    case ConfigEntryGeneralOption::THEME:
+                        general.theme = val;
+                        break;
+                }
                 break;
-            default:
+            }
+            case ConfigEntryCategory::PROVIDERS: {
+                if (sections.size() < 2) {
+                    on_error_unknown_opt();
+                    return;
+                }
+                const auto provider_it = maps.str_to_extprovider.find(sections.takeFirst());
+                if (provider_it == maps.str_to_extprovider.cend()) {
+                    on_error_unknown_opt();
+                    return;
+                }
+                auto& provider = ext_providers.mut(provider_it->second);
+                const auto option = sections.takeFirst();
+                if (option == QStringLiteral("enabled")) {
+                    provider.enabled = ::str_to_bool(val, provider.enabled, on_error_needs_bool);
+                }
                 break;
-        }
-        switch (entry_type->second) {
-            case ConfigEntryType::FULLSCREEN:
-                fullscreen = ::str_to_bool(val, fullscreen);
+            }
+            case ConfigEntryCategory::KEYS:
+            {
+                const auto key_it = maps.str_to_key_opt.find(sections.constFirst());
+                if (key_it == maps.str_to_key_opt.cend()) {
+                    on_error_unknown_opt();
+                    return;
+                }
+
+                QVector<int> key_nums;
+                const auto key_strs = val.splitRef(',');
+                for (QStringRef str : key_strs) {
+                    const int key = str.toInt();
+                    key_nums << key;
+                }
+                key_nums.removeAll(0);
+
+                keys.clear(key_it->second);
+                for (const int key : key_nums)
+                    keys.add_key(key_it->second, key);
+
                 break;
-            case ConfigEntryType::LOCALE:
-                locale = val;
-                break;
-            case ConfigEntryType::THEME:
-                theme = val;
-                break;
-            case ConfigEntryType::ENABLE_ES2:
-                enable_provider_es2 = ::str_to_bool(val, enable_provider_es2);
-                break;
-            case ConfigEntryType::ENABLE_STEAM:
-                enable_provider_steam = ::str_to_bool(val, enable_provider_steam);
-                break;
-            case ConfigEntryType::ENABLE_GOG:
-                enable_provider_gog = ::str_to_bool(val, enable_provider_gog);
-                break;
+            }
         }
     };
 
@@ -143,30 +283,67 @@ void AppSettings::save_config()
     }
 
 
-    if (locale.isEmpty())
-        locale = DEFAULT_LOCALE;
-    if (theme.isEmpty())
-        theme = DEFAULT_THEME;
+    const auto STR_TRUE(QStringLiteral("true"));
+    const auto STR_FALSE(QStringLiteral("false"));
+    const auto LINE_TEMPLATE(QStringLiteral("%1.%2: %3\n"));
 
-    const auto str_true(QStringLiteral("true"));
-    const auto str_false(QStringLiteral("false"));
-    const std::vector<std::pair<const ConfigEntryType, const QString>> entries {
-        { ConfigEntryType::FULLSCREEN, fullscreen ? str_true : str_false },
-        { ConfigEntryType::LOCALE, locale },
-        { ConfigEntryType::THEME, theme },
-        { ConfigEntryType::ENABLE_ES2, enable_provider_es2 ? str_true : str_false },
-        { ConfigEntryType::ENABLE_STEAM, enable_provider_steam ? str_true : str_false },
-        { ConfigEntryType::ENABLE_GOG, enable_provider_gog ? str_true : str_false },
-    };
-
-
-    const ConfigEntryMap config_entry_map;
     QTextStream stream(&config_file);
-    for (const auto& entry : entries) {
-        stream << config_entry_map.type_to_str.at(entry.first)
-               << QLatin1String(": ")
-               << entry.second
-               << '\n';
+
+
+    // sanity check
+
+    if (general.locale.isEmpty())
+        general.locale = general.DEFAULT_LOCALE;
+    if (general.theme.isEmpty())
+        general.theme = general.DEFAULT_THEME;
+
+
+    // printing (NOTE: slightly ugly but uses less memory like this)
+
+    ConfigEntryMaps maps;
+
+    HashMap<ConfigEntryCategory, QString, EnumHash> category_to_str;
+    for (const auto& entry : maps.str_to_category)
+        category_to_str.emplace(entry.second, entry.first);
+
+    // print general options
+    {
+        using GeneralOption = ConfigEntryGeneralOption;
+
+        HashMap<GeneralOption, QString, EnumHash> general_opt_to_str;
+        for (const auto& entry : maps.str_to_general_opt)
+            general_opt_to_str.emplace(entry.second, entry.first);
+
+        HashMap<GeneralOption, QString, EnumHash> values {
+            { GeneralOption::FULLSCREEN, general.fullscreen ? STR_TRUE : STR_FALSE },
+            { GeneralOption::LOCALE, general.locale },
+            { GeneralOption::THEME, general.theme },
+        };
+
+        for (const auto& entry : values) {
+            stream << LINE_TEMPLATE.arg(category_to_str.at(ConfigEntryCategory::GENERAL),
+                                        general_opt_to_str.at(entry.first),
+                                        entry.second);
+        }
+    }
+    // print provider info
+    for (const auto& entry : maps.str_to_extprovider) {
+        stream << LINE_TEMPLATE.arg(category_to_str.at(ConfigEntryCategory::PROVIDERS),
+                                    entry.first + QStringLiteral(".enabled"),
+                                    ext_providers[entry.second].enabled ? STR_TRUE : STR_FALSE);
+    }
+    // print keyboard config
+    for (const auto& entry : maps.str_to_key_opt) {
+        QStringList key_strs;
+        for (const int key : keys.at(entry.second))
+            key_strs << QString::number(key);
+
+        if (key_strs.isEmpty()) // 0 entries will be removed on read
+            key_strs << QStringLiteral("0");
+
+        stream << LINE_TEMPLATE.arg(category_to_str.at(ConfigEntryCategory::KEYS),
+                                    entry.first,
+                                    key_strs.join(','));
     }
 
     qInfo().noquote() << tr_log("Program settings saved");

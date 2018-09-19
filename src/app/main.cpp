@@ -72,6 +72,6 @@ void handleCommandLineArgs(QGuiApplication& app)
     argparser.process(app);
 
 
-    AppSettings::portable_mode = argparser.isSet(arg_portable);
-    AppSettings::silent = argparser.isSet(arg_silent);
+    AppSettings::general.portable = argparser.isSet(arg_portable);
+    AppSettings::general.silent = argparser.isSet(arg_silent);
 }

@@ -48,17 +48,17 @@ ProviderList::ProviderList(QObject* parent)
 {
 #ifdef WITH_COMPAT_ES2
     m_data.append(new model::Provider(QStringLiteral("EmulationStation"),
-                                      &AppSettings::enable_provider_es2,
+                                      &AppSettings::ext_providers.mut(ExtProvider::ES2).enabled,
                                       this));
 #endif
 #ifdef WITH_COMPAT_STEAM
     m_data.append(new model::Provider(QStringLiteral("Steam"),
-                                      &AppSettings::enable_provider_steam,
+                                      &AppSettings::ext_providers.mut(ExtProvider::STEAM).enabled,
                                       this));
 #endif
 #ifdef WITH_COMPAT_GOG
     m_data.append(new model::Provider(QStringLiteral("GOG"),
-                                      &AppSettings::enable_provider_gog,
+                                      &AppSettings::ext_providers.mut(ExtProvider::GOG).enabled,
                                       this));
 #endif
 }

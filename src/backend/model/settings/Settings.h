@@ -42,7 +42,7 @@ class Settings : public QObject {
 public:
     explicit Settings(QObject* parent = nullptr);
 
-    bool fullscreen() const { return AppSettings::fullscreen; }
+    bool fullscreen() const { return AppSettings::general.fullscreen; }
     void setFullscreen(bool);
 
     QStringList gameDirs() const;

@@ -154,14 +154,14 @@ void ThemeList::selectPreferredTheme()
 
 
     // A. Try to use the saved config value
-    if (!AppSettings::theme.isEmpty())
-        m_theme_idx = indexOfTheme(AppSettings::theme);
+    if (!AppSettings::general.theme.isEmpty())
+        m_theme_idx = indexOfTheme(AppSettings::general.theme);
 
     // B. Fall back to the built-in theme
     //    Either the config value is invalid, or has missing files,
     //    thus not present in `m_themes`.
     if (m_theme_idx < 0)
-        m_theme_idx = indexOfTheme(AppSettings::DEFAULT_THEME);
+        m_theme_idx = indexOfTheme(AppSettings::general.DEFAULT_THEME);
 
 
     Q_ASSERT(m_theme_idx >= 0 && m_theme_idx < m_themes.length());
@@ -207,7 +207,7 @@ void ThemeList::setIndex(int idx)
     emit themeChanged();
 
     // remember
-    AppSettings::theme = current()->dir();
+    AppSettings::general.theme = current()->dir();
     AppSettings::save_config();
 }
 

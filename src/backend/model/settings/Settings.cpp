@@ -59,10 +59,10 @@ Settings::Settings(QObject* parent)
 
 void Settings::setFullscreen(bool new_val)
 {
-    if (new_val == AppSettings::fullscreen)
+    if (new_val == AppSettings::general.fullscreen)
         return;
 
-    AppSettings::fullscreen = new_val;
+    AppSettings::general.fullscreen = new_val;
     AppSettings::save_config();
 
     emit fullscreenChanged();

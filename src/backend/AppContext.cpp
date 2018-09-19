@@ -111,7 +111,7 @@ AppContext::~AppContext()
 
 void AppContext::setup_logging()
 {
-    if (!AppSettings::silent)
+    if (!AppSettings::general.silent)
         g_log_streams.emplace_back(stdout);
 
     qInstallMessageHandler(on_log_message);
@@ -132,14 +132,22 @@ void AppContext::setup_logging()
 
 void AppContext::setup_gamepad()
 {
-    padkeynav.setButtonAKey(Qt::Key_Return);
-    padkeynav.setButtonBKey(Qt::Key_Escape);
-    padkeynav.setButtonXKey(Qt::Key_I);
-    padkeynav.setButtonYKey(Qt::Key_F);
-    padkeynav.setButtonL1Key(Qt::Key_A);
-    padkeynav.setButtonR1Key(Qt::Key_E);
-    padkeynav.setButtonL2Key(Qt::Key_PageUp);
-    padkeynav.setButtonR2Key(Qt::Key_PageDown);
+    #define SET_GAMEPAD_KEY(fnName, enumName) \
+        padkeynav.setButton ## fnName ## Key(static_cast<Qt::Key>(GamepadKeyId::enumName));
+    SET_GAMEPAD_KEY(A, A);
+    SET_GAMEPAD_KEY(B, B);
+    SET_GAMEPAD_KEY(X, X);
+    SET_GAMEPAD_KEY(Y, Y);
+    SET_GAMEPAD_KEY(L1, L1);
+    SET_GAMEPAD_KEY(L2, L2);
+    SET_GAMEPAD_KEY(L3, L3);
+    SET_GAMEPAD_KEY(R1, R1);
+    SET_GAMEPAD_KEY(R2, R2);
+    SET_GAMEPAD_KEY(R3, R3);
+    SET_GAMEPAD_KEY(Select, SELECT);
+    SET_GAMEPAD_KEY(Start, START);
+    SET_GAMEPAD_KEY(Guide, GUIDE);
+    #undef SET_GAMEPAD_KEY
 
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
                      &padaxisnav, &GamepadAxisNavigation::onAxisEvent);

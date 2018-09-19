@@ -60,12 +60,13 @@ bool is_str_bool(const QString& str)
     return str_to_bool_map.count(str.toLower());
 }
 
-bool str_to_bool(const QString& str, const bool default_val)
+bool str_to_bool(const QString& str, const bool default_val, const std::function<void()>& on_fail_cb)
 {
     const auto it = str_to_bool_map.find(str.toLower());
     if (it != str_to_bool_map.cend())
         return it->second;
 
+    on_fail_cb();
     return default_val;
 }
 

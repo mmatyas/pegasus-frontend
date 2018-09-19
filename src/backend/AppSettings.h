@@ -17,32 +17,100 @@
 
 #pragma once
 
+#include "utils/HashMap.h"
+#include "utils/NoCopyNoMove.h"
+
 #include <QString>
+#include <QVector>
 #include <functional>
 
 
+enum class KeyEvent : unsigned char {
+    ACCEPT,
+    CANCEL,
+    DETAILS,
+    FILTERS,
+    NEXT_PAGE,
+    PREV_PAGE,
+    PAGE_UP,
+    PAGE_DOWN,
+};
+enum class GamepadKeyId : int {
+    A = 0x100000,
+    B, X, Y,
+    L1, L2, L3,
+    R1, R2, R3,
+    SELECT,
+    START,
+    GUIDE,
+};
+enum class ExtProvider : unsigned char {
+    ES2,
+    STEAM,
+    GOG,
+};
+
+
+namespace appsettings {
+
+struct General {
+    const QString DEFAULT_LOCALE;
+    const QString DEFAULT_THEME;
+
+    bool portable;
+    bool silent;
+    bool fullscreen;
+    QString locale;
+    QString theme;
+
+    General();
+    NO_COPY_NO_MOVE(General)
+};
+
+
+class Keys {
+public:
+    Keys();
+    NO_COPY_NO_MOVE(Keys)
+
+    void add_key(KeyEvent, int);
+    void del_key(KeyEvent, int);
+    void clear(KeyEvent);
+
+    const QVector<int>& at(KeyEvent) const;
+    const QVector<int>& operator[](KeyEvent) const;
+    int gamepadKey(KeyEvent) const;
+
+private:
+    HashMap<KeyEvent, QVector<int>, EnumHash> m_event_keyboard;
+    const HashMap<KeyEvent, int, EnumHash> m_event_gamepad;
+};
+
+
+class Providers {
+    struct ExtProviderInfo {
+        bool enabled;
+    };
+
+public:
+    Providers();
+    NO_COPY_NO_MOVE(Providers)
+
+    ExtProviderInfo& mut(ExtProvider);
+    const ExtProviderInfo& at(ExtProvider) const;
+    const ExtProviderInfo& operator[](ExtProvider) const;
+
+private:
+    HashMap<ExtProvider, ExtProviderInfo, EnumHash> m_providers;
+};
+
+} // namespace appsettings
+
+
 struct AppSettings {
-    /// Do not read or write config files outside the program's directory
-    static bool portable_mode;
-    /// Do not write to stdout
-    static bool silent;
-
-    /// Run in full screen mode
-    static bool fullscreen;
-    /// Program language
-    static QString locale;
-    static const QString DEFAULT_LOCALE;
-    /// Current theme path
-    static QString theme;
-    static const QString DEFAULT_THEME;
-
-    /// Enable EmulationStation 2 support
-    static bool enable_provider_es2;
-    /// Enable Steam support
-    static bool enable_provider_steam;
-    /// Enable GOG support
-    static bool enable_provider_gog;
-
+    static appsettings::General general;
+    static appsettings::Providers ext_providers;
+    static appsettings::Keys keys;
 
     static void load_config();
     static void save_config();

@@ -70,8 +70,8 @@ void LocaleList::findAvailableLocales()
 void LocaleList::selectPreferredLocale()
 {
     // A. Try to use the saved config value
-    if (!AppSettings::locale.isEmpty())
-        m_locale_idx = indexOfLocale(AppSettings::locale);
+    if (!AppSettings::general.locale.isEmpty())
+        m_locale_idx = indexOfLocale(AppSettings::general.locale);
 
     // B. Try to use the system default language
     if (m_locale_idx < 0)
@@ -79,7 +79,7 @@ void LocaleList::selectPreferredLocale()
 
     // C. Fall back to the default
     if (m_locale_idx < 0)
-        m_locale_idx = indexOfLocale(AppSettings::DEFAULT_LOCALE);
+        m_locale_idx = indexOfLocale(AppSettings::general.DEFAULT_LOCALE);
 
 
     Q_ASSERT(m_locale_idx >= 0 && m_locale_idx < m_locales.length());
@@ -128,7 +128,7 @@ void LocaleList::setIndex(int idx)
     emit localeChanged();
 
     // remember
-    AppSettings::locale = current()->tag();
+    AppSettings::general.locale = current()->tag();
     AppSettings::save_config();
 }
 

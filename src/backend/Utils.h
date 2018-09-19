@@ -34,7 +34,7 @@ bool validFile(const QString& path);
 inline int mathMod(int a, int n) { return (a % n + n) % n; }
 
 bool is_str_bool(const QString&);
-bool str_to_bool(const QString&, const bool default_val = false);
+bool str_to_bool(const QString&, const bool default_val, const std::function<void()>& on_fail_cb);
 
 
 // Index shifting

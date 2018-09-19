@@ -121,15 +121,15 @@ ProviderManager::ProviderManager(QObject* parent)
     m_providers.emplace_back(new providers::favorites::Favorites());
     m_providers.emplace_back(new providers::playtime::PlaytimeStats());
 #ifdef WITH_COMPAT_STEAM
-    if (AppSettings::enable_provider_steam)
+    if (AppSettings::ext_providers.at(ExtProvider::STEAM).enabled)
         m_providers.emplace_back(new providers::steam::SteamProvider());
 #endif
 #ifdef WITH_COMPAT_GOG
-    if (AppSettings::enable_provider_gog)
+    if (AppSettings::ext_providers.at(ExtProvider::GOG).enabled)
         m_providers.emplace_back(new providers::gog::GogProvider());
 #endif
 #ifdef WITH_COMPAT_ES2
-    if (AppSettings::enable_provider_es2)
+    if (AppSettings::ext_providers.at(ExtProvider::ES2).enabled)
         m_providers.emplace_back(new providers::es2::Es2Provider());
 #endif
 

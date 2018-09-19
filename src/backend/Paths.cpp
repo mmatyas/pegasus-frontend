@@ -51,7 +51,7 @@ QString get_appconfig_dir()
     const QString dir_path = QSP::writableLocation(QSP::GenericDataLocation)
                            + QStringLiteral("/pegasus-frontend");
 #else
-    QString dir_path = AppSettings::portable_mode
+    QString dir_path = AppSettings::general.portable
         ? QCoreApplication::applicationDirPath() + QStringLiteral("/config")
         : QSP::writableLocation(QSP::AppConfigLocation);
     remove_orgname(dir_path);
@@ -103,7 +103,7 @@ QStringList configDirs()
             paths << local_config_dir;
 
 
-        if (!AppSettings::portable_mode) {
+        if (!AppSettings::general.portable) {
 #ifdef INSTALL_DATADIR
             if (QFileInfo::exists(INSTALL_DATADIR))
                 paths << QString(INSTALL_DATADIR);
