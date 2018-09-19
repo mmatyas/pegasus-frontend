@@ -32,7 +32,7 @@ Window {
                 ? Window.FullScreen : Window.AutomaticVisibility
 
     onClosing: {
-        themeContent.source = "";
+        theme.source = "";
         api.system.quit();
     }
 
@@ -58,24 +58,27 @@ Window {
     FocusScope {
         id: content
         anchors.fill: parent
+        enabled: focus
 
         Loader {
-            id: themeContent
+            id: theme
             anchors.fill: parent
 
             focus: true
-            Keys.onEscapePressed: {
-                themeContent.enabled = false;
-                mainMenu.focus = true;
-                mainMenu.item.open();
-            }
+            enabled: focus
+
             Keys.onPressed: {
+                if (api.keys.isCancel(event.key)) {
+                    event.accepted = true;
+                    mainMenu.focus = true;
+                }
+
                 if (event.key === Qt.Key_F5) {
                     event.accepted = true;
 
-                    themeContent.source = "";
+                    theme.source = "";
                     api.meta.clearQMLCache();
-                    themeContent.source = Qt.binding(function() {
+                    theme.source = Qt.binding(function() {
                         return api.settings.themes.current.qmlPath;
                     });
                 }
@@ -92,36 +95,38 @@ Window {
             asynchronous: true
             onStatusChanged: {
                 if (status == Loader.Error)
-                    themeContent.source = "messages/ThemeError.qml";
-                else if (status == Loader.Ready)
-                    item.focus = true;
+                    source = "messages/ThemeError.qml";
             }
+            onLoaded: item.focus = focus
+            onFocusChanged: if (item) item.focus = focus
         }
 
         Loader {
             id: mainMenu
             anchors.fill: parent
-            sourceComponent: MenuLayer { focus: true }
+
+            source: "MenuLayer.qml"
             asynchronous: true
+
+            onLoaded: item.focus = focus
+            onFocusChanged: if (item) item.focus = focus
+            enabled: focus
         }
         Connections {
             target: mainMenu.item
-            onClose: {
-                themeContent.enabled = true;
-                themeContent.focus = true;
-            }
+
+            onClose: theme.focus = true
+
             onRequestShutdown: {
-                content.enabled = false;
                 powerDialog.source = "dialogs/ShutdownDialog.qml"
                 powerDialog.focus = true;
             }
             onRequestReboot: {
-                content.enabled = false;
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
             onRequestQuit: {
-                themeContent.source = "";
+                theme.source = "";
                 api.system.quit();
             }
         }
@@ -133,14 +138,12 @@ Window {
             anchors.right: parent.right
 
             onSwipeLeft: {
-                if (!mainMenu.focus) {
-                    themeContent.enabled = false;
+                if (!mainMenu.focus)
                     mainMenu.focus = true;
-                    mainMenu.item.open();
-                }
             }
         }
     }
+
 
     Loader {
         id: powerDialog
@@ -148,22 +151,21 @@ Window {
     }
     Connections {
         target: powerDialog.item
-        onCancel: {
-            content.enabled = true;
-            content.focus = true;
-        }
+        onCancel: content.focus = true
     }
+
 
     SplashLayer {
         id: splashScreen
+        focus: true
+        enabled: false
 
         property bool dataLoading: api.meta.loading
-        property bool skinLoading: themeContent.status === Loader.Null || themeContent.status === Loader.Loading
+        property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
 
         function hideMaybe() {
-            if (enabled && !dataLoading && !skinLoading) {
+            if (visible && !dataLoading && !skinLoading) {
                 visible = false;
-                enabled = false;
                 content.focus = true;
 
                 // break bindings

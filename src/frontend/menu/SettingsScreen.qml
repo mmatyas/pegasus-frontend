@@ -20,150 +20,99 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
 
 
-MenuScreen {
+FocusScope {
     id: root
 
-    Keys.onEscapePressed: close()
+    signal close
 
-
-    PegasusUtils.HorizSwipeArea {
-        anchors.fill: parent
-        onSwipeRight: close()
+    function openScreen(url) {
+        subscreen.source = url;
+        subscreen.focus = true;
+        root.state = "sub";
     }
 
+    anchors.fill: parent
+    enabled: focus
+    visible: 0 < (x + width) && x < globalWidth
 
-    ScreenHeader {
-        id: header
-        text: qsTr("Settings") + api.tr
-    }
 
-    FocusScope {
-        id: content
-
+    SettingsMain {
+        id: main
         focus: true
-        enabled: focus
+        anchors.right: parent.right
 
-        anchors.top: header.bottom
-        anchors.topMargin: vpx(30)
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width * 0.7
-
-
-        Column {
-            anchors.fill: parent
-            spacing: vpx(5)
-
-            SectionTitle {
-                text: qsTr("General") + api.tr
-                first: true
-            }
-
-            MultivalueOption {
-                id: optLanguage
-
-                focus: true
-
-                label: qsTr("Language") + api.tr
-                value: api.settings.locales.current.name
-
-                onActivate: {
-                    focus = true;
-                    localeBox.focus = true;
-                }
-
-                KeyNavigation.down: optTheme
-            }
-
-            MultivalueOption {
-                id: optTheme
-
-                label: qsTr("Theme") + api.tr
-                value: api.settings.themes.current.name
-
-                onActivate: {
-                    focus = true;
-                    themeBox.focus = true;
-                }
-
-                KeyNavigation.down: optFullscreen
-            }
-
-            ToggleOption {
-                id: optFullscreen
-
-                label: qsTr("Fullscreen mode") + api.tr
-                note: qsTr("On some platforms this setting may have no effect") + api.tr
-
-                checked: api.settings.fullscreen
-                onCheckedChanged: {
-                    focus = true;
-                    api.settings.fullscreen = checked;
-                }
-
-                KeyNavigation.down: optKeyboardConfig
-            }
-
-            SectionTitle {
-                text: qsTr("Controls") + api.tr
-            }
-
-            SimpleButton {
-                id: optKeyboardConfig
-
-                label: qsTr("Edit keyboard mapping...") + api.tr
-                onActivate: keyboardEditor.focus = true
-
-                KeyNavigation.down: optEditGameDirs
-            }
-
-            SectionTitle {
-                text: qsTr("Gaming") + api.tr
-            }
-            SimpleButton {
-                id: optEditGameDirs
-
-                label: qsTr("Set game directories...") + api.tr
-                onActivate: gameDirEditor.focus = true
-            }
-            SimpleButton {
-                id: optEditProviders
-
-                label: qsTr("Enable/disable data sources...") + api.tr
-                onActivate: providerEditor.focus = true
-            }
-        }
-    }
-
-
-    MultivalueBox {
-        id: localeBox
-
-        model: api.settings.locales.model
-        index: api.settings.locales.index
-
-        onClose: content.focus = true
-        onSelect: api.settings.locales.index = index
-    }
-    MultivalueBox {
-        id: themeBox
-
-        model: api.settings.themes.model
-        index: api.settings.themes.index
-
-        onClose: content.focus = true
-        onSelect: api.settings.themes.index = index
+        onClose: root.close()
+        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
+        onOpenGameDirSettings: gameDirEditor.focus = true
+        onOpenProviderSettings: providerEditor.focus = true
     }
 
     GameDirEditor {
         id: gameDirEditor
-        onClose: content.focus = true
+        onClose: main.focus = true
     }
     ProviderEditor {
         id: providerEditor
-        onClose: content.focus = true
+        onClose: main.focus = true
     }
-    KeyEditor {
-        id: keyboardEditor
-        onClose: content.focus = true
+
+
+    Loader {
+        id: subscreen
+        asynchronous: true
+
+        width: parent.width
+        height: parent.height
+        anchors.left: main.right
+
+        enabled: focus
+        onLoaded: item.focus = focus
+        onFocusChanged: if (item) item.focus = focus
     }
+    Connections {
+        target: subscreen.item
+        onClose: {
+            main.focus = true;
+            root.state = "";
+        }
+    }
+
+
+    states: [
+        State {
+            name: "sub"
+            AnchorChanges {
+                target: main
+                anchors.right: subscreen.left;
+            }
+            AnchorChanges {
+                target: subscreen
+                anchors.left: undefined
+                anchors.right: parent.right;
+            }
+        }
+    ]
+
+    // fancy easing curves, a la material design
+    readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
+    readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
+    readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
+
+    transitions: [
+        Transition {
+            from: ""; to: "sub"
+            AnchorAnimation {
+                duration: 425
+                easing { type: Easing.Bezier; bezierCurve: bezierStandard }
+            }
+        },
+        Transition {
+            from: "sub"; to: ""
+            AnchorAnimation {
+                duration: 400
+                easing { type: Easing.Bezier; bezierCurve: bezierSharp }
+            }
+            onRunningChanged: if (!running) subscreen.source = ""
+        }
+    ]
 }

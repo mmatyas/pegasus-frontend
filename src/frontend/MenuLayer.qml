@@ -22,10 +22,6 @@ import QtQuick 2.0
 FocusScope {
     id: root
 
-    function open() {
-        root.state = "menu";
-    }
-
     signal close()
     signal requestShutdown()
     signal requestReboot()
@@ -35,54 +31,47 @@ FocusScope {
         root.state = "";
         root.close();
     }
+    function openScreen(url) {
+        subscreen.source = url;
+        subscreen.focus = true;
+        root.state = "sub";
+    }
 
     anchors.fill: parent
     visible: shade.opacity > 0
 
-    Keys.onEscapePressed: triggerClose()
+    enabled: focus
+    onFocusChanged: if (focus) root.state = "menu";
 
-
-    // capture right mouse button
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: root.triggerClose()
-    }
 
     Rectangle {
-        // background
         id: shade
-        anchors {
-            left: parent.left
-            top: parent.top
-            bottom: parent.bottom
-            right: menuPanel.left
-        }
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: menuPanel.left
 
         color: "black"
-        opacity: 0
-        visible: opacity > 0 && width > 0
-
+        opacity: root.focus ? 0.75 : 0
+        visible: opacity > 0.001 && width > 0
         Behavior on opacity { NumberAnimation { duration: 300 } }
 
         Text {
             id: revision
+
             text: api.meta.gitRevision + ", " + api.meta.gitDate
             color: "#eee"
-            font {
-                pixelSize: vpx(12)
-                family: "monospace"
-            }
-            anchors {
-                left: parent.left
-                bottom: parent.bottom
-                margins: vpx(10)
-            }
+            font.pixelSize: vpx(12)
+            font.family: "monospace"
+
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.margins: vpx(10)
         }
 
         MouseArea {
-            // capture left mouse button
             anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
             onClicked: root.triggerClose()
         }
     }
@@ -91,14 +80,20 @@ FocusScope {
         id: menuPanel
         anchors.left: parent.right
 
-        function openScreen(url) {
-            subscreen.source = url;
-            root.state = "sub";
+        focus: true
+        Keys.onPressed: {
+            if (event.isAutoRepeat)
+                return;
+
+            if (api.keys.isCancel(event.key)) {
+                event.accepted = true;
+                root.close();
+            }
         }
 
-        onShowSettingsScreen: openScreen("menu/SettingsScreen.qml")
-        onShowGamepadScreen: openScreen("menu/GamepadScreen.qml")
-        onShowHelpScreen: openScreen("menu/HelpScreen.qml")
+        onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
+        onShowGamepadScreen: root.openScreen("menu/GamepadScreen.qml")
+        onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
 
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
@@ -108,35 +103,34 @@ FocusScope {
 
     Loader {
         id: subscreen
-        anchors.left: menuPanel.right
+        asynchronous: true
 
         width: parent.width
         height: parent.height
+        anchors.left: menuPanel.right
 
-        enabled: false
+        enabled: focus
+        onFocusChanged: if (item) item.focus = focus;
+        onLoaded: item.focus = focus
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#222"
+            z: -1
+        }
     }
     Connections {
         target: subscreen.item
-        onClose: root.state = "menu"
+        onClose: {
+            menuPanel.focus = true;
+            root.state = "menu";
+        }
     }
 
 
     states: [
         State {
-            // the shade should be visible in every state
-            name: "_shade"
-            PropertyChanges {
-                target: shade
-                opacity: 0.75
-            }
-        },
-        State {
-            name: "menu"; extend: "_shade"
-            PropertyChanges {
-                target: menuPanel
-                focus: true
-                enabled: true
-            }
+            name: "menu"
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
@@ -144,20 +138,16 @@ FocusScope {
             }
         },
         State {
-            name: "sub"; extend: "_shade"
-            PropertyChanges {
-                target: menuPanel
-                enabled: false
-            }
-            PropertyChanges {
-                target: subscreen
-                enabled: true
-                focus: true
-            }
+            name: "sub"
             AnchorChanges {
                 target: menuPanel;
                 anchors.left: undefined
-                anchors.right: parent.left
+                anchors.right: subscreen.left
+            }
+            AnchorChanges {
+                target: subscreen;
+                anchors.left: undefined
+                anchors.right: parent.right
             }
         }
     ]

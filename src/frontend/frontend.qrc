@@ -54,5 +54,6 @@
         <file>menu/settings/KeyEditorEntry.qml</file>
         <file>menu/settings/KeyEditorEntryButton.qml</file>
         <file>menu/settings/KeyEditorRecorder.qml</file>
+        <file>menu/settings/SettingsMain.qml</file>
     </qresource>
 </RCC>

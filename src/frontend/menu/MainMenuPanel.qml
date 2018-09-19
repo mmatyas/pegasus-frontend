@@ -26,18 +26,32 @@ FocusScope {
     width: vpx(350)
     height: parent.height
     visible: x < parent.width && 0 < x + width
+    enabled: focus
 
-    signal showGamepadScreen()
-    signal showSettingsScreen()
-    signal showHelpScreen()
-    signal close()
+    signal close
+    signal showGamepadScreen
+    signal showSettingsScreen
+    signal showHelpScreen
 
-    signal requestShutdown()
-    signal requestReboot()
-    signal requestQuit()
+    signal requestShutdown
+    signal requestReboot
+    signal requestQuit
 
-    Keys.onEscapePressed: if (!event.isAutoRepeat) close()
+    Keys.onPressed: {
+        if (api.keys.isCancel(event.key)) {
+            event.accepted = true;
 
+            if (!event.isAutoRepeat)
+                root.close();
+        }
+    }
+
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: root.close()
+    }
 
     Rectangle {
         color: "#333"

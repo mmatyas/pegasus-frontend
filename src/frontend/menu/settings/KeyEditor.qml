@@ -25,13 +25,13 @@ FocusScope {
     signal close
 
     anchors.fill: parent
-
     enabled: focus
-    visible: opacity > 0.001
-    opacity: focus ? 1.0 : 0.0
-    Behavior on opacity { PropertyAnimation { duration: 150 } }
+    visible: 0 < (x + width) && x < globalWidth
 
     Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+
         if (api.keys.isCancel(event.key)) {
             event.accepted = true;
             root.close();
@@ -44,15 +44,16 @@ FocusScope {
         onSwipeRight: root.close()
     }
 
-    Rectangle {
+    MouseArea {
         anchors.fill: parent
-        color: "#222"
+        acceptedButtons: Qt.RightButton
+        onClicked: root.close()
+    }
 
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.RightButton
-            onClicked: root.close()
-        }
+    ScreenHeader {
+        id: header
+        text: qsTr("Settings > Keyboard") + api.tr
+        z: 2
     }
 
     FocusScope {
@@ -103,11 +104,6 @@ FocusScope {
         anchors.right: parent.right
         color: "#222"
         opacity: 0.75
-    }
-
-    ScreenHeader {
-        id: header
-        text: qsTr("Settings > Keyboard") + api.tr
     }
 
     KeyEditorRecorder {

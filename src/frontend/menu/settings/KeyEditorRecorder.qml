@@ -37,6 +37,7 @@ FocusScope {
             api.settings.keyEditor.addKey(eventId, event.key);
 
         triggerClose();
+        event.accepted = true;
     }
 
 
