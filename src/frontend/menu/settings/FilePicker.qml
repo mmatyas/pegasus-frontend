@@ -27,6 +27,15 @@ FocusScope {
 
     anchors.fill: parent
 
+    Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+        if (api.keys.isCancel(event.key)) {
+            event.accepted = true;
+            root.cancel();
+        }
+    }
+
 
     FolderListModel {
         id: folderModel

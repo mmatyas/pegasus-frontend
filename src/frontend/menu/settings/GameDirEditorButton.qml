@@ -36,8 +36,14 @@ Item {
     width: mImage1.width * 2 + mText.width + textSize
     height: textSize * 2.5
 
-    Keys.onEnterPressed: press()
-    Keys.onReturnPressed: press()
+    Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+        if (api.keys.isAccept(event.key)) {
+            event.accepted = true;
+            root.press();
+        }
+    }
 
 
     Rectangle {

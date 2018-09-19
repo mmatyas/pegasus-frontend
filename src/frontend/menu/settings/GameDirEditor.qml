@@ -30,6 +30,15 @@ FocusScope {
     opacity: focus ? 1.0 : 0.0
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
+    Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+        if (api.keys.isCancel(event.key)) {
+            event.accepted = true;
+            root.close();
+        }
+    }
+
 
     property var selectedIndices: [] // we don't have Set yet
     function isSelected(index) {
@@ -100,8 +109,8 @@ FocusScope {
 
         // TODO: proper gamepad button mapping
         Keys.onPressed: {
-            var do_remove = event.key === Qt.Key_Delete || event.key === Qt.Key_I;
-            var do_add = event.key === Qt.Key_F;
+            var do_remove = event.key === Qt.Key_Delete || api.keys.isDetails(event.key);
+            var do_add = api.keys.isFilters(event.key);
             if (!do_add && !do_remove)
                 return;
 
@@ -119,7 +128,7 @@ FocusScope {
                 filePicker.focus = true;
         }
         Keys.onReleased: {
-            if (event.key !== Qt.Key_Delete && event.key !== Qt.Key_I)
+            if (event.key !== Qt.Key_Delete && !api.keys.isDetails(event.key))
                 return;
 
             event.accepted = true;
@@ -242,8 +251,14 @@ FocusScope {
             height: label.height
             color: highlighted ? "#585858" : "transparent"
 
-            Keys.onEnterPressed: root.toggleIndex(index)
-            Keys.onReturnPressed: root.toggleIndex(index)
+            Keys.onPressed: {
+                if (event.isAutoRepeat)
+                    return;
+                if (api.keys.isAccept(event.key)) {
+                    event.accepted = true;
+                    root.toggleIndex(index);
+                }
+            }
 
 
             Rectangle {

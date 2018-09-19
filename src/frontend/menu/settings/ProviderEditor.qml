@@ -30,6 +30,15 @@ FocusScope {
     opacity: focus ? 1.0 : 0.0
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
+    Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+        if (api.keys.isCancel(event.key)) {
+            event.accepted = true;
+            root.close();
+        }
+    }
+
 
     Rectangle {
         id: shade
