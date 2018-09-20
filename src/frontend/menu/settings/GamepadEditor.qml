@@ -629,7 +629,7 @@ FocusScope {
 
             Text {
                 text: "B"
-                color: "#777"
+                color: escapeStartTime ? "#eee" : "#777"
                 font {
                     family: globalFonts.sans
                     pixelSize: parent.height * 0.7
@@ -643,7 +643,7 @@ FocusScope {
             text: qsTr("hold down to quit") + api.tr
             verticalAlignment: Text.AlignTop
 
-            color: "#777"
+            color: escapeStartTime ? "#eee" : "#777"
             font {
                 family: globalFonts.sans
                 pixelSize: vpx(22)
