@@ -22,10 +22,21 @@ import QtQuick 2.8
 import QtGamepad 1.0
 
 
-MenuScreen {
+FocusScope {
     id: root
 
-    property bool hasGamepads: GamepadManager.connectedGamepads.length > 0
+    signal close
+
+    anchors.fill: parent
+    enabled: focus
+    visible: 0 < (x + width) && x < globalWidth
+
+    function triggerClose() {
+        root.stopEscapeTimer();
+        root.close();
+    }
+
+    readonly property bool hasGamepads: GamepadManager.connectedGamepads.length > 0
 
 
     property ConfigField recordingField: null
@@ -52,10 +63,8 @@ MenuScreen {
             var currentTime = new Date().getTime();
             escapeProgress = (currentTime - escapeStartTime) / escapeDelay;
 
-            if (escapeProgress > 1.0) {
-                stopEscapeTimer();
-                root.close();
-            }
+            if (escapeProgress > 1.0)
+                root.triggerClose();
         }
     }
 
@@ -65,14 +74,16 @@ MenuScreen {
         escapeProgress = 0;
     }
 
-    Keys.onEscapePressed: {
-        if (!event.isAutoRepeat) {
+    Keys.onPressed: {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
             escapeStartTime = new Date().getTime();
             escapeTimer.start();
         }
     }
     Keys.onReleased: {
-        if (event.key === Qt.Key_Escape && !event.isAutoRepeat) {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
             stopEscapeTimer();
         }
     }
@@ -649,11 +660,11 @@ MenuScreen {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: root.close()
+        onClicked: root.triggerClose()
     }
 
     PegasusUtils.HorizSwipeArea {
         anchors.fill: parent
-        onSwipeRight: root.close()
+        onSwipeRight: root.triggerClose()
     }
 }

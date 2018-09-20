@@ -29,7 +29,6 @@ FocusScope {
     enabled: focus
 
     signal close
-    signal showGamepadScreen
     signal showSettingsScreen
     signal showHelpScreen
 
@@ -69,17 +68,6 @@ FocusScope {
             onActivated: {
                 focus = true;
                 root.showSettingsScreen();
-            }
-            selected: focus
-
-            KeyNavigation.down: mbControls
-        }
-        PrimaryMenuItem {
-            id: mbControls
-            text: qsTr("Controls") + api.tr
-            onActivated: {
-                focus = true;
-                root.showGamepadScreen();
             }
             selected: focus
 

@@ -141,6 +141,18 @@ FocusScope {
                     root.openKeySettings();
                 }
 
+                KeyNavigation.down: optGamepadConfig
+            }
+
+            SimpleButton {
+                id: optGamepadConfig
+
+                label: qsTr("Edit gamepad mapping...") + api.tr
+                onActivate: {
+                    focus = true;
+                    root.openGamepadSettings();
+                }
+
                 KeyNavigation.down: optEditGameDirs
             }
 

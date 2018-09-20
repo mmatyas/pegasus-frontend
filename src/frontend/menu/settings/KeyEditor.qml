@@ -31,10 +31,7 @@ FocusScope {
     visible: 0 < (x + width) && x < globalWidth
 
     Keys.onPressed: {
-        if (event.isAutoRepeat)
-            return;
-
-        if (api.keys.isCancel(event.key)) {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
         }
