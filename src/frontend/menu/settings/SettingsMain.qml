@@ -60,123 +60,163 @@ FocusScope {
     ScreenHeader {
         id: header
         text: qsTr("Settings") + api.tr
+        z: 2
     }
 
-    FocusScope {
-        id: content
+    Flickable {
+        id: container
 
-        focus: true
-        enabled: focus
-
-        anchors.top: header.bottom
-        anchors.topMargin: vpx(30)
+        width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width * 0.7
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
 
+        contentWidth: content.width
+        contentHeight: content.height
 
-        Column {
-            anchors.fill: parent
-            spacing: vpx(5)
+        Behavior on contentY { PropertyAnimation { duration: 100 } }
 
-            SectionTitle {
-                text: qsTr("General") + api.tr
-                first: true
-            }
+        readonly property int yBreakpoint: height * 0.5
+        readonly property int maxContentY: contentHeight - height
 
-            MultivalueOption {
-                id: optLanguage
+        function onFocus(item) {
+            if (item.focus)
+                contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
+        }
 
-                focus: true
+        FocusScope {
+            id: content
 
-                label: qsTr("Language") + api.tr
-                value: api.settings.locales.current.name
+            focus: true
+            enabled: focus
 
-                onActivate: {
-                    focus = true;
-                    localeBox.focus = true;
+            width: contentColumn.width
+            height: contentColumn.height
+
+            Column {
+                id: contentColumn
+                spacing: vpx(5)
+
+                width: root.width * 0.7
+                height: implicitHeight
+
+                Item {
+                    width: parent.width
+                    height: header.height + vpx(25)
                 }
 
-                KeyNavigation.down: optTheme
-            }
-
-            MultivalueOption {
-                id: optTheme
-
-                label: qsTr("Theme") + api.tr
-                value: api.settings.themes.current.name
-
-                onActivate: {
-                    focus = true;
-                    themeBox.focus = true;
+                SectionTitle {
+                    text: qsTr("General") + api.tr
+                    first: true
                 }
 
-                KeyNavigation.down: optFullscreen
-            }
+                MultivalueOption {
+                    id: optLanguage
 
-            ToggleOption {
-                id: optFullscreen
+                    focus: true
 
-                label: qsTr("Fullscreen mode") + api.tr
-                note: qsTr("On some platforms this setting may have no effect") + api.tr
+                    label: qsTr("Language") + api.tr
+                    value: api.settings.locales.current.name
 
-                checked: api.settings.fullscreen
-                onCheckedChanged: {
-                    focus = true;
-                    api.settings.fullscreen = checked;
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optTheme
                 }
 
-                KeyNavigation.down: optKeyboardConfig
-            }
+                MultivalueOption {
+                    id: optTheme
 
-            SectionTitle {
-                text: qsTr("Controls") + api.tr
-            }
+                    label: qsTr("Theme") + api.tr
+                    value: api.settings.themes.current.name
 
-            SimpleButton {
-                id: optKeyboardConfig
+                    onActivate: {
+                        focus = true;
+                        themeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
 
-                label: qsTr("Edit keyboard mapping...") + api.tr
-                onActivate: {
-                    focus = true;
-                    root.openKeySettings();
+                    KeyNavigation.down: optFullscreen
                 }
 
-                KeyNavigation.down: optGamepadConfig
-            }
+                ToggleOption {
+                    id: optFullscreen
 
-            SimpleButton {
-                id: optGamepadConfig
+                    label: qsTr("Fullscreen mode") + api.tr
+                    note: qsTr("On some platforms this setting may have no effect") + api.tr
 
-                label: qsTr("Edit gamepad mapping...") + api.tr
-                onActivate: {
-                    focus = true;
-                    root.openGamepadSettings();
+                    checked: api.settings.fullscreen
+                    onCheckedChanged: {
+                        focus = true;
+                        api.settings.fullscreen = checked;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optKeyboardConfig
                 }
 
-                KeyNavigation.down: optEditGameDirs
-            }
-
-            SectionTitle {
-                text: qsTr("Gaming") + api.tr
-            }
-            SimpleButton {
-                id: optEditGameDirs
-
-                label: qsTr("Set game directories...") + api.tr
-                onActivate: {
-                    focus = true;
-                    root.openGameDirSettings();
+                SectionTitle {
+                    text: qsTr("Controls") + api.tr
                 }
 
-                KeyNavigation.down: optEditProviders
-            }
-            SimpleButton {
-                id: optEditProviders
+                SimpleButton {
+                    id: optKeyboardConfig
 
-                label: qsTr("Enable/disable data sources...") + api.tr
-                onActivate: {
-                    focus = true;
-                    root.openProviderSettings();
+                    label: qsTr("Edit keyboard mapping...") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openKeySettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optGamepadConfig
+                }
+
+                SimpleButton {
+                    id: optGamepadConfig
+
+                    label: qsTr("Edit gamepad mapping...") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openGamepadSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optEditGameDirs
+                }
+
+                SectionTitle {
+                    text: qsTr("Gaming") + api.tr
+                }
+                SimpleButton {
+                    id: optEditGameDirs
+
+                    label: qsTr("Set game directories...") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openGameDirSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optEditProviders
+                }
+                SimpleButton {
+                    id: optEditProviders
+
+                    label: qsTr("Enable/disable data sources...") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openProviderSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
                 }
             }
         }
@@ -185,6 +225,7 @@ FocusScope {
 
     MultivalueBox {
         id: localeBox
+        z: 3
 
         model: api.settings.locales.model
         index: api.settings.locales.index
@@ -194,6 +235,7 @@ FocusScope {
     }
     MultivalueBox {
         id: themeBox
+        z: 3
 
         model: api.settings.themes.model
         index: api.settings.themes.index

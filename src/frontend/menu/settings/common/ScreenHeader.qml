@@ -24,6 +24,12 @@ Item {
     width: parent.width
     height: vpx(80)
 
+    Rectangle {
+        anchors.fill: parent
+        color: "#222"
+        opacity: 0.75
+    }
+
     Text {
         id: title
 

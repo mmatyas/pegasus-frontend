@@ -96,15 +96,6 @@ FocusScope {
         }
     }
 
-    Rectangle {
-        anchors.top: parent.top
-        anchors.bottom: header.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        color: "#222"
-        opacity: 0.75
-    }
-
     KeyEditorRecorder {
         id: recoder
         onClose: content.focus = true
