@@ -15,6 +15,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "common"
+import "keyeditor"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.6
 

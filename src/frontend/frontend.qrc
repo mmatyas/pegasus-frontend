@@ -3,57 +3,57 @@
         <file>main.qml</file>
         <file>MenuLayer.qml</file>
         <file>SplashLayer.qml</file>
+        <file>assets/dir-icon.png</file>
+        <file>assets/logo.png</file>
+        <file>assets/pbar-left.png</file>
+        <file>assets/pbar-right.png</file>
+        <file>assets/pbar.png</file>
+        <file>assets/qr-docs.png</file>
+        <file>assets/qt-logo.png</file>
+        <file>dialogs/GenericOkCancelDialog.qml</file>
+        <file>dialogs/RebootDialog.qml</file>
+        <file>dialogs/ShutdownDialog.qml</file>
         <file>menu/GamepadScreen.qml</file>
         <file>menu/HelpScreen.qml</file>
         <file>menu/MainMenuPanel.qml</file>
         <file>menu/MenuScreen.qml</file>
         <file>menu/SettingsScreen.qml</file>
+        <file>menu/gamepad/ConfigField.qml</file>
+        <file>menu/gamepad/ConfigGroup.qml</file>
+        <file>menu/gamepad/ConfigGroupLabel.qml</file>
+        <file>menu/gamepad/GamepadName.qml</file>
+        <file>menu/gamepad/preview/Container.qml</file>
+        <file>menu/gamepad/preview/Dpad.qml</file>
+        <file>menu/gamepad/preview/DpadHighlight.qml</file>
+        <file>menu/gamepad/preview/PadButton.qml</file>
+        <file>menu/gamepad/preview/PadShoulder.qml</file>
+        <file>menu/gamepad/preview/PadTrigger.qml</file>
+        <file>menu/gamepad/preview/Stick.qml</file>
+        <file>menu/help/QrBox.qml</file>
+        <file>menu/help/SectionTitle.qml</file>
         <file>menu/mainmenu/GenericMenuItem.qml</file>
         <file>menu/mainmenu/PrimaryMenuItem.qml</file>
         <file>menu/mainmenu/RollableMenuItem.qml</file>
         <file>menu/mainmenu/SecondaryMenuItem.qml</file>
-        <file>menu/gamepad/ConfigField.qml</file>
-        <file>menu/gamepad/ConfigGroup.qml</file>
-        <file>menu/gamepad/GamepadName.qml</file>
-        <file>menu/gamepad/preview/PadButton.qml</file>
-        <file>menu/gamepad/preview/Dpad.qml</file>
-        <file>menu/gamepad/preview/DpadHighlight.qml</file>
-        <file>menu/gamepad/preview/Stick.qml</file>
-        <file>menu/gamepad/preview/Container.qml</file>
-        <file>menu/gamepad/preview/PadTrigger.qml</file>
-        <file>menu/gamepad/preview/PadShoulder.qml</file>
-        <file>menu/gamepad/ConfigGroupLabel.qml</file>
-        <file>menu/help/QrBox.qml</file>
-        <file>menu/help/SectionTitle.qml</file>
-        <file>menu/settings/FilePicker.qml</file>
-        <file>menu/settings/MultivalueBox.qml</file>
-        <file>menu/settings/MultivalueOption.qml</file>
-        <file>menu/settings/ToggleOption.qml</file>
-        <file>menu/settings/Switch.qml</file>
+        <file>menu/settings/GameDirEditor.qml</file>
+        <file>menu/settings/KeyEditor.qml</file>
+        <file>menu/settings/ProviderEditor.qml</file>
+        <file>menu/settings/SettingsMain.qml</file>
+        <file>menu/settings/common/MultivalueBox.qml</file>
+        <file>menu/settings/common/MultivalueOption.qml</file>
+        <file>menu/settings/common/NeedsRestartNotice.qml</file>
+        <file>menu/settings/common/ScreenHeader.qml</file>
+        <file>menu/settings/common/SectionTitle.qml</file>
+        <file>menu/settings/common/SimpleButton.qml</file>
+        <file>menu/settings/common/Switch.qml</file>
+        <file>menu/settings/common/ToggleOption.qml</file>
+        <file>menu/settings/gamedireditor/FilePicker.qml</file>
+        <file>menu/settings/gamedireditor/GameDirEditorButton.qml</file>
+        <file>menu/settings/keyeditor/KeyEditorEntry.qml</file>
+        <file>menu/settings/keyeditor/KeyEditorEntryButton.qml</file>
+        <file>menu/settings/keyeditor/KeyEditorRecorder.qml</file>
         <file>messages/Error.qml</file>
         <file>messages/NoGamesError.qml</file>
         <file>messages/ThemeError.qml</file>
-        <file>dialogs/GenericOkCancelDialog.qml</file>
-        <file>dialogs/RebootDialog.qml</file>
-        <file>dialogs/ShutdownDialog.qml</file>
-        <file>assets/logo.png</file>
-        <file>assets/pbar.png</file>
-        <file>assets/pbar-right.png</file>
-        <file>assets/pbar-left.png</file>
-        <file>assets/qr-docs.png</file>
-        <file>assets/qt-logo.png</file>
-        <file>assets/dir-icon.png</file>
-        <file>menu/settings/SimpleButton.qml</file>
-        <file>menu/settings/GameDirEditor.qml</file>
-        <file>menu/settings/GameDirEditorButton.qml</file>
-        <file>menu/settings/SectionTitle.qml</file>
-        <file>menu/settings/ProviderEditor.qml</file>
-        <file>menu/settings/NeedsRestartNotice.qml</file>
-        <file>menu/settings/ScreenHeader.qml</file>
-        <file>menu/settings/KeyEditor.qml</file>
-        <file>menu/settings/KeyEditorEntry.qml</file>
-        <file>menu/settings/KeyEditorEntryButton.qml</file>
-        <file>menu/settings/KeyEditorRecorder.qml</file>
-        <file>menu/settings/SettingsMain.qml</file>
     </qresource>
 </RCC>
