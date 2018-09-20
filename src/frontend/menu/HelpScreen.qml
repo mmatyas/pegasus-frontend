@@ -42,7 +42,6 @@ MenuScreen {
 
         contentWidth: content.width
         contentHeight: content.height
-        clip: true
 
         readonly property real maxContentY: Math.max(0, contentHeight - height)
 
