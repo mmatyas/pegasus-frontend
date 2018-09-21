@@ -55,45 +55,50 @@ FocusScope {
         z: 2
     }
 
-    FocusScope {
+    KeyEditorResetButton {
+        anchors.bottom: header.bottom
+        anchors.bottomMargin: vpx(16)
+        anchors.right: header.horizontalCenter
+        anchors.rightMargin: header.width * -0.4
+        z: 2
+
+        KeyNavigation.down: content
+        onActivated: api.settings.keyEditor.resetKeys()
+    }
+
+    ListView {
         id: content
 
-        focus: true
-        enabled: focus
-
         anchors.top: header.bottom
+        anchors.topMargin: vpx(30)
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width * 0.5
 
-        ListView {
-            anchors.fill: parent
-            anchors.topMargin: vpx(30)
-            focus: true
+        focus: true
 
-            model: api.settings.keyEditor.eventCount
-            delegate: KeyEditorEntry {
-                eventId: modelData
-                onEditKey: {
-                    recoder.eventId = eventId;
-                    recoder.keyToChange = key;
-                    recoder.focus = true;
-                }
-                onNewKey: {
-                    recoder.eventId = eventId;
-                    recoder.keyToChange = 0;
-                    recoder.focus = true;
-                }
-                onDelKey: api.settings.keyEditor.delKey(eventId, key)
+        model: api.settings.keyEditor.eventCount
+        delegate: KeyEditorEntry {
+            eventId: modelData
+            onEditKey: {
+                recoder.eventId = eventId;
+                recoder.keyToChange = key;
+                recoder.focus = true;
             }
-
-            spacing: vpx(15)
-            displayMarginBeginning: header.height + anchors.topMargin
-            highlightMoveDuration: 150
-            highlightRangeMode: ListView.ApplyRange
-            preferredHighlightBegin: height * 0.25
-            preferredHighlightEnd: height * 0.75
+            onNewKey: {
+                recoder.eventId = eventId;
+                recoder.keyToChange = 0;
+                recoder.focus = true;
+            }
+            onDelKey: api.settings.keyEditor.delKey(eventId, key)
         }
+
+        spacing: vpx(15)
+        displayMarginBeginning: header.height + anchors.topMargin
+        highlightMoveDuration: 150
+        highlightRangeMode: ListView.ApplyRange
+        preferredHighlightBegin: height * 0.25
+        preferredHighlightEnd: height * 0.75
     }
 
     KeyEditorRecorder {

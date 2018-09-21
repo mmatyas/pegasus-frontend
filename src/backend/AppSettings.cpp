@@ -35,6 +35,33 @@ QString config_path()
     return paths::writableConfigDir() + QStringLiteral("/settings.txt");
 }
 
+HashMap<KeyEvent, QVector<int>, EnumHash> default_keymap()
+{
+    return {
+        { KeyEvent::ACCEPT, { Qt::Key_Return, Qt::Key_Enter }},
+        { KeyEvent::CANCEL, { Qt::Key_Escape, Qt::Key_Backspace }},
+        { KeyEvent::DETAILS, { Qt::Key_I }},
+        { KeyEvent::FILTERS, { Qt::Key_F }},
+        { KeyEvent::NEXT_PAGE, { Qt::Key_E, Qt::Key_D }},
+        { KeyEvent::PREV_PAGE, { Qt::Key_Q, Qt::Key_A }},
+        { KeyEvent::PAGE_UP, { Qt::Key_PageUp }},
+        { KeyEvent::PAGE_DOWN, { Qt::Key_PageDown }},
+    };
+}
+HashMap<KeyEvent, int, EnumHash> default_gamepadmap()
+{
+    return {
+        { KeyEvent::ACCEPT, static_cast<int>(GamepadKeyId::A) },
+        { KeyEvent::CANCEL, static_cast<int>(GamepadKeyId::B) },
+        { KeyEvent::DETAILS, static_cast<int>(GamepadKeyId::X) },
+        { KeyEvent::FILTERS, static_cast<int>(GamepadKeyId::Y) },
+        { KeyEvent::NEXT_PAGE, static_cast<int>(GamepadKeyId::R1) },
+        { KeyEvent::PREV_PAGE, static_cast<int>(GamepadKeyId::L1) },
+        { KeyEvent::PAGE_UP, static_cast<int>(GamepadKeyId::L2) },
+        { KeyEvent::PAGE_DOWN, static_cast<int>(GamepadKeyId::R2) },
+    };
+}
+
 enum class ConfigEntryCategory : unsigned char {
     GENERAL,
     PROVIDERS,
@@ -96,26 +123,8 @@ General::General()
 
 
 Keys::Keys()
-    : m_event_keyboard {
-        { KeyEvent::ACCEPT, { Qt::Key_Return, Qt::Key_Enter }},
-        { KeyEvent::CANCEL, { Qt::Key_Escape, Qt::Key_Backspace }},
-        { KeyEvent::DETAILS, { Qt::Key_I }},
-        { KeyEvent::FILTERS, { Qt::Key_F }},
-        { KeyEvent::NEXT_PAGE, { Qt::Key_E, Qt::Key_D }},
-        { KeyEvent::PREV_PAGE, { Qt::Key_Q, Qt::Key_A }},
-        { KeyEvent::PAGE_UP, { Qt::Key_PageUp }},
-        { KeyEvent::PAGE_DOWN, { Qt::Key_PageDown }},
-    }
-    , m_event_gamepad {
-        { KeyEvent::ACCEPT, static_cast<int>(GamepadKeyId::A) },
-        { KeyEvent::CANCEL, static_cast<int>(GamepadKeyId::B) },
-        { KeyEvent::DETAILS, static_cast<int>(GamepadKeyId::X) },
-        { KeyEvent::FILTERS, static_cast<int>(GamepadKeyId::Y) },
-        { KeyEvent::NEXT_PAGE, static_cast<int>(GamepadKeyId::R1) },
-        { KeyEvent::PREV_PAGE, static_cast<int>(GamepadKeyId::L1) },
-        { KeyEvent::PAGE_UP, static_cast<int>(GamepadKeyId::L2) },
-        { KeyEvent::PAGE_DOWN, static_cast<int>(GamepadKeyId::R2) },
-    }
+    : m_event_keyboard(default_keymap())
+    , m_event_gamepad(default_gamepadmap())
 {}
 void Keys::add_key(KeyEvent event, int key)
 {
@@ -131,6 +140,10 @@ void Keys::del_key(KeyEvent event, int key)
 void Keys::clear(KeyEvent event)
 {
     m_event_keyboard.at(event).clear();
+}
+void Keys::resetAll()
+{
+    m_event_keyboard = default_keymap();
 }
 const QVector<int>& Keys::at(KeyEvent event) const {
     return m_event_keyboard.at(event);

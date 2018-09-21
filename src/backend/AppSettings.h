@@ -76,6 +76,7 @@ public:
     void add_key(KeyEvent, int);
     void del_key(KeyEvent, int);
     void clear(KeyEvent);
+    void resetAll();
 
     const QVector<int>& at(KeyEvent) const;
     const QVector<int>& operator[](KeyEvent) const;

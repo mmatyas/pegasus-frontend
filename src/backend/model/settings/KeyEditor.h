@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE void addKey(int event_id, int key);
     Q_INVOKABLE void delKey(int event_id, int key);
     Q_INVOKABLE void changeKey(int event_id, int old_key, int new_key);
+    Q_INVOKABLE void resetKeys();
     Q_INVOKABLE const QVector<int> keysOf(int event_id) const;
     Q_INVOKABLE const QString keyName(int) const;
 

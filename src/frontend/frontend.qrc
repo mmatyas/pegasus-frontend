@@ -55,5 +55,6 @@
         <file>messages/Error.qml</file>
         <file>messages/NoGamesError.qml</file>
         <file>messages/ThemeError.qml</file>
+        <file>menu/settings/keyeditor/KeyEditorResetButton.qml</file>
     </qresource>
 </RCC>

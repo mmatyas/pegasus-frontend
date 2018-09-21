@@ -66,6 +66,13 @@ void KeyEditor::changeKey(int event_id, int old_key, int new_key)
     emit keysChanged();
 }
 
+void KeyEditor::resetKeys()
+{
+    AppSettings::keys.resetAll();
+    AppSettings::save_config();
+    emit keysChanged();
+}
+
 const QVector<int> KeyEditor::keysOf(int event_id) const
 {
     if (!valid_event_id(event_id))
