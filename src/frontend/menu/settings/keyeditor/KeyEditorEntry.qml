@@ -10,6 +10,7 @@ FocusScope {
     signal newKey(int eventId)
     signal delKey(int eventId, int key)
 
+    readonly property bool parentFocus: ListView.view.focus
     readonly property int textSize: vpx(18)
     readonly property int textBoxHeight: textSize * 2
     readonly property var eventNames: [
@@ -43,7 +44,7 @@ FocusScope {
         Rectangle {
             anchors.fill: parent
             color: "#444"
-            opacity: root.focus ? 0.75 : 0.25
+            opacity: (root.focus && root.parentFocus) ? 0.75 : 0.25
         }
 
         Text {
@@ -53,7 +54,7 @@ FocusScope {
             color: "#eee"
             font.pixelSize: root.textSize
             font.family: globalFonts.sans
-            font.bold: root.focus
+            font.bold: (root.focus && root.parentFocus)
 
             height: root.textBoxHeight
             verticalAlignment: Text.AlignVCenter
