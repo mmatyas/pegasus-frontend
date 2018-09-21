@@ -41,5 +41,8 @@ public:
 
 signals:
     void keysChanged();
+
+private:
+    const HashMap<int, QString> m_button_names;
 };
 } // namespace model

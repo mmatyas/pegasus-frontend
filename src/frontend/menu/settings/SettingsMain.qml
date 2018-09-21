@@ -165,7 +165,7 @@ FocusScope {
                 SimpleButton {
                     id: optKeyboardConfig
 
-                    label: qsTr("Edit keyboard mapping...") + api.tr
+                    label: qsTr("Change controls...") + api.tr
                     onActivate: {
                         focus = true;
                         root.openKeySettings();
@@ -178,7 +178,7 @@ FocusScope {
                 SimpleButton {
                     id: optGamepadConfig
 
-                    label: qsTr("Edit gamepad mapping...") + api.tr
+                    label: qsTr("Change gamepad layout...") + api.tr
                     onActivate: {
                         focus = true;
                         root.openGamepadSettings();

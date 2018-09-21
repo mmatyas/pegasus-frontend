@@ -31,12 +31,11 @@ class Keys : public QObject {
 public:
     #define KEYVEC_PROP(event, qml_array, qml_fn) \
         Q_PROPERTY(QVector<int> qml_array READ qml_array NOTIFY keysChanged) \
-        QVector<int> qml_array() const { \
-            QVector<int> keys(AppSettings::keys.at(KeyEvent::event)); \
-            return keys << AppSettings::keys.gamepadKey(KeyEvent::event); \
+        const QVector<int>& qml_array() const { \
+            return AppSettings::keys.at(KeyEvent::event); \
         } \
         Q_INVOKABLE bool qml_fn(int key) const { \
-            return qml_array().count(key) || AppSettings::keys.gamepadKey(KeyEvent::event) == key; \
+            return qml_array().count(key); \
         }
     KEYVEC_PROP(ACCEPT, accept, isAccept)
     KEYVEC_PROP(CANCEL, cancel, isCancel)

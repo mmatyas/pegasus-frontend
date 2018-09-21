@@ -28,9 +28,6 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
-        if (0x100000 <= event.key && event.key <= 0x1000ff) // gamepad key
-            return;
-
         if (keyToChange)
             api.settings.keyEditor.changeKey(eventId, keyToChange, event.key);
         else

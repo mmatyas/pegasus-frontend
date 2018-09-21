@@ -33,6 +33,21 @@ namespace model {
 
 KeyEditor::KeyEditor(QObject* parent)
     : QObject(parent)
+    , m_button_names {
+        { GamepadKeyId::A, QStringLiteral("A") },
+        { GamepadKeyId::B, QStringLiteral("B") },
+        { GamepadKeyId::X, QStringLiteral("X") },
+        { GamepadKeyId::Y, QStringLiteral("Y") },
+        { GamepadKeyId::L1, QStringLiteral("L1") },
+        { GamepadKeyId::L2, QStringLiteral("L2") },
+        { GamepadKeyId::L3, QStringLiteral("L3") },
+        { GamepadKeyId::R1, QStringLiteral("R1") },
+        { GamepadKeyId::R2, QStringLiteral("R2") },
+        { GamepadKeyId::R3, QStringLiteral("R3") },
+        { GamepadKeyId::SELECT, QStringLiteral("Select") },
+        { GamepadKeyId::START, QStringLiteral("Start") },
+        { GamepadKeyId::GUIDE, QStringLiteral("Guide") },
+    }
 {}
 
 void KeyEditor::addKey(int event_id, int key)
@@ -100,6 +115,11 @@ const QString KeyEditor::keyName(int key) const
             break;
     }
 #endif
+    if (m_button_names.count(key)) {
+        return QStringLiteral("Gamepad %1 (%2)")
+            .arg(QString::number(key - GamepadKeyId::A), m_button_names.at(key));
+    }
+
     return QKeySequence(key).toString();
 }
 

@@ -35,7 +35,8 @@ enum class KeyEvent : unsigned char {
     PAGE_UP,
     PAGE_DOWN,
 };
-enum class GamepadKeyId : int {
+
+enum GamepadKeyId {
     A = 0x100000,
     B, X, Y,
     L1, L2, L3,
@@ -80,11 +81,9 @@ public:
 
     const QVector<int>& at(KeyEvent) const;
     const QVector<int>& operator[](KeyEvent) const;
-    int gamepadKey(KeyEvent) const;
 
 private:
-    HashMap<KeyEvent, QVector<int>, EnumHash> m_event_keyboard;
-    const HashMap<KeyEvent, int, EnumHash> m_event_gamepad;
+    HashMap<KeyEvent, QVector<int>, EnumHash> m_event_keymap;
 };
 
 
