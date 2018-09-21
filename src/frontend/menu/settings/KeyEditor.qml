@@ -51,7 +51,7 @@ FocusScope {
 
     ScreenHeader {
         id: header
-        text: qsTr("Settings > Keyboard") + api.tr
+        text: qsTr("Settings > Controls") + api.tr
         z: 2
     }
 

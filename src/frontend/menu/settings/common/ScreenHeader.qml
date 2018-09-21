@@ -22,7 +22,7 @@ Item {
     property alias text: title.text
 
     width: parent.width
-    height: vpx(80)
+    height: vpx(74)
 
     Rectangle {
         anchors.fill: parent
@@ -34,7 +34,7 @@ Item {
         id: title
 
         color: "#eee"
-        font.pixelSize: vpx(40)
+        font.pixelSize: vpx(36)
         font.family: globalFonts.sans
 
         anchors.left: parent.horizontalCenter
