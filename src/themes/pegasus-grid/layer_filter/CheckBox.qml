@@ -71,6 +71,10 @@ Row {
         }
     }
 
-    Keys.onReturnPressed: checked = !checked
-    Keys.onSpacePressed: checked = !checked
+    Keys.onPressed: {
+        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
+            checked = !checked;
+        }
+    }
 }

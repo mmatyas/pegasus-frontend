@@ -35,20 +35,16 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
-        switch (event.key) {
-            case Qt.Key_Escape:
-            case Qt.Key_I:
-                closeRequested();
-                break;
-            // filtering
-            case Qt.Key_F:
-                filtersRequested();
-                break;
-            default:
-                return; // !! do not accept the event
+        if (api.keys.isCancel(event.key) || api.keys.isDetails(event.key)) {
+            event.accepted = true;
+            closeRequested();
+            return;
         }
-
-        event.accepted = true;
+        if (api.keys.isFilters(event.key)) {
+            event.accepted = true;
+            filtersRequested();
+            return;
+        }
     }
 
     Rectangle {

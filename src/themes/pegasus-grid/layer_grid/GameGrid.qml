@@ -36,29 +36,26 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
-        switch (event.key) {
-            // platform bar -- QWERTx/AZERTY support
-            case Qt.Key_Q:
-            case Qt.Key_A:
-                prevPlatformRequested();
-                break;
-            case Qt.Key_E:
-            case Qt.Key_D:
-                nextPlatformRequested();
-                break;
-            // game data
-            case Qt.Key_I:
-                detailsRequested();
-                break;
-            // filtering
-            case Qt.Key_F:
-                filtersRequested();
-                break;
-            default:
-                return; // !! do not accept the event
+        if (api.keys.isPrevPage(event.key)) {
+            event.accepted = true;
+            prevPlatformRequested();
+            return;
         }
-
-        event.accepted = true;
+        if (api.keys.isNextPage(event.key)) {
+            event.accepted = true;
+            nextPlatformRequested();
+            return;
+        }
+        if (api.keys.isDetails(event.key)) {
+            event.accepted = true;
+            detailsRequested();
+            return;
+        }
+        if (api.keys.isFilters(event.key)) {
+            event.accepted = true;
+            filtersRequested();
+            return;
+        }
     }
 
     GridView {
@@ -79,7 +76,25 @@ FocusScope {
         onCurrentIndexChanged: if (api.currentCollection) api.currentCollection.gameList.index = currentIndex
         Component.onCompleted: positionViewAtIndex(currentIndex, GridView.Center)
 
-        Keys.onReturnPressed: root.launchRequested()
+        Keys.onPressed: {
+            if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                event.accepted = true;
+                root.launchRequested()
+            }
+            if (api.keys.isPageUp(event.key) || api.keys.isPageDown(event.key)) {
+                event.accepted = true;
+                var rows_to_skip = Math.max(1, Math.round(grid.height / cellHeight));
+                var games_to_skip = rows_to_skip * columnCount;
+                if (api.keys.isPageUp(event.key))
+                    currentIndex = Math.max(currentIndex - games_to_skip, 0);
+                else
+                    currentIndex = Math.min(currentIndex + games_to_skip, model.length - 1);
+            }
+            if (event.modifiers === Qt.AltModifier && event.text) {
+                event.accepted = true;
+                api.currentCollection.gameList.jumpToLetter(event.text);
+            }
+        }
 
         // For better visibility, box arts should be displayed in five columns if
         // the boxes are "tall", and four if they are "wide". There are two issues:
@@ -113,21 +128,6 @@ FocusScope {
 
         cellWidth: width / columnCount
         cellHeight: cellWidth * cellHeightRatio;
-
-
-        Keys.onPressed: {
-            if (event.key === Qt.Key_PageUp || event.key === Qt.Key_PageDown) {
-                var rows_to_skip = Math.max(1, Math.round(grid.height / cellHeight));
-                var games_to_skip = rows_to_skip * columnCount;
-                if (event.key === Qt.Key_PageUp)
-                    currentIndex = Math.max(currentIndex - games_to_skip, 0);
-                else
-                    currentIndex = Math.min(currentIndex + games_to_skip, model.length - 1);
-            }
-            if (event.modifiers === Qt.AltModifier && event.text)
-                api.currentCollection.gameList.jumpToLetter(event.text);
-        }
-
 
         displayMarginBeginning: anchors.topMargin
 

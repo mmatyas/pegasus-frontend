@@ -156,9 +156,12 @@ Item {
 
             KeyNavigation.up: launchBtn
             KeyNavigation.down: launchBtn
-            Keys.onReturnPressed: toggleFav()
-            Keys.onEnterPressed: toggleFav()
-            Keys.onSpacePressed: toggleFav()
+            Keys.onPressed: {
+                if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                    event.accepted = true;
+                    toggleFav();
+                }
+            }
             onClicked: {
                 focus = true;
                 toggleFav();
@@ -192,8 +195,12 @@ Item {
             lineHeight: 2.5
 
             focus: true
-            Keys.onReturnPressed: api.currentGame.launch()
-            Keys.onEnterPressed: api.currentGame.launch()
+            Keys.onPressed: {
+                if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                    event.accepted = true;
+                    api.currentGame.launch();
+                }
+            }
             onClicked: {
                 focus = true;
                 api.currentGame.launch();
