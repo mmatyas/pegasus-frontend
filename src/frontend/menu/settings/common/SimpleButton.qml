@@ -32,7 +32,12 @@ FocusScope {
     width: parent.width
     height: fontSize * 2.5
 
-    Keys.onReturnPressed: activate()
+    Keys.onPressed: {
+        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.activate();
+        }
+    }
 
 
     Rectangle {

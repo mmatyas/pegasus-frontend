@@ -28,9 +28,7 @@ FocusScope {
     anchors.fill: parent
 
     Keys.onPressed: {
-        if (event.isAutoRepeat)
-            return;
-        if (api.keys.isCancel(event.key)) {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
         }
@@ -162,8 +160,13 @@ FocusScope {
                 folderModel.cd(name);
             }
 
-            Keys.onReturnPressed: pickItem()
-            Keys.onEnterPressed: pickItem()
+            Keys.onPressed: {
+                if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                    event.accepted = true;
+                    pickItem();
+                }
+            }
+
 
             Image {
                 id: icon

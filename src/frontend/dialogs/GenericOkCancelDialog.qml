@@ -40,7 +40,13 @@ FocusScope {
             cancelButton.focus = true;
     }
 
-    Keys.onEscapePressed: if (!event.isAutoRepeat) cancel()
+    Keys.onPressed: {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.cancel();
+        }
+    }
+
 
 
     // capture right mouse button
@@ -160,8 +166,12 @@ FocusScope {
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "#3c4" : "#666"
 
-                Keys.onEnterPressed: root.accept()
-                Keys.onReturnPressed: root.accept()
+                Keys.onPressed: {
+                    if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                        event.accepted = true;
+                        root.accept();
+                    }
+                }
 
                 Text {
                     anchors.centerIn: parent
@@ -192,8 +202,12 @@ FocusScope {
                 color: (focus || cancelMouseArea.containsMouse) ? "#f43" : "#666"
 
                 KeyNavigation.left: okButton
-                Keys.onEnterPressed: root.cancel()
-                Keys.onReturnPressed: root.cancel()
+                Keys.onPressed: {
+                    if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                        event.accepted = true;
+                        root.cancel();
+                    }
+                }
 
                 Text {
                     anchors.centerIn: parent

@@ -33,9 +33,7 @@ FocusScope {
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
     Keys.onPressed: {
-        if (event.isAutoRepeat)
-            return;
-        if (api.keys.isCancel(event.key)) {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
         }
@@ -111,14 +109,15 @@ FocusScope {
 
         // TODO: proper gamepad button mapping
         Keys.onPressed: {
+            if (event.isAutoRepeat)
+                return;
+
             var do_remove = event.key === Qt.Key_Delete || api.keys.isDetails(event.key);
             var do_add = api.keys.isFilters(event.key);
             if (!do_add && !do_remove)
                 return;
 
             event.accepted = true;
-            if (event.isAutoRepeat)
-                return;
 
             if (do_remove) {
                 if (list.focus && !root.isSelected(list.currentIndex))
@@ -130,13 +129,12 @@ FocusScope {
                 filePicker.focus = true;
         }
         Keys.onReleased: {
+            if (event.isAutoRepeat)
+                return;
             if (event.key !== Qt.Key_Delete && !api.keys.isDetails(event.key))
                 return;
 
             event.accepted = true;
-            if (event.isAutoRepeat)
-                return;
-
             root.stopDeletion();
         }
 
@@ -254,9 +252,7 @@ FocusScope {
             color: highlighted ? "#585858" : "transparent"
 
             Keys.onPressed: {
-                if (event.isAutoRepeat)
-                    return;
-                if (api.keys.isAccept(event.key)) {
+                if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
                     event.accepted = true;
                     root.toggleIndex(index);
                 }

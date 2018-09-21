@@ -41,9 +41,20 @@ FocusScope {
     enabled: focus
     visible: focus || animClosing.running
 
-    Keys.onEscapePressed: triggerClose()
-    Keys.onReturnPressed: { select(index); triggerClose(); }
-    Keys.onEnterPressed: { select(index); triggerClose(); }
+    Keys.onPressed: {
+        if (event.isAutoRepeat)
+            return;
+
+        if (api.keys.isCancel(event.key)) {
+            event.accepted = true;
+            triggerClose();
+        }
+        else if (api.keys.isAccept(event.key)) {
+            event.accepted = true;
+            select(index);
+            triggerClose();
+        }
+    }
 
     Component.onCompleted: {
         if (list.currentIndex > 0)

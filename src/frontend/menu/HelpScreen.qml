@@ -23,7 +23,12 @@ import QtQuick 2.6
 MenuScreen {
     id: root
 
-    Keys.onEscapePressed: root.close()
+    Keys.onPressed: {
+        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.close();
+        }
+    }
 
     readonly property int bodyFontSize: vpx(18)
 

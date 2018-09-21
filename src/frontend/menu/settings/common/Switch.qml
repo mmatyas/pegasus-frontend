@@ -30,8 +30,12 @@ Item {
         checked = !checked;
     }
 
-    Keys.onReturnPressed: if (!event.isAutoRepeat) toggle()
-    Keys.onEnterPressed: if (!event.isAutoRepeat) toggle()
+    Keys.onPressed: {
+        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.toggle();
+        }
+    }
 
 
     MouseArea {

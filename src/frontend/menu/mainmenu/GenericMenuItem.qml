@@ -31,7 +31,12 @@ Rectangle {
     height: textSizePx * 2
     color: selected || mouseArea.containsMouse ? activeColor : inactiveColor
 
-    Keys.onReturnPressed: activated()
+    Keys.onPressed: {
+        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+            event.accepted = true;
+            activated();
+        }
+    }
 
     Text {
         id: itemLabel

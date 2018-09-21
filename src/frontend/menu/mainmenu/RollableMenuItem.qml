@@ -82,7 +82,12 @@ FocusScope {
         visible: root.height > head.height
         anchors.bottom: parent.bottom
 
-        Keys.onEscapePressed: head.focus = true
+        Keys.onPressed: {
+            if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+                event.accepted = true;
+                head.focus = true;
+            }
+        }
 
         Column {
             id: submenu
