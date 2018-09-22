@@ -6,6 +6,7 @@ SUBDIRS += \
     game \
     gameassets \
     gamelist \
+    keys \
     localelist \
     system \
     themelist \
