@@ -30,7 +30,7 @@ FocusScope {
 
         if (api.keys.isCancel(event.key) || api.keys.isFilters(event.key)) {
             event.accepted = true;
-            filtersRequested();
+            closeRequested();
         }
     }
 
