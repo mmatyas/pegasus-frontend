@@ -101,7 +101,7 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir,
             continue;
 
         modeldata::Game* const game = games_by_shortpath.at(shortpath);
-        pegasus_assets::addAssetToGame(game->assets, detection_result.asset_type, dir_it.filePath());
+        pegasus_assets::add_asset_to(game->assets, detection_result.asset_type, dir_it.filePath());
     }
 }
 
@@ -150,19 +150,19 @@ void findAssets(modeldata::Game& game,
         QString& path = xml_props[MetaTypes::IMAGE];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
-            pegasus_assets::addAssetToGame(game.assets, AssetType::BOX_FRONT, path);
+            pegasus_assets::add_asset_to(game.assets, AssetType::BOX_FRONT, path);
     }
     if (game.assets.single(AssetType::ARCADE_MARQUEE).isEmpty()) {
         QString& path = xml_props[MetaTypes::MARQUEE];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
-            pegasus_assets::addAssetToGame(game.assets, AssetType::ARCADE_MARQUEE, path);
+            pegasus_assets::add_asset_to(game.assets, AssetType::ARCADE_MARQUEE, path);
     }
     if (xml_props.count(MetaTypes::VIDEO)) {
         QString& path = xml_props[MetaTypes::VIDEO];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
-            pegasus_assets::addAssetToGame(game.assets, AssetType::VIDEOS, path);
+            pegasus_assets::add_asset_to(game.assets, AssetType::VIDEOS, path);
     }
 }
 

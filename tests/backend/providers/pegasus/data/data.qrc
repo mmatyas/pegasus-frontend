@@ -34,5 +34,13 @@
         <file>custom_dirs/c/mygame.y</file>
         <file>custom_dirs/coll/collections.txt</file>
         <file>custom_dirs/coll/mygame.x</file>
+        <file>asset_search/collections.txt</file>
+        <file>asset_search/mygame1.ext</file>
+        <file>asset_search/mygame2.ext</file>
+        <file>asset_search/mygame3.ext</file>
+        <file>asset_search/media/mygame1/box_front.png</file>
+        <file>asset_search/media/mygame1/video.mp4</file>
+        <file>asset_search/media/mygame3/music.mp3</file>
+        <file>asset_search/media/mygame3/screenshot.jpg</file>
     </qresource>
 </RCC>

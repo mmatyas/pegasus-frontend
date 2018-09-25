@@ -118,7 +118,7 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
         const auto rx_asset = rx_asset_key.match(key);
         if (rx_asset.hasMatch()) {
             const QString asset_key = rx_asset.captured(1);
-            const AssetType asset_type = pegasus_assets::type_by_suffix(asset_key);
+            const AssetType asset_type = pegasus_assets::str_to_type(asset_key);
             if (asset_type == AssetType::UNKNOWN) {
                 on_error(lineno, tr_log("unknown asset type '%1', entry ignored").arg(asset_key));
                 return;

@@ -32,6 +32,7 @@ private slots:
     void find_in_empty_dir();
     void find_in_filled_dir();
     void enhance();
+    void asset_search();
     void custom_assets();
     void custom_directories();
 };
@@ -151,6 +152,39 @@ void test_PegasusProvider::enhance()
     QCOMPARE(games.at(game_key).title, QStringLiteral("game_in_subdir"));
     QCOMPARE(games.at(game_key).rating, 0.8f);
     QCOMPARE(games.at(game_key).release_date, QDate(1998, 5, 1));
+}
+
+void test_PegasusProvider::asset_search()
+{
+    HashMap<QString, modeldata::Game> games;
+    HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<QString>> collection_childs;
+
+    providers::pegasus::PegasusProvider provider;
+    provider.add_game_dir(QStringLiteral(":/asset_search"));
+
+    QTest::ignoreMessage(QtInfoMsg, "Found `:/asset_search/collections.txt`");
+    provider.findLists(games, collections, collection_childs);
+    provider.findStaticData(games, collections, collection_childs);
+
+    const QString collection_name(QStringLiteral("mygames"));
+    QVERIFY(collections.size() == 1);
+    QVERIFY(collections.count(collection_name) == 1);
+    QVERIFY(games.size() == 3);
+
+    auto game_it = games.find(QStringLiteral(":/asset_search/mygame1.ext"));
+    QVERIFY(game_it != games.cend());
+    QCOMPARE(game_it->second.assets.single(AssetType::BOX_FRONT),
+             QStringLiteral("file::/asset_search/media/mygame1/box_front.png"));
+    QCOMPARE(game_it->second.assets.multi(AssetType::VIDEOS),
+             { QStringLiteral("file::/asset_search/media/mygame1/video.mp4") });
+
+    game_it = games.find(QStringLiteral(":/asset_search/mygame3.ext"));
+    QVERIFY(game_it != games.cend());
+    QCOMPARE(game_it->second.assets.multi(AssetType::SCREENSHOTS),
+             { QStringLiteral("file::/asset_search/media/mygame3/screenshot.jpg") });
+    QCOMPARE(game_it->second.assets.single(AssetType::MUSIC),
+             QStringLiteral("file::/asset_search/media/mygame3/music.mp3"));
 }
 
 void test_PegasusProvider::custom_assets()

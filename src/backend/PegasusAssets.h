@@ -28,7 +28,8 @@ enum class AssetType : unsigned char;
 
 namespace pegasus_assets {
 
-AssetType type_by_suffix(const QString&);
+AssetType str_to_type(const QString&);
+const QStringList& allowed_asset_exts(AssetType type);
 
 struct AssetCheckResult {
     const QString basename;
@@ -37,7 +38,7 @@ struct AssetCheckResult {
     bool isValid() const;
 };
 AssetCheckResult checkFile(const QFileInfo&);
-void addAssetToGame(modeldata::GameAssets&, AssetType, const QString&);
+void add_asset_to(modeldata::GameAssets&, AssetType, const QString&);
 
 void findAssets(const QStringList& asset_dirs,
                 HashMap<QString, modeldata::Game>& games);

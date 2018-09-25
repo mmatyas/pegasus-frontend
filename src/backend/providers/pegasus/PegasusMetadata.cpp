@@ -26,8 +26,62 @@
 #include "modeldata/gaming/Game.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
 #include <QFileInfo>
 #include <QStringBuilder>
+
+
+namespace {
+
+AssetType detect_asset_type(const QString& basename, const QString& ext)
+{
+    const AssetType type = pegasus_assets::str_to_type(basename);
+    if (pegasus_assets::allowed_asset_exts(type).contains(ext))
+        return type;
+
+    return AssetType::UNKNOWN;
+}
+
+void find_assets(const QStringList& dir_list, HashMap<QString, modeldata::Game>& games)
+{
+    // shortpath: canonical path to dir + extensionless filename
+    HashMap<QString, modeldata::Game*> games_by_shortpath;
+    games_by_shortpath.reserve(games.size());
+    for (auto& pair : games) {
+        QString shortpath = pair.second.fileinfo().canonicalPath()
+                          % '/'
+                          % pair.second.fileinfo().completeBaseName();
+        games_by_shortpath.emplace(std::move(shortpath), &pair.second);
+    }
+
+
+    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+
+    for (const QString& dir_base : dir_list) {
+        const QString media_dir = dir_base + QStringLiteral("/media");
+
+        QDirIterator dir_it(media_dir, dir_filters, dir_flags);
+        while (dir_it.hasNext()) {
+            dir_it.next();
+            const QFileInfo fileinfo = dir_it.fileInfo();
+
+            const QString shortpath = fileinfo.canonicalPath().remove(dir_base.length(), 6); // len of `/media`
+            if (!games_by_shortpath.count(shortpath))
+                continue;
+
+            const AssetType asset_type = detect_asset_type(fileinfo.completeBaseName(), fileinfo.suffix());
+            if (asset_type == AssetType::UNKNOWN)
+                continue;
+
+            modeldata::Game* const game = games_by_shortpath[shortpath];
+            pegasus_assets::add_asset_to(game->assets, asset_type, dir_it.filePath());
+        }
+    }
+}
+
+} // namespace
 
 
 namespace providers {
@@ -80,7 +134,7 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
                                       const HashMap<QString, modeldata::Collection>&,
                                       const HashMap<QString, std::vector<QString>>&) const
 {
-    pegasus_assets::findAssets(dir_list, games);
+    find_assets(dir_list, games);
 
     for (const QString& dir_path : dir_list)
         read_metadata_file(dir_path, games);
@@ -130,7 +184,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
         const auto rx_asset = rx_asset_key.match(key);
         if (rx_asset.hasMatch()) {
             const QString asset_key = rx_asset.captured(1);
-            const AssetType asset_type = pegasus_assets::type_by_suffix(asset_key);
+            const AssetType asset_type = pegasus_assets::str_to_type(asset_key);
             if (asset_type == AssetType::UNKNOWN) {
                 on_error(lineno, tr_log("unknown asset type '%1', entry ignored").arg(asset_key));
                 return;
