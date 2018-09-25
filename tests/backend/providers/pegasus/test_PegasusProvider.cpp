@@ -170,7 +170,7 @@ void test_PegasusProvider::asset_search()
     const QString collection_name(QStringLiteral("mygames"));
     QVERIFY(collections.size() == 1);
     QVERIFY(collections.count(collection_name) == 1);
-    QVERIFY(games.size() == 3);
+    QVERIFY(games.size() == 4);
 
     auto game_it = games.find(QStringLiteral(":/asset_search/mygame1.ext"));
     QVERIFY(game_it != games.cend());
@@ -185,6 +185,11 @@ void test_PegasusProvider::asset_search()
              { QStringLiteral("file::/asset_search/media/mygame3/screenshot.jpg") });
     QCOMPARE(game_it->second.assets.single(AssetType::MUSIC),
              QStringLiteral("file::/asset_search/media/mygame3/music.mp3"));
+
+    game_it = games.find(QStringLiteral(":/asset_search/subdir/mygame4.ext"));
+    QVERIFY(game_it != games.cend());
+    QCOMPARE(game_it->second.assets.single(AssetType::BACKGROUND),
+             QStringLiteral("file::/asset_search/media/subdir/mygame4/background.png"));
 }
 
 void test_PegasusProvider::custom_assets()

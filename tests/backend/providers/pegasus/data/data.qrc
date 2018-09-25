@@ -38,9 +38,11 @@
         <file>asset_search/mygame1.ext</file>
         <file>asset_search/mygame2.ext</file>
         <file>asset_search/mygame3.ext</file>
+        <file>asset_search/subdir/mygame4.ext</file>
         <file>asset_search/media/mygame1/box_front.png</file>
         <file>asset_search/media/mygame1/video.mp4</file>
         <file>asset_search/media/mygame3/music.mp3</file>
         <file>asset_search/media/mygame3/screenshot.jpg</file>
+        <file>asset_search/media/subdir/mygame4/background.png</file>
     </qresource>
 </RCC>
