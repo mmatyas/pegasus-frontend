@@ -85,7 +85,7 @@ Rectangle {
                 platformPath.decrementCurrentIndex();
         }
     }
-    PegasusUtils.HorizSwipeArea {
+    PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeLeft: platformPath.incrementCurrentIndex()
         onSwipeRight: platformPath.decrementCurrentIndex()

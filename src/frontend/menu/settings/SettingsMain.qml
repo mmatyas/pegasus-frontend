@@ -43,7 +43,7 @@ FocusScope {
     }
 
 
-    PegasusUtils.HorizSwipeArea {
+    PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }

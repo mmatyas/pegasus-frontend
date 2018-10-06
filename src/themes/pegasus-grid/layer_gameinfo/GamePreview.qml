@@ -55,7 +55,7 @@ FocusScope {
         anchors.horizontalCenter: parent.left
         opacity: 0.85
 
-        PegasusUtils.HorizSwipeArea {
+        PegasusUtils.HorizontalSwipeArea {
             anchors.fill: parent
 
             onSwipeRight: openRequested()

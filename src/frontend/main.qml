@@ -130,7 +130,7 @@ Window {
                 api.system.quit();
             }
         }
-        PegasusUtils.HorizSwipeArea {
+        PegasusUtils.HorizontalSwipeArea {
             id: menuSwipe
 
             width: vpx(40)

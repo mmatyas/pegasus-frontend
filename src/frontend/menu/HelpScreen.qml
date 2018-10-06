@@ -33,7 +33,7 @@ MenuScreen {
     readonly property int bodyFontSize: vpx(18)
 
 
-    PegasusUtils.HorizSwipeArea {
+    PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }

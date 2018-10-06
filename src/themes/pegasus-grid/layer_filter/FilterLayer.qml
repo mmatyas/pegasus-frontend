@@ -43,7 +43,7 @@ FocusScope {
         opacity: 0
         Behavior on opacity { NumberAnimation { duration: 500 } }
 
-        PegasusUtils.HorizSwipeArea {
+        PegasusUtils.HorizontalSwipeArea {
             anchors.fill: parent
             enabled: panel.visible
             onClicked: closeRequested()
