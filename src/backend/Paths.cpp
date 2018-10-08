@@ -111,13 +111,13 @@ QStringList configDirs()
             paths << writableConfigDir();
             paths << QSP::standardLocations(QSP::AppConfigLocation);
             paths << QSP::standardLocations(QSP::AppDataLocation);
-            paths.removeDuplicates();
 
             // do not add the organization name to the search path
             const QRegularExpression regex(QStringLiteral("(/pegasus-frontend){2}$"));
             paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
         }
 
+        paths.removeDuplicates();
         return paths;
     }();
 
