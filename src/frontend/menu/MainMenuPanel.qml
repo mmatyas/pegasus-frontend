@@ -37,7 +37,10 @@ FocusScope {
     signal requestQuit
 
     Keys.onPressed: {
-        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+        if (event.isAutoRepeat)
+            return;
+
+        if (api.keys.isCancel(event.key) || api.keys.isMenu(event.key)) {
             event.accepted = true;
             root.close();
         }

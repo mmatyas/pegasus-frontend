@@ -50,6 +50,7 @@ HashMap<KeyEvent, QVector<int>, EnumHash> default_keymap()
         { KeyEvent::PREV_PAGE, { Qt::Key_Q, Qt::Key_A, GamepadKeyId::L1 }},
         { KeyEvent::PAGE_UP, { Qt::Key_PageUp, GamepadKeyId::L2 }},
         { KeyEvent::PAGE_DOWN, { Qt::Key_PageDown, GamepadKeyId::R2 }},
+        { KeyEvent::MAIN_MENU, { Qt::Key_F1, GamepadKeyId::START }},
     };
 }
 
@@ -95,6 +96,7 @@ struct ConfigEntryMaps {
         { QStringLiteral("prev-page"), KeyEvent::PREV_PAGE },
         { QStringLiteral("page-up"), KeyEvent::PAGE_UP },
         { QStringLiteral("page-down"), KeyEvent::PAGE_DOWN },
+        { QStringLiteral("menu"), KeyEvent::MAIN_MENU },
     };
 };
 

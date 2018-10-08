@@ -34,6 +34,7 @@ enum class KeyEvent : unsigned char {
     PREV_PAGE,
     PAGE_UP,
     PAGE_DOWN,
+    MAIN_MENU,
     // internal only:
     LEFT = 64,
     RIGHT,

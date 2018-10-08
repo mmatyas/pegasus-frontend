@@ -81,12 +81,6 @@ FocusScope {
         anchors.left: parent.right
 
         focus: true
-        Keys.onPressed: {
-            if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
-                event.accepted = true;
-                root.close();
-            }
-        }
 
         onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
         onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")

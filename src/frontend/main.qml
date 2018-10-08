@@ -68,7 +68,7 @@ Window {
             enabled: focus
 
             Keys.onPressed: {
-                if (api.keys.isCancel(event.key)) {
+                if (api.keys.isCancel(event.key) || api.keys.isMenu(event.key)) {
                     event.accepted = true;
                     mainMenu.focus = true;
                 }

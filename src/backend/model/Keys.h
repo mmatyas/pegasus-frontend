@@ -49,6 +49,7 @@ public:
     KEYVEC_PROP(PREV_PAGE, prevPage, isPrevPage)
     KEYVEC_PROP(PAGE_UP, pageUp, isPageUp)
     KEYVEC_PROP(PAGE_DOWN, pageDown, isPageDown)
+    KEYVEC_PROP(MAIN_MENU, menu, isMenu)
     #undef KEYVEC_PROP
 
 public:

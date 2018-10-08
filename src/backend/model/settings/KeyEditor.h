@@ -38,7 +38,7 @@ public:
     Q_INVOKABLE const QString keyName(int) const;
 
     static constexpr int eventCount() {
-        return static_cast<int>(::KeyEvent::PAGE_DOWN) + 1;
+        return static_cast<int>(::KeyEvent::MAIN_MENU) + 1;
     }
 
 signals:

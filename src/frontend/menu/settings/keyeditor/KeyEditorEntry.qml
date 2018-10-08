@@ -22,6 +22,7 @@ FocusScope {
         qsTr("Previous page") + api.tr,
         qsTr("Scroll page up") + api.tr,
         qsTr("Scroll page down") + api.tr,
+        qsTr("Main menu") + api.tr,
     ]
 
     width: ListView.view.width
