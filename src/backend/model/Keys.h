@@ -37,6 +37,10 @@ public:
         Q_INVOKABLE bool qml_fn(int key) const { \
             return qml_array().count(key); \
         }
+    KEYVEC_PROP(LEFT, left, isLeft)
+    KEYVEC_PROP(RIGHT, right, isRight)
+    KEYVEC_PROP(UP, up, isUp)
+    KEYVEC_PROP(DOWN, down, isDown)
     KEYVEC_PROP(ACCEPT, accept, isAccept)
     KEYVEC_PROP(CANCEL, cancel, isCancel)
     KEYVEC_PROP(DETAILS, details, isDetails)

@@ -34,6 +34,11 @@ enum class KeyEvent : unsigned char {
     PREV_PAGE,
     PAGE_UP,
     PAGE_DOWN,
+    // internal only:
+    LEFT = 64,
+    RIGHT,
+    UP,
+    DOWN,
 };
 
 enum GamepadKeyId {

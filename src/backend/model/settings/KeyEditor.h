@@ -37,7 +37,9 @@ public:
     Q_INVOKABLE const QVector<int> keysOf(int event_id) const;
     Q_INVOKABLE const QString keyName(int) const;
 
-    static constexpr int eventCount() { return static_cast<int>(::KeyEvent::PAGE_DOWN) + 1; }
+    static constexpr int eventCount() {
+        return static_cast<int>(::KeyEvent::PAGE_DOWN) + 1;
+    }
 
 signals:
     void keysChanged();

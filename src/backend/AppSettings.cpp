@@ -38,6 +38,10 @@ QString config_path()
 HashMap<KeyEvent, QVector<int>, EnumHash> default_keymap()
 {
     return {
+        { KeyEvent::LEFT, { Qt::Key_Left }},
+        { KeyEvent::RIGHT, { Qt::Key_Right }},
+        { KeyEvent::UP, { Qt::Key_Up }},
+        { KeyEvent::DOWN, { Qt::Key_Down }},
         { KeyEvent::ACCEPT, { Qt::Key_Return, Qt::Key_Enter, GamepadKeyId::A }},
         { KeyEvent::CANCEL, { Qt::Key_Escape, Qt::Key_Backspace, GamepadKeyId::B }},
         { KeyEvent::DETAILS, { Qt::Key_I, GamepadKeyId::X }},
