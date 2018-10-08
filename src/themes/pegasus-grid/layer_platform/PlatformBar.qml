@@ -19,7 +19,7 @@ import QtQuick 2.8
 import "qrc:/qmlutils" as PegasusUtils
 
 Rectangle {
-    property var platformModel: api.collectionList.model
+    property var platformModel: api.collections.model
 
     color: "#333"
     height: vpx(54)
@@ -56,8 +56,8 @@ Rectangle {
         preferredHighlightBegin: 0.04
         preferredHighlightEnd: 0.05
 
-        Component.onCompleted: currentIndex = api.collectionList.index
-        onCurrentIndexChanged: api.collectionList.index = currentIndex
+        Component.onCompleted: currentIndex = api.collections.index
+        onCurrentIndexChanged: api.collections.index = currentIndex
     }
 
     Component {

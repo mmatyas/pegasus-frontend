@@ -34,7 +34,7 @@ class Collection : public QObject {
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
     Q_PROPERTY(model::GameAssets* defaultAssets READ defaultAssetsPtr CONSTANT)
-    Q_PROPERTY(model::GameList* gameList READ gameListPtr CONSTANT)
+    Q_PROPERTY(model::GameList* games READ gameListPtr CONSTANT)
 
 public:
     explicit Collection(modeldata::Collection, QObject* parent = nullptr);

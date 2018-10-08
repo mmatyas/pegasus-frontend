@@ -46,7 +46,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(model::Settings* settings READ settings CONSTANT)
     Q_PROPERTY(model::System* system READ system CONSTANT)
     Q_PROPERTY(model::Keys* keys READ keys CONSTANT)
-    Q_PROPERTY(model::CollectionList* collectionList READ collectionList CONSTANT)
+    Q_PROPERTY(model::CollectionList* collections READ collections CONSTANT)
 
     // shortcuts
 
@@ -73,7 +73,7 @@ public:
     model::Settings* settings() { return &m_settings; }
     model::System* system() { return &m_system; }
     model::Keys* keys() { return &m_keys; }
-    model::CollectionList* collectionList() { return &m_collections; }
+    model::CollectionList* collections() { return &m_collections; }
 
     // shortcuts
     model::Collection* currentCollection() const { return m_collections.current(); }

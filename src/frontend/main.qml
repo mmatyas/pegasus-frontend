@@ -87,7 +87,7 @@ Window {
             source: {
                 if (api.meta.isLoading)
                     return "";
-                if (api.collectionList.count === 0)
+                if (api.collections.count === 0)
                     return "messages/NoGamesError.qml";
 
                 return api.settings.themes.current.qmlPath;
