@@ -67,6 +67,18 @@ Window {
             focus: true
             enabled: focus
 
+            readonly property url apiThemePath: api.settings.themes.current.qmlPath
+
+            function getThemeFile() {
+                if (api.meta.isLoading)
+                    return "";
+                if (api.collections.count === 0)
+                    return "messages/NoGamesError.qml";
+
+                return apiThemePath;
+            }
+            onApiThemePathChanged: source = Qt.binding(getThemeFile)
+
             Keys.onPressed: {
                 if (api.keys.isCancel(event.key) || api.keys.isMenu(event.key)) {
                     event.accepted = true;
@@ -78,20 +90,11 @@ Window {
 
                     theme.source = "";
                     api.meta.clearQMLCache();
-                    theme.source = Qt.binding(function() {
-                        return api.settings.themes.current.qmlPath;
-                    });
+                    theme.source = Qt.binding(getThemeFile);
                 }
             }
 
-            source: {
-                if (api.meta.isLoading)
-                    return "";
-                if (api.collections.count === 0)
-                    return "messages/NoGamesError.qml";
-
-                return api.settings.themes.current.qmlPath;
-            }
+            source: getThemeFile()
             asynchronous: true
             onStatusChanged: {
                 if (status == Loader.Error)
