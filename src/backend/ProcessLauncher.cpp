@@ -77,7 +77,6 @@ void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
 
     beforeRun();
     runProcess(launch_cmd, workdir);
-    afterRun();
 }
 
 void ProcessLauncher::runProcess(const QString& command, const QString& workdir)
@@ -155,6 +154,7 @@ void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
                                     .arg(process->program());
             break;
     }
+    afterRun();
 }
 
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
@@ -176,6 +176,7 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
             Q_UNREACHABLE();
             break;
     }
+    afterRun();
 }
 
 void ProcessLauncher::beforeRun() const
