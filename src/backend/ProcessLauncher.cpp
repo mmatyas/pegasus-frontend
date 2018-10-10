@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "ScriptRunner.h"
+#include "TerminalKbd.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 
@@ -40,6 +41,7 @@ void format_launch_command(QString& launch_cmd, const modeldata::Game& game)
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
 } // namespace
+
 
 ProcessLauncher::ProcessLauncher(QObject* parent)
     : QObject(parent)
@@ -179,16 +181,14 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
     afterRun();
 }
 
-void ProcessLauncher::beforeRun() const
+void ProcessLauncher::beforeRun()
 {
-    // call the relevant scripts
-    using ScriptEvent = ScriptRunner::EventType;
-    ScriptRunner::findAndRunScripts(ScriptEvent::PROCESS_STARTED);
+    TerminalKbd::enable();
+    ScriptRunner::findAndRunScripts(ScriptRunner::EventType::PROCESS_STARTED);
 }
 
-void ProcessLauncher::afterRun() const
+void ProcessLauncher::afterRun()
 {
-    // call the relevant scripts
-    using ScriptEvent = ScriptRunner::EventType;
-    ScriptRunner::findAndRunScripts(ScriptEvent::PROCESS_FINISHED);
+    ScriptRunner::findAndRunScripts(ScriptRunner::EventType::PROCESS_FINISHED);
+    TerminalKbd::disable();
 }

@@ -19,6 +19,7 @@
 #include "AppContext.h"
 #include "Backend.h"
 #include "LocaleUtils.h"
+#include "TerminalKbd.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
@@ -30,6 +31,8 @@ void handleCommandLineArgs(QGuiApplication&);
 
 int main(int argc, char *argv[])
 {
+    TerminalKbd::on_startup();
+
     QCoreApplication::addLibraryPath(QStringLiteral("lib/plugins"));
     QCoreApplication::addLibraryPath(QStringLiteral("lib"));
     QSettings::setDefaultFormat(QSettings::IniFormat);

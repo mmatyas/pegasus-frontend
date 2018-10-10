@@ -18,6 +18,7 @@ SOURCES += \
     Utils.cpp \
     Paths.cpp \
     AppSettings.cpp \
+    TerminalKbd.cpp
 
 HEADERS += \
     Api.h \
@@ -36,6 +37,7 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppSettings.h \
+    TerminalKbd.h
 
 include(configfiles/configfiles.pri)
 include(platform/platform.pri)

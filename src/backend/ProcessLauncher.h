@@ -52,6 +52,6 @@ private:
 
     void runProcess(const QString&, const QString&);
 
-    void beforeRun() const;
-    void afterRun() const;
+    void beforeRun();
+    void afterRun();
 };
