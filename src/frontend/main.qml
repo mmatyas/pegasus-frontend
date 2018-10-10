@@ -47,8 +47,8 @@ Window {
     // register custom global fonts
     QtObject {
         id: globalFonts
-        property string sans: sansFont.name
-        property string condensed: condensedFont.name
+        readonly property string sans: sansFont.name
+        readonly property string condensed: condensedFont.name
     }
     FontLoader { id: sansFont; source: "/fonts/Roboto.ttf" }
     FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed.ttf" }
