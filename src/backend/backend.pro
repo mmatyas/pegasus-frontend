@@ -7,7 +7,6 @@ CONFIG += c++11 staticlib warn_on exceptions_off object_parallel_to_source
 SOURCES += \
     Api.cpp \
     AppContext.cpp \
-    Assets.cpp \
     Backend.cpp \
     ConfigFile.cpp \
     FrontendLayer.cpp \
@@ -17,12 +16,12 @@ SOURCES += \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
+    AssetTypes.cpp
 
 HEADERS += \
     Api.h \
     AppCloseType.h \
     AppContext.h \
-    Assets.h \
     Backend.h \
     ConfigFile.h \
     FrontendLayer.h \
@@ -33,6 +32,7 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppSettings.h \
+    AssetTypes.h
 
 include(configfiles/configfiles.pri)
 include(platform/platform.pri)

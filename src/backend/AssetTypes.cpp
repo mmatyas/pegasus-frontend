@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Assets.h"
+#include "AssetTypes.h"
 
 
 bool asset_is_single(AssetType type)

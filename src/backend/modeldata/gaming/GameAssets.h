@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "Assets.h"
+#include "AssetTypes.h"
 #include "utils/HashMap.h"
 
 #include <QString>
