@@ -76,7 +76,7 @@ void find_assets(const QStringList& dir_list, HashMap<QString, modeldata::Game>&
                 continue;
 
             modeldata::Game* const game = games_by_shortpath[shortpath];
-            pegasus_assets::add_asset_to(game->assets, asset_type, dir_it.filePath());
+            game->assets.addFileMaybe(asset_type, dir_it.filePath());
         }
     }
 }

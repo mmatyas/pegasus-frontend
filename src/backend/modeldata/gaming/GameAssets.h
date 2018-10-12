@@ -33,6 +33,8 @@ struct GameAssets {
     const QString& single(AssetType type) { return m_single_assets[type]; }
     const QStringList& multi(AssetType type) { return m_multi_assets[type]; }
 
+    void addFileMaybe(AssetType, QString);
+    void addUrlMaybe(AssetType, QString);
     void setSingle(AssetType, QString);
     void appendMulti(AssetType, QString);
 

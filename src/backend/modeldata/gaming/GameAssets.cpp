@@ -17,10 +17,32 @@
 
 #include "GameAssets.h"
 
+#include <QUrl>
+
+#include "AssetTypes.h"
+
 
 namespace modeldata {
 
 GameAssets::GameAssets() = default;
+
+void GameAssets::addFileMaybe(AssetType key, QString path)
+{
+    QString url = QUrl::fromLocalFile(path).toString();
+    addUrlMaybe(key, std::move(url));
+}
+
+void GameAssets::addUrlMaybe(AssetType key, QString url)
+{
+    const bool is_single = asset_is_single(key);
+
+    if (is_single && single(key).isEmpty()) {
+        setSingle(key, std::move(url));
+    }
+    else if (!is_single && !multi(key).contains(url)) {
+        appendMulti(key, std::move(url));
+    }
+}
 
 void GameAssets::setSingle(AssetType key, QString value)
 {

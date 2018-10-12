@@ -50,15 +50,7 @@ void add_asset(modeldata::GameAssets& game_assets, const AssetType asset_type, c
         url = QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
     }
 
-    // FIXME: reduce duplication with pegasus_assets::addAssetToGame
-
-    const bool is_single = asset_is_single(asset_type);
-    if (is_single) {
-        game_assets.setSingle(asset_type, std::move(url));
-    }
-    else if (!game_assets.multi(asset_type).contains(url)) {
-        game_assets.appendMulti(asset_type, std::move(url));
-    }
+    game_assets.addUrlMaybe(asset_type, std::move(url));
 }
 
 } // namespace pegasus
