@@ -1,13 +1,18 @@
 HEADERS += \
-    platform/PowerCommands.h \
+    $$PWD/PowerCommands.h \
+    $$PWD/TerminalKbd.h \
+
+SOURCES += \
+    $$PWD/TerminalKbd.cpp \
+
 
 win32 {
-    SOURCES += platform/PowerCommands_win.cpp
+    SOURCES += $$PWD/PowerCommands_win.cpp
 }
-else:unix: {
-    macx: SOURCES += platform/PowerCommands_mac.cpp
-    else: SOURCES += platform/PowerCommands_linux.cpp
+else:unix:!android {
+    macx: SOURCES += $$PWD/PowerCommands_mac.cpp
+    else: SOURCES += $$PWD/PowerCommands_linux.cpp
 }
 else {
-    SOURCES += platform/PowerCommands_unimpl.cpp
+    SOURCES += $$PWD/PowerCommands_unimpl.cpp
 }

@@ -19,7 +19,7 @@
 #include "AppContext.h"
 #include "Backend.h"
 #include "LocaleUtils.h"
-#include "TerminalKbd.h"
+#include "platform/TerminalKbd.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>

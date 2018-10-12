@@ -19,9 +19,9 @@
 
 #include "LocaleUtils.h"
 #include "ScriptRunner.h"
-#include "TerminalKbd.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "platform/TerminalKbd.h"
 
 #include <QDebug>
 
