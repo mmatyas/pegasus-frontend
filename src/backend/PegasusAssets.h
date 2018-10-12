@@ -40,7 +40,4 @@ struct AssetCheckResult {
 AssetCheckResult checkFile(const QFileInfo&);
 void add_asset_to(modeldata::GameAssets&, AssetType, const QString&);
 
-void findAssets(const QStringList& asset_dirs,
-                HashMap<QString, modeldata::Game>& games);
-
 } // namespace pegasus_assets

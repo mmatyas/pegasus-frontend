@@ -181,45 +181,4 @@ void add_asset_to(modeldata::GameAssets& gameassets, AssetType asset_type, const
     }
 }
 
-void findAssets(const QStringList& asset_dirs,
-                HashMap<QString, modeldata::Game>& games)
-{
-    // shortpath: canonical path to dir + extensionless filename
-    HashMap<QString, modeldata::Game*> games_by_shortpath;
-    games_by_shortpath.reserve(games.size());
-    for (auto& pair : games) {
-        const QString shortpath = pair.second.fileinfo().canonicalPath()
-                                % '/'
-                                % pair.second.fileinfo().completeBaseName();
-        games_by_shortpath.emplace(shortpath, &pair.second);
-    }
-
-
-    for (const QString& dir_base : asset_dirs) {
-        const QString media_dir = dir_base + QStringLiteral("/media");
-
-        constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-        constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
-
-        QDirIterator dir_it(media_dir, dir_filters, dir_flags);
-        while (dir_it.hasNext()) {
-            dir_it.next();
-            const QFileInfo fileinfo = dir_it.fileInfo();
-            const auto detection_result = checkFile(fileinfo);
-            if (!detection_result.isValid())
-                continue;
-
-            const QString shortpath = fileinfo.canonicalPath().leftRef(dir_base.length())
-                                    % fileinfo.canonicalPath().midRef(dir_base.length() + 6) // len of `/media`
-                                    % '/'
-                                    % detection_result.basename;
-            if (!games_by_shortpath.count(shortpath))
-                continue;
-
-            modeldata::Game* const game = games_by_shortpath[shortpath];
-            add_asset_to(game->assets, detection_result.asset_type, dir_it.filePath());
-        }
-    }
-}
-
 } // namespace pegasus_assets
