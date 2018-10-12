@@ -32,6 +32,40 @@
 #include <QUrl>
 
 
+namespace pegasus_legacy_assets {
+struct AssetCheckResult {
+    const QString basename;
+    const AssetType asset_type;
+
+    bool isValid() const {
+        return asset_type != AssetType::UNKNOWN && !basename.isEmpty();
+    }
+};
+
+AssetCheckResult checkFile(const QFileInfo& file)
+{
+    const QString basename = file.completeBaseName();
+    const int last_dash = basename.lastIndexOf(QChar('-'));
+    const QString suffix = (last_dash == -1)
+        ? QString()
+        : basename.mid(last_dash + 1);
+
+    // missing/unknown suffix -> guess by extension
+    const AssetType type = pegasus_assets::str_to_type(suffix);
+    if (type == AssetType::UNKNOWN)
+        return { basename, pegasus_assets::ext_to_type(file.suffix()) };
+
+    // known suffix but wrong extension -> invalid
+    const QString game_basename = basename.left(last_dash);
+    if (!pegasus_assets::allowed_asset_exts(type).contains(file.suffix()))
+        return { game_basename, AssetType::UNKNOWN };
+
+    // known suffix and valid extension
+    return { game_basename, type };
+}
+} // pegasus_legacy_assets
+
+
 namespace {
 
 static constexpr auto MSG_PREFIX = "ES2:";
@@ -92,7 +126,7 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir,
     while (dir_it.hasNext()) {
         dir_it.next();
         const QFileInfo fileinfo = dir_it.fileInfo();
-        const auto detection_result = pegasus_assets::checkFile(fileinfo);
+        const auto detection_result = pegasus_legacy_assets::checkFile(fileinfo);
         if (!detection_result.isValid())
             continue;
 

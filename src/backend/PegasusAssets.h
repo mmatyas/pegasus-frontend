@@ -17,27 +17,15 @@
 
 #pragma once
 
-#include "utils/FwdDeclModelData.h"
-#include "utils/HashMap.h"
-
-#include <QFileInfo>
-#include <QString>
-
+class QString;
+class QStringList;
 enum class AssetType : unsigned char;
 
 
 namespace pegasus_assets {
 
 AssetType str_to_type(const QString&);
-const QStringList& allowed_asset_exts(AssetType type);
-
-struct AssetCheckResult {
-    const QString basename;
-    const AssetType asset_type;
-
-    bool isValid() const;
-};
-AssetCheckResult checkFile(const QFileInfo&);
-void add_asset_to(modeldata::GameAssets&, AssetType, const QString&);
+AssetType ext_to_type(const QString&);
+const QStringList& allowed_asset_exts(AssetType);
 
 } // namespace pegasus_assets

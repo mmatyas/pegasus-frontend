@@ -17,29 +17,11 @@
 
 #include "PegasusAssets.h"
 
-#include "model/gaming/Game.h"
+#include "AssetTypes.h"
+#include "utils/HashMap.h"
 
-#include <QDebug>
-#include <QDir>
-#include <QDirIterator>
-#include <QStringBuilder>
-#include <QUrl>
-
-
-namespace {
-
-static const HashMap<QString, AssetType> TYPE_BY_EXT = {
-    { QStringLiteral("png"), AssetType::BOX_FRONT },
-    { QStringLiteral("jpg"), AssetType::BOX_FRONT },
-    { QStringLiteral("webm"), AssetType::VIDEOS },
-    { QStringLiteral("mp4"), AssetType::VIDEOS },
-    { QStringLiteral("avi"), AssetType::VIDEOS },
-    { QStringLiteral("mp3"), AssetType::MUSIC },
-    { QStringLiteral("ogg"), AssetType::MUSIC },
-    { QStringLiteral("wav"), AssetType::MUSIC },
-};
-
-} // namespace
+#include <QString>
+#include <QStringList>
 
 
 namespace pegasus_assets {
@@ -109,6 +91,26 @@ AssetType str_to_type(const QString& str)
     return AssetType::UNKNOWN;
 }
 
+AssetType ext_to_type(const QString& ext)
+{
+    static const HashMap<QString, AssetType> map = {
+        { QStringLiteral("png"), AssetType::BOX_FRONT },
+        { QStringLiteral("jpg"), AssetType::BOX_FRONT },
+        { QStringLiteral("webm"), AssetType::VIDEOS },
+        { QStringLiteral("mp4"), AssetType::VIDEOS },
+        { QStringLiteral("avi"), AssetType::VIDEOS },
+        { QStringLiteral("mp3"), AssetType::MUSIC },
+        { QStringLiteral("ogg"), AssetType::MUSIC },
+        { QStringLiteral("wav"), AssetType::MUSIC },
+    };
+
+    const auto it = map.find(ext);
+    if (it != map.cend())
+        return it->second;
+
+    return AssetType::UNKNOWN;
+}
+
 const QStringList& allowed_asset_exts(AssetType type)
 {
     static const QStringList empty_list({});
@@ -125,59 +127,6 @@ const QStringList& allowed_asset_exts(AssetType type)
             return audio_exts;
         default:
             return image_exts;
-    }
-}
-
-bool AssetCheckResult::isValid() const
-{
-    return asset_type != AssetType::UNKNOWN && !basename.isEmpty();
-}
-
-AssetCheckResult checkFile(const QFileInfo& file)
-{
-    const QString basename = file.completeBaseName();
-    const int last_dash = basename.lastIndexOf(QChar('-'));
-    const QString suffix = (last_dash == -1)
-        ? QString()
-        : basename.mid(last_dash + 1);
-
-    const AssetType type = str_to_type(suffix);
-    if (type == AssetType::UNKNOWN) {
-        // missing/unknown suffix -> guess by extension
-        return {
-            basename,
-            TYPE_BY_EXT.count(file.suffix())
-                ? TYPE_BY_EXT.at(file.suffix())
-                : AssetType::UNKNOWN,
-        };
-    }
-
-    const QString game_basename = basename.left(last_dash);
-    if (!allowed_asset_exts(type).contains(file.suffix())) {
-        // known suffix but wrong extension -> invalid
-        return {
-            game_basename,
-            AssetType::UNKNOWN,
-        };
-    }
-
-    // known suffix and valid extension
-    return {
-        game_basename,
-        type,
-    };
-}
-
-void add_asset_to(modeldata::GameAssets& gameassets, AssetType asset_type, const QString& file_path)
-{
-    const bool is_single = asset_is_single(asset_type);
-    QString url = QUrl::fromLocalFile(file_path).toString();
-
-    if (is_single && gameassets.single(asset_type).isEmpty()) {
-        gameassets.setSingle(asset_type, std::move(url));
-    }
-    else if (!is_single && !gameassets.multi(asset_type).contains(url)) {
-        gameassets.appendMulti(asset_type, std::move(url));
     }
 }
 
