@@ -21,8 +21,8 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
-#include "Utils.h"
 #include "utils/HashMap.h"
+#include "utils/StrBoolConverter.h"
 
 #include <QDebug>
 #include <QFile>
@@ -173,6 +173,7 @@ void AppSettings::load_config()
 {
     const auto config_path = ::config_path();
     const ConfigEntryMaps maps;
+    const StrBoolConverter strconv;
 
 
     const auto on_error = [&](const int lineno, const QString msg){
@@ -184,6 +185,10 @@ void AppSettings::load_config()
         const auto on_error_unknown_opt = [&](){
             on_error(lineno, tr_log("unrecognized option `%1`, ignored").arg(key));
         };
+        const auto on_error_needs_bool = [&](){
+            on_error(lineno, tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
+        };
+
 
         QStringList sections = key.split('.');
         if (sections.size() < 2) {
@@ -197,10 +202,6 @@ void AppSettings::load_config()
             return;
         }
 
-        const auto on_error_needs_bool = [&](){
-            on_error(lineno, tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
-        };
-
         switch (category_it->second) {
             case ConfigEntryCategory::GENERAL: {
                 const auto option_it = maps.str_to_general_opt.find(sections.constFirst());
@@ -210,13 +211,13 @@ void AppSettings::load_config()
                 }
                 switch (option_it->second) {
                     case ConfigEntryGeneralOption::PORTABLE:
-                        general.portable = ::str_to_bool(val, general.portable, on_error_needs_bool);
+                        general.portable = strconv.toBool(val, general.portable, on_error_needs_bool);
                         break;
                     case ConfigEntryGeneralOption::SILENT:
-                        general.silent = ::str_to_bool(val, general.silent, on_error_needs_bool);
+                        general.silent = strconv.toBool(val, general.silent, on_error_needs_bool);
                         break;
                     case ConfigEntryGeneralOption::FULLSCREEN:
-                        general.fullscreen = ::str_to_bool(val, general.fullscreen, on_error_needs_bool);
+                        general.fullscreen = strconv.toBool(val, general.fullscreen, on_error_needs_bool);
                         break;
                     case ConfigEntryGeneralOption::LOCALE:
                         general.locale = val;
@@ -240,7 +241,7 @@ void AppSettings::load_config()
                 auto& provider = ext_providers.mut(provider_it->second);
                 const auto option = sections.takeFirst();
                 if (option == QStringLiteral("enabled")) {
-                    provider.enabled = ::str_to_bool(val, provider.enabled, on_error_needs_bool);
+                    provider.enabled = strconv.toBool(val, provider.enabled, on_error_needs_bool);
                 }
                 break;
             }

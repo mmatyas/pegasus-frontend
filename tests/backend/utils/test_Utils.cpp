@@ -17,7 +17,8 @@
 
 #include <QtTest/QtTest>
 
-#include "Utils.h"
+#include "utils/MathMod.h"
+#include "utils/PathCheck.h"
 
 
 class test_Utils : public QObject

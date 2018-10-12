@@ -19,9 +19,9 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "Utils.h"
 #include "modeldata/gaming/Collection.h"
 #include "modeldata/gaming/Game.h"
+#include "utils/PathCheck.h"
 
 #include <QDebug>
 #include <QDirIterator>

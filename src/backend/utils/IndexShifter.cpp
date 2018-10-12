@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,60 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Utils.h"
+#include "IndexShifter.h"
 
 #include "utils/HashMap.h"
+#include "utils/MathMod.h"
 
-#include <QFileInfo>
-
-#ifdef Q_OS_UNIX
-#include <sys/stat.h>
-#endif
-
-
-namespace {
-const HashMap<QString, const bool> str_to_bool_map {
-    { QStringLiteral("yes"), true },
-    { QStringLiteral("on"), true },
-    { QStringLiteral("true"), true },
-    { QStringLiteral("no"), false },
-    { QStringLiteral("off"), false },
-    { QStringLiteral("false"), false },
-};
-} // namespace
-
-
-bool validExtPath(const QString& path) {
-#ifdef Q_OS_UNIX
-    // fast posix check for unix systems
-    static struct ::stat buffer;
-    return (::stat(path.toUtf8().constData(), &buffer) == 0);
-#else
-    // default Qt fallback
-    return QFileInfo::exists(path);
-#endif
-}
-
-bool validFile(const QString& path)
-{
-    QFileInfo file(path);
-    return file.exists() && file.isFile();
-}
-
-bool is_str_bool(const QString& str)
-{
-    return str_to_bool_map.count(str.toLower());
-}
-
-bool str_to_bool(const QString& str, const bool default_val, const std::function<void()>& on_fail_cb)
-{
-    const auto it = str_to_bool_map.find(str.toLower());
-    if (it != str_to_bool_map.cend())
-        return it->second;
-
-    on_fail_cb();
-    return default_val;
-}
 
 const std::function<int(int,int)>& shifterFn(IndexShiftDirection direction)
 {

@@ -19,9 +19,9 @@
 
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
-#include "Utils.h"
 #include "model/gaming/Filters.h"
 #include "modeldata/gaming/Collection.h"
+#include "utils/IndexShifter.h"
 
 #include <QDebug>
 

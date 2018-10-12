@@ -15,7 +15,6 @@ SOURCES += \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
-    Utils.cpp \
     Paths.cpp \
     AppSettings.cpp \
 
@@ -32,7 +31,6 @@ HEADERS += \
     PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \
-    Utils.h \
     LocaleUtils.h \
     Paths.h \
     AppSettings.h \

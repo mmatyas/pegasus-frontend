@@ -24,7 +24,7 @@
 #include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "Utils.h"
+#include "utils/PathCheck.h"
 
 #include <QDebug>
 #include <QDir>
