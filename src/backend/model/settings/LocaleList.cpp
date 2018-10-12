@@ -18,9 +18,9 @@
 #include "LocaleList.h"
 
 #include "AppSettings.h"
-#include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "model/ListPropertyFn.h"
 
 #include <QCoreApplication>
 #include <QDebug>

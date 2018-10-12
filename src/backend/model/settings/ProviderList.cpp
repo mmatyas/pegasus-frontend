@@ -18,7 +18,7 @@
 #include "ProviderList.h"
 
 #include "AppSettings.h"
-#include "ListPropertyFn.h"
+#include "model/ListPropertyFn.h"
 
 #include <QDebug>
 

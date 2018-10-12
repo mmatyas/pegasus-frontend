@@ -17,7 +17,7 @@
 
 #include "CollectionList.h"
 
-#include "ListPropertyFn.h"
+#include "model/ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "model/gaming/Collection.h"
 #include "utils/IndexShifter.h"

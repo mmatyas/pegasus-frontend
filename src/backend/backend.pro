@@ -27,7 +27,6 @@ HEADERS += \
     ConfigFile.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
-    ListPropertyFn.h \
     PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \

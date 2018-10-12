@@ -21,9 +21,9 @@
 
 #include "AppSettings.h"
 #include "ConfigFile.h"
-#include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "model/ListPropertyFn.h"
 #include "utils/PathCheck.h"
 
 #include <QDebug>

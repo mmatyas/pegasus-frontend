@@ -17,9 +17,9 @@
 
 #include "Filters.h"
 
-#include "ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "configfiles/CustomFilters.h"
+#include "model/ListPropertyFn.h"
 #include "utils/IndexShifter.h"
 
 #include <QDebug>

@@ -17,8 +17,8 @@
 
 #include "GameList.h"
 
-#include "ListPropertyFn.h"
 #include "LocaleUtils.h"
+#include "model/ListPropertyFn.h"
 #include "model/gaming/Filters.h"
 #include "modeldata/gaming/Collection.h"
 #include "utils/IndexShifter.h"
