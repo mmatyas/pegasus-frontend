@@ -45,14 +45,20 @@ namespace {
 void remove_empty_collections(HashMap<QString, modeldata::Collection>& collections,
                               HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    auto it = collections.begin();
-    while (it != collections.end()) {
-        if (collection_childs[it->second.name()].empty()) {
-            qWarning().noquote() << tr_log("No games found for collection '%1', ignored").arg(it->second.name());
-            it = collections.erase(it);
+    std::vector<QString> empty_colls;
+
+    for (const auto& coll_entry : collections) {
+        const auto it = collection_childs.find(coll_entry.first);
+        if (it != collection_childs.cend() && collection_childs.at(it->first).size() > 0)
             continue;
-        }
-        ++it;
+
+        empty_colls.push_back(coll_entry.first);
+    }
+
+    for (const QString& coll : empty_colls) {
+        qWarning().noquote() << tr_log("No games found for collection '%1', ignored").arg(coll);
+        collections.erase(coll);
+        collection_childs.erase(coll);
     }
 }
 

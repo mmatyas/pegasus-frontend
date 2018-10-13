@@ -225,18 +225,25 @@ MetadataParser::MetadataParser(QObject* parent)
 
 void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
                              const HashMap<QString, modeldata::Collection>& collections,
-                             const HashMap<QString, std::vector<QString>>&)
+                             const HashMap<QString, std::vector<QString>>& collection_childs)
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
     // shortpath: dir name + extensionless filename
     HashMap<QString, modeldata::Game* const> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
-    for (auto& pair : games) {
-        const QString shortpath = pair.second.fileinfo().dir().dirName()
-                                % '/'
-                                % pair.second.fileinfo().completeBaseName();
-        games_by_shortpath.emplace(shortpath, &pair.second);
+    for (const auto& coll_titles_pair : collection_childs) {
+        Q_ASSERT(collections.count(coll_titles_pair.first));
+        const QString coll_shortname = collections.at(coll_titles_pair.first).shortName();
+
+        for (const auto& title : coll_titles_pair.second) {
+            Q_ASSERT(games.count(title));
+            modeldata::Game* const game = &games.at(title);
+
+            const QString gamefile = game->fileinfo().completeBaseName();
+            const QString shortpath = coll_shortname % '/' % gamefile;
+            games_by_shortpath.emplace(shortpath, game);
+        }
     }
 
 
