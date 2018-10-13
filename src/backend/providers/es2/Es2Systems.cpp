@@ -46,7 +46,6 @@ QString findSystemsFile()
             qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
             return path;
         }
-        // qDebug() << FALLBACK_MSG.arg(path);
     }
 
     return QString();

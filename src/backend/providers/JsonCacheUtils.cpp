@@ -86,7 +86,7 @@ QJsonDocument read_json_from_cache(const QString& provider_prefix,
     QJsonParseError parse_result;
     auto json = QJsonDocument::fromJson(json_file.readAll(), &parse_result);
     if (parse_result.error != QJsonParseError::NoError) {
-        qDebug()
+        qWarning().noquote()
             << provider_prefix
             << tr_log("could not parse cached file `%1`").arg(json_path)
             << parse_result.errorString();
