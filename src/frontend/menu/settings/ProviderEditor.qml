@@ -121,18 +121,6 @@ FocusScope {
                 preferredHighlightBegin: height * 0.5 - vpx(18) * 1.25
                 preferredHighlightEnd: height * 0.5 + vpx(18) * 1.25
                 highlightMoveDuration: 0
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
-                        if (new_idx < 0)
-                            return;
-
-                        list.currentIndex = new_idx;
-                        list.model[new_idx].enabled = !list.model[new_idx].enabled;
-                    }
-                }
             }
         }
 
@@ -148,13 +136,19 @@ FocusScope {
     Component {
         id: listEntry
 
-        Rectangle {
+        FocusScope {
+            readonly property int myIndex: index
             readonly property bool highlighted: ListView.view.focus
                                                 && (ListView.isCurrentItem || mouseArea.containsMouse)
 
             width: parent.width
             height: label.height
-            color: highlighted ? "#555" : "transparent"
+
+            Rectangle {
+                anchors.fill: parent
+                color: "#555"
+                visible: parent.highlighted
+            }
 
             Text {
                 id: label
@@ -173,19 +167,27 @@ FocusScope {
             }
 
             Switch {
+                id: onoff
                 anchors.right: parent.right
                 anchors.rightMargin: label.rightPadding
                 anchors.verticalCenter: parent.verticalCenter
 
                 height: label.font.pixelSize * 1.25
 
+                focus: true
                 checked: modelData.enabled
+                onCheckedChanged: modelData.enabled = checked
             }
 
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
                 hoverEnabled: true
+
+                onClicked: {
+                    list.currentIndex = myIndex;
+                    onoff.checked = !onoff.checked;
+                }
             }
         }
     }
