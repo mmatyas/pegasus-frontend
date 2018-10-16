@@ -106,7 +106,7 @@ struct ConfigEntryMaps {
 namespace appsettings {
 General::General()
     : DEFAULT_LOCALE(QStringLiteral("en"))
-    , DEFAULT_THEME(QStringLiteral(":/themes/pegasus-grid/"))
+    , DEFAULT_THEME(QStringLiteral(":/themes/pegasus-theme-grid/"))
     , portable(false)
     , silent(false)
     , fullscreen(true)
