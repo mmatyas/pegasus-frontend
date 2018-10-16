@@ -28,16 +28,13 @@ namespace backend {
 class AppContext {
 public:
     AppContext();
-    ~AppContext();
     AppContext(const AppContext&) = delete;
     AppContext& operator=(const AppContext&) = delete;
 
 private:
-    QFile logfile;
     QGamepadKeyNavigation padkeynav;
     GamepadAxisNavigation padaxisnav;
 
-    void setup_logging();
     void setup_gamepad();
 };
 

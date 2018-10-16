@@ -32,27 +32,6 @@
 
 namespace {
 
-QString find_writable_log_path()
-{
-    const QString log_path = paths::writableConfigDir();
-    if (log_path.isEmpty())
-        return QString();
-
-    return log_path + QLatin1String("/lastrun.log");
-}
-
-// using std::list because QTextStream is not copyable or movable,
-// and neither Qt not std::vector can be used in this case
-std::list<QTextStream> g_log_streams;
-
-void on_log_message(QtMsgType type, const QMessageLogContext& context, const QString& msg)
-{
-    // forward the message to all registered output streams
-    const QByteArray preparedMsg = qFormatLogMessage(type, context, msg).toLocal8Bit();
-    for (auto& stream : g_log_streams)
-        stream << preparedMsg << endl;
-}
-
 void on_gamepad_config()
 {
     using ScriptEvent = ScriptRunner::EventType;
@@ -99,35 +78,8 @@ namespace backend {
 
 AppContext::AppContext()
 {
-    setup_logging();
     setup_gamepad();
     register_api_classes();
-}
-
-AppContext::~AppContext()
-{
-    g_log_streams.clear();
-}
-
-void AppContext::setup_logging()
-{
-    if (!AppSettings::general.silent)
-        g_log_streams.emplace_back(stdout);
-
-    qInstallMessageHandler(on_log_message);
-
-    const QString logfile_path = find_writable_log_path();
-    if (logfile_path.isEmpty())
-        return;
-
-    logfile.setFileName(logfile_path);
-    if (!logfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << tr_log("Could not open `%1` for writing, file logging disabled.")
-                      .arg(logfile.fileName());
-        return;
-    }
-
-    g_log_streams.emplace_back(&logfile);
 }
 
 void AppContext::setup_gamepad()

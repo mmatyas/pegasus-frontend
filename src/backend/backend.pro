@@ -16,7 +16,8 @@ SOURCES += \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
-    AssetTypes.cpp
+    AssetTypes.cpp \
+    Log.cpp
 
 HEADERS += \
     Api.h \
@@ -32,7 +33,8 @@ HEADERS += \
     LocaleUtils.h \
     Paths.h \
     AppSettings.h \
-    AssetTypes.h
+    AssetTypes.h \
+    Log.h
 
 include(configfiles/configfiles.pri)
 include(platform/platform.pri)

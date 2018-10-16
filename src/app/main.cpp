@@ -19,6 +19,7 @@
 #include "AppContext.h"
 #include "Backend.h"
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "platform/TerminalKbd.h"
 
 #include <QCommandLineParser>
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
+    Log::init();
     AppSettings::load_config();
     handleCommandLineArgs(app);
 
