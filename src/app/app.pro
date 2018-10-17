@@ -90,6 +90,14 @@ win32 {
 
     target.path = $${INSTALL_BINDIR}
 }
+macx {
+    ICON = macos/pegasus-fe.icns
+    QMAKE_APPLICATION_BUNDLE_NAME = Pegasus
+    QMAKE_TARGET_BUNDLE_PREFIX = org.pegasus-frontend
+    QMAKE_INFO_PLIST = macos/Info.plist.in
+
+    target.path = $${INSTALL_BINDIR}
+}
 android {
     DISTFILES += \
         android/AndroidManifest.xml \

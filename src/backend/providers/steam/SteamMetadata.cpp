@@ -52,15 +52,20 @@ struct SteamGameEntry {
 
 QString find_steam_exe()
 {
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     QSettings reg_base(QLatin1String("HKEY_CURRENT_USER\\Software\\Valve\\Steam"),
                        QSettings::NativeFormat);
     QString reg_value = reg_base.value(QLatin1String("SteamExe")).toString();
     if (!reg_value.isEmpty())
         return reg_value.prepend('"').append('"');
-#endif
+
+#elif defined(Q_OS_MACOS)
+    return QStringLiteral("open -a Steam --args");
+
+#else
     // it should be in the PATH
     return QStringLiteral("steam");
+#endif
 }
 
 SteamGameEntry read_manifest(const QString& manifest_path)
@@ -218,7 +223,7 @@ bool fill_from_cache(const SteamGameEntry& entry)
 void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAccessManager& netman)
 {
     const int TIMEOUT_MS(5000);
-    const QString APPDETAILS_URL(QLatin1String("http://store.steampowered.com/api/appdetails/?appids="));
+    const QString APPDETAILS_URL(QLatin1String("https://store.steampowered.com/api/appdetails/?appids="));
 
     const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
