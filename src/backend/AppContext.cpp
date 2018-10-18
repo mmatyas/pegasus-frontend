@@ -20,17 +20,29 @@
 #include "Api.h"
 #include "AppSettings.h"
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
 #include "utils/FolderListModel.h"
 
 #include <QDebug>
 #include <QDir>
+#include <QGuiApplication>
 #include <QQmlEngine>
+#include <QSysInfo>
 #include <list>
 
 
 namespace {
+
+void print_metainfo()
+{
+    Log::info(tr_log("Pegasus " GIT_REVISION " (" GIT_DATE ")"));
+    Log::info(tr_log("Running on %1 (%2, %3)").arg(
+        QSysInfo::prettyProductName(),
+        QSysInfo::currentCpuArchitecture(),
+        QGuiApplication::platformName()));
+}
 
 void on_gamepad_config()
 {
@@ -78,6 +90,7 @@ namespace backend {
 
 AppContext::AppContext()
 {
+    print_metainfo();
     setup_gamepad();
     register_api_classes();
 }
