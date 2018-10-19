@@ -144,13 +144,14 @@ void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
 void PegasusMetadata::read_metadata_file(const QString& dir_path,
                                          HashMap<QString, modeldata::Game>& games) const
 {
+    static constexpr auto MSG_PREFIX = "Collections:";
     const QRegularExpression rx_asset_key(QStringLiteral(R"(^assets?\.(.+)$)"));
 
     QString curr_config_path;
     modeldata::Game* curr_game = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
-        qWarning().noquote()
+        qWarning().noquote() << MSG_PREFIX
             << tr_log("`%1`, line %2: %3").arg(curr_config_path, QString::number(lineno), msg);
     };
     const auto on_attribute = [&](const int lineno, const QString key, const QString val){
@@ -276,7 +277,7 @@ void PegasusMetadata::read_metadata_file(const QString& dir_path,
         if (!::validFile(path))
             continue;
 
-        qInfo().noquote() << tr_log("Found `%1`").arg(path);
+        qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
 
         curr_game = nullptr;
         curr_config_path = path;

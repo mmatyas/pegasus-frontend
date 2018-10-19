@@ -52,6 +52,7 @@ enum class CollAttribType : unsigned char {
 
 
 namespace {
+static constexpr auto MSG_PREFIX = "Collections:";
 
 using AttribType = providers::pegasus::CollAttribType;
 
@@ -89,7 +90,7 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
     modeldata::Collection* curr_coll = nullptr;
 
     const auto on_error = [&](const int lineno, const QString msg){
-        qWarning().noquote()
+        qWarning().noquote() << MSG_PREFIX
             << tr_log("`%1`, line %2: %3")
                       .arg(curr_config_path, QString::number(lineno), msg);
     };
@@ -186,7 +187,7 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
         if (!::validFile(path))
             continue;
 
-        qInfo().noquote() << tr_log("Found `%1`").arg(path);
+        qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
 
         curr_coll = nullptr;
         curr_config_path = path;

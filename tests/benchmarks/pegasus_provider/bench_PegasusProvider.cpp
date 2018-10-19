@@ -56,7 +56,7 @@ void bench_PegasusProvider::find_in_filled_dir()
     provider.add_game_dir(QStringLiteral(":/filled"));
 
     QBENCHMARK {
-        QTest::ignoreMessage(QtInfoMsg, "Found `:/filled/collections.txt`");
+        QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/filled/collections.txt`");
         provider.findLists(games, collections, collection_childs);
     }
 }

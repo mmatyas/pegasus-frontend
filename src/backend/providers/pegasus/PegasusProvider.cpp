@@ -42,10 +42,14 @@ PegasusProvider::PegasusProvider(QObject* parent)
 
 void PegasusProvider::add_game_dir(const QString& dir_path, bool silent)
 {
+    static constexpr auto MSG_PREFIX = "Collections:";
+
     const QFileInfo entry(dir_path);
     if (!entry.exists() || !entry.isDir()) {
-        if (!silent)
-            qWarning().noquote() << tr_log("Game directory `%1` not found, ignored").arg(dir_path);
+        if (!silent) {
+            qWarning().noquote() << MSG_PREFIX
+                << tr_log("game directory `%1` not found, ignored").arg(dir_path);
+        }
         return;
     }
 
