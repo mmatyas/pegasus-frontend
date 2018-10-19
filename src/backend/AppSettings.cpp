@@ -175,6 +175,12 @@ void AppSettings::load_config()
     const ConfigEntryMaps maps;
     const StrBoolConverter strconv;
 
+    // push CLI arguments
+    const struct CliArgs {
+        const bool silent = AppSettings::general.silent;
+        const bool portable = AppSettings::general.portable;
+    } cli_args;
+
 
     const auto on_error = [&](const int lineno, const QString msg){
         qWarning().noquote()
@@ -272,6 +278,10 @@ void AppSettings::load_config()
 
     config::readFile(config_path, on_attribute, on_error);
     qInfo().noquote() << tr_log("Program settings loaded");
+
+    // pop CLI arguments
+    AppSettings::general.silent |= cli_args.silent;
+    AppSettings::general.portable |= cli_args.portable;
 }
 
 void AppSettings::save_config()

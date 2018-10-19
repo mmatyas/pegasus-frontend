@@ -28,7 +28,7 @@
 #include <QSettings>
 
 
-void handleCommandLineArgs(QGuiApplication&);
+void handle_cli_args(QGuiApplication&);
 
 int main(int argc, char *argv[])
 {
@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
+    handle_cli_args(app);
     Log::init();
     AppSettings::load_config();
-    handleCommandLineArgs(app);
 
     backend::AppContext context;
     backend::Backend backend;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
-void handleCommandLineArgs(QGuiApplication& app)
+void handle_cli_args(QGuiApplication& app)
 {
     QCommandLineParser argparser;
     argparser.setApplicationDescription(tr_log(
