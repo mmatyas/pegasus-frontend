@@ -59,10 +59,10 @@ int main(int argc, char *argv[])
 void handleCommandLineArgs(QGuiApplication& app)
 {
     QCommandLineParser argparser;
-
-    argparser.setApplicationDescription('\n' + tr_log(
-        "A cross platform, customizable graphical frontend for launching emulators "
-        "and managing your game collection."));
+    argparser.setApplicationDescription(tr_log(
+        "\nPegasus is a graphical frontend for browsing your game library (especially\n"
+        "retro games) and launching them from one place. It's focusing on customization,\n"
+        "cross platform support (including embedded devices) and high performance."));
 
     const QCommandLineOption arg_portable(QStringLiteral("portable"),
         tr_log("Do not read or write config files outside the program's directory"));
@@ -74,7 +74,7 @@ void handleCommandLineArgs(QGuiApplication& app)
 
     argparser.addHelpOption();
     argparser.addVersionOption();
-    argparser.process(app);
+    argparser.process(app); // may quit!
 
 
     AppSettings::general.portable = argparser.isSet(arg_portable);
