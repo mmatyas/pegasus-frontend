@@ -67,7 +67,7 @@ void CollectionList::setIndex(int idx)
 
     const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_collections.count());
     if (!valid_idx) {
-        qWarning() << tr_log("Invalid collection index #%1").arg(idx);
+        qWarning().noquote() << tr_log("Invalid collection index #%1").arg(idx);
         return;
     }
 

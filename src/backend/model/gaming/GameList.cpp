@@ -200,7 +200,7 @@ void GameList::setIndex(int idx)
 
     const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_filtered_games.count());
     if (!valid_idx) {
-        qWarning() << tr_log("Invalid game index #%1").arg(idx);
+        qWarning().noquote() << tr_log("Invalid game index #%1").arg(idx);
         return;
     }
 

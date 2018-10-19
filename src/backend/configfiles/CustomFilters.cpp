@@ -67,7 +67,8 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
 
     QFile db_file(config_path);
     if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << tr_log("Could not open `%1` for reading, custom filters are not loaded.")
+        qWarning().noquote()
+            << tr_log("Could not open `%1` for reading, custom filters are not loaded.")
                       .arg(config_path);
         return default_filters();
     }
@@ -178,6 +179,6 @@ QVector<model::Filter*> CustomFilters::read(const QString& path)
         if (!entry.second->rules().isEmpty())
             out.push_back(entry.second);
     }
-    qInfo() << tr_log("Found %1 custom filters").arg(out.length());
+    qInfo().noquote() << tr_log("Found %1 custom filters").arg(out.length());
     return out;
 }

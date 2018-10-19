@@ -62,7 +62,7 @@ void Filters::setIndex(int idx)
 
     const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_filters.count());
     if (!valid_idx) {
-        qWarning() << tr_log("Invalid filter index #%1").arg(idx);
+        qWarning().noquote() << tr_log("Invalid filter index #%1").arg(idx);
         return;
     }
 
