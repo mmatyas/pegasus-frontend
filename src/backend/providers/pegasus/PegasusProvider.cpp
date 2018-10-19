@@ -54,8 +54,6 @@ void PegasusProvider::add_game_dir(const QString& dir_path, bool silent)
     }
 
     m_game_dirs << entry.canonicalFilePath();
-
-    qInfo().noquote() << tr_log("Found `%1`").arg(m_game_dirs.last());
 }
 
 void PegasusProvider::findLists(HashMap<QString, modeldata::Game>& games,
