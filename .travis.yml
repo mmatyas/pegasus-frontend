@@ -112,17 +112,30 @@ jobs:
     script:
       - export GIT_REV=$(git describe --always)
       - export STAGING_REPO=https://github.com/mmatyas/pegasus-deploy-staging.git
-      - export TARGETS='x11-static rpi1-static rpi2-static'
-      - for target in $TARGETS; do
-          git clone $STAGING_REPO -b continuous-${target} dist-${target};
+      - export TARGETS='x11-static rpi1-static rpi2-static macos-static'
+      - export FILE_CNT=0
+      - export EXPECTED_FILE_CNT=5 # 4 target + deb
+      - export NEXT_SLEEP_SEC=0
+      - |
+        while [[ "$TRAVIS_EVENT_TYPE" != "pull_request" && $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
+          if [[ $NEXT_SLEEP_SEC -ne 0 ]]; then echo Retrying in $NEXT_SLEEP_SEC seconds...; fi;
+          sleep $NEXT_SLEEP_SEC;
+          export NEXT_SLEEP_SEC=20;
+
+          for target in $TARGETS; do
+            rm -rf dist-${target};
+            git clone $STAGING_REPO -b continuous-${target} dist-${target};
+          done;
+
+          export FILES=$(find ./ -maxdepth 2 -name "*${GIT_REV}*.zip" -or -name "*.deb");
+          export FILE_CNT=$(echo $FILES | wc -w);
+          echo "Available files: $FILES ($FILE_CNT out of $EXPECTED_FILE_CNT)";
         done
-      - export FILES=$(find ./ -maxdepth 2 -name "*.zip" -or -name "*.deb")
-      - export FILE_CNT=$(echo $FILES | wc -w)
-      - export EXPECTED_FILE_CNT=4 # 3 target + deb
-      - if [[ $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; then return 1; fi
     after_success:
-      - wget https://github.com/mmatyas/uploadtool/raw/master/upload.sh
-      - bash ./upload.sh $FILES
+      - if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+          wget https://github.com/mmatyas/uploadtool/raw/master/upload.sh;
+          bash ./upload.sh $FILES;
+        fi
     deploy: null
 
   # Qt 5.7.1 (for Debian Stretch/Ubuntu Zesty)
