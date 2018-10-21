@@ -6,7 +6,7 @@ HEADERS += \
     $$PWD/pegasus/PegasusMetadata.h \
     $$PWD/pegasus/PegasusProvider.h \
     $$PWD/pegasus_favorites/Favorites.h \
-    $$PWD/pegasus_playtime/PlaytimeStats.h
+    $$PWD/pegasus_playtime/PlaytimeStats.h \
 
 SOURCES += \
     $$PWD/Provider.cpp \
@@ -16,7 +16,7 @@ SOURCES += \
     $$PWD/pegasus/PegasusMetadata.cpp \
     $$PWD/pegasus/PegasusProvider.cpp \
     $$PWD/pegasus_favorites/Favorites.cpp \
-    $$PWD/pegasus_playtime/PlaytimeStats.cpp
+    $$PWD/pegasus_playtime/PlaytimeStats.cpp \
 
 
 contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = yes
@@ -66,6 +66,13 @@ win32|macx|defined(pclinux,var)|defined(armlinux,var) {
         $$PWD/es2/Es2Metadata.cpp \
         $$PWD/es2/Es2Provider.cpp \
         $$PWD/es2/Es2Systems.cpp \
+}
+
+android {
+    ENABLED_COMPATS *= "Android Apps"
+    DEFINES *= WITH_COMPAT_ANDROIDAPPS
+    HEADERS += $$PWD/android_apps/AndroidAppsProvider.h
+    SOURCES += $$PWD/android_apps/AndroidAppsProvider.cpp
 }
 
 

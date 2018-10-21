@@ -86,6 +86,7 @@ struct ConfigEntryMaps {
         { QStringLiteral("es2"), ExtProvider::ES2 },
         { QStringLiteral("steam"), ExtProvider::STEAM },
         { QStringLiteral("gog"), ExtProvider::GOG },
+        { QStringLiteral("androidapps"), ExtProvider::ANDROIDAPPS },
     };
     const HashMap<QString, KeyEvent> str_to_key_opt {
         { QStringLiteral("accept"), KeyEvent::ACCEPT },
@@ -150,6 +151,7 @@ Providers::Providers()
         { ExtProvider::ES2, { true } },
         { ExtProvider::STEAM, { true } },
         { ExtProvider::GOG, { true } },
+        { ExtProvider::ANDROIDAPPS, { true } },
     }
 {}
 Providers::ExtProviderInfo& Providers::mut(ExtProvider key) {

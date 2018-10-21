@@ -99,12 +99,14 @@ macx {
     target.path = $${INSTALL_BINDIR}
 }
 android {
-    DISTFILES += \
+    QT += androidextras
+    OTHER_FILES += \
         android/AndroidManifest.xml \
         android/res/drawable-hdpi/icon.png \
         android/res/drawable-ldpi/icon.png \
         android/res/drawable-mdpi/icon.png \
         android/res/values/libs.xml \
+        android/src/opt/pegasus_frontend/android/MainActivity.java \
 
     ANDROID_CFGDIR_IN = $$PWD/android
     ANDROID_CFGDIR_OUT = $$OUT_PWD/android

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <manifest package="org.pegasus_frontend.android" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="@GIT_REVISION@" android:versionCode="@GIT_COMMIT_CNT@" android:installLocation="auto">
     <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="Pegasus" android:icon="@drawable/icon">
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="Pegasus" android:screenOrientation="userLandscape" android:launchMode="singleTop">
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name=".MainActivity" android:label="Pegasus" android:screenOrientation="userLandscape" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

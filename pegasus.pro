@@ -10,7 +10,8 @@ lessThan(QT_MINOR_VERSION, 9) {
 TEMPLATE = subdirs
 SUBDIRS += src
 
-qtHaveModule(testlib) {
+# FIXME: MAke sure the QT options of Backend inherit to the dependers
+qtHaveModule(testlib):!android {
     SUBDIRS += tests
     tests.depends = src
     tests.CONFIG = no_default_install

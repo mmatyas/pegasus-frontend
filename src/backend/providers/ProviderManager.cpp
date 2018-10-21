@@ -35,6 +35,9 @@
 #ifdef WITH_COMPAT_GOG
   #include "providers/gog/GogProvider.h"
 #endif
+#ifdef WITH_COMPAT_ANDROIDAPPS
+  #include "providers/android_apps/AndroidAppsProvider.h"
+#endif
 
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
@@ -137,6 +140,10 @@ ProviderManager::ProviderManager(QObject* parent)
 #ifdef WITH_COMPAT_ES2
     if (AppSettings::ext_providers.at(ExtProvider::ES2).enabled)
         m_providers.emplace_back(new providers::es2::Es2Provider());
+#endif
+#ifdef WITH_COMPAT_ANDROIDAPPS
+    if (AppSettings::ext_providers.at(ExtProvider::ANDROIDAPPS).enabled)
+        m_providers.emplace_back(new providers::android::AndroidAppsProvider());
 #endif
 
     for (const auto& provider : m_providers) {

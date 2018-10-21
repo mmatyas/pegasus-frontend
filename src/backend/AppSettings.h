@@ -55,6 +55,7 @@ enum class ExtProvider : unsigned char {
     ES2,
     STEAM,
     GOG,
+    ANDROIDAPPS,
 };
 
 
