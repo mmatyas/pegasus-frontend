@@ -70,11 +70,14 @@ unix:!macx {
     !isEmpty(INSTALL_ICONDIR) {
         icon.files += platform/linux/pegasus-fe.png
         icon.path = $${INSTALL_ICONDIR}
+        OTHER_FILES += $${icon.files}
         INSTALLS += icon
     }
     !isEmpty(INSTALL_DESKTOPDIR) {
         desktop_file.input = platform/linux/pegasus-fe.desktop.in
         desktop_file.output = $${OUT_PWD}/pegasus-fe.desktop
+        OTHER_FILES += $${desktop_file.input}
+
         QMAKE_SUBSTITUTES += desktop_file
         desktop.files += $$desktop_file.output
         desktop.path = $${INSTALL_DESKTOPDIR}
@@ -87,6 +90,7 @@ win32 {
     QMAKE_TARGET_DESCRIPTION = "Pegasus emulator frontend"
     QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2018 Matyas Mustoha"
     RC_ICONS = platform/windows/app_icon.ico
+    OTHER_FILES += $${RC_ICONS}
 
     target.path = $${INSTALL_BINDIR}
 }
