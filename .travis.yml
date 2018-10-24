@@ -5,85 +5,18 @@ dist: trusty
 
 branches:
   only:
-  - master
+    - master
 
 env:
   global:
-  - TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-  - QT_VER=qt5111
+    - QT_VER=qt5111
 
 git:
-  depth: 100
+  depth: 120
 
-install:
-  - pushd /tmp
-  - wget ${TOOLS_URL}/${QT_VER}_${TARGET}.txz
-  - if [[ $TARGET == rpi* ]]; then wget ${TOOLS_URL}/rpi-toolchain_483.txz; fi
-  - if [[ $TARGET == rpi* ]]; then wget ${TOOLS_URL}/rpi-sysroot_jessie_2017-07-05.txz; fi
-  - for f in *.txz; do sudo tar xJf ${f} -C /opt/; done
-  - if [[ "$TARGET" == "x11-static" ]]; then
-      sudo ln -s ${QT_VER}_${TARGET} /opt/${QT_VER}_${TARGET}_hosttools;
-      sudo apt-add-repository -y ppa:brightbox/ruby-ng &&
-      sudo apt-get -qq update &&
-      sudo apt-get install -y
-        libasound-dev
-        libgstreamer-plugins-base1.0-dev
-        libpulse-dev
-        libudev-dev
-        libxi-dev
-        ruby2.4
-      ;
-      gem install fpm;
-    fi
-  - popd
 
-before_script:
-  - if [[ $TARGET == x11* ]]; then
-      export DISPLAY=:99.0;
-      sh -e /etc/init.d/xvfb start;
-      sleep 3;
-    fi
-
-script:
-  - if [[ $TARGET == x11* ]]; then
-      find -name *.qml -exec /opt/${QT_VER}_${TARGET}/bin/qmllint {} \; ;
-    fi
-  - mkdir build && cd build
-  - /opt/${QT_VER}_${TARGET}_hosttools/bin/qmake ..
-      INSTALL_BINDIR=/usr/bin
-      INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps
-      INSTALL_DESKTOPDIR=/usr/share/applications
-  - make
-  - if [[ $TARGET == x11* ]]; then make check; fi
-  - make install INSTALL_ROOT=$PWD/../installoc
-  - cd ..
-
-after_success:
-  - export SUFFIX=$(git describe --always)_${TARGET}
-  - mkdir dist && cd dist
-  - zip -j pegasus-fe_${SUFFIX}.zip
-      ../installoc/usr/bin/pegasus-fe
-      ../README.md
-      ../LICENSE.md
-  - export DEB_REGEX='^alpha([0-9]+)-([0-9]+)-.*'
-  - if [[ "$TARGET" == "x11-static" && "$SUFFIX" =~ $DEB_REGEX ]]; then
-      export DEB_VER=$(echo $SUFFIX | sed -r "s/${DEB_REGEX}/0.\1.\2/");
-      fpm -s dir -t deb
-        --name pegasus-frontend
-        --version ${DEB_VER}
-        --license 'GPLv3+, CC-BY-NC-SA'
-        --maintainer 'Mátyás Mustoha'
-        --vendor 'pegasus-frontend.org'
-        --url http://pegasus-frontend.org
-        --category games
-        --deb-compression xz
-        --description "$(printf 'Cross platform graphical frontend for launching emulators\nPegasus is an experimental emulator frontend, focusing on customizability,\ncross platform support (including embedded) and high performance.')"
-        -d fontconfig -d gstreamer1.0-plugins-good -d policykit-1 -d 'libc6 >= 2.17' -d 'libstdc++6 >= 4.8'
-        $PWD/../installoc/=/
-      ;
-    fi
-  - cd ..
-
+install: ./etc/ci/travis_prepare.sh
+script: ./etc/ci/travis_build.sh && ./etc/ci/travis_stage.sh
 deploy:
   - provider: bintray
     file: "$TRAVIS_BUILD_DIR/etc/ci/travis_bintray-deb.json"
@@ -92,11 +25,12 @@ deploy:
       secure: grK+TcvmcnfEyFbBs7kTh6S/awFPQLzNROW5pwYcVc664NP4GxEFd+tl3CqkIuUv1n8HR/x/VWqIc7se12HQx41FnSYqJeArNPI7+gTHHyoR2AtcHptUR1BJUfemlrRhkjbd6dwfdwaeRDt3B1aIy9D0EG8gDgmt6tMIK390AFptwhbvarVZq2nlAnMJ3/DMWIzDXn2Kx6xErQji5LFCOmfFnOCw00z1uDpmTrO6QnfdwlORowVfhoT9SYdPtSQksYyi5Lzjeu0UmxIQtlGisqmiqPOdMb9ted0aNRhfHPYO2Dim+hOwBk+N9GO7AgHDjInkADOwtPxE7qcm5prLO0kV5Jc1ykWB4WWlBDQilggpwm2PbJbsf4zT6Dc7yRzAuarvlFkY8l8zvd4giyMzGCulMWHespglTF8YQDD6B6n78+ePeUqgq0beN/vQP5kAMIJbpXXnPrX9gHS3upO2F9HTQY1WLq+Aq0aub/9ZhEOkGMxzWdWl9u/CsoH2dySDyiyfOuhJuXyEGcfL4jL3yA8JPrZ18ApsEx3CJnnAvdJgy//0tkD5ajucEJVcsfQ5DW/HxfAT6APMMxkqvBiwxkipiUG52klXfwPfxw9oz6ZLC53HwF9MjxowOJnAf4MLbd3/H9AK7CPODPKt/n1ybVzEa3Awl9p2R/niNzaAYQA=
     skip_cleanup: true
   - provider: pages
-    skip-cleanup: true
     github-token: $GITHUB_TOKEN
     local-dir: dist
     repo: mmatyas/pegasus-deploy-staging
     target-branch: continuous-$TARGET
+    skip-cleanup: true
+
 
 jobs:
   include:
@@ -106,75 +40,13 @@ jobs:
 
   # Collect and deploy artifacts
   - stage: deploy
-    before_install: skip
     install: skip
-    before_script: skip
-    script:
-      - export GIT_REV=$(git describe --always)
-      - export STAGING_REPO=https://github.com/mmatyas/pegasus-deploy-staging.git
-      - export TARGETS='x11-static rpi1-static rpi2-static macos-static'
-      - export FILE_CNT=0
-      - export EXPECTED_FILE_CNT=5 # 4 target + deb
-      - export NEXT_SLEEP_SEC=0
-      - |
-        while [[ "$TRAVIS_EVENT_TYPE" != "pull_request" && $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
-          if [[ $NEXT_SLEEP_SEC -ne 0 ]]; then echo Retrying in $NEXT_SLEEP_SEC seconds...; fi;
-          sleep $NEXT_SLEEP_SEC;
-          export NEXT_SLEEP_SEC=20;
-
-          for target in $TARGETS; do
-            rm -rf dist-${target};
-            git clone $STAGING_REPO -b continuous-${target} dist-${target};
-          done;
-
-          export FILES=$(find ./ -maxdepth 2 -name "*${GIT_REV}*.zip" -or -name "*.deb");
-          export FILE_CNT=$(echo $FILES | wc -w);
-          echo "Available files: $FILES ($FILE_CNT out of $EXPECTED_FILE_CNT)";
-        done
-    after_success:
-      - if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
-          wget https://github.com/mmatyas/uploadtool/raw/master/upload.sh;
-          bash ./upload.sh $FILES;
-        fi
+    script: ./etc/ci/travis_deploy.sh
     deploy: null
 
-  # Qt 5.7.1 (for Debian Stretch/Ubuntu Zesty)
+  # Coverage testing
   - stage: test
-    env: QT_QPA_PLATFORM=minimal
-    before_install:
-      - sudo add-apt-repository -y ppa:beineri/opt-qt58-trusty
-      - sudo apt-get update
-    install:
-      - sudo apt-get install -y
-          lcov
-          qt58declarative
-          qt58graphicaleffects
-          qt58gamepad
-          qt58imageformats
-          qt58multimedia
-          qt58svg
-          qt58tools
-          libpulse-dev
-      - source /opt/qt58/bin/qt58-env.sh
-      - qmake -v
-      - gem install coveralls-lcov
-    script:
-      - mkdir build && cd build
-      - qmake ..
-          QMAKE_CXXFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage"
-          QMAKE_LDFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage"
-          LIBS+="-lgcov"
-          CONFIG+=debug
-      - make
-      - lcov --compat-libtool -i -c -d . -o coverage.pre
-      - make check
-    after_success:
-      - lcov --compat-libtool -c -d . -o coverage.post
-      - lcov --compat-libtool -a coverage.pre -a coverage.post -o coverage.total
-      - lcov --compat-libtool -r coverage.total
-          '/usr/*' '/opt/*' '*/moc_*' '*/qrc_*' '*/test_*' '*/bench_*' 'src/app/*'
-          -o coverage.clean
-      - sed -i 's|SF:/home/travis/build/mmatyas/pegasus-frontend/|SF:|g' coverage.clean
-      - cd ..
-      - coveralls-lcov build/coverage.clean
+    env: TARGET=coverage
+    install: ./etc/ci/travis_coverage-prepare.sh
+    script: ./etc/ci/travis_coverage-build.sh
     deploy: null
