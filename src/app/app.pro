@@ -68,12 +68,12 @@ unix:!macx {
     target.path = $${INSTALL_BINDIR}
 
     !isEmpty(INSTALL_ICONDIR) {
-        icon.files += $${TOP_SRCDIR}/etc/linux/pegasus-frontend.png
+        icon.files += platform/linux/pegasus-frontend.png
         icon.path = $${INSTALL_ICONDIR}
         INSTALLS += icon
     }
     !isEmpty(INSTALL_DESKTOPDIR) {
-        desktop_file.input = $${TOP_SRCDIR}/etc/linux/pegasus-frontend.desktop.in
+        desktop_file.input = platform/linux/pegasus-frontend.desktop.in
         desktop_file.output = $${OUT_PWD}/pegasus-frontend.desktop
         QMAKE_SUBSTITUTES += desktop_file
         desktop.files += $$desktop_file.output
@@ -86,29 +86,29 @@ win32 {
     QMAKE_TARGET_COMPANY = "pegasus-frontend.org"
     QMAKE_TARGET_DESCRIPTION = "Pegasus emulator frontend"
     QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2018 Matyas Mustoha"
-    RC_ICONS = $${TOP_SRCDIR}/etc/windows/app_icon.ico
+    RC_ICONS = platform/windows/app_icon.ico
 
     target.path = $${INSTALL_BINDIR}
 }
 macx {
-    ICON = macos/pegasus-fe.icns
+    ICON = platform/macos/pegasus-fe.icns
     QMAKE_APPLICATION_BUNDLE_NAME = Pegasus
     QMAKE_TARGET_BUNDLE_PREFIX = org.pegasus-frontend
-    QMAKE_INFO_PLIST = macos/Info.plist.in
+    QMAKE_INFO_PLIST = platform/macos/Info.plist.in
 
     target.path = $${INSTALL_BINDIR}
 }
 android {
     QT += androidextras
     OTHER_FILES += \
-        android/AndroidManifest.xml \
-        android/res/drawable-hdpi/icon.png \
-        android/res/drawable-ldpi/icon.png \
-        android/res/drawable-mdpi/icon.png \
-        android/res/values/libs.xml \
-        android/src/opt/pegasus_frontend/android/MainActivity.java \
+        platform/android/AndroidManifest.xml \
+        platform/android/res/drawable-hdpi/icon.png \
+        platform/android/res/drawable-ldpi/icon.png \
+        platform/android/res/drawable-mdpi/icon.png \
+        platform/android/res/values/libs.xml \
+        platform/android/src/opt/pegasus_frontend/android/MainActivity.java \
 
-    ANDROID_CFGDIR_IN = $$PWD/android
+    ANDROID_CFGDIR_IN = $$PWD/platform/android
     ANDROID_CFGDIR_OUT = $$OUT_PWD/android
     equals(ANDROID_CFGDIR_IN, $${ANDROID_CFGDIR_OUT}) {
         ANDROID_CFGDIR_OUT = $$OUT_PWD/android.out
