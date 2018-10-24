@@ -1,20 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>common/loading-spinner.png</file>
-        <file>gamepad/a.svg</file>
-        <file>gamepad/b.svg</file>
-        <file>gamepad/base.svg</file>
-        <file>gamepad/dpad.svg</file>
-        <file>gamepad/guide.svg</file>
-        <file>gamepad/l1.svg</file>
-        <file>gamepad/l2.svg</file>
-        <file>gamepad/r1.svg</file>
-        <file>gamepad/r2.svg</file>
-        <file>gamepad/select.svg</file>
-        <file>gamepad/start.svg</file>
-        <file>gamepad/stick.svg</file>
-        <file>gamepad/x.svg</file>
-        <file>gamepad/y.svg</file>
         <file>fonts/Roboto.ttf</file>
         <file>fonts/RobotoCondensed.ttf</file>
         <file>icon.png</file>

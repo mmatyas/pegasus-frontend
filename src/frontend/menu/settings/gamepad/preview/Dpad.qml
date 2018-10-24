@@ -26,7 +26,7 @@ Item {
         anchors.fill: parent
 
         fillMode: Image.PreserveAspectFit
-        source: "/gamepad/dpad.svg"
+        source: "qrc:/frontend/assets/gamepad/dpad.svg"
         sourceSize {
             width: 128
             height: 128

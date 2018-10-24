@@ -29,7 +29,7 @@ Item {
         width: parent.width
 
         fillMode: Image.PreserveAspectFit
-        source: "/gamepad/" + shortName + ".svg"
+        source: "qrc:/frontend/assets/gamepad/" + shortName + ".svg"
         sourceSize {
             width: 64
             height: 64

@@ -45,7 +45,7 @@ Item {
         }
 
         fillMode: Image.PreserveAspectFit
-        source: "/gamepad/stick.svg"
+        source: "qrc:/frontend/assets/gamepad/stick.svg"
         sourceSize {
             width: 128
             height: 128

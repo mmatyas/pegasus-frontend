@@ -36,7 +36,7 @@ Item {
         anchors.centerIn: parent
 
         fillMode: Image.PreserveAspectFit
-        source: "/gamepad/base.svg"
+        source: "qrc:/frontend/assets/gamepad/base.svg"
         sourceSize {
             width: 512
             height: 512

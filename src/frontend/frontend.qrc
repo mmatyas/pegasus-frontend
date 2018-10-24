@@ -10,6 +10,20 @@
         <file>assets/pbar.png</file>
         <file>assets/qr-docs.png</file>
         <file>assets/qt-logo.png</file>
+        <file>assets/gamepad/a.svg</file>
+        <file>assets/gamepad/b.svg</file>
+        <file>assets/gamepad/base.svg</file>
+        <file>assets/gamepad/dpad.svg</file>
+        <file>assets/gamepad/guide.svg</file>
+        <file>assets/gamepad/l1.svg</file>
+        <file>assets/gamepad/l2.svg</file>
+        <file>assets/gamepad/r1.svg</file>
+        <file>assets/gamepad/r2.svg</file>
+        <file>assets/gamepad/select.svg</file>
+        <file>assets/gamepad/start.svg</file>
+        <file>assets/gamepad/stick.svg</file>
+        <file>assets/gamepad/x.svg</file>
+        <file>assets/gamepad/y.svg</file>
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
