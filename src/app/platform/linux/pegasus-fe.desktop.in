@@ -1,11 +1,11 @@
 [Desktop Entry]
 Version=1.1
 Type=Application
-Name=Pegasus Frontend
+Name=Pegasus
 GenericName=Emulator Frontend
 Comment=A cross platform, customizable graphical frontend for launching emulators and managing your game collection.
 Exec=$${INSTALL_BINDIR}/pegasus-fe
-Icon=pegasus-frontend
+Icon=pegasus-fe
 Terminal=false
 Categories=Game;Player;
 Keywords=emulator;retro;game;videogame;video game;player;

@@ -68,13 +68,13 @@ unix:!macx {
     target.path = $${INSTALL_BINDIR}
 
     !isEmpty(INSTALL_ICONDIR) {
-        icon.files += platform/linux/pegasus-frontend.png
+        icon.files += platform/linux/pegasus-fe.png
         icon.path = $${INSTALL_ICONDIR}
         INSTALLS += icon
     }
     !isEmpty(INSTALL_DESKTOPDIR) {
-        desktop_file.input = platform/linux/pegasus-frontend.desktop.in
-        desktop_file.output = $${OUT_PWD}/pegasus-frontend.desktop
+        desktop_file.input = platform/linux/pegasus-fe.desktop.in
+        desktop_file.output = $${OUT_PWD}/pegasus-fe.desktop
         QMAKE_SUBSTITUTES += desktop_file
         desktop.files += $$desktop_file.output
         desktop.path = $${INSTALL_DESKTOPDIR}
