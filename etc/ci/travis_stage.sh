@@ -11,8 +11,8 @@ fi
 set -o xtrace
 
 SUFFIX=$(git describe --always)_${TARGET}
-DEB_REGEX_LATEST='^alpha([0-9]+)-([0-9]+)-g[0-9a-f]+_'
-DEB_REGEX_STABLE='^alpha([0-9]+)_'
+DEB_REGEX_LATEST='^alpha([0-9]+)-([0-9]+)-g[0-9a-f]+_.*'
+DEB_REGEX_STABLE='^alpha([0-9]+)_.*'
 
 
 # Regular release
