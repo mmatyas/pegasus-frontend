@@ -77,5 +77,12 @@ void AndroidAppsProvider::findLists(HashMap<QString, modeldata::Game>& games,
     }
 }
 
+void AndroidAppsProvider::findStaticData(HashMap<QString, modeldata::Game>& games,
+                                         const HashMap<QString, modeldata::Collection>& collections,
+                                         const HashMap<QString, std::vector<QString>>& collection_childs)
+{
+    m_metadata.findStaticData(games, collections, collection_childs);
+}
+
 } // namespace android
 } // namespace providers

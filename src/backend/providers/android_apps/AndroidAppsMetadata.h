@@ -17,28 +17,34 @@
 
 #pragma once
 
-#include "AndroidAppsMetadata.h"
 #include "providers/Provider.h"
+
+#include <QRegularExpression>
 
 
 namespace providers {
 namespace android {
 
-class AndroidAppsProvider : public Provider {
-    Q_OBJECT
-
+class Metadata {
 public:
-    AndroidAppsProvider(QObject* parent = nullptr);
+    Metadata();
 
-    void findLists(HashMap<QString, modeldata::Game>&,
-                   HashMap<QString, modeldata::Collection>&,
-                   HashMap<QString, std::vector<QString>>&) final;
     void findStaticData(HashMap<QString, modeldata::Game>&,
                         const HashMap<QString, modeldata::Collection>&,
-                        const HashMap<QString, std::vector<QString>>&) final;
+                        const HashMap<QString, std::vector<QString>>&);
 
 private:
-    Metadata m_metadata;
+    const QRegularExpression rx_meta_itemprops;
+    const QRegularExpression rx_background;
+    const QRegularExpression rx_developer;
+    const QRegularExpression rx_category;
+    const QRegularExpression rx_screenshots;
+
+    std::vector<QString> fill_from_cache(const std::vector<QString>&,
+                                         HashMap<QString, modeldata::Game>&);
+    void fill_from_network(const std::vector<QString>&,
+                           HashMap<QString, modeldata::Game>&);
+    bool parse_reply(QByteArray&, QJsonObject&);
 };
 
 } // namespace android

@@ -28,6 +28,7 @@ ENABLED_COMPATS =
 
 win32|macx|defined(pclinux,var) {
     ENABLED_COMPATS += Steam
+    uses_json_cache = yes
     DEFINES *= WITH_COMPAT_STEAM
     HEADERS += \
         $$PWD/steam/SteamGamelist.h \
@@ -41,6 +42,7 @@ win32|macx|defined(pclinux,var) {
 
 win32|defined(pclinux,var) {
     ENABLED_COMPATS += GOG
+    uses_json_cache = yes
     DEFINES *= WITH_COMPAT_GOG
     HEADERS += \
         $$PWD/gog/GogCommon.h \
@@ -70,13 +72,18 @@ win32|macx|defined(pclinux,var)|defined(armlinux,var) {
 
 android {
     ENABLED_COMPATS *= "Android Apps"
+    uses_json_cache = yes
     DEFINES *= WITH_COMPAT_ANDROIDAPPS
-    HEADERS += $$PWD/android_apps/AndroidAppsProvider.h
-    SOURCES += $$PWD/android_apps/AndroidAppsProvider.cpp
+    HEADERS += \
+        $$PWD/android_apps/AndroidAppsProvider.h \
+        $$PWD/android_apps/AndroidAppsMetadata.h
+    SOURCES += \
+        $$PWD/android_apps/AndroidAppsProvider.cpp \
+        $$PWD/android_apps/AndroidAppsMetadata.cpp
 }
 
 
-contains(ENABLED_COMPATS,Steam)|contains(ENABLED_COMPATS,GOG) {
+defined(uses_json_cache,var) {
     HEADERS += \
         $$PWD/JsonCacheUtils.h
     SOURCES += \
