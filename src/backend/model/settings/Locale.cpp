@@ -25,9 +25,7 @@ namespace model {
 Locale::Locale(QString bcp47tag, QObject* parent)
     : QObject(parent)
     , m_bcp47tag(std::move(bcp47tag))
-    , m_name(m_bcp47tag == QLatin1String("hu-Hung")
-             ? QStringLiteral("magyar (rovás)") // unicode bug, hu-Hung would turn into magyar
-             : QLocale(m_bcp47tag).nativeLanguageName())
+    , m_name(QLocale(m_bcp47tag).nativeLanguageName())
 {}
 
 } // namespace model
