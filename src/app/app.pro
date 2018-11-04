@@ -109,8 +109,8 @@ android {
         platform/android/res/drawable-hdpi/icon.png \
         platform/android/res/drawable-ldpi/icon.png \
         platform/android/res/drawable-mdpi/icon.png \
+        platform/android/src/org/pegasus_frontend/android/MainActivity.java \
         platform/android/res/values/libs.xml \
-        platform/android/src/opt/pegasus_frontend/android/MainActivity.java \
 
     ANDROID_CFGDIR_IN = $$PWD/platform/android
     ANDROID_CFGDIR_OUT = $$OUT_PWD/android
