@@ -61,6 +61,11 @@ ProviderList::ProviderList(QObject* parent)
                                       &AppSettings::ext_providers.mut(ExtProvider::GOG).enabled,
                                       this));
 #endif
+#ifdef WITH_COMPAT_ANDROIDAPPS
+    m_data.append(new model::Provider(QStringLiteral("Android Apps"),
+                                      &AppSettings::ext_providers.mut(ExtProvider::ANDROIDAPPS).enabled,
+                                      this));
+#endif
 }
 
 QQmlListProperty<Provider> ProviderList::getListProp()
