@@ -63,6 +63,10 @@ void FrontendLayer::rebuild()
     m_engine->addImportPath(QStringLiteral("lib/qml"));
     m_engine->addImportPath(QStringLiteral("qml"));
     m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
+#ifdef Q_OS_ANDROID
+    m_engine->addImageProvider(QStringLiteral("androidicons"), &m_android_icon_provider);
+#endif
+
     m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
     m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 

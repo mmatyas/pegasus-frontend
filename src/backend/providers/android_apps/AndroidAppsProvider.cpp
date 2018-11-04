@@ -74,6 +74,9 @@ void AndroidAppsProvider::findLists(HashMap<QString, modeldata::Game>& games,
         modeldata::Game& game = games.at(package);
         game.title = appname;
         game.launch_cmd = QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component);
+
+        game.assets.setSingle(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
+        game.assets.setSingle(AssetType::UI_TILE, game.assets.single(AssetType::BOX_FRONT));
     }
 }
 

@@ -1,8 +1,17 @@
 package org.pegasus_frontend.android;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 
@@ -36,11 +45,15 @@ final class App {
 
 public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity {
     private static PackageManager m_pm;
+    private static int m_icon_density;
 
     @Override
     protected void onStart() {
         super.onStart();
         m_pm = getPackageManager();
+
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        m_icon_density = activityManager.getLauncherLargeIconDensity();
     }
 
     public static App[] appList() {
@@ -53,5 +66,43 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
             entries[i] = new App(m_pm, activities.get(i));
 
         return entries;
+    }
+
+    public static byte[] appIcon(String packageName) {
+        Drawable drawable = null;
+        try {
+            // NOTE: while there is m_pm.getApplicationInfo(), unfortunately
+            //       that returns low density images for most apps
+            ApplicationInfo appinfo = m_pm.getApplicationInfo(packageName, 0);
+            Resources resources = m_pm.getResourcesForApplication(appinfo);
+            Intent launch_intent = m_pm.getLaunchIntentForPackage(packageName);
+            ResolveInfo resolveinfo = m_pm.resolveActivity(launch_intent, 0);
+            // NOTE: getDrawableForDensity() has changed in API 21-22
+            drawable = resources.getDrawableForDensity(resolveinfo.activityInfo.getIconResource(), m_icon_density);
+        }
+        catch (Exception ex) { }
+        if (drawable == null)
+            drawable = m_pm.getDefaultActivityIcon();
+
+        Bitmap bitmap = drawableToBitmap(drawable);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+
+    private static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            // TODO: handle null
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int w = Math.max(1, drawable.getIntrinsicWidth());
+        int h = Math.max(1, drawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

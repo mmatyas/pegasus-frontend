@@ -16,3 +16,8 @@ else:unix:!android {
 else {
     SOURCES += $$PWD/PowerCommands_unimpl.cpp
 }
+
+android {
+    HEADERS += $$PWD/AndroidAppIconProvider.h
+    SOURCES += $$PWD/AndroidAppIconProvider.cpp
+}

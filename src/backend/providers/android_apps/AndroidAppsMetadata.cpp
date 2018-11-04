@@ -70,11 +70,6 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
     if (0.0 <= rating && rating <= 5.0)
         game.rating = static_cast<float>(rating / 5.0);
 
-    const QString icon = root[Lat("icon")].toString();
-    if (!icon.isEmpty()) {
-        game.assets.setSingle(AssetType::BOX_FRONT, icon);
-        game.assets.setSingle(AssetType::UI_TILE, icon);
-    }
     const QString background = root[Lat("background")].toString();
     if (!background.isEmpty())
         game.assets.setSingle(AssetType::BACKGROUND, background);

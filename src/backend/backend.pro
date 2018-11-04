@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-QT += qml gamepad sql
+QT += qml quick gamepad sql
 CONFIG += c++11 staticlib warn_on exceptions_off object_parallel_to_source
 android: QT += androidextras
 
