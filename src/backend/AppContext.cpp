@@ -114,8 +114,10 @@ void AppContext::setup_gamepad()
     SET_GAMEPAD_KEY(Guide, GUIDE);
     #undef SET_GAMEPAD_KEY
 
+#ifndef Q_OS_ANDROID
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
                      &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
+#endif
 
     // config change
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, on_gamepad_config);
