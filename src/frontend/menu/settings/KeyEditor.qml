@@ -82,7 +82,7 @@ FocusScope {
             eventId: modelData
             onEditKey: {
                 recoder.eventId = eventId;
-                recoder.keyToChange = key;
+                recoder.keyToChange = keyCode;
                 recoder.focus = true;
             }
             onNewKey: {
@@ -90,7 +90,7 @@ FocusScope {
                 recoder.keyToChange = 0;
                 recoder.focus = true;
             }
-            onDelKey: api.settings.keyEditor.delKey(eventId, key)
+            onDelKey: api.settings.keyEditor.delKey(eventId, keyCode)
         }
 
         spacing: vpx(15)

@@ -23,9 +23,9 @@ FocusScope {
 
     property int eventId
 
-    signal editKey(int eventId, int key)
+    signal editKey(int eventId, int keyCode)
     signal newKey(int eventId)
-    signal delKey(int eventId, int key)
+    signal delKey(int eventId, int keyCode)
 
     readonly property bool parentFocus: ListView.view.focus
     readonly property int textSize: vpx(18)
@@ -83,16 +83,16 @@ FocusScope {
     ListView {
         id: keyList
 
-        readonly property var keys: api.settings.keyEditor.keysOf(root.eventId)
-        readonly property bool hasKeys: keys.length
+        readonly property var keyCodes: api.settings.keyEditor.keyCodesOf(root.eventId)
+        readonly property bool hasKeys: keyCodes.length
         property bool flagSetLastOnReload: false
 
         width: parent.width * 0.5
-        height: keys.length * (root.textBoxHeight + spacing)
+        height: keyCodes.length * (root.textBoxHeight + spacing)
         anchors.right: parent.right
         spacing: vpx(4)
 
-        model: keys.length
+        model: keyCodes.length // Qt idiocy: apparently QVector<int> can't be used as model
         delegate: keyDelegate
 
         visible: hasKeys
@@ -105,6 +105,47 @@ FocusScope {
                 flagSetLastOnReload = false;
             }
             root.updateFocus();
+        }
+    }
+
+    Component {
+        id: keyDelegate
+
+        FocusScope {
+            id: keyButton
+            width: ListView.view.width
+            height: root.textBoxHeight
+
+            // See keyList.model
+            readonly property int keyCode: keyList.keyCodes[modelData]
+
+            onFocusChanged: editBtn.focus = true // do not remember relative focus
+
+            KeyEditorEntryButton {
+                id: editBtn
+
+                height: parent.height
+                anchors.left: parent.left
+                anchors.right: delBtn.left
+                anchors.rightMargin: keyList.spacing
+
+                color: "#3bb"
+                text: api.settings.keyEditor.keyName(keyCode)
+                onPressed: root.editKey(root.eventId, keyCode)
+
+                focus: true
+                KeyNavigation.right: delBtn
+            }
+            KeyEditorEntryButton {
+                id: delBtn
+                anchors.right: parent.right
+                height: parent.height
+                width: height * 0.75
+
+                color: "#d88"
+                text: "\u2212" // minus
+                onPressed: root.delKey(root.eventId, keyCode);
+            }
         }
     }
 
@@ -126,46 +167,5 @@ FocusScope {
         }
 
         KeyNavigation.up: keyList.hasKeys ? keyList : null
-    }
-
-    Component {
-        id: keyDelegate
-
-        FocusScope {
-            id: keyButton
-            width: ListView.view.width
-            height: root.textBoxHeight
-
-            // this is a workaround for yet another Qt idiocy
-            readonly property int key: api.settings.keyEditor.keysOf(root.eventId)[modelData]
-
-            onFocusChanged: editBtn.focus = true // do not remember relative focus
-
-            KeyEditorEntryButton {
-                id: editBtn
-
-                height: parent.height
-                anchors.left: parent.left
-                anchors.right: delBtn.left
-                anchors.rightMargin: keyList.spacing
-
-                color: "#3bb"
-                text: api.settings.keyEditor.keyName(keyButton.key)
-                onPressed: root.editKey(root.eventId, keyButton.key)
-
-                focus: true
-                KeyNavigation.right: delBtn
-            }
-            KeyEditorEntryButton {
-                id: delBtn
-                anchors.right: parent.right
-                height: parent.height
-                width: height * 0.75
-
-                color: "#d88"
-                text: "\u2212" // minus
-                onPressed: root.delKey(root.eventId, keyButton.key);
-            }
-        }
     }
 }

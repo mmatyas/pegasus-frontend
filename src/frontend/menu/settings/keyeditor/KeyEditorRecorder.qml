@@ -22,6 +22,7 @@ FocusScope {
 
     property int eventId
     property int keyToChange
+    readonly property var modifiers: [Qt.Key_Control, Qt.Key_Alt, Qt.Key_AltGr, Qt.Key_Shift, Qt.Key_Meta]
 
     property bool recoding: false
     property int secondsLeft: 5
@@ -45,10 +46,13 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
+        if (modifiers.indexOf(event.key) > -1)
+            return;
+
         if (keyToChange)
-            api.settings.keyEditor.changeKey(eventId, keyToChange, event.key);
+            api.settings.keyEditor.replaceKey(eventId, keyToChange, event);
         else
-            api.settings.keyEditor.addKey(eventId, event.key);
+            api.settings.keyEditor.addKey(eventId, event);
 
         triggerClose();
         event.accepted = true;

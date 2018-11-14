@@ -17,32 +17,16 @@
 
 #pragma once
 
-#include "AppSettings.h"
-
 #include <QObject>
+#include <QKeyEvent>
 
 
-namespace model {
-class KeyEditor: public QObject {
+// Lightweight (and hacky) reproduction of KeyEvent
+// because the proper implementation is private in Qt
+class FakeQKeyEvent : public QObject {
     Q_OBJECT
-    Q_PROPERTY(int eventCount READ eventCount CONSTANT)
-
 public:
-    explicit KeyEditor(QObject* parent = nullptr);
+    explicit FakeQKeyEvent();
 
-    Q_INVOKABLE void addKey(int event_id, const QVariant& keyevent);
-    Q_INVOKABLE void delKey(int event_id, const int keycode);
-    Q_INVOKABLE void replaceKey(int event_id, const int old_keycode, const QVariant& new_keyevent);
-    Q_INVOKABLE void resetKeys();
-
-    Q_INVOKABLE QVector<int> keyCodesOf(int event_id) const;
-    Q_INVOKABLE QString keyName(const int keycode) const;
-
-    static constexpr int eventCount() {
-        return static_cast<int>(::KeyEvent::MAIN_MENU) + 1;
-    }
-
-signals:
-    void keysChanged();
+    QKeyEvent event;
 };
-} // namespace model

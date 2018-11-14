@@ -35,7 +35,7 @@ QString config_path()
     return paths::writableConfigDir() + QStringLiteral("/settings.txt");
 }
 
-HashMap<KeyEvent, QVector<int>, EnumHash> default_keymap()
+HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> default_keymap()
 {
     return {
         { KeyEvent::LEFT, { Qt::Key_Left }},
@@ -119,16 +119,16 @@ General::General()
 Keys::Keys()
     : m_event_keymap(default_keymap())
 {}
-void Keys::add_key(KeyEvent event, int key)
+void Keys::add_key(KeyEvent event, QKeySequence keyseq)
 {
     for (auto& entry : m_event_keymap)
-        entry.second.removeOne(key);
+        entry.second.removeOne(keyseq);
 
-    m_event_keymap.at(event).append(key);
+    m_event_keymap.at(event).append(std::move(keyseq));
 }
-void Keys::del_key(KeyEvent event, int key)
+void Keys::del_key(KeyEvent event, QKeySequence keyseq)
 {
-    m_event_keymap.at(event).removeOne(key);
+    m_event_keymap.at(event).removeOne(keyseq);
 }
 void Keys::clear(KeyEvent event)
 {
@@ -138,10 +138,10 @@ void Keys::resetAll()
 {
     m_event_keymap = default_keymap();
 }
-const QVector<int>& Keys::at(KeyEvent event) const {
+const QVector<QKeySequence>& Keys::at(KeyEvent event) const {
     return m_event_keymap.at(event);
 }
-const QVector<int>& Keys::operator[](KeyEvent event) const {
+const QVector<QKeySequence>& Keys::operator[](KeyEvent event) const {
     return at(event);
 }
 
@@ -169,6 +169,21 @@ const Providers::ExtProviderInfo& Providers::operator[](ExtProvider key) const {
 appsettings::General AppSettings::general;
 appsettings::Keys AppSettings::keys;
 appsettings::Providers AppSettings::ext_providers;
+const std::map<QKeySequence, QString> AppSettings::gamepadButtonNames {
+    { QKeySequence(GamepadKeyId::A), QStringLiteral("A") },
+    { QKeySequence(GamepadKeyId::B), QStringLiteral("B") },
+    { QKeySequence(GamepadKeyId::X), QStringLiteral("X") },
+    { QKeySequence(GamepadKeyId::Y), QStringLiteral("Y") },
+    { QKeySequence(GamepadKeyId::L1), QStringLiteral("L1") },
+    { QKeySequence(GamepadKeyId::L2), QStringLiteral("L2") },
+    { QKeySequence(GamepadKeyId::L3), QStringLiteral("L3") },
+    { QKeySequence(GamepadKeyId::R1), QStringLiteral("R1") },
+    { QKeySequence(GamepadKeyId::R2), QStringLiteral("R2") },
+    { QKeySequence(GamepadKeyId::R3), QStringLiteral("R3") },
+    { QKeySequence(GamepadKeyId::SELECT), QStringLiteral("Select") },
+    { QKeySequence(GamepadKeyId::START), QStringLiteral("Start") },
+    { QKeySequence(GamepadKeyId::GUIDE), QStringLiteral("Guide") },
+};
 
 
 void AppSettings::load_config()
@@ -176,6 +191,12 @@ void AppSettings::load_config()
     const auto config_path = ::config_path();
     const ConfigEntryMaps maps;
     const StrBoolConverter strconv;
+
+    std::map<QString, QKeySequence> reverse_gamepadButtonNames;
+    for (const auto& pair : gamepadButtonNames) {
+        reverse_gamepadButtonNames.emplace(QStringLiteral("Gamepad") + pair.second, pair.first);
+    }
+
 
     // push CLI arguments
     const struct CliArgs {
@@ -261,17 +282,28 @@ void AppSettings::load_config()
                     return;
                 }
 
-                QVector<int> key_nums;
-                const auto key_strs = val.splitRef(',');
-                for (QStringRef str : key_strs) {
-                    const int key = str.toInt();
-                    key_nums << key;
-                }
-                key_nums.removeAll(0);
-
                 keys.clear(key_it->second);
-                for (const int key : key_nums)
-                    keys.add_key(key_it->second, key);
+                if (val == QStringLiteral("none"))
+                    return;
+
+                QVector<QKeySequence> keyseqs;
+                const auto key_strs = val.splitRef(',');
+                for (QStringRef strref : key_strs) {
+                    const auto str = strref.trimmed().toString();
+
+                    const auto gamepadbtn_it = reverse_gamepadButtonNames.find(str);
+                    if (gamepadbtn_it != reverse_gamepadButtonNames.cend()) {
+                        keyseqs.append(gamepadbtn_it->second);
+                        continue;
+                    }
+
+                    QKeySequence keyseq(str);
+                    if (!keyseq.isEmpty())
+                        keyseqs.append(std::move(keyseq));
+                }
+
+                for (const auto& keyseq : keyseqs)
+                    keys.add_key(key_it->second, keyseq);
 
                 break;
             }
@@ -313,7 +345,8 @@ void AppSettings::save_config()
         general.theme = general.DEFAULT_THEME;
 
 
-    // printing (NOTE: slightly ugly but uses less memory like this)
+    // printing
+    // NOTE: slightly ugly but uses less memory like this
 
     ConfigEntryMaps maps;
 
@@ -350,11 +383,15 @@ void AppSettings::save_config()
     // print keyboard config
     for (const auto& entry : maps.str_to_key_opt) {
         QStringList key_strs;
-        for (const int key : keys.at(entry.second))
-            key_strs << QString::number(key);
+        for (const QKeySequence& keyseq : keys.at(entry.second)) {
+            if (gamepadButtonNames.count(keyseq))
+                key_strs << QStringLiteral("Gamepad") + gamepadButtonNames.at(keyseq);
+            else
+                key_strs << keyseq.toString();
+        }
 
-        if (key_strs.isEmpty()) // 0 entries will be removed on read
-            key_strs << QStringLiteral("0");
+        if (key_strs.isEmpty())
+            key_strs << QStringLiteral("none");
 
         stream << LINE_TEMPLATE.arg(category_to_str.at(ConfigEntryCategory::KEYS),
                                     entry.first,

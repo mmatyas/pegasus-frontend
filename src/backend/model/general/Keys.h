@@ -18,9 +18,11 @@
 #pragma once
 
 #include "AppSettings.h"
+#include "utils/KeySequenceTools.h"
 
 #include <QObject>
 #include <QVector>
+#include <QKeySequence>
 
 
 namespace model {
@@ -29,27 +31,23 @@ class Keys : public QObject {
     Q_OBJECT
 
 public:
-    #define KEYVEC_PROP(event, qml_array, qml_fn) \
-        Q_PROPERTY(QVector<int> qml_array READ qml_array NOTIFY keysChanged) \
-        const QVector<int>& qml_array() const { \
-            return AppSettings::keys.at(KeyEvent::event); \
-        } \
-        Q_INVOKABLE bool qml_fn(int key) const { \
-            return qml_array().count(key); \
+    #define KEYVEC_PROP(keytype, qml_fn) \
+        Q_INVOKABLE bool qml_fn(const QVariant& qmlevent) const { \
+            return AppSettings::keys.at(KeyEvent::keytype).count(::qmlevent_to_keyseq(qmlevent)); \
         }
-    KEYVEC_PROP(LEFT, left, isLeft)
-    KEYVEC_PROP(RIGHT, right, isRight)
-    KEYVEC_PROP(UP, up, isUp)
-    KEYVEC_PROP(DOWN, down, isDown)
-    KEYVEC_PROP(ACCEPT, accept, isAccept)
-    KEYVEC_PROP(CANCEL, cancel, isCancel)
-    KEYVEC_PROP(DETAILS, details, isDetails)
-    KEYVEC_PROP(FILTERS, filters, isFilters)
-    KEYVEC_PROP(NEXT_PAGE, nextPage, isNextPage)
-    KEYVEC_PROP(PREV_PAGE, prevPage, isPrevPage)
-    KEYVEC_PROP(PAGE_UP, pageUp, isPageUp)
-    KEYVEC_PROP(PAGE_DOWN, pageDown, isPageDown)
-    KEYVEC_PROP(MAIN_MENU, menu, isMenu)
+    KEYVEC_PROP(LEFT, isLeft)
+    KEYVEC_PROP(RIGHT, isRight)
+    KEYVEC_PROP(UP, isUp)
+    KEYVEC_PROP(DOWN, isDown)
+    KEYVEC_PROP(ACCEPT, isAccept)
+    KEYVEC_PROP(CANCEL, isCancel)
+    KEYVEC_PROP(DETAILS, isDetails)
+    KEYVEC_PROP(FILTERS, isFilters)
+    KEYVEC_PROP(NEXT_PAGE, isNextPage)
+    KEYVEC_PROP(PREV_PAGE, isPrevPage)
+    KEYVEC_PROP(PAGE_UP, isPageUp)
+    KEYVEC_PROP(PAGE_DOWN, isPageDown)
+    KEYVEC_PROP(MAIN_MENU, isMenu)
     #undef KEYVEC_PROP
 
 public:

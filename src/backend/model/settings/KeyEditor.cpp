@@ -17,8 +17,7 @@
 
 #include "KeyEditor.h"
 
-#include <QKeySequence>
-#include <QDebug>
+#include "utils/KeySequenceTools.h"
 
 
 namespace {
@@ -33,50 +32,43 @@ namespace model {
 
 KeyEditor::KeyEditor(QObject* parent)
     : QObject(parent)
-    , m_button_names {
-        { GamepadKeyId::A, QStringLiteral("A") },
-        { GamepadKeyId::B, QStringLiteral("B") },
-        { GamepadKeyId::X, QStringLiteral("X") },
-        { GamepadKeyId::Y, QStringLiteral("Y") },
-        { GamepadKeyId::L1, QStringLiteral("L1") },
-        { GamepadKeyId::L2, QStringLiteral("L2") },
-        { GamepadKeyId::L3, QStringLiteral("L3") },
-        { GamepadKeyId::R1, QStringLiteral("R1") },
-        { GamepadKeyId::R2, QStringLiteral("R2") },
-        { GamepadKeyId::R3, QStringLiteral("R3") },
-        { GamepadKeyId::SELECT, QStringLiteral("Select") },
-        { GamepadKeyId::START, QStringLiteral("Start") },
-        { GamepadKeyId::GUIDE, QStringLiteral("Guide") },
-    }
 {}
 
-void KeyEditor::addKey(int event_id, int key)
+void KeyEditor::addKey(int event_id, const QVariant& event)
 {
     if (!valid_event_id(event_id))
         return;
 
-    AppSettings::keys.add_key(static_cast<::KeyEvent>(event_id), key);
+    QKeySequence keyseq = ::qmlevent_to_keyseq(event);
+    if (keyseq.isEmpty())
+        return;
+
+    AppSettings::keys.add_key(static_cast<::KeyEvent>(event_id), std::move(keyseq));
     AppSettings::save_config();
     emit keysChanged();
 }
 
-void KeyEditor::delKey(int event_id, int key)
+void KeyEditor::delKey(int event_id, const int keycode)
 {
-    if (!valid_event_id(event_id))
+    if (!valid_event_id(event_id) || keycode == 0)
         return;
 
-    AppSettings::keys.del_key(static_cast<::KeyEvent>(event_id), key);
+    AppSettings::keys.del_key(static_cast<::KeyEvent>(event_id), QKeySequence(keycode));
     AppSettings::save_config();
     emit keysChanged();
 }
 
-void KeyEditor::changeKey(int event_id, int old_key, int new_key)
+void KeyEditor::replaceKey(int event_id, const int old_keycode, const QVariant& new_keyevent)
 {
-    if (!valid_event_id(event_id))
+    if (!valid_event_id(event_id) || old_keycode == 0)
         return;
 
-    AppSettings::keys.del_key(static_cast<::KeyEvent>(event_id), old_key);
-    AppSettings::keys.add_key(static_cast<::KeyEvent>(event_id), new_key);
+    QKeySequence keyseq_new = ::qmlevent_to_keyseq(new_keyevent);
+    if (keyseq_new.isEmpty())
+        return;
+
+    AppSettings::keys.del_key(static_cast<::KeyEvent>(event_id), QKeySequence(old_keycode));
+    AppSettings::keys.add_key(static_cast<::KeyEvent>(event_id), std::move(keyseq_new));
     AppSettings::save_config();
     emit keysChanged();
 }
@@ -88,39 +80,33 @@ void KeyEditor::resetKeys()
     emit keysChanged();
 }
 
-const QVector<int> KeyEditor::keysOf(int event_id) const
+QVector<int> KeyEditor::keyCodesOf(int event_id) const
 {
     if (!valid_event_id(event_id))
         return {};
 
-    return AppSettings::keys.at(static_cast<::KeyEvent>(event_id));
+    QVector<int> keycode_list;
+
+    const auto keyseq_list = AppSettings::keys.at(static_cast<::KeyEvent>(event_id));
+    for (const QKeySequence& keyseq : keyseq_list) {
+        Q_ASSERT(!keyseq.isEmpty());
+        keycode_list.append(keyseq[0]);
+    }
+
+    return keycode_list;
 }
 
-const QString KeyEditor::keyName(int key) const
+QString KeyEditor::keyName(const int keycode) const
 {
-#ifndef Q_OS_MACOS
-    // Qt workaround
-    switch (key) {
-        case Qt::Key_Shift:
-            return QStringLiteral("Shift");
-        case Qt::Key_Control:
-            return QStringLiteral("Ctrl");
-        case Qt::Key_Meta:
-            return QStringLiteral("Meta");
-        case Qt::Key_Alt:
-            return QStringLiteral("Alt");
-        case Qt::Key_AltGr:
-            return QStringLiteral("AltGr");
-        default:
-            break;
-    }
-#endif
-    if (m_button_names.count(key)) {
+    const QKeySequence keyseq(keycode);
+
+    const auto gamepad_it = AppSettings::gamepadButtonNames.find(keyseq);
+    if (gamepad_it != AppSettings::gamepadButtonNames.cend()) {
         return QStringLiteral("Gamepad %1 (%2)")
-            .arg(QString::number(key - GamepadKeyId::A), m_button_names.at(key));
+            .arg(QString::number(keyseq[0] - GamepadKeyId::A), gamepad_it->second);
     }
 
-    return QKeySequence(key).toString();
+    return keyseq.toString(QKeySequence::NativeText);
 }
 
 } // namespace model

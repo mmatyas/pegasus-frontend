@@ -22,7 +22,9 @@
 
 #include <QString>
 #include <QVector>
+#include <QKeySequence>
 #include <functional>
+#include <map>
 
 
 enum class KeyEvent : unsigned char {
@@ -81,16 +83,16 @@ public:
     Keys();
     NO_COPY_NO_MOVE(Keys)
 
-    void add_key(KeyEvent, int);
-    void del_key(KeyEvent, int);
+    void add_key(KeyEvent, QKeySequence);
+    void del_key(KeyEvent, QKeySequence);
     void clear(KeyEvent);
     void resetAll();
 
-    const QVector<int>& at(KeyEvent) const;
-    const QVector<int>& operator[](KeyEvent) const;
+    const QVector<QKeySequence>& at(KeyEvent) const;
+    const QVector<QKeySequence>& operator[](KeyEvent) const;
 
 private:
-    HashMap<KeyEvent, QVector<int>, EnumHash> m_event_keymap;
+    HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> m_event_keymap;
 };
 
 
@@ -122,4 +124,6 @@ struct AppSettings {
     static void load_config();
     static void save_config();
     static void parse_gamedirs(const std::function<void(const QString&)>&);
+
+    static const std::map<QKeySequence, QString> gamepadButtonNames;
 };
