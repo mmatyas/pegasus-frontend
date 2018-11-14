@@ -40,7 +40,7 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
-        if (api.keys.isCancel(event.key) || api.keys.isMenu(event.key)) {
+        if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
             event.accepted = true;
             root.close();
         }

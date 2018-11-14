@@ -45,11 +45,11 @@ FocusScope {
         if (event.isAutoRepeat)
             return;
 
-        if (api.keys.isCancel(event.key)) {
+        if (api.keys.isCancel(event)) {
             event.accepted = true;
             triggerClose();
         }
-        else if (api.keys.isAccept(event.key)) {
+        else if (api.keys.isAccept(event)) {
             event.accepted = true;
             select(index);
             triggerClose();

@@ -28,7 +28,7 @@ FocusScope {
     anchors.fill: parent
 
     Keys.onPressed: {
-        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
         }
@@ -161,7 +161,7 @@ FocusScope {
             }
 
             Keys.onPressed: {
-                if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     pickItem();
                 }

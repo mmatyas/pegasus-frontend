@@ -41,7 +41,7 @@ FocusScope {
     }
 
     Keys.onPressed: {
-        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
         }
@@ -167,7 +167,7 @@ FocusScope {
                 color: (focus || okMouseArea.containsMouse) ? "#3c4" : "#666"
 
                 Keys.onPressed: {
-                    if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         root.accept();
                     }
@@ -203,7 +203,7 @@ FocusScope {
 
                 KeyNavigation.left: okButton
                 Keys.onPressed: {
-                    if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         root.cancel();
                     }

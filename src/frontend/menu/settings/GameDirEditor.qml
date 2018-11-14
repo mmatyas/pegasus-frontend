@@ -33,7 +33,7 @@ FocusScope {
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
     Keys.onPressed: {
-        if (api.keys.isCancel(event.key) && !event.isAutoRepeat) {
+        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
         }
@@ -112,8 +112,8 @@ FocusScope {
             if (event.isAutoRepeat)
                 return;
 
-            var do_remove = event.key === Qt.Key_Delete || api.keys.isDetails(event.key);
-            var do_add = api.keys.isFilters(event.key);
+            var do_remove = event.key === Qt.Key_Delete || api.keys.isDetails(event);
+            var do_add = api.keys.isFilters(event);
             if (!do_add && !do_remove)
                 return;
 
@@ -131,7 +131,7 @@ FocusScope {
         Keys.onReleased: {
             if (event.isAutoRepeat)
                 return;
-            if (event.key !== Qt.Key_Delete && !api.keys.isDetails(event.key))
+            if (event.key !== Qt.Key_Delete && !api.keys.isDetails(event))
                 return;
 
             event.accepted = true;
@@ -252,7 +252,7 @@ FocusScope {
             color: highlighted ? "#585858" : "transparent"
 
             Keys.onPressed: {
-                if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+                if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     root.toggleIndex(index);
                 }

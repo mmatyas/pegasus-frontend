@@ -37,13 +37,13 @@ Item {
     height: textSize * 2.5
 
     Keys.onPressed: {
-        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.press();
         }
     }
     Keys.onReleased: {
-        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.release();
         }

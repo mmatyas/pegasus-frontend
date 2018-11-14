@@ -32,7 +32,7 @@ Rectangle {
     color: selected || mouseArea.containsMouse ? activeColor : inactiveColor
 
     Keys.onPressed: {
-        if (api.keys.isAccept(event.key) && !event.isAutoRepeat) {
+        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             activated();
         }
