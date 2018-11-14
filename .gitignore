@@ -15,3 +15,8 @@ build*
 *.pro.user
 *.kdev4
 *.workspace
+
+# ignore Qt generated files
+*.qmlc
+*.jsc
+*.autosave
