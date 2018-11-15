@@ -18,8 +18,11 @@
 #pragma once
 
 #include "AppSettings.h"
+#include "model/Key.h"
 
 #include <QObject>
+#include <QString>
+#include <QVariantList>
 
 
 namespace model {
@@ -30,13 +33,15 @@ class KeyEditor: public QObject {
 public:
     explicit KeyEditor(QObject* parent = nullptr);
 
+    // NOTE: keycode = key + modifier flags
     Q_INVOKABLE void addKey(int event_id, const QVariant& keyevent);
-    Q_INVOKABLE void delKey(int event_id, const int keycode);
-    Q_INVOKABLE void replaceKey(int event_id, const int old_keycode, const QVariant& new_keyevent);
+    Q_INVOKABLE void deleteKeyCode(int event_id, const int keycode);
+    Q_INVOKABLE void replaceKeyCode(int event_id, const int old_keycode, const QVariant& new_keyevent);
     Q_INVOKABLE void resetKeys();
 
-    Q_INVOKABLE QVector<int> keyCodesOf(int event_id) const;
-    Q_INVOKABLE QString keyName(const int keycode) const;
+    Q_INVOKABLE QVariantList keysOf(int event_id) const;
+    Q_INVOKABLE QString keyCodeName(const int keycode) const;
+    Q_INVOKABLE QString keyName(const model::Key& key) const;
 
     static constexpr int eventCount() {
         return static_cast<int>(::KeyEvent::MAIN_MENU) + 1;

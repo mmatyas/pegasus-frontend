@@ -17,6 +17,7 @@
 
 import QtQuick 2.0
 import QtTest 1.11
+import "utils.js" as Utils
 
 
 TestCase {
@@ -31,7 +32,7 @@ TestCase {
         width: 50; height: 50
         focus: true
 
-        Keys.onPressed: keyEditor.replaceKey(0, oldKey, event);
+        Keys.onPressed: keyEditor.replaceKeyCode(0, oldKey, event);
     }
 
     SignalSpy {
@@ -41,10 +42,6 @@ TestCase {
     }
 
 
-    function hasKey(event, key) {
-        return keyEditor.keyCodesOf(event).indexOf(key) > -1;
-    }
-
     function init() {
         keyEditor.resetKeys();
         changed.clear();
@@ -53,34 +50,28 @@ TestCase {
     function test_sameEvent() {
         oldKey = Qt.Key_Return;
         var newKey = Qt.Key_X;
-        var keyCount = keyEditor.keyCodesOf(0).length;
-        compare(hasKey(0, oldKey), true);
-        compare(hasKey(0, newKey), false);
+        compare(Utils.hasKey(0, oldKey), true);
+        compare(Utils.hasKey(0, newKey), false);
 
         keyClick(newKey);
 
         tryCompare(changed, "count", 1);
-        tryCompare(keyEditor.keyCodesOf(0), "length", keyCount);
-        compare(hasKey(0, oldKey), false);
-        compare(hasKey(0, newKey), true);
+        compare(Utils.hasKey(0, oldKey), false);
+        compare(Utils.hasKey(0, newKey), true);
     }
 
     function test_differentEvent() {
         oldKey = Qt.Key_Return;
         var newKey = Qt.Key_Escape;
-        var keyCount0 = keyEditor.keyCodesOf(0).length;
-        var keyCount1 = keyEditor.keyCodesOf(1).length;
-        compare(hasKey(0, oldKey), true);
-        compare(hasKey(0, newKey), false);
-        compare(hasKey(1, newKey), true);
+        compare(Utils.hasKey(0, oldKey), true);
+        compare(Utils.hasKey(0, newKey), false);
+        compare(Utils.hasKey(1, newKey), true);
 
         keyClick(newKey);
 
         tryCompare(changed, "count", 1);
-        tryCompare(keyEditor.keyCodesOf(0), "length", keyCount0);
-        tryCompare(keyEditor.keyCodesOf(1), "length", keyCount1 - 1);
-        compare(hasKey(0, oldKey), false);
-        compare(hasKey(0, newKey), true);
-        compare(hasKey(1, newKey), false);
+        compare(Utils.hasKey(0, oldKey), false);
+        compare(Utils.hasKey(0, newKey), true);
+        compare(Utils.hasKey(1, newKey), false);
     }
 }

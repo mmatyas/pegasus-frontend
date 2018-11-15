@@ -17,12 +17,21 @@
 
 import QtQuick 2.0
 import QtTest 1.11
+import "utils.js" as Utils
 
 
 TestCase {
     name: "deleting"
     when: windowShown
 
+
+    Rectangle {
+        id: rect
+        width: 50; height: 50
+        focus: true
+
+        Keys.onPressed: keyEditor.addKey(0, event);
+    }
 
     SignalSpy {
         id: changed
@@ -31,33 +40,37 @@ TestCase {
     }
 
 
-    function hasKey(event, key) {
-        return keyEditor.keyCodesOf(event).indexOf(key) > -1;
-    }
-
     function init() {
         keyEditor.resetKeys();
         changed.clear();
     }
 
-    function test_del() {
+    function test_regular() {
         var test_key = Qt.Key_Return;
-        var key_count = keyEditor.keyCodesOf(0).length;
-        compare(hasKey(0, test_key), true);
+        compare(Utils.hasKey(0, test_key), true);
 
-        keyEditor.delKey(0, test_key);
+        keyEditor.deleteKeyCode(0, test_key);
 
         tryCompare(changed, "count", 1);
-        tryCompare(keyEditor.keyCodesOf(0), "length", key_count - 1);
-        compare(hasKey(0, test_key), false);
+        compare(Utils.hasKey(0, test_key), false);
+    }
+
+    function test_modifier() {
+        var test_key = Qt.Key_Return;
+        var test_modifier = Qt.ShiftModifier;
+
+        keyClick(test_key, test_modifier)
+        tryCompare(changed, "count", 1);
+        compare(Utils.hasKeyMod(0, test_key, test_modifier), true);
+
+        keyEditor.deleteKeyCode(0, test_key + test_modifier);
+
+        tryCompare(changed, "count", 2);
+        compare(Utils.hasKeyMod(0, test_key, test_modifier), false);
     }
 
     function test_invalid() {
-        var key_count = keyEditor.keyCodesOf(0).length;
-
-        keyEditor.delKey(0, 0);
-
+        keyEditor.deleteKeyCode(0, 0);
         tryCompare(changed, "count", 0);
-        tryCompare(keyEditor.keyCodesOf(0), "length", key_count);
     }
 }

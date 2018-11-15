@@ -13,3 +13,4 @@ OTHER_FILES += \
     tst_delete.qml \
     tst_keyname.qml \
     tst_replace.qml \
+    utils.js

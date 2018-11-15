@@ -90,7 +90,7 @@ FocusScope {
                 recoder.keyToChange = 0;
                 recoder.focus = true;
             }
-            onDelKey: api.settings.keyEditor.delKey(eventId, keyCode)
+            onDelKey: api.settings.keyEditor.deleteKeyCode(eventId, keyCode)
         }
 
         spacing: vpx(15)

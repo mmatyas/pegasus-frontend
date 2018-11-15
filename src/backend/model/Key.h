@@ -15,38 +15,33 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QtQuickTest>
+#pragma once
 
-#include "model/settings/KeyEditor.h"
+#include "utils/MoveOnly.h"
 
-#include <QQmlEngine>
-#include <QQmlContext>
+#include <QObject>
 
 
-class Setup : public QObject {
-    Q_OBJECT
+namespace model {
+class Key {
+    Q_GADGET
+    Q_PROPERTY(int key READ key CONSTANT)
+    Q_PROPERTY(int modifiers READ modifiers CONSTANT)
+    Q_PROPERTY(int keyCode READ keyCode CONSTANT)
 
 public:
-    Setup()
-#ifdef Q_OS_MAC
-        : m_is_mac(true)
-#else
-        : m_is_mac(false)
-#endif
-    {}
+    explicit Key();
+    explicit Key(const QKeySequence&);
 
-public slots:
-    void qmlEngineAvailable(QQmlEngine *engine)
-    {
-        engine->rootContext()->setContextProperty("keyEditor", &m_keyeditor);
-        engine->rootContext()->setContextProperty("isMac", QVariant::fromValue(m_is_mac));
-    }
+    int key() const { return m_key; }
+    int modifiers() const { return m_modifiers; }
+    int keyCode() const { return m_key + m_modifiers; }
 
 private:
-    const bool m_is_mac;
-    model::KeyEditor m_keyeditor;
+    const int m_modifiers;
+    const int m_key;
 };
+} // namespace model
 
-
-QUICK_TEST_MAIN_WITH_SETUP(KeyEditor, Setup)
-#include "test_KeyEditor.moc"
+Q_DECLARE_METATYPE(model::Key);
+Q_DECLARE_TYPEINFO(model::Key, Q_PRIMITIVE_TYPE);

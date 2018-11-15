@@ -39,19 +39,36 @@ TestCase {
     }
 
 
+    function init() {
+        keyEditor.resetKeys();
+        changed.clear();
+    }
+
     function test_letter() {
-        compare(keyEditor.keyName(Qt.Key_X), "X");
+        compare(keyEditor.keyCodeName(Qt.Key_X), "X");
     }
 
     function test_gamepad() {
-        compare(keyEditor.keyName(0x100000), "Gamepad 0 (A)");
+        compare(keyEditor.keyCodeName(0x100000), "Gamepad 0 (A)");
     }
 
     function test_modifier() {
-        keyClick(Qt.Key_X, Qt.ControlModifier)
-        tryCompare(changed, "count", 1);
+        var expected = isMac ? "\u2325X" : "Alt+X";
+        compare(keyEditor.keyCodeName(Qt.Key_X + Qt.AltModifier), expected);
+    }
 
-        var keyCode = keyEditor.keyCodesOf(0)[keyEditor.keyCodesOf(0).length - 1];
-        compare(keyEditor.keyName(keyCode), "Ctrl+X");
+    function test_keyName() {
+        keyClick(Qt.Key_X, Qt.AltModifier);
+
+        var found = false;
+        var keys = keyEditor.keysOf(0);
+        var expected = isMac ? "\u2325X" : "Alt+X";
+
+        for (var i = 0; i < keys.length; i++) {
+            if (keyEditor.keyName(keys[i]) === expected)
+                found = true;
+        }
+
+        compare(found, true);
     }
 }

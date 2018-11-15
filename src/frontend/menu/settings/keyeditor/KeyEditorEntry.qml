@@ -83,16 +83,15 @@ FocusScope {
     ListView {
         id: keyList
 
-        readonly property var keyCodes: api.settings.keyEditor.keyCodesOf(root.eventId)
-        readonly property bool hasKeys: keyCodes.length
+        readonly property bool hasKeys: model.length
         property bool flagSetLastOnReload: false
 
         width: parent.width * 0.5
-        height: keyCodes.length * (root.textBoxHeight + spacing)
+        height: model.length * (root.textBoxHeight + spacing)
         anchors.right: parent.right
         spacing: vpx(4)
 
-        model: keyCodes.length // Qt idiocy: apparently QVector<int> can't be used as model
+        model: api.settings.keyEditor.keysOf(root.eventId)
         delegate: keyDelegate
 
         visible: hasKeys
@@ -116,9 +115,6 @@ FocusScope {
             width: ListView.view.width
             height: root.textBoxHeight
 
-            // See keyList.model
-            readonly property int keyCode: keyList.keyCodes[modelData]
-
             onFocusChanged: editBtn.focus = true // do not remember relative focus
 
             KeyEditorEntryButton {
@@ -130,8 +126,8 @@ FocusScope {
                 anchors.rightMargin: keyList.spacing
 
                 color: "#3bb"
-                text: api.settings.keyEditor.keyName(keyCode)
-                onPressed: root.editKey(root.eventId, keyCode)
+                text: api.settings.keyEditor.keyName(modelData)
+                onPressed: root.editKey(root.eventId, modelData.keyCode)
 
                 focus: true
                 KeyNavigation.right: delBtn
@@ -144,7 +140,7 @@ FocusScope {
 
                 color: "#d88"
                 text: "\u2212" // minus
-                onPressed: root.delKey(root.eventId, keyCode);
+                onPressed: root.delKey(root.eventId, modelData.keyCode);
             }
         }
     }

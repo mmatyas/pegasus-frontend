@@ -15,38 +15,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QtQuickTest>
-
-#include "model/settings/KeyEditor.h"
-
-#include <QQmlEngine>
-#include <QQmlContext>
-
-
-class Setup : public QObject {
-    Q_OBJECT
-
-public:
-    Setup()
-#ifdef Q_OS_MAC
-        : m_is_mac(true)
-#else
-        : m_is_mac(false)
-#endif
-    {}
-
-public slots:
-    void qmlEngineAvailable(QQmlEngine *engine)
-    {
-        engine->rootContext()->setContextProperty("keyEditor", &m_keyeditor);
-        engine->rootContext()->setContextProperty("isMac", QVariant::fromValue(m_is_mac));
+function hasKeyMod(eventid, key, modifiers) {
+    var eventKeys = keyEditor.keysOf(eventid);
+    for (var i = 0; i < eventKeys.length; i++) {
+        var eventKey = eventKeys[i];
+        if (eventKey.key === key && eventKey.modifiers === modifiers)
+            return true;
     }
+    return false;
+}
 
-private:
-    const bool m_is_mac;
-    model::KeyEditor m_keyeditor;
-};
-
-
-QUICK_TEST_MAIN_WITH_SETUP(KeyEditor, Setup)
-#include "test_KeyEditor.moc"
+function hasKey(eventid, key) {
+    return hasKeyMod(eventid, key, 0);
+}

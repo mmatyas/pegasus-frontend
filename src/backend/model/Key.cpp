@@ -15,38 +15,29 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QtQuickTest>
+#include "Key.h"
 
-#include "model/settings/KeyEditor.h"
-
-#include <QQmlEngine>
-#include <QQmlContext>
+#include <QKeySequence>
 
 
-class Setup : public QObject {
-    Q_OBJECT
-
-public:
-    Setup()
-#ifdef Q_OS_MAC
-        : m_is_mac(true)
-#else
-        : m_is_mac(false)
-#endif
-    {}
-
-public slots:
-    void qmlEngineAvailable(QQmlEngine *engine)
-    {
-        engine->rootContext()->setContextProperty("keyEditor", &m_keyeditor);
-        engine->rootContext()->setContextProperty("isMac", QVariant::fromValue(m_is_mac));
-    }
-
-private:
-    const bool m_is_mac;
-    model::KeyEditor m_keyeditor;
-};
+namespace {
+int get_modifiers(int keycode)
+{
+    return static_cast<int>(static_cast<unsigned>(keycode) & Qt::KeyboardModifierMask);
+}
+} // namespace
 
 
-QUICK_TEST_MAIN_WITH_SETUP(KeyEditor, Setup)
-#include "test_KeyEditor.moc"
+namespace model {
+
+Key::Key()
+    : m_modifiers(Qt::NoModifier)
+    , m_key(Qt::Key_unknown)
+{}
+
+Key::Key(const QKeySequence& keyseq)
+    : m_modifiers(keyseq.isEmpty() ? static_cast<int>(Qt::NoModifier) : get_modifiers(keyseq[0]))
+    , m_key(keyseq.isEmpty() ? static_cast<int>(Qt::Key_unknown) : keyseq[0] - m_modifiers)
+{}
+
+} // namespace model

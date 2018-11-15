@@ -48,7 +48,7 @@ void KeyEditor::addKey(int event_id, const QVariant& event)
     emit keysChanged();
 }
 
-void KeyEditor::delKey(int event_id, const int keycode)
+void KeyEditor::deleteKeyCode(int event_id, const int keycode)
 {
     if (!valid_event_id(event_id) || keycode == 0)
         return;
@@ -58,7 +58,7 @@ void KeyEditor::delKey(int event_id, const int keycode)
     emit keysChanged();
 }
 
-void KeyEditor::replaceKey(int event_id, const int old_keycode, const QVariant& new_keyevent)
+void KeyEditor::replaceKeyCode(int event_id, const int old_keycode, const QVariant& new_keyevent)
 {
     if (!valid_event_id(event_id) || old_keycode == 0)
         return;
@@ -80,23 +80,21 @@ void KeyEditor::resetKeys()
     emit keysChanged();
 }
 
-QVector<int> KeyEditor::keyCodesOf(int event_id) const
+QVariantList KeyEditor::keysOf(int event_id) const
 {
     if (!valid_event_id(event_id))
         return {};
 
-    QVector<int> keycode_list;
+    QVariantList key_list;
 
     const auto keyseq_list = AppSettings::keys.at(static_cast<::KeyEvent>(event_id));
-    for (const QKeySequence& keyseq : keyseq_list) {
-        Q_ASSERT(!keyseq.isEmpty());
-        keycode_list.append(keyseq[0]);
-    }
+    for (const QKeySequence& keyseq : keyseq_list)
+        key_list << QVariant::fromValue(model::Key(keyseq));
 
-    return keycode_list;
+    return key_list;
 }
 
-QString KeyEditor::keyName(const int keycode) const
+QString KeyEditor::keyCodeName(const int keycode) const
 {
     const QKeySequence keyseq(keycode);
 
@@ -107,6 +105,11 @@ QString KeyEditor::keyName(const int keycode) const
     }
 
     return keyseq.toString(QKeySequence::NativeText);
+}
+
+QString KeyEditor::keyName(const model::Key& key) const
+{
+    return keyCodeName(key.keyCode());
 }
 
 } // namespace model
