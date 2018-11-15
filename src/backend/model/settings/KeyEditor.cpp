@@ -80,6 +80,7 @@ void KeyEditor::resetKeys()
     emit keysChanged();
 }
 
+// FIXME: Duplication with the Keys Api
 QVariantList KeyEditor::keysOf(int event_id) const
 {
     if (!valid_event_id(event_id))

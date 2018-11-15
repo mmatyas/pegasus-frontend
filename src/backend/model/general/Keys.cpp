@@ -17,11 +17,25 @@
 
 #include "Keys.h"
 
+#include "model/Key.h"
+
 
 namespace model {
 
 Keys::Keys(QObject* parent)
     : QObject(parent)
 {}
+
+// NOTE: Don't call this for invalid and internal KeyEvents.
+QVariantList Keys::qmlkeys_of(KeyEvent event) const
+{
+    QVariantList key_list;
+
+    const auto keyseq_list = AppSettings::keys.at(event);
+    for (const QKeySequence& keyseq : keyseq_list)
+        key_list << QVariant::fromValue(model::Key(keyseq));
+
+    return key_list;
+}
 
 } // namespace model

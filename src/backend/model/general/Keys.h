@@ -21,8 +21,7 @@
 #include "utils/KeySequenceTools.h"
 
 #include <QObject>
-#include <QVector>
-#include <QKeySequence>
+#include <QVariantList>
 
 
 namespace model {
@@ -31,23 +30,26 @@ class Keys : public QObject {
     Q_OBJECT
 
 public:
-    #define KEYVEC_PROP(keytype, qml_fn) \
+    #define KEYVEC_PROP(keytype, qml_array, qml_fn) \
         Q_INVOKABLE bool qml_fn(const QVariant& qmlevent) const { \
             return AppSettings::keys.at(KeyEvent::keytype).count(::qmlevent_to_keyseq(qmlevent)); \
+        } \
+        Q_INVOKABLE QVariantList qml_array(KeyEvent event) const { \
+            return qmlkeys_of(event); \
         }
-    KEYVEC_PROP(LEFT, isLeft)
-    KEYVEC_PROP(RIGHT, isRight)
-    KEYVEC_PROP(UP, isUp)
-    KEYVEC_PROP(DOWN, isDown)
-    KEYVEC_PROP(ACCEPT, isAccept)
-    KEYVEC_PROP(CANCEL, isCancel)
-    KEYVEC_PROP(DETAILS, isDetails)
-    KEYVEC_PROP(FILTERS, isFilters)
-    KEYVEC_PROP(NEXT_PAGE, isNextPage)
-    KEYVEC_PROP(PREV_PAGE, isPrevPage)
-    KEYVEC_PROP(PAGE_UP, isPageUp)
-    KEYVEC_PROP(PAGE_DOWN, isPageDown)
-    KEYVEC_PROP(MAIN_MENU, isMenu)
+    KEYVEC_PROP(LEFT, left, isLeft)
+    KEYVEC_PROP(RIGHT, right, isRight)
+    KEYVEC_PROP(UP, up, isUp)
+    KEYVEC_PROP(DOWN, down, isDown)
+    KEYVEC_PROP(ACCEPT, accept, isAccept)
+    KEYVEC_PROP(CANCEL, cancel, isCancel)
+    KEYVEC_PROP(DETAILS, details, isDetails)
+    KEYVEC_PROP(FILTERS, filters, isFilters)
+    KEYVEC_PROP(NEXT_PAGE, nextPage, isNextPage)
+    KEYVEC_PROP(PREV_PAGE, prevPage, isPrevPage)
+    KEYVEC_PROP(PAGE_UP, pageUp, isPageUp)
+    KEYVEC_PROP(PAGE_DOWN, pageDown, isPageDown)
+    KEYVEC_PROP(MAIN_MENU, menu, isMenu)
     #undef KEYVEC_PROP
 
 public:
@@ -55,6 +57,9 @@ public:
 
 signals:
     void keysChanged();
+
+private:
+    QVariantList qmlkeys_of(KeyEvent event) const;
 };
 
 } // namespace model
