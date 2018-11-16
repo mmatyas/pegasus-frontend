@@ -17,6 +17,7 @@
 
 #include "KeyEditor.h"
 
+#include "AppSettings.h"
 #include "utils/KeySequenceTools.h"
 
 

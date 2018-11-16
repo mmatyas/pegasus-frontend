@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "AppSettings.h"
 #include "model/Key.h"
+#include "types/KeyEventType.h"
 
 #include <QObject>
 #include <QString>

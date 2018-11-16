@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,22 +17,9 @@
 
 #pragma once
 
-#include "utils/HashMap.h"
-#include "utils/NoCopyNoMove.h"
-
-#include <QString>
-#include <functional>
-
-
-// A class is used in order to free the hashmap after parsing
-class StrBoolConverter {
-public:
-    StrBoolConverter();
-    NO_COPY_NO_MOVE(StrBoolConverter)
-
-    bool isBool(const QString&) const;
-    void store_maybe(bool& target, const QString& str, const std::function<void()>& fail_cb) const;
-
-private:
-    const HashMap<QString, const bool> m_strmap;
+enum class ExtProvider : unsigned char {
+    ES2,
+    STEAM,
+    GOG,
+    ANDROIDAPPS,
 };

@@ -34,13 +34,14 @@ bool StrBoolConverter::isBool(const QString& str) const
     return m_strmap.count(str.toLower());
 }
 
-bool StrBoolConverter::toBool(const QString& str, const bool default_val,
-                              const std::function<void()>& on_fail_cb) const
+void StrBoolConverter::store_maybe(bool& target, const QString& str,
+                                   const std::function<void()>& fail_cb) const
 {
     const auto it = m_strmap.find(str.toLower());
-    if (it != m_strmap.cend())
-        return it->second;
+    if (it == m_strmap.cend()) {
+        fail_cb();
+        return;
+    }
 
-    on_fail_cb();
-    return default_val;
+    target = it->second;
 }

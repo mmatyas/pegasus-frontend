@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include "types/GamepadKeyId.h"
+#include "types/KeyEventType.h"
+#include "types/ProviderType.h"
 #include "utils/HashMap.h"
 #include "utils/NoCopyNoMove.h"
 
@@ -25,40 +28,6 @@
 #include <QKeySequence>
 #include <functional>
 #include <map>
-
-
-enum class KeyEvent : unsigned char {
-    ACCEPT,
-    CANCEL,
-    DETAILS,
-    FILTERS,
-    NEXT_PAGE,
-    PREV_PAGE,
-    PAGE_UP,
-    PAGE_DOWN,
-    MAIN_MENU,
-    // internal only:
-    LEFT = 64,
-    RIGHT,
-    UP,
-    DOWN,
-};
-
-enum GamepadKeyId {
-    A = 0x100000,
-    B, X, Y,
-    L1, L2, L3,
-    R1, R2, R3,
-    SELECT,
-    START,
-    GUIDE,
-};
-enum class ExtProvider : unsigned char {
-    ES2,
-    STEAM,
-    GOG,
-    ANDROIDAPPS,
-};
 
 
 namespace appsettings {
@@ -84,7 +53,7 @@ public:
     NO_COPY_NO_MOVE(Keys)
 
     void add_key(KeyEvent, QKeySequence);
-    void del_key(KeyEvent, QKeySequence);
+    void del_key(KeyEvent, const QKeySequence&);
     void clear(KeyEvent);
     void resetAll();
 
