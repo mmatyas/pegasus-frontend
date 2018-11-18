@@ -4,20 +4,9 @@ set -o errexit
 set -o nounset
 set -o xtrace
 
+DIR=$(dirname "$0")
 
-export QT_QPA_PLATFORM=minimal
+source $DIR/travis_prepare.sh
 
-sudo add-apt-repository -y ppa:beineri/opt-qt58-trusty
-sudo apt-get update
-sudo apt-get install -y \
-  lcov \
-  qt58declarative \
-  qt58graphicaleffects \
-  qt58gamepad \
-  qt58imageformats \
-  qt58multimedia \
-  qt58svg \
-  qt58tools \
-  libpulse-dev
-
+sudo apt-get install -y lcov
 gem install coveralls-lcov

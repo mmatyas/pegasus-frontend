@@ -10,13 +10,6 @@ fi
 
 set -o xtrace
 
-
-# Lint
-
-if [[ $TARGET == x11* ]]; then
-  find -name *.qml -exec /opt/${QT_VER}_${TARGET}/bin/qmllint {} \;
-fi
-
 # Build
 
 mkdir build && cd build
