@@ -114,6 +114,7 @@ Providers::Providers()
         { ExtProvider::STEAM, { true } },
         { ExtProvider::GOG, { true } },
         { ExtProvider::ANDROIDAPPS, { true } },
+        { ExtProvider::SKRAPER, { true } },
     }
 {}
 Providers::ExtProviderInfo& Providers::mut(ExtProvider key) {

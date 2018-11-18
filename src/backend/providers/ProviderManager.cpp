@@ -21,9 +21,9 @@
 #include "LocaleUtils.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
-#include "pegasus/PegasusProvider.h"
-#include "pegasus_favorites/Favorites.h"
-#include "pegasus_playtime/PlaytimeStats.h"
+#include "providers/pegasus/PegasusProvider.h"
+#include "providers/pegasus_favorites/Favorites.h"
+#include "providers/pegasus_playtime/PlaytimeStats.h"
 #include "utils/HashMap.h"
 
 #ifdef WITH_COMPAT_ES2
@@ -37,6 +37,9 @@
 #endif
 #ifdef WITH_COMPAT_ANDROIDAPPS
   #include "providers/android_apps/AndroidAppsProvider.h"
+#endif
+#ifdef WITH_COMPAT_SKRAPER
+  #include "providers/skraper/SkraperAssetsProvider.h"
 #endif
 
 #include <QDebug>
@@ -144,6 +147,10 @@ ProviderManager::ProviderManager(QObject* parent)
 #ifdef WITH_COMPAT_ANDROIDAPPS
     if (AppSettings::ext_providers.at(ExtProvider::ANDROIDAPPS).enabled)
         m_providers.emplace_back(new providers::android::AndroidAppsProvider());
+#endif
+#ifdef WITH_COMPAT_SKRAPER
+    if (AppSettings::ext_providers.at(ExtProvider::SKRAPER).enabled)
+        m_providers.emplace_back(new providers::skraper::SkraperAssetsProvider());
 #endif
 
     for (const auto& provider : m_providers) {

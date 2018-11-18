@@ -66,6 +66,11 @@ ProviderList::ProviderList(QObject* parent)
                                       &AppSettings::ext_providers.mut(ExtProvider::ANDROIDAPPS).enabled,
                                       this));
 #endif
+#ifdef WITH_COMPAT_SKRAPER
+    m_data.append(new model::Provider(QStringLiteral("Skraper Assets"),
+                                      &AppSettings::ext_providers.mut(ExtProvider::SKRAPER).enabled,
+                                      this));
+#endif
 }
 
 QQmlListProperty<Provider> ProviderList::getListProp()

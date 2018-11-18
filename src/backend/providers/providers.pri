@@ -82,6 +82,14 @@ android {
         $$PWD/android_apps/AndroidAppsMetadata.cpp
 }
 
+# All
+{
+    ENABLED_COMPATS += "Skraper Assets"
+    DEFINES *= WITH_COMPAT_SKRAPER
+    HEADERS += $$PWD/skraper/SkraperAssetsProvider.h
+    SOURCES += $$PWD/skraper/SkraperAssetsProvider.cpp
+}
+
 
 defined(uses_json_cache,var) {
     HEADERS += \
