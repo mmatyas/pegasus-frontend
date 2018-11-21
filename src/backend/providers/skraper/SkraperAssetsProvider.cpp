@@ -34,7 +34,7 @@ std::vector<QString> get_game_dirs()
     AppSettings::parse_gamedirs([&game_dirs](const QString& line){
         const QFileInfo finfo(line);
         if (finfo.isDir())
-            game_dirs.emplace_back(line);
+            game_dirs.emplace_back(finfo.canonicalFilePath());
     });
 
     return game_dirs;
