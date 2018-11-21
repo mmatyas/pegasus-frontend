@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,28 +17,21 @@
 
 #pragma once
 
-#include <QString>
-#include <QVector>
+
+enum class ScriptEvent : unsigned char {
+    QUIT,
+    REBOOT,
+    SHUTDOWN,
+    CONFIG_CHANGED,
+    SETTINGS_CHANGED,
+    CONTROLS_CHANGED,
+    PROCESS_STARTED,
+    PROCESS_FINISHED,
+};
 
 
 /// A utility class for finding and running external scripts
 class ScriptRunner {
 public:
-    enum class EventType : unsigned char {
-        QUIT,
-        REBOOT,
-        SHUTDOWN,
-        CONFIG_CHANGED,
-        SETTINGS_CHANGED,
-        CONTROLS_CHANGED,
-        PROCESS_STARTED,
-        PROCESS_FINISHED,
-    };
-
-    static void findAndRunScripts(EventType);
-
-    static QVector<QString> findScripts(const QString& dirname);
-    static QVector<QString> findScripts(EventType);
-
-    static void runScripts(const QVector<QString>& paths);
+    static void run(ScriptEvent);
 };

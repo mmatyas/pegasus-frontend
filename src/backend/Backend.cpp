@@ -30,15 +30,13 @@ namespace {
 
 void on_app_close(AppCloseType type)
 {
-    using ScriptEvent = ScriptRunner::EventType;
-
-    ScriptRunner::findAndRunScripts(ScriptEvent::QUIT);
+    ScriptRunner::run(ScriptEvent::QUIT);
     switch (type) {
         case AppCloseType::REBOOT:
-            ScriptRunner::findAndRunScripts(ScriptEvent::REBOOT);
+            ScriptRunner::run(ScriptEvent::REBOOT);
             break;
         case AppCloseType::SHUTDOWN:
-            ScriptRunner::findAndRunScripts(ScriptEvent::SHUTDOWN);
+            ScriptRunner::run(ScriptEvent::SHUTDOWN);
             break;
         default: break;
     }

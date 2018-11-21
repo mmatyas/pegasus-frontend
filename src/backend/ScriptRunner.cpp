@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,84 +19,82 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "utils/HashMap.h"
 
 #include <QDebug>
 #include <QDirIterator>
-#include <QMap>
 #include <QProcess>
+#include <QString>
+#include <QStringBuilder>
+#include <vector>
 
 
 namespace {
-
-const QMap<ScriptRunner::EventType, QString> script_dirs = {
-    { ScriptRunner::EventType::QUIT, QStringLiteral("quit") },
-    { ScriptRunner::EventType::REBOOT, QStringLiteral("reboot") },
-    { ScriptRunner::EventType::SHUTDOWN, QStringLiteral("shutdown") },
-    { ScriptRunner::EventType::CONFIG_CHANGED, QStringLiteral("config-changed") },
-    { ScriptRunner::EventType::SETTINGS_CHANGED, QStringLiteral("settings-changed") },
-    { ScriptRunner::EventType::CONTROLS_CHANGED, QStringLiteral("controls-changed") },
-    { ScriptRunner::EventType::PROCESS_STARTED, QStringLiteral("game-start") },
-    { ScriptRunner::EventType::PROCESS_FINISHED, QStringLiteral("game-end") },
-};
-
-} // namespace
-
-void ScriptRunner::findAndRunScripts(ScriptRunner::EventType event)
-{
-    Q_ASSERT(script_dirs.contains(event));
-
-    const auto scripts = findScripts(event);
-    const auto dirname = script_dirs.value(event);
-
-    if (scripts.count() > 0) {
-        qInfo().noquote() << tr_log("Running `%1` scripts...").arg(dirname);
-        runScripts(scripts);
-    }
-}
-
-QVector<QString> ScriptRunner::findScripts(ScriptRunner::EventType event)
-{
-    Q_ASSERT(script_dirs.contains(event));
-
-    return findScripts(script_dirs.value(event));
-}
-
-QVector<QString> ScriptRunner::findScripts(const QString& dirname)
+std::vector<QString> find_scripts_in(const QString& dirname)
 {
     constexpr auto filters = QDir::Files | QDir::Readable | QDir::Executable | QDir::NoDotAndDotDot;
     constexpr auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     Q_ASSERT(!dirname.isEmpty());
 
-    QVector<QString> scripts;
+    std::vector<QString> all_scripts;
 
-    auto search_paths = paths::configDirs();
-    for (auto& path : search_paths) {
-        path += "/scripts/" + dirname;
+    const QStringList configdirs = paths::configDirs();
+    for (const QString& configdir : configdirs) {
+        const QString scriptdir = configdir % QStringLiteral("/scripts/") % dirname;
 
-        QVector<QString> local_scripts;
-        QDirIterator scripdir(path, filters, flags);
-        while (scripdir.hasNext())
-            local_scripts.append(scripdir.next());
+        std::vector<QString> local_scripts;
+        QDirIterator scripdir_it(scriptdir, filters, flags);
+        while (scripdir_it.hasNext())
+            local_scripts.emplace_back(scripdir_it.next());
 
         std::sort(local_scripts.begin(), local_scripts.end());
-        scripts.append(local_scripts);
+        all_scripts.insert(all_scripts.end(),
+                           std::make_move_iterator(local_scripts.begin()),
+                           std::make_move_iterator(local_scripts.end()));
     }
 
-    return scripts;
+    return all_scripts;
 }
 
-void ScriptRunner::runScripts(const QVector<QString>& paths)
+void execute_all(const std::vector<QString>& paths)
 {
-    if (paths.length() <= 0)
+    Q_ASSERT(!paths.empty());
+
+    const int num_field_width = QString::number(paths.size()).length();
+
+    for (size_t i = 0; i < paths.size(); i++) {
+        qInfo().noquote() << tr_log("[%1/%2] Running `%3`")
+            .arg(i + 1, num_field_width)
+            .arg(paths.size())
+            .arg(paths[i]);
+        QProcess::execute(paths[i]);
+    }
+}
+} // namespace
+
+
+void ScriptRunner::run(ScriptEvent event)
+{
+    static const HashMap<ScriptEvent, QString, EnumHash> SCRIPT_DIRS = {
+        { ScriptEvent::QUIT, QStringLiteral("quit") },
+        { ScriptEvent::REBOOT, QStringLiteral("reboot") },
+        { ScriptEvent::SHUTDOWN, QStringLiteral("shutdown") },
+        { ScriptEvent::CONFIG_CHANGED, QStringLiteral("config-changed") },
+        { ScriptEvent::SETTINGS_CHANGED, QStringLiteral("settings-changed") },
+        { ScriptEvent::CONTROLS_CHANGED, QStringLiteral("controls-changed") },
+        { ScriptEvent::PROCESS_STARTED, QStringLiteral("game-start") },
+        { ScriptEvent::PROCESS_FINISHED, QStringLiteral("game-end") },
+    };
+    Q_ASSERT(SCRIPT_DIRS.count(event));
+
+
+    const QString& dirname = SCRIPT_DIRS.at(event);
+    const std::vector<QString> scripts = find_scripts_in(dirname);
+
+    if (scripts.empty())
         return;
 
-    const int num_field_width = QString::number(paths.length()).length();
-
-    for (int i = 0; i < paths.length(); i++) {
-        qInfo().noquote() << tr_log("[%1/%2] %3")
-                             .arg(i + 1, num_field_width)
-                             .arg(paths.length()).arg(paths.at(i));
-        QProcess::execute(paths.at(i));
-    }
+    qInfo().noquote() << tr_log("Running `%1` scripts...").arg(dirname);
+    execute_all(scripts);
 }

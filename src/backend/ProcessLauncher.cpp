@@ -185,11 +185,11 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
 void ProcessLauncher::beforeRun()
 {
     TerminalKbd::enable();
-    ScriptRunner::findAndRunScripts(ScriptRunner::EventType::PROCESS_STARTED);
+    ScriptRunner::run(ScriptEvent::PROCESS_STARTED);
 }
 
 void ProcessLauncher::afterRun()
 {
-    ScriptRunner::findAndRunScripts(ScriptRunner::EventType::PROCESS_FINISHED);
+    ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
     TerminalKbd::disable();
 }

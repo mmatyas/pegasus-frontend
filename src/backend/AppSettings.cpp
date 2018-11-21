@@ -171,9 +171,8 @@ void AppSettings::save_config()
     appsettings::SaveContext().save();
 
 
-    using ScriptEvent = ScriptRunner::EventType;
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::SETTINGS_CHANGED);
+    ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::run(ScriptEvent::SETTINGS_CHANGED);
 }
 
 void AppSettings::parse_gamedirs(const std::function<void(const QString&)>& callback)

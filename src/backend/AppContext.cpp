@@ -46,10 +46,8 @@ void print_metainfo()
 
 void on_gamepad_config()
 {
-    using ScriptEvent = ScriptRunner::EventType;
-
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::findAndRunScripts(ScriptEvent::CONTROLS_CHANGED);
+    ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::run(ScriptEvent::CONTROLS_CHANGED);
 }
 
 void register_api_classes()
