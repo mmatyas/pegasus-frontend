@@ -22,7 +22,6 @@ SOURCES += \
 
 HEADERS += \
     Api.h \
-    AppCloseType.h \
     AppContext.h \
     Backend.h \
     ConfigFile.h \

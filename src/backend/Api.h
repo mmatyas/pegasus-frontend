@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "AppCloseType.h"
 #include "model/gaming/CollectionList.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Filters.h"
@@ -26,6 +25,7 @@
 #include "model/general/System.h"
 #include "model/settings/Settings.h"
 #include "providers/ProviderManager.h"
+#include "types/AppCloseType.h"
 
 #include <QFutureWatcher>
 #include <QObject>

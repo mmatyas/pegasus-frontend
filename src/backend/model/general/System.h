@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "AppCloseType.h"
+#include "types/AppCloseType.h"
 
 #include <QObject>
 
