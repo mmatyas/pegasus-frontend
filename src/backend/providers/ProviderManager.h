@@ -52,7 +52,4 @@ signals:
 private:
     std::vector<ProviderPtr> m_providers;
     QFuture<void> m_init_seq;
-
-private slots:
-    void onPegasusDirFound(QString);
 };

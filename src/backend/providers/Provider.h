@@ -65,7 +65,6 @@ public:
 
 signals:
     void gameCountChanged(int);
-    void romDirFound(QString);
 };
 
 } // namespace providers

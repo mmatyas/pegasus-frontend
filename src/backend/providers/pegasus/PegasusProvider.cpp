@@ -27,41 +27,49 @@
 #include <QTextStream>
 
 
+namespace {
+std::vector<QString> get_game_dirs()
+{
+    std::vector<QString> game_dirs;
+
+    const QString global_dir = paths::writableConfigDir() + QStringLiteral("/global_collection");
+    const QFileInfo global_finfo(global_dir);
+    if (global_finfo.isDir())
+        game_dirs.emplace_back(global_finfo.canonicalFilePath());
+
+    constexpr auto MSG_PREFIX = "Collections:";
+    AppSettings::parse_gamedirs([&game_dirs](const QString& line){
+        const QFileInfo finfo(line);
+        if (!finfo.isDir()) {
+            qWarning().noquote() << MSG_PREFIX << tr_log("game directory `%1` not found, ignored").arg(line);
+            return;
+        }
+
+        game_dirs.emplace_back(finfo.canonicalFilePath());
+    });
+
+    game_dirs.erase(std::unique(game_dirs.begin(), game_dirs.end()), game_dirs.end());
+    return game_dirs;
+}
+} // namespace
+
+
 namespace providers {
 namespace pegasus {
 
 PegasusProvider::PegasusProvider(QObject* parent)
+    : PegasusProvider(get_game_dirs(), parent)
+{}
+
+PegasusProvider::PegasusProvider(std::vector<QString> game_dirs, QObject* parent)
     : Provider(parent)
-{
-    add_game_dir(paths::writableConfigDir() + QStringLiteral("/global_collection"), true);
-
-    AppSettings::parse_gamedirs([this](const QString& line){
-        add_game_dir(line);
-    });
-}
-
-void PegasusProvider::add_game_dir(const QString& dir_path, bool silent)
-{
-    static constexpr auto MSG_PREFIX = "Collections:";
-
-    const QFileInfo entry(dir_path);
-    if (!entry.exists() || !entry.isDir()) {
-        if (!silent) {
-            qWarning().noquote() << MSG_PREFIX
-                << tr_log("game directory `%1` not found, ignored").arg(dir_path);
-        }
-        return;
-    }
-
-    m_game_dirs.emplace_back(entry.canonicalFilePath());
-}
+    , m_game_dirs(std::move(game_dirs))
+{}
 
 void PegasusProvider::findLists(HashMap<QString, modeldata::Game>& games,
                                 HashMap<QString, modeldata::Collection>& collections,
                                 HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    m_game_dirs.erase(std::unique(m_game_dirs.begin(), m_game_dirs.end()), m_game_dirs.end());
-
     collection_finder.find_in_dirs(m_game_dirs, games, collections, collection_childs,
                                    [this](int game_count){ emit gameCountChanged(game_count); });
 }

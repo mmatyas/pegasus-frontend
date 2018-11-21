@@ -32,6 +32,7 @@ class PegasusProvider : public Provider {
 
 public:
     explicit PegasusProvider(QObject* parent = nullptr);
+    explicit PegasusProvider(std::vector<QString> game_dirs, QObject* parent = nullptr);
 
     void findLists(HashMap<QString, modeldata::Game>&,
                    HashMap<QString, modeldata::Collection>&,
@@ -40,10 +41,8 @@ public:
                         const HashMap<QString, modeldata::Collection>&,
                         const HashMap<QString, std::vector<QString>>&) final;
 
-    void add_game_dir(const QString&, bool silent = false);
-
 private:
-    std::vector<QString> m_game_dirs;
+    const std::vector<QString> m_game_dirs;
     const PegasusCollections collection_finder;
     const PegasusMetadata metadata_finder;
 };

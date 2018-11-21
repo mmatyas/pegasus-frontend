@@ -43,8 +43,7 @@ void test_PegasusProvider::find_in_empty_dir()
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<QString>> collection_childs;
 
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/empty"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/empty")});
     provider.findLists(games, collections, collection_childs);
 
     QVERIFY(games.empty());
@@ -59,8 +58,7 @@ void test_PegasusProvider::find_in_filled_dir()
     HashMap<QString, std::vector<QString>> collection_childs;
 
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/filled/collections.txt`");
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/filled"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/filled")});
     provider.findLists(games, collections, collection_childs);
 
     // finds the correct collections
@@ -117,8 +115,7 @@ void test_PegasusProvider::enhance()
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/with_meta/collections.txt`");
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/with_meta/metadata.txt`");
     QTest::ignoreMessage(QtWarningMsg, QRegularExpression("`:/with_meta/metadata.txt`, line \\d: no file defined yet.*"));
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/with_meta"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/with_meta")});
     provider.findLists(games, collections, collection_childs);
     provider.findStaticData(games, collections, collection_childs);
 
@@ -160,8 +157,7 @@ void test_PegasusProvider::asset_search()
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<QString>> collection_childs;
 
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/asset_search"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/asset_search")});
 
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/asset_search/collections.txt`");
     provider.findLists(games, collections, collection_childs);
@@ -200,8 +196,7 @@ void test_PegasusProvider::custom_assets()
 
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_assets/collections.txt`");
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_assets/metadata.txt`");
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/custom_assets"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_assets")});
     provider.findLists(games, collections, collection_childs);
     provider.findStaticData(games, collections, collection_childs);
 
@@ -221,8 +216,7 @@ void test_PegasusProvider::custom_directories()
     HashMap<QString, std::vector<QString>> collection_childs;
 
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_dirs/coll/collections.txt`");
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/custom_dirs/coll"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_dirs/coll")});
     provider.findLists(games, collections, collection_childs);
     provider.findStaticData(games, collections, collection_childs);
 

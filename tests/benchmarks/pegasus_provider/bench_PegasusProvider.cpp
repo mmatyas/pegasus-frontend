@@ -38,8 +38,7 @@ void bench_PegasusProvider::find_in_empty_dir()
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<QString>> collection_childs;
 
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/empty"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/empty")});
 
     QBENCHMARK {
         provider.findLists(games, collections, collection_childs);
@@ -52,8 +51,7 @@ void bench_PegasusProvider::find_in_filled_dir()
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<QString>> collection_childs;
 
-    providers::pegasus::PegasusProvider provider;
-    provider.add_game_dir(QStringLiteral(":/filled"));
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/filled")});
 
     QBENCHMARK {
         QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/filled/collections.txt`");

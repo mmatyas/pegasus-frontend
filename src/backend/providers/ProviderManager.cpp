@@ -156,16 +156,7 @@ ProviderManager::ProviderManager(QObject* parent)
     for (const auto& provider : m_providers) {
         connect(provider.get(), &providers::Provider::gameCountChanged,
                 this, &ProviderManager::gameCountChanged);
-        connect(provider.get(), &providers::Provider::romDirFound,
-                this, &ProviderManager::onPegasusDirFound,
-                Qt::DirectConnection);
     }
-}
-
-void ProviderManager::onPegasusDirFound(QString dir_path)
-{
-    static_cast<providers::pegasus::PegasusProvider*>(m_providers.front().get())
-        ->add_game_dir(std::move(dir_path));
 }
 
 void ProviderManager::startSearch()

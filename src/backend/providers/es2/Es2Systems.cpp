@@ -256,8 +256,6 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
             collection_childs[collection_name].emplace_back(game_key);
         }
     }
-
-    emit romDirFound(xml_props[QLatin1String("path")]);
 }
 
 } // namespace es2

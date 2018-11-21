@@ -29,9 +29,6 @@ Es2Provider::Es2Provider(QObject* parent)
 {
     connect(&systems, &SystemsParser::gameCountChanged,
             this, &Es2Provider::gameCountChanged);
-    connect(&systems, &SystemsParser::romDirFound,
-            this, &Es2Provider::romDirFound,
-            Qt::DirectConnection);
 }
 
 void Es2Provider::findLists(HashMap<QString, modeldata::Game>& games,
