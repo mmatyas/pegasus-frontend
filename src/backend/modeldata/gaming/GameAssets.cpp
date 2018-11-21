@@ -19,7 +19,15 @@
 
 #include <QUrl>
 
-#include "AssetTypes.h"
+#include "types/AssetType.h"
+
+
+namespace {
+bool asset_is_single(AssetType type)
+{
+    return type != AssetType::SCREENSHOTS && type != AssetType::VIDEOS;
+}
+} // namespace
 
 
 namespace modeldata {

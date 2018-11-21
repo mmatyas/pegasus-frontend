@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,13 +15,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "AssetTypes.h"
+#pragma once
 
+enum class AssetType : unsigned char {
+    UNKNOWN,
 
-bool asset_is_single(AssetType type)
-{
-    if (type == AssetType::SCREENSHOTS || type == AssetType::VIDEOS)
-        return false;
+    BOX_FRONT,
+    BOX_BACK,
+    BOX_SPINE,
+    BOX_FULL,
+    CARTRIDGE,
+    LOGO,
+    POSTER,
 
-    return true;
+    ARCADE_MARQUEE,
+    ARCADE_BEZEL,
+    ARCADE_PANEL,
+    ARCADE_CABINET_L,
+    ARCADE_CABINET_R,
+
+    UI_TILE,
+    UI_BANNER,
+    UI_STEAMGRID,
+    BACKGROUND,
+    MUSIC,
+
+    SCREENSHOTS,
+    VIDEOS,
 };

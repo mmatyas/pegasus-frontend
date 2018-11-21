@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "AssetTypes.h"
 #include "providers/Provider.h"
+#include "types/AssetType.h"
 #include "utils/MoveOnly.h"
 
 #include <array>
