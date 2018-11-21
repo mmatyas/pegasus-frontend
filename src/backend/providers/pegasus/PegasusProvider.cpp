@@ -53,14 +53,15 @@ void PegasusProvider::add_game_dir(const QString& dir_path, bool silent)
         return;
     }
 
-    m_game_dirs << entry.canonicalFilePath();
+    m_game_dirs.emplace_back(entry.canonicalFilePath());
 }
 
 void PegasusProvider::findLists(HashMap<QString, modeldata::Game>& games,
                                 HashMap<QString, modeldata::Collection>& collections,
                                 HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    m_game_dirs.removeDuplicates();
+    m_game_dirs.erase(std::unique(m_game_dirs.begin(), m_game_dirs.end()), m_game_dirs.end());
+
     collection_finder.find_in_dirs(m_game_dirs, games, collections, collection_childs,
                                    [this](int game_count){ emit gameCountChanged(game_count); });
 }

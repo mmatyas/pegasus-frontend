@@ -299,7 +299,7 @@ PegasusCollections::PegasusCollections()
 {
 }
 
-void PegasusCollections::find_in_dirs(const QStringList& dir_list,
+void PegasusCollections::find_in_dirs(const std::vector<QString>& dir_list,
                                       HashMap<QString, modeldata::Game>& games,
                                       HashMap<QString, modeldata::Collection>& collections,
                                       HashMap<QString, std::vector<QString>>& collection_childs,

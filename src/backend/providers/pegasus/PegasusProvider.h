@@ -21,6 +21,8 @@
 #include "PegasusMetadata.h"
 #include "providers/Provider.h"
 
+#include <vector>
+
 
 namespace providers {
 namespace pegasus {
@@ -41,7 +43,7 @@ public:
     void add_game_dir(const QString&, bool silent = false);
 
 private:
-    QStringList m_game_dirs;
+    std::vector<QString> m_game_dirs;
     const PegasusCollections collection_finder;
     const PegasusMetadata metadata_finder;
 };

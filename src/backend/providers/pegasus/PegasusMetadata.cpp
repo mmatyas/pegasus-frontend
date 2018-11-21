@@ -43,7 +43,7 @@ AssetType detect_asset_type(const QString& basename, const QString& ext)
     return AssetType::UNKNOWN;
 }
 
-void find_assets(const QStringList& dir_list, HashMap<QString, modeldata::Game>& games)
+void find_assets(const std::vector<QString>& dir_list, HashMap<QString, modeldata::Game>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
     HashMap<QString, modeldata::Game*> games_by_shortpath;
@@ -129,7 +129,7 @@ PegasusMetadata::PegasusMetadata()
 {
 }
 
-void PegasusMetadata::enhance_in_dirs(const QStringList& dir_list,
+void PegasusMetadata::enhance_in_dirs(const std::vector<QString>& dir_list,
                                       HashMap<QString, modeldata::Game>& games,
                                       const HashMap<QString, modeldata::Collection>&,
                                       const HashMap<QString, std::vector<QString>>&) const

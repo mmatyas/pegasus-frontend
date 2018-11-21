@@ -21,8 +21,8 @@
 #include "utils/HashMap.h"
 
 #include <QString>
-#include <QStringList>
 #include <QRegularExpression>
+#include <vector>
 
 
 namespace providers {
@@ -34,7 +34,7 @@ class PegasusMetadata {
 public:
     PegasusMetadata();
 
-    void enhance_in_dirs(const QStringList&,
+    void enhance_in_dirs(const std::vector<QString>&,
                          HashMap<QString, modeldata::Game>&,
                          const HashMap<QString, modeldata::Collection>&,
                          const HashMap<QString, std::vector<QString>>&) const;

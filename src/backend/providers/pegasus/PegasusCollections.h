@@ -20,7 +20,7 @@
 #include "utils/FwdDeclModelData.h"
 #include "utils/HashMap.h"
 
-#include <QStringList>
+#include <QString>
 #include <functional>
 #include <vector>
 
@@ -34,7 +34,7 @@ class PegasusCollections {
 public:
     PegasusCollections();
 
-    void find_in_dirs(const QStringList&,
+    void find_in_dirs(const std::vector<QString>&,
                       HashMap<QString, modeldata::Game>&,
                       HashMap<QString, modeldata::Collection>&,
                       HashMap<QString, std::vector<QString>>&,
