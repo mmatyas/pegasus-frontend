@@ -36,7 +36,8 @@ public:
 
     void find(HashMap<QString, modeldata::Game>& games,
               HashMap<QString, modeldata::Collection>& collections,
-              HashMap<QString, std::vector<QString>>& collection_childs);
+              HashMap<QString, std::vector<QString>>& collection_childs,
+              HashMap<QString, QString>& collection_dirs);
 
 signals:
     void gameCountChanged(int count);
@@ -45,11 +46,13 @@ private:
     void readSystemsFile(QXmlStreamReader&,
                          HashMap<QString, modeldata::Game>&,
                          HashMap<QString, modeldata::Collection>&,
-                         HashMap<QString, std::vector<QString>>&);
+                         HashMap<QString, std::vector<QString>>&,
+                         HashMap<QString, QString>&);
     void readSystemEntry(QXmlStreamReader&,
                          HashMap<QString, modeldata::Game>&,
                          HashMap<QString, modeldata::Collection>&,
-                         HashMap<QString, std::vector<QString>>&);
+                         HashMap<QString, std::vector<QString>>&,
+                         HashMap<QString, QString>&);
 };
 
 } // namespace es2

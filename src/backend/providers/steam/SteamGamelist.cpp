@@ -74,10 +74,10 @@ QString find_steam_datadir()
     return QString();
 }
 
-QStringList find_steam_installdirs(const QString& steam_datadir)
+std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
 {
-    QStringList installdirs;
-    installdirs << steam_datadir % QLatin1String("steamapps");
+    std::vector<QString> installdirs;
+    installdirs.emplace_back(steam_datadir % QLatin1String("steamapps"));
 
 
     const QString config_path = steam_datadir % QLatin1String("config/config.vdf");
@@ -97,23 +97,24 @@ QStringList find_steam_installdirs(const QString& steam_datadir)
         const auto match = installdir_regex.match(line);
         if (match.hasMatch()) {
             const QString path = match.captured(1) % QLatin1String("/steamapps");
-            if (!installdirs.contains(path) && QFileInfo(path).isDir())
-                installdirs << path;
+            if (QFileInfo(path).isDir())
+                installdirs.emplace_back(path);
         }
     }
 
+    installdirs.erase(std::unique(installdirs.begin(), installdirs.end()), installdirs.end());
     return installdirs;
 }
 
 void register_appmanifests(HashMap<QString, modeldata::Game>& games,
-                           modeldata::Collection& collection,
-                           std::vector<QString>& childs)
+                           std::vector<QString>& childs,
+                           const std::vector<QString>& installdirs)
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     const auto dir_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = { QStringLiteral("appmanifest_*.acf") };
 
-    for (const QString& dir_path : collection.source_dirs) {
+    for (const QString& dir_path : installdirs) {
         QDirIterator dir_it(dir_path, name_filters, dir_filters, dir_flags);
         while (dir_it.hasNext()) {
             dir_it.next();
@@ -146,8 +147,8 @@ void Gamelist::find(HashMap<QString, modeldata::Game>& games,
     if (steamdir.isEmpty())
         return;
 
-    QStringList installdirs = find_steam_installdirs(steamdir);
-    if (installdirs.isEmpty()) {
+    const std::vector<QString> installdirs = find_steam_installdirs(steamdir);
+    if (installdirs.empty()) {
         qWarning().noquote() << MSG_PREFIX << tr_log("no installation directories found");
         return;
     }
@@ -158,13 +159,12 @@ void Gamelist::find(HashMap<QString, modeldata::Game>& games,
 
     modeldata::Collection& collection = collections.at(STEAM_TAG);
     collection.setShortName(STEAM_TAG);
-    collection.source_dirs.append(installdirs);
 
     std::vector<QString>& childs = collection_childs[STEAM_TAG];
 
 
     const size_t game_count_before = games.size();
-    register_appmanifests(games, collection, childs);
+    register_appmanifests(games, childs, installdirs);
     if (game_count_before != games.size())
         emit gameCountChanged(static_cast<int>(games.size()));
 }

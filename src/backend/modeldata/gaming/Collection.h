@@ -42,7 +42,6 @@ struct Collection {
 
     QString summary;
     QString description;
-    QStringList source_dirs; // TODO: remove
 
     GameAssets default_assets;
 

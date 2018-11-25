@@ -20,6 +20,7 @@
 #include "Es2Systems.h"
 #include "Es2Metadata.h"
 #include "providers/Provider.h"
+#include "utils/HashMap.h"
 
 
 namespace providers {
@@ -41,6 +42,7 @@ public:
 private:
     SystemsParser systems;
     MetadataParser metadata;
+    HashMap<QString, QString> m_collection_dirs;
 };
 
 } // namespace es2

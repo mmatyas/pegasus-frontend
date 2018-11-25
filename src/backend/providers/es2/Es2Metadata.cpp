@@ -70,16 +70,16 @@ namespace {
 
 static constexpr auto MSG_PREFIX = "ES2:";
 
-QString findGamelistFile(const modeldata::Collection& collection)
+QString findGamelistFile(const modeldata::Collection& collection,
+                         const QString& collection_dir)
 {
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
 
     const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
 
     std::vector<QString> possible_files;
-    for (const QString& dir : collection.source_dirs) {
-        possible_files.emplace_back(dir % GAMELISTFILE);
-    }
+    possible_files.emplace_back(collection_dir % GAMELISTFILE);
+
     if (!collection.shortName().isEmpty()) {
         possible_files.emplace_back(paths::homePath()
             % QStringLiteral("/.emulationstation/gamelists/")
@@ -175,9 +175,9 @@ HashMap<QString, MetaTypes>::const_iterator find_by_strref(const HashMap<QString
 
 void findAssets(modeldata::Game& game,
                 HashMap<MetaTypes, QString, EnumHash>& xml_props,
-                const modeldata::Collection& collection)
+                const QString& collection_dir)
 {
-    const QString rom_dir = collection.source_dirs.constFirst() % '/';
+    const QString rom_dir = collection_dir % '/';
 
     if (game.assets.single(AssetType::BOX_FRONT).isEmpty()) {
         QString& path = xml_props[MetaTypes::IMAGE];
@@ -224,7 +224,8 @@ MetadataParser::MetadataParser(QObject* parent)
 
 void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
                              const HashMap<QString, modeldata::Collection>& collections,
-                             const HashMap<QString, std::vector<QString>>& collection_childs)
+                             const HashMap<QString, std::vector<QString>>& collection_childs,
+                             const HashMap<QString, QString>& collection_dirs)
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
@@ -254,7 +255,8 @@ void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
             continue;
 
         // find the metadata file
-        const QString gamelist_path = findGamelistFile(collection);
+        const QString collection_dir = collection_dirs.at(collection.name());
+        const QString gamelist_path = findGamelistFile(collection, collection_dir);
         if (gamelist_path.isEmpty())
             continue;
 
@@ -268,7 +270,7 @@ void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
 
         // parse the file
         QXmlStreamReader xml(&xml_file);
-        parseGamelistFile(xml, games, collection);
+        parseGamelistFile(xml, games, collection_dir);
         if (xml.error())
             qWarning().noquote() << MSG_PREFIX << xml.errorString();
 
@@ -283,7 +285,7 @@ void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
 
 void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
                                        HashMap<QString, modeldata::Game>& games,
-                                       const modeldata::Collection& collection) const
+                                       const QString& collection_dir) const
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
@@ -304,13 +306,13 @@ void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
             continue;
         }
 
-        parseGameEntry(xml, games, collection);
+        parseGameEntry(xml, games, collection_dir);
     }
 }
 
 void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
                                     HashMap<QString, modeldata::Game>& games,
-                                    const modeldata::Collection& collection) const
+                                    const QString& collection_dir) const
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
 
@@ -343,13 +345,13 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
 
     // apply
 
-    convertToCanonicalPath(game_path, collection.source_dirs.constFirst());
+    convertToCanonicalPath(game_path, collection_dir);
     if (!games.count(game_path))
         return;
 
     modeldata::Game& game = games.at(game_path);
     applyMetadata(game, xml_props);
-    findAssets(game, xml_props, collection);
+    findAssets(game, xml_props, collection_dir);
 }
 
 void MetadataParser::applyMetadata(modeldata::Game& game,

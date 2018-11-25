@@ -101,8 +101,6 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
                 collections.emplace(val, modeldata::Collection(val));
 
             curr_coll = &collections.at(val);
-            curr_coll->source_dirs.append(dir_path);
-
             filters.emplace_back(val, dir_path);
             return;
         }
@@ -151,7 +149,6 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
                     if (finfo.isRelative())
                         finfo.setFile(dir_path % '/' % val);
 
-                    curr_coll->source_dirs.append(finfo.canonicalFilePath());
                     filter.directories.append(finfo.canonicalFilePath());
                 }
                 break;

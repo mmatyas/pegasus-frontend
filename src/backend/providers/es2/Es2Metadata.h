@@ -37,7 +37,8 @@ public:
     MetadataParser(QObject* parent);
     void enhance(HashMap<QString, modeldata::Game>& games,
                  const HashMap<QString, modeldata::Collection>& collections,
-                 const HashMap<QString, std::vector<QString>>& collection_childs);
+                 const HashMap<QString, std::vector<QString>>& collection_childs,
+                 const HashMap<QString, QString>& collection_dirs);
 
 private:
     const HashMap<QString, MetaTypes> m_key_types;
@@ -46,10 +47,10 @@ private:
 
     void parseGamelistFile(QXmlStreamReader&,
                            HashMap<QString, modeldata::Game>&,
-                           const modeldata::Collection&) const;
+                           const QString&) const;
     void parseGameEntry(QXmlStreamReader&,
                         HashMap<QString, modeldata::Game>&,
-                        const modeldata::Collection&) const;
+                        const QString&) const;
     void applyMetadata(modeldata::Game&,
                        HashMap<MetaTypes, QString, EnumHash>&) const;
 };

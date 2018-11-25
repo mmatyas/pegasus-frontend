@@ -35,14 +35,14 @@ void Es2Provider::findLists(HashMap<QString, modeldata::Game>& games,
                             HashMap<QString, modeldata::Collection>& collections,
                             HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    systems.find(games, collections, collection_childs);
+    systems.find(games, collections, collection_childs, m_collection_dirs);
 }
 
 void Es2Provider::findStaticData(HashMap<QString, modeldata::Game>& games,
                                  const HashMap<QString, modeldata::Collection>& collections,
                                  const HashMap<QString, std::vector<QString>>& collection_childs)
 {
-    metadata.enhance(games, collections, collection_childs);
+    metadata.enhance(games, collections, collection_childs, m_collection_dirs);
 }
 
 } // namespace es2
