@@ -99,19 +99,13 @@ QVariantList KeyEditor::keysOf(int event_id) const
 QString KeyEditor::keyCodeName(const int keycode) const
 {
     const QKeySequence keyseq(keycode);
-
-    const auto gamepad_it = AppSettings::gamepadButtonNames.find(keyseq);
-    if (gamepad_it != AppSettings::gamepadButtonNames.cend()) {
-        return QStringLiteral("Gamepad %1 (%2)")
-            .arg(QString::number(keyseq[0] - GamepadKeyId::A), gamepad_it->second);
-    }
-
-    return keyseq.toString(QKeySequence::NativeText);
+    const model::Key key(keyseq);
+    return keyName(key);
 }
 
 QString KeyEditor::keyName(const model::Key& key) const
 {
-    return keyCodeName(key.keyCode());
+    return key.toString();
 }
 
 } // namespace model

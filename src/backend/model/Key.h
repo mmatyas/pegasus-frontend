@@ -28,6 +28,7 @@ class Key {
     Q_PROPERTY(int key READ key CONSTANT)
     Q_PROPERTY(int modifiers READ modifiers CONSTANT)
     Q_PROPERTY(int keyCode READ keyCode CONSTANT)
+    Q_PROPERTY(QString toString READ toString CONSTANT)
 
 public:
     explicit Key();
@@ -36,6 +37,7 @@ public:
     int key() const { return m_key; }
     int modifiers() const { return m_modifiers; }
     int keyCode() const { return m_key + m_modifiers; }
+    QString toString() const;
 
 private:
     const int m_modifiers;
