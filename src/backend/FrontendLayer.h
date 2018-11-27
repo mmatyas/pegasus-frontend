@@ -18,7 +18,6 @@
 #pragma once
 
 #include <QObject>
-#include <QPointer>
 #include <QQmlApplicationEngine>
 
 #ifdef Q_OS_ANDROID
@@ -52,7 +51,7 @@ signals:
 
 private:
     QObject* const m_api;
-    QPointer<QQmlApplicationEngine> m_engine;
+    QQmlApplicationEngine* m_engine;
 
 #ifdef Q_OS_ANDROID
     AndroidAppIconProvider m_android_icon_provider;

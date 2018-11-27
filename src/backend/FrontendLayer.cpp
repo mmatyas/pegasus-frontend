@@ -51,6 +51,7 @@ QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
 FrontendLayer::FrontendLayer(QObject* const api, QObject* parent)
     : QObject(parent)
     , m_api(api)
+    , m_engine(nullptr)
 {
     // Note: the pointer to the Api is non-owning and constant during the runtime
 }
@@ -59,7 +60,7 @@ void FrontendLayer::rebuild()
 {
     Q_ASSERT(!m_engine);
 
-    m_engine = new QQmlApplicationEngine();
+    m_engine = new QQmlApplicationEngine(this);
     m_engine->addImportPath(QStringLiteral("lib/qml"));
     m_engine->addImportPath(QStringLiteral("qml"));
     m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
@@ -78,10 +79,11 @@ void FrontendLayer::teardown()
     Q_ASSERT(m_engine);
 
     // signal forwarding
-    connect(m_engine.data(), &QQmlApplicationEngine::destroyed,
+    connect(m_engine, &QQmlApplicationEngine::destroyed,
             this, &FrontendLayer::teardownComplete);
 
     m_engine->deleteLater();
+    m_engine = nullptr;
 }
 
 void FrontendLayer::clearCache()
