@@ -46,7 +46,7 @@ static constexpr auto SEPARATOR = "----------------------------------------";
 
 ProcessLauncher::ProcessLauncher(QObject* parent)
     : QObject(parent)
-    , process(nullptr)
+    , m_process(nullptr)
 {}
 
 void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
@@ -86,66 +86,68 @@ void ProcessLauncher::runProcess(const QString& command, const QString& workdir)
 {
     qInfo().noquote() << tr_log("Executing command: `%1`").arg(command);
 
-    Q_ASSERT(!process);
-    process = new QProcess();
+    Q_ASSERT(!m_process);
+    m_process = new QProcess(this);
 
     // set up signals and slots
-    connect(process.data(), &QProcess::started, this, &ProcessLauncher::onProcessStarted);
-    connect(process.data(), &QProcess::errorOccurred, this, &ProcessLauncher::onProcessFailed);
-    connect(process.data(), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+    connect(m_process, &QProcess::started, this, &ProcessLauncher::onProcessStarted);
+    connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessFailed);
+    connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
             this, &ProcessLauncher::onProcessFinished);
 
     // run the command
-    process->setProcessChannelMode(QProcess::ForwardedChannels);
-    process->setInputChannelMode(QProcess::ForwardedInputChannel);
-    process->setWorkingDirectory(workdir);
-    process->start(command, QProcess::ReadOnly);
+    m_process->setProcessChannelMode(QProcess::ForwardedChannels);
+    m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
+    m_process->setWorkingDirectory(workdir);
+    m_process->start(command, QProcess::ReadOnly);
 
     // wait
-    const bool started_successfully = process->waitForStarted(-1);
+    const bool started_successfully = m_process->waitForStarted(-1);
     if (started_successfully) {
         emit processLaunchOk();
     }
     else {
         emit processLaunchError();
-        process->deleteLater();
+        m_process->deleteLater();
+        m_process = nullptr;
     }
 }
 
 void ProcessLauncher::onTeardownComplete()
 {
-    Q_ASSERT(process);
+    Q_ASSERT(m_process);
 
-    process->waitForFinished(-1);
-    process->deleteLater();
+    m_process->waitForFinished(-1);
+    m_process->deleteLater();
+    m_process = nullptr;
     emit processFinished();
 }
 
 void ProcessLauncher::onProcessStarted()
 {
-    Q_ASSERT(process);
-    qInfo().noquote() << tr_log("Process %1 started").arg(process->processId());
+    Q_ASSERT(m_process);
+    qInfo().noquote() << tr_log("Process %1 started").arg(m_process->processId());
     qInfo().noquote() << SEPARATOR;
 }
 
 void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
 {
-    Q_ASSERT(process);
+    Q_ASSERT(m_process);
     switch (error) {
         case QProcess::FailedToStart:
             qWarning().noquote() << tr_log("Could not run the command `%1`; either the"
                                            " invoked program is missing, or you don't have"
                                            " the permission to run it.")
-                                    .arg(process->program());
+                                    .arg(m_process->program());
             break;
         case QProcess::Crashed:
             qWarning().noquote() << tr_log("The external program `%1` has crashed")
-                                    .arg(process->program());
+                                    .arg(m_process->program());
             break;
         case QProcess::Timedout:
             qWarning().noquote() << tr_log("The command `%1` has not started in a"
                                            " reasonable amount of time")
-                                    .arg(process->program());
+                                    .arg(m_process->program());
             break;
         case QProcess::ReadError:
         case QProcess::WriteError:
@@ -154,7 +156,7 @@ void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
             break;
         default:
             qWarning().noquote() << tr_log("Running the command `%1` failed due to an unknown error")
-                                    .arg(process->program());
+                                    .arg(m_process->program());
             break;
     }
     afterRun();
@@ -162,7 +164,7 @@ void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
 
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
 {
-    Q_ASSERT(process);
+    Q_ASSERT(m_process);
     qInfo().noquote() << SEPARATOR;
 
     switch (exitstatus) {

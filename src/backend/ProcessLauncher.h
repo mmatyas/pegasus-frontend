@@ -20,7 +20,6 @@
 #include "utils/FwdDeclModel.h"
 
 #include <QObject>
-#include <QPointer>
 #include <QProcess>
 
 
@@ -48,7 +47,7 @@ private slots:
     void onProcessFinished(int, QProcess::ExitStatus);
 
 private:
-    QPointer<QProcess> process;
+    QProcess* m_process;
 
     void runProcess(const QString&, const QString&);
 
