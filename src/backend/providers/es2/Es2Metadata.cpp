@@ -20,8 +20,8 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "PegasusAssets.h"
-#include "modeldata/gaming/Collection.h"
-#include "modeldata/gaming/Game.h"
+#include "modeldata/gaming/CollectionData.h"
+#include "modeldata/gaming/GameData.h"
 #include "utils/PathCheck.h"
 
 #include <QDebug>

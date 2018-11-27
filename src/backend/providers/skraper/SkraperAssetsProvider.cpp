@@ -19,7 +19,7 @@
 
 #include "AppSettings.h"
 #include "LocaleUtils.h"
-#include "modeldata/gaming/Game.h"
+#include "modeldata/gaming/GameData.h"
 
 #include <QDebug>
 #include <QDirIterator>

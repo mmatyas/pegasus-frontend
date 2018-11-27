@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "GameAssets.h"
+#include "GameAssetsData.h"
 
 #include <QSharedPointer>
 #include <QString>

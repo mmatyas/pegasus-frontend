@@ -18,7 +18,7 @@
 #pragma once
 
 #include "GameList.h"
-#include "modeldata/gaming/Collection.h"
+#include "modeldata/gaming/CollectionData.h"
 
 #include <QString>
 #include <QQmlListProperty>

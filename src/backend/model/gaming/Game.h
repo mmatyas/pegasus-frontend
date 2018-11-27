@@ -18,8 +18,8 @@
 #pragma once
 
 #include "GameAssets.h"
-#include "modeldata/gaming/Collection.h"
-#include "modeldata/gaming/Game.h"
+#include "modeldata/gaming/CollectionData.h"
+#include "modeldata/gaming/GameData.h"
 
 #include <QObject>
 

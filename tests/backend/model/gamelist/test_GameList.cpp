@@ -19,7 +19,7 @@
 
 #include "model/gaming/Filters.h"
 #include "model/gaming/GameList.h"
-#include "modeldata/gaming/Collection.h"
+#include "modeldata/gaming/CollectionData.h"
 
 
 class test_GameList : public QObject {

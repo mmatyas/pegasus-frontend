@@ -20,7 +20,7 @@
 #include "GogCommon.h"
 #include "LocaleUtils.h"
 #include "providers/JsonCacheUtils.h"
-#include "modeldata/gaming/Game.h"
+#include "modeldata/gaming/GameData.h"
 
 #include <QEventLoop>
 #include <QJsonArray>

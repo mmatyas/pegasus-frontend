@@ -15,28 +15,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "Collection.h"
-
-#include "Game.h"
+#include "GameData.h"
 
 
 namespace modeldata {
 
-Collection::Collection(QString name)
-    : m_name(std::move(name))
-    , m_short_name(m_name.toLower())
-{}
-
-void Collection::setShortName(const QString& str)
+Game::Game(QFileInfo fileinfo)
+    : title(fileinfo.completeBaseName())
+    , player_count(1)
+    , is_favorite(false)
+    , rating(0.f)
+    , playcount(0)
+    , playtime(0)
+    , m_fileinfo(std::move(fileinfo))
 {
-    Q_ASSERT(!str.isEmpty());
-    m_short_name = str.toLower();
-}
-
-void Collection::setLaunchCmd(QString str)
-{
-    Q_ASSERT(!str.isEmpty());
-    m_launch_cmd = std::move(str);
 }
 
 } // namespace modeldata
