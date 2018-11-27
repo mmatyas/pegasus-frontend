@@ -105,7 +105,7 @@ FocusScope {
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
 
-                visible: api.settings.providers.count === 0
+                visible: api.internal.settings.providers.count === 0
             }
 
             ListView {
@@ -113,7 +113,7 @@ FocusScope {
                 anchors.fill: parent
                 clip: true
 
-                model: api.settings.providers.model
+                model: api.internal.settings.providers.model
                 delegate: listEntry
 
                 focus: true

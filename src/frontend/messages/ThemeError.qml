@@ -23,10 +23,10 @@ Error {
     details: qsTr("Pegasus tried to load the selected theme (%1), but failed."
                 + " This may happen when you try to load an outdated theme, or when"
                 + " there's a bug in its code.")
-            .arg(api.settings.themes.current.name)
+            .arg(api.internal.settings.themes.current.name)
             + api.tr
     instruction: qsTr("For now, please select a different theme from the main menu.") + api.tr
     logInfo: qsTr("You might find more details in the log file:<pre>%1</pre>")
-        .arg(api.meta.logFilePath)
+        .arg(api.internal.meta.logFilePath)
         + api.tr
 }

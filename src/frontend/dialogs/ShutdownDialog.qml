@@ -26,5 +26,5 @@ GenericOkCancelDialog
     message: qsTr("The system will shut down. Are you sure?") + api.tr
     symbol: "\u23FB"
 
-    onAccept: api.system.shutdown()
+    onAccept: api.internal.system.shutdown()
 }

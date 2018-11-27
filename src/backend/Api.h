@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,13 +17,11 @@
 
 #pragma once
 
+#include "model/ApiInternal.h"
 #include "model/gaming/CollectionList.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Filters.h"
 #include "model/general/Keys.h"
-#include "model/general/Meta.h"
-#include "model/general/System.h"
-#include "model/settings/Settings.h"
 #include "providers/ProviderManager.h"
 #include "types/AppCloseType.h"
 
@@ -41,10 +39,8 @@ class ApiObject : public QObject {
 
     // subcomponents
 
+    Q_PROPERTY(model::ApiInternal* internal READ internal CONSTANT)
     Q_PROPERTY(model::Filters* filters READ filters CONSTANT)
-    Q_PROPERTY(model::Meta* meta READ meta CONSTANT)
-    Q_PROPERTY(model::Settings* settings READ settings CONSTANT)
-    Q_PROPERTY(model::System* system READ system CONSTANT)
     Q_PROPERTY(model::Keys* keys READ keys CONSTANT)
     Q_PROPERTY(model::CollectionList* collections READ collections CONSTANT)
 
@@ -68,10 +64,8 @@ public:
 
 public:
     // subcomponents
+    model::ApiInternal* internal() { return &m_internal; }
     model::Filters* filters() { return &m_filters; }
-    model::Meta* meta() { return &m_meta; }
-    model::Settings* settings() { return &m_settings; }
-    model::System* system() { return &m_system; }
     model::Keys* keys() { return &m_keys; }
     model::CollectionList* collections() { return &m_collections; }
 
@@ -114,9 +108,7 @@ private slots:
     void onGameFavoriteChanged();
 
 private:
-    model::Meta m_meta;
-    model::System m_system;
-    model::Settings m_settings;
+    model::ApiInternal m_internal;
     model::Filters m_filters;
     model::Keys m_keys;
     model::CollectionList m_collections;

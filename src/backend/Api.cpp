@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,21 +26,21 @@ ApiObject::ApiObject(QObject* parent)
     , m_launch_game(nullptr)
     , m_providerman(this)
 {
-    connect(m_settings.localesPtr(), &model::LocaleList::localeChanged,
+    connect(m_internal.settings.localesPtr(), &model::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
-    connect(m_settings.keyEditorPtr(), &model::KeyEditor::keysChanged,
+    connect(m_internal.settings.keyEditorPtr(), &model::KeyEditor::keysChanged,
             &m_keys, &model::Keys::refresh_keys);
-    connect(&m_system, &model::System::appCloseRequested,
+    connect(&m_internal.system, &model::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
+    connect(&m_providerman, &ProviderManager::gameCountChanged,
+            &m_internal.meta, &model::Meta::onGameCountUpdate);
+    connect(&m_providerman, &ProviderManager::firstPhaseComplete,
+            &m_internal.meta, &model::Meta::onFirstPhaseCompleted);
+    connect(&m_providerman, &ProviderManager::secondPhaseComplete,
+            &m_internal.meta, &model::Meta::onSecondPhaseCompleted);
+
     connect(&m_filters, &model::Filters::filtersChanged,
             this, &ApiObject::onFiltersChanged);
-
-    connect(&m_providerman, &ProviderManager::gameCountChanged,
-            &m_meta, &model::Meta::onGameCountUpdate);
-    connect(&m_providerman, &ProviderManager::firstPhaseComplete,
-            &m_meta, &model::Meta::onFirstPhaseCompleted);
-    connect(&m_providerman, &ProviderManager::secondPhaseComplete,
-            &m_meta, &model::Meta::onSecondPhaseCompleted);
 
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
@@ -55,7 +55,7 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::onGameFavoriteChanged);
 
     // partial QML reload
-    connect(&m_meta, &model::Meta::qmlClearCacheRequested,
+    connect(&m_internal.meta, &model::Meta::qmlClearCacheRequested,
             this, &ApiObject::qmlClearCacheRequested);
 }
 
@@ -67,7 +67,7 @@ void ApiObject::startScanning()
 void ApiObject::onStaticDataLoaded(QVector<model::Collection*> collections, QVector<model::Game*> games)
 {
     m_collections.setModelData(std::move(collections), std::move(games));
-    m_meta.onUiReady();
+    m_internal.meta.onUiReady();
 }
 
 void ApiObject::onLaunchRequested(model::Collection* coll, model::Game* game)

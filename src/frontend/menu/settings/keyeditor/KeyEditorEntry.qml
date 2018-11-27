@@ -91,7 +91,7 @@ FocusScope {
         anchors.right: parent.right
         spacing: vpx(4)
 
-        model: api.settings.keyEditor.keysOf(root.eventId)
+        model: api.internal.settings.keyEditor.keysOf(root.eventId)
         delegate: keyDelegate
 
         visible: hasKeys

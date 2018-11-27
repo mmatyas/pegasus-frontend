@@ -113,7 +113,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Language") + api.tr
-                    value: api.settings.locales.current.name
+                    value: api.internal.settings.locales.current.name
 
                     onActivate: {
                         focus = true;
@@ -128,7 +128,7 @@ FocusScope {
                     id: optTheme
 
                     label: qsTr("Theme") + api.tr
-                    value: api.settings.themes.current.name
+                    value: api.internal.settings.themes.current.name
 
                     onActivate: {
                         focus = true;
@@ -145,10 +145,10 @@ FocusScope {
                     label: qsTr("Fullscreen mode") + api.tr
                     note: qsTr("On some platforms this setting may have no effect") + api.tr
 
-                    checked: api.settings.fullscreen
+                    checked: api.internal.settings.fullscreen
                     onCheckedChanged: {
                         focus = true;
-                        api.settings.fullscreen = checked;
+                        api.internal.settings.fullscreen = checked;
                     }
                     onFocusChanged: container.onFocus(this)
 
@@ -224,20 +224,20 @@ FocusScope {
         id: localeBox
         z: 3
 
-        model: api.settings.locales.model
-        index: api.settings.locales.index
+        model: api.internal.settings.locales.model
+        index: api.internal.settings.locales.index
 
         onClose: content.focus = true
-        onSelect: api.settings.locales.index = index
+        onSelect: api.internal.settings.locales.index = index
     }
     MultivalueBox {
         id: themeBox
         z: 3
 
-        model: api.settings.themes.model
-        index: api.settings.themes.index
+        model: api.internal.settings.themes.model
+        index: api.internal.settings.themes.index
 
         onClose: content.focus = true
-        onSelect: api.settings.themes.index = index
+        onSelect: api.internal.settings.themes.index = index
     }
 }

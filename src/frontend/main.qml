@@ -28,12 +28,12 @@ Window {
     title: "Pegasus"
     color: "#000"
 
-    visibility: api.settings.fullscreen
+    visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
 
     onClosing: {
         theme.source = "";
-        api.system.quit();
+        api.internal.system.quit();
     }
 
     readonly property int globalWidth: appWindow.width
@@ -67,10 +67,10 @@ Window {
             focus: true
             enabled: focus
 
-            readonly property url apiThemePath: api.settings.themes.current.qmlPath
+            readonly property url apiThemePath: api.internal.settings.themes.current.qmlPath
 
             function getThemeFile() {
-                if (api.meta.isLoading)
+                if (api.internal.meta.isLoading)
                     return "";
                 if (api.collections.count === 0)
                     return "messages/NoGamesError.qml";
@@ -89,7 +89,7 @@ Window {
                     event.accepted = true;
 
                     theme.source = "";
-                    api.meta.clearQMLCache();
+                    api.internal.meta.clearQMLCache();
                     theme.source = Qt.binding(getThemeFile);
                 }
             }
@@ -130,7 +130,7 @@ Window {
             }
             onRequestQuit: {
                 theme.source = "";
-                api.system.quit();
+                api.internal.system.quit();
             }
         }
         PegasusUtils.HorizontalSwipeArea {
@@ -163,7 +163,7 @@ Window {
         focus: true
         enabled: false
 
-        property bool dataLoading: api.meta.loading
+        property bool dataLoading: api.internal.meta.loading
         property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
 
         function hideMaybe() {

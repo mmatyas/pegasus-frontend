@@ -50,9 +50,9 @@ FocusScope {
             return;
 
         if (keyToChange)
-            api.settings.keyEditor.replaceKeyCode(eventId, keyToChange, event);
+            api.internal.settings.keyEditor.replaceKeyCode(eventId, keyToChange, event);
         else
-            api.settings.keyEditor.addKey(eventId, event);
+            api.internal.settings.keyEditor.addKey(eventId, event);
 
         triggerClose();
         event.accepted = true;

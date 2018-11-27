@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,16 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+#include "ApiInternal.h"
 
 
-GenericOkCancelDialog
-{
-    focus: true
+namespace model {
 
-    title: qsTr("Reboot") + api.tr
-    message: qsTr("The system will reboot. Are you sure?") + api.tr
-    symbol: "\u21BB"
+ApiInternal::ApiInternal()
+{}
 
-    onAccept: api.internal.system.reboot()
-}
+} // namespace model

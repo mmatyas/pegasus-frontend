@@ -23,7 +23,7 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
-    property real progress: api.meta.loadingProgress
+    property real progress: api.internal.meta.loadingProgress
 
     Behavior on progress { NumberAnimation {} }
 
@@ -114,7 +114,7 @@ Rectangle {
     Text {
         id: gameCounter
 
-        text: qsTr("%1 games found").arg(api.meta.gameCount)
+        text: qsTr("%1 games found").arg(api.internal.meta.gameCount)
         color: "#999"
         font {
             pixelSize: vpx(16)
