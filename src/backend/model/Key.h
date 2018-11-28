@@ -23,27 +23,24 @@
 
 
 namespace model {
-class Key {
-    Q_GADGET
+class Key : public QObject {
+    Q_OBJECT
     Q_PROPERTY(int key READ key CONSTANT)
     Q_PROPERTY(int modifiers READ modifiers CONSTANT)
     Q_PROPERTY(int keyCode READ keyCode CONSTANT)
-    Q_PROPERTY(QString toString READ toString CONSTANT)
 
 public:
-    explicit Key();
-    explicit Key(const QKeySequence&);
+    explicit Key(QObject* parent = nullptr);
+    explicit Key(const QKeySequence&, QObject* parent = nullptr);
 
     int key() const { return m_key; }
     int modifiers() const { return m_modifiers; }
     int keyCode() const { return m_key + m_modifiers; }
-    QString toString() const;
+
+    Q_INVOKABLE QString name() const;
 
 private:
     const int m_modifiers;
     const int m_key;
 };
 } // namespace model
-
-Q_DECLARE_METATYPE(model::Key);
-Q_DECLARE_TYPEINFO(model::Key, Q_PRIMITIVE_TYPE);

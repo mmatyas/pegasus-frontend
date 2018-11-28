@@ -32,17 +32,20 @@ int get_modifiers(int keycode)
 
 namespace model {
 
-Key::Key()
-    : m_modifiers(Qt::NoModifier)
+Key::Key(QObject* parent)
+    : QObject(parent)
+    , m_modifiers(Qt::NoModifier)
     , m_key(Qt::Key_unknown)
 {}
 
-Key::Key(const QKeySequence& keyseq)
-    : m_modifiers(keyseq.isEmpty() ? static_cast<int>(Qt::NoModifier) : get_modifiers(keyseq[0]))
+Key::Key(const QKeySequence& keyseq, QObject* parent)
+    : QObject(parent)
+    , m_modifiers(keyseq.isEmpty() ? static_cast<int>(Qt::NoModifier) : get_modifiers(keyseq[0]))
     , m_key(keyseq.isEmpty() ? static_cast<int>(Qt::Key_unknown) : keyseq[0] - m_modifiers)
 {}
 
-QString Key::toString() const
+// NOTE: toString was already taken...
+QString Key::name() const
 {
     const QKeySequence keyseq(keyCode());
 

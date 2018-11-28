@@ -81,7 +81,6 @@ void KeyEditor::resetKeys()
     emit keysChanged();
 }
 
-// FIXME: Duplication with the Keys Api
 QVariantList KeyEditor::keysOf(int event_id) const
 {
     if (!valid_event_id(event_id))
@@ -91,21 +90,9 @@ QVariantList KeyEditor::keysOf(int event_id) const
 
     const auto keyseq_list = AppSettings::keys.at(static_cast<::KeyEvent>(event_id));
     for (const QKeySequence& keyseq : keyseq_list)
-        key_list << QVariant::fromValue(model::Key(keyseq));
+        key_list << QVariant::fromValue(new model::Key(keyseq));
 
     return key_list;
-}
-
-QString KeyEditor::keyCodeName(const int keycode) const
-{
-    const QKeySequence keyseq(keycode);
-    const model::Key key(keyseq);
-    return keyName(key);
-}
-
-QString KeyEditor::keyName(const model::Key& key) const
-{
-    return key.toString();
 }
 
 } // namespace model

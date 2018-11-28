@@ -40,8 +40,6 @@ public:
     Q_INVOKABLE void resetKeys();
 
     Q_INVOKABLE QVariantList keysOf(int event_id) const;
-    Q_INVOKABLE QString keyCodeName(const int keycode) const;
-    Q_INVOKABLE QString keyName(const model::Key& key) const;
 
     static constexpr int eventCount() {
         return static_cast<int>(::KeyEvent::MAIN_MENU) + 1;

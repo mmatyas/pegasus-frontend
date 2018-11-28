@@ -74,6 +74,8 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::ProviderList>(API_URI, 0, 9, "ProviderList", error_msg);
     qmlRegisterUncreatableType<model::Filter>(API_URI, 0, 8, "Filter", error_msg);
     qmlRegisterUncreatableType<model::Filters>(API_URI, 0, 8, "Filters", error_msg);
+    qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
+    qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
 
     // backend classes
     qRegisterMetaType<QVector<model::Collection*>>();

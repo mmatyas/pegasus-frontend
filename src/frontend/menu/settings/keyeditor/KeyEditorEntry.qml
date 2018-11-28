@@ -126,7 +126,7 @@ FocusScope {
                 anchors.rightMargin: keyList.spacing
 
                 color: "#3bb"
-                text: api.settings.keyEditor.keyName(modelData)
+                text: modelData.name()
                 onPressed: root.editKey(root.eventId, modelData.keyCode)
 
                 focus: true

@@ -28,6 +28,8 @@ ApiObject::ApiObject(QObject* parent)
 {
     connect(m_settings.localesPtr(), &model::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
+    connect(m_settings.keyEditorPtr(), &model::KeyEditor::keysChanged,
+            &m_keys, &model::Keys::refresh_keys);
     connect(&m_system, &model::System::appCloseRequested,
             this, &ApiObject::appCloseRequested);
     connect(&m_filters, &model::Filters::filtersChanged,

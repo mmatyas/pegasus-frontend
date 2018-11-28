@@ -17,11 +17,14 @@
 
 #pragma once
 
-#include "AppSettings.h"
+#include "model/Key.h"
+#include "types/KeyEventType.h"
+#include "utils/HashMap.h"
 #include "utils/KeySequenceTools.h"
 
 #include <QObject>
-#include <QVariantList>
+#include <QQmlListProperty>
+#include <QVector>
 
 
 namespace model {
@@ -29,14 +32,16 @@ namespace model {
 class Keys : public QObject {
     Q_OBJECT
 
-public:
-    #define KEYVEC_PROP(keytype, qml_array, qml_fn) \
-        Q_INVOKABLE bool qml_fn(const QVariant& qmlevent) const { \
-            return AppSettings::keys.at(KeyEvent::keytype).count(::qmlevent_to_keyseq(qmlevent)); \
-        } \
-        Q_INVOKABLE QVariantList qml_array(KeyEvent event) const { \
-            return qmlkeys_of(event); \
-        }
+    #define KEYVEC_PROP(keytype, qmlArray, qmlFn) \
+        private: \
+            Q_PROPERTY(QQmlListProperty<model::Key> qmlArray READ qmlArray NOTIFY keysChanged) \
+            QQmlListProperty<model::Key> qmlArray() { \
+                return to_qmlkeys(KeyEvent::keytype); \
+            } \
+        public: \
+            Q_INVOKABLE bool qmlFn(const QVariant& qmlEvent) const { \
+                return qmlkey_in_keylist(KeyEvent::keytype, qmlEvent); \
+            }
     KEYVEC_PROP(LEFT, left, isLeft)
     KEYVEC_PROP(RIGHT, right, isRight)
     KEYVEC_PROP(UP, up, isUp)
@@ -55,11 +60,16 @@ public:
 public:
     explicit Keys(QObject* parent = nullptr);
 
+    void refresh_keys();
+
 signals:
     void keysChanged();
 
 private:
-    QVariantList qmlkeys_of(KeyEvent event) const;
+    HashMap<KeyEvent, QVector<model::Key*>, EnumHash> m_keylists;
+
+    bool qmlkey_in_keylist(KeyEvent, const QVariant&) const;
+    QQmlListProperty<model::Key> to_qmlkeys(KeyEvent);
 };
 
 } // namespace model

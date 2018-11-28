@@ -17,6 +17,7 @@
 
 #include <QtQuickTest>
 
+#include "model/general/Keys.h"
 #include "model/settings/KeyEditor.h"
 
 #include <QQmlEngine>
@@ -33,11 +34,17 @@ public:
 #else
         : m_is_mac(false)
 #endif
-    {}
+    {
+        qmlRegisterUncreatableType<model::Key>("PegasusTest", 1, 0, "Key", "Error!");
+
+        connect(&m_keyeditor, &model::KeyEditor::keysChanged,
+                &m_keys, &model::Keys::refresh_keys);
+    }
 
 public slots:
     void qmlEngineAvailable(QQmlEngine *engine)
     {
+        engine->rootContext()->setContextProperty("keys", &m_keys);
         engine->rootContext()->setContextProperty("keyEditor", &m_keyeditor);
         engine->rootContext()->setContextProperty("isMac", QVariant::fromValue(m_is_mac));
     }
@@ -45,6 +52,7 @@ public slots:
 private:
     const bool m_is_mac;
     model::KeyEditor m_keyeditor;
+    model::Keys m_keys;
 };
 
 

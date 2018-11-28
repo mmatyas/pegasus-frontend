@@ -17,25 +17,78 @@
 
 #include "Keys.h"
 
+#include "AppSettings.h"
 #include "model/Key.h"
+#include "model/ListPropertyFn.h"
+
+
+namespace {
+void free_keylist(QVector<model::Key*>& keylist)
+{
+    for (model::Key* keyptr : keylist)
+        keyptr->deleteLater();
+
+    keylist.clear();
+}
+} // namespace
 
 
 namespace model {
 
 Keys::Keys(QObject* parent)
     : QObject(parent)
-{}
-
-// NOTE: Don't call this for invalid and internal KeyEvents.
-QVariantList Keys::qmlkeys_of(KeyEvent event) const
+    , m_keylists {
+        { KeyEvent::LEFT, {} },
+        { KeyEvent::RIGHT, {} },
+        { KeyEvent::UP, {} },
+        { KeyEvent::DOWN, {} },
+        { KeyEvent::ACCEPT, {} },
+        { KeyEvent::CANCEL, {} },
+        { KeyEvent::DETAILS, {} },
+        { KeyEvent::FILTERS, {} },
+        { KeyEvent::NEXT_PAGE, {} },
+        { KeyEvent::PREV_PAGE, {} },
+        { KeyEvent::PAGE_UP, {} },
+        { KeyEvent::PAGE_DOWN, {} },
+        { KeyEvent::MAIN_MENU, {} },
+    }
 {
-    QVariantList key_list;
-
-    const auto keyseq_list = AppSettings::keys.at(event);
-    for (const QKeySequence& keyseq : keyseq_list)
-        key_list << QVariant::fromValue(model::Key(keyseq));
-
-    return key_list;
+    // NOTE: m_keylists is initialized with all keys
+    // in order to keep the vector pointers constant
+    refresh_keys();
 }
+
+void Keys::refresh_keys()
+{
+    for (auto& entry : m_keylists) {
+        auto& keylist = entry.second;
+        free_keylist(keylist);
+
+        const auto& keyseq_list = AppSettings::keys.at(entry.first);
+        keylist.reserve(keyseq_list.size());
+
+        for (const QKeySequence& keyseq : keyseq_list)
+            keylist.append(new model::Key(keyseq, this));
+
+        keylist.squeeze();
+    }
+
+    emit keysChanged();
+}
+
+bool Keys::qmlkey_in_keylist(KeyEvent keytype, const QVariant& qmlevent) const
+{
+    const QKeySequence keyseq = ::qmlevent_to_keyseq(qmlevent);
+    return AppSettings::keys.at(keytype).count(keyseq);
+}
+
+QQmlListProperty<model::Key> Keys::to_qmlkeys(KeyEvent keytype)
+{
+    static constexpr auto count = &listproperty_count<model::Key>;
+    static constexpr auto at = &listproperty_at<model::Key>;
+
+    return {this, &m_keylists.at(keytype), count, at};
+}
+
 
 } // namespace model
