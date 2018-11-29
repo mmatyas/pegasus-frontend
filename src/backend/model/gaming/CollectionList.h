@@ -29,13 +29,6 @@ namespace model {
 class CollectionList : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(model::Collection* current
-               READ current
-               NOTIFY currentChanged)
-    Q_PROPERTY(int index
-               READ index
-               WRITE setIndex
-               NOTIFY currentChanged)
     Q_PROPERTY(int count
                READ count
                NOTIFY modelChanged)
@@ -48,23 +41,18 @@ public:
 
     void setModelData(const QVector<Collection*>&);
 
-    Collection* current() const;
     const QVector<Collection*>& collections() const { return m_collections; }
 
 signals:
     void modelChanged();
-    void currentChanged();
 
 private:
     int count() const { return m_collections.count(); }
-    int index() const { return m_collection_idx; }
-    void setIndex(int);
 
     QQmlListProperty<Collection> elementsProp();
 
 private:
     QVector<Collection*> m_collections;
-    int m_collection_idx;
 };
 
 } // namespace model

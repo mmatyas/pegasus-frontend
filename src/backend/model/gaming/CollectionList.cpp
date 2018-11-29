@@ -42,37 +42,7 @@ namespace model {
 
 CollectionList::CollectionList(QObject* parent)
     : QObject(parent)
-    , m_collection_idx(-1)
-{
-}
-
-Collection* CollectionList::current() const
-{
-    if (m_collection_idx < 0)
-        return nullptr;
-
-    Q_ASSERT(m_collection_idx < m_collections.length());
-    return m_collections.at(m_collection_idx);
-}
-
-void CollectionList::setIndex(int idx)
-{
-    // Setting the index to a valid value causes changing the current collection
-    // and the current game. Setting the index to an invalid value should not
-    // change anything.
-
-    if (idx == m_collection_idx)
-        return;
-
-    const bool valid_idx = (idx == -1) || (0 <= idx && idx < m_collections.count());
-    if (!valid_idx) {
-        qWarning().noquote() << tr_log("Invalid collection index #%1").arg(idx);
-        return;
-    }
-
-    m_collection_idx = idx;
-    emit currentChanged();
-}
+{}
 
 QQmlListProperty<Collection> CollectionList::elementsProp()
 {
@@ -85,7 +55,6 @@ QQmlListProperty<Collection> CollectionList::elementsProp()
 void CollectionList::setModelData(const QVector<Collection*>& collections)
 {
     Q_ASSERT(m_collections.isEmpty());
-    Q_ASSERT(m_collection_idx == -1);
 
     m_collections = collections;
     sort_collections(m_collections);
@@ -93,10 +62,8 @@ void CollectionList::setModelData(const QVector<Collection*>& collections)
     for (Collection* const coll : m_collections)
         coll->setParent(this);
 
-    if (!m_collections.isEmpty()) {
-        setIndex(0);
+    if (!m_collections.isEmpty())
         emit modelChanged();
-    }
 }
 
 } // namespace model
