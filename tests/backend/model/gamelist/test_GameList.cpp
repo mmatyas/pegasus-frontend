@@ -17,7 +17,6 @@
 
 #include <QtTest/QtTest>
 
-#include "model/gaming/Filters.h"
 #include "model/gaming/GameList.h"
 #include "modeldata/gaming/CollectionData.h"
 
@@ -37,9 +36,6 @@ private slots:
     void indexIncDecEmpty();
     void indexIncDec();
     void indexIncDec_data();
-
-    void applyFilters();
-    void applyFilters_data();
 
     void letterJump();
 
@@ -184,129 +180,6 @@ void test_GameList::indexIncDec()
 
     QMetaObject::invokeMethod(&list, metacall.toStdString().c_str(), Qt::DirectConnection);
     QCOMPARE(list.property("index").toInt(), expected_idx);
-}
-
-void test_GameList::applyFilters()
-{
-    std::vector<modeldata::Game> modeldata;
-    modeldata.emplace_back(QFileInfo("game0"));
-        modeldata.back().title = "not-fav, 1P";
-        modeldata.back().is_favorite = false;
-        modeldata.back().player_count = 1;
-    modeldata.emplace_back(QFileInfo("game1"));
-        modeldata.back().title = "not-fav, 2P";
-        modeldata.back().is_favorite = false;
-        modeldata.back().player_count = 2;
-    modeldata.emplace_back(QFileInfo("game2"));
-        modeldata.back().title = "fav, 1P";
-        modeldata.back().is_favorite = true;
-        modeldata.back().player_count = 1;
-    modeldata.emplace_back(QFileInfo("game3"));
-        modeldata.back().title = "My Game";
-        modeldata.back().is_favorite = false;
-        modeldata.back().player_count = 1;
-    modeldata.emplace_back(QFileInfo("game4"));
-        modeldata.back().title = "Another Game";
-        modeldata.back().is_favorite = true;
-        modeldata.back().player_count = 1;
-
-    QVector<model::Game*> games;
-    for (modeldata::Game& game : modeldata)
-        games.append(new model::Game(std::move(game), this));
-
-    model::GameList gamelist;
-    gamelist.setModelData(std::move(games));
-
-    QSignalSpy triggered(&gamelist, &model::GameList::filteredGamesChanged);
-    QVERIFY(triggered.isValid());
-    QVERIFY(triggered.count() == 0);
-
-    // just to make sure
-    QVERIFY(gamelist.property("count").toInt() == 5);
-    QVERIFY(gamelist.property("countAll").toInt() == 5);
-
-
-    QFETCH(model::Filters*, filters);
-    QFETCH(int, matching_games_cnt);
-
-    gamelist.applyFilters(*filters);
-    QCOMPARE(gamelist.property("count").toInt(), matching_games_cnt);
-    QCOMPARE(gamelist.property("countAll").toInt(), 5);
-
-    // if the filter didn't change the list of games, there should be
-    // no new trigger -- we only check the count here for simplicity
-    if (matching_games_cnt == gamelist.allGames().count())
-        QCOMPARE(triggered.count(), 0);
-    else
-        QCOMPARE(triggered.count(), 1);
-
-    // turning off the filters restores the game count
-    filters->setProperty("gameTitle", QString());
-    for (model::Filter* const filter : filters->elements())
-        filter->setProperty("enabled", false);
-
-    gamelist.applyFilters(*filters);
-    QCOMPARE(gamelist.property("count").toInt(), 5);
-    QCOMPARE(gamelist.property("countAll").toInt(), 5);
-}
-
-void test_GameList::applyFilters_data()
-{
-    QTest::addColumn<model::Filters*>("filters");
-    QTest::addColumn<int>("matching_games_cnt");
-
-    {
-        auto filters = new model::Filters(this);
-
-        QTest::newRow("empty") << filters << 5;
-    }
-    {
-        auto filters = new model::Filters(this);
-        filters->setProperty("gameTitle", "My Game");
-
-        QTest::newRow("full title") << filters << 1;
-    }
-    {
-        auto filters = new model::Filters(this);
-        filters->setProperty("gameTitle", "Game");
-
-        QTest::newRow("partial title") << filters << 2;
-    }
-    // NOTE: inserting a filter outside the Filters ctor
-    // may not update/signal the Qt properties for the change
-    {
-        auto filters = new model::Filters(this);
-        filters->elementsMut().append(new model::Filter("", filters));
-        filters->elements().last()->rulesMut().append(model::FilterRule {
-            QLatin1String("favorite"),
-            model::FilterRuleType::IS_TRUE,
-            QRegularExpression(),
-        });
-        filters->elements().last()->setProperty("enabled", true);
-
-        QTest::newRow("favorite") << filters << 2;
-    }
-    {
-        auto filters = new model::Filters(this);
-
-        filters->elementsMut().append(new model::Filter("", filters));
-        filters->elements().last()->rulesMut().append(model::FilterRule {
-            QLatin1String("title"),
-            model::FilterRuleType::CONTAINS,
-            QRegularExpression("fav"),
-        });
-        filters->elements().last()->setProperty("enabled", true);
-
-        filters->elementsMut().append(new model::Filter("", filters));
-        filters->elements().last()->rulesMut().append(model::FilterRule {
-            QLatin1String("players"),
-            model::FilterRuleType::EQUALS,
-            QRegularExpression("2"),
-        });
-        filters->elements().last()->setProperty("enabled", true);
-
-        QTest::newRow("title filter + players") << filters << 1;
-    }
 }
 
 void test_GameList::letterJump()

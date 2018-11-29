@@ -24,7 +24,6 @@
 #include <QVector>
 
 enum class IndexShiftDirection : unsigned char;
-namespace model { class Filters; }
 
 
 namespace model {
@@ -85,10 +84,7 @@ private:
     QQmlListProperty<Game> getAllGamesProp();
 
 public:
-    // backend-side functions
-
     void clearFilters();
-    void applyFilters(const Filters&);
 
     const QVector<Game*>& filteredGames() const { return m_filtered_games; }
     const QVector<Game*>& allGames() const { return m_all_games; }

@@ -37,9 +37,6 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_providerman, &ProviderManager::secondPhaseComplete,
             &m_internal.meta, &model::Meta::onSecondPhaseCompleted);
 
-    connect(&m_filters, &model::Filters::filtersChanged,
-            this, &ApiObject::onFiltersChanged);
-
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
 
@@ -103,10 +100,4 @@ void ApiObject::onGameFinished()
 void ApiObject::onGameFavoriteChanged()
 {
     m_providerman.onGameFavoriteChanged(m_collections.allGames());
-}
-
-void ApiObject::onFiltersChanged()
-{
-    for (model::Collection* const collection : m_collections.collections())
-        collection->gameListMut().applyFilters(m_filters);
 }

@@ -23,6 +23,7 @@
 #include "Log.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
+#include "model/gaming/Filters.h"
 #include "utils/FolderListModel.h"
 
 #include <QDebug>

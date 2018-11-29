@@ -20,7 +20,6 @@
 #include "model/ApiInternal.h"
 #include "model/gaming/CollectionList.h"
 #include "model/gaming/Collection.h"
-#include "model/gaming/Filters.h"
 #include "model/general/Keys.h"
 #include "providers/ProviderManager.h"
 #include "types/AppCloseType.h"
@@ -47,7 +46,6 @@ class ApiObject : public QObject {
     Q_OBJECT
 
     API_MEMBER(model::ApiInternal, internal)
-    API_MEMBER(model::Filters, filters)
     API_MEMBER(model::Keys, keys)
     API_MEMBER(model::CollectionList, collections)
 
@@ -79,7 +77,6 @@ private slots:
     void onStaticDataLoaded();
 
     void onLaunchRequested(model::Collection*, model::Game*);
-    void onFiltersChanged();
     void onGameFavoriteChanged();
 
 private:
