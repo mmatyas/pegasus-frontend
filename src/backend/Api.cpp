@@ -18,7 +18,6 @@
 #include "Api.h"
 
 #include "LocaleUtils.h"
-#include <QtConcurrent/QtConcurrent>
 
 
 ApiObject::ApiObject(QObject* parent)
@@ -30,13 +29,13 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::localeChanged);
     connect(m_internal.settings.keyEditorPtr(), &model::KeyEditor::keysChanged,
             &m_keys, &model::Keys::refresh_keys);
+
     connect(&m_providerman, &ProviderManager::gameCountChanged,
             &m_internal.meta, &model::Meta::onGameCountUpdate);
     connect(&m_providerman, &ProviderManager::firstPhaseComplete,
             &m_internal.meta, &model::Meta::onFirstPhaseCompleted);
     connect(&m_providerman, &ProviderManager::secondPhaseComplete,
             &m_internal.meta, &model::Meta::onSecondPhaseCompleted);
-
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
 }
@@ -77,15 +76,13 @@ void ApiObject::onGameLaunchRequested()
 void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game);
-
     m_providerman.onGameLaunched(m_launch_game);
 }
 
 void ApiObject::onGameLaunchError()
 {
-    Q_ASSERT(m_launch_game);
-
     // TODO: show error
+    Q_ASSERT(m_launch_game);
     m_launch_game = nullptr;
 }
 
@@ -94,7 +91,6 @@ void ApiObject::onGameFinished()
     Q_ASSERT(m_launch_game);
 
     m_providerman.onGameFinished(m_launch_game);
-
     m_launch_game = nullptr;
 }
 

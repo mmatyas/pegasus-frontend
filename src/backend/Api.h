@@ -22,9 +22,7 @@
 #include "model/gaming/Collection.h"
 #include "model/general/Keys.h"
 #include "providers/ProviderManager.h"
-#include "types/AppCloseType.h"
 
-#include <QFutureWatcher>
 #include <QObject>
 #include <QQmlListProperty>
 
