@@ -20,7 +20,6 @@
 #include "model/ListPropertyFn.h"
 #include "LocaleUtils.h"
 #include "model/gaming/Collection.h"
-#include "utils/IndexShifter.h"
 
 #include <QDebug>
 
@@ -73,31 +72,6 @@ void CollectionList::setIndex(int idx)
 
     m_collection_idx = idx;
     emit currentChanged();
-}
-
-void CollectionList::shiftIndex(IndexShiftDirection dir)
-{
-    if (m_collections.isEmpty())
-        return;
-
-    const int target_idx = shifterFn(dir)(m_collection_idx, m_collections.count());
-    setIndex(target_idx);
-}
-
-void CollectionList::incrementIndex() {
-    shiftIndex(IndexShiftDirection::INCREMENT);
-}
-
-void CollectionList::decrementIndex() {
-    shiftIndex(IndexShiftDirection::DECREMENT);
-}
-
-void CollectionList::incrementIndexNoWrap() {
-    shiftIndex(IndexShiftDirection::INCREMENT_NOWRAP);
-}
-
-void CollectionList::decrementIndexNoWrap() {
-    shiftIndex(IndexShiftDirection::DECREMENT_NOWRAP);
 }
 
 QQmlListProperty<Collection> CollectionList::elementsProp()

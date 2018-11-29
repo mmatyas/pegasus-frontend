@@ -23,8 +23,6 @@
 #include <QQmlListProperty>
 #include <QVector>
 
-enum class IndexShiftDirection : unsigned char;
-
 
 namespace model {
 
@@ -53,11 +51,6 @@ public:
     Collection* current() const;
     const QVector<Collection*>& collections() const { return m_collections; }
 
-    Q_INVOKABLE void incrementIndex();
-    Q_INVOKABLE void decrementIndex();
-    Q_INVOKABLE void incrementIndexNoWrap();
-    Q_INVOKABLE void decrementIndexNoWrap();
-
 signals:
     void modelChanged();
     void currentChanged();
@@ -72,8 +65,6 @@ private:
 private:
     QVector<Collection*> m_collections;
     int m_collection_idx;
-
-    void shiftIndex(IndexShiftDirection);
 };
 
 } // namespace model

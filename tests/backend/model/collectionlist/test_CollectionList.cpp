@@ -33,10 +33,6 @@ private slots:
     void indexChange();
     void indexChange_data();
 
-    void indexIncDecEmpty();
-    void indexIncDec();
-    void indexIncDec_data();
-
 private:
     const model::Collection* const null_coll = static_cast<model::Collection*>(nullptr); // Qt 5.7
 };
@@ -133,63 +129,6 @@ void test_CollectionList::indexChange_data()
     QTest::newRow("undefined (-1)") << -1 << -1;
     QTest::newRow("out of range (pos)") << 999 << 0;
     QTest::newRow("out of range (neg)") << -999 << 0;
-}
-
-void test_CollectionList::indexIncDecEmpty()
-{
-    model::CollectionList list;
-    QVERIFY(list.property("index").toInt() == -1);
-
-    // increment empty -> stays -1
-    QMetaObject::invokeMethod(&list, "incrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.property("index").toInt(), -1);
-
-    // decrement empty -> stays -1
-    QMetaObject::invokeMethod(&list, "decrementIndex", Qt::DirectConnection);
-    QCOMPARE(list.property("index").toInt(), -1);
-}
-
-void test_CollectionList::indexIncDec_data()
-{
-    QTest::addColumn<int>("start_idx");
-    QTest::addColumn<QString>("metacall");
-    QTest::addColumn<int>("expected_idx");
-
-    QTest::newRow("increment regular") << 0 << "incrementIndex" << 1;
-    QTest::newRow("increment last") << 1 << "incrementIndex" << 0;
-    QTest::newRow("decrement regular") << 1 << "decrementIndex" << 0;
-    QTest::newRow("decrement first") << 0 << "decrementIndex" << 1;
-    QTest::newRow("increment regular, no wrap") << 0 << "incrementIndexNoWrap" << 1;
-    QTest::newRow("increment last, no wrap") << 1 << "incrementIndexNoWrap" << 1;
-    QTest::newRow("decrement regular, no wrap") << 1 << "decrementIndexNoWrap" << 0;
-    QTest::newRow("decrement first, no wrap") << 0 << "decrementIndexNoWrap" << 0;
-}
-
-void test_CollectionList::indexIncDec()
-{
-    QVector<model::Collection*> collections = {
-        new model::Collection(modeldata::Collection("coll1")),
-        new model::Collection(modeldata::Collection("coll2")),
-    };
-    QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo("dummy1"))),
-        new model::Game(modeldata::Game(QFileInfo("dummy2"))),
-    };
-    collections.at(0)->setGameList({ games.at(0) });
-    collections.at(1)->setGameList({ games.at(1) });
-
-    model::CollectionList list;
-    list.setModelData(std::move(collections));
-
-    QFETCH(int, start_idx);
-    QFETCH(QString, metacall);
-    QFETCH(int, expected_idx);
-
-    list.setProperty("index", start_idx);
-    QVERIFY(list.property("index").toInt() == start_idx);
-
-    QMetaObject::invokeMethod(&list, metacall.toStdString().c_str(), Qt::DirectConnection);
-    QCOMPARE(list.property("index").toInt(), expected_idx);
 }
 
 
