@@ -90,5 +90,4 @@ QQmlListProperty<model::Key> Keys::to_qmlkeys(KeyEvent keytype)
     return {this, &m_keylists.at(keytype), count, at};
 }
 
-
 } // namespace model

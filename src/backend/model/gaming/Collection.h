@@ -48,7 +48,6 @@ public:
 
     GameAssets* defaultAssetsPtr() { return &m_default_assets; }
 
-private:
     const QString& name() const { return m_collection.name(); }
     const QString& shortName() const { return m_collection.shortName(); }
     const QString& summary() const { return m_collection.summary; }

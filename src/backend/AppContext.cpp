@@ -61,7 +61,6 @@ void register_api_classes()
     const QString error_msg = tr_log("Sorry, you cannot create this type in QML.");
 
     qmlRegisterUncreatableType<model::Collection>(API_URI, 0, 7, "Collection", error_msg);
-    qmlRegisterUncreatableType<model::CollectionList>(API_URI, 0, 7, "CollectionList", error_msg);
     qmlRegisterUncreatableType<model::Game>(API_URI, 0, 2, "Game", error_msg);
     qmlRegisterUncreatableType<model::GameList>(API_URI, 0, 6, "GameList", error_msg);
     qmlRegisterUncreatableType<model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);

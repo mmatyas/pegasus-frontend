@@ -18,7 +18,6 @@
 #pragma once
 
 #include "model/ApiInternal.h"
-#include "model/gaming/CollectionList.h"
 #include "model/gaming/Collection.h"
 #include "model/general/Keys.h"
 #include "providers/ProviderManager.h"
@@ -45,7 +44,7 @@ class ApiObject : public QObject {
 
     API_MEMBER(model::ApiInternal, internal)
     API_MEMBER(model::Keys, keys)
-    API_MEMBER(model::CollectionList, collections)
+    Q_PROPERTY(QQmlListProperty<model::Collection> collections READ collections NOTIFY collectionsChanged)
 
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
@@ -57,6 +56,8 @@ public:
     void startScanning();
 
 signals:
+    void collectionsChanged();
+
     // game launching
     void launchGame(const model::Game*);
 
@@ -76,7 +77,9 @@ private slots:
     void onGameLaunchRequested();
 
 private:
-    QVector<model::Collection*> m_collections_data;
+    QQmlListProperty<model::Collection> collections();
+
+    QVector<model::Collection*> m_collections;
     QVector<model::Game*> m_all_games_data;
 
     // game launching

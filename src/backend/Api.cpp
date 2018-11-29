@@ -18,6 +18,19 @@
 #include "Api.h"
 
 #include "LocaleUtils.h"
+#include "model/ListPropertyFn.h"
+
+
+namespace {
+void sort_collections(QVector<model::Collection*>& collections)
+{
+    std::sort(collections.begin(), collections.end(),
+        [](const model::Collection* const a, const model::Collection* const b) {
+            return QString::localeAwareCompare(a->name(), b->name()) < 0;
+        }
+    );
+}
+} // namespace
 
 
 ApiObject::ApiObject(QObject* parent)
@@ -40,26 +53,36 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::onStaticDataLoaded);
 }
 
+QQmlListProperty<model::Collection> ApiObject::collections()
+{
+    static constexpr auto count = &listproperty_count<model::Collection>;
+    static constexpr auto at = &listproperty_at<model::Collection>;
+
+    return {this, &m_collections, count, at};
+}
+
 void ApiObject::startScanning()
 {
-    m_providerman.startSearch(m_collections_data, m_all_games_data);
+    m_providerman.startSearch(m_collections, m_all_games_data);
 }
 
 void ApiObject::onStaticDataLoaded()
 {
     qInfo().noquote() << tr_log("%1 games found").arg(m_all_games_data.count());
 
-    m_collections.setModelData(m_collections_data);
+    sort_collections(m_collections);
+    for (model::Collection* const coll : m_collections)
+        coll->setParent(this);
 
     for (model::Game* game : m_all_games_data) {
         game->setParent(this);
-
         connect(game, &model::Game::launchRequested,
                 this, &ApiObject::onGameLaunchRequested);
         connect(game, &model::Game::favoriteChanged,
                 this, &ApiObject::onGameFavoriteChanged);
     }
 
+    emit collectionsChanged();
     m_internal.meta.onUiReady();
 }
 

@@ -72,7 +72,7 @@ Window {
             function getThemeFile() {
                 if (api.internal.meta.isLoading)
                     return "";
-                if (api.collections.count === 0)
+                if (api.collections.length === 0)
                     return "messages/NoGamesError.qml";
 
                 return apiThemePath;
