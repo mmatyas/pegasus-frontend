@@ -44,7 +44,8 @@ class ApiObject : public QObject {
 
     API_MEMBER(model::ApiInternal, internal)
     API_MEMBER(model::Keys, keys)
-    Q_PROPERTY(QQmlListProperty<model::Collection> collections READ collections NOTIFY collectionsChanged)
+    Q_PROPERTY(QQmlListProperty<model::Collection> collections READ collections NOTIFY modelChanged)
+    Q_PROPERTY(QQmlListProperty<model::Game> allGames READ allGames NOTIFY modelChanged)
 
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
@@ -56,7 +57,7 @@ public:
     void startScanning();
 
 signals:
-    void collectionsChanged();
+    void modelChanged();
 
     // game launching
     void launchGame(const model::Game*);
@@ -78,9 +79,10 @@ private slots:
 
 private:
     QQmlListProperty<model::Collection> collections();
+    QQmlListProperty<model::Game> allGames();
 
     QVector<model::Collection*> m_collections;
-    QVector<model::Game*> m_all_games_data;
+    QVector<model::Game*> m_all_games;
 
     // game launching
     model::Game* m_launch_game;

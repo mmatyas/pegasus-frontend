@@ -30,6 +30,14 @@ void sort_collections(QVector<model::Collection*>& collections)
         }
     );
 }
+void sort_games(QVector<model::Game*>& games)
+{
+    std::sort(games.begin(), games.end(),
+        [](const model::Game* const a, const model::Game* const b) {
+            return QString::localeAwareCompare(a->title(), b->title()) < 0;
+        }
+    );
+}
 } // namespace
 
 
@@ -61,20 +69,29 @@ QQmlListProperty<model::Collection> ApiObject::collections()
     return {this, &m_collections, count, at};
 }
 
+QQmlListProperty<model::Game> ApiObject::allGames()
+{
+    static constexpr auto count = &listproperty_count<model::Game>;
+    static constexpr auto at = &listproperty_at<model::Game>;
+
+    return {this, &m_all_games, count, at};
+}
+
 void ApiObject::startScanning()
 {
-    m_providerman.startSearch(m_collections, m_all_games_data);
+    m_providerman.startSearch(m_collections, m_all_games);
 }
 
 void ApiObject::onStaticDataLoaded()
 {
-    qInfo().noquote() << tr_log("%1 games found").arg(m_all_games_data.count());
+    qInfo().noquote() << tr_log("%1 games found").arg(m_all_games.count());
 
     sort_collections(m_collections);
     for (model::Collection* const coll : m_collections)
         coll->setParent(this);
 
-    for (model::Game* game : m_all_games_data) {
+    sort_games(m_all_games);
+    for (model::Game* game : m_all_games) {
         game->setParent(this);
         connect(game, &model::Game::launchRequested,
                 this, &ApiObject::onGameLaunchRequested);
@@ -82,7 +99,7 @@ void ApiObject::onStaticDataLoaded()
                 this, &ApiObject::onGameFavoriteChanged);
     }
 
-    emit collectionsChanged();
+    emit modelChanged();
     m_internal.meta.onUiReady();
 }
 
@@ -119,5 +136,5 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_providerman.onGameFavoriteChanged(m_all_games_data);
+    m_providerman.onGameFavoriteChanged(m_all_games);
 }
