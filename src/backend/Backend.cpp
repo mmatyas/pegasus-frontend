@@ -94,12 +94,12 @@ Backend::Backend()
                      &frontend, &FrontendLayer::rebuild);
 
 
-    // special commands
-    QObject::connect(&api, &ApiObject::qmlClearCacheRequested,
+    // partial QML reload
+    QObject::connect(api.internal().metaPtr(), &model::Meta::qmlClearCacheRequested,
                      &frontend, &FrontendLayer::clearCache);
 
-    // close the app on quit request
-    QObject::connect(&api, &ApiObject::appCloseRequested, on_app_close);
+    // quit/reboot/shutdown request
+    QObject::connect(api.internal().systemPtr(), &model::System::appCloseRequested, on_app_close);
 }
 
 void Backend::start()
