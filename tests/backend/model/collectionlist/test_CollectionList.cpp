@@ -67,8 +67,7 @@ void test_CollectionList::addPlatform()
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
     QVERIFY(spy_current.isValid());
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.setModelData(std::move(collections), std::move(games));
+    list.setModelData(std::move(collections));
 
 
     QCOMPARE(list.property("current").value<model::Collection*>(), list.collections().first());
@@ -95,8 +94,7 @@ void test_CollectionList::indexChange()
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
     QVERIFY(spy_current.isValid());
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.setModelData(std::move(collections), std::move(games));
+    list.setModelData(std::move(collections));
 
     QVERIFY(list.property("count").toInt() == 2);
     QVERIFY(list.property("index").toInt() == 0);
@@ -181,8 +179,7 @@ void test_CollectionList::indexIncDec()
     collections.at(1)->setGameList({ games.at(1) });
 
     model::CollectionList list;
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
-    list.setModelData(std::move(collections), std::move(games));
+    list.setModelData(std::move(collections));
 
     QFETCH(int, start_idx);
     QFETCH(QString, metacall);

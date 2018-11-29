@@ -17,6 +17,7 @@
 
 #include "Api.h"
 
+#include "LocaleUtils.h"
 #include <QtConcurrent/QtConcurrent>
 
 
@@ -47,9 +48,13 @@ void ApiObject::startScanning()
 
 void ApiObject::onStaticDataLoaded()
 {
-    m_collections.setModelData(m_collections_data, m_all_games_data);
+    qInfo().noquote() << tr_log("%1 games found").arg(m_all_games_data.count());
+
+    m_collections.setModelData(m_collections_data);
 
     for (model::Game* game : m_all_games_data) {
+        game->setParent(this);
+
         connect(game, &model::Game::launchRequested,
                 this, &ApiObject::onGameLaunchRequested);
         connect(game, &model::Game::favoriteChanged,

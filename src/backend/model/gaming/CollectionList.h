@@ -48,11 +48,10 @@ class CollectionList : public QObject {
 public:
     explicit CollectionList(QObject* parent = nullptr);
 
-    void setModelData(const QVector<Collection*>&, const QVector<Game*>&);
+    void setModelData(const QVector<Collection*>&);
 
     Collection* current() const;
     const QVector<Collection*>& collections() const { return m_collections; }
-    const QVector<Game*>& allGames() const { return m_all_games; }
 
     Q_INVOKABLE void incrementIndex();
     Q_INVOKABLE void decrementIndex();
@@ -75,8 +74,6 @@ private:
     int m_collection_idx;
 
     void shiftIndex(IndexShiftDirection);
-
-    QVector<Game*> m_all_games;
 };
 
 } // namespace model
