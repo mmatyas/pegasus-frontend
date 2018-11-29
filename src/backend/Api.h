@@ -30,6 +30,15 @@
 #include <QQmlListProperty>
 
 
+#define API_MEMBER(type, name) \
+    public: \
+        type* name##Ptr() { return &m_##name; } \
+        type& name() { return m_##name; } \
+    private: \
+        type m_##name; \
+        Q_PROPERTY(type* name READ name##Ptr CONSTANT)
+
+
 /// Provides data access for QML
 ///
 /// Provides an API for the frontend layer, to allow accessing every public
@@ -39,10 +48,10 @@ class ApiObject : public QObject {
 
     // subcomponents
 
-    Q_PROPERTY(model::ApiInternal* internal READ internal CONSTANT)
-    Q_PROPERTY(model::Filters* filters READ filters CONSTANT)
-    Q_PROPERTY(model::Keys* keys READ keys CONSTANT)
-    Q_PROPERTY(model::CollectionList* collections READ collections CONSTANT)
+    API_MEMBER(model::ApiInternal, internal)
+    API_MEMBER(model::Filters, filters)
+    API_MEMBER(model::Keys, keys)
+    API_MEMBER(model::CollectionList, collections)
 
     // shortcuts
 
@@ -63,12 +72,6 @@ public:
     void startScanning();
 
 public:
-    // subcomponents
-    model::ApiInternal* internal() { return &m_internal; }
-    model::Filters* filters() { return &m_filters; }
-    model::Keys* keys() { return &m_keys; }
-    model::CollectionList* collections() { return &m_collections; }
-
     // shortcuts
     model::Collection* currentCollection() const { return m_collections.current(); }
     model::Game* currentGame() const {
@@ -108,11 +111,6 @@ private slots:
     void onGameFavoriteChanged();
 
 private:
-    model::ApiInternal m_internal;
-    model::Filters m_filters;
-    model::Keys m_keys;
-    model::CollectionList m_collections;
-
     // game launching
     model::Collection* m_launch_collection;
     model::Game* m_launch_game;
