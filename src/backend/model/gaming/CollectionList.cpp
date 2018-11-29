@@ -108,7 +108,7 @@ QQmlListProperty<Collection> CollectionList::elementsProp()
     return {this, &m_collections, count, at};
 }
 
-void CollectionList::setModelData(QVector<Collection*>&& collections, QVector<Game*>&& games)
+void CollectionList::setModelData(const QVector<Collection*>& collections, const QVector<Game*>& games)
 {
     Q_ASSERT(m_collections.isEmpty());
     Q_ASSERT(m_collection_idx == -1);
@@ -119,8 +119,8 @@ void CollectionList::setModelData(QVector<Collection*>&& collections, QVector<Ga
     for (Game* const game : m_all_games)
         game->setParent(this);
 
-    sort_collections(collections);
-    m_collections = std::move(collections);
+    m_collections = collections;
+    sort_collections(m_collections);
 
     for (Collection* const coll : m_collections) {
         coll->setParent(this);

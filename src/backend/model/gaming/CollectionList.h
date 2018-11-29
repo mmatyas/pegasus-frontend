@@ -48,7 +48,7 @@ class CollectionList : public QObject {
 public:
     explicit CollectionList(QObject* parent = nullptr);
 
-    void setModelData(QVector<Collection*>&&, QVector<Game*>&&);
+    void setModelData(const QVector<Collection*>&, const QVector<Game*>&);
 
     Collection* current() const;
     const QVector<Collection*>& collections() const { return m_collections; }

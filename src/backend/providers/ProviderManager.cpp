@@ -159,9 +159,12 @@ ProviderManager::ProviderManager(QObject* parent)
     }
 }
 
-void ProviderManager::startSearch()
+void ProviderManager::startSearch(QVector<model::Collection*>& out_collections,
+                                  QVector<model::Game*>& out_games)
 {
-    m_init_seq = QtConcurrent::run([this]{
+    Q_ASSERT(!m_init_seq.isRunning());
+
+    m_init_seq = QtConcurrent::run([this, &out_collections, &out_games]{
         HashMap<QString, modeldata::Game> games;
         HashMap<QString, modeldata::Collection> collections;
         HashMap<QString, std::vector<QString>> collection_childs;
@@ -178,18 +181,16 @@ void ProviderManager::startSearch()
         emit secondPhaseComplete(timer.restart());
 
 
-        QVector<model::Collection*> collection_vec;
-        QVector<model::Game*> game_vec;
         HashMap<QString, model::Game*> modelgame_map;
 
         build_ui_layer(games, collections, collection_childs,
-                       game_vec, collection_vec, modelgame_map);
-        move_qobjs_to_thread(game_vec, collection_vec, parent()->thread());
-        emit staticDataReady(collection_vec, game_vec);
+                       out_games, out_collections, modelgame_map);
+        move_qobjs_to_thread(out_games, out_collections, parent()->thread());
+        emit staticDataReady();
 
 
         for (const auto& provider : m_providers)
-            provider->findDynamicData(game_vec, collection_vec, modelgame_map);
+            provider->findDynamicData(out_games, out_collections, modelgame_map);
         emit thirdPhaseComplete(timer.elapsed());
     });
 }

@@ -51,12 +51,12 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::startScanning()
 {
-    m_providerman.startSearch();
+    m_providerman.startSearch(m_collections_data, m_all_games_data);
 }
 
-void ApiObject::onStaticDataLoaded(QVector<model::Collection*> collections, QVector<model::Game*> games)
+void ApiObject::onStaticDataLoaded()
 {
-    m_collections.setModelData(std::move(collections), std::move(games));
+    m_collections.setModelData(m_collections_data, m_all_games_data);
     m_internal.meta.onUiReady();
 }
 

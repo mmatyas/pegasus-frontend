@@ -35,7 +35,7 @@ public:
 
     size_t providerCount() const { return m_providers.size(); }
 
-    void startSearch();
+    void startSearch(QVector<model::Collection*>&, QVector<model::Game*>&);
     void onGameLaunched(model::Collection* const, model::Game* const);
     void onGameFinished(model::Collection* const, model::Game* const);
     void onGameFavoriteChanged(const QVector<model::Game*>&);
@@ -46,7 +46,7 @@ signals:
 
     void firstPhaseComplete(qint64);
     void secondPhaseComplete(qint64);
-    void staticDataReady(QVector<model::Collection*>, QVector<model::Game*>);
+    void staticDataReady();
     void thirdPhaseComplete(qint64);
 
 private:

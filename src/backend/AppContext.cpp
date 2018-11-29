@@ -75,10 +75,6 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
     qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
 
-    // backend classes
-    qRegisterMetaType<QVector<model::Collection*>>();
-    qRegisterMetaType<QVector<model::Game*>>();
-
     // QML utilities
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
 }

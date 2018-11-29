@@ -76,13 +76,16 @@ public slots:
 private slots:
     // internal communication
 
-    void onStaticDataLoaded(QVector<model::Collection*>, QVector<model::Game*>);
+    void onStaticDataLoaded();
 
     void onLaunchRequested(model::Collection*, model::Game*);
     void onFiltersChanged();
     void onGameFavoriteChanged();
 
 private:
+    QVector<model::Collection*> m_collections_data;
+    QVector<model::Game*> m_all_games_data;
+
     // game launching
     model::Collection* m_launch_collection;
     model::Game* m_launch_game;
