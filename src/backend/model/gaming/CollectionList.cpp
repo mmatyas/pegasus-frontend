@@ -122,14 +122,8 @@ void CollectionList::setModelData(const QVector<Collection*>& collections, const
     m_collections = collections;
     sort_collections(m_collections);
 
-    for (Collection* const coll : m_collections) {
+    for (Collection* const coll : m_collections)
         coll->setParent(this);
-
-        connect(coll, &Collection::gameLaunchRequested,
-                this, &CollectionList::gameLaunchRequested);
-        connect(coll, &Collection::gameFavoriteChanged,
-                this, &CollectionList::gameFavoriteChanged);
-    }
 
     if (!m_collections.isEmpty()) {
         setIndex(0);

@@ -60,7 +60,7 @@ public:
 
 signals:
     // game launching
-    void launchGame(const model::Collection*, const model::Game*);
+    void launchGame(const model::Game*);
 
     // triggers translation update
     void localeChanged();
@@ -73,18 +73,15 @@ public slots:
 
 private slots:
     // internal communication
-
     void onStaticDataLoaded();
-
-    void onLaunchRequested(model::Collection*, model::Game*);
     void onGameFavoriteChanged();
+    void onGameLaunchRequested();
 
 private:
     QVector<model::Collection*> m_collections_data;
     QVector<model::Game*> m_all_games_data;
 
     // game launching
-    model::Collection* m_launch_collection;
     model::Game* m_launch_game;
 
     // initialization

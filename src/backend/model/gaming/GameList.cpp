@@ -58,13 +58,6 @@ void GameList::setModelData(QVector<Game*> games)
     sort_game_vec(games);
     m_all_games = std::move(games);
 
-    for (Game* const game : qAsConst(m_all_games)) {
-        connect(game, &Game::launchRequested,
-                this, &GameList::gameLaunchRequested);
-        connect(game, &Game::favoriteChanged,
-                this, &GameList::gameFavoriteChanged);
-    }
-
     clearFilters();
 }
 

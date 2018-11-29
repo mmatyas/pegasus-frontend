@@ -29,12 +29,7 @@ Collection::Collection(modeldata::Collection collection, QObject* parent)
     , m_collection(std::move(collection))
     , m_gamelist(this)
     , m_default_assets(&m_collection.default_assets, this)
-{
-    connect(&m_gamelist, &GameList::gameLaunchRequested,
-            this, [this](model::Game* game){ emit gameLaunchRequested(this, game); });
-    connect(&m_gamelist, &GameList::gameFavoriteChanged,
-            this, &Collection::gameFavoriteChanged);
-}
+{}
 
 void Collection::setGameList(QVector<Game*> games)
 {

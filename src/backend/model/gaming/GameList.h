@@ -70,9 +70,6 @@ signals:
     void filteredGamesChanged();
     void allGamesChanged();
 
-    void gameLaunchRequested(model::Game*);
-    void gameFavoriteChanged();
-
 private:
     int filteredCount() const { return m_filtered_games.count(); }
     int allCount() const { return m_all_games.count(); }

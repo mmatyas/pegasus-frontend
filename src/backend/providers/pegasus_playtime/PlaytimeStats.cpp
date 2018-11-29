@@ -19,7 +19,6 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 
 #include <QDebug>
@@ -177,12 +176,6 @@ void update_modelgame(model::Game* const game, const QDateTime& start_time, cons
     game->updatePlayStats(duration, start_time.addSecs(duration));
 }
 
-
-bool collection_is_steam(const model::Collection* const collection)
-{
-    return collection->data().name() == QLatin1String("Steam");
-}
-
 } // namespace
 
 
@@ -256,29 +249,16 @@ void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
     }
 }
 
-void PlaytimeStats::onGameLaunched(model::Collection* const collection,
-                                   model::Game* const game)
+void PlaytimeStats::onGameLaunched(model::Game* const game)
 {
     Q_ASSERT(game);
-    Q_ASSERT(collection);
-
-    // Steam saves play time in its own files
-    if (collection_is_steam(collection))
-        return;
-
     m_last_launch_time = QDateTime::currentDateTimeUtc();
 }
 
-void PlaytimeStats::onGameFinished(model::Collection* const collection,
-                                   model::Game* const game)
+void PlaytimeStats::onGameFinished(model::Game* const game)
 {
     Q_ASSERT(game);
-    Q_ASSERT(collection);
     Q_ASSERT(m_last_launch_time.isValid());
-
-    // again, Steam
-    if (collection_is_steam(collection))
-        return;
 
     QMutexLocker lock(&m_queue_guard);
 

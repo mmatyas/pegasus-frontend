@@ -49,16 +49,11 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , m_process(nullptr)
 {}
 
-void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
-                                        const model::Game* game)
+void ProcessLauncher::onLaunchRequested(const model::Game* game)
 {
     Q_ASSERT(game);
-    // collection can be null!
 
     QString launch_cmd = game->data().launch_cmd;
-    if (launch_cmd.isEmpty() && collection)
-        launch_cmd = collection->data().launchCmd();
-
     if (!launch_cmd.isEmpty())
         format_launch_command(launch_cmd, game->data());
 
@@ -72,8 +67,6 @@ void ProcessLauncher::onLaunchRequested(const model::Collection* collection,
 
 
     QString workdir = game->data().launch_workdir;
-    if (workdir.isEmpty() && collection)
-        workdir = collection->data().launch_workdir;
     if (workdir.isEmpty())
         workdir = game->data().fileinfo().absolutePath();
 

@@ -22,7 +22,6 @@
 
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
-    , m_launch_collection(nullptr)
     , m_launch_game(nullptr)
     , m_providerman(this)
 {
@@ -39,11 +38,6 @@ ApiObject::ApiObject(QObject* parent)
 
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
-
-    connect(&m_collections, &model::CollectionList::gameLaunchRequested,
-            this, &ApiObject::onLaunchRequested);
-    connect(&m_collections, &model::CollectionList::gameFavoriteChanged,
-            this, &ApiObject::onGameFavoriteChanged);
 }
 
 void ApiObject::startScanning()
@@ -54,50 +48,52 @@ void ApiObject::startScanning()
 void ApiObject::onStaticDataLoaded()
 {
     m_collections.setModelData(m_collections_data, m_all_games_data);
+
+    for (model::Game* game : m_all_games_data) {
+        connect(game, &model::Game::launchRequested,
+                this, &ApiObject::onGameLaunchRequested);
+        connect(game, &model::Game::favoriteChanged,
+                this, &ApiObject::onGameFavoriteChanged);
+    }
+
     m_internal.meta.onUiReady();
 }
 
-void ApiObject::onLaunchRequested(model::Collection* coll, model::Game* game)
+void ApiObject::onGameLaunchRequested()
 {
     // avoid launch spamming
     if (m_launch_game)
         return;
 
-    m_launch_collection = coll;
-    m_launch_game = game;
-
-    emit launchGame(m_launch_collection, m_launch_game);
+    m_launch_game = static_cast<model::Game*>(QObject::sender());
+    emit launchGame(m_launch_game);
 }
 
 void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game);
 
-    m_providerman.onGameLaunched(m_launch_collection, m_launch_game);
+    m_providerman.onGameLaunched(m_launch_game);
 }
 
 void ApiObject::onGameLaunchError()
 {
-    Q_ASSERT(m_launch_collection);
     Q_ASSERT(m_launch_game);
 
     // TODO: show error
-    m_launch_collection = nullptr;
     m_launch_game = nullptr;
 }
 
 void ApiObject::onGameFinished()
 {
-    Q_ASSERT(m_launch_collection);
     Q_ASSERT(m_launch_game);
 
-    m_providerman.onGameFinished(m_launch_collection, m_launch_game);
+    m_providerman.onGameFinished(m_launch_game);
 
-    m_launch_collection = nullptr;
     m_launch_game = nullptr;
 }
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_providerman.onGameFavoriteChanged(m_collections.allGames());
+    m_providerman.onGameFavoriteChanged(m_all_games_data);
 }

@@ -60,8 +60,8 @@ public:
 
     // events
     virtual void onGameFavoriteChanged(const QVector<model::Game*>&) {}
-    virtual void onGameLaunched(model::Collection* const, model::Game* const) {}
-    virtual void onGameFinished(model::Collection* const, model::Game* const) {}
+    virtual void onGameLaunched(model::Game* const) {}
+    virtual void onGameFinished(model::Game* const) {}
 
 signals:
     void gameCountChanged(int);

@@ -36,10 +36,8 @@ public:
     void findDynamicData(const QVector<model::Game*>&,
                          const QVector<model::Collection*>&,
                          const HashMap<QString, model::Game*>&) final;
-    void onGameLaunched(model::Collection* const,
-                        model::Game* const) final;
-    void onGameFinished(model::Collection* const,
-                        model::Game* const) final;
+    void onGameLaunched(model::Game* const) final;
+    void onGameFinished(model::Game* const) final;
 
 signals:
     void startedWriting();

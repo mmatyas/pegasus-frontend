@@ -101,8 +101,8 @@ void test_Playtime::write()
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
-    playtime.onGameLaunched(collections.at(0), games.at(0));
-    playtime.onGameFinished(collections.at(0), games.at(0));
+    playtime.onGameLaunched(games.at(0));
+    playtime.onGameFinished(games.at(0));
 
     QVERIFY(spy_start.count() || spy_start.wait());
     QVERIFY(spy_end.count() || spy_end.wait());
@@ -130,14 +130,14 @@ void test_Playtime::write_queue()
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
 
-    playtime.onGameLaunched(collections.at(0), games.at(0));
-    playtime.onGameFinished(collections.at(0), games.at(0));
+    playtime.onGameLaunched(games.at(0));
+    playtime.onGameFinished(games.at(0));
 
-    playtime.onGameLaunched(collections.at(0), games.at(0));
-    playtime.onGameFinished(collections.at(0), games.at(0));
+    playtime.onGameLaunched(games.at(0));
+    playtime.onGameFinished(games.at(0));
 
-    playtime.onGameLaunched(collections.at(0), games.at(0));
-    playtime.onGameFinished(collections.at(0), games.at(0));
+    playtime.onGameLaunched(games.at(0));
+    playtime.onGameFinished(games.at(0));
 
 
     QVERIFY(spy_start.count() || spy_start.wait());

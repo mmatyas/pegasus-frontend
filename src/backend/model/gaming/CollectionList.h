@@ -62,8 +62,6 @@ public:
 signals:
     void modelChanged();
     void currentChanged();
-    void gameLaunchRequested(model::Collection*, model::Game*);
-    void gameFavoriteChanged();
 
 private:
     int count() const { return m_collections.count(); }

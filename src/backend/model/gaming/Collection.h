@@ -48,10 +48,6 @@ public:
 
     GameAssets* defaultAssetsPtr() { return &m_default_assets; }
 
-signals:
-    void gameLaunchRequested(model::Collection*, model::Game*);
-    void gameFavoriteChanged();
-
 private:
     const QString& name() const { return m_collection.name(); }
     const QString& shortName() const { return m_collection.shortName(); }
