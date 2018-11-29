@@ -43,10 +43,6 @@ ApiObject::ApiObject(QObject* parent)
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
 
-    connect(&m_collections, &model::CollectionList::currentChanged,
-            this, &ApiObject::currentCollectionChanged);
-    connect(&m_collections, &model::CollectionList::currentGameChanged,
-            this, &ApiObject::currentGameChanged);
     connect(&m_collections, &model::CollectionList::gameLaunchRequested,
             this, &ApiObject::onLaunchRequested);
     connect(&m_collections, &model::CollectionList::gameFavoriteChanged,

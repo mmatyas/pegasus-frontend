@@ -25,7 +25,6 @@ class test_Collection : public QObject {
 
 private slots:
     void names();
-    void gameChanged();
 };
 
 void test_Collection::names()
@@ -39,27 +38,6 @@ void test_Collection::names()
     // the properties are read-only and should be called only after the initial setup
     QCOMPARE(collection.property("shortName").toString(), QStringLiteral("abbrev"));
     QCOMPARE(collection.property("name").toString(), QStringLiteral("myname"));
-}
-
-void test_Collection::gameChanged()
-{
-    modeldata::Collection modeldata("dummy");
-    model::Collection collection(std::move(modeldata));
-
-    QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo("dummy1")), this),
-        new model::Game(modeldata::Game(QFileInfo("dummy2")), this),
-    };
-    collection.setGameList(std::move(games));
-
-
-    QSignalSpy triggered(&collection, &model::Collection::currentGameChanged);
-    QVERIFY(triggered.isValid());
-    QVERIFY(collection.gameListMut().property("index").toInt() == 0);
-    QCOMPARE(triggered.count(), 0);
-
-    collection.gameListMut().setProperty("index", 1);
-    QCOMPARE(triggered.count(), 1);
 }
 
 

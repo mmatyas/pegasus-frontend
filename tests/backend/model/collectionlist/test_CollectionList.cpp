@@ -66,9 +66,7 @@ void test_CollectionList::addPlatform()
 
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
-    QSignalSpy spy_game(&list, &model::CollectionList::currentGameChanged);
     QVERIFY(spy_current.isValid());
-    QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
     list.setModelData(std::move(collections), std::move(games));
 
@@ -77,7 +75,6 @@ void test_CollectionList::addPlatform()
     QCOMPARE(list.property("index").toInt(), 0);
     QCOMPARE(list.property("count").toInt(), 2);
     QCOMPARE(spy_current.count(), 1);
-    QCOMPARE(spy_game.count(), 1);
 }
 
 void test_CollectionList::indexChange()
@@ -97,16 +94,13 @@ void test_CollectionList::indexChange()
 
     model::CollectionList list;
     QSignalSpy spy_current(&list, &model::CollectionList::currentChanged);
-    QSignalSpy spy_game(&list, &model::CollectionList::currentGameChanged);
     QVERIFY(spy_current.isValid());
-    QVERIFY(spy_game.isValid());
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("\\d+ games found"));
     list.setModelData(std::move(collections), std::move(games));
 
     QVERIFY(list.property("count").toInt() == 2);
     QVERIFY(list.property("index").toInt() == 0);
     QVERIFY(spy_current.count() == 1);
-    QVERIFY(spy_game.count() == 1);
 
     // test
 
@@ -119,7 +113,6 @@ void test_CollectionList::indexChange()
 
     QCOMPARE(list.property("index").toInt(), expected);
     QCOMPARE(spy_current.count(), expected == 0 ? 1 : 2);
-    QCOMPARE(spy_game.count(), expected == 0 ? 1 : 2);
 
     // check pointer
     auto current_ptr = list.property("current").value<model::Collection*>();

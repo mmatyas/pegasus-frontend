@@ -46,21 +46,10 @@
 class ApiObject : public QObject {
     Q_OBJECT
 
-    // subcomponents
-
     API_MEMBER(model::ApiInternal, internal)
     API_MEMBER(model::Filters, filters)
     API_MEMBER(model::Keys, keys)
     API_MEMBER(model::CollectionList, collections)
-
-    // shortcuts
-
-    Q_PROPERTY(model::Collection* currentCollection
-               READ currentCollection
-               NOTIFY currentCollectionChanged)
-    Q_PROPERTY(model::Game* currentGame
-               READ currentGame
-               NOTIFY currentGameChanged)
 
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
@@ -71,23 +60,12 @@ public:
     // scanning
     void startScanning();
 
-public:
-    // shortcuts
-    model::Collection* currentCollection() const { return m_collections.current(); }
-    model::Game* currentGame() const {
-        return currentCollection() ? currentCollection()->gameList().current() : nullptr;
-    }
-
 signals:
     // game launching
     void launchGame(const model::Collection*, const model::Game*);
 
     // triggers translation update
     void localeChanged();
-
-    // shortcuts
-    void currentCollectionChanged();
-    void currentGameChanged();
 
 public slots:
     // game launch communication

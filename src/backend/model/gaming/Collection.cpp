@@ -30,8 +30,6 @@ Collection::Collection(modeldata::Collection collection, QObject* parent)
     , m_gamelist(this)
     , m_default_assets(&m_collection.default_assets, this)
 {
-    connect(&m_gamelist, &GameList::currentChanged,
-            this, &Collection::currentGameChanged);
     connect(&m_gamelist, &GameList::gameLaunchRequested,
             this, [this](model::Game* game){ emit gameLaunchRequested(this, game); });
     connect(&m_gamelist, &GameList::gameFavoriteChanged,

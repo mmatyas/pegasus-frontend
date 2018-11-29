@@ -73,7 +73,6 @@ void CollectionList::setIndex(int idx)
 
     m_collection_idx = idx;
     emit currentChanged();
-    emit currentGameChanged();
 }
 
 void CollectionList::shiftIndex(IndexShiftDirection dir)
@@ -126,8 +125,6 @@ void CollectionList::setModelData(QVector<Collection*>&& collections, QVector<Ga
     for (Collection* const coll : m_collections) {
         coll->setParent(this);
 
-        connect(coll, &Collection::currentGameChanged,
-                this, &CollectionList::onGameChanged);
         connect(coll, &Collection::gameLaunchRequested,
                 this, &CollectionList::gameLaunchRequested);
         connect(coll, &Collection::gameFavoriteChanged,
@@ -138,12 +135,6 @@ void CollectionList::setModelData(QVector<Collection*>&& collections, QVector<Ga
         setIndex(0);
         emit modelChanged();
     }
-}
-
-void CollectionList::onGameChanged()
-{
-    if (sender() == current())
-        emit currentGameChanged();
 }
 
 } // namespace model

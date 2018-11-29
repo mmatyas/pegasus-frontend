@@ -49,7 +49,6 @@ public:
     GameAssets* defaultAssetsPtr() { return &m_default_assets; }
 
 signals:
-    void currentGameChanged();
     void gameLaunchRequested(model::Collection*, model::Game*);
     void gameFavoriteChanged();
 
