@@ -23,8 +23,6 @@
 #include <QQmlListProperty>
 #include <QVector>
 
-enum class IndexShiftDirection : unsigned char;
-
 
 namespace model {
 
@@ -59,10 +57,6 @@ public:
 public:
     Game* current() const;
 
-    Q_INVOKABLE void incrementIndex();
-    Q_INVOKABLE void decrementIndex();
-    Q_INVOKABLE void incrementIndexNoWrap();
-    Q_INVOKABLE void decrementIndexNoWrap();
     Q_INVOKABLE void jumpToLetter(const QString&);
 
 signals:
@@ -91,8 +85,6 @@ private:
 
     QVector<Game*> m_all_games;
     QVector<Game*> m_filtered_games;
-
-    void shiftIndex(IndexShiftDirection);
 };
 
 } // namespace model

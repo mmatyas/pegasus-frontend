@@ -20,7 +20,6 @@
 #include "LocaleUtils.h"
 #include "model/ListPropertyFn.h"
 #include "modeldata/gaming/CollectionData.h"
-#include "utils/IndexShifter.h"
 
 #include <QDebug>
 
@@ -83,31 +82,6 @@ void GameList::setIndex(int idx)
 
     m_game_idx = idx;
     emit currentChanged();
-}
-
-void GameList::shiftIndex(IndexShiftDirection dir)
-{
-    if (m_filtered_games.isEmpty())
-        return;
-
-    const int target_idx = shifterFn(dir)(m_game_idx, m_filtered_games.count());
-    setIndex(target_idx);
-}
-
-void GameList::incrementIndex() {
-    shiftIndex(IndexShiftDirection::INCREMENT);
-}
-
-void GameList::decrementIndex() {
-    shiftIndex(IndexShiftDirection::DECREMENT);
-}
-
-void GameList::incrementIndexNoWrap() {
-    shiftIndex(IndexShiftDirection::INCREMENT_NOWRAP);
-}
-
-void GameList::decrementIndexNoWrap() {
-    shiftIndex(IndexShiftDirection::DECREMENT_NOWRAP);
 }
 
 QQmlListProperty<Game> GameList::getFilteredGamesProp()
