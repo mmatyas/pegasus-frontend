@@ -141,7 +141,7 @@ std::vector<GameFilter> read_collections_file(const HashMap<QString, AttribType>
                 curr_coll->setShortName(val);
                 break;
             case AttribType::LAUNCH_CMD:
-                curr_coll->setLaunchCmd(val);
+                curr_coll->launch_cmd = val;
                 break;
             case AttribType::DIRECTORIES:
                 {
@@ -255,7 +255,7 @@ void process_filter(const GameFilter& filter,
                 const QString game_key = fileinfo.canonicalFilePath();
                 if (!games.count(game_key)) {
                     modeldata::Game game(std::move(fileinfo));
-                    game.launch_cmd = collections.at(filter.parent_collection).launchCmd();
+                    game.launch_cmd = collections.at(filter.parent_collection).launch_cmd;
                     games.emplace(game_key, std::move(game));
                 }
                 collection_childs[filter.parent_collection].emplace_back(game_key);

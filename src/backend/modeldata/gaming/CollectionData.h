@@ -34,23 +34,20 @@ struct Collection {
     explicit Collection(QString name);
     MOVE_ONLY(Collection)
 
-    const QString& name() const { return m_name; }
-    const QString& shortName() const { return m_short_name; }
-    const QString& launchCmd() const { return m_launch_cmd; }
-    void setShortName(const QString&);
-    void setLaunchCmd(QString);
+    QString launch_cmd; // TODO: remove
+    QString launch_workdir; // TODO: remove
 
-    QString launch_workdir;
-
+    const QString name;
     QString summary;
     QString description;
 
-    GameAssets default_assets;
+    GameAssets default_assets; // TODO: remove
+
+    const QString& shortName() const { return m_short_name; }
+    void setShortName(const QString&);
 
 private:
-    QString m_name;
     QString m_short_name;
-    QString m_launch_cmd;
 };
 
 } // namespace modeldata

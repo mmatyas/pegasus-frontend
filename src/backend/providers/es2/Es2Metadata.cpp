@@ -251,11 +251,11 @@ void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
         const modeldata::Collection& collection = pair.second;
 
         // ignore Steam
-        if (collection.name() == QLatin1String("Steam"))
+        if (collection.name == QLatin1String("Steam"))
             continue;
 
         // find the metadata file
-        const QString collection_dir = collection_dirs.at(collection.name());
+        const QString collection_dir = collection_dirs.at(collection.name);
         const QString gamelist_path = findGamelistFile(collection, collection_dir);
         if (gamelist_path.isEmpty())
             continue;

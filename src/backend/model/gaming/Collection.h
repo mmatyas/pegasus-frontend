@@ -44,7 +44,7 @@ public:
     void setGameList(QVector<Game*>);
 
 public:
-    const QString& name() const { return m_collection.name(); }
+    const QString& name() const { return m_collection.name; }
     const QString& shortName() const { return m_collection.shortName(); }
     const QString& summary() const { return m_collection.summary; }
     const QString& description() const { return m_collection.description; }

@@ -54,7 +54,7 @@ struct Game {
     QStringList publishers;
     QStringList genres;
 
-    HashMap<QString, QString> extra;
+    HashMap<QString, QString> extra; // TODO: remove
     GameAssets assets;
 
 private:

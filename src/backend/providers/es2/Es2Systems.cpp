@@ -219,7 +219,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         .replace(QLatin1String("%ROM%"), QLatin1String("\"{file.path}\""))
         .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"));
-    collection.setLaunchCmd(launch_cmd);
+    collection.launch_cmd = launch_cmd;
 
     // add the games
 
@@ -253,7 +253,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
 
             if (!games.count(game_key)) {
                 modeldata::Game game(std::move(fileinfo));
-                game.launch_cmd = collection.launchCmd();
+                game.launch_cmd = collection.launch_cmd;
                 games.emplace(game_key, std::move(game));
             }
             collection_childs[collection_name].emplace_back(game_key);
