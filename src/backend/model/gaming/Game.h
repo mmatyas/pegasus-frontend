@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -70,11 +70,6 @@ class Game : public QObject {
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
 
     Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
-
-    // deprecated
-    Q_PROPERTY(int year READ releaseYear CONSTANT)
-    Q_PROPERTY(int month READ releaseMonth CONSTANT)
-    Q_PROPERTY(int day READ releaseDay CONSTANT)
 
 public:
     explicit Game(modeldata::Game, QObject* parent = nullptr);
