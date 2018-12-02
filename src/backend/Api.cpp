@@ -19,6 +19,9 @@
 
 #include "LocaleUtils.h"
 #include "model/ListPropertyFn.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
+#include "utils/SortGames.h"
 
 
 namespace {
@@ -27,14 +30,6 @@ void sort_collections(QVector<model::Collection*>& collections)
     std::sort(collections.begin(), collections.end(),
         [](const model::Collection* const a, const model::Collection* const b) {
             return QString::localeAwareCompare(a->name(), b->name()) < 0;
-        }
-    );
-}
-void sort_games(QVector<model::Game*>& games)
-{
-    std::sort(games.begin(), games.end(),
-        [](const model::Game* const a, const model::Game* const b) {
-            return QString::localeAwareCompare(a->title(), b->title()) < 0;
         }
     );
 }

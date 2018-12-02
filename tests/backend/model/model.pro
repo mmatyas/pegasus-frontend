@@ -4,7 +4,6 @@ SUBDIRS += \
     collection \
     game \
     gameassets \
-    gamelist \
     localelist \
     system \
     themelist \

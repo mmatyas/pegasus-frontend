@@ -18,9 +18,9 @@
 #pragma once
 
 #include "model/ApiInternal.h"
-#include "model/gaming/Collection.h"
 #include "model/general/Keys.h"
 #include "providers/ProviderManager.h"
+#include "utils/FwdDeclModel.h"
 
 #include <QObject>
 #include <QQmlListProperty>

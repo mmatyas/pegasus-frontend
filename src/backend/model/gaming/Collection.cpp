@@ -18,6 +18,8 @@
 #include "Collection.h"
 
 #include "LocaleUtils.h"
+#include "model/ListPropertyFn.h"
+#include "utils/SortGames.h"
 
 #include <QDebug>
 
@@ -27,13 +29,23 @@ namespace model {
 Collection::Collection(modeldata::Collection collection, QObject* parent)
     : QObject(parent)
     , m_collection(std::move(collection))
-    , m_gamelist(this)
     , m_default_assets(&m_collection.default_assets, this)
 {}
 
 void Collection::setGameList(QVector<Game*> games)
 {
-    m_gamelist.setModelData(std::move(games));
+    m_games = std::move(games);
+    sort_games(m_games);
+
+    emit gamelistChanged();
+}
+
+QQmlListProperty<Game> Collection::qmlGames()
+{
+    static constexpr auto count = &listproperty_count<Game>;
+    static constexpr auto at = &listproperty_at<Game>;
+
+    return {this, &m_games, count, at};
 }
 
 } // namespace model

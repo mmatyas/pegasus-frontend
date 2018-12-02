@@ -10,7 +10,8 @@ HEADERS += \
     $$PWD/StrBoolConverter.h \
     $$PWD/PathCheck.h \
     $$PWD/FakeQKeyEvent.h \
-    $$PWD/KeySequenceTools.h
+    $$PWD/KeySequenceTools.h \
+    $$PWD/SortGames.h
 
 SOURCES += \
     $$PWD/FolderListModel.cpp \

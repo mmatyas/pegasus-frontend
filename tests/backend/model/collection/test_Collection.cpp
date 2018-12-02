@@ -18,6 +18,7 @@
 #include <QtTest/QtTest>
 
 #include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 
 
 class test_Collection : public QObject {
@@ -25,6 +26,7 @@ class test_Collection : public QObject {
 
 private slots:
     void names();
+    void games();
 };
 
 void test_Collection::names()
@@ -38,6 +40,23 @@ void test_Collection::names()
     // the properties are read-only and should be called only after the initial setup
     QCOMPARE(collection.property("shortName").toString(), QStringLiteral("abbrev"));
     QCOMPARE(collection.property("name").toString(), QStringLiteral("myname"));
+}
+
+void test_Collection::games()
+{
+    QVector<model::Game*> games = {
+        new model::Game(modeldata::Game(QFileInfo("c")), this),
+        new model::Game(modeldata::Game(QFileInfo("a")), this),
+        new model::Game(modeldata::Game(QFileInfo("b")), this),
+    };
+    model::Collection collection(modeldata::Collection("test"));
+    collection.setGameList(std::move(games));
+
+    // matching count and sorted by title
+    QCOMPARE(collection.games().size(), 3);
+    QCOMPARE(collection.games().at(0)->title(), "a");
+    QCOMPARE(collection.games().at(1)->title(), "b");
+    QCOMPARE(collection.games().at(2)->title(), "c");
 }
 
 

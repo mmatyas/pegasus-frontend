@@ -23,7 +23,10 @@
 #include "Log.h"
 #include "Paths.h"
 #include "ScriptRunner.h"
+#include "model/gaming/Collection.h"
 #include "model/gaming/Filters.h"
+#include "model/gaming/Game.h"
+#include "model/gaming/GameAssets.h"
 #include "utils/FolderListModel.h"
 
 #include <QDebug>
@@ -62,7 +65,6 @@ void register_api_classes()
 
     qmlRegisterUncreatableType<model::Collection>(API_URI, 0, 7, "Collection", error_msg);
     qmlRegisterUncreatableType<model::Game>(API_URI, 0, 2, "Game", error_msg);
-    qmlRegisterUncreatableType<model::GameList>(API_URI, 0, 6, "GameList", error_msg);
     qmlRegisterUncreatableType<model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
     qmlRegisterUncreatableType<model::Locale>(API_URI, 0, 6, "Locale", error_msg);
     qmlRegisterUncreatableType<model::LocaleList>(API_URI, 0, 6, "LocaleList", error_msg);

@@ -104,7 +104,7 @@ void build_ui_layer(HashMap<QString, modeldata::Game>& games,
     for (model::Collection* const coll : collection_vec) {
         QVector<model::Game*> childs;
 
-        const std::vector<QString>& game_keys = collection_childs[coll->data().name()];
+        const std::vector<QString>& game_keys = collection_childs[coll->name()];
         for (const QString& game_key : game_keys)
             childs.append(modelgame_map.at(game_key));
 

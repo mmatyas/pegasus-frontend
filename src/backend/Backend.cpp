@@ -20,6 +20,7 @@
 #include "LocaleUtils.h"
 #include "Log.h"
 #include "ScriptRunner.h"
+#include "model/gaming/Game.h"
 #include "platform/PowerCommands.h"
 
 #include <QCoreApplication>
