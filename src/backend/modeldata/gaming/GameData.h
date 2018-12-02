@@ -31,6 +31,7 @@ namespace modeldata {
 
 struct Game {
     explicit Game(QFileInfo fileinfo);
+    MOVE_ONLY(Game)
 
     const QFileInfo& fileinfo() const { return m_fileinfo; }
 
@@ -55,8 +56,6 @@ struct Game {
 
     HashMap<QString, QString> extra;
     GameAssets assets;
-
-    MOVE_ONLY(Game)
 
 private:
     QFileInfo m_fileinfo;

@@ -18,6 +18,7 @@
 #pragma once
 
 #include "GameAssetsData.h"
+#include "utils/MoveOnly.h"
 
 #include <QSharedPointer>
 #include <QString>
@@ -31,6 +32,7 @@ struct Game;
 
 struct Collection {
     explicit Collection(QString name);
+    MOVE_ONLY(Collection)
 
     const QString& name() const { return m_name; }
     const QString& shortName() const { return m_short_name; }
@@ -44,12 +46,6 @@ struct Collection {
     QString description;
 
     GameAssets default_assets;
-
-
-    Collection(const Collection&) = delete;
-    Collection& operator=(const Collection&) = delete;
-    Collection(Collection&&) = default;
-    Collection& operator=(Collection&&) = default;
 
 private:
     QString m_name;

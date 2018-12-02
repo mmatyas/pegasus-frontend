@@ -19,6 +19,7 @@
 
 #include "types/AssetType.h"
 #include "utils/HashMap.h"
+#include "utils/MoveOnly.h"
 
 #include <QString>
 #include <QStringList>
@@ -28,6 +29,7 @@ namespace modeldata {
 
 struct GameAssets {
     explicit GameAssets();
+    MOVE_ONLY(GameAssets)
 
     // NOTE: a value for an asset type may not exist at the time of calling
     const QString& single(AssetType type) { return m_single_assets[type]; }
@@ -37,12 +39,6 @@ struct GameAssets {
     void addUrlMaybe(AssetType, QString);
     void setSingle(AssetType, QString);
     void appendMulti(AssetType, QString);
-
-
-    GameAssets(const GameAssets&) = delete;
-    GameAssets& operator=(const GameAssets&) = delete;
-    GameAssets(GameAssets&&) = default;
-    GameAssets& operator=(GameAssets&&) = default;
 
 private:
     HashMap<AssetType, QString> m_single_assets;
