@@ -24,36 +24,45 @@
 #include <QObject>
 
 
-#define DATA_CONST_PROP(type, api_name, member_name) \
-    public: \
-        const type& api_name() const { return m_game.member_name; } \
-    private: \
-        Q_PROPERTY(type api_name READ api_name CONSTANT)
+namespace {
+QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
+} // namespace
+
+
+#define CPROP_Q(type, apiName) \
+    private: Q_PROPERTY(type apiName READ apiName CONSTANT)
+
+#define CPROP_REF(type, apiName, dataField) \
+    public: const type& apiName() const { return m_game.dataField; } \
+    CPROP_Q(type, apiName)
+
+#define CPROP_POD(type, apiName, dataField) \
+    public: type apiName() const { return m_game.dataField; } \
+    CPROP_Q(type, apiName)
 
 
 namespace model {
-
 class Game : public QObject {
     Q_OBJECT
 
-    DATA_CONST_PROP(QString, title, title)
-    DATA_CONST_PROP(QString, summary, summary)
-    DATA_CONST_PROP(QString, description, description)
+    CPROP_REF(QString, title, title)
+    CPROP_REF(QString, summary, summary)
+    CPROP_REF(QString, description, description)
 
     Q_PROPERTY(QString developer READ developerString CONSTANT)
     Q_PROPERTY(QString publisher READ publisherString CONSTANT)
     Q_PROPERTY(QString genre READ genreString CONSTANT)
-    DATA_CONST_PROP(QStringList, developerList, developers)
-    DATA_CONST_PROP(QStringList, publisherList, publishers)
-    DATA_CONST_PROP(QStringList, genreList, genres)
+    CPROP_REF(QStringList, developerList, developers)
+    CPROP_REF(QStringList, publisherList, publishers)
+    CPROP_REF(QStringList, genreList, genres)
 
-    Q_PROPERTY(int players READ players CONSTANT)
-    Q_PROPERTY(float rating READ rating CONSTANT)
-    DATA_CONST_PROP(QDate, release, release_date)
+    CPROP_POD(int, players, player_count)
+    CPROP_POD(float, rating, rating)
 
-    Q_PROPERTY(int releaseYear READ releaseYear CONSTANT)
-    Q_PROPERTY(int releaseMonth READ releaseMonth CONSTANT)
-    Q_PROPERTY(int releaseDay READ releaseDay CONSTANT)
+    CPROP_REF(QDate, release, release_date)
+    CPROP_POD(int, releaseYear, release_date.year())
+    CPROP_POD(int, releaseMonth, release_date.month())
+    CPROP_POD(int, releaseDay, release_date.day())
 
     Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
     Q_PROPERTY(int playCount READ playCount NOTIFY playStatsChanged)
@@ -88,15 +97,7 @@ private:
     QString publisherString() const { return joined_list(m_game.publishers); }
     QString genreString() const { return joined_list(m_game.genres); }
 
-    int players() const { return m_game.player_count; }
-    float rating() const { return m_game.rating; }
     bool favorite() const { return m_game.is_favorite; }
-
-    int releaseYear() const { return m_game.release_date.year(); }
-    int releaseMonth() const { return m_game.release_date.month(); }
-    int releaseDay() const { return m_game.release_date.day(); }
-
-
     int playCount() const { return m_game.playcount; }
     qint64 playTime() const { return m_game.playtime; }
     const QDateTime& lastPlayed() const { return m_game.last_played; }
@@ -106,8 +107,10 @@ private:
 private:
     modeldata::Game m_game;
     GameAssets m_assets;
-
-    QString joined_list(const QStringList& list) const { return list.join(QLatin1String(", ")); }
 };
-
 } // namespace model
+
+
+#undef CPROP_REF
+#undef CPROP_POD
+#undef CPROP_Q
