@@ -54,9 +54,9 @@ void test_Collection::games()
 
     // matching count and sorted by title
     QCOMPARE(collection.games().size(), 3);
-    QCOMPARE(collection.games().at(0)->title(), "a");
-    QCOMPARE(collection.games().at(1)->title(), "b");
-    QCOMPARE(collection.games().at(2)->title(), "c");
+    QCOMPARE(collection.games().at(0)->title(), QStringLiteral("a"));
+    QCOMPARE(collection.games().at(1)->title(), QStringLiteral("b"));
+    QCOMPARE(collection.games().at(2)->title(), QStringLiteral("c"));
 }
 
 
