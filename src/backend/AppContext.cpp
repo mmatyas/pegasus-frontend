@@ -24,7 +24,6 @@
 #include "Paths.h"
 #include "ScriptRunner.h"
 #include "model/gaming/Collection.h"
-#include "model/gaming/Filters.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameAssets.h"
 #include "utils/FolderListModel.h"
@@ -72,8 +71,6 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::ThemeList>(API_URI, 0, 6, "ThemeList", error_msg);
     qmlRegisterUncreatableType<model::Provider>(API_URI, 0, 9, "Provider", error_msg);
     qmlRegisterUncreatableType<model::ProviderList>(API_URI, 0, 9, "ProviderList", error_msg);
-    qmlRegisterUncreatableType<model::Filter>(API_URI, 0, 8, "Filter", error_msg);
-    qmlRegisterUncreatableType<model::Filters>(API_URI, 0, 8, "Filters", error_msg);
     qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
     qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
 
