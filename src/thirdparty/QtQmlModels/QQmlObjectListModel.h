@@ -111,7 +111,7 @@ public:
             }
             else {
                 static const QByteArray CLASS_NAME = (QByteArrayLiteral ("QQmlObjectListModel<") % m_metaObj.className () % '>');
-                qWarning () << "Can't have" << propName << "as a role name in" << qPrintable (CLASS_NAME);
+                qWarning () << "Can't have" << propName << "as a role name in" << CLASS_NAME.toStdString().c_str();
             }
         }
     }
@@ -437,9 +437,9 @@ private: // data members
 };
 
 #define QML_OBJMODEL_PROPERTY(type, name) \
-    protected: Q_PROPERTY (QQmlObjectListModelBase * name READ get_##name CONSTANT) \
+    protected: Q_PROPERTY (QQmlObjectListModelBase * name READ name CONSTANT) \
     private: QQmlObjectListModel<type> * m_##name; \
-    public: QQmlObjectListModel<type> * get_##name (void) const { return m_##name; } \
+    public: QQmlObjectListModel<type> * name (void) const { return m_##name; } \
     private:
 
 #endif // QQMLOBJECTLISTMODEL_H
