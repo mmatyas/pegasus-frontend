@@ -42,11 +42,29 @@
   #include "providers/skraper/SkraperAssetsProvider.h"
 #endif
 
+#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
 
 
 namespace {
+void sort_games(QVector<model::Game*>& games)
+{
+    std::sort(games.begin(), games.end(),
+        [](const model::Game* const a, const model::Game* const b) {
+            return QString::localeAwareCompare(a->title(), b->title()) < 0;
+        }
+    );
+}
+
+void sort_collections(QVector<model::Collection*>& collections)
+{
+    std::sort(collections.begin(), collections.end(),
+        [](const model::Collection* const a, const model::Collection* const b) {
+            return QString::localeAwareCompare(a->name(), b->name()) < 0;
+        }
+    );
+}
 
 void remove_empty_collections(HashMap<QString, modeldata::Collection>& collections,
                               HashMap<QString, std::vector<QString>>& collection_childs)
@@ -82,47 +100,51 @@ void run_list_providers(const std::vector<ProviderPtr>& providers,
     remove_empty_collections(collections, collection_childs);
 }
 
-void build_ui_layer(HashMap<QString, modeldata::Game>& games,
+void build_ui_layer(QThread* const ui_thread,
+                    HashMap<QString, modeldata::Game>& games,
                     HashMap<QString, modeldata::Collection>& collections,
                     HashMap<QString, std::vector<QString>>& collection_childs,
-                    QVector<model::Game*>& game_vec,
-                    QVector<model::Collection*>& collection_vec,
-                    HashMap<QString, model::Game*>& modelgame_map)
+                    QQmlObjectListModel<model::Game>& game_model,
+                    QQmlObjectListModel<model::Collection>& collection_model,
+                    HashMap<QString, model::Game*>& gameid_to_q_game)
 {
-    collection_vec.reserve(static_cast<int>(collections.size()));
-    game_vec.reserve(static_cast<int>(games.size()));
-    modelgame_map.reserve(games.size());
+    QVector<model::Game*> q_games;
+    q_games.reserve(static_cast<int>(games.size()));
+    gameid_to_q_game.reserve(games.size());
 
     for (auto& keyval : games) {
-        game_vec.append(new model::Game(std::move(keyval.second)));
-        modelgame_map.emplace(keyval.first, game_vec.last());
+        auto qobj = new model::Game(std::move(keyval.second));
+        qobj->moveToThread(ui_thread);
+        q_games.append(qobj);
+        gameid_to_q_game.emplace(keyval.first, q_games.last());
     }
+    sort_games(q_games);
+    game_model.append(q_games);
 
-    for (auto& keyval : collections)
-        collection_vec.append(new model::Collection(std::move(keyval.second)));
 
-    for (model::Collection* const coll : collection_vec) {
-        QVector<model::Game*> childs;
+    QVector<model::Collection*> q_collections;
+    q_collections.reserve(static_cast<int>(collections.size()));
 
-        const std::vector<QString>& game_keys = collection_childs[coll->name()];
+    for (auto& keyval : collections) {
+        auto qobj = new model::Collection(std::move(keyval.second));
+        qobj->moveToThread(ui_thread);
+        q_collections.append(qobj);
+    }
+    sort_collections(q_collections);
+    collection_model.append(q_collections);
+
+
+    for (model::Collection* const q_coll : q_collections) {
+        QVector<model::Game*> q_childs;
+
+        const std::vector<QString>& game_keys = collection_childs[q_coll->name()];
         for (const QString& game_key : game_keys)
-            childs.append(modelgame_map.at(game_key));
+            q_childs.append(gameid_to_q_game.at(game_key));
 
-        coll->setGameList(childs);
+        sort_games(q_childs);
+        q_coll->setGameList(q_childs);
     }
 }
-
-void move_qobjs_to_thread(const QVector<model::Game*>& games,
-                          const QVector<model::Collection*>& collections,
-                          QThread* const target_thread)
-{
-    for (model::Collection* const coll : collections)
-        coll->moveToThread(target_thread);
-
-    for (model::Game* const game : games)
-        game->moveToThread(target_thread);
-}
-
 } // namespace
 
 
@@ -159,12 +181,12 @@ ProviderManager::ProviderManager(QObject* parent)
     }
 }
 
-void ProviderManager::startSearch(QVector<model::Collection*>& out_collections,
-                                  QVector<model::Game*>& out_games)
+void ProviderManager::startSearch(QQmlObjectListModel<model::Game>& game_model,
+                                  QQmlObjectListModel<model::Collection>& collection_model)
 {
     Q_ASSERT(!m_init_seq.isRunning());
 
-    m_init_seq = QtConcurrent::run([this, &out_collections, &out_games]{
+    m_init_seq = QtConcurrent::run([this, &game_model, &collection_model]{
         HashMap<QString, modeldata::Game> games;
         HashMap<QString, modeldata::Collection> collections;
         HashMap<QString, std::vector<QString>> collection_childs;
@@ -181,16 +203,16 @@ void ProviderManager::startSearch(QVector<model::Collection*>& out_collections,
         emit secondPhaseComplete(timer.restart());
 
 
-        HashMap<QString, model::Game*> modelgame_map;
+        HashMap<QString, model::Game*> gameid_to_q_game;
 
-        build_ui_layer(games, collections, collection_childs,
-                       out_games, out_collections, modelgame_map);
-        move_qobjs_to_thread(out_games, out_collections, parent()->thread());
+        build_ui_layer(parent()->thread(),
+                       games, collections, collection_childs,
+                       game_model, collection_model, gameid_to_q_game);
         emit staticDataReady();
 
 
         for (const auto& provider : m_providers)
-            provider->findDynamicData(out_games, out_collections, modelgame_map);
+            provider->findDynamicData(game_model.asList(), collection_model.asList(), gameid_to_q_game);
         emit thirdPhaseComplete(timer.elapsed());
     });
 }

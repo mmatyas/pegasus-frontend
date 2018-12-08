@@ -19,9 +19,12 @@
 
 #include "model/ApiInternal.h"
 #include "model/general/Keys.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "providers/ProviderManager.h"
 #include "utils/FwdDeclModel.h"
 
+#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 #include <QQmlListProperty>
 
@@ -44,8 +47,8 @@ class ApiObject : public QObject {
 
     API_MEMBER(model::ApiInternal, internal)
     API_MEMBER(model::Keys, keys)
-    Q_PROPERTY(QQmlListProperty<model::Collection> collections READ collections NOTIFY modelChanged)
-    Q_PROPERTY(QQmlListProperty<model::Game> allGames READ allGames NOTIFY modelChanged)
+    QML_OBJMODEL_PROPERTY(model::Collection, collections)
+    QML_OBJMODEL_PROPERTY(model::Game, allGames)
 
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
@@ -57,8 +60,6 @@ public:
     void startScanning();
 
 signals:
-    void modelChanged();
-
     // game launching
     void launchGame(const model::Game*);
 
@@ -78,12 +79,6 @@ private slots:
     void onGameLaunchRequested();
 
 private:
-    QQmlListProperty<model::Collection> collections();
-    QQmlListProperty<model::Game> allGames();
-
-    QVector<model::Collection*> m_collections;
-    QVector<model::Game*> m_all_games;
-
     // game launching
     model::Game* m_launch_game;
 

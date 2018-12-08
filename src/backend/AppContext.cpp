@@ -28,6 +28,7 @@
 #include "model/gaming/GameAssets.h"
 #include "utils/FolderListModel.h"
 
+#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDebug>
 #include <QDir>
 #include <QGuiApplication>
@@ -76,6 +77,10 @@ void register_api_classes()
 
     // QML utilities
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
+
+    // third-party
+    qmlRegisterUncreatableType<QQmlObjectListModelBase>("QtQmlTricks.SmartDataModels",
+                                                        2, 0, "ObjectListModel", error_msg);
 }
 
 } // namespace

@@ -18,8 +18,10 @@
 #pragma once
 
 #include "GameAssets.h"
+#include "model/gaming/Game.h"
 #include "modeldata/gaming/CollectionData.h"
 
+#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QQmlListProperty>
 #include <QString>
 #include <QVector>
@@ -36,7 +38,7 @@ class Collection : public QObject {
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
     Q_PROPERTY(model::GameAssets* defaultAssets READ defaultAssetsPtr CONSTANT)
-    Q_PROPERTY(QQmlListProperty<model::Game> games READ qmlGames NOTIFY gamelistChanged)
+    QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
     explicit Collection(modeldata::Collection, QObject* parent = nullptr);
@@ -48,17 +50,12 @@ public:
     const QString& shortName() const { return m_collection.shortName(); }
     const QString& summary() const { return m_collection.summary; }
     const QString& description() const { return m_collection.description; }
-    const QVector<model::Game*>& games() const { return m_games; }
 
     QQmlListProperty<model::Game> qmlGames();
     GameAssets* defaultAssetsPtr() { return &m_default_assets; }
 
-signals:
-    void gamelistChanged();
-
 private:
     modeldata::Collection m_collection;
-    QVector<model::Game*> m_games;
     GameAssets m_default_assets;
 };
 } // namespace model

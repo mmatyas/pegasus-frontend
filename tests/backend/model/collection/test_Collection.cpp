@@ -45,18 +45,18 @@ void test_Collection::names()
 void test_Collection::games()
 {
     QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo("c")), this),
         new model::Game(modeldata::Game(QFileInfo("a")), this),
         new model::Game(modeldata::Game(QFileInfo("b")), this),
+        new model::Game(modeldata::Game(QFileInfo("c")), this),
     };
     model::Collection collection(modeldata::Collection("test"));
     collection.setGameList(std::move(games));
 
     // matching count and sorted by title
-    QCOMPARE(collection.games().size(), 3);
-    QCOMPARE(collection.games().at(0)->title(), QStringLiteral("a"));
-    QCOMPARE(collection.games().at(1)->title(), QStringLiteral("b"));
-    QCOMPARE(collection.games().at(2)->title(), QStringLiteral("c"));
+    QCOMPARE(collection.games()->count(), 3);
+    QCOMPARE(collection.games()->at(0)->title(), QStringLiteral("a"));
+    QCOMPARE(collection.games()->at(1)->title(), QStringLiteral("b"));
+    QCOMPARE(collection.games()->at(2)->title(), QStringLiteral("c"));
 }
 
 

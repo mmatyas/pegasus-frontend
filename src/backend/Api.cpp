@@ -18,22 +18,6 @@
 #include "Api.h"
 
 #include "LocaleUtils.h"
-#include "model/ListPropertyFn.h"
-#include "model/gaming/Collection.h"
-#include "model/gaming/Game.h"
-#include "utils/SortGames.h"
-
-
-namespace {
-void sort_collections(QVector<model::Collection*>& collections)
-{
-    std::sort(collections.begin(), collections.end(),
-        [](const model::Collection* const a, const model::Collection* const b) {
-            return QString::localeAwareCompare(a->name(), b->name()) < 0;
-        }
-    );
-}
-} // namespace
 
 
 ApiObject::ApiObject(QObject* parent)
@@ -56,45 +40,22 @@ ApiObject::ApiObject(QObject* parent)
             this, &ApiObject::onStaticDataLoaded);
 }
 
-QQmlListProperty<model::Collection> ApiObject::collections()
-{
-    static constexpr auto count = &listproperty_count<model::Collection>;
-    static constexpr auto at = &listproperty_at<model::Collection>;
-
-    return {this, &m_collections, count, at};
-}
-
-QQmlListProperty<model::Game> ApiObject::allGames()
-{
-    static constexpr auto count = &listproperty_count<model::Game>;
-    static constexpr auto at = &listproperty_at<model::Game>;
-
-    return {this, &m_all_games, count, at};
-}
-
 void ApiObject::startScanning()
 {
-    m_providerman.startSearch(m_collections, m_all_games);
+    m_providerman.startSearch(m_allGames, m_collections);
 }
 
 void ApiObject::onStaticDataLoaded()
 {
-    qInfo().noquote() << tr_log("%1 games found").arg(m_all_games.count());
+    qInfo().noquote() << tr_log("%1 games found").arg(m_allGames.count());
 
-    sort_collections(m_collections);
-    for (model::Collection* const coll : m_collections)
-        coll->setParent(this);
-
-    sort_games(m_all_games);
-    for (model::Game* game : m_all_games) {
-        game->setParent(this);
+    for (model::Game* game : m_allGames) {
         connect(game, &model::Game::launchRequested,
                 this, &ApiObject::onGameLaunchRequested);
         connect(game, &model::Game::favoriteChanged,
                 this, &ApiObject::onGameFavoriteChanged);
     }
 
-    emit modelChanged();
     m_internal.meta.onUiReady();
 }
 
@@ -131,5 +92,5 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_providerman.onGameFavoriteChanged(m_all_games);
+    m_providerman.onGameFavoriteChanged(m_allGames.asList());
 }
