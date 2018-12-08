@@ -6,7 +6,6 @@
 #include <QChar>
 #include <QDebug>
 #include <QHash>
-#include <QList>
 #include <QMetaMethod>
 #include <QMetaObject>
 #include <QMetaProperty>
@@ -16,8 +15,8 @@
 #include <QVariant>
 #include <QVector>
 
-template<typename T> QList<T> qListFromVariant (const QVariantList & list) {
-    QList<T> ret;
+template<typename T> QVector<T> qVectorFromVariant (const QVariantList & list) {
+    QVector<T> ret;
     ret.reserve (list.size ());
     for (QVariantList::const_iterator it = list.constBegin (); it != list.constEnd (); ++it) {
         const QVariant & var = static_cast<QVariant>(* it);
@@ -26,19 +25,19 @@ template<typename T> QList<T> qListFromVariant (const QVariantList & list) {
     return ret;
 }
 
-template<typename T> QVariantList qListToVariant (const QList<T> & list) {
+template<typename T> QVariantList qVectorToVariant (const QVector<T> & list) {
     QVariantList ret;
     ret.reserve (list.size ());
-    for (typename QList<T>::const_iterator it = list.constBegin (); it != list.constEnd (); ++it) {
+    for (typename QVector<T>::const_iterator it = list.constBegin (); it != list.constEnd (); ++it) {
         const T & val = static_cast<T>(* it);
         ret.append (QVariant::fromValue (val));
     }
     return ret;
 }
 
-// custom foreach for QList, which uses no copy and check pointer non-null
-#define FOREACH_PTR_IN_QLIST(_type_, _var_, _list_) \
-    for (typename QList<_type_ *>::const_iterator it = _list_.constBegin (); it != _list_.constEnd (); ++it) \
+// custom foreach for QVector, which uses no copy and check pointer non-null
+#define FOREACH_PTR_IN_LIST(_type_, _var_, _list_) \
+    for (typename QVector<_type_ *>::const_iterator it = _list_.constBegin (); it != _list_.constEnd (); ++it) \
         if (_type_ * _var_ = (* it))
 
 class QQmlObjectListModelBase : public QAbstractListModel { // abstract Qt base class
@@ -137,7 +136,7 @@ public:
     QHash<int, QByteArray> roleNames (void) const Q_DECL_FINAL {
         return m_roles;
     }
-    typedef typename QList<ItemType *>::const_iterator const_iterator;
+    typedef typename QVector<ItemType *>::const_iterator const_iterator;
     const_iterator begin (void) const {
         return m_items.begin ();
     }
@@ -183,7 +182,7 @@ public: // C++ API
     void clear (void) Q_DECL_FINAL {
         if (!m_items.isEmpty ()) {
             beginRemoveRows (noParent (), 0, m_items.count () -1);
-            FOREACH_PTR_IN_QLIST (ItemType, item, m_items) {
+            FOREACH_PTR_IN_LIST (ItemType, item, m_items) {
                 dereferenceItem (item);
             }
             m_items.clear ();
@@ -219,25 +218,25 @@ public: // C++ API
             endInsertRows ();
         }
     }
-    void append (const QList<ItemType *> & itemList) {
+    void append (const QVector<ItemType *> & itemList) {
         if (!itemList.isEmpty ()) {
             const int pos = m_items.count ();
             beginInsertRows (noParent (), pos, pos + itemList.count () -1);
             m_items.reserve (m_items.count () + itemList.count ());
             m_items.append (itemList);
-            FOREACH_PTR_IN_QLIST (ItemType, item, itemList) {
+            FOREACH_PTR_IN_LIST (ItemType, item, itemList) {
                 referenceItem (item);
             }
             updateCounter ();
             endInsertRows ();
         }
     }
-    void prepend (const QList<ItemType *> & itemList) {
+    void prepend (const QVector<ItemType *> & itemList) {
         if (!itemList.isEmpty ()) {
             beginInsertRows (noParent (), 0, itemList.count () -1);
             m_items.reserve (m_items.count () + itemList.count ());
             int offset = 0;
-            FOREACH_PTR_IN_QLIST (ItemType, item, itemList) {
+            FOREACH_PTR_IN_LIST (ItemType, item, itemList) {
                 m_items.insert (offset, item);
                 referenceItem (item);
                 offset++;
@@ -246,12 +245,12 @@ public: // C++ API
             endInsertRows ();
         }
     }
-    void insert (int idx, const QList<ItemType *> & itemList) {
+    void insert (int idx, const QVector<ItemType *> & itemList) {
         if (!itemList.isEmpty ()) {
             beginInsertRows (noParent (), idx, idx + itemList.count () -1);
             m_items.reserve (m_items.count () + itemList.count ());
             int offset = 0;
-            FOREACH_PTR_IN_QLIST (ItemType, item, itemList) {
+            FOREACH_PTR_IN_LIST (ItemType, item, itemList) {
                 m_items.insert (idx + offset, item);
                 referenceItem (item);
                 offset++;
@@ -293,7 +292,7 @@ public: // C++ API
     ItemType * last (void) const {
         return m_items.last ();
     }
-    const QList<ItemType *> & toList (void) const {
+    const QVector<ItemType *> & asList (void) const {
         return m_items;
     }
 
@@ -332,7 +331,7 @@ public: // QML slots implementation
         return static_cast<QObject *> (last ());
     }
     QVariantList toVarArray (void) const Q_DECL_FINAL {
-        return qListToVariant<ItemType *> (m_items);
+        return qVectorToVariant<ItemType *> (m_items);
     }
 
 protected: // internal stuff
@@ -433,7 +432,7 @@ private: // data members
     QMetaMethod                m_handler;
     QHash<int, QByteArray>     m_roles;
     QHash<int, int>            m_signalIdxToRole;
-    QList<ItemType *>          m_items;
+    QVector<ItemType *>        m_items;
     QHash<QString, ItemType *> m_indexByUid;
 };
 
