@@ -43,8 +43,8 @@ include(utils/utils.pri)
 include(types/types.pri)
 
 
-include($${TOP_SRCDIR}/src/deployment_vars.pri)
-
 DEFINES *= \
     $${COMMON_DEFINES} \
     INSTALL_DATADIR=\\\"$${INSTALL_DATADIR}\\\"
+
+include($${TOP_SRCDIR}/src/thirdparty/thirdparty.pri)
