@@ -98,7 +98,7 @@ public:
         if (!displayRole.isEmpty ()) {
             m_roles.insert (Qt::DisplayRole, QByteArrayLiteral ("display"));
         }
-        m_roles.insert (baseRole (), QByteArrayLiteral ("qtObject"));
+        m_roles.insert (baseRole (), QByteArrayLiteral ("modelData"));
         const int len = m_metaObj.propertyCount ();
         for (int propertyIdx = 0, role = (baseRole () +1); propertyIdx < len; propertyIdx++, role++) {
             QMetaProperty metaProp = m_metaObj.property (propertyIdx);

@@ -83,7 +83,7 @@
 
     \return The hash table of role to name matching
 
-    \b Note : an additional \c 'qtObject' role is added for convenience.
+    \b Note : an additional \c 'modelData' role is added for convenience.
 */
 
 /*!
