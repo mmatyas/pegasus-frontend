@@ -85,6 +85,7 @@ public:
         , m_dispRoleName (displayRole)
         , m_metaObj (ItemType::staticMetaObject)
     {
+#ifndef NDEBUG
         static QSet<QByteArray> roleNamesBlacklist;
         if (roleNamesBlacklist.isEmpty ()) {
             roleNamesBlacklist << QByteArrayLiteral ("id")
@@ -93,6 +94,7 @@ public:
                                << QByteArrayLiteral ("model")
                                << QByteArrayLiteral ("modelData");
         }
+#endif // NDEBUG
         static const char * HANDLER = "onItemPropertyChanged()";
         m_handler = metaObject ()->method (metaObject ()->indexOfMethod (HANDLER));
         if (!displayRole.isEmpty ()) {
@@ -103,15 +105,16 @@ public:
         for (int propertyIdx = 0, role = (baseRole () +1); propertyIdx < len; propertyIdx++, role++) {
             QMetaProperty metaProp = m_metaObj.property (propertyIdx);
             const QByteArray propName = QByteArray (metaProp.name ());
-            if (!roleNamesBlacklist.contains (propName)) {
-                m_roles.insert (role, propName);
-                if (metaProp.hasNotifySignal ()) {
-                    m_signalIdxToRole.insert (metaProp.notifySignalIndex (), role);
-                }
-            }
-            else {
+#ifndef NDEBUG
+            if (roleNamesBlacklist.contains (propName)) {
                 static const QByteArray CLASS_NAME = (QByteArrayLiteral ("QQmlObjectListModel<") % m_metaObj.className () % '>');
                 qWarning () << "Can't have" << propName << "as a role name in" << CLASS_NAME.toStdString().c_str();
+                continue;
+            }
+#endif // NDEBUG
+            m_roles.insert (role, propName);
+            if (metaProp.hasNotifySignal ()) {
+                m_signalIdxToRole.insert (metaProp.notifySignalIndex (), role);
             }
         }
     }
