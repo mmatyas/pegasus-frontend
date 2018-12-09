@@ -6,9 +6,8 @@ win32:CONFIG(release, debug|release): LIBS += -L$${TOP_BUILDDIR}/src/backend/rel
 else:win32:CONFIG(debug, debug|release): LIBS += -L$${TOP_BUILDDIR}/src/backend/debug/ -lbackend
 else:unix: LIBS += -L$${TOP_BUILDDIR}/src/backend/ -lbackend
 
-INCLUDEPATH += $${TOP_SRCDIR}/src/backend $${TOP_SRCDIR}/src/thirdparty
-DEPENDPATH += $${TOP_SRCDIR}/src/backend $${TOP_SRCDIR}/src/thirdparty
-QT *= qml sql
+INCLUDEPATH += $${TOP_SRCDIR}/src/backend $${TOP_SRCDIR}/src/thirdparty $${TOP_SRCDIR}/thirdparty
+DEPENDPATH += $${TOP_SRCDIR}/src/backend $${TOP_SRCDIR}/src/thirdparty $${TOP_SRCDIR}/thirdparty
 
 win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${TOP_BUILDDIR}/src/backend/release/libbackend.a
 else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${TOP_BUILDDIR}/src/backend/debug/libbackend.a

@@ -5,3 +5,6 @@
 [submodule "src/themes/pegasus-theme-grid"]
 	path = src/themes/pegasus-theme-grid
 	url = https://github.com/mmatyas/pegasus-theme-grid.git
+[submodule "thirdparty/SortFilterProxyModel"]
+	path = thirdparty/SortFilterProxyModel
+	url = https://github.com/mmatyas/SortFilterProxyModel.git
