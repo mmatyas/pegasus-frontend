@@ -1,5 +1,11 @@
 # Link the project that includes this file to the Backend
 
+QT *= qml quick multimedia gamepad svg sql
+CONFIG += c++11 warn_on
+
+win32: LIBS += -luser32 -ladvapi32
+macx: LIBS += -framework Cocoa
+
 # based on the auto-generated code by Qt Creator
 
 win32:CONFIG(release, debug|release): LIBS += -L$${TOP_BUILDDIR}/src/backend/release/ -lbackend

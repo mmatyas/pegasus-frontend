@@ -1,16 +1,7 @@
 TEMPLATE = app
-
 TARGET = pegasus-fe
 
-QT += qml quick multimedia gamepad svg sql
-CONFIG += c++11 warn_on exceptions_off
-greaterThan(QT_MINOR_VERSION, 10): CONFIG += qtquickcompiler
-
-win32: LIBS += -luser32 -ladvapi32
-macx: LIBS += -framework Cocoa
-
 SOURCES += main.cpp
-
 RESOURCES += \
     lang/translations.qrc \
     ../qmlutils/qmlutils.qrc \
@@ -19,6 +10,8 @@ RESOURCES += \
     $${TOP_SRCDIR}/assets/assets.qrc
 
 DEFINES *= $${COMMON_DEFINES}
+
+greaterThan(QT_MINOR_VERSION, 10): CONFIG += qtquickcompiler
 
 
 # Linking
