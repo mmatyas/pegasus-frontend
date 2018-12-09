@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     backend \
-    benchmarks
+    benchmarks \
+    integration \
 
 requires(qtHaveModule(testlib))
