@@ -41,8 +41,8 @@ struct GameAssets {
     void appendMulti(AssetType, QString);
 
 private:
-    HashMap<AssetType, QString> m_single_assets;
-    HashMap<AssetType, QStringList> m_multi_assets;
+    HashMap<AssetType, QString, EnumHash> m_single_assets;
+    HashMap<AssetType, QStringList, EnumHash> m_multi_assets;
 };
 
 } // namespace modeldata
