@@ -48,9 +48,9 @@ lcov --compat-libtool -r coverage.total \
   '/opt/*' \
   '*/moc_*' \
   '*/qrc_*' \
-  '*/test_*' \
-  '*/bench_*' \
   'src/app/*' \
+  'tests/*' \
+  'thirdparty/*' \
   -o coverage.clean
 sed -i 's|SF:/home/travis/build/mmatyas/pegasus-frontend/|SF:|g' coverage.clean
 
