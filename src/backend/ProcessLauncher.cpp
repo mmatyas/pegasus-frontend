@@ -24,16 +24,17 @@
 #include "platform/TerminalKbd.h"
 
 #include <QDebug>
+#include <QDir>
 
 
 namespace {
 void format_launch_command(QString& launch_cmd, const modeldata::Game& game)
 {
     launch_cmd
-        .replace(QLatin1String("{file.path}"), game.fileinfo().absoluteFilePath())
+        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(game.fileinfo().absoluteFilePath()))
         .replace(QLatin1String("{file.name}"), game.fileinfo().fileName())
         .replace(QLatin1String("{file.basename}"), game.fileinfo().completeBaseName())
-        .replace(QLatin1String("{file.dir}"), game.fileinfo().absolutePath());
+        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(game.fileinfo().absolutePath()));
 }
 } // namespace
 
