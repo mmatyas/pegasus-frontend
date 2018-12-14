@@ -156,6 +156,11 @@ void Log::init()
     qInstallMessageHandler(on_qt_message);
 }
 
+void Log::close()
+{
+    m_sinks.clear();
+}
+
 #define FORALLSINK_CALLER(method) \
     void Log::method(const QString& message) \
     { \

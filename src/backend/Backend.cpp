@@ -18,6 +18,7 @@
 #include "Backend.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "ScriptRunner.h"
 #include "platform/PowerCommands.h"
 
@@ -43,6 +44,7 @@ void on_app_close(AppCloseType type)
     }
 
     qInfo().noquote() << tr_log("Closing Pegasus, goodbye!");
+    Log::close();
 
     QCoreApplication::quit();
     switch (type) {

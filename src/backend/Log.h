@@ -42,6 +42,7 @@ public:
     NO_COPY_NO_MOVE(Log)
 
     static void init();
+    static void close();
 
     static void info(const QString& message);
     static void warning(const QString& message);
