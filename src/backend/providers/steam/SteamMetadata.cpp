@@ -58,8 +58,9 @@ QString find_steam_exe()
     QString reg_value = reg_base.value(QLatin1String("SteamExe")).toString();
     if (!reg_value.isEmpty())
         return reg_value.prepend('"').append('"');
+#endif
 
-#elif defined(Q_OS_MACOS)
+#if defined(Q_OS_MACOS)
     return QStringLiteral("open -a Steam --args");
 
 #else
