@@ -22,20 +22,11 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/ProviderManager.h"
-#include "utils/FwdDeclModel.h"
+#include "utils/QmlHelpers.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 #include <QQmlListProperty>
-
-
-#define API_MEMBER(type, name) \
-    public: \
-        type* name##Ptr() { return &m_##name; } \
-        type& name() { return m_##name; } \
-    private: \
-        type m_##name; \
-        Q_PROPERTY(type* name READ name##Ptr CONSTANT)
 
 
 /// Provides data access for QML
@@ -45,8 +36,8 @@
 class ApiObject : public QObject {
     Q_OBJECT
 
-    API_MEMBER(model::ApiInternal, internal)
-    API_MEMBER(model::Keys, keys)
+    QML_CONST_PROPERTY(model::ApiInternal, internal)
+    QML_CONST_PROPERTY(model::Keys, keys)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
     QML_OBJMODEL_PROPERTY(model::Game, allGames)
 

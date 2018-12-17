@@ -10,6 +10,7 @@ HEADERS += \
     $$PWD/PathCheck.h \
     $$PWD/FakeQKeyEvent.h \
     $$PWD/KeySequenceTools.h \
+    $$PWD/QmlHelpers.h
 
 SOURCES += \
     $$PWD/FolderListModel.cpp \

@@ -25,17 +25,17 @@ ApiObject::ApiObject(QObject* parent)
     , m_launch_game(nullptr)
     , m_providerman(this)
 {
-    connect(m_internal.settings.localesPtr(), &model::LocaleList::localeChanged,
+    connect(m_internal.settings().localesPtr(), &model::LocaleList::localeChanged,
             this, &ApiObject::localeChanged);
-    connect(m_internal.settings.keyEditorPtr(), &model::KeyEditor::keysChanged,
+    connect(m_internal.settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
             &m_keys, &model::Keys::refresh_keys);
 
     connect(&m_providerman, &ProviderManager::gameCountChanged,
-            &m_internal.meta, &model::Meta::onGameCountUpdate);
+            &m_internal.meta(), &model::Meta::onGameCountUpdate);
     connect(&m_providerman, &ProviderManager::firstPhaseComplete,
-            &m_internal.meta, &model::Meta::onFirstPhaseCompleted);
+            &m_internal.meta(), &model::Meta::onFirstPhaseCompleted);
     connect(&m_providerman, &ProviderManager::secondPhaseComplete,
-            &m_internal.meta, &model::Meta::onSecondPhaseCompleted);
+            &m_internal.meta(), &model::Meta::onSecondPhaseCompleted);
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
 }
@@ -56,7 +56,7 @@ void ApiObject::onStaticDataLoaded()
                 this, &ApiObject::onGameFavoriteChanged);
     }
 
-    m_internal.meta.onUiReady();
+    m_internal.meta().onUiReady();
 }
 
 void ApiObject::onGameLaunchRequested()

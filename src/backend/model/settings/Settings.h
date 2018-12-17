@@ -22,6 +22,7 @@
 #include "LocaleList.h"
 #include "ThemeList.h"
 #include "ProviderList.h"
+#include "utils/QmlHelpers.h"
 
 #include <QObject>
 
@@ -35,11 +36,12 @@ class Settings : public QObject {
     Q_PROPERTY(bool fullscreen
                READ fullscreen WRITE setFullscreen
                NOTIFY fullscreenChanged)
-    Q_PROPERTY(model::KeyEditor* keyEditor READ keyEditorPtr NOTIFY keysChanged)
-    Q_PROPERTY(model::LocaleList* locales READ localesPtr CONSTANT)
-    Q_PROPERTY(model::ThemeList* themes READ themesPtr CONSTANT)
-    Q_PROPERTY(model::ProviderList* providers READ providersPtr CONSTANT)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
+
+    QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
+    QML_CONST_PROPERTY(model::LocaleList, locales)
+    QML_CONST_PROPERTY(model::ThemeList, themes)
+    QML_CONST_PROPERTY(model::ProviderList, providers)
 
 public:
     explicit Settings(QObject* parent = nullptr);
@@ -48,24 +50,12 @@ public:
     void setFullscreen(bool);
 
     QStringList gameDirs() const;
-    KeyEditor* keyEditorPtr() { return &m_key_editor; }
-    LocaleList* localesPtr() { return &m_locales; }
-    ThemeList* themesPtr() { return &m_themes; }
-    ProviderList* providersPtr() { return &m_providers; }
-
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
 
 signals:
     void fullscreenChanged();
     void gameDirsChanged();
-    void keysChanged();
-
-private:
-    KeyEditor m_key_editor;
-    LocaleList m_locales;
-    ThemeList m_themes;
-    ProviderList m_providers;
 };
 
 } // namespace model

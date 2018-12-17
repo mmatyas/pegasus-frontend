@@ -96,11 +96,11 @@ Backend::Backend()
 
 
     // partial QML reload
-    QObject::connect(api.internal().metaPtr(), &model::Meta::qmlClearCacheRequested,
+    QObject::connect(&api.internal().meta(), &model::Meta::qmlClearCacheRequested,
                      &frontend, &FrontendLayer::clearCache);
 
     // quit/reboot/shutdown request
-    QObject::connect(api.internal().systemPtr(), &model::System::appCloseRequested, on_app_close);
+    QObject::connect(&api.internal().system(), &model::System::appCloseRequested, on_app_close);
 }
 
 void Backend::start()

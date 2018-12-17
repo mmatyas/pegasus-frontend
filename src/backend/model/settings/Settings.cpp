@@ -52,13 +52,7 @@ namespace model {
 
 Settings::Settings(QObject* parent)
     : QObject(parent)
-    , m_key_editor(this)
-    , m_locales(this)
-    , m_themes(this)
-    , m_providers(this)
-{
-    connect(&m_key_editor, &KeyEditor::keysChanged, this, &Settings::keysChanged);
-}
+{}
 
 void Settings::setFullscreen(bool new_val)
 {
