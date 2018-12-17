@@ -19,7 +19,7 @@
 
 #include "AppSettings.h"
 #include "KeyEditor.h"
-#include "LocaleList.h"
+#include "Locales.h"
 #include "ThemeList.h"
 #include "ProviderList.h"
 #include "utils/QmlHelpers.h"
@@ -39,7 +39,7 @@ class Settings : public QObject {
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
 
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
-    QML_CONST_PROPERTY(model::LocaleList, locales)
+    QML_CONST_PROPERTY(model::Locales, locales)
     QML_CONST_PROPERTY(model::ThemeList, themes)
     QML_CONST_PROPERTY(model::ProviderList, providers)
 

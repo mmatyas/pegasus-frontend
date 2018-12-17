@@ -17,10 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "model/settings/LocaleList.h"
+#include "model/settings/Locales.h"
 
 
-class test_LocaleList : public QObject {
+class test_Locales : public QObject {
     Q_OBJECT
 
 private:
@@ -31,22 +31,20 @@ private slots:
 
     void indexChange();
     void indexChange_data();
-
-    void count();
 };
 
-void test_LocaleList::initTestCase()
+void test_Locales::initTestCase()
 {
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
-    model::LocaleList localelist;
-    QVERIFY(localelist.index() >= 0);
+    model::Locales locales;
+    initial_index = locales.currentIndex();
 
-    initial_index = localelist.index();
+    QVERIFY(initial_index >= 0);
 }
 
-void test_LocaleList::indexChange()
+void test_Locales::indexChange()
 {
     QFETCH(int, testval);
 
@@ -55,19 +53,19 @@ void test_LocaleList::indexChange()
     if (testval != initial_index)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid locale index .*"));
 
-    model::LocaleList localelist;
-    QSignalSpy triggered(&localelist, &model::LocaleList::localeChanged);
+    model::Locales locales;
+    QSignalSpy triggered(&locales, &model::Locales::localeChanged);
     QVERIFY(triggered.isValid());
 
-    model::Locale* before = localelist.current();
-    localelist.setProperty("index", testval);
+    const auto before = locales.currentName();
+    locales.setProperty("currentIndex", testval);
 
-    QCOMPARE(localelist.property("index").toInt(), initial_index);
-    QCOMPARE(localelist.property("current").value<model::Locale*>(), before);
+    QCOMPARE(locales.property("currentIndex").toInt(), initial_index);
+    QCOMPARE(locales.property("currentName").toString(), before);
     QCOMPARE(triggered.count(), 0);
 }
 
-void test_LocaleList::indexChange_data()
+void test_Locales::indexChange_data()
 {
     QTest::addColumn<int>("testval");
 
@@ -77,15 +75,6 @@ void test_LocaleList::indexChange_data()
     QTest::newRow("out of range (neg)") << -999;
 }
 
-void test_LocaleList::count()
-{
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 
-    model::LocaleList localelist;
-    QCOMPARE(localelist.count(), localelist.property("count").toInt());
-}
-
-
-QTEST_MAIN(test_LocaleList)
+QTEST_MAIN(test_Locales)
 #include "test_LocaleList.moc"

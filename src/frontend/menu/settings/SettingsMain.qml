@@ -113,7 +113,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Language") + api.tr
-                    value: api.internal.settings.locales.current.name
+                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
@@ -224,11 +224,11 @@ FocusScope {
         id: localeBox
         z: 3
 
-        model: api.internal.settings.locales.model
-        index: api.internal.settings.locales.index
+        model: api.internal.settings.locales
+        index: api.internal.settings.locales.currentIndex
 
         onClose: content.focus = true
-        onSelect: api.internal.settings.locales.index = index
+        onSelect: api.internal.settings.locales.currentIndex = index
     }
     MultivalueBox {
         id: themeBox

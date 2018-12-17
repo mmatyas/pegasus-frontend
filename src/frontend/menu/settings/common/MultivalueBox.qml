@@ -150,7 +150,7 @@ FocusScope {
                 anchors.rightMargin: vpx(24)
                 anchors.verticalCenter: parent.verticalCenter
 
-                text: modelData.name
+                text: model.name
                 color: "#444"
                 font.pixelSize: root.textSize
                 font.family: globalFonts.sans

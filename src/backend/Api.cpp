@@ -25,7 +25,7 @@ ApiObject::ApiObject(QObject* parent)
     , m_launch_game(nullptr)
     , m_providerman(this)
 {
-    connect(m_internal.settings().localesPtr(), &model::LocaleList::localeChanged,
+    connect(&m_internal.settings().locales(), &model::Locales::localeChanged,
             this, &ApiObject::localeChanged);
     connect(m_internal.settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
             &m_keys, &model::Keys::refresh_keys);
