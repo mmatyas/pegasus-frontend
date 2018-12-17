@@ -67,7 +67,7 @@ Window {
             focus: true
             enabled: focus
 
-            readonly property url apiThemePath: api.internal.settings.themes.current.qmlPath
+            readonly property url apiThemePath: api.internal.settings.themes.currentQmlPath
 
             function getThemeFile() {
                 if (api.internal.meta.isLoading)

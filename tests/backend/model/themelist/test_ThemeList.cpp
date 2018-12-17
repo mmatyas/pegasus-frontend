@@ -17,10 +17,10 @@
 
 #include <QtTest/QtTest>
 
-#include "model/settings/ThemeList.h"
+#include "model/settings/Themes.h"
 
 
-class test_ThemeList : public QObject {
+class test_Themes : public QObject {
     Q_OBJECT
 
 private:
@@ -31,22 +31,20 @@ private slots:
 
     void indexChange();
     void indexChange_data();
-
-    void count();
 };
 
-void test_ThemeList::initTestCase()
+void test_Themes::initTestCase()
 {
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
-    model::ThemeList themelist;
-    QVERIFY(themelist.index() >= 0);
+    model::Themes themes;
+    initial_index = themes.currentIndex();
 
-    initial_index = themelist.index();
+    QVERIFY(initial_index >= 0);
 }
 
-void test_ThemeList::indexChange()
+void test_Themes::indexChange()
 {
     QFETCH(int, testval);
 
@@ -55,19 +53,19 @@ void test_ThemeList::indexChange()
     if (testval != initial_index)
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
 
-    model::ThemeList themelist;
-    QSignalSpy triggered(&themelist, &model::ThemeList::themeChanged);
+    model::Themes themes;
+    QSignalSpy triggered(&themes, &model::Themes::themeChanged);
     QVERIFY(triggered.isValid());
 
-    model::Theme* before = themelist.current();
-    themelist.setProperty("index", testval);
+    const auto before = themes.currentQmlPath();
+    themes.setProperty("currentIndex", testval);
 
-    QCOMPARE(themelist.property("index").toInt(), initial_index);
-    QCOMPARE(themelist.property("current").value<model::Theme*>(), before);
+    QCOMPARE(themes.property("currentIndex").toInt(), initial_index);
+    QCOMPARE(themes.property("currentQmlPath").toString(), before);
     QCOMPARE(triggered.count(), 0);
 }
 
-void test_ThemeList::indexChange_data()
+void test_Themes::indexChange_data()
 {
     QTest::addColumn<int>("testval");
 
@@ -77,15 +75,6 @@ void test_ThemeList::indexChange_data()
     QTest::newRow("out of range (neg)") << -999;
 }
 
-void test_ThemeList::count()
-{
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
-    QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
-    model::ThemeList themelist;
-    QCOMPARE(themelist.count(), themelist.property("count").toInt());
-}
-
-
-QTEST_MAIN(test_ThemeList)
+QTEST_MAIN(test_Themes)
 #include "test_ThemeList.moc"

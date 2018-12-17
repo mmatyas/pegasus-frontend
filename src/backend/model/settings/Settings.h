@@ -20,7 +20,7 @@
 #include "AppSettings.h"
 #include "KeyEditor.h"
 #include "Locales.h"
-#include "ThemeList.h"
+#include "Themes.h"
 #include "ProviderList.h"
 #include "utils/QmlHelpers.h"
 
@@ -40,7 +40,7 @@ class Settings : public QObject {
 
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
     QML_CONST_PROPERTY(model::Locales, locales)
-    QML_CONST_PROPERTY(model::ThemeList, themes)
+    QML_CONST_PROPERTY(model::Themes, themes)
     QML_CONST_PROPERTY(model::ProviderList, providers)
 
 public:

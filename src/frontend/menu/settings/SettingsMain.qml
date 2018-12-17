@@ -128,7 +128,7 @@ FocusScope {
                     id: optTheme
 
                     label: qsTr("Theme") + api.tr
-                    value: api.internal.settings.themes.current.name
+                    value: api.internal.settings.themes.currentName
 
                     onActivate: {
                         focus = true;
@@ -234,10 +234,10 @@ FocusScope {
         id: themeBox
         z: 3
 
-        model: api.internal.settings.themes.model
-        index: api.internal.settings.themes.index
+        model: api.internal.settings.themes
+        index: api.internal.settings.themes.currentIndex
 
         onClose: content.focus = true
-        onSelect: api.internal.settings.themes.index = index
+        onSelect: api.internal.settings.themes.currentIndex = index
     }
 }
