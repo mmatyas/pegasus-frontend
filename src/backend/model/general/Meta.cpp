@@ -39,6 +39,7 @@ Meta::Meta(QObject* parent)
 
 void Meta::clearQMLCache()
 {
+    qInfo().noquote() << tr_log("Reloading the frontend...");
     emit qmlClearCacheRequested();
 }
 
