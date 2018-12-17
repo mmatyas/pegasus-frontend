@@ -77,4 +77,4 @@ void test_Themes::indexChange_data()
 
 
 QTEST_MAIN(test_Themes)
-#include "test_ThemeList.moc"
+#include "test_Themes.moc"

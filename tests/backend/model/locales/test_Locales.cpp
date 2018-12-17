@@ -77,4 +77,4 @@ void test_Locales::indexChange_data()
 
 
 QTEST_MAIN(test_Locales)
-#include "test_LocaleList.moc"
+#include "test_Locales.moc"

@@ -3,7 +3,7 @@ CONFIG += testcase no_testcase_installs
 QT += qml testlib
 CONFIG += c++11 warn_on exceptions_off
 
-TARGET = test_LocaleList
+TARGET = test_Locales
 SOURCES = $${TARGET}.cpp
 DEFINES *= $${COMMON_DEFINES}
 
