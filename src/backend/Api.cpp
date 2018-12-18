@@ -27,7 +27,7 @@ ApiObject::ApiObject(QObject* parent)
 {
     connect(&m_internal.settings().locales(), &model::Locales::localeChanged,
             this, &ApiObject::localeChanged);
-    connect(m_internal.settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
+    connect(&m_internal.settings().keyEditor(), &model::KeyEditor::keysChanged,
             &m_keys, &model::Keys::refresh_keys);
 
     connect(&m_providerman, &ProviderManager::gameCountChanged,

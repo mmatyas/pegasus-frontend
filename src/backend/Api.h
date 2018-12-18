@@ -26,7 +26,6 @@
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
-#include <QQmlListProperty>
 
 
 /// Provides data access for QML

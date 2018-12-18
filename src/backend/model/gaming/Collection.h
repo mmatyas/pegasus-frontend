@@ -22,7 +22,6 @@
 #include "modeldata/gaming/CollectionData.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
-#include <QQmlListProperty>
 #include <QString>
 #include <QVector>
 
@@ -51,7 +50,6 @@ public:
     const QString& summary() const { return m_collection.summary; }
     const QString& description() const { return m_collection.description; }
 
-    QQmlListProperty<model::Game> qmlGames();
     GameAssets* defaultAssetsPtr() { return &m_default_assets; }
 
 private:
