@@ -15,16 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-function hasKeyMod(eventid, key, modifiers) {
-    var eventKeys = keyEditor.keysOf(eventid);
-    for (var i = 0; i < eventKeys.length; i++) {
-        var eventKey = eventKeys[i];
+function hasKeyMod(keylist, key, modifiers) {
+    for (var i = 0; i < keylist.length; i++) {
+        var eventKey = keylist[i];
         if (eventKey.key === key && eventKey.modifiers === modifiers)
             return true;
     }
     return false;
 }
 
-function hasKey(eventid, key) {
-    return hasKeyMod(eventid, key, 0);
+function hasKey(keylist, key) {
+    return hasKeyMod(keylist, key, 0);
 }

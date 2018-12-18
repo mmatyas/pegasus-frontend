@@ -47,12 +47,12 @@ TestCase {
 
     function test_regular() {
         var test_key = Qt.Key_Return;
-        compare(Utils.hasKey(0, test_key), true);
+        compare(Utils.hasKey(keys.accept, test_key), true);
 
         keyEditor.deleteKeyCode(0, test_key);
 
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKey(0, test_key), false);
+        compare(Utils.hasKey(keys.accept, test_key), false);
     }
 
     function test_modifier() {
@@ -61,12 +61,12 @@ TestCase {
 
         keyClick(test_key, test_modifier)
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKeyMod(0, test_key, test_modifier), true);
+        compare(Utils.hasKeyMod(keys.accept, test_key, test_modifier), true);
 
         keyEditor.deleteKeyCode(0, test_key + test_modifier);
 
         tryCompare(changed, "count", 2);
-        compare(Utils.hasKeyMod(0, test_key, test_modifier), false);
+        compare(Utils.hasKeyMod(keys.accept, test_key, test_modifier), false);
     }
 
     function test_invalid() {

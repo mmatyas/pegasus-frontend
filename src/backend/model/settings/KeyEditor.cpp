@@ -81,18 +81,4 @@ void KeyEditor::resetKeys()
     emit keysChanged();
 }
 
-QVariantList KeyEditor::keysOf(int event_id) const
-{
-    if (!valid_event_id(event_id))
-        return {};
-
-    QVariantList key_list;
-
-    const auto keyseq_list = AppSettings::keys.at(static_cast<::KeyEvent>(event_id));
-    for (const QKeySequence& keyseq : keyseq_list)
-        key_list << QVariant::fromValue(new model::Key(keyseq));
-
-    return key_list;
-}
-
 } // namespace model

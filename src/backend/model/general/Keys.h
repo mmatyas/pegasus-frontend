@@ -17,13 +17,11 @@
 
 #pragma once
 
-#include "model/Key.h"
 #include "types/KeyEventType.h"
 #include "utils/HashMap.h"
-#include "utils/KeySequenceTools.h"
 
+#include <QList>
 #include <QObject>
-#include <QQmlListProperty>
 #include <QVector>
 
 
@@ -32,14 +30,14 @@ namespace model {
 class Keys : public QObject {
     Q_OBJECT
 
-    #define KEYVEC_PROP(keytype, qmlArray, qmlFn) \
+    #define KEYVEC_PROP(keytype, keylist, checkFn) \
         private: \
-            Q_PROPERTY(QQmlListProperty<model::Key> qmlArray READ qmlArray NOTIFY keysChanged) \
-            QQmlListProperty<model::Key> qmlArray() { \
+            Q_PROPERTY(QList<QObject*> keylist READ keylist NOTIFY keysChanged) \
+            QList<QObject*> keylist() { \
                 return to_qmlkeys(KeyEvent::keytype); \
             } \
         public: \
-            Q_INVOKABLE bool qmlFn(const QVariant& qmlEvent) const { \
+            Q_INVOKABLE bool checkFn(const QVariant& qmlEvent) const { \
                 return qmlkey_in_keylist(KeyEvent::keytype, qmlEvent); \
             }
     KEYVEC_PROP(LEFT, left, isLeft)
@@ -66,10 +64,10 @@ signals:
     void keysChanged();
 
 private:
-    HashMap<KeyEvent, QVector<model::Key*>, EnumHash> m_keylists;
+    HashMap<KeyEvent, QVector<QObject*>, EnumHash> m_keylists;
 
     bool qmlkey_in_keylist(KeyEvent, const QVariant&) const;
-    QQmlListProperty<model::Key> to_qmlkeys(KeyEvent);
+    QList<QObject*> to_qmlkeys(KeyEvent);
 };
 
 } // namespace model

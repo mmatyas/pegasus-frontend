@@ -50,28 +50,28 @@ TestCase {
     function test_sameEvent() {
         oldKey = Qt.Key_Return;
         var newKey = Qt.Key_X;
-        compare(Utils.hasKey(0, oldKey), true);
-        compare(Utils.hasKey(0, newKey), false);
+        compare(Utils.hasKey(keys.accept, oldKey), true);
+        compare(Utils.hasKey(keys.accept, newKey), false);
 
         keyClick(newKey);
 
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKey(0, oldKey), false);
-        compare(Utils.hasKey(0, newKey), true);
+        compare(Utils.hasKey(keys.accept, oldKey), false);
+        compare(Utils.hasKey(keys.accept, newKey), true);
     }
 
     function test_differentEvent() {
         oldKey = Qt.Key_Return;
         var newKey = Qt.Key_Escape;
-        compare(Utils.hasKey(0, oldKey), true);
-        compare(Utils.hasKey(0, newKey), false);
-        compare(Utils.hasKey(1, newKey), true);
+        compare(Utils.hasKey(keys.accept, oldKey), true);
+        compare(Utils.hasKey(keys.accept, newKey), false);
+        compare(Utils.hasKey(keys.cancel, newKey), true);
 
         keyClick(newKey);
 
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKey(0, oldKey), false);
-        compare(Utils.hasKey(0, newKey), true);
-        compare(Utils.hasKey(1, newKey), false);
+        compare(Utils.hasKey(keys.accept, oldKey), false);
+        compare(Utils.hasKey(keys.accept, newKey), true);
+        compare(Utils.hasKey(keys.cancel, newKey), false);
     }
 }

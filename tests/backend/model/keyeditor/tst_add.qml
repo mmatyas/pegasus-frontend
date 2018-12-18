@@ -47,28 +47,28 @@ TestCase {
 
     function test_addNew() {
         var test_key = Qt.Key_X;
-        compare(Utils.hasKey(0, test_key), false);
+        compare(Utils.hasKey(keys.accept, test_key), false);
 
         keyClick(test_key);
 
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKey(0, test_key), true);
+        compare(Utils.hasKey(keys.accept, test_key), true);
     }
 
     function test_addNewWithModifers() {
         var test_key = Qt.Key_X;
         var test_modifier = Qt.ControlModifier;
-        compare(Utils.hasKeyMod(0, test_key, test_modifier), false);
+        compare(Utils.hasKeyMod(keys.accept, test_key, test_modifier), false);
 
         keyClick(test_key, test_modifier);
 
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKeyMod(0, test_key, test_modifier), true);
+        compare(Utils.hasKeyMod(keys.accept, test_key, test_modifier), true);
     }
 
     function test_addExisting() {
         var test_key = Qt.Key_Return;
-        compare(Utils.hasKey(0, test_key), true);
+        compare(Utils.hasKey(keys.accept, test_key), true);
 
         // Test only that it works
         keyClick(test_key);
@@ -76,13 +76,13 @@ TestCase {
 
     function test_addOverlapping() {
         var test_key = Qt.Key_Escape;
-        compare(Utils.hasKey(0, test_key), false);
-        compare(Utils.hasKey(1, test_key), true);
+        compare(Utils.hasKey(keys.accept, test_key), false);
+        compare(Utils.hasKey(keys.cancel, test_key), true);
 
         keyClick(test_key);
 
         tryCompare(changed, "count", 1);
-        compare(Utils.hasKey(0, test_key), true);
-        compare(Utils.hasKey(1, test_key), false);
+        compare(Utils.hasKey(keys.accept, test_key), true);
+        compare(Utils.hasKey(keys.cancel, test_key), false);
     }
 }

@@ -30,17 +30,34 @@ FocusScope {
     readonly property bool parentFocus: ListView.view.focus
     readonly property int textSize: vpx(18)
     readonly property int textBoxHeight: textSize * 2
-    readonly property var eventNames: [
-        qsTr("Accept/Select") + api.tr,
-        qsTr("Cancel/Back") + api.tr,
-        qsTr("Game details") + api.tr,
-        qsTr("Filters") + api.tr,
-        qsTr("Next page") + api.tr,
-        qsTr("Previous page") + api.tr,
-        qsTr("Scroll page up") + api.tr,
-        qsTr("Scroll page down") + api.tr,
-        qsTr("Main menu") + api.tr,
-    ]
+    readonly property var entries: [{
+            name: qsTr("Accept/Select") + api.tr,
+            keys: api.keys.accept,
+        }, {
+            name: qsTr("Cancel/Back") + api.tr,
+            keys: api.keys.cancel,
+        }, {
+            name: qsTr("Game details") + api.tr,
+            keys: api.keys.details,
+        }, {
+            name: qsTr("Filters") + api.tr,
+            keys: api.keys.filters,
+        }, {
+            name: qsTr("Next page") + api.tr,
+            keys: api.keys.nextPage,
+        }, {
+            name: qsTr("Previous page") + api.tr,
+            keys: api.keys.prevPage,
+        }, {
+            name: qsTr("Scroll page up") + api.tr,
+            keys: api.keys.pageUp,
+        }, {
+            name: qsTr("Scroll page down") + api.tr,
+            keys: api.keys.pageDown,
+        }, {
+            name: qsTr("Main menu") + api.tr,
+            keys: api.keys.menu,
+        }]
 
     width: ListView.view.width
     height: childrenRect.height
@@ -68,7 +85,7 @@ FocusScope {
         Text {
             id: nameLabel
 
-            text: eventNames[eventId]
+            text: entries[eventId].name
             color: "#eee"
             font.pixelSize: root.textSize
             font.family: globalFonts.sans
@@ -91,7 +108,7 @@ FocusScope {
         anchors.right: parent.right
         spacing: vpx(4)
 
-        model: api.internal.settings.keyEditor.keysOf(root.eventId)
+        model: entries[root.eventId].keys
         delegate: keyDelegate
 
         visible: hasKeys

@@ -39,8 +39,6 @@ public:
     Q_INVOKABLE void replaceKeyCode(int event_id, const int old_keycode, const QVariant& new_keyevent);
     Q_INVOKABLE void resetKeys();
 
-    Q_INVOKABLE QVariantList keysOf(int event_id) const;
-
     static constexpr int eventCount() {
         return static_cast<int>(::KeyEvent::MAIN_MENU) + 1;
     }

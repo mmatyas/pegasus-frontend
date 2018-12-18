@@ -19,13 +19,13 @@
 
 #include "AppSettings.h"
 #include "model/Key.h"
-#include "model/ListPropertyFn.h"
+#include "utils/KeySequenceTools.h"
 
 
 namespace {
-void free_keylist(QVector<model::Key*>& keylist)
+void free_keylist(QVector<QObject*>& keylist)
 {
-    for (model::Key* keyptr : keylist)
+    for (QObject* keyptr : keylist)
         keyptr->deleteLater();
 
     keylist.clear();
@@ -53,8 +53,6 @@ Keys::Keys(QObject* parent)
         { KeyEvent::MAIN_MENU, {} },
     }
 {
-    // NOTE: m_keylists is initialized with all keys
-    // in order to keep the vector pointers constant
     refresh_keys();
 }
 
@@ -82,12 +80,9 @@ bool Keys::qmlkey_in_keylist(KeyEvent keytype, const QVariant& qmlevent) const
     return AppSettings::keys.at(keytype).count(keyseq);
 }
 
-QQmlListProperty<model::Key> Keys::to_qmlkeys(KeyEvent keytype)
+QList<QObject*> Keys::to_qmlkeys(KeyEvent keytype)
 {
-    static constexpr auto count = &listproperty_count<model::Key>;
-    static constexpr auto at = &listproperty_at<model::Key>;
-
-    return {this, &m_keylists.at(keytype), count, at};
+    return QList<QObject*>::fromVector(m_keylists.at(keytype));
 }
 
 } // namespace model

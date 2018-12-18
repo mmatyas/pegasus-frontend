@@ -44,9 +44,10 @@ public:
 public slots:
     void qmlEngineAvailable(QQmlEngine *engine)
     {
-        engine->rootContext()->setContextProperty("keys", &m_keys);
-        engine->rootContext()->setContextProperty("keyEditor", &m_keyeditor);
-        engine->rootContext()->setContextProperty("isMac", QVariant::fromValue(m_is_mac));
+        auto ctx = engine->rootContext();
+        ctx->setContextProperty("keys", &m_keys);
+        ctx->setContextProperty("keyEditor", &m_keyeditor);
+        ctx->setContextProperty("isMac", QVariant::fromValue(m_is_mac));
     }
 
 private:
