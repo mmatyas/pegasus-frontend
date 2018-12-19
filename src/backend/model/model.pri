@@ -1,5 +1,4 @@
 HEADERS += \
-    $$PWD/ListPropertyFn.h \
     $$PWD/Key.h \
     $$PWD/ApiInternal.h
 
