@@ -17,8 +17,8 @@
 
 #pragma once
 
+#include "Game.h"
 #include "GameAssets.h"
-#include "model/gaming/Game.h"
 #include "modeldata/gaming/CollectionData.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"

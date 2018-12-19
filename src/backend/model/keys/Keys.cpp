@@ -18,7 +18,7 @@
 #include "Keys.h"
 
 #include "AppSettings.h"
-#include "model/Key.h"
+#include "Key.h"
 #include "utils/KeySequenceTools.h"
 
 

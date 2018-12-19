@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "model/settings/Themes.h"
+#include "model/internal/settings/Themes.h"
 
 
 class test_Themes : public QObject {

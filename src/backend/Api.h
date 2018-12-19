@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "model/ApiInternal.h"
-#include "model/general/Keys.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "model/internal/Internal.h"
+#include "model/keys/Keys.h"
 #include "providers/ProviderManager.h"
 #include "utils/QmlHelpers.h"
 
@@ -35,7 +35,7 @@
 class ApiObject : public QObject {
     Q_OBJECT
 
-    QML_CONST_PROPERTY(model::ApiInternal, internal)
+    QML_CONST_PROPERTY(model::Internal, internal)
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
     QML_OBJMODEL_PROPERTY(model::Game, allGames)

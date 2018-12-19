@@ -17,8 +17,9 @@
 
 #include <QtQuickTest>
 
-#include "model/general/Keys.h"
-#include "model/settings/KeyEditor.h"
+#include "model/keys/Key.h"
+#include "model/keys/Keys.h"
+#include "model/internal/settings/KeyEditor.h"
 
 #include <QQmlEngine>
 #include <QQmlContext>

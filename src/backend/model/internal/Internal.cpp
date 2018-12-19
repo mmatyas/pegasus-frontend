@@ -15,12 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ApiInternal.h"
+#include "Internal.h"
 
 
 namespace model {
 
-ApiInternal::ApiInternal()
+Internal::Internal()
 {}
 
 } // namespace model

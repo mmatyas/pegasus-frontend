@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "model/Key.h"
 #include "types/KeyEventType.h"
 
 #include <QObject>

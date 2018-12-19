@@ -26,6 +26,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameAssets.h"
+#include "model/keys/Key.h"
 #include "utils/FolderListModel.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"

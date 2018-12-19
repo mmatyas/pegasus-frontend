@@ -17,15 +17,16 @@
 
 #pragma once
 
-#include "model/general/Meta.h"
-#include "model/general/System.h"
-#include "model/settings/Settings.h"
+#include "Meta.h"
+#include "System.h"
+#include "settings/Settings.h"
 #include "utils/QmlHelpers.h"
+
 #include <QObject>
 
 
 namespace model {
-class ApiInternal : public QObject {
+class Internal : public QObject {
     Q_OBJECT
 
     QML_CONST_PROPERTY(model::Meta, meta)
@@ -33,6 +34,6 @@ class ApiInternal : public QObject {
     QML_CONST_PROPERTY(model::System, system)
 
 public:
-    explicit ApiInternal();
+    explicit Internal();
 };
 } // namespace model
