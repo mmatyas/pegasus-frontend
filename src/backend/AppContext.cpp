@@ -68,8 +68,7 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
     qmlRegisterUncreatableType<model::Locales>(API_URI, 0, 11, "Locales", error_msg);
     qmlRegisterUncreatableType<model::Themes>(API_URI, 0, 11, "Themes", error_msg);
-    qmlRegisterUncreatableType<model::Provider>(API_URI, 0, 9, "Provider", error_msg);
-    qmlRegisterUncreatableType<model::ProviderList>(API_URI, 0, 9, "ProviderList", error_msg);
+    qmlRegisterUncreatableType<model::Providers>(API_URI, 0, 11, "Providers", error_msg);
     qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
     qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
 

@@ -21,7 +21,7 @@
 #include "KeyEditor.h"
 #include "Locales.h"
 #include "Themes.h"
-#include "ProviderList.h"
+#include "Providers.h"
 #include "utils/QmlHelpers.h"
 
 #include <QObject>
@@ -41,7 +41,7 @@ class Settings : public QObject {
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
     QML_CONST_PROPERTY(model::Locales, locales)
     QML_CONST_PROPERTY(model::Themes, themes)
-    QML_CONST_PROPERTY(model::ProviderList, providers)
+    QML_CONST_PROPERTY(model::Providers, providers)
 
 public:
     explicit Settings(QObject* parent = nullptr);

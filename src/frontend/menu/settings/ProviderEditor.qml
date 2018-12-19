@@ -113,7 +113,7 @@ FocusScope {
                 anchors.fill: parent
                 clip: true
 
-                model: api.internal.settings.providers.model
+                model: api.internal.settings.providers
                 delegate: listEntry
 
                 focus: true
@@ -152,7 +152,7 @@ FocusScope {
 
             Text {
                 id: label
-                text: modelData.name
+                text: model.name
                 verticalAlignment: Text.AlignVCenter
                 lineHeight: 2.5
 
@@ -175,8 +175,8 @@ FocusScope {
                 height: label.font.pixelSize * 1.25
 
                 focus: true
-                checked: modelData.enabled
-                onCheckedChanged: modelData.enabled = checked
+                checked: model.enabled
+                onCheckedChanged: model.enabled = checked
             }
 
             MouseArea {
