@@ -17,7 +17,6 @@
 
 #include <QtTest/QtTest>
 
-#include "utils/MathMod.h"
 #include "utils/PathCheck.h"
 
 
@@ -28,8 +27,6 @@ class test_Utils : public QObject
 private slots:
     void validExtPath_data();
     void validExtPath();
-
-    void mathMod();
 };
 
 void test_Utils::validExtPath_data()
@@ -50,15 +47,6 @@ void test_Utils::validExtPath()
     QFETCH(bool, result);
 
     QCOMPARE(::validExtPath(path), result);
-}
-
-void test_Utils::mathMod()
-{
-    int expected = 0;
-    for (int i = -6; i <= 6; i++) {
-        QCOMPARE(::mathMod(i, 3), expected);
-        expected = (expected + 1) % 3;
-    }
 }
 
 

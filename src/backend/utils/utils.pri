@@ -5,7 +5,6 @@ HEADERS += \
     $$PWD/FolderListModel.h \
     $$PWD/MoveOnly.h \
     $$PWD/NoCopyNoMove.h \
-    $$PWD/MathMod.h \
     $$PWD/StrBoolConverter.h \
     $$PWD/PathCheck.h \
     $$PWD/FakeQKeyEvent.h \
