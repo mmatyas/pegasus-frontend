@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,32 +31,34 @@ private slots:
     void datablob();
     void file();
 
-private:
-    std::vector<std::tuple<int, QString, QString>> m_entries;
+    void merge_lines();
 
-    void onAttributeFound(int, const QString&, const QString&);
-    void onError(int, const QString&);
+private:
+    std::vector<config::Entry> m_entries;
+
+    void onAttributeFound(const config::Entry&);
+    void onError(const config::Error&);
 
     void readStream(QTextStream&);
 };
 
 
-void test_ConfigFile::onAttributeFound(int line, const QString& key, const QString& val)
+void test_ConfigFile::onAttributeFound(const config::Entry& entry)
 {
-    m_entries.emplace_back(line, key, val);
+    m_entries.emplace_back(entry);
 }
 
-void test_ConfigFile::onError(int linenum, const QString& msg)
+void test_ConfigFile::onError(const config::Error& error)
 {
     qWarning().noquote() << QObject::tr("line %1: %2")
-        .arg(QString::number(linenum), msg);
+        .arg(QString::number(error.line), error.message);
 }
 
 void test_ConfigFile::readStream(QTextStream& stream)
 {
     config::readStream(stream,
-        [this](const int lineno, const QString key, const QString val){ this->onAttributeFound(lineno, key, val); },
-        [this](const int lineno, const QString msg){ this->onError(lineno, msg); });
+        [this](const config::Entry& entry){ this->onAttributeFound(entry); },
+        [this](const config::Error& error){ this->onError(error); });
 }
 
 
@@ -83,25 +85,40 @@ void test_ConfigFile::datablob()
 
 void test_ConfigFile::file()
 {
-    QTest::ignoreMessage(QtWarningMsg, "line 3: multiline value found, but no attribute has been defined yet");
+    QTest::ignoreMessage(QtWarningMsg, "line 3: line starts with whitespace, but no attribute has been defined yet");
     QTest::ignoreMessage(QtWarningMsg, "line 8: attribute value missing, entry ignored");
     QTest::ignoreMessage(QtWarningMsg, "line 9: line invalid, skipped");
+    QTest::ignoreMessage(QtWarningMsg, "line 23: line starts with whitespace, but no attribute has been defined yet");
     config::readFile(":/test.cfg",
-        [this](const int lineno, const QString key, const QString val){ this->onAttributeFound(lineno, key, val); },
-        [this](const int lineno, const QString msg){ this->onError(lineno, msg); });
+        [this](const config::Entry& entry){ this->onAttributeFound(entry); },
+        [this](const config::Error& error){ this->onError(error); });
 
     const decltype(m_entries) expected {
-        std::make_tuple(5, QStringLiteral("key1"), QStringLiteral("val")),
-        std::make_tuple(6, QStringLiteral("key2"), QStringLiteral("val")),
-        std::make_tuple(7, QStringLiteral("key with spaces"), QStringLiteral("val with spaces")),
-        std::make_tuple(11, QStringLiteral("multiline1"), QStringLiteral("hello world!")),
-        std::make_tuple(13, QStringLiteral("multiline2"), QStringLiteral("a line with\nline break")),
-        std::make_tuple(17, QStringLiteral("multiline3"), QStringLiteral("purely multiline")),
+        config::Entry { 5, "key1", {"val"} },
+        config::Entry { 6, "key2", {"val"} },
+        config::Entry { 7, "key with spaces", {"val with spaces"} },
+        config::Entry { 11, "multiline1", {"hello", "world!"} },
+        config::Entry { 13, "multiline2", {"purely", "multiline"} },
+        config::Entry { 16, "multiline3", {"text", "with", "\n", "line break"} },
+        config::Entry { 20, "multiline4", {"text", "stops here"} },
+        config::Entry { 25, "list1", {"list", "of", "items"} },
     };
-    /*for (const auto& entry : m_entries) {
-        qDebug() << "line" << std::get<0>(entry) << "key" << std::get<1>(entry) << "val" << std::get<2>(entry);
-    }*/
-    QCOMPARE(m_entries, expected);
+
+
+    const size_t count = std::min(m_entries.size(), expected.size());
+    for (size_t i = 0; i < count; i++) {
+        QCOMPARE(m_entries.at(i).line, expected.at(i).line);
+        QCOMPARE(m_entries.at(i).key, expected.at(i).key);
+        QCOMPARE(m_entries.at(i).values, expected.at(i).values);
+    }
+    QCOMPARE(m_entries.size(), expected.size());
+}
+
+void test_ConfigFile::merge_lines()
+{
+    QCOMPARE(config::mergeLines({}), QString());
+    QCOMPARE(config::mergeLines({ "aa", "bb" }), QStringLiteral("aa bb"));
+    QCOMPARE(config::mergeLines({ "\n", "aa", "\n", "bb", "\n" }), QStringLiteral("aa\nbb"));
 }
 
 
