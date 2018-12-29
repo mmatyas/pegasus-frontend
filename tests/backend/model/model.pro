@@ -5,6 +5,7 @@ SUBDIRS += \
     game \
     gameassets \
     locales \
+    memory \
     system \
     themes \
 

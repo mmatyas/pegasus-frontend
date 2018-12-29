@@ -15,22 +15,24 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "Container.h"
 
 
-#define QML_CONST_PROPERTY(type, name) \
-    public: \
-        type& name() { return m_##name; } \
-        type* name##Ptr() { return &m_##name; } \
-    private: \
-        type m_##name; \
-        Q_PROPERTY(type* name READ name##Ptr CONSTANT)
+Container::Container(QObject* parent)
+    : QObject(parent)
+{
+    setup();
+}
 
-// NOTE: For some reason defining signals here doesn't seem to work...
-#define QML_READONLY_PROPERTY(type, name) \
-    public: \
-        type& name() { return m_##name; } \
-        type* name##Ptr() { return &m_##name; } \
-    private: \
-        type m_##name; \
-        Q_PROPERTY(type* name READ name##Ptr NOTIFY name##Changed)
+Container::Container(QString settings_dir, QObject* parent)
+    : QObject(parent)
+    , m_memory(settings_dir)
+{
+    setup();
+}
+
+void Container::setup()
+{
+    connect(&m_memory, &model::Memory::dataChanged,
+            this, &Container::memoryChanged);
+}

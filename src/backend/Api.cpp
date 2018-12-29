@@ -25,10 +25,15 @@ ApiObject::ApiObject(QObject* parent)
     , m_launch_game(nullptr)
     , m_providerman(this)
 {
+    connect(&m_memory, &model::Memory::dataChanged,
+            this, &ApiObject::memoryChanged);
+
     connect(&m_internal.settings().locales(), &model::Locales::localeChanged,
             this, &ApiObject::localeChanged);
     connect(&m_internal.settings().keyEditor(), &model::KeyEditor::keysChanged,
             &m_keys, &model::Keys::refresh_keys);
+    connect(&m_internal.settings().themes(), &model::Themes::themeChanged,
+            this, &ApiObject::onThemeChanged);
 
     connect(&m_providerman, &ProviderManager::gameCountChanged,
             &m_internal.meta(), &model::Meta::onGameCountUpdate);
@@ -38,6 +43,8 @@ ApiObject::ApiObject(QObject* parent)
             &m_internal.meta(), &model::Meta::onSecondPhaseCompleted);
     connect(&m_providerman, &ProviderManager::staticDataReady,
             this, &ApiObject::onStaticDataLoaded);
+
+    onThemeChanged();
 }
 
 void ApiObject::startScanning()
@@ -93,4 +100,9 @@ void ApiObject::onGameFinished()
 void ApiObject::onGameFavoriteChanged()
 {
     m_providerman.onGameFavoriteChanged(m_allGames.asList());
+}
+
+void ApiObject::onThemeChanged()
+{
+    m_memory.changeTheme(m_internal.settings().themes().currentQmlDir());
 }

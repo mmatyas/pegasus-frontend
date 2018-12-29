@@ -21,6 +21,7 @@
 #include "model/gaming/Game.h"
 #include "model/internal/Internal.h"
 #include "model/keys/Keys.h"
+#include "model/memory/Memory.h"
 #include "providers/ProviderManager.h"
 #include "utils/QmlHelpers.h"
 
@@ -37,6 +38,7 @@ class ApiObject : public QObject {
 
     QML_CONST_PROPERTY(model::Internal, internal)
     QML_CONST_PROPERTY(model::Keys, keys)
+    QML_READONLY_PROPERTY(model::Memory, memory)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
     QML_OBJMODEL_PROPERTY(model::Game, allGames)
 
@@ -50,8 +52,8 @@ public:
     void startScanning();
 
 signals:
-    // game launching
     void launchGame(const model::Game*);
+    void memoryChanged();
 
     // triggers translation update
     void localeChanged();
@@ -67,6 +69,7 @@ private slots:
     void onStaticDataLoaded();
     void onGameFavoriteChanged();
     void onGameLaunchRequested();
+    void onThemeChanged();
 
 private:
     // game launching

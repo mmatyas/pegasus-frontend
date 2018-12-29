@@ -17,20 +17,24 @@
 
 #pragma once
 
+#include "model/memory/Memory.h"
 
-#define QML_CONST_PROPERTY(type, name) \
-    public: \
-        type& name() { return m_##name; } \
-        type* name##Ptr() { return &m_##name; } \
-    private: \
-        type m_##name; \
-        Q_PROPERTY(type* name READ name##Ptr CONSTANT)
 
-// NOTE: For some reason defining signals here doesn't seem to work...
-#define QML_READONLY_PROPERTY(type, name) \
-    public: \
-        type& name() { return m_##name; } \
-        type* name##Ptr() { return &m_##name; } \
-    private: \
-        type m_##name; \
-        Q_PROPERTY(type* name READ name##Ptr NOTIFY name##Changed)
+class Container : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(model::Memory* memory READ memory NOTIFY memoryChanged)
+
+public:
+    explicit Container(QObject* parent = nullptr);
+    explicit Container(QString settings_dir, QObject* parent = nullptr);
+
+    model::Memory* memory() { return &m_memory; }
+
+signals:
+    void memoryChanged();
+
+private:
+    model::Memory m_memory;
+
+    void setup();
+};
