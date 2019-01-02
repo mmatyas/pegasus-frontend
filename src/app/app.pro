@@ -7,6 +7,8 @@ RESOURCES += \
     ../frontend/frontend.qrc \
     ../themes/themes.qrc \
     $${TOP_SRCDIR}/assets/assets.qrc
+OTHER_FILES += \
+    qmlplugins.qml
 
 DEFINES *= $${COMMON_DEFINES}
 

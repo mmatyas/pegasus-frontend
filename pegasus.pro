@@ -9,6 +9,7 @@ lessThan(QT_MINOR_VERSION, 9) {
 
 TEMPLATE = subdirs
 SUBDIRS += src
+OTHER_FILES += .qmake.conf
 
 # FIXME: MAke sure the QT options of Backend inherit to the dependers
 qtHaveModule(testlib):!android {
