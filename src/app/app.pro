@@ -3,7 +3,6 @@ TARGET = pegasus-fe
 
 SOURCES += main.cpp
 RESOURCES += \
-    lang/translations.qrc \
     ../qmlutils/qmlutils.qrc \
     ../frontend/frontend.qrc \
     ../themes/themes.qrc \
@@ -21,36 +20,33 @@ include($${TOP_SRCDIR}/src/link_to_backend.pri)
 
 # Translations
 
-LOCALE_QRC_FILE = $${TOP_SRCDIR}/lang/translations.qrc.in
 LOCALE_TS_FILES = $$files($${TOP_SRCDIR}/lang/pegasus_*.ts)
+LOCALE_QRC_IN = $${TOP_SRCDIR}/lang/translations.qrc.in
 
-# build the QM files
 qtPrepareTool(LRELEASE, lrelease)
-locales.name = Translations
+locales.name = Compile translations
 locales.input = LOCALE_TS_FILES
 locales.output  = lang/${QMAKE_FILE_BASE}.qm
 locales.commands = $$LRELEASE -removeidentical ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_OUT}
 locales.clean = ${QMAKE_FILE_OUT}
 locales.CONFIG += no_link target_predeps
-QMAKE_EXTRA_COMPILERS += locales
 
-# copy the QRC only after all QM files have been built
+locales_qrc.name = Generate translations QRC
+locales_qrc.input = LOCALE_QRC_IN
+locales_qrc.output  = lang/translations.qrc
+locales_qrc.commands = $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+locales_qrc.clean = ${QMAKE_FILE_OUT}
+locales_qrc.CONFIG += no_link target_predeps
+
 for(tsfile, LOCALE_TS_FILES) {
     qmfile = lang/$$basename(tsfile)
     qmfile ~= s/.ts$/.qm
 
-    LOCALE_QRC_DEPS += $$qmfile
+    locales_qrc.depends += $$qmfile
 }
 
-# copy the QRC file
-locales_qrc.name = Translations QRC
-locales_qrc.input = LOCALE_QRC_FILE
-locales_qrc.output  = lang/${QMAKE_FILE_BASE}
-locales_qrc.commands = $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
-locales_qrc.clean = ${QMAKE_FILE_OUT}
-locales_qrc.depends = $${LOCALE_QRC_DEPS}
-locales_qrc.CONFIG += no_link target_predeps
-QMAKE_EXTRA_COMPILERS += locales_qrc
+QMAKE_EXTRA_COMPILERS += locales locales_qrc
+RESOURCES += $${locales_qrc.output}
 
 
 # Deployment
