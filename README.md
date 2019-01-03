@@ -20,37 +20,18 @@ Pegasus is a graphical frontend for browsing your game library and launching all
 
 ## Features
 
-**Open source and cross platform:** runs on Linux, Windows, Mac, all Raspberries, Odroids and possibly on other devices. Hardware accelerated and works with or without X11. It may even run on phones and tablets too.
+**Open source and cross platform:** runs on Windows, Linux, Mac, Android, all Raspberries, Odroids and possibly on other devices too. Hardware accelerated and works with or without X11.
 
-**Full control over the UI:** you can completely change everything that is on the screen, add or remove UI elements, menu screens, whatever. Want to make it look like Kodi? Steam? Any other launcher? No problem. You can even [run your custom shader code](etc/promo/shader_demo.jpg).
+**Full control over the UI:** themes can completely change everything that is on the screen. Add or remove UI elements, menu screens, animations, whatever. Want to make it look like Kodi? Steam? Any other launcher? No problem. You can even [run your custom shader code](etc/promo/shader_demo.jpg).
 
 **ES2 backward compatibility:** Pegasus can use EmulationStation's gamelist files, no need to invent a new set of tools.
 
-**Features you'd expect:** Gamepad support and config. Multiple aspect ratio support. Portable mode support. Live theme reload. Visible system informations. A clock in the corner.
+**Features you'd expect:** Gamepad support and config. Multiple aspect ratio support. Portable mode support. Live theme reload. A clock in the corner.
 
 
-## Installation
+## Installation and setup
 
-At the moment, this project is still in alpha. You can find the current unstable releases and the latest automatic builds [here][gh ci builds]. You can also build the program manually from its source code.
-
-**Debian/Ubuntu:** for 64-bit desktops, the latest version can be installed like this:
-
-```sh
-# Add the repository
-curl https://bintray.com/user/downloadSubjectPublicKey?username=bintray | sudo apt-key add -
-sudo add-apt-repository 'deb https://dl.bintray.com/mmatyas/deb testing main'
-
-# Update and install
-sudo apt update
-sudo apt install pegasus-frontend
-```
-
-### Runtime dependencies
-
-While the releases try to include most required dependencies, on some platforms you might need to install additional packages.
-
-- Linux: a distro not older than Ubuntu 14.04 or Debian Wheezy is recommended. The dependencies are Fontconfig and GStreamer 1.x (`fontconfig gstreamer1.0-alsa gstreamer1.0-libav gstreamer1.0-plugins-good`).
-- Windows: all dependencies included, should work on anything between Windows 7 and 10.
+You can find downloads and platform-specific notes on the [project's website](http://pegasus-frontend.org), under *Downloads*. Documentation and configuration guides can be found [HERE](http://pegasus-frontend.org/docs/), in particular you might want to take a look on the [Getting started](http://pegasus-frontend.org/docs/user-guide/getting-started/) page.
 
 
 ## Building from source
@@ -69,7 +50,7 @@ For more information, please see the detailed [build guide](http://pegasus-front
 
 **Downloading the source**
 
-The project uses Git submodules. If you cloned the repository recursively, they are automatically cloned as well. If you did not, you can do it manually like this:
+The project uses Git submodules. If you cloned the repository recursively, they are automatically cloned as well. In case you forget to do that, you can do it manually like this:
 
 ```sh
 # call this after every repo update
@@ -87,13 +68,8 @@ make
 make install  # optional
 ```
 
-**QMake parameters**
+**For more details**, including possible build parameters, see the [build documentation](http://pegasus-frontend.org/docs/dev/build).
 
-Additional parameters are available for QMake:
-
-- `INSTALLDIR`: where to `make install` the program. Defaults to `/opt/pegasus-frontend` or `C:\pegasus-frontend`.
-
-**For more details**, see the [wiki page](http://pegasus-frontend.org/docs/dev/build).
 
 
 ## License
