@@ -1,4 +1,4 @@
-![screenshot](etc/promo/screenshot_alpha1.jpg)
+![screenshot](etc/promo/screenshot_alpha10.jpg)
 
 
 # Pegasus Frontend
