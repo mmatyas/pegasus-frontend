@@ -32,7 +32,7 @@ std::vector<model::LocaleEntry> find_available_locales()
     constexpr int QM_PREFIX_LEN = 8; // length of "pegasus_"
     constexpr int QM_SUFFIX_LEN = 3; // length of ".qm"
 
-    QStringList qm_files = QDir(QStringLiteral(":/lang")).entryList(QStringList(QStringLiteral("*.qm")));
+    QStringList qm_files = QDir(QStringLiteral(":/i18n")).entryList(QStringList(QStringLiteral("*.qm")));
     qm_files.append(QStringLiteral("pegasus_en.qm"));
     qm_files.sort();
 
@@ -112,7 +112,7 @@ void Locales::load_selected_locale()
     const auto& locale = m_locales.at(m_current_idx);
 
     m_translator.load(QStringLiteral("pegasus_") + locale.bcp47tag,
-                      QStringLiteral(":/lang"),
+                      QStringLiteral(":/i18n"),
                       QStringLiteral("-"));
     qInfo().noquote() << tr_log("Locale set to `%2`").arg(locale.bcp47tag);
 }

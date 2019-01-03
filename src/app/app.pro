@@ -16,33 +16,8 @@ include($${TOP_SRCDIR}/src/link_to_frontend.pri)
 
 # Translations
 
-LOCALE_TS_FILES = $$files($${TOP_SRCDIR}/lang/pegasus_*.ts)
-LOCALE_QRC_IN = "$${TOP_SRCDIR}/lang/translations.qrc.in"
-
-qtPrepareTool(LRELEASE, lrelease)
-locales.name = Compile translations
-locales.input = LOCALE_TS_FILES
-locales.output  = lang/${QMAKE_FILE_BASE}.qm
-locales.commands = $$LRELEASE -removeidentical ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_OUT}
-locales.clean = ${QMAKE_FILE_OUT}
-locales.CONFIG += no_link target_predeps
-
-locales_qrc.name = Generate translations QRC
-locales_qrc.input = LOCALE_QRC_IN
-locales_qrc.output  = lang/translations.qrc
-locales_qrc.commands = $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
-locales_qrc.clean = ${QMAKE_FILE_OUT}
-locales_qrc.CONFIG += no_link target_predeps
-
-for(tsfile, LOCALE_TS_FILES) {
-    qmfile = lang/$$basename(tsfile)
-    qmfile ~= s/.ts$/.qm
-
-    locales_qrc.depends += $$qmfile
-}
-
-QMAKE_EXTRA_COMPILERS += locales locales_qrc
-RESOURCES += $${locales_qrc.output}
+EXTRA_TRANSLATIONS = $$files($${TOP_SRCDIR}/lang/pegasus_*.ts)
+CONFIG += lrelease embed_translations
 
 
 # Deployment
