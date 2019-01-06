@@ -30,6 +30,9 @@ private slots:
 
     void invalid();
 
+    void json();
+    void json_data();
+
     void settings_file();
 };
 
@@ -102,6 +105,29 @@ void test_Memory::invalid()
     QCOMPARE(changed.count(), 0);
     QCOMPARE(c.memory()->has("test"), false);
     QCOMPARE(c.memory()->get("test"), QVariant());
+}
+
+void test_Memory::json()
+{
+    Container c;
+    QSignalSpy changed(&c, &Container::memoryChanged);
+    QVERIFY(changed.isValid());
+
+    QFETCH(QJsonValue, jsonval);
+
+    c.memory()->set("test", QVariant(jsonval));
+    QCOMPARE(changed.count(), 1);
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test"), QVariant(jsonval));
+}
+
+void test_Memory::json_data()
+{
+    QTest::addColumn<QJsonValue>("jsonval");
+    QTest::newRow("null") << QJsonValue(QJsonValue::Null);
+    QTest::newRow("undefined") << QJsonValue(QJsonValue::Undefined);
+    QTest::newRow("array") << QJsonValue(QJsonArray({1,2,3}));
+    QTest::newRow("object") << QJsonValue(QJsonObject({{"x", 1}, {"y", 2}}));
 }
 
 void test_Memory::settings_file()
