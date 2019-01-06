@@ -124,6 +124,11 @@ QVariant Memory::get(const QString& key) const
     return m_data.value(key);
 }
 
+bool Memory::has(const QString& key) const
+{
+    return m_data.contains(key);
+}
+
 void Memory::set(const QString& key, QVariant value)
 {
     if (key.isEmpty()) {

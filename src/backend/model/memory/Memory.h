@@ -31,6 +31,7 @@ public:
     ~Memory();
 
     Q_INVOKABLE QVariant get(const QString&) const;
+    Q_INVOKABLE bool has(const QString&) const;
     Q_INVOKABLE void set(const QString&, QVariant);
 
     void flush() const;

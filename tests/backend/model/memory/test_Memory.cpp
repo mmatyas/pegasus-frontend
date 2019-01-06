@@ -36,64 +36,57 @@ private slots:
 void test_Memory::set_new()
 {
     Container c;
-    QVariant result;
     QSignalSpy changed(&c, &Container::memoryChanged);
     QVERIFY(changed.isValid());
 
-    result = c.memory()->get("test");
-    QCOMPARE(result, QVariant());
+    QCOMPARE(c.memory()->has("test"), false);
+    QCOMPARE(c.memory()->get("test"), QVariant());
 
     c.memory()->set("test", "myvalue");
     QCOMPARE(changed.count(), 1);
 
-    result = c.memory()->get("test");
-    QCOMPARE(result, QVariant("myvalue"));
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
 }
 
 void test_Memory::set_overwrite()
 {
     Container c;
-    QVariant result;
     QSignalSpy changed(&c, &Container::memoryChanged);
     QVERIFY(changed.isValid());
 
     c.memory()->set("test", "myvalue");
     QCOMPARE(changed.count(), 1);
-
-    result = c.memory()->get("test");
-    QCOMPARE(result, QVariant("myvalue"));
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
 
     c.memory()->set("test", "something else");
     QCOMPARE(changed.count(), 2);
 
-    result = c.memory()->get("test");
-    QCOMPARE(result, QVariant("something else"));
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test"), QVariant("something else"));
 }
 
 void test_Memory::set_delete()
 {
     Container c;
-    QVariant result;
     QSignalSpy changed(&c, &Container::memoryChanged);
     QVERIFY(changed.isValid());
 
     c.memory()->set("test", "myvalue");
     QCOMPARE(changed.count(), 1);
-
-    result = c.memory()->get("test");
-    QCOMPARE(result, QVariant("myvalue"));
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
 
     c.memory()->set("test", QVariant());
     QCOMPARE(changed.count(), 2);
-
-    result = c.memory()->get("test");
-    QCOMPARE(result, QVariant());
+    QCOMPARE(c.memory()->has("test"), false);
+    QCOMPARE(c.memory()->get("test"), QVariant());
 }
 
 void test_Memory::invalid()
 {
     Container c;
-    QVariant result;
     QSignalSpy changed(&c, &Container::memoryChanged);
     QVERIFY(changed.isValid());
 
@@ -101,9 +94,8 @@ void test_Memory::invalid()
 
     c.memory()->set("", "myvalue");
     QCOMPARE(changed.count(), 0);
-
-    result = c.memory()->get("");
-    QCOMPARE(result, QVariant());
+    QCOMPARE(c.memory()->has(""), false);
+    QCOMPARE(c.memory()->get(""), QVariant());
 }
 
 void test_Memory::settings_file()
@@ -135,6 +127,7 @@ void test_Memory::settings_file()
 
     c.memory()->changeTheme("/path/to/QtAutoTestB/");
     QCOMPARE(changed.count(), ++change_cnt);
+    QCOMPARE(c.memory()->has("test"), false);
     QCOMPARE(c.memory()->get("test"), QVariant());
 
     // the data before the change was saved
@@ -148,6 +141,7 @@ void test_Memory::settings_file()
 
     c.memory()->changeTheme("/path/to/QtAutoTestA/");
     QCOMPARE(changed.count(), ++change_cnt);
+    QCOMPARE(c.memory()->has("test"), true);
     QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
 
     // empty data is not saved
