@@ -26,7 +26,6 @@ class test_Memory : public QObject {
 private slots:
     void set_new();
     void set_overwrite();
-    void set_delete();
     void unset();
 
     void invalid();
@@ -68,23 +67,6 @@ void test_Memory::set_overwrite()
     QCOMPARE(c.memory()->get("test"), QVariant("something else"));
 }
 
-void test_Memory::set_delete()
-{
-    Container c;
-    QSignalSpy changed(&c, &Container::memoryChanged);
-    QVERIFY(changed.isValid());
-
-    c.memory()->set("test", "myvalue");
-    QCOMPARE(changed.count(), 1);
-    QCOMPARE(c.memory()->has("test"), true);
-    QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
-
-    c.memory()->set("test", QVariant());
-    QCOMPARE(changed.count(), 2);
-    QCOMPARE(c.memory()->has("test"), false);
-    QCOMPARE(c.memory()->get("test"), QVariant());
-}
-
 void test_Memory::unset()
 {
     Container c;
@@ -109,11 +91,17 @@ void test_Memory::invalid()
     QVERIFY(changed.isValid());
 
     QTest::ignoreMessage(QtWarningMsg, "`set(key,val)` called with empty `key`, ignored");
+    QTest::ignoreMessage(QtWarningMsg, "`set(key,val)` called with invalid `val` type, ignored");
 
     c.memory()->set("", "myvalue");
     QCOMPARE(changed.count(), 0);
     QCOMPARE(c.memory()->has(""), false);
     QCOMPARE(c.memory()->get(""), QVariant());
+
+    c.memory()->set("test", QVariant());
+    QCOMPARE(changed.count(), 0);
+    QCOMPARE(c.memory()->has("test"), false);
+    QCOMPARE(c.memory()->get("test"), QVariant());
 }
 
 void test_Memory::settings_file()

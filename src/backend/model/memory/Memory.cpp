@@ -135,12 +135,12 @@ void Memory::set(const QString& key, QVariant value)
         qWarning().noquote() << "`set(key,val)` called with empty `key`, ignored";
         return;
     }
+    if (!value.isValid()) {
+        qWarning().noquote() << "`set(key,val)` called with invalid `val` type, ignored";
+        return;
+    }
 
-    if (value.isValid())
-        m_data[key] = std::move(value);
-    else
-        m_data.remove(key);
-
+    m_data[key] = std::move(value);
     emit dataChanged();
 }
 
