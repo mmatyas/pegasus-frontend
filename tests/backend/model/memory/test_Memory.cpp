@@ -27,6 +27,7 @@ private slots:
     void set_new();
     void set_overwrite();
     void set_delete();
+    void unset();
 
     void invalid();
 
@@ -79,6 +80,23 @@ void test_Memory::set_delete()
     QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
 
     c.memory()->set("test", QVariant());
+    QCOMPARE(changed.count(), 2);
+    QCOMPARE(c.memory()->has("test"), false);
+    QCOMPARE(c.memory()->get("test"), QVariant());
+}
+
+void test_Memory::unset()
+{
+    Container c;
+    QSignalSpy changed(&c, &Container::memoryChanged);
+    QVERIFY(changed.isValid());
+
+    c.memory()->set("test", "myvalue");
+    QCOMPARE(changed.count(), 1);
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test"), QVariant("myvalue"));
+
+    c.memory()->unset("test");
     QCOMPARE(changed.count(), 2);
     QCOMPARE(c.memory()->has("test"), false);
     QCOMPARE(c.memory()->get("test"), QVariant());

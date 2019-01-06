@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE QVariant get(const QString&) const;
     Q_INVOKABLE bool has(const QString&) const;
     Q_INVOKABLE void set(const QString&, QVariant);
+    Q_INVOKABLE void unset(const QString&);
 
     void flush() const;
     void changeTheme(const QString&);

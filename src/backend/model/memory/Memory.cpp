@@ -144,6 +144,12 @@ void Memory::set(const QString& key, QVariant value)
     emit dataChanged();
 }
 
+void Memory::unset(const QString& key)
+{
+    m_data.remove(key);
+    emit dataChanged();
+}
+
 void Memory::changeTheme(const QString& theme_root_dir)
 {
     flush();
