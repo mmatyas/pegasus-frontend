@@ -97,9 +97,12 @@ android {
     QT += androidextras
     OTHER_FILES += \
         platform/android/AndroidManifest.xml \
-        platform/android/res/drawable-hdpi/icon.png \
         platform/android/res/drawable-ldpi/icon.png \
         platform/android/res/drawable-mdpi/icon.png \
+        platform/android/res/drawable-hdpi/icon.png \
+        platform/android/res/drawable-xhdpi/icon.png \
+        platform/android/res/drawable-xxhdpi/icon.png \
+        platform/android/res/drawable-xxxhdpi/icon.png \
         platform/android/src/org/pegasus_frontend/android/MainActivity.java \
         platform/android/res/values/libs.xml \
 
