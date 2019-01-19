@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -62,16 +62,14 @@ QString find_steam_datadir()
 
 
     for (const auto& dir : qAsConst(possible_dirs)) {
-        if (QFileInfo(dir).isDir()) {
-            qInfo().noquote() << MSG_PREFIX
-                              << tr_log("found data directory: `%1`").arg(dir);
+        if (QFileInfo::exists(dir)) {
+            qInfo().noquote() << MSG_PREFIX << tr_log("found data directory: `%1`").arg(dir);
             return dir;
         }
     }
 
-    qInfo().noquote() << MSG_PREFIX
-                      << tr_log("no installation found");
-    return QString();
+    qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
+    return {};
 }
 
 std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
@@ -96,8 +94,8 @@ std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
         const QString line = stream.readLine();
         const auto match = installdir_regex.match(line);
         if (match.hasMatch()) {
-            const QString path = match.captured(1) % QLatin1String("/steamapps");
-            if (QFileInfo(path).isDir())
+            const QString path = match.captured(1) % QLatin1String("/steamapps/");
+            if (QFileInfo::exists(path))
                 installdirs.emplace_back(path);
         }
     }
@@ -106,8 +104,8 @@ std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
     return installdirs;
 }
 
-void register_appmanifests(HashMap<QString, modeldata::Game>& games,
-                           std::vector<QString>& childs,
+void register_appmanifests(providers::SearchContext& sctx,
+                           std::vector<size_t>& collection_childs,
                            const std::vector<QString>& installdirs)
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
@@ -119,12 +117,16 @@ void register_appmanifests(HashMap<QString, modeldata::Game>& games,
         while (dir_it.hasNext()) {
             dir_it.next();
             QFileInfo fileinfo = dir_it.fileInfo();
-            const QString game_key = fileinfo.canonicalFilePath();
 
-            if (!games.count(game_key))
-                games.emplace(game_key, modeldata::Game(std::move(fileinfo)));
+            const QString game_path = fileinfo.canonicalFilePath();
+            if (!sctx.path_to_gameidx.count(game_path)) {
+                modeldata::Game game(fileinfo);
+                sctx.path_to_gameidx.emplace(game_path, sctx.games.size());
+                sctx.games.emplace_back(std::move(game));
+            }
 
-            childs.emplace_back(game_key);
+            const size_t game_idx = sctx.path_to_gameidx.at(game_path);
+            collection_childs.emplace_back(game_idx);
         }
     }
 }
@@ -139,9 +141,7 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(HashMap<QString, modeldata::Game>& games,
-                    HashMap<QString, modeldata::Collection>& collections,
-                    HashMap<QString, std::vector<QString>>& collection_childs)
+void Gamelist::find(providers::SearchContext& sctx)
 {
     const QString steamdir = find_steam_datadir();
     if (steamdir.isEmpty())
@@ -154,19 +154,15 @@ void Gamelist::find(HashMap<QString, modeldata::Game>& games,
     }
 
     const QString STEAM_TAG(QStringLiteral("Steam"));
-    if (!collections.count(STEAM_TAG))
-        collections.emplace(STEAM_TAG, modeldata::Collection(STEAM_TAG));
+    if (!sctx.collections.count(STEAM_TAG))
+        sctx.collections.emplace(STEAM_TAG, modeldata::Collection(STEAM_TAG));
 
-    modeldata::Collection& collection = collections.at(STEAM_TAG);
-    collection.setShortName(STEAM_TAG);
+    std::vector<size_t>& childs = sctx.collection_childs[STEAM_TAG];
 
-    std::vector<QString>& childs = collection_childs[STEAM_TAG];
-
-
-    const size_t game_count_before = games.size();
-    register_appmanifests(games, childs, installdirs);
-    if (game_count_before != games.size())
-        emit gameCountChanged(static_cast<int>(games.size()));
+    const size_t game_count_before = sctx.games.size();
+    register_appmanifests(sctx, childs, installdirs);
+    if (game_count_before != sctx.games.size())
+        emit gameCountChanged(static_cast<int>(sctx.games.size()));
 }
 
 } // namespace steam

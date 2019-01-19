@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,14 +42,6 @@ namespace {
 static constexpr auto MSG_PREFIX = "Steam:";
 static constexpr auto JSON_CACHE_DIR = "steam";
 
-struct SteamGameEntry {
-    QString title;
-    QString appid;
-    modeldata::Game* game_ptr { nullptr };
-
-    bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
-};
-
 QString find_steam_exe()
 {
 #if defined(Q_OS_WIN)
@@ -61,13 +53,21 @@ QString find_steam_exe()
 #endif
 
 #if defined(Q_OS_MACOS)
+    // it should be installed
     return QStringLiteral("open -a Steam --args");
-
 #else
     // it should be in the PATH
     return QStringLiteral("steam");
 #endif
 }
+
+struct SteamGameEntry {
+    QString title;
+    QString appid;
+    modeldata::Game* game_ptr { nullptr };
+
+    bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
+};
 
 SteamGameEntry read_manifest(const QString& manifest_path)
 {
@@ -301,25 +301,27 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(HashMap<QString, modeldata::Game>& games,
-                       const HashMap<QString, modeldata::Collection>&,
-                       const HashMap<QString, std::vector<QString>>& collection_childs)
+void Metadata::enhance(providers::SearchContext& sctx)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
-    if (!collection_childs.count(STEAM_TAG))
+    if (!sctx.collection_childs.count(STEAM_TAG))
         return;
 
-    const std::vector<QString>& childs = collection_childs.at(STEAM_TAG);
+    const std::vector<size_t>& childs = sctx.collection_childs.at(STEAM_TAG);
     const QString steamexe = find_steam_exe();
 
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
 
-    for (const QString& game_key : childs) {
-        modeldata::Game& game = games.at(game_key);
+    for (const size_t game_idx : childs) {
+        modeldata::Game& game = sctx.games.at(game_idx);
 
-        SteamGameEntry entry = read_manifest(game.fileinfo().filePath());
+        // Steam games can have only one manifest file
+        Q_ASSERT(game.files.size() == 1);
+        const QString path = game.files.begin()->second.fileinfo.absoluteFilePath();
+
+        SteamGameEntry entry = read_manifest(path);
         if (!entry.appid.isEmpty()) {
             if (entry.title.isEmpty())
                 entry.title = QLatin1String("App #") % entry.appid;

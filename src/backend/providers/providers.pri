@@ -18,20 +18,8 @@ unix:!android:defined(target_arm, var): armlinux = yes
 
 ENABLED_COMPATS =
 
-# win32|macx|defined(pclinux,var) {
-#     ENABLED_COMPATS += Steam
-#     uses_json_cache = yes
-#     DEFINES *= WITH_COMPAT_STEAM
-#     HEADERS += \
-#         $$PWD/steam/SteamGamelist.h \
-#         $$PWD/steam/SteamMetadata.h \
-#         $$PWD/steam/SteamProvider.h
-#     SOURCES += \
-#         $$PWD/steam/SteamGamelist.cpp \
-#         $$PWD/steam/SteamMetadata.cpp \
-#         $$PWD/steam/SteamProvider.cpp
-# }
-#.
+win32|macx|defined(pclinux,var): include(steam/steam.pri)
+
 # win32|defined(pclinux,var) {
 #     ENABLED_COMPATS += GOG
 #     uses_json_cache = yes
@@ -83,7 +71,7 @@ ENABLED_COMPATS =
 # }
 
 
-defined(uses_json_cache,var) {
+defined(USES_JSON_CACHE, var) {
     HEADERS += \
         $$PWD/JsonCacheUtils.h
     SOURCES += \
