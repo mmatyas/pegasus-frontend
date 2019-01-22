@@ -30,6 +30,10 @@
 #include "utils/FolderListModel.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
+#include "SortFilterProxyModel/qqmlsortfilterproxymodel.h"
+#include "SortFilterProxyModel/filters/filtersqmltypes.h"
+#include "SortFilterProxyModel/proxyroles/proxyrolesqmltypes.h"
+#include "SortFilterProxyModel/sorters/sortersqmltypes.h"
 #include <QDebug>
 #include <QDir>
 #include <QGuiApplication>
@@ -79,6 +83,10 @@ void register_api_classes()
     // third-party
     qmlRegisterUncreatableType<QQmlObjectListModelBase>("QtQmlTricks.SmartDataModels",
                                                         2, 0, "ObjectListModel", error_msg);
+    qqsfpm::registerSorterTypes();
+    qqsfpm::registerFiltersTypes();
+    qqsfpm::registerProxyRoleTypes();
+    qqsfpm::registerQQmlSortFilterProxyModelTypes();
 }
 
 } // namespace
