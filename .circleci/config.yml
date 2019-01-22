@@ -20,7 +20,7 @@ jobs:
       - run: /opt/${QT_TARGET}/bin/androiddeployqt
           --input src/app/android-libpegasus-fe.so-deployment-settings.json
           --output ${PWD}/installdir
-          --android-platform 21
+          --android-platform android-22
           --gradle
           --sign ./aks "${AKS_ALIAS}"
           --storepass "${AKS_STOREPASS}"
