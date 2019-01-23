@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -82,9 +82,7 @@ SystemsParser::SystemsParser(QObject* parent)
     : QObject(parent)
 {}
 
-void SystemsParser::find(HashMap<QString, modeldata::Game>& games,
-                         HashMap<QString, modeldata::Collection>& collections,
-                         HashMap<QString, std::vector<QString>>& collection_childs,
+void SystemsParser::find(providers::SearchContext& sctx,
                          HashMap<QString, QString>& collection_dirs)
 {
     // find the systems file
@@ -103,15 +101,13 @@ void SystemsParser::find(HashMap<QString, modeldata::Game>& games,
 
     // parse the systems file
     QXmlStreamReader xml(&xml_file);
-    readSystemsFile(xml, games, collections, collection_childs, collection_dirs);
+    readSystemsFile(xml, sctx, collection_dirs);
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }
 
 void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
-                                    HashMap<QString, modeldata::Game>& games,
-                                    HashMap<QString, modeldata::Collection>& collections,
-                                    HashMap<QString, std::vector<QString>>& collection_childs,
+                                    providers::SearchContext& sctx,
                                     HashMap<QString, QString>& collection_dirs)
 {
     // read the root <systemList> element
@@ -127,25 +123,23 @@ void SystemsParser::readSystemsFile(QXmlStreamReader& xml,
     }
 
     // read all <system> nodes
-    size_t game_count = games.size();
+    size_t game_count = sctx.games.size();
     while (xml.readNextStartElement()) {
         if (xml.name() != QLatin1String("system")) {
             xml.skipCurrentElement();
             continue;
         }
 
-        readSystemEntry(xml, games, collections, collection_childs, collection_dirs);
-        if (game_count != games.size()) {
-            game_count = games.size();
+        readSystemEntry(xml, sctx, collection_dirs);
+        if (game_count != sctx.games.size()) {
+            game_count = sctx.games.size();
             emit gameCountChanged(static_cast<int>(game_count));
         }
     }
 }
 
 void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
-                                    HashMap<QString, modeldata::Game>& games,
-                                    HashMap<QString, modeldata::Collection>& collections,
-                                    HashMap<QString, std::vector<QString>>& collection_childs,
+                                    providers::SearchContext& sctx,
                                     HashMap<QString, QString>& collection_dirs)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
@@ -206,10 +200,11 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     const QString& shortname = xml_props[QLatin1String("name")];
     const QString& collection_name = fullname.isEmpty() ? shortname : fullname;
 
-    if (!collections.count(collection_name))
-        collections.emplace(collection_name, modeldata::Collection(collection_name));
+    if (!sctx.collections.count(collection_name))
+        sctx.collections.emplace(collection_name, modeldata::Collection(collection_name));
 
-    modeldata::Collection& collection = collections.at(collection_name);
+    modeldata::Collection& collection = sctx.collections.at(collection_name);
+    std::vector<size_t>& childs = sctx.collection_childs[collection_name];
 
     collection.setShortName(shortname);
     collection_dirs[collection_name] = xml_props[QLatin1String("path")];
@@ -249,14 +244,17 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
         while (files_it.hasNext()) {
             files_it.next();
             QFileInfo fileinfo = files_it.fileInfo();
-            const QString game_key = fileinfo.canonicalFilePath();
+            const QString game_path = fileinfo.canonicalFilePath();
 
-            if (!games.count(game_key)) {
-                modeldata::Game game(std::move(fileinfo));
+            if (!sctx.path_to_gameidx.count(game_path)) {
+                modeldata::Game game(fileinfo);
                 game.launch_cmd = collection.launch_cmd;
-                games.emplace(game_key, std::move(game));
+                sctx.path_to_gameidx.emplace(game_path, sctx.games.size());
+                sctx.games.emplace_back(std::move(game));
             }
-            collection_childs[collection_name].emplace_back(game_key);
+
+            const size_t game_idx = sctx.path_to_gameidx.at(game_path);
+            childs.emplace_back(game_idx);
         }
     }
 }

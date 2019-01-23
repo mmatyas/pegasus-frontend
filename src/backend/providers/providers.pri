@@ -20,21 +20,8 @@ ENABLED_COMPATS =
 
 win32|macx|defined(pclinux,var): include(steam/steam.pri)
 win32|defined(pclinux,var): include(gog/gog.pri)
+win32|macx|defined(pclinux,var)|defined(armlinux,var): include(es2/es2.pri)
 
-# win32|macx|defined(pclinux,var)|defined(armlinux,var) {
-#     ENABLED_COMPATS += EmulationStation
-#     DEFINES *= WITH_COMPAT_ES2
-#     HEADERS += \
-#         $$PWD/es2/Es2Metadata.h \
-#         $$PWD/es2/Es2Provider.h \
-#         $$PWD/es2/Es2Systems.h \
-#
-#     SOURCES += \
-#         $$PWD/es2/Es2Metadata.cpp \
-#         $$PWD/es2/Es2Provider.cpp \
-#         $$PWD/es2/Es2Systems.cpp \
-# }
-#.
 # android {
 #     ENABLED_COMPATS *= "Android Apps"
 #     uses_json_cache = yes

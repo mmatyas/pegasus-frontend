@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -222,32 +222,30 @@ MetadataParser::MetadataParser(QObject* parent)
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
 {}
 
-void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
-                             const HashMap<QString, modeldata::Collection>& collections,
-                             const HashMap<QString, std::vector<QString>>& collection_childs,
+void MetadataParser::enhance(providers::SearchContext& sctx,
                              const HashMap<QString, QString>& collection_dirs)
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
     // shortpath: dir name + extensionless filename
     HashMap<QString, modeldata::Game* const> games_by_shortpath;
-    games_by_shortpath.reserve(games.size());
-    for (const auto& coll_titles_pair : collection_childs) {
-        Q_ASSERT(collections.count(coll_titles_pair.first));
-        const QString coll_shortname = collections.at(coll_titles_pair.first).shortName();
+    games_by_shortpath.reserve(sctx.games.size());
+    for (const auto& entry : sctx.collection_childs) {
+        Q_ASSERT(sctx.collections.count(entry.first));
+        const QString coll_shortname = sctx.collections.at(entry.first).shortName();
 
-        for (const auto& title : coll_titles_pair.second) {
-            Q_ASSERT(games.count(title));
-            modeldata::Game* const game = &games.at(title);
+        for (const size_t game_idx : entry.second) {
+            Q_ASSERT(game_idx < sctx.games.size());
+            modeldata::Game* const game = &sctx.games.at(game_idx);
 
-            const QString gamefile = game->fileinfo().completeBaseName();
+            const QString gamefile = game->files.cbegin()->second.fileinfo.completeBaseName();
             const QString shortpath = coll_shortname % '/' % gamefile;
             games_by_shortpath.emplace(shortpath, game);
         }
     }
 
 
-    for (const auto& pair : collections) {
+    for (const auto& pair : sctx.collections) {
         const modeldata::Collection& collection = pair.second;
 
         // ignore Steam
@@ -274,7 +272,7 @@ void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
 
         // parse the file
         QXmlStreamReader xml(&xml_file);
-        parseGamelistFile(xml, games, collection_dir);
+        parseGamelistFile(xml, sctx, collection_dir);
         if (xml.error())
             qWarning().noquote() << MSG_PREFIX << xml.errorString();
 
@@ -288,7 +286,7 @@ void MetadataParser::enhance(HashMap<QString, modeldata::Game>& games,
 }
 
 void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
-                                       HashMap<QString, modeldata::Game>& games,
+                                       providers::SearchContext& sctx,
                                        const QString& collection_dir) const
 {
     // find the root <gameList> element
@@ -310,12 +308,12 @@ void MetadataParser::parseGamelistFile(QXmlStreamReader& xml,
             continue;
         }
 
-        parseGameEntry(xml, games, collection_dir);
+        parseGameEntry(xml, sctx, collection_dir);
     }
 }
 
 void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
-                                    HashMap<QString, modeldata::Game>& games,
+                                    providers::SearchContext& sctx,
                                     const QString& collection_dir) const
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "game");
@@ -350,10 +348,11 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
     // apply
 
     convertToCanonicalPath(game_path, collection_dir);
-    if (!games.count(game_path))
+    if (!sctx.path_to_gameidx.count(game_path))
         return;
 
-    modeldata::Game& game = games.at(game_path);
+    const size_t game_idx = sctx.path_to_gameidx.at(game_path);
+    modeldata::Game& game = sctx.games.at(game_idx);
     applyMetadata(game, xml_props);
     findAssets(game, xml_props, collection_dir);
 }
@@ -369,16 +368,16 @@ void MetadataParser::applyMetadata(modeldata::Game& game,
     game.genres.append(xml_props[MetaTypes::GENRE]);
 
     // then the numbers
-    game.playcount += xml_props[MetaTypes::PLAYCOUNT].toInt();
+    game.files.begin()->second.play_count += xml_props[MetaTypes::PLAYCOUNT].toInt();
     game.rating = qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f);
 
     // the player count can be a range
     const QString players_field = xml_props[MetaTypes::PLAYERS];
     const auto players_match = m_players_regex.match(players_field);
     if (players_match.hasMatch()) {
-        int a = 0, b = 0;
-        a = players_match.captured(1).toInt();
-        b = players_match.captured(3).toInt();
+        short a = 0, b = 0;
+        a = players_match.captured(1).toShort();
+        b = players_match.captured(3).toShort();
         game.player_count = std::max(a, b);
     }
 
@@ -393,7 +392,7 @@ void MetadataParser::applyMetadata(modeldata::Game& game,
     // then dates
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
 
-    game.last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
+    game.files.begin()->second.last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
 
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
     game.release_date = release_time.date();
