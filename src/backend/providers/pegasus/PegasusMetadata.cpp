@@ -145,9 +145,9 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
     switch (ctx.helpers.game_attribs.at(entry.key)) {
         case GameAttrib::FILES:
             for (const QString& line : entry.values) {
-                const QFileInfo fi(ctx.dir_path, line);
+                QFileInfo fi(ctx.dir_path, line);
                 if (fi.exists())
-                    ctx.cur_game->files.emplace(fi.absoluteFilePath(), fi);
+                    ctx.cur_game->files.emplace(fi.absoluteFilePath(), modeldata::GameFile(fi));
             }
             break;
         case GameAttrib::DEVELOPERS:
@@ -166,9 +166,9 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
             {
                 const auto rx_match = ctx.helpers.rx_count_range.match(first_line_of(entry));
                 if (rx_match.hasMatch()) {
-                    const int a = rx_match.capturedRef(1).toInt();
-                    const int b = rx_match.capturedRef(3).toInt();
-                    ctx.cur_game->player_count = std::max({1, a, b});
+                    const short a = rx_match.capturedRef(1).toShort();
+                    const short b = rx_match.capturedRef(3).toShort();
+                    ctx.cur_game->player_count = std::max({static_cast<short>(1), a, b});
                 }
             }
             break;

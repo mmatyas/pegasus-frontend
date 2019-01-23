@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -84,14 +84,14 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
     return true;
 }
 
-bool fill_from_cached_json(const QString& game_id, modeldata::Game& game)
+bool fill_from_cached_json(const QString& package, modeldata::Game& game)
 {
     const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
-    const auto json = providers::read_json_from_cache(message_prefix, cache_dir, game_id);
+    const auto json = providers::read_json_from_cache(message_prefix, cache_dir, package);
     if (!read_json(game, json)) {
-        providers::delete_cached_json(message_prefix, cache_dir, game_id);
+        providers::delete_cached_json(message_prefix, cache_dir, package);
         return false;
     }
 
@@ -118,36 +118,35 @@ Metadata::Metadata()
     rx_screenshots.optimize();
 }
 
-void Metadata::findStaticData(HashMap<QString, modeldata::Game>& games,
-                              const HashMap<QString, modeldata::Collection>&,
-                              const HashMap<QString, std::vector<QString>>& collection_childs)
+void Metadata::findStaticData(SearchContext& sctx)
 {
-    const auto cc_it = collection_childs.find(QStringLiteral("Android"));
-    if (cc_it == collection_childs.cend())
+    const auto cc_it = sctx.collection_childs.find(QStringLiteral("Android"));
+    if (cc_it == sctx.collection_childs.cend())
         return;
 
-    const auto uncached_entries = fill_from_cache(cc_it->second, games);
-    fill_from_network(uncached_entries, games);
+    const auto uncached_entries = fill_from_cache(cc_it->second, sctx.games);
+    fill_from_network(uncached_entries, sctx.games);
 }
 
-std::vector<QString> Metadata::fill_from_cache(const std::vector<QString>& child_ids,
-                                               HashMap<QString, modeldata::Game>& all_games)
+std::vector<size_t> Metadata::fill_from_cache(const std::vector<size_t>& child_ids,
+                                              std::vector<modeldata::Game>& all_games)
 {
-    std::vector<QString> uncached_entries;
+    std::vector<size_t> uncached_entries;
 
-    for (auto& child_id : child_ids) {
-        modeldata::Game& game = all_games.at(child_id);
+    for (size_t idx : child_ids) {
+        modeldata::Game& game = all_games.at(idx);
+        const QString& package = game.files.begin()->second.fileinfo.fileName();
 
-        const bool filled = fill_from_cached_json(child_id, game);
+        const bool filled = fill_from_cached_json(package, game);
         if (!filled)
-            uncached_entries.push_back(child_id);
+            uncached_entries.push_back(idx);
     }
 
     return uncached_entries;
 }
 
-void Metadata::fill_from_network(const std::vector<QString>& child_ids,
-                                 HashMap<QString, modeldata::Game>& games)
+void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
+                                 std::vector<modeldata::Game>& all_games)
 {
     if (child_ids.empty())
         return;
@@ -185,16 +184,16 @@ void Metadata::fill_from_network(const std::vector<QString>& child_ids,
     QObject::connect(&loop_timeout, &QTimer::timeout,
                      &loop, &QEventLoop::quit);
 
-    for (size_t i = 0; i < child_ids.size(); i++) {
-        const QString& id = child_ids[i];
-        const QUrl url(GPLAY_URL.arg(id));
+    for (size_t idx : child_ids) {
+        const QString package = all_games.at(idx).files.begin()->second.fileinfo.fileName();
+        const QUrl url(GPLAY_URL.arg(package));
 
         QNetworkRequest request(url);
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         QNetworkReply* reply = netman.get(request);
 
         QObject::connect(reply, &QNetworkReply::finished,
-            [&, reply](){
+            [&, idx, package, reply](){
                 completed_transfers++;
                 if (completed_transfers == listeners.count())
                     loop.quit();
@@ -205,7 +204,7 @@ void Metadata::fill_from_network(const std::vector<QString>& child_ids,
                 if (reply->error()) {
                     qWarning().noquote() << MSG_PREFIX
                         << tr_log("downloading metadata for `%1` failed (%2)")
-                           .arg(id, reply->errorString());
+                           .arg(package, reply->errorString());
                     return;
                 }
 
@@ -214,10 +213,10 @@ void Metadata::fill_from_network(const std::vector<QString>& child_ids,
                 QByteArray html_raw = reply->readAll();
                 if (parse_reply(html_raw, json)) {
                     const QJsonDocument json_doc(json);
-                    modeldata::Game& game = games.at(id);
+                    modeldata::Game& game = all_games.at(idx);
 
                     if (read_json(game, json_doc)) {
-                        providers::cache_json(message_prefix, cache_dir, id, json_doc.toJson(QJsonDocument::Compact));
+                        providers::cache_json(message_prefix, cache_dir, package, json_doc.toJson(QJsonDocument::Compact));
                         return;
                     }
                 }
@@ -225,7 +224,7 @@ void Metadata::fill_from_network(const std::vector<QString>& child_ids,
                 qWarning().noquote() << MSG_PREFIX
                     << tr_log("failed to parse the response of the server "
                               "for app `%1` - perhaps the Google Play sites have changed?")
-                              .arg(id);
+                              .arg(package);
             });
 
         listeners << reply;

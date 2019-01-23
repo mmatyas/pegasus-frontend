@@ -21,19 +21,8 @@ ENABLED_COMPATS =
 win32|macx|defined(pclinux,var): include(steam/steam.pri)
 win32|defined(pclinux,var): include(gog/gog.pri)
 win32|macx|defined(pclinux,var)|defined(armlinux,var): include(es2/es2.pri)
+android: include(android_apps/android.pri)
 
-# android {
-#     ENABLED_COMPATS *= "Android Apps"
-#     uses_json_cache = yes
-#     DEFINES *= WITH_COMPAT_ANDROIDAPPS
-#     HEADERS += \
-#         $$PWD/android_apps/AndroidAppsProvider.h \
-#         $$PWD/android_apps/AndroidAppsMetadata.h
-#     SOURCES += \
-#         $$PWD/android_apps/AndroidAppsProvider.cpp \
-#         $$PWD/android_apps/AndroidAppsMetadata.cpp
-# }
-#.
 # # All
 # {
 #     ENABLED_COMPATS += "Skraper Assets"
