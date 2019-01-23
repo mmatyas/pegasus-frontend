@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "providers/Provider.h"
 #include "utils/FwdDeclModelData.h"
 #include "utils/HashMap.h"
 
@@ -32,9 +33,7 @@ class Gamelist : public QObject {
 public:
     explicit Gamelist(QObject* parent);
 
-    void find(HashMap<QString, modeldata::Game>& games,
-              HashMap<QString, modeldata::Collection>& collections,
-              HashMap<QString, std::vector<QString>>& collection_childs);
+    void find(providers::SearchContext&, HashMap<size_t, QString>&);
 
 signals:
     void gameCountChanged(int count);

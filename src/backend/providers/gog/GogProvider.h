@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "GogGamelist.h"
 #include "GogMetadata.h"
 #include "providers/Provider.h"
+#include "utils/HashMap.h"
 
 
 namespace providers {
@@ -31,14 +32,12 @@ class GogProvider : public Provider {
 public:
     GogProvider(QObject* parent = nullptr);
 
-    void findLists(HashMap<QString, modeldata::Game>&,
-                   HashMap<QString, modeldata::Collection>&,
-                   HashMap<QString, std::vector<QString>>&) final;
-    void findStaticData(HashMap<QString, modeldata::Game>&,
-                        const HashMap<QString, modeldata::Collection>&,
-                        const HashMap<QString, std::vector<QString>>&) final;
+    void findLists(SearchContext&) final;
+    void findStaticData(SearchContext&) final;
 
 private:
+    HashMap<size_t, QString> m_gogids;
+
     Gamelist gamelist;
     Metadata metadata;
 };

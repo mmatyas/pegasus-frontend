@@ -19,23 +19,8 @@ unix:!android:defined(target_arm, var): armlinux = yes
 ENABLED_COMPATS =
 
 win32|macx|defined(pclinux,var): include(steam/steam.pri)
+win32|defined(pclinux,var): include(gog/gog.pri)
 
-# win32|defined(pclinux,var) {
-#     ENABLED_COMPATS += GOG
-#     uses_json_cache = yes
-#     DEFINES *= WITH_COMPAT_GOG
-#     HEADERS += \
-#         $$PWD/gog/GogCommon.h \
-#         $$PWD/gog/GogGamelist.h \
-#         $$PWD/gog/GogMetadata.h \
-#         $$PWD/gog/GogProvider.h
-#     SOURCES += \
-#         $$PWD/gog/GogCommon.cpp \
-#         $$PWD/gog/GogGamelist.cpp \
-#         $$PWD/gog/GogMetadata.cpp \
-#         $$PWD/gog/GogProvider.cpp
-# }
-#.
 # win32|macx|defined(pclinux,var)|defined(armlinux,var) {
 #     ENABLED_COMPATS += EmulationStation
 #     DEFINES *= WITH_COMPAT_ES2

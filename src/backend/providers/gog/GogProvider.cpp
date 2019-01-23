@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,18 +30,14 @@ GogProvider::GogProvider(QObject* parent)
             this, &GogProvider::gameCountChanged);
 }
 
-void GogProvider::findLists(HashMap<QString, modeldata::Game>& games,
-                            HashMap<QString, modeldata::Collection>& collections,
-                            HashMap<QString, std::vector<QString>>& collection_childs)
+void GogProvider::findLists(SearchContext& sctx)
 {
-    gamelist.find(games, collections, collection_childs);
+    gamelist.find(sctx, m_gogids);
 }
 
-void GogProvider::findStaticData(HashMap<QString, modeldata::Game>& games,
-                                 const HashMap<QString, modeldata::Collection>& collections,
-                                 const HashMap<QString, std::vector<QString>>& collection_childs)
+void GogProvider::findStaticData(SearchContext& sctx)
 {
-    metadata.enhance(games, collections, collection_childs);
+    metadata.enhance(sctx, m_gogids);
 }
 
 } // namespace gog

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -127,26 +127,30 @@ bool invalid_entry(const GogEntry& entry)
 }
 
 void register_entries(const std::vector<GogEntry>& entries,
-                      HashMap<QString, modeldata::Game>& games,
-                      std::vector<QString>& collection_childs)
+                      providers::SearchContext& sctx,
+                      HashMap<size_t, QString>& gogids)
 {
+    std::vector<size_t>& childs = sctx.collection_childs[providers::gog::gog_tag()];
+
     for (const GogEntry& entry : entries) {
         QFileInfo finfo(entry.exe);
-        const QString game_key = finfo.canonicalFilePath();
+        const QString game_path = finfo.canonicalFilePath();
 
-        if (!games.count(game_key)) {
+        if (!sctx.path_to_gameidx.count(game_path)) {
             modeldata::Game game(std::move(finfo));
             game.title = entry.name;
             game.launch_cmd = '"' % entry.launch_cmd % '"';
             game.launch_workdir = entry.workdir;
 
-            if (!entry.id.isEmpty())
-                game.extra.emplace(providers::gog::gog_id_key(), entry.id);
-
-            games.emplace(game_key, std::move(game));
+            sctx.path_to_gameidx.emplace(game_path, sctx.games.size());
+            sctx.games.emplace_back(std::move(game));
         }
 
-        collection_childs.emplace_back(game_key);
+        const size_t game_idx = sctx.path_to_gameidx.at(game_path);
+        childs.emplace_back(game_idx);
+
+        if (!entry.id.isEmpty())
+            gogids.emplace(game_idx, entry.id);
     }
 }
 } // namespace
@@ -159,12 +163,9 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(HashMap<QString, modeldata::Game>& games,
-                    HashMap<QString, modeldata::Collection>& collections,
-                    HashMap<QString, std::vector<QString>>& collection_childs)
+void Gamelist::find(providers::SearchContext& sctx, HashMap<size_t, QString>& gogids)
 {
     static constexpr auto MSG_PREFIX = "GOG:";
-    const QString GOG_TAG(QStringLiteral("GOG"));
 
 
     std::vector<GogEntry> entries(find_game_entries());
@@ -175,19 +176,14 @@ void Gamelist::find(HashMap<QString, modeldata::Game>& games,
         return;
 
 
-    if (!collections.count(GOG_TAG)) {
-        modeldata::Collection collection(GOG_TAG);
-        collection.setShortName(GOG_TAG);
-        //collection.source_dirs.append(installdirs);
-        collections.emplace(GOG_TAG, std::move(collection));
-    }
+    const QString GOG_TAG(gog_tag());
+    if (!sctx.collections.count(GOG_TAG))
+        sctx.collections.emplace(GOG_TAG, modeldata::Collection(GOG_TAG));
 
-    std::vector<QString>& childs = collection_childs[GOG_TAG];
-
-    const size_t game_count_before = games.size();
-    register_entries(entries, games, childs);
-    if (game_count_before != games.size())
-        emit gameCountChanged(static_cast<int>(games.size()));
+    const size_t game_count_before = sctx.games.size();
+    register_entries(entries, sctx, gogids);
+    if (game_count_before != sctx.games.size())
+        emit gameCountChanged(static_cast<int>(sctx.games.size()));
 }
 
 } // namespace steam
