@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "PegasusMetadata.h"
+#include "PegasusMedia.h"
 
 #include <QDebug>
 #include <QFile>
@@ -67,19 +69,15 @@ PegasusProvider::PegasusProvider(std::vector<QString> game_dirs, QObject* parent
     , m_game_dirs(std::move(game_dirs))
 {}
 
-void PegasusProvider::findLists(HashMap<QString, modeldata::Game>& games,
-                                HashMap<QString, modeldata::Collection>& collections,
-                                HashMap<QString, std::vector<QString>>& collection_childs)
+void PegasusProvider::findLists(SearchContext& ctx)
 {
-    collection_finder.find_in_dirs(m_game_dirs, games, collections, collection_childs,
-                                   [this](int game_count){ emit gameCountChanged(game_count); });
+    find_in_dirs(m_game_dirs, ctx);
+    emit gameCountChanged(static_cast<int>(ctx.games.size()));
 }
 
-void PegasusProvider::findStaticData(HashMap<QString, modeldata::Game>& games,
-                                     const HashMap<QString, modeldata::Collection>& collections,
-                                     const HashMap<QString, std::vector<QString>>& collection_childs)
+void PegasusProvider::findStaticData(SearchContext& ctx)
 {
-    metadata_finder.enhance_in_dirs(m_game_dirs, games, collections, collection_childs);
+    find_assets(m_game_dirs, ctx.games);
 }
 
 } // namespace pegasus

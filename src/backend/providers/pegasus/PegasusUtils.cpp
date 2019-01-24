@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,43 +15,41 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "PegasusCommon.h"
+#include "PegasusUtils.h"
 
 #include <QFileInfo>
+#include <QStringBuilder>
 #include <QUrl>
 
 
 namespace providers {
 namespace pegasus {
+namespace utils {
 
-QStringList tokenize(const QString& str)
+QStringList tokenize_by_comma(const QString& str)
 {
-    QStringList list = str.split(',', QString::SkipEmptyParts);
+    QStringList list = str.split(QChar(','), QString::SkipEmptyParts);
     for (QString& item : list)
         item = item.trimmed();
 
     return list;
 }
 
-void add_asset(modeldata::GameAssets& game_assets, const AssetType asset_type, const QString& value,
-               const QString& relative_dir)
+QString assetline_to_url(const QString& value, const QString& relative_dir)
 {
-    Q_ASSERT(asset_type != AssetType::UNKNOWN);
+    Q_ASSERT(!value.isEmpty());
+    Q_ASSERT(!relative_dir.isEmpty());
 
-    QString url;
-    if (value.startsWith(QStringLiteral("http://")) || value.startsWith(QStringLiteral("https://"))) {
-        url = value;
-    }
-    else {
-        QFileInfo finfo(value);
-        if (finfo.isRelative())
-            finfo.setFile(relative_dir + '/' + value);
+    if (value.startsWith(QLatin1String("http://")) || value.startsWith(QLatin1String("https://")))
+        return value;
 
-        url = QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
-    }
+    QFileInfo finfo(value);
+    if (finfo.isRelative())
+        finfo.setFile(relative_dir % '/' % value);
 
-    game_assets.addUrlMaybe(asset_type, std::move(url));
+    return QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
 }
 
+} // namespace utils
 } // namespace pegasus
 } // namespace providers

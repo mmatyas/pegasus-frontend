@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,9 @@
 
 #pragma once
 
-#include "PegasusCollections.h"
-#include "PegasusMetadata.h"
 #include "providers/Provider.h"
 
+#include <QString>
 #include <vector>
 
 
@@ -34,17 +33,11 @@ public:
     explicit PegasusProvider(QObject* parent = nullptr);
     explicit PegasusProvider(std::vector<QString> game_dirs, QObject* parent = nullptr);
 
-    void findLists(HashMap<QString, modeldata::Game>&,
-                   HashMap<QString, modeldata::Collection>&,
-                   HashMap<QString, std::vector<QString>>&) final;
-    void findStaticData(HashMap<QString, modeldata::Game>&,
-                        const HashMap<QString, modeldata::Collection>&,
-                        const HashMap<QString, std::vector<QString>>&) final;
+    void findLists(SearchContext&) final;
+    void findStaticData(SearchContext&) final;
 
 private:
     const std::vector<QString> m_game_dirs;
-    const PegasusCollections collection_finder;
-    const PegasusMetadata metadata_finder;
 };
 
 } // namespace pegasus

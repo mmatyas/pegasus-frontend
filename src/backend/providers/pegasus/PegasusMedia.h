@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,17 +17,16 @@
 
 #pragma once
 
-#include "modeldata/gaming/GameAssetsData.h"
+#include "utils/FwdDeclModelData.h"
 
 #include <QString>
-#include <QStringList>
+#include <vector>
 
 
 namespace providers {
 namespace pegasus {
 
-QStringList tokenize(const QString& str);
-void add_asset(modeldata::GameAssets&, const AssetType, const QString&, const QString&);
+void find_assets(const std::vector<QString>&, std::vector<modeldata::Game>&);
 
 } // namespace pegasus
 } // namespace providers

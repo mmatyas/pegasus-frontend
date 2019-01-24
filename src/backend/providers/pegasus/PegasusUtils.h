@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,32 +17,17 @@
 
 #pragma once
 
-#include "utils/FwdDeclModelData.h"
-#include "utils/HashMap.h"
-
 #include <QString>
-#include <functional>
-#include <vector>
+#include <QStringList>
 
 
 namespace providers {
 namespace pegasus {
+namespace utils {
 
-enum class CollAttribType : unsigned char;
+QStringList tokenize_by_comma(const QString&);
+QString assetline_to_url(const QString&, const QString&);
 
-class PegasusCollections {
-public:
-    PegasusCollections();
-
-    void find_in_dirs(const std::vector<QString>&,
-                      HashMap<QString, modeldata::Game>&,
-                      HashMap<QString, modeldata::Collection>&,
-                      HashMap<QString, std::vector<QString>>&,
-                      const std::function<void(int)>&) const;
-
-private:
-    const HashMap<QString, CollAttribType> m_key_types;
-};
-
+} // namespace utils
 } // namespace pegasus
 } // namespace providers
