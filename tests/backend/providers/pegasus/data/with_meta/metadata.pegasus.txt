@@ -1,0 +1,67 @@
+# Games can be defined before collections
+game: Pre
+file: pre.ext
+
+
+collection: My Games
+shortname: mygames
+extensions: ext
+summary: this is the summary
+description: this is the description
+launch: launcher.exe "{file.path}"
+workdir: some/workdir
+
+
+# Test basic metadata
+game: A simple game
+file: basic.ext
+# repeating multi keys will append
+developer: Dev
+developer: Dev with Spaces
+publisher: The Company
+genres:
+  genre1
+  genre2
+  genre with spaces
+players: 2-4
+rating: 80%
+# repeating single keys will overwrite
+release: 1998
+release: 1998-05
+x-something: ignored
+summary: something short
+  here
+description: a very
+  long
+  .
+  description
+
+
+game: Subdir Game
+file: subdir/game_in_subdir.ext
+
+
+# Test multiple files
+game: Multifile Game
+files:
+  multi.a.ext
+  multi.b.ext
+
+
+# Launch-only entries are not supported at the moment
+game: Virtual Game
+launch: runme.exe param1 param2
+workdir: some/dir/here
+
+
+# Check some more interesting cases
+game: Horse
+file: horse.ext
+launch: dummy
+workdir: my/work/dir
+rating: asd
+rating: 0.7
+release: 123465
+release: 45-1992
+release: 1992-45
+asd: asdasd

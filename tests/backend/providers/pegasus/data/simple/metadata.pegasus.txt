@@ -5,9 +5,10 @@ ignore-file: duplicategame.ext
 launch: myemulator {file.path}
 
 collection: Favorite games
-file: favgame1.ext
-file: favgame2.ext
-file: game with spaces.ext
+files:
+  favgame1.ext
+  favgame2.ext
+  game with spaces.ext
 
 collection: Multi-game ROMs
 regex: \d+.in.1

@@ -1,4 +1,0 @@
-collection: mygames
-extensions: ext
-summary: this is the summary
-description: this is the description
