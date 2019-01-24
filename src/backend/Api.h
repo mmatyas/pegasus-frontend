@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,7 +52,9 @@ public:
     void startScanning();
 
 signals:
-    void launchGame(const model::Game*);
+    void launchGame(const model::GameFile*);
+    void launchFailed(const QString);
+    void launchSelectFile(const model::GameFile*);
     void memoryChanged();
 
     // triggers translation update
@@ -68,12 +70,13 @@ private slots:
     // internal communication
     void onStaticDataLoaded();
     void onGameFavoriteChanged();
-    void onGameLaunchRequested();
+    void onGameFileSelectorRequested();
+    void onGameFileLaunchRequested();
     void onThemeChanged();
 
 private:
     // game launching
-    model::Game* m_launch_game;
+    model::GameFile* m_launch_game_file;
 
     // initialization
     ProviderManager m_providerman;

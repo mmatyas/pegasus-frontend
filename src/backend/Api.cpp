@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
-    , m_launch_game(nullptr)
+    , m_launch_game_file(nullptr)
     , m_providerman(this)
 {
     connect(&m_memory, &model::Memory::dataChanged,
@@ -57,44 +57,53 @@ void ApiObject::onStaticDataLoaded()
     qInfo().noquote() << tr_log("%1 games found").arg(m_allGames.count());
 
     for (model::Game* game : m_allGames) {
-        connect(game, &model::Game::launchRequested,
-                this, &ApiObject::onGameLaunchRequested);
+        connect(game, &model::Game::launchFileSelectorRequested,
+                this, &ApiObject::onGameFileSelectorRequested);
         connect(game, &model::Game::favoriteChanged,
                 this, &ApiObject::onGameFavoriteChanged);
+
+        for (model::GameFile* gamefile : *game->files()) {
+            connect(gamefile, &model::GameFile::launchRequested,
+                    this, &ApiObject::onGameFileLaunchRequested);
+        }
     }
 
     m_internal.meta().onUiReady();
 }
 
-void ApiObject::onGameLaunchRequested()
+void ApiObject::onGameFileSelectorRequested()
 {
-    // avoid launch spamming
-    if (m_launch_game)
+    // TODO
+}
+
+void ApiObject::onGameFileLaunchRequested()
+{
+    if (m_launch_game_file)
         return;
 
-    m_launch_game = static_cast<model::Game*>(QObject::sender());
-    emit launchGame(m_launch_game);
+    m_launch_game_file = static_cast<model::GameFile*>(QObject::sender());
+    emit launchGame(m_launch_game_file);
 }
 
 void ApiObject::onGameLaunchOk()
 {
-    Q_ASSERT(m_launch_game);
-    m_providerman.onGameLaunched(m_launch_game);
+    Q_ASSERT(m_launch_game_file);
+    m_providerman.onGameLaunched(m_launch_game_file);
 }
 
 void ApiObject::onGameLaunchError()
 {
     // TODO: show error
-    Q_ASSERT(m_launch_game);
-    m_launch_game = nullptr;
+    Q_ASSERT(m_launch_game_file);
+    m_launch_game_file = nullptr;
 }
 
 void ApiObject::onGameFinished()
 {
-    Q_ASSERT(m_launch_game);
+    Q_ASSERT(m_launch_game_file);
 
-    m_providerman.onGameFinished(m_launch_game);
-    m_launch_game = nullptr;
+    m_providerman.onGameFinished(m_launch_game_file);
+    m_launch_game_file = nullptr;
 }
 
 void ApiObject::onGameFavoriteChanged()
