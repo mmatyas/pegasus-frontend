@@ -22,21 +22,13 @@ win32|macx|defined(pclinux,var): include(steam/steam.pri)
 win32|defined(pclinux,var): include(gog/gog.pri)
 win32|macx|defined(pclinux,var)|defined(armlinux,var): include(es2/es2.pri)
 android: include(android_apps/android.pri)
-
-# # All
-# {
-#     ENABLED_COMPATS += "Skraper Assets"
-#     DEFINES *= WITH_COMPAT_SKRAPER
-#     HEADERS += $$PWD/skraper/SkraperAssetsProvider.h
-#     SOURCES += $$PWD/skraper/SkraperAssetsProvider.cpp
-# }
+# All platforms
+include(skraper/skraper.pri)
 
 
 defined(USES_JSON_CACHE, var) {
-    HEADERS += \
-        $$PWD/JsonCacheUtils.h
-    SOURCES += \
-        $$PWD/JsonCacheUtils.cpp
+    HEADERS += $$PWD/JsonCacheUtils.h
+    SOURCES += $$PWD/JsonCacheUtils.cpp
 }
 
 

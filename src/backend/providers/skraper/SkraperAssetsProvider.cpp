@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,15 +40,17 @@ std::vector<QString> get_game_dirs()
     return game_dirs;
 }
 
-HashMap<QString, modeldata::Game* const> build_gamepath_db(HashMap<QString, modeldata::Game>& games)
+HashMap<QString, modeldata::Game* const> build_gamepath_db(std::vector<modeldata::Game>& games)
 {
     HashMap<QString, modeldata::Game* const> map;
 
-    for (auto& pair : games) {
-        const QFileInfo& finfo = pair.second.fileinfo();
+    for (modeldata::Game& game : games) {
+        for (const auto& file_entry : game.files) {
+            const QFileInfo& finfo = file_entry.second.fileinfo;
 
-        QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
-        map.emplace(std::move(path), &pair.second);
+            QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
+            map.emplace(std::move(path), &game);
+        }
     }
 
     return map;
@@ -92,15 +94,13 @@ SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
     }
 {}
 
-void SkraperAssetsProvider::findStaticData(HashMap<QString, modeldata::Game>& games,
-                                           const HashMap<QString, modeldata::Collection>&,
-                                           const HashMap<QString, std::vector<QString>>&)
+void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
 {
     qInfo().noquote() << tr_log("Skraper: Looking for assets...");
     unsigned found_assets_cnt = 0;
 
     const std::vector<QString> game_dirs = get_game_dirs();
-    const HashMap<QString, modeldata::Game* const> extless_path_to_game = build_gamepath_db(games);
+    const HashMap<QString, modeldata::Game* const> extless_path_to_game = build_gamepath_db(sctx.games);
 
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
