@@ -19,3 +19,4 @@
 
 namespace model { class Collection; }
 namespace model { class Game; }
+namespace model { class GameFile; }

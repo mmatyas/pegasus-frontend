@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,9 +22,20 @@ namespace model {
 
 Game::Game(modeldata::Game game, QObject* parent)
     : QObject(parent)
+    , m_files(this)
     , m_game(std::move(game))
     , m_assets(&m_game.assets, this)
 {
+    for (auto& entry : m_game.files) {
+        auto gamefile = new model::GameFile(std::move(entry.second), this);
+
+        connect(gamefile, &model::GameFile::playStatsChanged,
+                this, &model::Game::playStatsChanged);
+
+        m_files.append(gamefile);
+    }
+
+    m_game.files.clear();
 }
 
 void Game::setFavorite(bool new_val)
@@ -33,27 +44,38 @@ void Game::setFavorite(bool new_val)
     emit favoriteChanged();
 }
 
-// This one is for summing the play times provided by multiple Providers.
-void Game::addPlayStats(int playcount, qint64 playtime, const QDateTime& last_played)
-{
-    m_game.last_played = std::max(m_game.last_played, last_played);
-    m_game.playtime += playtime;
-    m_game.playcount += playcount;
-    emit playStatsChanged();
-}
 
-// This one is a single update for playtime when the game finishes.
-void Game::updatePlayStats(qint64 duration, QDateTime time_finished)
+int Game::playCount() const
 {
-    m_game.last_played = std::move(time_finished);
-    m_game.playtime += duration;
-    m_game.playcount++;
-    emit playStatsChanged();
+    return std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
+        [](int sum, const model::GameFile* const gamefile){
+            return sum + gamefile->playCount();
+        });
+}
+qint64 Game::playTime() const
+{
+    return std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
+        [](qint64 sum, const model::GameFile* const gamefile){
+            return sum + gamefile->playTime();
+        });
+}
+QDateTime Game::lastPlayed() const
+{
+    const auto it = std::max_element(filesConst().cbegin(), filesConst().cend(),
+        [](const model::GameFile* const a, const model::GameFile* const b){
+            return a->lastPlayed() < b->lastPlayed();
+        });
+    return (*it)->lastPlayed();
 }
 
 void Game::launch()
 {
-    emit launchRequested(this);
+    Q_ASSERT(m_files.count() > 0);
+
+    if (m_files.count() == 1)
+        m_files.first()->launch();
+    else
+        emit launchFileSelectorRequested();
 }
 
 } // namespace model

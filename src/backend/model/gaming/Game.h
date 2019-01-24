@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,9 +18,11 @@
 #pragma once
 
 #include "GameAssets.h"
+#include "GameFile.h"
 #include "modeldata/gaming/CollectionData.h"
 #include "modeldata/gaming/GameData.h"
 
+#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 
 
@@ -70,6 +72,7 @@ class Game : public QObject {
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
 
     Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
+    QML_OBJMODEL_PROPERTY(model::GameFile, files)
 
 public:
     explicit Game(modeldata::Game, QObject* parent = nullptr);
@@ -78,26 +81,26 @@ public:
 
     const modeldata::Game& data() const { return m_game; }
     void setFavorite(bool);
-    void addPlayStats(int playcount, qint64 playtime, const QDateTime& last_played);
-    void updatePlayStats(qint64 duration, QDateTime time_finished);
 
-signals:
-    void launchRequested(model::Game*);
+public:
+    // a workaround for const pointer issues with the model
+    const QVector<model::GameFile*>& filesConst() const { return m_files.asList(); }
 
-    void favoriteChanged();
-    void playStatsChanged();
-
-private:
     QString developerString() const { return joined_list(m_game.developers); }
     QString publisherString() const { return joined_list(m_game.publishers); }
     QString genreString() const { return joined_list(m_game.genres); }
 
     bool favorite() const { return m_game.is_favorite; }
-    int playCount() const { return m_game.playcount; }
-    qint64 playTime() const { return m_game.playtime; }
-    const QDateTime& lastPlayed() const { return m_game.last_played; }
+    int playCount() const;
+    qint64 playTime() const;
+    QDateTime lastPlayed() const;
 
     GameAssets* assetsPtr() { return &m_assets; }
+
+signals:
+    void launchFileSelectorRequested();
+    void favoriteChanged();
+    void playStatsChanged();
 
 private:
     modeldata::Game m_game;

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ class Collection : public QObject {
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
-    Q_PROPERTY(model::GameAssets* defaultAssets READ defaultAssetsPtr CONSTANT)
+    Q_PROPERTY(model::GameAssets* defaultAssets READ assetsPtr CONSTANT)
     QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
@@ -50,10 +50,10 @@ public:
     const QString& summary() const { return m_collection.summary; }
     const QString& description() const { return m_collection.description; }
 
-    GameAssets* defaultAssetsPtr() { return &m_default_assets; }
+    GameAssets* assetsPtr() { return &m_assets; }
 
 private:
     modeldata::Collection m_collection;
-    GameAssets m_default_assets;
+    GameAssets m_assets;
 };
 } // namespace model
