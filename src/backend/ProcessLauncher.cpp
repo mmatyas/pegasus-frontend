@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,13 +28,13 @@
 
 
 namespace {
-void format_launch_command(QString& launch_cmd, const modeldata::Game& game)
+void format_launch_command(QString& launch_cmd, const QFileInfo& finfo)
 {
     launch_cmd
-        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(game.fileinfo().absoluteFilePath()))
-        .replace(QLatin1String("{file.name}"), game.fileinfo().fileName())
-        .replace(QLatin1String("{file.basename}"), game.fileinfo().completeBaseName())
-        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(game.fileinfo().absolutePath()));
+        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
+        .replace(QLatin1String("{file.name}"), finfo.fileName())
+        .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
+        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
 }
 } // namespace
 
@@ -49,13 +49,18 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , m_process(nullptr)
 {}
 
-void ProcessLauncher::onLaunchRequested(const model::Game* game)
+void ProcessLauncher::onLaunchRequested(const model::GameFile* gamefile)
 {
-    Q_ASSERT(game);
+    Q_ASSERT(gamefile);
+
+    auto game = static_cast<const model::Game* const>(gamefile->parent());
+
+    // TODO: in the future, check the gamefile's own launch command first
 
     QString launch_cmd = game->data().launch_cmd;
+
     if (!launch_cmd.isEmpty())
-        format_launch_command(launch_cmd, game->data());
+        format_launch_command(launch_cmd, gamefile->data().fileinfo);
 
     if (launch_cmd.isEmpty()) {
         qInfo().noquote()
@@ -68,7 +73,7 @@ void ProcessLauncher::onLaunchRequested(const model::Game* game)
 
     QString workdir = game->data().launch_workdir;
     if (workdir.isEmpty())
-        workdir = game->data().fileinfo().absolutePath();
+        workdir = gamefile->data().fileinfo.absolutePath();
 
 
     beforeRun();
