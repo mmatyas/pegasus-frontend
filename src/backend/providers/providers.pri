@@ -7,6 +7,7 @@ HEADERS += \
     $$PWD/pegasus/PegasusProvider.h \
     $$PWD/pegasus_favorites/Favorites.h \
     $$PWD/pegasus_playtime/PlaytimeStats.h \
+    $$PWD/EnabledProviders.h
 
 SOURCES += \
     $$PWD/Provider.cpp \

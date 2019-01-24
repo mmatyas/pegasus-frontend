@@ -18,29 +18,11 @@
 #include "ProviderManager.h"
 
 #include "AppSettings.h"
+#include "EnabledProviders.h"
 #include "LocaleUtils.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
-#include "providers/pegasus/PegasusProvider.h"
-#include "providers/pegasus_favorites/Favorites.h"
-#include "providers/pegasus_playtime/PlaytimeStats.h"
 #include "utils/HashMap.h"
-
-#ifdef WITH_COMPAT_ES2
-  #include "providers/es2/Es2Provider.h"
-#endif
-#ifdef WITH_COMPAT_STEAM
-  #include "providers/steam/SteamProvider.h"
-#endif
-#ifdef WITH_COMPAT_GOG
-  #include "providers/gog/GogProvider.h"
-#endif
-#ifdef WITH_COMPAT_ANDROIDAPPS
-  #include "providers/android_apps/AndroidAppsProvider.h"
-#endif
-#ifdef WITH_COMPAT_SKRAPER
-  #include "providers/skraper/SkraperAssetsProvider.h"
-#endif
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDebug>
