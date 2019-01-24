@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,14 +29,15 @@ private slots:
     void genres();
     void release();
 
-    void launch();
+    void launchSingle();
+    void launchMulti();
 };
 
 void testStrAndList(std::function<void(modeldata::Game&, const QString&)> fn_add,
                     const char* str_name,
                     const char* list_name)
 {
-    modeldata::Game modeldata({});
+    modeldata::Game modeldata("test");
     fn_add(modeldata, "test1");
     fn_add(modeldata, "test2");
     fn_add(modeldata, "test3");
@@ -67,7 +68,7 @@ void test_Game::genres()
 
 void test_Game::release()
 {
-    modeldata::Game modeldata({});
+    modeldata::Game modeldata("test");
     modeldata.release_date = QDate(1999,1,2);
 
     model::Game game(std::move(modeldata));
@@ -76,14 +77,29 @@ void test_Game::release()
     QCOMPARE(game.property("releaseDay").toInt(), 2);
 }
 
-void test_Game::launch()
+void test_Game::launchSingle()
 {
-    model::Game game(modeldata::Game({}));
+    modeldata::Game gamedata("test");
+    gamedata.files.emplace("a", modeldata::GameFile(QFileInfo("test")));
+    model::Game game(std::move(gamedata));
 
-    QSignalSpy spy_launch(&game, &model::Game::launchRequested);
+    QSignalSpy spy_launch(game.files()->first(), &model::GameFile::launchRequested);
     QVERIFY(spy_launch.isValid());
 
-    // FIXME: "Unable to handle parameter '' of type ..."
+    QMetaObject::invokeMethod(&game, "launch");
+    QVERIFY(spy_launch.count() == 1 || spy_launch.wait());
+}
+
+void test_Game::launchMulti()
+{
+    modeldata::Game gamedata("test");
+    gamedata.files.emplace("a", modeldata::GameFile(QFileInfo("test1")));
+    gamedata.files.emplace("b", modeldata::GameFile(QFileInfo("test2")));
+    model::Game game(std::move(gamedata));
+
+    QSignalSpy spy_launch(&game, &model::Game::launchFileSelectorRequested);
+    QVERIFY(spy_launch.isValid());
+
     QMetaObject::invokeMethod(&game, "launch");
     QVERIFY(spy_launch.count() == 1 || spy_launch.wait());
 }
