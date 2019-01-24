@@ -1,17 +1,16 @@
 HEADERS += \
     $$PWD/Provider.h \
     $$PWD/ProviderManager.h \
-    #$$PWD/pegasus_favorites/Favorites.h \
     #$$PWD/pegasus_playtime/PlaytimeStats.h \
     $$PWD/EnabledProviders.h
 
 SOURCES += \
     $$PWD/Provider.cpp \
     $$PWD/ProviderManager.cpp \
-    #$$PWD/pegasus_favorites/Favorites.cpp \
     #$$PWD/pegasus_playtime/PlaytimeStats.cpp \
 
 include(pegasus/pegasus.pri)
+include(pegasus_favorites/favorites.pri)
 
 contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = yes
 unix:!macx:!android:!defined(target_arm, var): pclinux = yes

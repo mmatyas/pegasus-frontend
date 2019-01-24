@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@ QString default_db_path()
 {
     return paths::writableConfigDir() + QStringLiteral("/favorites.txt");
 }
-
 } // namespace
 
 
@@ -51,9 +50,9 @@ Favorites::Favorites(QString db_path, QObject* parent)
     , m_db_path(std::move(db_path))
 {}
 
-void Favorites::findDynamicData(const QVector<model::Game*>&,
-                                const QVector<model::Collection*>&,
-                                const HashMap<QString, model::Game*>& modelgame_map)
+void Favorites::findDynamicData(const QVector<model::Collection*>&,
+                                const QVector<model::Game*>&,
+                                const HashMap<QString, model::GameFile*>& path_map)
 {
     if (!QFileInfo::exists(m_db_path))
         return;
@@ -72,8 +71,10 @@ void Favorites::findDynamicData(const QVector<model::Game*>&,
         if (line.startsWith('#'))
             continue;
 
-        if (modelgame_map.count(line))
-            modelgame_map.at(line)->setFavorite(true);
+        if (path_map.count(line)) {
+            auto parent = static_cast<model::Game* const>(path_map.at(line)->parent());
+            parent->setFavorite(true);
+        }
     }
 }
 
@@ -84,8 +85,13 @@ void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const model::Game* const game : game_list) {
-        if (game->data().is_favorite)
-            m_pending_task << game->data().fileinfo().canonicalFilePath();
+        if (game->favorite()) {
+            for (const model::GameFile* const file : game->filesConst()) {
+                const QString path = file->data().fileinfo.canonicalFilePath();
+                if (Q_LIKELY(!path.isEmpty()))
+                    m_pending_task << path;
+            }
+        }
     }
 
     if (m_active_task.isEmpty())

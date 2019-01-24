@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ void test_FavoriteDB::write()
         new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
         new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
     };
+
     games.at(1)->setFavorite(true);
     games.at(2)->setFavorite(true);
 
@@ -155,8 +156,8 @@ void test_FavoriteDB::read()
     {
         QTextStream tmp_stream(&tmp_file);
         tmp_stream << QStringLiteral("# Favorite reader test") << endl;
-        tmp_stream << games[2]->data().fileinfo().canonicalFilePath() << endl;
-        tmp_stream << games[1]->data().fileinfo().canonicalFilePath() << endl;
+        tmp_stream << games[2]->filesConst().first()->data().fileinfo.canonicalFilePath() << endl;
+        tmp_stream << games[1]->filesConst().first()->data().fileinfo.canonicalFilePath() << endl;
         tmp_stream << QStringLiteral(":/somethingfake") << endl;
     }
     const QString db_path = tmp_file.fileName();
@@ -164,12 +165,15 @@ void test_FavoriteDB::read()
 
     providers::favorites::Favorites favorite_db(db_path);
 
-    QVector<model::Collection*> collections;
-    HashMap<QString, model::Game*> modelgame_map;
-    for (model::Game* const game : games)
-        modelgame_map.emplace(game->data().fileinfo().canonicalFilePath(), game);
+    HashMap<QString, model::GameFile*> path_map;
+    for (const model::Game* const game : games) {
+        model::GameFile* const gamefile = game->filesConst().first();
+        QString path = gamefile->data().fileinfo.canonicalFilePath();
+        QVERIFY(!path.isEmpty());
+        path_map.emplace(std::move(path), gamefile);
+    }
 
-    favorite_db.findDynamicData(games, collections, modelgame_map);
+    favorite_db.findDynamicData({}, games, path_map);
 
     QVERIFY(!games[0]->data().is_favorite);
     QVERIFY(games[1]->data().is_favorite);
