@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,11 +33,11 @@ public:
     explicit PlaytimeStats(QObject* parent = nullptr);
     explicit PlaytimeStats(QString db_path, QObject* parent = nullptr);
 
-    void findDynamicData(const QVector<model::Game*>&,
-                         const QVector<model::Collection*>&,
-                         const HashMap<QString, model::Game*>&) final;
-    void onGameLaunched(model::Game* const) final;
-    void onGameFinished(model::Game* const) final;
+    void findDynamicData(const QVector<model::Collection*>&,
+                         const QVector<model::Game*>&,
+                         const HashMap<QString, model::GameFile*>&) final;
+    void onGameLaunched(model::GameFile* const) final;
+    void onGameFinished(model::GameFile* const) final;
 
 signals:
     void startedWriting();
@@ -49,12 +49,12 @@ private:
     QDateTime m_last_launch_time;
 
     struct QueueEntry {
-        model::Game* const game;
+        model::GameFile* const gamefile;
         const QDateTime launch_time;
         const qint64 duration;
 
-        QueueEntry(model::Game* const game, QDateTime launch_time, qint64 duration)
-            : game(std::move(game))
+        QueueEntry(model::GameFile* const gamefile, QDateTime launch_time, qint64 duration)
+            : gamefile(std::move(gamefile))
             , launch_time(std::move(launch_time))
             , duration(std::move(duration))
         {}

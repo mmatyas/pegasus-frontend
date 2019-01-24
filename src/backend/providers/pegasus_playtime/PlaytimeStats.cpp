@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -169,11 +169,10 @@ void save_play_entry(const int path_id, const QDateTime& start_time, const qint6
         print_query_error(query);
 }
 
-void update_modelgame(model::Game* const game, const QDateTime& start_time, const qint64 duration)
+void update_modelgame(model::GameFile* const gamefile, const QDateTime& start_time, const qint64 duration)
 {
-    Q_ASSERT(game);
-
-    game->updatePlayStats(duration, start_time.addSecs(duration));
+    Q_ASSERT(gamefile);
+    gamefile->updatePlayTime(duration, start_time.addSecs(duration));
 }
 
 } // namespace
@@ -191,9 +190,9 @@ PlaytimeStats::PlaytimeStats(QString db_path, QObject* parent)
     , m_db_path(std::move(db_path))
 {}
 
-void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
-                                    const QVector<model::Collection*>&,
-                                    const HashMap<QString, model::Game*>& modelgame_map)
+void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
+                                    const QVector<model::Game*>&,
+                                    const HashMap<QString, model::GameFile*>& path_map)
 {
     if (!QFileInfo::exists(m_db_path))
         return;
@@ -230,7 +229,7 @@ void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
 
     while (query.next()) {
         const QString path = query.value(0).toString();
-        if (!modelgame_map.count(path))
+        if (!path_map.count(path))
             continue;
 
         const qint64 start_epoch = query.value(1).toLongLong();
@@ -243,21 +242,21 @@ void PlaytimeStats::findDynamicData(const QVector<model::Game*>&,
     }
     // trigger update only once
     for (const auto& pair : stat_map) {
-        model::Game* game = modelgame_map.at(pair.first);
+        model::GameFile* gamefile = path_map.at(pair.first);
         const Stats& stats = stat_map.at(pair.first);
-        game->addPlayStats(stats.playcount, stats.playtime, stats.last_played);
+        gamefile->addPlayStats(stats.playcount, stats.playtime, stats.last_played);
     }
 }
 
-void PlaytimeStats::onGameLaunched(model::Game* const game)
+void PlaytimeStats::onGameLaunched(model::GameFile* const gamefile)
 {
-    Q_ASSERT(game);
+    Q_ASSERT(gamefile);
     m_last_launch_time = QDateTime::currentDateTimeUtc();
 }
 
-void PlaytimeStats::onGameFinished(model::Game* const game)
+void PlaytimeStats::onGameFinished(model::GameFile* const gamefile)
 {
-    Q_ASSERT(game);
+    Q_ASSERT(gamefile);
     Q_ASSERT(m_last_launch_time.isValid());
 
     QMutexLocker lock(&m_queue_guard);
@@ -266,7 +265,7 @@ void PlaytimeStats::onGameFinished(model::Game* const game)
     const auto duration = m_last_launch_time.secsTo(now);
 
     m_pending_tasks.emplace_back(
-        game,
+        gamefile,
         m_last_launch_time,
         duration
     );
@@ -299,12 +298,13 @@ void PlaytimeStats::start_processing()
                 break;
 
             for (const QueueEntry& entry : m_active_tasks) {
-                const int path_id = get_path_id(entry.game->data().fileinfo().canonicalFilePath());
+                const QString path = entry.gamefile->data().fileinfo.canonicalFilePath();
+                const int path_id = get_path_id(path);
                 if (path_id == -1)
                     continue;
 
                 save_play_entry(path_id, entry.launch_time, entry.duration);
-                update_modelgame(entry.game, entry.launch_time, entry.duration);
+                update_modelgame(entry.gamefile, entry.launch_time, entry.duration);
             }
 
             channel.commit();

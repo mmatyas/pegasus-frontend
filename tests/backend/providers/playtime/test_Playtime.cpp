@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ using PlaytimeStats = providers::playtime::PlaytimeStats;
 
 namespace {
 
-void create_dummy_data(QVector<model::Game*>& games,
-                       QVector<model::Collection*>& collections,
-                       HashMap<QString, model::Game*>& modelgame_map,
+void create_dummy_data(QVector<model::Collection*>& collections,
+                       QVector<model::Game*>& games,
+                       HashMap<QString, model::GameFile*>& path_map,
                        QObject* parent)
 {
     collections = {
@@ -41,9 +41,9 @@ void create_dummy_data(QVector<model::Game*>& games,
         new model::Game(modeldata::Game(QFileInfo("dummy1")), parent),
         new model::Game(modeldata::Game(QFileInfo("dummy2")), parent),
     };
-    modelgame_map = {
-        { "dummy1", games.at(0) },
-        { "dummy2", games.at(1) },
+    path_map = {
+        { "dummy1", games.at(0)->files()->first() },
+        { "dummy2", games.at(1)->files()->first() },
     };
 
     collections.at(0)->setGameList({ games.at(0) });
@@ -64,10 +64,10 @@ private slots:
 
 void test_Playtime::read()
 {
-    QVector<model::Game*> games;
     QVector<model::Collection*> collections;
-    HashMap<QString, model::Game*> modelgame_map;
-    create_dummy_data(games, collections, modelgame_map, this);
+    QVector<model::Game*> games;
+    HashMap<QString, model::GameFile*> path_map;
+    create_dummy_data(collections, games, path_map, this);
 
     const QString db_path = QDir::tempPath() + QStringLiteral("/data.db");
     QFile::remove(db_path);
@@ -75,21 +75,19 @@ void test_Playtime::read()
 
 
     PlaytimeStats playtime(db_path);
+    playtime.findDynamicData(collections, games, path_map);
 
-    playtime.findDynamicData(games, collections, modelgame_map);
-
-
-    QCOMPARE(games.at(0)->data().playcount, 4);
-    QCOMPARE(games.at(0)->data().playtime, 35 /*sec*/);
-    QCOMPARE(games.at(0)->data().last_played, QDateTime::fromSecsSinceEpoch(1531755039));
+    QCOMPARE(games.at(0)->playCount(), 4);
+    QCOMPARE(games.at(0)->playTime(), 35 /*sec*/);
+    QCOMPARE(games.at(0)->lastPlayed(), QDateTime::fromSecsSinceEpoch(1531755039));
 }
 
 void test_Playtime::write()
 {
-    QVector<model::Game*> games;
     QVector<model::Collection*> collections;
-    HashMap<QString, model::Game*> modelgame_map;
-    create_dummy_data(games, collections, modelgame_map, this);
+    QVector<model::Game*> games;
+    HashMap<QString, model::GameFile*> path_map;
+    create_dummy_data(collections, games, path_map, this);
 
     QTemporaryFile db_file;
     QVERIFY(db_file.open());
@@ -101,8 +99,8 @@ void test_Playtime::write()
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
-    playtime.onGameLaunched(games.at(0));
-    playtime.onGameFinished(games.at(0));
+    playtime.onGameLaunched(games.at(0)->files()->first());
+    playtime.onGameFinished(games.at(0)->files()->first());
 
     QVERIFY(spy_start.count() || spy_start.wait());
     QVERIFY(spy_end.count() || spy_end.wait());
@@ -114,10 +112,10 @@ void test_Playtime::write()
 
 void test_Playtime::write_queue()
 {
-    QVector<model::Game*> games;
     QVector<model::Collection*> collections;
-    HashMap<QString, model::Game*> modelgame_map;
-    create_dummy_data(games, collections, modelgame_map, this);
+    QVector<model::Game*> games;
+    HashMap<QString, model::GameFile*> path_map;
+    create_dummy_data(collections, games, path_map, this);
 
     QTemporaryFile db_file;
     QVERIFY(db_file.open());
@@ -130,14 +128,14 @@ void test_Playtime::write_queue()
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
 
-    playtime.onGameLaunched(games.at(0));
-    playtime.onGameFinished(games.at(0));
+    playtime.onGameLaunched(games.at(0)->files()->first());
+    playtime.onGameFinished(games.at(0)->files()->first());
 
-    playtime.onGameLaunched(games.at(0));
-    playtime.onGameFinished(games.at(0));
+    playtime.onGameLaunched(games.at(0)->files()->first());
+    playtime.onGameFinished(games.at(0)->files()->first());
 
-    playtime.onGameLaunched(games.at(0));
-    playtime.onGameFinished(games.at(0));
+    playtime.onGameLaunched(games.at(0)->files()->first());
+    playtime.onGameFinished(games.at(0)->files()->first());
 
 
     QVERIFY(spy_start.count() || spy_start.wait());
