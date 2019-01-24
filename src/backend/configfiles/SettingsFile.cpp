@@ -88,11 +88,11 @@ LoadContext::LoadContext()
 
 void LoadContext::load() const
 {
-    const auto on_error = [this](const int lineno, const QString msg){
-        log_error(lineno, msg);
+    const auto on_error = [this](const config::Error& error){
+        log_error(error.line, error.message);
     };
-    const auto on_attribute = [this](const int lineno, const QString key, const QString val){
-        handle_entry(lineno, key, val);
+    const auto on_attribute = [this](const config::Entry& entry){
+        handle_entry(entry.line, entry.key, config::mergeLines(entry.values));
     };
 
     config::readFile(config_path, on_attribute, on_error);

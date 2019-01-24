@@ -47,12 +47,12 @@ HashMap<QString, QString> read_metafile(const QString& config_file_path)
 
     config::readFile(
         config_file_path,
-        [&](const int, const QString key, const QString val){
-            result.emplace(key, val);
+        [&](const config::Entry& entry){
+            result.emplace(entry.key, config::mergeLines(entry.values));
         },
-        [&](const int linenum, const QString msg){
+        [&](const config::Error& error){
             qWarning().noquote() << tr_log("`%1`, line %2: %3")
-                .arg(config_file_path, QString::number(linenum), msg);
+                .arg(config_file_path, QString::number(error.line), error.message);
         });
     return result;
 }
