@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ struct Collection {
     QString summary;
     QString description;
 
-    GameAssets default_assets; // TODO: remove
+    GameAssets assets; // TODO: remove
 
     const QString& shortName() const { return m_short_name; }
     void setShortName(const QString&);

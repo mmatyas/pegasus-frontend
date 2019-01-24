@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,40 +25,51 @@
 #include <QFileInfo>
 #include <QString>
 #include <QStringList>
+#include <QVector>
 
 
 namespace modeldata {
 
-struct Game {
-    explicit Game(QFileInfo fileinfo);
-    MOVE_ONLY(Game)
+struct GameFile {
+    QFileInfo fileinfo;
+    QString name;
+    // TODO: in the future...
+    // QString summary;
+    // QString description;
+    // QString launch_cmd;
+    // QString launch_workdir;
 
-    const QFileInfo& fileinfo() const { return m_fileinfo; }
+    QDateTime last_played;
+    qint64 play_time;
+    int play_count;
+
+    explicit GameFile(QFileInfo);
+    MOVE_ONLY(GameFile)
+};
+
+struct Game {
+    explicit Game(QFileInfo);
+    explicit Game(QString);
+    MOVE_ONLY(Game)
 
     QString title;
     QString summary;
     QString description;
+
     QString launch_cmd;
     QString launch_workdir;
+    HashMap<QString, GameFile> files;
 
-    int player_count;
+    short player_count;
     bool is_favorite;
     float rating;
     QDate release_date;
-
-    int playcount;
-    qint64 playtime;
-    QDateTime last_played;
 
     QStringList developers;
     QStringList publishers;
     QStringList genres;
 
-    HashMap<QString, QString> extra; // TODO: remove
     GameAssets assets;
-
-private:
-    QFileInfo m_fileinfo;
 };
 
 } // namespace modeldata

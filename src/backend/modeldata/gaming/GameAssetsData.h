@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ struct GameAssets {
     void appendMulti(AssetType, QString);
 
 private:
+    // TODO: merge these two
     HashMap<AssetType, QString, EnumHash> m_single_assets;
     HashMap<AssetType, QStringList, EnumHash> m_multi_assets;
 };

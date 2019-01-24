@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,17 +18,39 @@
 #include "GameData.h"
 
 
+namespace {
+QString pretty_filename(const QFileInfo& fi)
+{
+    return fi.completeBaseName()
+        .replace(QLatin1Char('_'), QLatin1Char(' '))
+        .replace(QLatin1Char('.'), QLatin1Char(' '));
+}
+} // namespace
+
+
 namespace modeldata {
 
-Game::Game(QFileInfo fileinfo)
-    : title(fileinfo.completeBaseName())
+GameFile::GameFile(QFileInfo fi)
+    : fileinfo(std::move(fi))
+    , name(pretty_filename(fileinfo))
+    , play_time(0)
+    , play_count(0)
+{}
+
+Game::Game(QFileInfo fi)
+    : Game(pretty_filename(fi))
+{
+    QString path = fi.absoluteFilePath();
+    Q_ASSERT(!path.isEmpty());
+    // TODO: one call to the prettifier could be optimized out here
+    files.emplace(std::move(path), GameFile(std::move(fi)));
+}
+
+Game::Game(QString title)
+    : title(std::move(title))
     , player_count(1)
     , is_favorite(false)
     , rating(0.f)
-    , playcount(0)
-    , playtime(0)
-    , m_fileinfo(std::move(fileinfo))
-{
-}
+{}
 
 } // namespace modeldata
