@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,17 +17,24 @@
 
 #pragma once
 
+#include "modeldata/gaming/GameData.h"
+#include "modeldata/gaming/CollectionData.h"
 #include "utils/FwdDeclModel.h"
-#include "utils/FwdDeclModelData.h"
 #include "utils/HashMap.h"
 
 #include <QString>
 #include <QObject>
-#include <QVector>
 #include <vector>
 
 
 namespace providers {
+
+struct SearchContext {
+    std::vector<modeldata::Game> games;
+    HashMap<QString, modeldata::Collection> collections;
+    HashMap<QString, std::vector<size_t>> collection_childs;
+    HashMap<QString, size_t> path_to_gameidx;
+};
 
 class Provider : public QObject {
     Q_OBJECT
@@ -38,30 +45,23 @@ public:
 
     /// Initialization first stage:
     /// Find all games and collections.
-    virtual void findLists(HashMap<QString, modeldata::Game>&,
-                           HashMap<QString, modeldata::Collection>&,
-                           HashMap<QString, std::vector<QString>>&)
-    {}
+    virtual void findLists(SearchContext&) {}
 
     /// Initialization second stage:
     /// Enhance the previously found games and collections with metadata and assets.
-    virtual void findStaticData(HashMap<QString, modeldata::Game>&,
-                                const HashMap<QString, modeldata::Collection>&,
-                                const HashMap<QString, std::vector<QString>>&)
-    {}
+    virtual void findStaticData(SearchContext&) {}
 
     /// Initialization third stage:
     /// Find data that may change during the runtime for all games
-    virtual void findDynamicData(const QVector<model::Game*>&,
-                                 const QVector<model::Collection*>&,
-                                 const HashMap<QString, model::Game*>&)
-    {}
+    virtual void findDynamicData(const QVector<model::Collection*>&,
+                                 const QVector<model::Game*>&,
+                                 const HashMap<QString, model::GameFile*>&) {}
 
 
     // events
     virtual void onGameFavoriteChanged(const QVector<model::Game*>&) {}
-    virtual void onGameLaunched(model::Game* const) {}
-    virtual void onGameFinished(model::Game* const) {}
+    virtual void onGameLaunched(model::GameFile* const) {}
+    virtual void onGameFinished(model::GameFile* const) {}
 
 signals:
     void gameCountChanged(int);
