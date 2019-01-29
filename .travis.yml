@@ -12,7 +12,7 @@ env:
     - QT_VER=qt5112
 
 git:
-  depth: 120
+  depth: 175
 
 
 install: ./etc/ci/travis_prepare.sh
