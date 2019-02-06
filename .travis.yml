@@ -1,7 +1,7 @@
 language: cpp
 
 sudo: required
-dist: trusty
+dist: xenial
 
 branches:
   only:
@@ -9,7 +9,7 @@ branches:
 
 env:
   global:
-    - QT_VER=qt5112
+    - QT_VER=qt5121
 
 git:
   depth: 175
@@ -37,6 +37,7 @@ jobs:
   - env: TARGET=x11-static
   - env: TARGET=rpi1-static
   - env: TARGET=rpi2-static
+  - env: TARGET=rpi3-static
 
   # Collect and deploy artifacts
   - stage: deploy
@@ -51,3 +52,6 @@ jobs:
     install: ./etc/ci/travis_coverage-prepare.sh
     script: ./etc/ci/travis_coverage-build.sh
     deploy: null
+
+services:
+  - xvfb

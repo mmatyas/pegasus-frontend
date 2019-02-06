@@ -12,12 +12,7 @@ if [[ $TARGET != x11* ]]; then
   exit 1
 fi
 
-
 set -o xtrace
-
-export DISPLAY=:99.0
-sh -e /etc/init.d/xvfb start
-sleep 3
 
 
 # Lint

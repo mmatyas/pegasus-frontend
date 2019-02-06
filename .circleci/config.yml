@@ -5,7 +5,7 @@ jobs:
       - image: mmatyas/pegasus-qt-android
     environment:
       - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-      - QT_TARGET: qt5112_android
+      - QT_TARGET: qt5121_android
       - ANDROID_NDK_ROOT: /opt/android-ndk
     steps:
       - run: git clone https://github.com/mmatyas/pegasus-frontend .
@@ -28,7 +28,7 @@ jobs:
       # Deploy
       - run: mkdir dist
       - run: cp
-          installdir/build/outputs/apk/installdir-release-signed.apk
+          installdir/build/outputs/apk/release/installdir-release-signed.apk
           dist/pegasus-fe_$(git describe --always)_android.apk
       - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
       - run: bash ./upload.sh dist/*.apk
@@ -37,7 +37,7 @@ jobs:
       - image: mmatyas/pegasus-qt-mingw
     environment:
       - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-      - QT_TARGET: qt5112_win32-mingw-static
+      - QT_TARGET: qt5121_win32-mingw-static
     steps:
       - run: git clone https://github.com/mmatyas/pegasus-frontend .
       - run: git checkout -qf ${CIRCLE_SHA1}
