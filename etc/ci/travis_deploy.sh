@@ -11,8 +11,8 @@ fi
 
 STAGING_REPO=https://github.com/mmatyas/pegasus-deploy-staging.git
 GIT_REV=$(git describe --always)
-TARGETS='x11-static rpi1-static rpi2-static macos-static'
-EXPECTED_FILE_CNT=5  # 4 regular + 1 deb
+TARGETS='x11-static rpi1-static rpi2-static rpi3-static macos-static'
+EXPECTED_FILE_CNT=6  # 5 regular + 1 deb
 
 
 # Collect
