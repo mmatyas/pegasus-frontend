@@ -26,4 +26,14 @@ fi
 make install INSTALL_ROOT=$PWD/../installoc
 
 
+# Check deps
+
+if [[ $TARGET == x11* ]]; then
+  CROSS=
+else
+  CROSS=/opt/linaro/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+fi
+${CROSS}objdump -p ../installoc/usr/bin/pegasus-fe | grep NEEDED | sort
+
+
 cd ..
