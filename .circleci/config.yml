@@ -46,6 +46,7 @@ jobs:
       - run: /opt/${QT_TARGET}_hosttools/bin/qmake .
       - run: make
       - run: make install INSTALL_ROOT=${PWD}/installdir
+      - run: i686-w64-mingw32-objdump -p installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe | grep 'DLL Name' | sort
       # Deploy
       - run: mkdir dist
       - run: zip -j dist/pegasus-fe_$(git describe --always)_win-mingw-static.zip
