@@ -79,7 +79,7 @@ win32 {
     QMAKE_TARGET_PRODUCT = "pegasus-frontend"
     QMAKE_TARGET_COMPANY = "pegasus-frontend.org"
     QMAKE_TARGET_DESCRIPTION = "Pegasus emulator frontend"
-    QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2018 Matyas Mustoha"
+    QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2019 Matyas Mustoha"
     RC_ICONS = platform/windows/app_icon.ico
     OTHER_FILES += $${RC_ICONS}
 
