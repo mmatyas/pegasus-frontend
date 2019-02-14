@@ -135,7 +135,7 @@ std::vector<size_t> Metadata::fill_from_cache(const std::vector<size_t>& child_i
 
     for (size_t idx : child_ids) {
         modeldata::Game& game = all_games.at(idx);
-        const QString& package = game.files.begin()->second.fileinfo.fileName();
+        const QString& package = game.files.cbegin()->fileinfo.fileName();
 
         const bool filled = fill_from_cached_json(package, game);
         if (!filled)
@@ -185,7 +185,7 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
                      &loop, &QEventLoop::quit);
 
     for (size_t idx : child_ids) {
-        const QString package = all_games.at(idx).files.begin()->second.fileinfo.fileName();
+        const QString package = all_games.at(idx).files.cbegin()->fileinfo.fileName();
         const QUrl url(GPLAY_URL.arg(package));
 
         QNetworkRequest request(url);

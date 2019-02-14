@@ -26,8 +26,8 @@ Game::Game(modeldata::Game game, QObject* parent)
     , m_game(std::move(game))
     , m_assets(&m_game.assets, this)
 {
-    for (auto& entry : m_game.files) {
-        auto gamefile = new model::GameFile(std::move(entry.second), this);
+    for (modeldata::GameFile& entry : m_game.files) {
+        auto gamefile = new model::GameFile(std::move(entry), this);
 
         connect(gamefile, &model::GameFile::playStatsChanged,
                 this, &model::Game::playStatsChanged);

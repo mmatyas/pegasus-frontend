@@ -319,7 +319,7 @@ void Metadata::enhance(providers::SearchContext& sctx)
 
         // Steam games can have only one manifest file
         Q_ASSERT(game.files.size() == 1);
-        const QString path = game.files.begin()->second.fileinfo.absoluteFilePath();
+        const QString path = game.files.cbegin()->fileinfo.absoluteFilePath();
 
         SteamGameEntry entry = read_manifest(path);
         if (!entry.appid.isEmpty()) {

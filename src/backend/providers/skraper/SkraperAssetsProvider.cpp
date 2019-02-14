@@ -45,8 +45,8 @@ HashMap<QString, modeldata::Game* const> build_gamepath_db(std::vector<modeldata
     HashMap<QString, modeldata::Game* const> map;
 
     for (modeldata::Game& game : games) {
-        for (const auto& file_entry : game.files) {
-            const QFileInfo& finfo = file_entry.second.fileinfo;
+        for (const modeldata::GameFile& file_entry : game.files) {
+            const QFileInfo& finfo = file_entry.fileinfo;
 
             QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
             map.emplace(std::move(path), &game);

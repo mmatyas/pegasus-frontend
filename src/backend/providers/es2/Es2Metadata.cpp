@@ -238,7 +238,7 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
             Q_ASSERT(game_idx < sctx.games.size());
             modeldata::Game* const game = &sctx.games.at(game_idx);
 
-            const QString gamefile = game->files.cbegin()->second.fileinfo.completeBaseName();
+            const QString gamefile = game->files.cbegin()->fileinfo.completeBaseName();
             const QString shortpath = coll_shortname % '/' % gamefile;
             games_by_shortpath.emplace(shortpath, game);
         }
@@ -368,7 +368,7 @@ void MetadataParser::applyMetadata(modeldata::Game& game,
     game.genres.append(xml_props[MetaTypes::GENRE]);
 
     // then the numbers
-    game.files.begin()->second.play_count += xml_props[MetaTypes::PLAYCOUNT].toInt();
+    game.files.front().play_count += xml_props[MetaTypes::PLAYCOUNT].toInt();
     game.rating = qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f);
 
     // the player count can be a range
@@ -392,7 +392,7 @@ void MetadataParser::applyMetadata(modeldata::Game& game,
     // then dates
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
 
-    game.files.begin()->second.last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
+    game.files.front().last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
 
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
     game.release_date = release_time.date();

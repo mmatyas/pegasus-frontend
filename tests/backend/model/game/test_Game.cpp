@@ -80,7 +80,7 @@ void test_Game::release()
 void test_Game::launchSingle()
 {
     modeldata::Game gamedata("test");
-    gamedata.files.emplace("a", modeldata::GameFile(QFileInfo("test")));
+    gamedata.files.emplace_back(QFileInfo("test"));
     model::Game game(std::move(gamedata));
 
     QSignalSpy spy_launch(game.files()->first(), &model::GameFile::launchRequested);
@@ -93,8 +93,8 @@ void test_Game::launchSingle()
 void test_Game::launchMulti()
 {
     modeldata::Game gamedata("test");
-    gamedata.files.emplace("a", modeldata::GameFile(QFileInfo("test1")));
-    gamedata.files.emplace("b", modeldata::GameFile(QFileInfo("test2")));
+    gamedata.files.emplace_back(QFileInfo("test1"));
+    gamedata.files.emplace_back(QFileInfo("test2"));
     model::Game game(std::move(gamedata));
 
     QSignalSpy spy_launch(&game, &model::Game::launchFileSelectorRequested);

@@ -28,6 +28,16 @@
 
 namespace {
 
+int contains_path(const QString& path, const std::vector<modeldata::GameFile>& files)
+{
+    int contains = 0;
+    for (const modeldata::GameFile& gf : files) {
+        if (gf.fileinfo.filePath() == path)
+            contains++;
+    }
+    return contains;
+}
+
 void verify_collected_files(providers::SearchContext& ctx, const HashMap<QString, QStringList>& coll_files_map)
 {
     for (const auto& entry : coll_files_map) {
@@ -44,7 +54,8 @@ void verify_collected_files(providers::SearchContext& ctx, const HashMap<QString
             const size_t game_idx = ctx.path_to_gameidx.at(can_path);
 
             QVERIFY(game_idx < ctx.games.size());
-            QVERIFY(ctx.games.at(game_idx).files.count(abs_path));
+            QVERIFY(contains_path(abs_path, ctx.games.at(game_idx).files));
+
             expected_indices.emplace_back(game_idx);
         }
 
@@ -193,7 +204,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
         QCOMPARE(static_cast<int>(game.files.size()), 1);
-        QCOMPARE(static_cast<int>(game.files.count(file_path)), 1);
+        QCOMPARE(contains_path(file_path, game.files), 1);
     }
 
     // Subdir
@@ -223,8 +234,8 @@ void test_PegasusProvider::with_meta()
         const modeldata::Game& game = ctx.games.at(game_idx_a);
         QCOMPARE(game.title, QStringLiteral("Multifile Game"));
         QCOMPARE(static_cast<int>(game.files.size()), 2);
-        QCOMPARE(static_cast<int>(game.files.count(file_path_a)), 1);
-        QCOMPARE(static_cast<int>(game.files.count(file_path_b)), 1);
+        QCOMPARE(contains_path(file_path_a, game.files), 1);
+        QCOMPARE(contains_path(file_path_b, game.files), 1);
         QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
     }

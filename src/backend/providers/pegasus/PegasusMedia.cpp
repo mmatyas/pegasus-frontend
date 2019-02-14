@@ -47,8 +47,8 @@ void find_assets(const std::vector<QString>& dir_list, std::vector<modeldata::Ga
     HashMap<QString, modeldata::Game* const> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
     for (modeldata::Game& game : games) {
-        for (auto& gf_entry : game.files) {
-            const QFileInfo fi(gf_entry.first);
+        for (const modeldata::GameFile& gf_entry : qAsConst(game.files)) {
+            const QFileInfo& fi = gf_entry.fileinfo;
 
             QString shortpath = fi.canonicalPath() % '/' % fi.completeBaseName();
             games_by_shortpath.emplace(std::move(shortpath), &game);

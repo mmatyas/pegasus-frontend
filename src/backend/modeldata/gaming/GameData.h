@@ -25,7 +25,7 @@
 #include <QFileInfo>
 #include <QString>
 #include <QStringList>
-#include <QVector>
+#include <vector>
 
 
 namespace modeldata {
@@ -58,7 +58,7 @@ struct Game {
 
     QString launch_cmd;
     QString launch_workdir;
-    HashMap<QString, GameFile> files;
+    std::vector<GameFile> files;
 
     short player_count;
     bool is_favorite;

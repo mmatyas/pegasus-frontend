@@ -144,10 +144,11 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
 
     switch (ctx.helpers.game_attribs.at(entry.key)) {
         case GameAttrib::FILES:
+            // TODO: remove duplicates
             for (const QString& line : entry.values) {
                 QFileInfo fi(ctx.dir_path, line);
                 if (fi.exists())
-                    ctx.cur_game->files.emplace(fi.absoluteFilePath(), modeldata::GameFile(fi));
+                    ctx.cur_game->files.emplace_back(std::move(fi));
             }
             break;
         case GameAttrib::DEVELOPERS:
@@ -342,9 +343,8 @@ void build_path_map(const std::vector<modeldata::Game>& games,
         // empty games should have been removed already
         Q_ASSERT(games[i].files.size() > 0);
 
-        for (const auto& entry : games[i].files) {
-            const QFileInfo fi(entry.first);
-            QString path = fi.canonicalFilePath();
+        for (const modeldata::GameFile& entry : games[i].files) {
+            QString path = entry.fileinfo.canonicalFilePath();
 
             // File s are added to the game only if they exist;
             // the canonical path will be empty only if the file was deleted since this check

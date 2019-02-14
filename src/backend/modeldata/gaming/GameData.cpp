@@ -40,10 +40,8 @@ GameFile::GameFile(QFileInfo fi)
 Game::Game(QFileInfo fi)
     : Game(pretty_filename(fi))
 {
-    QString path = fi.absoluteFilePath();
-    Q_ASSERT(!path.isEmpty());
     // TODO: one call to the prettifier could be optimized out here
-    files.emplace(std::move(path), GameFile(std::move(fi)));
+    files.emplace_back(std::move(fi));
 }
 
 Game::Game(QString title)
