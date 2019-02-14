@@ -45,6 +45,8 @@ struct GameFile {
 
     explicit GameFile(QFileInfo);
     MOVE_ONLY(GameFile)
+
+    bool operator==(const GameFile&) const;
 };
 
 struct Game {

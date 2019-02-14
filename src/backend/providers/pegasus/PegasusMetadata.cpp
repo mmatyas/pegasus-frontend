@@ -26,6 +26,7 @@
 #include "modeldata/gaming/CollectionData.h"
 #include "modeldata/gaming/GameData.h"
 #include "utils/PathCheck.h"
+#include "utils/StdHelpers.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -144,11 +145,12 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
 
     switch (ctx.helpers.game_attribs.at(entry.key)) {
         case GameAttrib::FILES:
-            // TODO: remove duplicates
-            for (const QString& line : entry.values) {
-                QFileInfo fi(ctx.dir_path, line);
-                if (fi.exists())
-                    ctx.cur_game->files.emplace_back(std::move(fi));
+            {
+                auto& files = ctx.cur_game->files;
+                for (const QString& line : entry.values)
+                    files.emplace_back(QFileInfo(ctx.dir_path, line));
+
+                utils::remove_dupli(files);
             }
             break;
         case GameAttrib::DEVELOPERS:

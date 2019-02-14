@@ -37,6 +37,10 @@ GameFile::GameFile(QFileInfo fi)
     , play_count(0)
 {}
 
+bool GameFile::operator==(const GameFile& other) const {
+    return fileinfo == other.fileinfo;
+}
+
 Game::Game(QFileInfo fi)
     : Game(pretty_filename(fi))
 {

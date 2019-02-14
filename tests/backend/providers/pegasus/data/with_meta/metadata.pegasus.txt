@@ -57,6 +57,7 @@ workdir: some/dir/here
 # Check some more interesting cases
 game: Horse
 file: horse.ext
+file: horse.ext
 launch: dummy
 workdir: my/work/dir
 rating: asd
@@ -64,4 +65,5 @@ rating: 0.7
 release: 123465
 release: 45-1992
 release: 1992-45
+file: horse.ext
 asd: asdasd

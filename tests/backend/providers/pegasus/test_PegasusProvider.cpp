@@ -145,10 +145,10 @@ void test_PegasusProvider::with_meta()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/with_meta/metadata.pegasus.txt`");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 62: failed to parse rating value");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 64: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
+    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 63: failed to parse rating value");
     QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 65: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 67: unrecognized game property `asd`, ignored");
+    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 66: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
+    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 69: unrecognized game property `asd`, ignored");
     QTest::ignoreMessage(QtWarningMsg, "Collections: No files defined for game 'Virtual Game', ignored");
 
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/with_meta")});
@@ -251,6 +251,8 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.rating, 0.7f);
         QCOMPARE(game.launch_cmd, QStringLiteral("dummy"));
         QCOMPARE(game.launch_workdir, QStringLiteral("my/work/dir"));
+        QCOMPARE(static_cast<int>(game.files.size()), 1);
+        QCOMPARE(contains_path(file_path, game.files), 1);
     }
 }
 
