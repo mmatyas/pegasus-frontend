@@ -40,6 +40,8 @@ FocusScope {
         nameFilters: [
             "collections.pegasus.txt",
             "collections.txt",
+            "metadata.pegasus.txt",
+            "metadata.txt",
         ]
     }
 
