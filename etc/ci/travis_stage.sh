@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 
-if [[ -z "$QT_VER" || -z "$TARGET" ]]; then
+if [[ -z ${QT_VER-} || -z ${TARGET-} ]]; then
   echo "Please define QT_VER and TARGET first"
   exit 1
 fi

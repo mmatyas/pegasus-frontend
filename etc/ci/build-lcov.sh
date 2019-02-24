@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 
-if [[ -z "$QT_VER" || -z "$TARGET" ]]; then
+if [[ -z ${QT_VER-} || -z ${TARGET-} ]]; then
   echo "Please define QT_VER and TARGET first"
   exit 1
 fi
@@ -12,19 +12,7 @@ if [[ $TARGET != x11* ]]; then
   exit 1
 fi
 
-set -o xtrace
 
-
-# Lint
-
-find -name *.qml -exec /opt/${QT_VER}_${TARGET}/bin/qmllint {} \;
-
-
-# Build
-
-/opt/${QT_VER}_${TARGET}_hosttools/bin/qmake -v
-
-mkdir build && cd build
 /opt/${QT_VER}_${TARGET}_hosttools/bin/qmake .. \
   QMAKE_CXXFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
   QMAKE_LDFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
@@ -32,23 +20,27 @@ mkdir build && cd build
   CONFIG+=debug
 make
 
+
 lcov --compat-libtool -i -c -d . -o coverage.pre
 make check
 lcov --compat-libtool -c -d . -o coverage.post
 
-set +o xtrace
+
 lcov --compat-libtool -a coverage.pre -a coverage.post -o coverage.total
+PARENTDIR="$(dirname "$(pwd)")"
+sed -i "s|SF:$PARENTDIR/|SF:|g" coverage.total
+
 lcov --compat-libtool -r coverage.total \
   '/usr/*' \
   '/opt/*' \
   '*/moc_*' \
   '*/qrc_*' \
+  '*/test_*' \
+  '*/bench_*' \
   'src/app/*' \
   'tests/*' \
   'thirdparty/*' \
+  '*/pegasus-fe_plugin_import.cpp' \
+  '*/pegasus-fe_qml_plugin_import.cpp' \
+  '*/qmlcache_loader.cpp' \
   -o coverage.clean
-sed -i 's|SF:/home/travis/build/mmatyas/pegasus-frontend/|SF:|g' coverage.clean
-
-
-cd ..
-coveralls-lcov build/coverage.clean

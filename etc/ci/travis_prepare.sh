@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 
-if [[ -z "$QT_VER" || -z "$TARGET" ]]; then
+if [[ -z ${QT_VER-} || -z ${TARGET-} ]]; then
   echo "Please define QT_VER and TARGET first"
   exit 1
 fi
@@ -27,6 +27,11 @@ if [[ $TARGET = x11* ]]; then
     libxkbcommon-x11-dev \
     ruby2.4
   gem install fpm
+fi
+
+if [[ -n ${RUN_COV-} ]]; then
+  sudo apt-get install -y lcov
+  gem install coveralls-lcov
 fi
 
 

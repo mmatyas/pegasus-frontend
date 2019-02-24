@@ -48,9 +48,8 @@ jobs:
   # Coverage testing
   - stage: test
     name: Coverage
-    env: TARGET=x11-static
-    install: ./etc/ci/travis_coverage-prepare.sh
-    script: ./etc/ci/travis_coverage-build.sh
+    env: TARGET=x11-static RUN_COV=1
+    script: ./etc/ci/travis_build.sh
     deploy: null
 
 services:
