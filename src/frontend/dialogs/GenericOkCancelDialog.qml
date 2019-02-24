@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -49,28 +49,9 @@ FocusScope {
 
 
 
-    // capture right mouse button
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: cancel()
-    }
-
-    // background
-    Rectangle {
+    Shade {
         id: shade
-
-        anchors.fill: parent
-        color: "black"
-        opacity: 0
-        visible: opacity > 0
-
-        Behavior on opacity { NumberAnimation { duration: 125 } }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: root.cancel()
-        }
+        onCancel: root.cancel()
     }
 
     // actual dialog
