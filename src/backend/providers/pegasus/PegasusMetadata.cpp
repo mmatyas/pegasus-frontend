@@ -456,6 +456,13 @@ void process_filters(const std::vector<FileFilter>& filters, providers::SearchCo
                 }
             }
         }
+
+        const auto coll_childs_it = sctx.collection_childs.find(collection.name);
+        if (coll_childs_it != sctx.collection_childs.cend()) {
+            auto& vec = coll_childs_it->second;
+            std::sort(vec.begin(), vec.end());
+            vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+        }
     }
 }
 

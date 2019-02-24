@@ -1,0 +1,12 @@
+collection: Test
+extension: ext
+
+
+game: Singlefile Game
+files: single.ext
+
+
+game: Multifile Game
+files:
+  multi.a.ext
+  multi.b.ext

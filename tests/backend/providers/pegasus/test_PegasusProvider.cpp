@@ -80,6 +80,7 @@ private slots:
     void asset_search();
     void custom_assets();
     void custom_directories();
+    void multifile();
 };
 
 void test_PegasusProvider::empty()
@@ -348,6 +349,27 @@ void test_PegasusProvider::custom_directories()
         }},
     };
     verify_collected_files(ctx, coll_files_map);
+}
+
+void test_PegasusProvider::multifile()
+{
+    providers::SearchContext ctx;
+
+    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/multifile/metadata.txt`");
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/multifile")});
+    provider.findLists(ctx);
+
+    QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
+    QCOMPARE(static_cast<int>(ctx.games.size()), 2);
+    QCOMPARE(static_cast<int>(ctx.games.at(0).files.size()), 1);
+    QCOMPARE(static_cast<int>(ctx.games.at(1).files.size()), 2);
+    QCOMPARE(static_cast<int>(ctx.path_to_gameidx.size()), 3);
+    QCOMPARE(static_cast<int>(ctx.collection_childs.size()), 1);
+
+    const auto& child_vec = ctx.collection_childs.begin()->second;
+    QCOMPARE(static_cast<int>(child_vec.size()), 2);
+    QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 0) != child_vec.cend(), true);
+    QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 1) != child_vec.cend(), true);
 }
 
 

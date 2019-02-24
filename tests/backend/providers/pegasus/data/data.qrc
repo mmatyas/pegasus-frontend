@@ -45,5 +45,9 @@
         <file>asset_search/media/mygame3/music.mp3</file>
         <file>asset_search/media/mygame3/screenshot.jpg</file>
         <file>asset_search/media/subdir/mygame4/background.png</file>
+        <file>multifile/metadata.txt</file>
+        <file>multifile/multi.a.ext</file>
+        <file>multifile/multi.b.ext</file>
+        <file>multifile/single.ext</file>
     </qresource>
 </RCC>
