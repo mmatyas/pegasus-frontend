@@ -29,6 +29,8 @@ private slots:
     void genres();
     void release();
 
+    void files();
+
     void launchSingle();
     void launchMulti();
 };
@@ -75,6 +77,18 @@ void test_Game::release()
     QCOMPARE(game.property("releaseYear").toInt(), 1999);
     QCOMPARE(game.property("releaseMonth").toInt(), 1);
     QCOMPARE(game.property("releaseDay").toInt(), 2);
+}
+
+void test_Game::files()
+{
+    modeldata::Game gamedata("test");
+    gamedata.files.emplace_back(QFileInfo("test1"));
+    gamedata.files.emplace_back(QFileInfo("test2"));
+    model::Game game(std::move(gamedata));
+
+    QCOMPARE(game.files()->count(), 2);
+    QCOMPARE(game.files()->get(0)->property("name").toString(), QStringLiteral("test1"));
+    QCOMPARE(game.files()->get(1)->property("name").toString(), QStringLiteral("test2"));
 }
 
 void test_Game::launchSingle()
