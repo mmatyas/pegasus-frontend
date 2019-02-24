@@ -158,6 +158,23 @@ Window {
     }
 
 
+    Loader {
+        id: multifileSelector
+        anchors.fill: parent
+    }
+    Connections {
+        target: api
+        onSelectGameFile: {
+            multifileSelector.setSource("dialogs/MultifileSelector.qml", {"game": game})
+            multifileSelector.focus = true;
+        }
+    }
+    Connections {
+        target: multifileSelector.item
+        onCancel: content.focus = true
+    }
+
+
     SplashLayer {
         id: splashScreen
         focus: true

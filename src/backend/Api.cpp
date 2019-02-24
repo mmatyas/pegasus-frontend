@@ -73,7 +73,8 @@ void ApiObject::onStaticDataLoaded()
 
 void ApiObject::onGameFileSelectorRequested()
 {
-    // TODO
+    auto game = static_cast<model::Game*>(QObject::sender());
+    emit selectGameFile(game);
 }
 
 void ApiObject::onGameFileLaunchRequested()
@@ -82,7 +83,7 @@ void ApiObject::onGameFileLaunchRequested()
         return;
 
     m_launch_game_file = static_cast<model::GameFile*>(QObject::sender());
-    emit launchGame(m_launch_game_file);
+    emit launchGameFile(m_launch_game_file);
 }
 
 void ApiObject::onGameLaunchOk()

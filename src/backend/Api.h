@@ -52,9 +52,9 @@ public:
     void startScanning();
 
 signals:
-    void launchGame(const model::GameFile*);
+    void selectGameFile(model::Game* game);
+    void launchGameFile(const model::GameFile*);
     void launchFailed(const QString);
-    void launchSelectFile(const model::GameFile*);
     void memoryChanged();
 
     // triggers translation update

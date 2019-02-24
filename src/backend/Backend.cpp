@@ -70,7 +70,7 @@ Backend::Backend()
     // see the relevant classes
 
     // the Api asks the Launcher to start the game
-    QObject::connect(&api, &ApiObject::launchGame,
+    QObject::connect(&api, &ApiObject::launchGameFile,
                      &launcher, &ProcessLauncher::onLaunchRequested);
 
     // the Launcher tries to start the game, ask the Frontend

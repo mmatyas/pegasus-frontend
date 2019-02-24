@@ -70,6 +70,7 @@
         <file>messages/NoGamesError.qml</file>
         <file>messages/ThemeError.qml</file>
         <file>menu/settings/keyeditor/KeyEditorResetButton.qml</file>
+        <file>dialogs/MultifileSelector.qml</file>
         <file>dialogs/Shade.qml</file>
     </qresource>
 </RCC>
