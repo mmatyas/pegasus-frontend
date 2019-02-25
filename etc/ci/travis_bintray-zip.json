@@ -8,7 +8,7 @@
         "name": "continuous"
     },
     "files": [{
-        "includePattern": "dist/(.*\.zip)",
+        "includePattern": "dist/(.*\\.zip)",
         "uploadPattern": "/$1"
     }],
     "publish": true
