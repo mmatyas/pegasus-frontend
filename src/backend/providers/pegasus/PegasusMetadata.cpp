@@ -123,6 +123,10 @@ void parse_collection_entry(ParserContext& ctx, const config::Entry& entry)
             break;
         case CollAttrib::REGEX:
             filter_group.regex.setPattern(first_line_of(entry));
+            if (!filter_group.regex.isValid()) {
+                ctx.print_error(entry.line, tr_log("invalid regular expression: %1")
+                    .arg(filter_group.regex.errorString()));
+            }
             break;
         case CollAttrib::SHORT_DESC:
             ctx.cur_coll->summary = config::mergeLines(entry.values);
