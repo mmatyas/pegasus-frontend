@@ -250,20 +250,23 @@ bool parse_asset_entry_maybe(ParserContext& ctx, const config::Entry& entry)
     return true;
 }
 
-void parse_entry(ParserContext& ctx, const config::Entry& entry)
+void parse_entry(const config::Entry& entry,
+                 ParserContext& ctx,
+                 providers::SearchContext& sctx,
+                 std::vector<FileFilter>& filters)
 {
     // TODO: set cur_* by the return value of emplace
     if (entry.key == QLatin1String("collection")) {
         const QString& name = first_line_of(entry);
 
-        if (!ctx.outvars.collections.count(name))
-            ctx.outvars.collections.emplace(name, modeldata::Collection(name));
+        if (!sctx.collections.count(name))
+            sctx.collections.emplace(name, modeldata::Collection(name));
 
-        ctx.cur_coll = &ctx.outvars.collections.at(name);
+        ctx.cur_coll = &sctx.collections.at(name);
         ctx.cur_game = nullptr;
 
-        ctx.outvars.filters.emplace_back(name, ctx.dir_path);
-        ctx.cur_filter = &ctx.outvars.filters.back();
+        filters.emplace_back(name, ctx.dir_path);
+        ctx.cur_filter = &filters.back();
         return;
     }
 
@@ -273,8 +276,8 @@ void parse_entry(ParserContext& ctx, const config::Entry& entry)
             game.launch_cmd = ctx.cur_coll->launch_cmd;
             game.launch_workdir = ctx.cur_coll->launch_workdir;
         }
-        ctx.outvars.games.emplace_back(std::move(game));
-        ctx.cur_game = &ctx.outvars.games.back();
+        sctx.games.emplace_back(std::move(game));
+        ctx.cur_game = &sctx.games.back();
         return;
     }
 
@@ -297,15 +300,18 @@ void parse_entry(ParserContext& ctx, const config::Entry& entry)
         parse_collection_entry(ctx, entry);
 }
 
-void read_metafile(const QString& metafile_path, OutputVars& output, const ParserHelpers& helpers)
+void read_metafile(const QString& metafile_path,
+                   providers::SearchContext& sctx,
+                   std::vector<FileFilter>& filters,
+                   const ParserHelpers& helpers)
 {
-    ParserContext ctx(metafile_path, output, helpers);
+    ParserContext ctx(metafile_path, helpers);
 
     const auto on_error = [&](const config::Error& error){
         ctx.print_error(error.line, error.message);
     };
     const auto on_entry = [&](const config::Entry& entry){
-        parse_entry(ctx, entry);
+        parse_entry(entry, ctx, sctx, filters);
     };
 
     if (!config::readFile(metafile_path, on_entry, on_error)) {
@@ -316,7 +322,9 @@ void read_metafile(const QString& metafile_path, OutputVars& output, const Parse
 }
 
 // collect collection and game information
-void collect_metadata(const std::vector<QString>& dir_list, OutputVars& results)
+void collect_metadata(const std::vector<QString>& dir_list,
+                      providers::SearchContext& sctx,
+                      std::vector<FileFilter>& filters)
 {
     const ParserHelpers helpers;
 
@@ -325,7 +333,7 @@ void collect_metadata(const std::vector<QString>& dir_list, OutputVars& results)
         if (metafile.isEmpty())
             continue;
 
-        read_metafile(metafile, results, helpers);
+        read_metafile(metafile, sctx, filters, helpers);
     }
 }
 
@@ -476,14 +484,16 @@ namespace pegasus {
 
 void find_in_dirs(const std::vector<QString>& dir_list, providers::SearchContext& sctx)
 {
-    OutputVars results(sctx.collections, sctx.games);
-    collect_metadata(dir_list, results);
+    std::vector<FileFilter> filters;
+    filters.reserve(dir_list.size());
+
+    collect_metadata(dir_list, sctx, filters);
 
     remove_empty_games(sctx.games);
     build_path_map(sctx.games, sctx.path_to_gameidx);
 
-    tidy_filters(results.filters);
-    process_filters(results.filters, sctx);
+    tidy_filters(filters);
+    process_filters(filters, sctx);
 }
 
 } // namespace pegasus

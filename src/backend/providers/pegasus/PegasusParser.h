@@ -86,14 +86,6 @@ struct FileFilter {
     MOVE_ONLY(FileFilter)
 };
 
-struct OutputVars {
-    HashMap<QString, modeldata::Collection>& collections;
-    std::vector<modeldata::Game>& games;
-    std::vector<FileFilter> filters;
-
-    explicit OutputVars(decltype(collections), decltype(games));
-    MOVE_ONLY(OutputVars)
-};
 
 struct ParserHelpers {
     const HashMap<QString, CollAttrib> coll_attribs;
@@ -109,11 +101,11 @@ struct ParserHelpers {
     MOVE_ONLY(ParserHelpers)
 };
 
+
 struct ParserContext {
     const QString metafile_path;
     const QString dir_path;
 
-    OutputVars& outvars;
     const ParserHelpers& helpers;
 
     modeldata::Collection* cur_coll;
@@ -123,7 +115,7 @@ struct ParserContext {
     modeldata::Game* cur_game;
 
 
-    explicit ParserContext(QString metafile_path, OutputVars&, const ParserHelpers&);
+    explicit ParserContext(QString metafile_path, const ParserHelpers&);
     MOVE_ONLY(ParserContext)
 
     void print_error(const int lineno, const QString msg) const;

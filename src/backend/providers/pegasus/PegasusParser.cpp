@@ -32,15 +32,9 @@ FileFilter::FileFilter(QString collection, QString base_dir)
     : collection_name(std::move(collection))
     , directories({std::move(base_dir)})
 {
+    Q_ASSERT(!collection_name.isEmpty());
     Q_ASSERT(!directories.front().isEmpty());
 }
-
-
-OutputVars::OutputVars(HashMap<QString, modeldata::Collection>& collections,
-                       std::vector<modeldata::Game>& games)
-    : collections(collections)
-    , games(games)
-{}
 
 
 ParserHelpers::ParserHelpers()
@@ -102,10 +96,9 @@ ParserHelpers::ParserHelpers()
 {}
 
 
-ParserContext::ParserContext(QString file_path, OutputVars& outvars, const ParserHelpers& helpers)
+ParserContext::ParserContext(QString file_path, const ParserHelpers& helpers)
     : metafile_path(std::move(file_path))
     , dir_path(QFileInfo(metafile_path).path())
-    , outvars(outvars)
     , helpers(helpers)
     , cur_coll(nullptr)
     , cur_filter(nullptr)
