@@ -40,11 +40,6 @@ FileFilter::FileFilter(QString collection, QString base_dir)
     Q_ASSERT(!directories.front().isEmpty());
 }
 
-FileFilterHelpers::FileFilterHelpers(const FileFilter& filter)
-    : rx_include(filter.include.regex)
-    , rx_exclude(filter.exclude.regex)
-{}
-
 
 OutputVars::OutputVars(HashMap<QString, modeldata::Collection>& collections,
                        std::vector<modeldata::Game>& games)

@@ -122,7 +122,7 @@ void parse_collection_entry(ParserContext& ctx, const config::Entry& entry)
                 filter_group.files.append(value);
             break;
         case CollAttrib::REGEX:
-            filter_group.regex = first_line_of(entry);
+            filter_group.regex.setPattern(first_line_of(entry));
             break;
         case CollAttrib::SHORT_DESC:
             ctx.cur_coll->summary = config::mergeLines(entry.values);
@@ -386,20 +386,19 @@ QVector<QString> filter_find_dirs(const QString& filter_dir)
     return result;
 }
 
-bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, const QString filter_dir,
-                        const FileFilterHelpers& helpers)
+bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, const QString filter_dir)
 {
     const QString relative_path = fileinfo.filePath().mid(filter_dir.length() + 1);
 
     const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
         || filter.exclude.files.contains(relative_path)
-        || (!filter.exclude.regex.isEmpty() && helpers.rx_exclude.match(fileinfo.filePath()).hasMatch());
+        || (!filter.exclude.regex.pattern().isEmpty() && filter.exclude.regex.match(fileinfo.filePath()).hasMatch());
     if (exclude)
         return false;
 
     const bool include = filter.include.extensions.contains(fileinfo.suffix())
         || filter.include.files.contains(relative_path)
-        || (!filter.include.regex.isEmpty() && helpers.rx_include.match(fileinfo.filePath()).hasMatch());
+        || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.match(fileinfo.filePath()).hasMatch());
     if (!include)
         return false;
 
@@ -439,7 +438,6 @@ void process_filters(const std::vector<FileFilter>& filters, providers::SearchCo
 
     for (const FileFilter& filter : filters) {
         const modeldata::Collection& collection = sctx.collections.at(filter.collection_name);
-        const FileFilterHelpers helpers(filter);
 
         for (const QString& filter_dir : filter.directories) {
             // ie. all dirs and subdirs except /media
@@ -451,7 +449,7 @@ void process_filters(const std::vector<FileFilter>& filters, providers::SearchCo
                     subdir_it.next();
                     const QFileInfo fileinfo = subdir_it.fileInfo();
 
-                    if (file_passes_filter(fileinfo, filter, filter_dir, helpers))
+                    if (file_passes_filter(fileinfo, filter, filter_dir))
                         accept_filtered_file(fileinfo, collection, sctx);
                 }
             }

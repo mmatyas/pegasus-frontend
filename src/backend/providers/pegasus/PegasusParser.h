@@ -70,7 +70,7 @@ enum class GameAttrib : unsigned char {
 struct FileFilterGroup {
     QStringList extensions;
     QStringList files;
-    QString regex;
+    QRegularExpression regex;
 
     explicit FileFilterGroup();
     MOVE_ONLY(FileFilterGroup)
@@ -84,13 +84,6 @@ struct FileFilter {
 
     explicit FileFilter(QString collection, QString base_dir);
     MOVE_ONLY(FileFilter)
-};
-struct FileFilterHelpers {
-    const QRegularExpression rx_include;
-    const QRegularExpression rx_exclude;
-
-    explicit FileFilterHelpers(const FileFilter&);
-    MOVE_ONLY(FileFilterHelpers)
 };
 
 struct OutputVars {
