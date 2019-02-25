@@ -42,4 +42,4 @@ cd ..
 if [[ $TARGET == rpi* ]]; then
   CROSS=/opt/linaro/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
 fi
-${CROSS}objdump -p installoc/usr/bin/pegasus-fe | grep NEEDED | sort
+${CROSS-}objdump -p installoc/usr/bin/pegasus-fe | grep NEEDED | sort
