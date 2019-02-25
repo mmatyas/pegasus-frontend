@@ -22,11 +22,6 @@
 #include <QDebug>
 
 
-namespace {
-static constexpr auto MSG_PREFIX = "Collections:";
-} // namespace
-
-
 namespace providers {
 namespace pegasus {
 namespace parser {
@@ -121,8 +116,8 @@ ParserContext::ParserContext(QString file_path, OutputVars& outvars, const Parse
 }
 
 void ParserContext::print_error(const int lineno, const QString msg) const {
-    qWarning().noquote() << MSG_PREFIX
-        << tr_log("`%1`, line %2: %3").arg(metafile_path, QString::number(lineno), msg);
+    qWarning().noquote()
+        << tr_log("Collections: `%1`, line %2: %3").arg(metafile_path, QString::number(lineno), msg);
 }
 
 } // namespace parser
