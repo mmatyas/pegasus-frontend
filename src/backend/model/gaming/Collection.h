@@ -36,7 +36,7 @@ class Collection : public QObject {
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
-    Q_PROPERTY(model::GameAssets* defaultAssets READ assetsPtr CONSTANT)
+    Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
     QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
