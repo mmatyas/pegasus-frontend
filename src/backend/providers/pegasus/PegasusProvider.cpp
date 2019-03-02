@@ -34,10 +34,15 @@ std::vector<QString> get_game_dirs()
 {
     std::vector<QString> game_dirs;
 
-    const QString global_dir = paths::writableConfigDir() + QStringLiteral("/global_collection");
-    const QFileInfo global_finfo(global_dir);
-    if (global_finfo.isDir())
-        game_dirs.emplace_back(global_finfo.canonicalFilePath());
+    const std::vector<QString> globaldirs = {
+        QStringLiteral("/metafiles"),
+        QStringLiteral("/global_collection"),
+    };
+    for (const auto& globaldir : globaldirs) {
+        const QFileInfo global_finfo(paths::writableConfigDir() + globaldir);
+        if (global_finfo.isDir())
+            game_dirs.emplace_back(global_finfo.canonicalFilePath());
+    }
 
     AppSettings::parse_gamedirs([&game_dirs](const QString& line){
         constexpr auto MSG_PREFIX = "Collections:";
