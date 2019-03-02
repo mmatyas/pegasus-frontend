@@ -25,9 +25,28 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QRegularExpression>
 
 
 namespace {
+static constexpr auto SEPARATOR = "----------------------------------------";
+
+void format_replace_env(QString& launch_cmd)
+{
+    const auto env = QProcessEnvironment::systemEnvironment();
+    const QRegularExpression rx_env(QStringLiteral("{env.([^}]+)}"));
+
+    auto match = rx_env.match(launch_cmd);
+    while (match.hasMatch()) {
+        const int from = match.capturedStart();
+        const int len = match.capturedLength();
+        launch_cmd.replace(from, len, env.value(match.captured(1)));
+
+        const int match_offset = match.capturedStart() + match.capturedLength();
+        match = rx_env.match(launch_cmd, match_offset);
+    }
+}
+
 void format_launch_command(QString& launch_cmd, const QFileInfo& finfo)
 {
     launch_cmd
@@ -35,12 +54,9 @@ void format_launch_command(QString& launch_cmd, const QFileInfo& finfo)
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
+
+    format_replace_env(launch_cmd);
 }
-} // namespace
-
-
-namespace {
-static constexpr auto SEPARATOR = "----------------------------------------";
 } // namespace
 
 
