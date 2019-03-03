@@ -104,6 +104,12 @@ std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
     return installdirs;
 }
 
+bool should_ignore(const QString& filename)
+{
+    // Steamworks Common Redistributables
+    return filename == QLatin1String("appmanifest_228980.acf");
+}
+
 void register_appmanifests(providers::SearchContext& sctx,
                            std::vector<size_t>& collection_childs,
                            const std::vector<QString>& installdirs)
@@ -116,7 +122,10 @@ void register_appmanifests(providers::SearchContext& sctx,
         QDirIterator dir_it(dir_path, name_filters, dir_filters, dir_flags);
         while (dir_it.hasNext()) {
             dir_it.next();
-            QFileInfo fileinfo = dir_it.fileInfo();
+
+            const QFileInfo fileinfo = dir_it.fileInfo();
+            if (should_ignore(fileinfo.fileName()))
+                continue;
 
             const QString game_path = fileinfo.canonicalFilePath();
             if (!sctx.path_to_gameidx.count(game_path)) {
