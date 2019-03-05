@@ -348,11 +348,11 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
     // apply
 
     convertToCanonicalPath(game_path, collection_dir);
-    if (!sctx.path_to_gameidx.count(game_path))
+    if (!sctx.path_to_gameid.count(game_path))
         return;
 
-    const size_t game_idx = sctx.path_to_gameidx.at(game_path);
-    modeldata::Game& game = sctx.games.at(game_idx);
+    const size_t game_id = sctx.path_to_gameid.at(game_path);
+    modeldata::Game& game = sctx.games.at(game_id);
     applyMetadata(game, xml_props);
     findAssets(game, xml_props, collection_dir);
 }

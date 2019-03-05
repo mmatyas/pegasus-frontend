@@ -65,15 +65,16 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
         const QString action = jni_app.callObjectMethod<jstring>(APP_LAUNCH_ACT).toString();
         const QString component = jni_app.callObjectMethod<jstring>(APP_LAUNCH_CPT).toString();
 
-        if (!sctx.path_to_gameidx.count(package)) {
-            sctx.path_to_gameidx.emplace(package, sctx.games.size());
-            sctx.games.emplace_back(QFileInfo(package));
+        if (!sctx.path_to_gameid.count(package)) {
+            const size_t game_id = sctx.games.size();
+            sctx.path_to_gameid.emplace(package, game_id);
+            sctx.games.emplace(game_id, QFileInfo(package));
         }
 
-        const size_t game_idx = sctx.path_to_gameidx.at(package);
-        childs.emplace_back(game_idx);
+        const size_t game_id = sctx.path_to_gameid.at(package);
+        childs.emplace_back(game_id);
 
-        modeldata::Game& game = sctx.games.at(game_idx);
+        modeldata::Game& game = sctx.games.at(game_id);
         game.title = appname;
         game.launch_cmd = QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component);
 

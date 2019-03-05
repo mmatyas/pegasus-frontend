@@ -129,7 +129,7 @@ void Metadata::findStaticData(SearchContext& sctx)
 }
 
 std::vector<size_t> Metadata::fill_from_cache(const std::vector<size_t>& child_ids,
-                                              std::vector<modeldata::Game>& all_games)
+                                              HashMap<size_t, modeldata::Game>& all_games)
 {
     std::vector<size_t> uncached_entries;
 
@@ -146,7 +146,7 @@ std::vector<size_t> Metadata::fill_from_cache(const std::vector<size_t>& child_i
 }
 
 void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
-                                 std::vector<modeldata::Game>& all_games)
+                                 HashMap<size_t, modeldata::Game>& all_games)
 {
     if (child_ids.empty())
         return;

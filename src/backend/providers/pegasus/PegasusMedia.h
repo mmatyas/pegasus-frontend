@@ -18,6 +18,7 @@
 #pragma once
 
 #include "utils/FwdDeclModelData.h"
+#include "utils/HashMap.h"
 
 #include <QString>
 #include <vector>
@@ -26,7 +27,7 @@
 namespace providers {
 namespace pegasus {
 
-void find_assets(const std::vector<QString>&, std::vector<modeldata::Game>&);
+void find_assets(const std::vector<QString>&, HashMap<size_t, modeldata::Game>&);
 
 } // namespace pegasus
 } // namespace providers

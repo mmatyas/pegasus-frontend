@@ -30,10 +30,10 @@
 namespace providers {
 
 struct SearchContext {
-    std::vector<modeldata::Game> games;
+    HashMap<size_t, modeldata::Game> games;
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<size_t>> collection_childs;
-    HashMap<QString, size_t> path_to_gameidx;
+    HashMap<QString, size_t> path_to_gameid;
 };
 
 class Provider : public QObject {

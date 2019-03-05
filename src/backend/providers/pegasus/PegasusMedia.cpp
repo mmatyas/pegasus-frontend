@@ -41,12 +41,14 @@ AssetType detect_asset_type(const QString& basename, const QString& ext)
 namespace providers {
 namespace pegasus {
 
-void find_assets(const std::vector<QString>& dir_list, std::vector<modeldata::Game>& games)
+void find_assets(const std::vector<QString>& dir_list, HashMap<size_t, modeldata::Game>& games)
 {
     // shortpath: canonical path to dir + extensionless filename
     HashMap<QString, modeldata::Game* const> games_by_shortpath;
     games_by_shortpath.reserve(games.size());
-    for (modeldata::Game& game : games) {
+    for (auto& entry : games) {
+        modeldata::Game& game = entry.second;
+
         for (const modeldata::GameFile& gf_entry : qAsConst(game.files)) {
             const QFileInfo& fi = gf_entry.fileinfo;
 

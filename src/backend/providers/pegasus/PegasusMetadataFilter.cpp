@@ -71,7 +71,7 @@ void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection
                           providers::SearchContext& sctx)
 {
     const QString game_path = fileinfo.canonicalFilePath();
-    if (!sctx.path_to_gameidx.count(game_path)) {
+    if (!sctx.path_to_gameid.count(game_path)) {
         // This means there weren't any game entries with matching file entry
         // in any of the parsed metadata files. There is no existing game data
         // created yet either.
@@ -79,14 +79,15 @@ void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection
         game.launch_cmd = parent.launch_cmd;
         game.launch_workdir = parent.launch_workdir;
 
-        sctx.path_to_gameidx.emplace(game_path, sctx.games.size());
-        sctx.games.emplace_back(std::move(game));
+        const size_t game_id = sctx.games.size();
+        sctx.path_to_gameid.emplace(game_path, game_id);
+        sctx.games.emplace(game_id, std::move(game));
     }
-    const size_t game_idx = sctx.path_to_gameidx.at(game_path);
-    sctx.collection_childs[parent.name].emplace_back(game_idx);
+    const size_t game_id = sctx.path_to_gameid.at(game_path);
+    sctx.collection_childs[parent.name].emplace_back(game_id);
 
     // When a game was defined earlier than its collection
-    modeldata::Game& game = sctx.games.at(game_idx);
+    modeldata::Game& game = sctx.games.at(game_id);
     if (game.launch_cmd.isEmpty())
         game.launch_cmd = parent.launch_cmd;
     if (game.launch_workdir.isEmpty())

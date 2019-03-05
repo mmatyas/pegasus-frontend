@@ -278,8 +278,9 @@ void parse_entry(const config::Entry& entry,
             game.launch_cmd = ctx.cur_coll->launch_cmd;
             game.launch_workdir = ctx.cur_coll->launch_workdir;
         }
-        sctx.games.emplace_back(std::move(game));
-        ctx.cur_game = &sctx.games.back();
+        const size_t game_id = sctx.games.size();
+        sctx.games.emplace(game_id, std::move(game));
+        ctx.cur_game = &sctx.games.at(game_id);
         return;
     }
 
@@ -339,34 +340,35 @@ void collect_metadata(const std::vector<QString>& dir_list,
     }
 }
 
-void remove_empty_games(std::vector<modeldata::Game>& games)
+void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
 {
-    auto it = std::remove_if(games.begin(), games.end(),
-        [](const modeldata::Game& game) { return game.files.empty(); });
+    auto it = games.begin();
+    while (it != games.end()) {
+        if (it->second.files.empty()) {
+            qWarning().noquote() << MSG_PREFIX
+                << tr_log("No files defined for game '%1', ignored").arg(it->second.title);
+            it = games.erase(it);
+            continue;
+        }
 
-    for (auto printer_it = it; printer_it != games.end(); ++printer_it) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("No files defined for game '%1', ignored").arg(printer_it->title);
+        ++it;
     }
-
-    games.erase(it, games.end());
 }
 
-void build_path_map(const std::vector<modeldata::Game>& games,
-                    HashMap<QString, size_t>& path_to_gameidx)
+void build_path_map(const HashMap<size_t, modeldata::Game>& games,
+                    HashMap<QString, size_t>& path_to_gameid)
 {
-    for (size_t i = 0; i < games.size(); i++) {
+    for (const auto& entry : games) {
         // empty games should have been removed already
-        Q_ASSERT(games[i].files.size() > 0);
+        Q_ASSERT(entry.second.files.size() > 0);
 
-        for (const modeldata::GameFile& entry : games[i].files) {
-            QString path = entry.fileinfo.canonicalFilePath();
+        for (const modeldata::GameFile& gf : entry.second.files) {
+            QString path = gf.fileinfo.canonicalFilePath();
 
-            // File s are added to the game only if they exist;
+            // Files are added to the game only if they exist;
             // the canonical path will be empty only if the file was deleted since this check
-            Q_ASSERT(!path.isEmpty());
             if (Q_LIKELY(!path.isEmpty()))
-                path_to_gameidx.emplace(std::move(path), i);
+                path_to_gameid.emplace(std::move(path), entry.first);
         }
     }
 }
@@ -385,7 +387,7 @@ void find_in_dirs(const std::vector<QString>& dir_list, providers::SearchContext
     collect_metadata(dir_list, sctx, filters);
 
     remove_empty_games(sctx.games);
-    build_path_map(sctx.games, sctx.path_to_gameidx);
+    build_path_map(sctx.games, sctx.path_to_gameid);
 
     tidy_filters(filters);
     process_filters(filters, sctx);

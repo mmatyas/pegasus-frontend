@@ -97,14 +97,22 @@ void build_ui_layer(providers::SearchContext& ctx,
                     QQmlObjectListModel<model::Game>& game_model,
                     HashMap<QString, model::GameFile*>& path_map)
 {
-    QVector<model::Game*> q_games;
-    q_games.reserve(static_cast<int>(ctx.games.size()));
+    HashMap<size_t, model::Game*> q_game_map;
+    q_game_map.reserve(ctx.games.size());
 
-    for (modeldata::Game& game : ctx.games) {
-        auto q_game = new model::Game(std::move(game));
+    for (auto& keyval : ctx.games) {
+        auto q_game = new model::Game(std::move(keyval.second));
         q_game->moveToThread(ui_thread);
-        q_games.append(q_game);
+        q_game_map.emplace(keyval.first, q_game);
     }
+
+    QVector<model::Game*> q_game_list;
+    q_game_list.reserve(static_cast<int>(ctx.games.size()));
+    for (auto& keyval : q_game_map)
+        q_game_list.append(keyval.second);
+
+    sort_games(q_game_list);
+    game_model.append(q_game_list);
 
 
     QVector<model::Collection*> q_collections;
@@ -121,23 +129,23 @@ void build_ui_layer(providers::SearchContext& ctx,
 
 
     for (model::Collection* const q_coll : q_collections) {
-        const std::vector<size_t>& game_indices = ctx.collection_childs[q_coll->name()];
+        const std::vector<size_t>& game_ids = ctx.collection_childs[q_coll->name()];
 
         QVector<model::Game*> q_childs;
-        q_childs.reserve(static_cast<int>(game_indices.size()));
+        q_childs.reserve(static_cast<int>(game_ids.size()));
 
-        for (size_t game_idx : game_indices)
-            q_childs.append(q_games.at(static_cast<int>(game_idx)));
+        for (size_t game_id : game_ids) {
+            Q_ASSERT(q_game_map.count(game_id));
+            q_childs.append(q_game_map.at(game_id));
+        }
 
         sort_games(q_childs);
         q_coll->setGameList(q_childs);
     }
 
 
-    path_map.reserve(ctx.path_to_gameidx.size());
-    for (auto entry : ctx.path_to_gameidx) {
-        const model::Game* const q_game = q_games.at(static_cast<int>(entry.second));
-
+    path_map.reserve(ctx.path_to_gameid.size());
+    for (const model::Game* const q_game : q_game_list) {
         for (model::GameFile* const q_gamefile : q_game->filesConst()) {
             QString path = q_gamefile->data().fileinfo.canonicalFilePath();
             Q_ASSERT(!path.isEmpty());
@@ -145,10 +153,6 @@ void build_ui_layer(providers::SearchContext& ctx,
                 path_map.emplace(std::move(path), q_gamefile);
         }
     }
-
-
-    sort_games(q_games);
-    game_model.append(q_games);
 }
 } // namespace
 

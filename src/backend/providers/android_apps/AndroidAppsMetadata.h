@@ -18,6 +18,7 @@
 #pragma once
 
 #include "providers/Provider.h"
+#include "utils/HashMap.h"
 
 #include <QRegularExpression>
 
@@ -38,8 +39,8 @@ private:
     const QRegularExpression rx_category;
     const QRegularExpression rx_screenshots;
 
-    std::vector<size_t> fill_from_cache(const std::vector<size_t>&, std::vector<modeldata::Game>&);
-    void fill_from_network(const std::vector<size_t>&, std::vector<modeldata::Game>&);
+    std::vector<size_t> fill_from_cache(const std::vector<size_t>&, HashMap<size_t, modeldata::Game>&);
+    void fill_from_network(const std::vector<size_t>&, HashMap<size_t, modeldata::Game>&);
     bool parse_reply(QByteArray&, QJsonObject&);
 };
 

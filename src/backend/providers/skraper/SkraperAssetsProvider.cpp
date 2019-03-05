@@ -40,11 +40,12 @@ std::vector<QString> get_game_dirs()
     return game_dirs;
 }
 
-HashMap<QString, modeldata::Game* const> build_gamepath_db(std::vector<modeldata::Game>& games)
+HashMap<QString, modeldata::Game* const> build_gamepath_db(HashMap<size_t, modeldata::Game>& games)
 {
     HashMap<QString, modeldata::Game* const> map;
 
-    for (modeldata::Game& game : games) {
+    for (auto& entry : games) {
+        modeldata::Game& game = entry.second;
         for (const modeldata::GameFile& file_entry : game.files) {
             const QFileInfo& finfo = file_entry.fileinfo;
 

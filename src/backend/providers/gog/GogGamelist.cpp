@@ -136,21 +136,22 @@ void register_entries(const std::vector<GogEntry>& entries,
         QFileInfo finfo(entry.exe);
         const QString game_path = finfo.canonicalFilePath();
 
-        if (!sctx.path_to_gameidx.count(game_path)) {
+        if (!sctx.path_to_gameid.count(game_path)) {
             modeldata::Game game(std::move(finfo));
             game.title = entry.name;
             game.launch_cmd = '"' % entry.launch_cmd % '"';
             game.launch_workdir = entry.workdir;
 
-            sctx.path_to_gameidx.emplace(game_path, sctx.games.size());
-            sctx.games.emplace_back(std::move(game));
+            const size_t game_id = sctx.games.size();
+            sctx.path_to_gameid.emplace(game_path, game_id);
+            sctx.games.emplace(game_id, std::move(game));
         }
 
-        const size_t game_idx = sctx.path_to_gameidx.at(game_path);
-        childs.emplace_back(game_idx);
+        const size_t game_id = sctx.path_to_gameid.at(game_path);
+        childs.emplace_back(game_id);
 
         if (!entry.id.isEmpty())
-            gogids.emplace(game_idx, entry.id);
+            gogids.emplace(game_id, entry.id);
     }
 }
 } // namespace
