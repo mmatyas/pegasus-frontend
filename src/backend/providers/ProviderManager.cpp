@@ -89,9 +89,9 @@ void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
     }
 }
 
-void remove_duplicate_childs(providers::SearchContext& sctx)
+void remove_duplicate_childs(HashMap<QString, std::vector<size_t>>& coll_childs)
 {
-    for (auto& entry : sctx.collection_childs) {
+    for (auto& entry : coll_childs) {
         std::vector<size_t>& child_list = entry.second;
         VEC_REMOVE_DUPLICATES(child_list);
     }
@@ -130,7 +130,7 @@ void run_list_providers(providers::SearchContext& ctx, const std::vector<Provide
 
     remove_empty_collections(ctx);
     remove_empty_games(ctx.games);
-    remove_duplicate_childs(ctx);
+    remove_duplicate_childs(ctx.collection_childs);
     remove_parentless_games(ctx);
 }
 
