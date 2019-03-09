@@ -88,7 +88,7 @@ void parse_collection_entry(ParserContext& ctx, const config::Entry& entry)
     Q_ASSERT(ctx.cur_filter);
     Q_ASSERT(!ctx.cur_game);
 
-    if (!ctx.helpers.coll_attribs.count(entry.key)) {
+    if (!ctx.constants.coll_attribs.count(entry.key)) {
         ctx.print_error(entry.line, tr_log("unrecognized collection property `%1`, ignored").arg(entry.key));
         return;
     }
@@ -97,7 +97,7 @@ void parse_collection_entry(ParserContext& ctx, const config::Entry& entry)
         ? ctx.cur_filter->exclude
         : ctx.cur_filter->include;
 
-    switch (ctx.helpers.coll_attribs.at(entry.key)) {
+    switch (ctx.constants.coll_attribs.at(entry.key)) {
         case CollAttrib::SHORT_NAME:
             ctx.cur_coll->setShortName(first_line_of(entry));
             break;
@@ -144,12 +144,12 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
     // NOTE: ctx.cur_coll may be null (ie. a game entry defined before any collection)
     Q_ASSERT(ctx.cur_game);
 
-    if (!ctx.helpers.game_attribs.count(entry.key)) {
+    if (!ctx.constants.game_attribs.count(entry.key)) {
         ctx.print_error(entry.line, tr_log("unrecognized game property `%1`, ignored").arg(entry.key));
         return;
     }
 
-    switch (ctx.helpers.game_attribs.at(entry.key)) {
+    switch (ctx.constants.game_attribs.at(entry.key)) {
         case GameAttrib::FILES:
             {
                 auto& files = ctx.cur_game->files;
@@ -173,7 +173,7 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
             break;
         case GameAttrib::PLAYER_COUNT:
             {
-                const auto rx_match = ctx.helpers.rx_count_range.match(first_line_of(entry));
+                const auto rx_match = ctx.constants.rx_count_range.match(first_line_of(entry));
                 if (rx_match.hasMatch()) {
                     const short a = rx_match.capturedRef(1).toShort();
                     const short b = rx_match.capturedRef(3).toShort();
@@ -189,7 +189,7 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
             break;
         case GameAttrib::RELEASE:
             {
-                const auto rx_match = ctx.helpers.rx_date.match(first_line_of(entry));
+                const auto rx_match = ctx.constants.rx_date.match(first_line_of(entry));
                 if (!rx_match.hasMatch()) {
                     ctx.print_error(entry.line, tr_log("incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD"));
                     return;
@@ -205,12 +205,12 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
             {
                 const QString& line = first_line_of(entry);
 
-                const auto rx_match_a = ctx.helpers.rx_percent.match(line);
+                const auto rx_match_a = ctx.constants.rx_percent.match(line);
                 if (rx_match_a.hasMatch()) {
                     ctx.cur_game->rating = qBound(0.f, line.leftRef(line.length() - 1).toFloat() / 100.f, 1.f);
                     return;
                 }
-                const auto rx_match_b = ctx.helpers.rx_float.match(line);
+                const auto rx_match_b = ctx.constants.rx_float.match(line);
                 if (rx_match_b.hasMatch()) {
                     ctx.cur_game->rating = qBound(0.f, line.toFloat(), 1.f);
                     return;
@@ -234,7 +234,7 @@ bool parse_asset_entry_maybe(ParserContext& ctx, const config::Entry& entry)
 {
     Q_ASSERT(ctx.cur_coll || ctx.cur_game);
 
-    const auto rx_match = ctx.helpers.rx_asset_key.match(entry.key);
+    const auto rx_match = ctx.constants.rx_asset_key.match(entry.key);
     if (!rx_match.hasMatch())
         return false;
 
@@ -305,9 +305,9 @@ void parse_entry(const config::Entry& entry,
 void read_metafile(const QString& metafile_path,
                    providers::SearchContext& sctx,
                    std::vector<FileFilter>& filters,
-                   const ParserHelpers& helpers)
+                   const Constants& constants)
 {
-    ParserContext ctx(metafile_path, helpers);
+    ParserContext ctx(metafile_path, constants);
 
     const auto on_error = [&](const config::Error& error){
         ctx.print_error(error.line, error.message);
@@ -328,14 +328,14 @@ void collect_metadata(const std::vector<QString>& dir_list,
                       providers::SearchContext& sctx,
                       std::vector<FileFilter>& filters)
 {
-    const ParserHelpers helpers;
+    const Constants constants;
 
     for (const QString& dir_path : dir_list) {
         const QString metafile = find_metafile_in(dir_path);
         if (metafile.isEmpty())
             continue;
 
-        read_metafile(metafile, sctx, filters, helpers);
+        read_metafile(metafile, sctx, filters, constants);
     }
 }
 
