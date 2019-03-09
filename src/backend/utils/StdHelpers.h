@@ -25,6 +25,7 @@
     std::sort(vec.begin(), vec.end())
 
 #define VEC_REMOVE_DUPLICATES(vec) \
+    VEC_SORT(vec); \
     vec.erase(std::unique(vec.begin(), vec.end()), vec.end())
 
 #define VEC_REMOVE_VALUE(vec, val) \

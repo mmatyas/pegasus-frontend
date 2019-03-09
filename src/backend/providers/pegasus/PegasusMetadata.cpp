@@ -371,15 +371,6 @@ void build_path_map(const std::vector<modeldata::Game>& games,
     }
 }
 
-void remove_duplicate_childs(providers::SearchContext& sctx)
-{
-    for (auto& entry : sctx.collection_childs) {
-        std::vector<size_t> child_list = entry.second;
-        VEC_SORT(child_list);
-        VEC_REMOVE_DUPLICATES(child_list);
-    }
-}
-
 } // namespace
 
 
@@ -398,7 +389,6 @@ void find_in_dirs(const std::vector<QString>& dir_list, providers::SearchContext
 
     tidy_filters(filters);
     process_filters(filters, sctx);
-    remove_duplicate_childs(sctx);
 }
 
 } // namespace pegasus

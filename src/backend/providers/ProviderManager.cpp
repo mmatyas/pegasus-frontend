@@ -23,6 +23,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "utils/HashMap.h"
+#include "utils/StdHelpers.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDebug>
@@ -46,6 +47,14 @@ void sort_collections(QVector<model::Collection*>& collections)
             return QString::localeAwareCompare(a->name(), b->name()) < 0;
         }
     );
+}
+
+void remove_duplicate_childs(providers::SearchContext& sctx)
+{
+    for (auto& entry : sctx.collection_childs) {
+        std::vector<size_t>& child_list = entry.second;
+        VEC_REMOVE_DUPLICATES(child_list);
+    }
 }
 
 void remove_empty_collections(providers::SearchContext& ctx)
@@ -73,6 +82,7 @@ void run_list_providers(providers::SearchContext& ctx, const std::vector<Provide
         ptr->findLists(ctx);
 
     remove_empty_collections(ctx);
+    remove_duplicate_childs(ctx);
 }
 
 void run_asset_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
