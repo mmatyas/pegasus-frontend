@@ -61,7 +61,7 @@ std::map<QKeySequence, QString> gamepad_button_names()
         { QKeySequence(GamepadKeyId::START), QStringLiteral("Start") },
         { QKeySequence(GamepadKeyId::GUIDE), QStringLiteral("Guide") },
     };
-};
+}
 } // namespace
 
 
