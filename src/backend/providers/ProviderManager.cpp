@@ -59,20 +59,40 @@ void remove_duplicate_childs(providers::SearchContext& sctx)
 
 void remove_empty_collections(providers::SearchContext& ctx)
 {
-    std::vector<QString> empty_colls;
+    const auto childs_end = ctx.collection_childs.cend();
 
-    for (const auto& coll_entry : ctx.collections) {
-        const auto it = ctx.collection_childs.find(coll_entry.first);
-        if (it != ctx.collection_childs.cend() && ctx.collection_childs.at(it->first).size() > 0)
+    auto it = ctx.collections.begin();
+    while (it != ctx.collections.end()) {
+        const QString& key = it->first;
+        const auto childs_it = ctx.collection_childs.find(key);
+
+        const bool is_empty = childs_it == childs_end || childs_it->second.empty();
+        if (is_empty) {
+            qWarning().noquote()
+                << tr_log("No games found for collection '%1', ignored").arg(key);
+
+            ctx.collection_childs.erase(key);
+            it = ctx.collections.erase(it);
             continue;
+        }
 
-        empty_colls.push_back(coll_entry.first);
+        ++it;
     }
+}
 
-    for (const QString& coll : empty_colls) {
-        qWarning().noquote() << tr_log("No games found for collection '%1', ignored").arg(coll);
-        ctx.collections.erase(coll);
-        ctx.collection_childs.erase(coll);
+void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
+{
+    auto it = games.begin();
+    while (it != games.end()) {
+        const modeldata::Game& game = it->second;
+        if (game.files.empty()) {
+            qWarning().noquote()
+                << tr_log("No files defined for game '%1', ignored").arg(game.title);
+            it = games.erase(it);
+            continue;
+        }
+
+        ++it;
     }
 }
 
@@ -82,6 +102,7 @@ void run_list_providers(providers::SearchContext& ctx, const std::vector<Provide
         ptr->findLists(ctx);
 
     remove_empty_collections(ctx);
+    remove_empty_games(ctx.games);
     remove_duplicate_childs(ctx);
 }
 

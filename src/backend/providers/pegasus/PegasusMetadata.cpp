@@ -139,7 +139,7 @@ void parse_collection_entry(ParserContext& ctx, const config::Entry& entry)
     }
 }
 
-void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
+void parse_game_entry(ParserContext& ctx, providers::SearchContext& sctx, const config::Entry& entry)
 {
     // NOTE: ctx.cur_coll may be null (ie. a game entry defined before any collection)
     Q_ASSERT(ctx.cur_game);
@@ -152,11 +152,27 @@ void parse_game_entry(ParserContext& ctx, const config::Entry& entry)
     switch (ctx.constants.game_attribs.at(entry.key)) {
         case GameAttrib::FILES:
             {
-                auto& files = ctx.cur_game->files;
-                for (const QString& line : entry.values)
-                    files.emplace_back(QFileInfo(ctx.dir_path, line));
+                const size_t game_id = sctx.games.size() - 1; // FIXME: improve this
 
-                VEC_REMOVE_DUPLICATES(files);
+                auto& files = ctx.cur_game->files;
+                for (const QString& line : entry.values) {
+                    QFileInfo fi(ctx.dir_path, line);
+
+                    QString path = fi.canonicalFilePath();
+                    if (path.isEmpty()) {
+                        ctx.print_error(entry.line, tr_log("missing file `%1`").arg(line));
+                        continue;
+                    }
+                    if (sctx.path_to_gameid.count(path) && sctx.path_to_gameid.at(path) == game_id) {
+                        ctx.print_error(entry.line, tr_log("duplicate file `%1`").arg(line));
+                        continue;
+                    }
+
+                    // NOTE: the case when a file is set for multiple games
+                    // is not handled at the moment
+                    sctx.path_to_gameid.emplace(std::move(path), game_id);
+                    files.emplace_back(std::move(fi));
+                }
             }
             break;
         case GameAttrib::DEVELOPERS:
@@ -298,7 +314,7 @@ void parse_entry(const config::Entry& entry,
 
 
     if (ctx.cur_game)
-        parse_game_entry(ctx, entry);
+        parse_game_entry(ctx, sctx, entry);
     else
         parse_collection_entry(ctx, entry);
 }
@@ -324,7 +340,6 @@ void read_metafile(const QString& metafile_path,
     }
 }
 
-// collect collection and game information
 void collect_metadata(const std::vector<QString>& dir_list,
                       providers::SearchContext& sctx,
                       std::vector<FileFilter>& filters)
@@ -340,39 +355,6 @@ void collect_metadata(const std::vector<QString>& dir_list,
     }
 }
 
-void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
-{
-    auto it = games.begin();
-    while (it != games.end()) {
-        if (it->second.files.empty()) {
-            qWarning().noquote() << MSG_PREFIX
-                << tr_log("No files defined for game '%1', ignored").arg(it->second.title);
-            it = games.erase(it);
-            continue;
-        }
-
-        ++it;
-    }
-}
-
-void build_path_map(const HashMap<size_t, modeldata::Game>& games,
-                    HashMap<QString, size_t>& path_to_gameid)
-{
-    for (const auto& entry : games) {
-        // empty games should have been removed already
-        Q_ASSERT(entry.second.files.size() > 0);
-
-        for (const modeldata::GameFile& gf : entry.second.files) {
-            QString path = gf.fileinfo.canonicalFilePath();
-
-            // Files are added to the game only if they exist;
-            // the canonical path will be empty only if the file was deleted since this check
-            if (Q_LIKELY(!path.isEmpty()))
-                path_to_gameid.emplace(std::move(path), entry.first);
-        }
-    }
-}
-
 } // namespace
 
 
@@ -385,9 +367,6 @@ void find_in_dirs(const std::vector<QString>& dir_list, providers::SearchContext
     filters.reserve(dir_list.size());
 
     collect_metadata(dir_list, sctx, filters);
-
-    remove_empty_games(sctx.games);
-    build_path_map(sctx.games, sctx.path_to_gameid);
 
     tidy_filters(filters);
     process_filters(filters, sctx);

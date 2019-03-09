@@ -144,17 +144,18 @@ void test_PegasusProvider::with_meta()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/with_meta/metadata.pegasus.txt`");
+    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 60: duplicate file `horse.ext`");
     QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 63: failed to parse rating value");
     QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 65: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
     QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 66: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
+    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 68: duplicate file `horse.ext`");
     QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 69: unrecognized game property `asd`, ignored");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: No files defined for game 'Virtual Game', ignored");
 
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/with_meta")});
     provider.findLists(ctx);
 
     QCOMPARE(static_cast<int>(ctx.collections.size()), 1);
-    QCOMPARE(static_cast<int>(ctx.games.size()), 5);
+    QCOMPARE(static_cast<int>(ctx.games.size()), 6);
 
     const auto common_launch = QStringLiteral("launcher.exe \"{file.path}\"");
     const auto common_workdir = QStringLiteral("some/workdir");
@@ -246,6 +247,16 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(contains_path(file_path_b, game.files), 1);
         QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
+    }
+
+    // Launch-only
+    {
+        using entry_t = decltype(ctx.games)::value_type;
+
+        const QString title = QStringLiteral("Virtual Game");
+        const auto it = std::find_if(ctx.games.cbegin(), ctx.games.cend(),
+            [&title](const entry_t& entry){ return entry.second.title == title; });
+        QVERIFY(it != ctx.games.cend());
     }
 
     // Other cases
