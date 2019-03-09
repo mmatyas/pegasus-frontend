@@ -22,7 +22,7 @@
 #include "Paths.h"
 #include "PegasusAssets.h"
 #include "PegasusMetadataFilter.h"
-#include "PegasusParser.h"
+#include "PegasusMetadataContext.h"
 #include "PegasusUtils.h"
 #include "modeldata/gaming/CollectionData.h"
 #include "modeldata/gaming/GameData.h"
