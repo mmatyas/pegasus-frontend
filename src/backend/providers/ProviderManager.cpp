@@ -28,6 +28,7 @@
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
+#include <unordered_set>
 
 
 namespace {
@@ -47,14 +48,6 @@ void sort_collections(QVector<model::Collection*>& collections)
             return QString::localeAwareCompare(a->name(), b->name()) < 0;
         }
     );
-}
-
-void remove_duplicate_childs(providers::SearchContext& sctx)
-{
-    for (auto& entry : sctx.collection_childs) {
-        std::vector<size_t>& child_list = entry.second;
-        VEC_REMOVE_DUPLICATES(child_list);
-    }
 }
 
 void remove_empty_collections(providers::SearchContext& ctx)
@@ -96,6 +89,40 @@ void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
     }
 }
 
+void remove_duplicate_childs(providers::SearchContext& sctx)
+{
+    for (auto& entry : sctx.collection_childs) {
+        std::vector<size_t>& child_list = entry.second;
+        VEC_REMOVE_DUPLICATES(child_list);
+    }
+}
+
+void remove_parentless_games(providers::SearchContext& sctx)
+{
+    // prepare
+    std::unordered_set<size_t> parented_game_ids;
+    size_t parented_game_cnt = 0; // TODO: map-reduce
+    for (const auto& entry : sctx.collection_childs)
+        parented_game_cnt += entry.second.size();
+
+    parented_game_ids.reserve(parented_game_cnt);
+    for (const auto& entry : sctx.collection_childs)
+        parented_game_ids.insert(entry.second.cbegin(), entry.second.cend());
+
+    // remove
+    auto it = sctx.games.begin();
+    while (it != sctx.games.end()) {
+        const bool has_parent = parented_game_ids.count(it->first);
+        if (!has_parent) {
+            qWarning().noquote()
+                << tr_log("Game '%1' does not belong to any collections, ignored").arg(it->second.title);
+            it = sctx.games.erase(it);
+            continue;
+        }
+        ++it;
+    }
+}
+
 void run_list_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
 {
     for (const ProviderPtr& ptr : providers)
@@ -104,6 +131,7 @@ void run_list_providers(providers::SearchContext& ctx, const std::vector<Provide
     remove_empty_collections(ctx);
     remove_empty_games(ctx.games);
     remove_duplicate_childs(ctx);
+    remove_parentless_games(ctx);
 }
 
 void run_asset_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
