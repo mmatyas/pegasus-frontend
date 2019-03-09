@@ -27,6 +27,10 @@
 #include <QString>
 #include <vector>
 
+namespace providers { namespace pegasus { namespace filter {
+class FileFilter;
+}}}
+
 
 namespace providers {
 namespace pegasus {
@@ -67,26 +71,6 @@ enum class GameAttrib : unsigned char {
 };*/
 
 
-struct FileFilterGroup {
-    QStringList extensions;
-    QStringList files;
-    QRegularExpression regex;
-
-    explicit FileFilterGroup();
-    MOVE_ONLY(FileFilterGroup)
-};
-struct FileFilter {
-    // NOTE: collections can have different filtering parameters in different directories
-    QString collection_name;
-    QStringList directories;
-    FileFilterGroup include;
-    FileFilterGroup exclude;
-
-    explicit FileFilter(QString collection, QString base_dir);
-    MOVE_ONLY(FileFilter)
-};
-
-
 struct ParserHelpers {
     const HashMap<QString, CollAttrib> coll_attribs;
     const HashMap<QString, GameAttrib> game_attribs;
@@ -111,7 +95,7 @@ struct ParserContext {
     modeldata::Collection* cur_coll;
     // NOTE: while these would be highly unsafe normally, we can use the fact
     // that no games/filters are added during the time their pointer is used
-    FileFilter* cur_filter;
+    filter::FileFilter* cur_filter;
     modeldata::Game* cur_game;
 
 

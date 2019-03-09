@@ -26,17 +26,6 @@ namespace providers {
 namespace pegasus {
 namespace parser {
 
-FileFilterGroup::FileFilterGroup() = default;
-
-FileFilter::FileFilter(QString collection, QString base_dir)
-    : collection_name(std::move(collection))
-    , directories({std::move(base_dir)})
-{
-    Q_ASSERT(!collection_name.isEmpty());
-    Q_ASSERT(!directories.front().isEmpty());
-}
-
-
 ParserHelpers::ParserHelpers()
     : coll_attribs {
         { QStringLiteral("shortname"), CollAttrib::SHORT_NAME },

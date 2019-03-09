@@ -21,11 +21,12 @@
 #include <vector>
 
 
-namespace utils {
+#define VEC_SORT(vec) \
+    std::sort(vec.begin(), vec.end())
 
-template<typename T>
-void remove_dupli(std::vector<T>& vec) {
-    vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
-}
+#define VEC_REMOVE_DUPLICATES(vec) \
+    vec.erase(std::unique(vec.begin(), vec.end()), vec.end())
 
-} // namespace utils
+#define VEC_REMOVE_VALUE(vec, val) \
+    vec.erase(std::remove(vec.begin(), vec.end(), val), vec.end())
+
