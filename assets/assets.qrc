@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>common/loading-spinner.png</file>
         <file>fonts/Roboto.ttf</file>
         <file>fonts/RobotoCondensed.ttf</file>
         <file>icon.png</file>

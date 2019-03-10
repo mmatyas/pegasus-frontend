@@ -15,6 +15,7 @@
         <file>pegasus-theme-grid/layer_grid/GameGridItem.qml</file>
         <file>pegasus-theme-grid/layer_platform/PlatformBar.qml</file>
         <file>pegasus-theme-grid/layer_platform/PlatformCard.qml</file>
+        <file>pegasus-theme-grid/assets/loading-spinner.png</file>
         <file>pegasus-theme-grid/assets/icons/heart_empty.svg</file>
         <file>pegasus-theme-grid/assets/icons/heart_filled.svg</file>
         <file>pegasus-theme-grid/assets/logos/3do.svg</file>
