@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "PegasusMetadataContext.h"
+#include "PegasusMetadataParser.h"
 
 #include "LocaleUtils.h"
 #include "PegasusAssets.h"

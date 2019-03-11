@@ -19,8 +19,8 @@
 
 #include "LocaleUtils.h"
 #include "PegasusMetadataConstants.h"
-#include "PegasusMetadataContext.h"
 #include "PegasusMetadataFilter.h"
+#include "PegasusMetadataParser.h"
 #include "providers/Provider.h"
 
 #include <QDebug>
