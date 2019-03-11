@@ -27,7 +27,7 @@
 
 
 namespace {
-using FileFilter = providers::pegasus::filter::FileFilter;
+using FileFilter = providers::pegasus::parser::FileFilter;
 
 // Find all dirs and subdirectories, but ignore 'media'
 std::vector<QString> all_valid_subdirs(const QString& filter_dir)
@@ -98,7 +98,7 @@ void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection
 
 namespace providers {
 namespace pegasus {
-namespace filter {
+namespace parser {
 
 FileFilterGroup::FileFilterGroup() = default;
 
@@ -158,6 +158,6 @@ void process_filters(const std::vector<FileFilter>& filters, providers::SearchCo
         process_filter(filter, sctx);
 }
 
-} // namespace filter
+} // namespace parser
 } // namespace pegasus
 } // namespace providers

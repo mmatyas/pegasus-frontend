@@ -17,40 +17,47 @@
 
 #pragma once
 
-#include "PegasusMetadataConstants.h"
-#include "modeldata/gaming/CollectionData.h"
-#include "modeldata/gaming/GameData.h"
+#include "ConfigFile.h"
+#include "providers/Provider.h"
+#include "utils/FwdDeclModelData.h"
 #include "utils/MoveOnly.h"
 
 #include <QString>
 #include <vector>
-
-namespace providers { namespace pegasus { namespace filter {
-class FileFilter;
-}}}
 
 
 namespace providers {
 namespace pegasus {
 namespace parser {
 
-struct ParserContext {
-    const QString metafile_path;
-    const QString dir_path;
-
-    const Constants& constants;
-
-    modeldata::Collection* cur_coll;
-    // NOTE: while these would be highly unsafe normally, we can use the fact
-    // that no games/filters are added during the time their pointer is used
-    filter::FileFilter* cur_filter;
-    modeldata::Game* cur_game;
+struct Constants;
+struct FileFilter;
 
 
-    explicit ParserContext(QString metafile_path, const Constants&);
-    MOVE_ONLY(ParserContext)
+class Parser {
+public:
+    explicit Parser(QString metafile_path, const Constants&);
+    MOVE_ONLY(Parser)
 
     void print_error(const int lineno, const QString msg) const;
+    void parse_entry(const config::Entry&, providers::SearchContext&, std::vector<FileFilter>&);
+
+private:
+    const QString m_metafile_path;
+    const QString m_dir_path;
+
+    const Constants& m_constants;
+
+    // NOTE: while these would be highly unsafe normally, we can use the fact
+    // that no games/filters are added during the time their pointer is used
+    modeldata::Collection* m_cur_coll;
+    modeldata::Game* m_cur_game;
+    FileFilter* m_cur_filter;
+
+private:
+    void parse_collection_entry(const config::Entry&) const;
+    void parse_game_entry(const config::Entry&, providers::SearchContext&) const;
+    bool parse_asset_entry_maybe(const config::Entry&) const;
 };
 
 } // namespace parser

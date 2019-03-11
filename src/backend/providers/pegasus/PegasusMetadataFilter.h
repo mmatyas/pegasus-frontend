@@ -27,7 +27,7 @@
 
 namespace providers {
 namespace pegasus {
-namespace filter {
+namespace parser {
 
 struct FileFilterGroup {
     QStringList extensions;
@@ -52,6 +52,6 @@ void tidy_filters(std::vector<FileFilter>&);
 void process_filter(const FileFilter&, providers::SearchContext&);
 void process_filters(const std::vector<FileFilter>&, providers::SearchContext&);
 
-} // namespace filter
+} // namespace parser
 } // namespace pegasus
 } // namespace providers

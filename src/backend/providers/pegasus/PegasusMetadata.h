@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "providers/Provider.h"
-
 #include <QString>
 #include <vector>
+
+namespace providers { struct SearchContext; }
 
 
 namespace providers {
