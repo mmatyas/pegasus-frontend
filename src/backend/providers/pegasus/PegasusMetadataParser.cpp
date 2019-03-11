@@ -100,7 +100,11 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
                 if (finfo.isRelative())
                     finfo.setFile(m_dir_path % '/' % value);
 
-                m_cur_filter->directories.append(finfo.canonicalFilePath());
+                const QString can_path = finfo.canonicalFilePath();
+                if (can_path.isEmpty())
+                    print_error(entry.line, tr_log("directory path `%1` does not exist, ignored").arg(entry.key));
+                else
+                    m_cur_filter->directories.append(can_path);
             }
             break;
         case CollAttrib::EXTENSIONS:

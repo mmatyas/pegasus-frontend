@@ -32,6 +32,10 @@ using FileFilter = providers::pegasus::parser::FileFilter;
 // Find all dirs and subdirectories, but ignore 'media'
 std::vector<QString> all_valid_subdirs(const QString& filter_dir)
 {
+    Q_ASSERT(!filter_dir.isEmpty());
+    if (Q_UNLIKELY(filter_dir.isEmpty()))
+        return {};
+
     constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
 
