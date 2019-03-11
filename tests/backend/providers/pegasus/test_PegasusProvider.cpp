@@ -383,7 +383,6 @@ void test_PegasusProvider::multifile()
     QCOMPARE(static_cast<int>(ctx.collection_childs.size()), 1);
 
     const auto& child_vec = ctx.collection_childs.begin()->second;
-    QCOMPARE(static_cast<int>(child_vec.size()), 2);
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 0) != child_vec.cend(), true);
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 1) != child_vec.cend(), true);
 }
