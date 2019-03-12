@@ -18,12 +18,15 @@
 #include "PegasusMetadata.h"
 
 #include "LocaleUtils.h"
+#include "Paths.h"
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusMetadataParser.h"
 #include "providers/Provider.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
 
 using namespace providers::pegasus::parser;
 
@@ -57,6 +60,27 @@ QString find_metafile_in(const QString& dir_path)
     return QString();
 }
 
+std::vector<QString> find_global_metafiles()
+{
+    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto dir_flags = QDirIterator::FollowSymlinks;
+    const QRegularExpression rx_path(QStringLiteral("^(.+\\.)?metadata(\\.pegasus)?\\.txt$"));
+
+    std::vector<QString> result;
+
+    const QString dir_path = paths::writableConfigDir() + QLatin1String("/metafiles");
+    QDirIterator dir_it(dir_path, dir_filters, dir_flags);
+    while (dir_it.hasNext()) {
+        QString path = dir_it.next();
+        if (rx_path.match(dir_it.fileName()).hasMatch()) {
+            qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
+            result.emplace_back(std::move(path));
+        }
+    }
+
+    return result;
+}
+
 void read_metafile(const QString& metafile_path,
                    providers::SearchContext& sctx,
                    std::vector<FileFilter>& filters,
@@ -84,12 +108,13 @@ void collect_metadata(const std::vector<QString>& dir_list,
 {
     const Constants constants;
 
+    for (const QString& metafile : find_global_metafiles())
+        read_metafile(metafile, sctx, filters, constants);
+
     for (const QString& dir_path : dir_list) {
         const QString metafile = find_metafile_in(dir_path);
-        if (metafile.isEmpty())
-            continue;
-
-        read_metafile(metafile, sctx, filters, constants);
+        if (!metafile.isEmpty())
+            read_metafile(metafile, sctx, filters, constants);
     }
 }
 } // namespace
