@@ -54,12 +54,17 @@ void find_assets(const std::vector<QString>& dir_list, HashMap<size_t, modeldata
 
             QString shortpath = fi.canonicalPath() % '/' % fi.completeBaseName();
             games_by_shortpath.emplace(std::move(shortpath), &game);
+
+            // TODO: could be optimized
+            QString namepath = fi.canonicalPath() % '/' % game.title;
+            games_by_shortpath.emplace(std::move(namepath), &game);
         }
     }
 
 
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    constexpr int media_len = 6; // len of `/media`
 
     for (const QString& dir_base : dir_list) {
         const QString media_dir = dir_base + QStringLiteral("/media");
@@ -69,7 +74,7 @@ void find_assets(const std::vector<QString>& dir_list, HashMap<size_t, modeldata
             dir_it.next();
             const QFileInfo fileinfo = dir_it.fileInfo();
 
-            const QString shortpath = fileinfo.canonicalPath().remove(dir_base.length(), 6); // len of `/media`
+            const QString shortpath = fileinfo.canonicalPath().remove(dir_base.length(), media_len);
             if (!games_by_shortpath.count(shortpath))
                 continue;
 

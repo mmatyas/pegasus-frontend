@@ -45,6 +45,10 @@
         <file>asset_search/media/mygame3/music.mp3</file>
         <file>asset_search/media/mygame3/screenshot.jpg</file>
         <file>asset_search/media/subdir/mygame4/background.png</file>
+        <file>asset_search_by_title/metadata.txt</file>
+        <file>asset_search_by_title/mygame.ext</file>
+        <file>asset_search_by_title/media/My Precious Game/box_front.png</file>
+        <file>asset_search_by_title/media/My Precious Game/video.mp4</file>
         <file>multifile/metadata.txt</file>
         <file>multifile/multi.a.ext</file>
         <file>multifile/multi.b.ext</file>
