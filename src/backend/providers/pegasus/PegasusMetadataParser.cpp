@@ -45,6 +45,17 @@ const QString& first_line_of(const config::Entry& entry)
 
     return entry.values.first();
 }
+
+bool contains_slash(const QString& str)
+{
+    return str.contains(QChar('/')) || str.contains(QChar('\\'));
+}
+
+void prepend_dirpath_maybe(const QString& base_dir, QString& launch_cmd)
+{
+    if (contains_slash(launch_cmd))
+        launch_cmd = QDir::toNativeSeparators(base_dir % QChar('/') % launch_cmd);
+}
 } // namespace
 
 
@@ -90,6 +101,7 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             break;
         case CollAttrib::LAUNCH_CMD:
             m_cur_coll->launch_cmd = config::mergeLines(entry.values);
+            prepend_dirpath_maybe(m_dir_path, m_cur_coll->launch_cmd);
             break;
         case CollAttrib::LAUNCH_WORKDIR:
             m_cur_coll->launch_workdir = first_line_of(entry);
@@ -228,6 +240,7 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             break;
         case GameAttrib::LAUNCH_CMD:
             m_cur_game->launch_cmd = first_line_of(entry);
+            prepend_dirpath_maybe(m_dir_path, m_cur_game->launch_cmd);
             break;
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);

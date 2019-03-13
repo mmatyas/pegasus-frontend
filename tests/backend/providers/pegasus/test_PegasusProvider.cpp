@@ -80,6 +80,7 @@ private slots:
     void custom_assets();
     void custom_directories();
     void multifile();
+    void launch_commands();
 };
 
 void test_PegasusProvider::empty()
@@ -409,6 +410,35 @@ void test_PegasusProvider::multifile()
     const auto& child_vec = ctx.collection_childs.begin()->second;
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 0) != child_vec.cend(), true);
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 1) != child_vec.cend(), true);
+}
+
+void test_PegasusProvider::launch_commands()
+{
+    providers::SearchContext ctx;
+
+    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands/metadata.txt`");
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands")});
+    provider.findLists(ctx);
+
+    QCOMPARE(static_cast<int>(ctx.collections.size()),  4);
+    QCOMPARE(static_cast<int>(ctx.games.size()), 4);
+
+    const QStringList expected = {
+        QDir::toNativeSeparators("something '{file.path}'"),
+        QDir::toNativeSeparators(":/launch_commands/path/to/something '{file.path}'"),
+        QDir::toNativeSeparators(":/launch_commands/./path/to/something '{file.path}'"),
+        QDir::toNativeSeparators(":/launch_commands/../path/to/something '{file.path}'"),
+    };
+
+    QCOMPARE(ctx.collections.at("Global Coll").launch_cmd, expected[0]);
+    QCOMPARE(ctx.collections.at("Dotless Coll").launch_cmd, expected[1]);
+    QCOMPARE(ctx.collections.at("Dot Coll").launch_cmd, expected[2]);
+    QCOMPARE(ctx.collections.at("DotDot Coll").launch_cmd, expected[3]);
+
+    QCOMPARE(ctx.games.at(0).launch_cmd, expected[0]);
+    QCOMPARE(ctx.games.at(1).launch_cmd, expected[1]);
+    QCOMPARE(ctx.games.at(2).launch_cmd, expected[2]);
+    QCOMPARE(ctx.games.at(3).launch_cmd, expected[3]);
 }
 
 
