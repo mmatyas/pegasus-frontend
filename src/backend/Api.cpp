@@ -142,6 +142,7 @@ void ApiObject::onStaticDataLoaded()
     m_internal.meta().onUiReady();
     qInfo().noquote() << tr_log("%1 games found").arg(m_allGames.count());
 
+    m_providerman_sctx = {};
     m_providerman.startDynamicSearch(m_allGames.asList(), m_collections.asList());
 }
 
