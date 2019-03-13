@@ -25,31 +25,12 @@
 #include "utils/HashMap.h"
 #include "utils/StdHelpers.h"
 
-#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
 #include <unordered_set>
 
 
 namespace {
-void sort_games(QVector<model::Game*>& games)
-{
-    std::sort(games.begin(), games.end(),
-        [](const model::Game* const a, const model::Game* const b) {
-            return QString::localeAwareCompare(a->title(), b->title()) < 0;
-        }
-    );
-}
-
-void sort_collections(QVector<model::Collection*>& collections)
-{
-    std::sort(collections.begin(), collections.end(),
-        [](const model::Collection* const a, const model::Collection* const b) {
-            return QString::localeAwareCompare(a->name(), b->name()) < 0;
-        }
-    );
-}
-
 void remove_empty_collections(providers::SearchContext& ctx)
 {
     const auto childs_end = ctx.collection_childs.cend();
@@ -140,68 +121,25 @@ void run_asset_providers(providers::SearchContext& ctx, const std::vector<Provid
         provider->findStaticData(ctx);
 }
 
-void build_ui_layer(providers::SearchContext& ctx,
-                    QThread* const ui_thread,
-                    QQmlObjectListModel<model::Collection>& collection_model,
-                    QQmlObjectListModel<model::Game>& game_model,
-                    HashMap<QString, model::GameFile*>& path_map)
+HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& games)
 {
-    HashMap<size_t, model::Game*> q_game_map;
-    q_game_map.reserve(ctx.games.size());
+    // prepare
+    size_t gamefile_cnt = 0; // TODO: map-reduce
+    for (const model::Game* const q_game : games)
+        gamefile_cnt += q_game->data().files.size();
 
-    for (auto& keyval : ctx.games) {
-        auto q_game = new model::Game(std::move(keyval.second));
-        q_game->moveToThread(ui_thread);
-        q_game_map.emplace(keyval.first, q_game);
-    }
-
-    QVector<model::Game*> q_game_list;
-    q_game_list.reserve(static_cast<int>(ctx.games.size()));
-    for (auto& keyval : q_game_map)
-        q_game_list.append(keyval.second);
-
-    sort_games(q_game_list);
-    game_model.append(q_game_list);
-
-
-    QVector<model::Collection*> q_collections;
-    q_collections.reserve(static_cast<int>(ctx.collections.size()));
-
-    for (auto& keyval : ctx.collections) {
-        auto q_coll = new model::Collection(std::move(keyval.second));
-        q_coll->moveToThread(ui_thread);
-        q_collections.append(q_coll);
-    }
-
-    sort_collections(q_collections);
-    collection_model.append(q_collections);
-
-
-    for (model::Collection* const q_coll : q_collections) {
-        const std::vector<size_t>& game_ids = ctx.collection_childs[q_coll->name()];
-
-        QVector<model::Game*> q_childs;
-        q_childs.reserve(static_cast<int>(game_ids.size()));
-
-        for (size_t game_id : game_ids) {
-            Q_ASSERT(q_game_map.count(game_id));
-            q_childs.append(q_game_map.at(game_id));
-        }
-
-        sort_games(q_childs);
-        q_coll->setGameList(q_childs);
-    }
-
-
-    path_map.reserve(ctx.path_to_gameid.size());
-    for (const model::Game* const q_game : q_game_list) {
+    // build
+    HashMap<QString, model::GameFile*> result;
+    result.reserve(gamefile_cnt);
+    for (const model::Game* const q_game : games) {
         for (model::GameFile* const q_gamefile : q_game->filesConst()) {
             QString path = q_gamefile->data().fileinfo.canonicalFilePath();
             Q_ASSERT(!path.isEmpty());
             if (Q_LIKELY(!path.isEmpty()))
-                path_map.emplace(std::move(path), q_gamefile);
+                result.emplace(std::move(path), q_gamefile);
         }
     }
+    return result;
 }
 } // namespace
 
@@ -239,17 +177,15 @@ ProviderManager::ProviderManager(QObject* parent)
     }
 }
 
-void ProviderManager::startSearch(QQmlObjectListModel<model::Game>& game_model,
-                                  QQmlObjectListModel<model::Collection>& collection_model)
+void ProviderManager::startStaticSearch(providers::SearchContext& out_sctx)
 {
-    Q_ASSERT(!m_init_seq.isRunning());
+    Q_ASSERT(!m_future.isRunning());
 
-    m_init_seq = QtConcurrent::run([this, &game_model, &collection_model]{
+    m_future = QtConcurrent::run([this, &out_sctx]{
         providers::SearchContext ctx;
 
         QElapsedTimer timer;
         timer.start();
-
 
         run_list_providers(ctx, m_providers);
         emit firstPhaseComplete(timer.restart());
@@ -257,19 +193,31 @@ void ProviderManager::startSearch(QQmlObjectListModel<model::Game>& game_model,
         run_asset_providers(ctx, m_providers);
         emit secondPhaseComplete(timer.restart());
 
-        HashMap<QString, model::GameFile*> path_map;
-        build_ui_layer(ctx, parent()->thread(), collection_model, game_model, path_map);
+        std::swap(ctx, out_sctx);
         emit staticDataReady();
+    });
+}
 
+void ProviderManager::startDynamicSearch(const QVector<model::Game*>& games,
+                                         const QVector<model::Collection*>& collections)
+{
+    Q_ASSERT(!m_future.isRunning());
+
+    m_future = QtConcurrent::run([this, &games, &collections]{
+        QElapsedTimer timer;
+        timer.start();
+
+        const HashMap<QString, model::GameFile*> path_map = build_path_map(games);
         for (const auto& provider : m_providers)
-            provider->findDynamicData(collection_model.asList(), game_model.asList(), path_map);
-        emit thirdPhaseComplete(timer.elapsed());
+            provider->findDynamicData(collections, games, path_map);
+
+        emit dynamicDataReady(timer.elapsed());
     });
 }
 
 void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_games)
 {
-    if (m_init_seq.isRunning())
+    if (m_future.isRunning())
         return;
 
     for (const auto& provider : m_providers)
@@ -278,7 +226,7 @@ void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_gam
 
 void ProviderManager::onGameLaunched(model::GameFile* const game)
 {
-    if (m_init_seq.isRunning())
+    if (m_future.isRunning())
         return;
 
     for (const auto& provider : m_providers)
@@ -287,7 +235,7 @@ void ProviderManager::onGameLaunched(model::GameFile* const game)
 
 void ProviderManager::onGameFinished(model::GameFile* const game)
 {
-    if (m_init_seq.isRunning())
+    if (m_future.isRunning())
         return;
 
     for (const auto& provider : m_providers)

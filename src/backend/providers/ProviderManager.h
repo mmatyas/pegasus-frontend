@@ -23,8 +23,8 @@
 #include <QObject>
 #include <QFuture>
 #include <memory>
+#include <vector>
 
-template<typename T> class QQmlObjectListModel;
 using ProviderPtr = std::unique_ptr<providers::Provider>;
 
 
@@ -36,7 +36,9 @@ public:
 
     size_t providerCount() const { return m_providers.size(); }
 
-    void startSearch(QQmlObjectListModel<model::Game>&, QQmlObjectListModel<model::Collection>&);
+    void startStaticSearch(providers::SearchContext&);
+    void startDynamicSearch(const QVector<model::Game*>&, const QVector<model::Collection*>&);
+
     void onGameLaunched(model::GameFile* const);
     void onGameFinished(model::GameFile* const);
     void onGameFavoriteChanged(const QVector<model::Game*>&);
@@ -48,9 +50,9 @@ signals:
     void firstPhaseComplete(qint64);
     void secondPhaseComplete(qint64);
     void staticDataReady();
-    void thirdPhaseComplete(qint64);
+    void dynamicDataReady(qint64);
 
 private:
     std::vector<ProviderPtr> m_providers;
-    QFuture<void> m_init_seq;
+    QFuture<void> m_future;
 };

@@ -79,6 +79,7 @@ private:
     model::GameFile* m_launch_game_file;
 
     // initialization
+    providers::SearchContext m_providerman_sctx;
     ProviderManager m_providerman;
 
     // used to trigger re-rendering of texts on locale change
