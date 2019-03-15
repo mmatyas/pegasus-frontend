@@ -1,20 +1,22 @@
 HEADERS += \
+    $$PWD/CommandTokenizer.h \
+    $$PWD/FakeQKeyEvent.h \
+    $$PWD/FolderListModel.h \
+    $$PWD/FwdDeclModel.h \
     $$PWD/FwdDeclModelData.h \
     $$PWD/HashMap.h \
-    $$PWD/FwdDeclModel.h \
-    $$PWD/FolderListModel.h \
+    $$PWD/KeySequenceTools.h \
     $$PWD/MoveOnly.h \
     $$PWD/NoCopyNoMove.h \
-    $$PWD/StrBoolConverter.h \
     $$PWD/PathCheck.h \
-    $$PWD/FakeQKeyEvent.h \
-    $$PWD/KeySequenceTools.h \
     $$PWD/QmlHelpers.h \
-    $$PWD/StdHelpers.h
+    $$PWD/StdHelpers.h \
+    $$PWD/StrBoolConverter.h \
 
 SOURCES += \
-    $$PWD/FolderListModel.cpp \
-    $$PWD/StrBoolConverter.cpp \
-    $$PWD/PathCheck.cpp \
+    $$PWD/CommandTokenizer.cpp \
     $$PWD/FakeQKeyEvent.cpp \
+    $$PWD/FolderListModel.cpp \
     $$PWD/KeySequenceTools.cpp \
+    $$PWD/PathCheck.cpp \
+    $$PWD/StrBoolConverter.cpp \

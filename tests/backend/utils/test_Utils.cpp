@@ -17,6 +17,7 @@
 
 #include <QtTest/QtTest>
 
+#include "utils/CommandTokenizer.h"
 #include "utils/PathCheck.h"
 
 
@@ -27,6 +28,9 @@ class test_Utils : public QObject
 private slots:
     void validExtPath_data();
     void validExtPath();
+
+    void tokenize_command();
+    void tokenize_command_data();
 };
 
 void test_Utils::validExtPath_data()
@@ -47,6 +51,29 @@ void test_Utils::validExtPath()
     QFETCH(bool, result);
 
     QCOMPARE(::validExtPath(path), result);
+}
+
+void test_Utils::tokenize_command()
+{
+    QFETCH(QString, str);
+    QFETCH(QStringList, expected);
+
+    QCOMPARE(utils::tokenize_command(str), expected);
+}
+
+void test_Utils::tokenize_command_data()
+{
+    QTest::addColumn<QString>("str");
+    QTest::addColumn<QStringList>("expected");
+
+    QTest::newRow("empty") << QString() << QStringList();
+    QTest::newRow("simple") << QString("test a b c") << QStringList({"test","a","b","c"});
+    QTest::newRow("quoted 1") << QString("'test cmd' a 'b c' d") << QStringList({"test cmd","a","b c","d"});
+    QTest::newRow("quoted 2") << QString("\"test cmd\" a \"b c\" d") << QStringList({"test cmd","a","b c","d"});
+    QTest::newRow("missing quote pair 1") << QString("'test cmd") << QStringList({"'test", "cmd"});
+    QTest::newRow("missing quote pair 2") << QString("\"test cmd") << QStringList({"\"test", "cmd"});
+    QTest::newRow("whitespaces") << QString("test'cmd\"  a'b  c'  d") << QStringList({"test'cmd\"","a'b","c'","d"});
+    QTest::newRow("whitespaces") << QString("  'test cmd'  a \"b  c\"  d ") << QStringList({"test cmd","a","b  c","d"});
 }
 
 
