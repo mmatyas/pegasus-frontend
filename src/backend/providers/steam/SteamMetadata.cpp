@@ -157,7 +157,7 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
         game.developers.append(arr_entry.toString());
 
     const QJsonArray publisher_arr = app_data[QLatin1String("publishers")].toArray();
-    for (const auto& arr_entry : developer_arr)
+    for (const auto& arr_entry : publisher_arr)
         game.publishers.append(arr_entry.toString());
 
     const auto metacritic_obj = app_data[QLatin1String("metacritic")].toObject();
