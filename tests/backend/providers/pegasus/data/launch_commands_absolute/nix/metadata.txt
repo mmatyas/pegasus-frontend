@@ -1,0 +1,5 @@
+collection: Coll
+launch: /path/to/something '{file.path}'
+
+game: Game
+launch: /path/to/something '{file.path}'

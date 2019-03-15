@@ -54,5 +54,7 @@
         <file>multifile/multi.b.ext</file>
         <file>multifile/single.ext</file>
         <file>launch_commands/metadata.txt</file>
+        <file>launch_commands_absolute/nix/metadata.txt</file>
+        <file>launch_commands_absolute/win/metadata.txt</file>
     </qresource>
 </RCC>

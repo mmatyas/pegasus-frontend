@@ -54,8 +54,12 @@ bool contains_slash(const QString& str)
 
 void prepend_dirpath_maybe(const QString& base_dir, QString& launch_cmd)
 {
-    if (contains_slash(launch_cmd))
-        launch_cmd = QDir::toNativeSeparators(base_dir % QChar('/') % launch_cmd);
+    if (!contains_slash(launch_cmd))
+        return;
+    if (QFileInfo(launch_cmd).isAbsolute())
+        return;
+
+    launch_cmd = QDir::toNativeSeparators(base_dir % QChar('/') % launch_cmd);
 }
 } // namespace
 

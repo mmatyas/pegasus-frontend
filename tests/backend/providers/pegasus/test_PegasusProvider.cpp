@@ -81,6 +81,7 @@ private slots:
     void custom_directories();
     void multifile();
     void launch_commands();
+    void launch_commands_abs();
 };
 
 void test_PegasusProvider::empty()
@@ -439,6 +440,27 @@ void test_PegasusProvider::launch_commands()
     QCOMPARE(ctx.games.at(1).launch_args, expected[1]);
     QCOMPARE(ctx.games.at(2).launch_args, expected[2]);
     QCOMPARE(ctx.games.at(3).launch_args, expected[3]);
+}
+
+void test_PegasusProvider::launch_commands_abs()
+{
+    providers::SearchContext ctx;
+#ifdef Q_OS_WIN
+    const QStringList expected = { "D:\\path\\to\\something", "{file.path}" };
+    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands_absolute/win/metadata.txt`");
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands_absolute/win")});
+#else
+    const QStringList expected = { "/path/to/something", "{file.path}" };
+    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands_absolute/nix/metadata.txt`");
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands_absolute/nix")});
+#endif
+    provider.findLists(ctx);
+
+    QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
+    QCOMPARE(static_cast<int>(ctx.games.size()), 1);
+
+    QCOMPARE(ctx.collections.at("Coll").launch_args, expected);
+    QCOMPARE(ctx.games.at(0).launch_args, expected);
 }
 
 

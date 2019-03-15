@@ -1,0 +1,5 @@
+collection: Coll
+launch: D:\path\to\something '{file.path}'
+
+game: Game
+launch: D:\path\to\something '{file.path}'
