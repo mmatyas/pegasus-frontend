@@ -159,7 +159,7 @@ void test_PegasusProvider::with_meta()
     QCOMPARE(static_cast<int>(ctx.collections.size()), 1);
     QCOMPARE(static_cast<int>(ctx.games.size()), 6);
 
-    const auto common_launch = QStringLiteral("launcher.exe \"{file.path}\"");
+    const auto common_launch = QStringList({"launcher.exe", "{file.path}"});
     const auto common_workdir = QStringLiteral("some/workdir");
 
     // Collection
@@ -172,7 +172,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(coll.shortName(), QStringLiteral("mygames"));
         QCOMPARE(coll.summary, QStringLiteral("this is the summary"));
         QCOMPARE(coll.description, QStringLiteral("this is the description"));
-        QCOMPARE(coll.launch_cmd, common_launch);
+        QCOMPARE(coll.launch_args, common_launch);
         QCOMPARE(coll.launch_workdir, common_workdir);
     }
 
@@ -186,7 +186,7 @@ void test_PegasusProvider::with_meta()
         QVERIFY(ctx.games.count(game_id));
         const modeldata::Game& game = ctx.games.at(game_id);
 
-        QCOMPARE(game.launch_cmd, common_launch);
+        QCOMPARE(game.launch_args, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
     }
 
@@ -209,7 +209,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.summary, QStringLiteral("something short here"));
         QCOMPARE(game.description, QStringLiteral("a very long\ndescription"));
         QCOMPARE(game.rating, 0.8f);
-        QCOMPARE(game.launch_cmd, common_launch);
+        QCOMPARE(game.launch_args, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
@@ -226,7 +226,7 @@ void test_PegasusProvider::with_meta()
         const modeldata::Game& game = ctx.games.at(game_id);
 
         QCOMPARE(game.title, QStringLiteral("Subdir Game"));
-        QCOMPARE(game.launch_cmd, common_launch);
+        QCOMPARE(game.launch_args, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
     }
 
@@ -247,7 +247,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(static_cast<int>(game.files.size()), 2);
         QCOMPARE(contains_path(file_path_a, game.files), 1);
         QCOMPARE(contains_path(file_path_b, game.files), 1);
-        QCOMPARE(game.launch_cmd, common_launch);
+        QCOMPARE(game.launch_args, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
     }
 
@@ -272,7 +272,7 @@ void test_PegasusProvider::with_meta()
         const modeldata::Game& game = ctx.games.at(game_id);
 
         QCOMPARE(game.rating, 0.7f);
-        QCOMPARE(game.launch_cmd, QStringLiteral("dummy"));
+        QCOMPARE(game.launch_args, QStringList("dummy"));
         QCOMPARE(game.launch_workdir, QStringLiteral("my/work/dir"));
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
@@ -423,22 +423,22 @@ void test_PegasusProvider::launch_commands()
     QCOMPARE(static_cast<int>(ctx.collections.size()),  4);
     QCOMPARE(static_cast<int>(ctx.games.size()), 4);
 
-    const QStringList expected = {
-        QDir::toNativeSeparators("something '{file.path}'"),
-        QDir::toNativeSeparators(":/launch_commands/path/to/something '{file.path}'"),
-        QDir::toNativeSeparators(":/launch_commands/./path/to/something '{file.path}'"),
-        QDir::toNativeSeparators(":/launch_commands/../path/to/something '{file.path}'"),
+    const QVector<QStringList> expected = {
+        { QDir::toNativeSeparators("something"), "{file.path}" },
+        { QDir::toNativeSeparators(":/launch_commands/path/to/something"), "{file.path}" },
+        { QDir::toNativeSeparators(":/launch_commands/./path/to/something"), "{file.path}" },
+        { QDir::toNativeSeparators(":/launch_commands/../path/to/something"), "{file.path}" },
     };
 
-    QCOMPARE(ctx.collections.at("Global Coll").launch_cmd, expected[0]);
-    QCOMPARE(ctx.collections.at("Dotless Coll").launch_cmd, expected[1]);
-    QCOMPARE(ctx.collections.at("Dot Coll").launch_cmd, expected[2]);
-    QCOMPARE(ctx.collections.at("DotDot Coll").launch_cmd, expected[3]);
+    QCOMPARE(ctx.collections.at("Global Coll").launch_args, expected[0]);
+    QCOMPARE(ctx.collections.at("Dotless Coll").launch_args, expected[1]);
+    QCOMPARE(ctx.collections.at("Dot Coll").launch_args, expected[2]);
+    QCOMPARE(ctx.collections.at("DotDot Coll").launch_args, expected[3]);
 
-    QCOMPARE(ctx.games.at(0).launch_cmd, expected[0]);
-    QCOMPARE(ctx.games.at(1).launch_cmd, expected[1]);
-    QCOMPARE(ctx.games.at(2).launch_cmd, expected[2]);
-    QCOMPARE(ctx.games.at(3).launch_cmd, expected[3]);
+    QCOMPARE(ctx.games.at(0).launch_args, expected[0]);
+    QCOMPARE(ctx.games.at(1).launch_args, expected[1]);
+    QCOMPARE(ctx.games.at(2).launch_args, expected[2]);
+    QCOMPARE(ctx.games.at(3).launch_args, expected[3]);
 }
 
 

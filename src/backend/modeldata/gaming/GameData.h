@@ -58,7 +58,7 @@ struct Game {
     QString summary;
     QString description;
 
-    QString launch_cmd;
+    QStringList launch_args;
     QString launch_workdir;
     std::vector<GameFile> files;
 

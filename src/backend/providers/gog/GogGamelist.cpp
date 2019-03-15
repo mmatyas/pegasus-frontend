@@ -139,7 +139,7 @@ void register_entries(const std::vector<GogEntry>& entries,
         if (!sctx.path_to_gameid.count(game_path)) {
             modeldata::Game game(std::move(finfo));
             game.title = entry.name;
-            game.launch_cmd = '"' % entry.launch_cmd % '"';
+            game.launch_args = QStringList(entry.launch_cmd);
             game.launch_workdir = entry.workdir;
 
             const size_t game_id = sctx.games.size();

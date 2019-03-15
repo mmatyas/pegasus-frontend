@@ -21,6 +21,7 @@
 #include "Paths.h"
 #include "modeldata/gaming/CollectionData.h"
 #include "modeldata/gaming/GameData.h"
+#include "utils/CommandTokenizer.h"
 #include "utils/PathCheck.h"
 
 #include <QDebug>
@@ -210,11 +211,10 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
     collection_dirs[collection_name] = xml_props[QLatin1String("path")];
 
     const QString launch_cmd = xml_props[QLatin1String("command")]
-        .replace(QLatin1String("\"%ROM%\""), QLatin1String("\"{file.path}\"")) // make sure we don't double quote
-        .replace(QLatin1String("%ROM%"), QLatin1String("\"{file.path}\""))
+        .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"));
-    collection.launch_cmd = launch_cmd;
+    collection.launch_args = utils::tokenize_command(launch_cmd);
 
     // add the games
 
@@ -248,7 +248,7 @@ void SystemsParser::readSystemEntry(QXmlStreamReader& xml,
 
             if (!sctx.path_to_gameid.count(game_path)) {
                 modeldata::Game game(fileinfo);
-                game.launch_cmd = collection.launch_cmd;
+                game.launch_args = collection.launch_args;
 
                 const size_t game_id = sctx.games.size();
                 sctx.path_to_gameid.emplace(game_path, game_id);

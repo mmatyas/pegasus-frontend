@@ -34,7 +34,7 @@ struct Collection {
     explicit Collection(QString name);
     MOVE_ONLY(Collection)
 
-    QString launch_cmd; // TODO: remove
+    QStringList launch_args; // TODO: remove
     QString launch_workdir; // TODO: remove
 
     const QString name;

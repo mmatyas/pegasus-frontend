@@ -80,7 +80,7 @@ void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection
         // in any of the parsed metadata files. There is no existing game data
         // created yet either.
         modeldata::Game game(fileinfo);
-        game.launch_cmd = parent.launch_cmd;
+        game.launch_args = parent.launch_args;
         game.launch_workdir = parent.launch_workdir;
 
         const size_t game_id = sctx.games.size();
@@ -92,8 +92,8 @@ void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection
 
     // When a game was defined earlier than its collection
     modeldata::Game& game = sctx.games.at(game_id);
-    if (game.launch_cmd.isEmpty())
-        game.launch_cmd = parent.launch_cmd;
+    if (game.launch_args.isEmpty())
+        game.launch_args = parent.launch_args;
     if (game.launch_workdir.isEmpty())
         game.launch_workdir = parent.launch_workdir;
 }

@@ -76,7 +76,12 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
 
         modeldata::Game& game = sctx.games.at(game_id);
         game.title = appname;
-        game.launch_cmd = QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component);
+        game.launch_args = QStringList({
+            QStringLiteral("am"), QStringLiteral("start"),
+            QStringLiteral("--user"), QStringLiteral("0"),
+            QStringLiteral("-a"), action,
+            QStringLiteral("-n"), component,
+        });
 
         game.assets.setSingle(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
         game.assets.setSingle(AssetType::UI_TILE, game.assets.single(AssetType::BOX_FRONT));

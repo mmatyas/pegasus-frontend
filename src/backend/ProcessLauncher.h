@@ -49,7 +49,7 @@ private slots:
 private:
     QProcess* m_process;
 
-    void runProcess(const QString&, const QString&);
+    void runProcess(const QString&, const QStringList&, const QString&);
 
     void beforeRun();
     void afterRun();

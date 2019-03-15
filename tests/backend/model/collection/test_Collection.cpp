@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ void test_Collection::names()
 {
     modeldata::Collection modeldata("myname");
     modeldata.setShortName("abbrev");
-    modeldata.launch_cmd = "runner";
+    modeldata.launch_args = QStringList("runner");
     model::Collection collection(std::move(modeldata));
     collection.setGameList({});
 

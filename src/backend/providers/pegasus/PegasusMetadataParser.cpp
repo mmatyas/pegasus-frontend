@@ -22,6 +22,7 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusUtils.h"
+#include "utils/CommandTokenizer.h"
 
 #include <QDebug>
 #include <QDir>
@@ -100,8 +101,9 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             m_cur_coll->setShortName(first_line_of(entry));
             break;
         case CollAttrib::LAUNCH_CMD:
-            m_cur_coll->launch_cmd = config::mergeLines(entry.values);
-            prepend_dirpath_maybe(m_dir_path, m_cur_coll->launch_cmd);
+            m_cur_coll->launch_args = ::utils::tokenize_command(config::mergeLines(entry.values));
+            if (!m_cur_coll->launch_args.isEmpty())
+                prepend_dirpath_maybe(m_dir_path, m_cur_coll->launch_args.first());
             break;
         case CollAttrib::LAUNCH_WORKDIR:
             m_cur_coll->launch_workdir = first_line_of(entry);
@@ -239,8 +241,9 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             }
             break;
         case GameAttrib::LAUNCH_CMD:
-            m_cur_game->launch_cmd = first_line_of(entry);
-            prepend_dirpath_maybe(m_dir_path, m_cur_game->launch_cmd);
+            m_cur_game->launch_args = ::utils::tokenize_command(config::mergeLines(entry.values));
+            if (!m_cur_game->launch_args.isEmpty())
+                prepend_dirpath_maybe(m_dir_path, m_cur_game->launch_args.first());
             break;
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);
@@ -294,7 +297,7 @@ void Parser::parse_entry(const config::Entry& entry,
     if (entry.key == QLatin1String("game")) {
         modeldata::Game game(first_line_of(entry));
         if (m_cur_coll) {
-            game.launch_cmd = m_cur_coll->launch_cmd;
+            game.launch_args = m_cur_coll->launch_args;
             game.launch_workdir = m_cur_coll->launch_workdir;
         }
         const size_t game_id = sctx.games.size();

@@ -47,15 +47,17 @@ void format_replace_env(QString& launch_cmd)
     }
 }
 
-void format_launch_command(QString& launch_cmd, const QFileInfo& finfo)
+void format_launch_command(QStringList& launch_args, const QFileInfo& finfo)
 {
-    launch_cmd
-        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
-        .replace(QLatin1String("{file.name}"), finfo.fileName())
-        .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
-        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
+    for (QString& part : launch_args) {
+        part
+            .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
+            .replace(QLatin1String("{file.name}"), finfo.fileName())
+            .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
+            .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
 
-    format_replace_env(launch_cmd);
+        format_replace_env(part);
+    }
 }
 } // namespace
 
@@ -73,12 +75,12 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* gamefile)
 
     // TODO: in the future, check the gamefile's own launch command first
 
-    QString launch_cmd = game->data().launch_cmd;
+    QStringList launch_args = game->data().launch_args;
 
-    if (!launch_cmd.isEmpty())
-        format_launch_command(launch_cmd, gamefile->data().fileinfo);
+    if (!launch_args.isEmpty())
+        format_launch_command(launch_args, gamefile->data().fileinfo);
 
-    if (launch_cmd.isEmpty()) {
+    if (launch_args.isEmpty() || launch_args.constFirst().isEmpty()) {
         qInfo().noquote()
             << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
                .arg(game->data().title);
@@ -86,19 +88,19 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* gamefile)
         return;
     }
 
-
+    const QString command = launch_args.takeFirst();
     QString workdir = game->data().launch_workdir;
     if (workdir.isEmpty())
         workdir = gamefile->data().fileinfo.absolutePath();
 
 
     beforeRun();
-    runProcess(launch_cmd, workdir);
+    runProcess(command, launch_args, workdir);
 }
 
-void ProcessLauncher::runProcess(const QString& command, const QString& workdir)
+void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
-    qInfo().noquote() << tr_log("Executing command: `%1`").arg(command);
+    qInfo().noquote() << tr_log("Executing command: [`%1`,`%2`]").arg(command, args.join(QLatin1String("`,`")));
 
     Q_ASSERT(!m_process);
     m_process = new QProcess(this);
@@ -113,7 +115,7 @@ void ProcessLauncher::runProcess(const QString& command, const QString& workdir)
     m_process->setProcessChannelMode(QProcess::ForwardedChannels);
     m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_process->setWorkingDirectory(workdir);
-    m_process->start(command, QProcess::ReadOnly);
+    m_process->start(command, args, QProcess::ReadOnly);
 
     // wait
     const bool started_successfully = m_process->waitForStarted(-1);

@@ -42,22 +42,27 @@ namespace {
 static constexpr auto MSG_PREFIX = "Steam:";
 static constexpr auto JSON_CACHE_DIR = "steam";
 
-QString find_steam_exe()
+QStringList find_steam_call()
 {
 #if defined(Q_OS_WIN)
     QSettings reg_base(QLatin1String("HKEY_CURRENT_USER\\Software\\Valve\\Steam"),
                        QSettings::NativeFormat);
     QString reg_value = reg_base.value(QLatin1String("SteamExe")).toString();
     if (!reg_value.isEmpty())
-        return reg_value.prepend('"').append('"');
+        return {reg_value};
 #endif
 
 #if defined(Q_OS_MACOS)
     // it should be installed
-    return QStringLiteral("open -a Steam --args");
+    return {
+        QStringLiteral("open"),
+        QStringLiteral("-a"),
+        QStringLiteral("Steam"),
+        QStringLiteral("--args"),
+    };
 #else
     // it should be in the PATH
-    return QStringLiteral("steam");
+    return {QStringLiteral("steam")};
 #endif
 }
 
@@ -308,7 +313,7 @@ void Metadata::enhance(providers::SearchContext& sctx)
         return;
 
     const std::vector<size_t>& childs = sctx.collection_childs.at(STEAM_TAG);
-    const QString steamexe = find_steam_exe();
+    const QStringList steam_call = find_steam_call();
 
     // try to fill using manifest files
 
@@ -327,7 +332,8 @@ void Metadata::enhance(providers::SearchContext& sctx)
                 entry.title = QLatin1String("App #") % entry.appid;
 
             game.title = entry.title;
-            game.launch_cmd = steamexe % QLatin1String(" steam://rungameid/") % entry.appid;
+            game.launch_args = steam_call;
+            game.launch_args.append(QStringLiteral("steam://rungameid/") % entry.appid);
             entry.game_ptr = &game;
 
             entries.push_back(std::move(entry));
