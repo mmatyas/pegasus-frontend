@@ -40,7 +40,11 @@ struct GogEntry {
     QString workdir;
 
     GogEntry(QString id, QString name, QString exe, QString launch_cmd, QString workdir)
-        : id(id), name(name), exe(exe), launch_cmd(launch_cmd), workdir(workdir)
+        : id(std::move(id))
+        , name(std::move(name))
+        , exe(std::move(exe))
+        , launch_cmd(std::move(launch_cmd))
+        , workdir(std::move(workdir))
     {}
 
     MOVE_ONLY(GogEntry)

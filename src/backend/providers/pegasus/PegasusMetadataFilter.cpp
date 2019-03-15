@@ -52,7 +52,7 @@ std::vector<QString> all_valid_subdirs(const QString& filter_dir)
     return result;
 }
 
-bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, const QString filter_dir)
+bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, const QString& filter_dir)
 {
     const QString relative_path = fileinfo.filePath().mid(filter_dir.length() + 1);
 

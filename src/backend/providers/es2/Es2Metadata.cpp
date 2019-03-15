@@ -257,7 +257,7 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
             continue;
 
         // find the metadata file
-        const QString collection_dir = collection_dirs.at(collection.name);
+        const QString& collection_dir = collection_dirs.at(collection.name);
         const QString gamelist_path = findGamelistFile(collection, collection_dir);
         if (gamelist_path.isEmpty())
             continue;

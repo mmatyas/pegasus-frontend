@@ -43,7 +43,7 @@ std::vector<model::LocaleEntry> find_available_locales()
         const int locale_tag_len = filename.length() - QM_PREFIX_LEN - QM_SUFFIX_LEN;
         Q_ASSERT(locale_tag_len > 0);
 
-        const QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
+        QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
         locales.emplace_back(std::move(locale_tag));
 
         qInfo().noquote() << tr_log("Found locale `%2`").arg(locales.back().bcp47tag);

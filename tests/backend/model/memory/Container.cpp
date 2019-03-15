@@ -26,7 +26,7 @@ Container::Container(QObject* parent)
 
 Container::Container(QString settings_dir, QObject* parent)
     : QObject(parent)
-    , m_memory(settings_dir)
+    , m_memory(std::move(settings_dir))
 {
     setup();
 }

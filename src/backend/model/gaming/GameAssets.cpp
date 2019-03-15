@@ -22,7 +22,7 @@ namespace model {
 
 GameAssets::GameAssets(modeldata::GameAssets* const assets, QObject* parent)
     : QObject(parent)
-    , m_assets(std::move(assets))
+    , m_assets(assets)
 {}
 
 } // namespace model

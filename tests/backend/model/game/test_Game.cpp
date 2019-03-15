@@ -35,7 +35,7 @@ private slots:
     void launchMulti();
 };
 
-void testStrAndList(std::function<void(modeldata::Game&, const QString&)> fn_add,
+void testStrAndList(const std::function<void(modeldata::Game&, const QString&)>& fn_add,
                     const char* str_name,
                     const char* list_name)
 {

@@ -80,7 +80,7 @@ Parser::Parser(QString file_path, const Constants& constants)
     Q_ASSERT(!m_dir_path.isEmpty());
 }
 
-void Parser::print_error(const int lineno, const QString msg) const {
+void Parser::print_error(const int lineno, const QString& msg) const {
     qWarning().noquote()
         << tr_log("Collections: `%1`, line %2: %3").arg(m_metafile_path, QString::number(lineno), msg);
 }

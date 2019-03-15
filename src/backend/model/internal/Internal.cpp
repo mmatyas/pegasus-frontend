@@ -20,7 +20,6 @@
 
 namespace model {
 
-Internal::Internal()
-{}
+Internal::Internal() = default;
 
 } // namespace model
