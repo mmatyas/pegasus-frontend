@@ -1,0 +1,14 @@
+collection: Test
+extension: ext
+
+
+game: Single
+file: game1.ext
+assets.video: videos/a.mp4
+
+game: Multi
+file: game2.ext
+assets.videos:
+  videos/a.mp4
+  videos/b.mp4
+  videos/c.mp4

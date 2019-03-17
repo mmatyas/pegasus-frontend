@@ -71,6 +71,12 @@ void rel_program_to_abs(const QString& base_dir, QStringList& launch_args)
 
     rel_path_to_abs(base_dir, launch_args.first());
 }
+
+// FIXME: duplication
+bool asset_is_single(AssetType type)
+{
+    return type != AssetType::SCREENSHOTS && type != AssetType::VIDEOS;
+}
 } // namespace
 
 
@@ -285,7 +291,13 @@ bool Parser::parse_asset_entry_maybe(const config::Entry& entry) const
     modeldata::GameAssets& assets = m_cur_game
         ? m_cur_game->assets
         : m_cur_coll->assets;
-    assets.addUrlMaybe(asset_type, utils::assetline_to_url(entry.values.first(), m_dir_path));
+
+    if (asset_is_single(asset_type))
+        assets.addUrlMaybe(asset_type, utils::assetline_to_url(entry.values.first(), m_dir_path));
+    else {
+        for (const QString& line : entry.values)
+            assets.addUrlMaybe(asset_type, utils::assetline_to_url(line, m_dir_path));
+    }
     return true;
 }
 

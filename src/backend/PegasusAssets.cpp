@@ -80,8 +80,11 @@ AssetType str_to_type(const QString& str)
         { QStringLiteral("flyer"), AssetType::POSTER },
         { QStringLiteral("background"), AssetType::BACKGROUND },
         { QStringLiteral("music"), AssetType::MUSIC },
+
         { QStringLiteral("screenshot"), AssetType::SCREENSHOTS },
+        { QStringLiteral("screenshots"), AssetType::SCREENSHOTS },
         { QStringLiteral("video"), AssetType::VIDEOS },
+        { QStringLiteral("videos"), AssetType::VIDEOS },
     };
 
     const auto it = map.find(str);

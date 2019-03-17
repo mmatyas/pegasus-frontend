@@ -78,6 +78,7 @@ private slots:
     void asset_search();
     void asset_search_by_title();
     void custom_assets();
+    void custom_assets_multi();
     void custom_directories();
     void multifile();
     void launch_commands();
@@ -369,6 +370,36 @@ void test_PegasusProvider::custom_assets()
     modeldata::Game& game = ctx.games.at(ctx.path_to_gameid.at(path));
     QCOMPARE(game.assets.single(AssetType::BOX_FRONT),
         QStringLiteral("file::/custom_assets/different_dir/whatever.png"));
+}
+
+void test_PegasusProvider::custom_assets_multi()
+{
+    providers::SearchContext ctx;
+
+    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_assets_multi/metadata.txt`");
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_assets_multi")});
+    provider.findLists(ctx);
+    provider.findStaticData(ctx);
+
+    QVERIFY(ctx.collections.size() == 1);
+    QVERIFY(ctx.games.size() == 2);
+
+    {
+        const auto path = QStringLiteral(":/custom_assets_multi/game1.ext");
+        QVERIFY(ctx.path_to_gameid.count(path));
+        modeldata::Game& game = ctx.games.at(ctx.path_to_gameid.at(path));
+        QCOMPARE(game.assets.multi(AssetType::VIDEOS),
+            QStringList(QStringLiteral("file::/custom_assets_multi/videos/a.mp4")));
+    }{
+        const auto path = QStringLiteral(":/custom_assets_multi/game2.ext");
+        QVERIFY(ctx.path_to_gameid.count(path));
+        modeldata::Game& game = ctx.games.at(ctx.path_to_gameid.at(path));
+        QCOMPARE(game.assets.multi(AssetType::VIDEOS), QStringList({
+            QStringLiteral("file::/custom_assets_multi/videos/a.mp4"),
+            QStringLiteral("file::/custom_assets_multi/videos/b.mp4"),
+            QStringLiteral("file::/custom_assets_multi/videos/c.mp4"),
+        }));
+    }
 }
 
 void test_PegasusProvider::custom_directories()

@@ -27,6 +27,12 @@
         <file>custom_assets/media/mygame1-boxFront.png</file>
         <file>custom_assets/different_dir/whatever.png</file>
         <file>custom_assets/my_collection_assets/cartridge.png</file>
+        <file>custom_assets_multi/game1.ext</file>
+        <file>custom_assets_multi/game2.ext</file>
+        <file>custom_assets_multi/metadata.txt</file>
+        <file>custom_assets_multi/videos/a.mp4</file>
+        <file>custom_assets_multi/videos/b.mp4</file>
+        <file>custom_assets_multi/videos/c.mp4</file>
         <file>custom_dirs/a/mygame.x</file>
         <file>custom_dirs/a/mygame.y</file>
         <file>custom_dirs/b/mygame.x</file>
