@@ -146,8 +146,8 @@ FocusScope {
         Text {
             id: info
 
-            text: qsTr("Pegasus will look for collection files (collections.pegasus.txt or "
-                     + "collections.txt)\nin the following directories:") + api.tr
+            text: qsTr("Pegasus will look for collection files (metadata.pegasus.txt or "
+                     + "metadata.txt)\nin the following directories:") + api.tr
             color: "#eee"
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)

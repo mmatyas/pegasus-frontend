@@ -76,7 +76,7 @@ FocusScope {
 
         Text {
             id: info
-            text: qsTr("Select a collection file below (collections.pegasus.txt or collections.txt).\n"
+            text: qsTr("Select a collection file below (metadata.pegasus.txt or metadata.txt).\n"
                      + "The directory of the file will then be added to the list.")
             color: "#ee4"
             font.family: globalFonts.sans
