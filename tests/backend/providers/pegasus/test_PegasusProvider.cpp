@@ -161,7 +161,11 @@ void test_PegasusProvider::with_meta()
     QCOMPARE(static_cast<int>(ctx.games.size()), 6);
 
     const auto common_launch = QStringList({"launcher.exe", "{file.path}"});
-    const auto common_workdir = QStringLiteral("some/workdir");
+#ifdef Q_OS_WIN
+    const auto common_workdir = QStringLiteral(":\\with_meta\\some\\workdir");
+#else
+    const auto common_workdir = QStringLiteral(":/with_meta/some/workdir");
+#endif
 
     // Collection
     {
@@ -274,7 +278,11 @@ void test_PegasusProvider::with_meta()
 
         QCOMPARE(game.rating, 0.7f);
         QCOMPARE(game.launch_args, QStringList("dummy"));
-        QCOMPARE(game.launch_workdir, QStringLiteral("my/work/dir"));
+#ifdef Q_OS_WIN
+        QCOMPARE(game.launch_workdir, QStringLiteral(":\\with_meta\\my\\work\\dir"));
+#else
+        QCOMPARE(game.launch_workdir, QStringLiteral(":/with_meta/my/work/dir"));
+#endif
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
     }
@@ -446,11 +454,13 @@ void test_PegasusProvider::launch_commands_abs()
 {
     providers::SearchContext ctx;
 #ifdef Q_OS_WIN
-    const QStringList expected = { "D:\\path\\to\\something", "{file.path}" };
+    const QStringList expected_args = { "D:\\path\\to\\something", "{file.path}" };
+    const QString expected_workdir = "E:\\path\\to\\elsewhere";
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands_absolute/win/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands_absolute/win")});
 #else
-    const QStringList expected = { "/path/to/something", "{file.path}" };
+    const QStringList expected_args = { "/path/to/something", "{file.path}" };
+    const QString expected_workdir = "/path/to/elsewhere";
     QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands_absolute/nix/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands_absolute/nix")});
 #endif
@@ -459,8 +469,10 @@ void test_PegasusProvider::launch_commands_abs()
     QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
     QCOMPARE(static_cast<int>(ctx.games.size()), 1);
 
-    QCOMPARE(ctx.collections.at("Coll").launch_args, expected);
-    QCOMPARE(ctx.games.at(0).launch_args, expected);
+    QCOMPARE(ctx.collections.at("Coll").launch_args, expected_args);
+    QCOMPARE(ctx.collections.at("Coll").launch_workdir, expected_workdir);
+    QCOMPARE(ctx.games.at(0).launch_args, expected_args);
+    QCOMPARE(ctx.games.at(0).launch_workdir, expected_workdir);
 }
 
 

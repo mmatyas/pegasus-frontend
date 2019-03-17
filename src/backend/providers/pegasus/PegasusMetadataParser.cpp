@@ -52,14 +52,24 @@ bool contains_slash(const QString& str)
     return str.contains(QChar('/')) || str.contains(QChar('\\'));
 }
 
-void prepend_dirpath_maybe(const QString& base_dir, QString& launch_cmd)
+void rel_path_to_abs(const QString& base_dir, QString& path)
 {
-    if (!contains_slash(launch_cmd))
+    if (path.isEmpty())
         return;
-    if (QFileInfo(launch_cmd).isAbsolute())
+    if (QFileInfo(path).isAbsolute())
         return;
 
-    launch_cmd = QDir::toNativeSeparators(base_dir % QChar('/') % launch_cmd);
+    path = QDir::toNativeSeparators(base_dir % QChar('/') % path);
+}
+
+void rel_program_to_abs(const QString& base_dir, QStringList& launch_args)
+{
+    if (launch_args.isEmpty())
+        return;
+    if (!contains_slash(launch_args.constFirst()))
+        return;
+
+    rel_path_to_abs(base_dir, launch_args.first());
 }
 } // namespace
 
@@ -106,11 +116,11 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             break;
         case CollAttrib::LAUNCH_CMD:
             m_cur_coll->launch_args = ::utils::tokenize_command(config::mergeLines(entry.values));
-            if (!m_cur_coll->launch_args.isEmpty())
-                prepend_dirpath_maybe(m_dir_path, m_cur_coll->launch_args.first());
+            rel_program_to_abs(m_dir_path, m_cur_coll->launch_args);
             break;
         case CollAttrib::LAUNCH_WORKDIR:
             m_cur_coll->launch_workdir = first_line_of(entry);
+            rel_path_to_abs(m_dir_path, m_cur_coll->launch_workdir);
             break;
         case CollAttrib::DIRECTORIES:
             for (const QString& value : entry.values) {
@@ -246,11 +256,11 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             break;
         case GameAttrib::LAUNCH_CMD:
             m_cur_game->launch_args = ::utils::tokenize_command(config::mergeLines(entry.values));
-            if (!m_cur_game->launch_args.isEmpty())
-                prepend_dirpath_maybe(m_dir_path, m_cur_game->launch_args.first());
+            rel_program_to_abs(m_dir_path, m_cur_game->launch_args);
             break;
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);
+            rel_path_to_abs(m_dir_path, m_cur_game->launch_workdir);
             break;
     }
 }

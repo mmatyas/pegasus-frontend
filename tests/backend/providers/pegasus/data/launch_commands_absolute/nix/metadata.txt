@@ -1,5 +1,7 @@
 collection: Coll
 launch: /path/to/something '{file.path}'
+workdir: /path/to/elsewhere
 
 game: Game
 launch: /path/to/something '{file.path}'
+workdir: /path/to/elsewhere
