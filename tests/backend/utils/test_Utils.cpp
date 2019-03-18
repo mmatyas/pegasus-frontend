@@ -66,14 +66,16 @@ void test_Utils::tokenize_command_data()
     QTest::addColumn<QString>("str");
     QTest::addColumn<QStringList>("expected");
 
-    QTest::newRow("empty") << QString() << QStringList();
+    QTest::newRow("null") << QString() << QStringList();
+    QTest::newRow("empty") << QString("  \t  ") << QStringList();
     QTest::newRow("simple") << QString("test a b c") << QStringList({"test","a","b","c"});
     QTest::newRow("quoted 1") << QString("'test cmd' a 'b c' d") << QStringList({"test cmd","a","b c","d"});
     QTest::newRow("quoted 2") << QString("\"test cmd\" a \"b c\" d") << QStringList({"test cmd","a","b c","d"});
-    QTest::newRow("missing quote pair 1") << QString("'test cmd") << QStringList({"'test", "cmd"});
-    QTest::newRow("missing quote pair 2") << QString("\"test cmd") << QStringList({"\"test", "cmd"});
-    QTest::newRow("whitespaces") << QString("test'cmd\"  a'b  c'  d") << QStringList({"test'cmd\"","a'b","c'","d"});
-    QTest::newRow("whitespaces") << QString("  'test cmd'  a \"b  c\"  d ") << QStringList({"test cmd","a","b  c","d"});
+    QTest::newRow("quoted 3") << QString("\"test cmd\"\"a b\"'c'") << QStringList({"test cmd","a b", "c"});
+    QTest::newRow("missing quote pair 1") << QString("'test cmd") << QStringList({"'test cmd"});
+    QTest::newRow("missing quote pair 2") << QString("\"test cmd") << QStringList({"\"test cmd"});
+    QTest::newRow("in-string quotes") << QString("test'cmd\" a'b  c' d") << QStringList({"test'cmd\"","a'b","c'","d"});
+    QTest::newRow("whitespaces") << QString("  ' test cmd\t'  a\t \"b  c \"  d ") << QStringList({"test cmd","a","b  c","d"});
 }
 
 
