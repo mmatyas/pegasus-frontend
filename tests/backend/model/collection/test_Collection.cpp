@@ -33,7 +33,7 @@ void test_Collection::names()
 {
     modeldata::Collection modeldata("myname");
     modeldata.setShortName("abbrev");
-    modeldata.launch_args = QStringList("runner");
+    modeldata.launch_cmd = "runner";
     model::Collection collection(std::move(modeldata));
     collection.setGameList({});
 

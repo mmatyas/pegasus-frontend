@@ -1,7 +1,0 @@
-collection: Coll
-launch: D:\path\to\something '{file.path}'
-workdir: E:\path\to\elsewhere
-
-game: Game
-launch: D:\path\to\something '{file.path}'
-workdir: E:\path\to\elsewhere

@@ -22,6 +22,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "platform/TerminalKbd.h"
+#include "utils/CommandTokenizer.h"
 
 #include <QDebug>
 #include <QDir>
@@ -59,6 +60,35 @@ void format_launch_command(QStringList& launch_args, const QFileInfo& finfo)
         format_replace_env(part);
     }
 }
+
+bool contains_slash(const QString& str)
+{
+    return str.contains(QChar('/')) || str.contains(QChar('\\'));
+}
+
+QString abs_launchcmd(const QString& cmd, const QString& base_dir)
+{
+    if (!contains_slash(cmd))
+        return cmd;
+    if (base_dir.isEmpty())
+        return cmd;
+    if (QFileInfo(cmd).isAbsolute())
+        return cmd;
+
+    return QDir::toNativeSeparators(base_dir % QChar('/') % cmd);
+}
+
+QString abs_workdir(const QString& workdir, const QString& base_dir, const QString& fallback_workdir)
+{
+    if (workdir.isEmpty())
+        return fallback_workdir;
+    if (base_dir.isEmpty())
+        return workdir;
+    if (QFileInfo(workdir).isAbsolute())
+        return workdir;
+
+    return QDir::toNativeSeparators(base_dir % QChar('/') % workdir);
+}
 } // namespace
 
 
@@ -67,32 +97,33 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , m_process(nullptr)
 {}
 
-void ProcessLauncher::onLaunchRequested(const model::GameFile* gamefile)
+void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 {
-    Q_ASSERT(gamefile);
+    Q_ASSERT(q_gamefile);
 
-    auto game = static_cast<const model::Game* const>(gamefile->parent());
+    const auto q_game = static_cast<const model::Game* const>(q_gamefile->parent());
+    const modeldata::Game& game = q_game->data();
+    const modeldata::GameFile& gamefile = q_gamefile->data();
+
 
     // TODO: in the future, check the gamefile's own launch command first
 
-    QStringList launch_args = game->data().launch_args;
+    QStringList launch_args = ::utils::tokenize_command(game.launch_cmd);
 
     if (!launch_args.isEmpty())
-        format_launch_command(launch_args, gamefile->data().fileinfo);
+        format_launch_command(launch_args, gamefile.fileinfo);
 
     if (launch_args.isEmpty() || launch_args.constFirst().isEmpty()) {
         qInfo().noquote()
             << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
-               .arg(game->data().title);
+               .arg(game.title);
         emit processLaunchError();
         return;
     }
 
-    const QString command = launch_args.takeFirst();
-    QString workdir = game->data().launch_workdir;
-    if (workdir.isEmpty())
-        workdir = gamefile->data().fileinfo.absolutePath();
 
+    const QString command = abs_launchcmd(launch_args.takeFirst(), game.relative_basedir);
+    const QString workdir = abs_workdir(game.launch_workdir, game.relative_basedir, gamefile.fileinfo.absolutePath());
 
     beforeRun();
     runProcess(command, launch_args, workdir);
@@ -101,6 +132,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* gamefile)
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
     qInfo().noquote() << tr_log("Executing command: [`%1`,`%2`]").arg(command, args.join(QLatin1String("`,`")));
+    qInfo().noquote() << tr_log("Working directory: `%3`").arg(workdir);
 
     Q_ASSERT(!m_process);
     m_process = new QProcess(this);

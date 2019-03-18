@@ -22,7 +22,6 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusUtils.h"
-#include "utils/CommandTokenizer.h"
 
 #include <QDebug>
 #include <QDir>
@@ -45,31 +44,6 @@ const QString& first_line_of(const config::Entry& entry)
     }
 
     return entry.values.first();
-}
-
-bool contains_slash(const QString& str)
-{
-    return str.contains(QChar('/')) || str.contains(QChar('\\'));
-}
-
-void rel_path_to_abs(const QString& base_dir, QString& path)
-{
-    if (path.isEmpty())
-        return;
-    if (QFileInfo(path).isAbsolute())
-        return;
-
-    path = QDir::toNativeSeparators(base_dir % QChar('/') % path);
-}
-
-void rel_program_to_abs(const QString& base_dir, QStringList& launch_args)
-{
-    if (launch_args.isEmpty())
-        return;
-    if (!contains_slash(launch_args.constFirst()))
-        return;
-
-    rel_path_to_abs(base_dir, launch_args.first());
 }
 
 // FIXME: duplication
@@ -121,12 +95,10 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             m_cur_coll->setShortName(first_line_of(entry));
             break;
         case CollAttrib::LAUNCH_CMD:
-            m_cur_coll->launch_args = ::utils::tokenize_command(config::mergeLines(entry.values));
-            rel_program_to_abs(m_dir_path, m_cur_coll->launch_args);
+            m_cur_coll->launch_cmd = config::mergeLines(entry.values);
             break;
         case CollAttrib::LAUNCH_WORKDIR:
             m_cur_coll->launch_workdir = first_line_of(entry);
-            rel_path_to_abs(m_dir_path, m_cur_coll->launch_workdir);
             break;
         case CollAttrib::DIRECTORIES:
             for (const QString& value : entry.values) {
@@ -261,12 +233,10 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             }
             break;
         case GameAttrib::LAUNCH_CMD:
-            m_cur_game->launch_args = ::utils::tokenize_command(config::mergeLines(entry.values));
-            rel_program_to_abs(m_dir_path, m_cur_game->launch_args);
+            m_cur_game->launch_cmd = config::mergeLines(entry.values);
             break;
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);
-            rel_path_to_abs(m_dir_path, m_cur_game->launch_workdir);
             break;
     }
 }
@@ -313,6 +283,7 @@ void Parser::parse_entry(const config::Entry& entry,
             sctx.collections.emplace(name, modeldata::Collection(name));
 
         m_cur_coll = &sctx.collections.at(name);
+        m_cur_coll->relative_basedir = m_dir_path;
         m_cur_game = nullptr;
 
         filters.emplace_back(name, m_dir_path);
@@ -322,8 +293,9 @@ void Parser::parse_entry(const config::Entry& entry,
 
     if (entry.key == QLatin1String("game")) {
         modeldata::Game game(first_line_of(entry));
+        game.relative_basedir = m_dir_path;
         if (m_cur_coll) {
-            game.launch_args = m_cur_coll->launch_args;
+            game.launch_cmd = m_cur_coll->launch_cmd;
             game.launch_workdir = m_cur_coll->launch_workdir;
         }
         const size_t game_id = sctx.games.size();

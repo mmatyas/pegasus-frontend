@@ -22,6 +22,7 @@
 #include "Paths.h"
 #include "modeldata/gaming/CollectionData.h"
 #include "modeldata/gaming/GameData.h"
+#include "utils/CommandTokenizer.h"
 #include "utils/MoveOnly.h"
 
 #include <QDebug>
@@ -143,7 +144,7 @@ void register_entries(const std::vector<GogEntry>& entries,
         if (!sctx.path_to_gameid.count(game_path)) {
             modeldata::Game game(std::move(finfo));
             game.title = entry.name;
-            game.launch_args = QStringList(entry.launch_cmd);
+            game.launch_cmd = ::utils::escape_command(entry.launch_cmd);
             game.launch_workdir = entry.workdir;
 
             const size_t game_id = sctx.games.size();

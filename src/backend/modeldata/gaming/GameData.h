@@ -58,8 +58,9 @@ struct Game {
     QString summary;
     QString description;
 
-    QStringList launch_args;
+    QString launch_cmd;
     QString launch_workdir;
+    QString relative_basedir;
     std::vector<GameFile> files;
 
     short player_count;

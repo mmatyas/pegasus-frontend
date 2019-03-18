@@ -81,8 +81,6 @@ private slots:
     void custom_assets_multi();
     void custom_directories();
     void multifile();
-    void launch_commands();
-    void launch_commands_abs();
 };
 
 void test_PegasusProvider::empty()
@@ -161,12 +159,9 @@ void test_PegasusProvider::with_meta()
     QCOMPARE(static_cast<int>(ctx.collections.size()), 1);
     QCOMPARE(static_cast<int>(ctx.games.size()), 6);
 
-    const auto common_launch = QStringList({"launcher.exe", "{file.path}"});
-#ifdef Q_OS_WIN
-    const auto common_workdir = QStringLiteral(":\\with_meta\\some\\workdir");
-#else
-    const auto common_workdir = QStringLiteral(":/with_meta/some/workdir");
-#endif
+    const auto common_launch = QStringLiteral("launcher.exe '{file.path}'");
+    const auto common_workdir = QStringLiteral("some/workdir");
+    const auto common_basedir = QStringLiteral(":/with_meta");
 
     // Collection
     {
@@ -178,8 +173,9 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(coll.shortName(), QStringLiteral("mygames"));
         QCOMPARE(coll.summary, QStringLiteral("this is the summary"));
         QCOMPARE(coll.description, QStringLiteral("this is the description"));
-        QCOMPARE(coll.launch_args, common_launch);
+        QCOMPARE(coll.launch_cmd, common_launch);
         QCOMPARE(coll.launch_workdir, common_workdir);
+        QCOMPARE(coll.relative_basedir, common_basedir);
     }
 
     // Game before the first collection entry
@@ -192,8 +188,9 @@ void test_PegasusProvider::with_meta()
         QVERIFY(ctx.games.count(game_id));
         const modeldata::Game& game = ctx.games.at(game_id);
 
-        QCOMPARE(game.launch_args, common_launch);
+        QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
+        QCOMPARE(game.relative_basedir, common_basedir);
     }
 
     // Basic
@@ -215,8 +212,9 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.summary, QStringLiteral("something short here"));
         QCOMPARE(game.description, QStringLiteral("a very long\ndescription"));
         QCOMPARE(game.rating, 0.8f);
-        QCOMPARE(game.launch_args, common_launch);
+        QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
+        QCOMPARE(game.relative_basedir, common_basedir);
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
     }
@@ -232,8 +230,9 @@ void test_PegasusProvider::with_meta()
         const modeldata::Game& game = ctx.games.at(game_id);
 
         QCOMPARE(game.title, QStringLiteral("Subdir Game"));
-        QCOMPARE(game.launch_args, common_launch);
+        QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
+        QCOMPARE(game.relative_basedir, common_basedir);
     }
 
     // Multifile
@@ -253,8 +252,9 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(static_cast<int>(game.files.size()), 2);
         QCOMPARE(contains_path(file_path_a, game.files), 1);
         QCOMPARE(contains_path(file_path_b, game.files), 1);
-        QCOMPARE(game.launch_args, common_launch);
+        QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
+        QCOMPARE(game.relative_basedir, common_basedir);
     }
 
     // Launch-only
@@ -278,12 +278,9 @@ void test_PegasusProvider::with_meta()
         const modeldata::Game& game = ctx.games.at(game_id);
 
         QCOMPARE(game.rating, 0.7f);
-        QCOMPARE(game.launch_args, QStringList("dummy"));
-#ifdef Q_OS_WIN
-        QCOMPARE(game.launch_workdir, QStringLiteral(":\\with_meta\\my\\work\\dir"));
-#else
-        QCOMPARE(game.launch_workdir, QStringLiteral(":/with_meta/my/work/dir"));
-#endif
+        QCOMPARE(game.launch_cmd, QStringLiteral("dummy"));
+        QCOMPARE(game.launch_workdir, QStringLiteral("my/work/dir"));
+        QCOMPARE(game.relative_basedir, common_basedir);
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
     }
@@ -450,60 +447,6 @@ void test_PegasusProvider::multifile()
     const auto& child_vec = ctx.collection_childs.begin()->second;
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 0) != child_vec.cend(), true);
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 1) != child_vec.cend(), true);
-}
-
-void test_PegasusProvider::launch_commands()
-{
-    providers::SearchContext ctx;
-
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands")});
-    provider.findLists(ctx);
-
-    QCOMPARE(static_cast<int>(ctx.collections.size()),  4);
-    QCOMPARE(static_cast<int>(ctx.games.size()), 4);
-
-    const QVector<QStringList> expected = {
-        { QDir::toNativeSeparators("something"), "{file.path}" },
-        { QDir::toNativeSeparators(":/launch_commands/path/to/something"), "{file.path}" },
-        { QDir::toNativeSeparators(":/launch_commands/./path/to/something"), "{file.path}" },
-        { QDir::toNativeSeparators(":/launch_commands/../path/to/something"), "{file.path}" },
-    };
-
-    QCOMPARE(ctx.collections.at("Global Coll").launch_args, expected[0]);
-    QCOMPARE(ctx.collections.at("Dotless Coll").launch_args, expected[1]);
-    QCOMPARE(ctx.collections.at("Dot Coll").launch_args, expected[2]);
-    QCOMPARE(ctx.collections.at("DotDot Coll").launch_args, expected[3]);
-
-    QCOMPARE(ctx.games.at(0).launch_args, expected[0]);
-    QCOMPARE(ctx.games.at(1).launch_args, expected[1]);
-    QCOMPARE(ctx.games.at(2).launch_args, expected[2]);
-    QCOMPARE(ctx.games.at(3).launch_args, expected[3]);
-}
-
-void test_PegasusProvider::launch_commands_abs()
-{
-    providers::SearchContext ctx;
-#ifdef Q_OS_WIN
-    const QStringList expected_args = { "D:\\path\\to\\something", "{file.path}" };
-    const QString expected_workdir = "E:\\path\\to\\elsewhere";
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands_absolute/win/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands_absolute/win")});
-#else
-    const QStringList expected_args = { "/path/to/something", "{file.path}" };
-    const QString expected_workdir = "/path/to/elsewhere";
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/launch_commands_absolute/nix/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/launch_commands_absolute/nix")});
-#endif
-    provider.findLists(ctx);
-
-    QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
-    QCOMPARE(static_cast<int>(ctx.games.size()), 1);
-
-    QCOMPARE(ctx.collections.at("Coll").launch_args, expected_args);
-    QCOMPARE(ctx.collections.at("Coll").launch_workdir, expected_workdir);
-    QCOMPARE(ctx.games.at(0).launch_args, expected_args);
-    QCOMPARE(ctx.games.at(0).launch_workdir, expected_workdir);
 }
 
 
