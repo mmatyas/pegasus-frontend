@@ -32,33 +32,31 @@
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
 
-void format_replace_env(QString& launch_cmd)
+void replace_env_vars(QString& param)
 {
     const auto env = QProcessEnvironment::systemEnvironment();
     const QRegularExpression rx_env(QStringLiteral("{env.([^}]+)}"));
 
-    auto match = rx_env.match(launch_cmd);
+    auto match = rx_env.match(param);
     while (match.hasMatch()) {
         const int from = match.capturedStart();
         const int len = match.capturedLength();
-        launch_cmd.replace(from, len, env.value(match.captured(1)));
+        param.replace(from, len, env.value(match.captured(1)));
 
         const int match_offset = match.capturedStart() + match.capturedLength();
-        match = rx_env.match(launch_cmd, match_offset);
+        match = rx_env.match(param, match_offset);
     }
 }
 
-void format_launch_command(QStringList& launch_args, const QFileInfo& finfo)
+void replace_variables(QString& param, const QFileInfo& finfo)
 {
-    for (QString& part : launch_args) {
-        part
-            .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
-            .replace(QLatin1String("{file.name}"), finfo.fileName())
-            .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
-            .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
+    param
+        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
+        .replace(QLatin1String("{file.name}"), finfo.fileName())
+        .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
+        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
 
-        format_replace_env(part);
-    }
+    replace_env_vars(param);
 }
 
 bool contains_slash(const QString& str)
@@ -108,25 +106,28 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     // TODO: in the future, check the gamefile's own launch command first
 
-    QStringList launch_args = ::utils::tokenize_command(game.launch_cmd);
+    QStringList args = ::utils::tokenize_command(game.launch_cmd);
+    for (QString& arg : args)
+        replace_variables(arg, gamefile.fileinfo);
 
-    if (!launch_args.isEmpty())
-        format_launch_command(launch_args, gamefile.fileinfo);
-
-    if (launch_args.isEmpty() || launch_args.constFirst().isEmpty()) {
+    QString command = args.isEmpty() ? QString() : args.takeFirst();
+    if (command.isEmpty()) {
         qInfo().noquote()
             << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
                .arg(game.title);
         emit processLaunchError();
         return;
     }
+    command = abs_launchcmd(command, game.relative_basedir);
 
 
-    const QString command = abs_launchcmd(launch_args.takeFirst(), game.relative_basedir);
-    const QString workdir = abs_workdir(game.launch_workdir, game.relative_basedir, gamefile.fileinfo.absolutePath());
+    QString workdir = game.launch_workdir;
+    replace_variables(workdir, gamefile.fileinfo);
+    workdir = abs_workdir(workdir, game.relative_basedir, gamefile.fileinfo.absolutePath());
+
 
     beforeRun();
-    runProcess(command, launch_args, workdir);
+    runProcess(command, args, workdir);
 }
 
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
