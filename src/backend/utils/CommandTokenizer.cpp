@@ -17,6 +17,8 @@
 
 #include "CommandTokenizer.h"
 
+#include <QRegularExpression>
+#include <QStringBuilder>
 #include <functional>
 
 
@@ -78,5 +80,23 @@ QStringList tokenize_command(const QString& str)
         o_start = o_end;
     }
     return results;
+}
+
+QString escape_command(const QString& str)
+{
+    constexpr QChar SINGLE_QUOTE = '\'';
+    constexpr QChar DOUBLE_QUOTE = '"';
+
+    if (!str.contains(QChar(' ')))
+        return str;
+
+    if (!str.contains(SINGLE_QUOTE))
+        return SINGLE_QUOTE % str % SINGLE_QUOTE;
+
+    if (!str.contains(DOUBLE_QUOTE))
+        return DOUBLE_QUOTE % str % DOUBLE_QUOTE;
+
+    // Hope for the best...
+    return str;
 }
 } // namespace utils

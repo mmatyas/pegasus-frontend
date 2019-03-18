@@ -31,6 +31,9 @@ private slots:
 
     void tokenize_command();
     void tokenize_command_data();
+
+    void escape_command();
+    void escape_command_data();
 };
 
 void test_Utils::validExtPath_data()
@@ -76,6 +79,27 @@ void test_Utils::tokenize_command_data()
     QTest::newRow("missing quote pair 2") << QString("\"test cmd") << QStringList({"\"test cmd"});
     QTest::newRow("in-string quotes") << QString("test'cmd\" a'b  c' d") << QStringList({"test'cmd\"","a'b","c'","d"});
     QTest::newRow("whitespaces") << QString("  ' test cmd\t'  a\t \"b  c \"  d ") << QStringList({"test cmd","a","b  c","d"});
+}
+
+void test_Utils::escape_command()
+{
+    QFETCH(QString, str);
+    QFETCH(QString, expected);
+
+    QCOMPARE(utils::escape_command(str), expected);
+}
+
+void test_Utils::escape_command_data()
+{
+    QTest::addColumn<QString>("str");
+    QTest::addColumn<QString>("expected");
+
+    QTest::newRow("null") << QString() << QString();
+    QTest::newRow("simple") << "testcmd" << "testcmd";
+    QTest::newRow("spaces") << "test a b" << "'test a b'";
+    QTest::newRow("single quote") << "test's cmd" << "\"test's cmd\"";
+    QTest::newRow("double quote") << "test \"my\" cmd" << "'test \"my\" cmd'";
+    QTest::newRow("mixed") << "test's \"my\" cmd" << "test's \"my\" cmd"; // no change
 }
 
 

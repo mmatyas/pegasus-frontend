@@ -22,4 +22,5 @@
 
 namespace utils {
 QStringList tokenize_command(const QString&);
+QString escape_command(const QString&);
 } // namespace
