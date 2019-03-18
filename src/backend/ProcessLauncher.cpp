@@ -87,6 +87,11 @@ QString abs_workdir(const QString& workdir, const QString& base_dir, const QStri
 
     return QDir::toNativeSeparators(base_dir % QChar('/') % workdir);
 }
+
+QString serialize_command(const QString& cmd, const QStringList& args)
+{
+    return (QStringList(cmd) + args).join(QLatin1String("`,`"));
+}
 } // namespace
 
 
@@ -132,7 +137,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
-    qInfo().noquote() << tr_log("Executing command: [`%1`,`%2`]").arg(command, args.join(QLatin1String("`,`")));
+    qInfo().noquote() << tr_log("Executing command: [`%1`]").arg(serialize_command(command, args));
     qInfo().noquote() << tr_log("Working directory: `%3`").arg(workdir);
 
     Q_ASSERT(!m_process);
