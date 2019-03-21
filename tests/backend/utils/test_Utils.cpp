@@ -75,8 +75,8 @@ void test_Utils::tokenize_command_data()
     QTest::newRow("quoted 1") << QString("'test cmd' a 'b c' d") << QStringList({"test cmd","a","b c","d"});
     QTest::newRow("quoted 2") << QString("\"test cmd\" a \"b c\" d") << QStringList({"test cmd","a","b c","d"});
     QTest::newRow("quoted 3") << QString("\"test cmd\"\"a b\"'c'") << QStringList({"test cmd","a b", "c"});
-    QTest::newRow("missing quote pair 1") << QString("'test cmd") << QStringList({"'test cmd"});
-    QTest::newRow("missing quote pair 2") << QString("\"test cmd") << QStringList({"\"test cmd"});
+    QTest::newRow("missing quote pair 1") << QString("test 'cmd") << QStringList({"test", "cmd"});
+    QTest::newRow("missing quote pair 2") << QString("test \"cmd") << QStringList({"test", "cmd"});
     QTest::newRow("in-string quotes") << QString("test'cmd\" a'b  c' d") << QStringList({"test'cmd\"","a'b","c'","d"});
     QTest::newRow("whitespaces") << QString("  ' test cmd\t'  a\t \"b  c \"  d ") << QStringList({"test cmd","a","b  c","d"});
 }
