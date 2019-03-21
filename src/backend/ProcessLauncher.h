@@ -23,6 +23,12 @@
 #include <QProcess>
 
 
+namespace helpers {
+QString abs_launchcmd(const QString& cmd, const QString& base_dir);
+QString abs_workdir(const QString& workdir, const QString& base_dir, const QString& fallback_workdir);
+} // namespace helpers
+
+
 /// Launches and manages external processes
 ///
 /// Launches external processes and detects their success or failure.

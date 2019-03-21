@@ -64,8 +64,18 @@ bool contains_slash(const QString& str)
     return str.contains(QChar('/')) || str.contains(QChar('\\'));
 }
 
+QString serialize_command(const QString& cmd, const QStringList& args)
+{
+    return (QStringList(cmd) + args).join(QLatin1String("`,`"));
+}
+} // namespace
+
+
+namespace helpers {
 QString abs_launchcmd(const QString& cmd, const QString& base_dir)
 {
+    Q_ASSERT(!cmd.isEmpty());
+
     if (!contains_slash(cmd))
         return cmd;
     if (base_dir.isEmpty())
@@ -87,12 +97,7 @@ QString abs_workdir(const QString& workdir, const QString& base_dir, const QStri
 
     return QDir::toNativeSeparators(base_dir % QChar('/') % workdir);
 }
-
-QString serialize_command(const QString& cmd, const QStringList& args)
-{
-    return (QStringList(cmd) + args).join(QLatin1String("`,`"));
-}
-} // namespace
+} // namespace helpers
 
 
 ProcessLauncher::ProcessLauncher(QObject* parent)
@@ -123,12 +128,12 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
         emit processLaunchError();
         return;
     }
-    command = abs_launchcmd(command, game.relative_basedir);
+    command = helpers::abs_launchcmd(command, game.relative_basedir);
 
 
     QString workdir = game.launch_workdir;
     replace_variables(workdir, gamefile.fileinfo);
-    workdir = abs_workdir(workdir, game.relative_basedir, gamefile.fileinfo.absolutePath());
+    workdir = helpers::abs_workdir(workdir, game.relative_basedir, gamefile.fileinfo.absolutePath());
 
 
     beforeRun();

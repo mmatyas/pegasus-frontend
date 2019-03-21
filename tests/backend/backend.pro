@@ -4,5 +4,6 @@ SUBDIRS += \
     api \
     configfile \
     model \
+    processlauncher \
     providers \
     utils \
