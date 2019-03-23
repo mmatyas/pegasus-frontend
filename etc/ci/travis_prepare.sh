@@ -26,7 +26,7 @@ if [[ $TARGET = x11* ]]; then
     libxkbcommon-dev \
     libxkbcommon-x11-dev \
     ruby2.4
-  gem install fpm
+  gem install fpm -v 1.10.2
 fi
 
 if [[ -n ${RUN_COV-} ]]; then
