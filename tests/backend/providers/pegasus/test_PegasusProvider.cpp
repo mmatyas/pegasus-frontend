@@ -81,6 +81,7 @@ private slots:
     void custom_assets_multi();
     void custom_directories();
     void multifile();
+    void nonASCII();
 };
 
 void test_PegasusProvider::empty()
@@ -447,6 +448,94 @@ void test_PegasusProvider::multifile()
     const auto& child_vec = ctx.collection_childs.begin()->second;
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 0) != child_vec.cend(), true);
     QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), 1) != child_vec.cend(), true);
+}
+
+void test_PegasusProvider::nonASCII()
+{
+    struct TestEntry {
+        QString title;
+        QString filename;
+        QString desc;
+    };
+    // It's 2019 and yet some compilers still have Unicode troubles...
+    const std::vector<TestEntry> entries {
+        { "AsciiGame", "ascii.ext", "A simple ASCII filename" },
+        {
+            u8"\u00C1rv\u00EDzt\u0171r\u0151", // Árvíztűrő
+            u8"\u00E1rv\u00EDzt\u0171r\u0151.ext", // árvíztűrő.ext
+            u8"\u00C1rv\u00EDzt\u0171r\u0151 t\u00FCk\u00F6rf\u00FAr\u00F3g\u00E9p", // Árvíztűrő tükörfúrógép
+        },
+        {
+            u8"\u65E5\u672C\u30B2\u30FC\u30E0", // 日本ゲーム
+            u8"\u30B2\u30FC\u30E0.ext", // ゲーム.ext
+            u8"\u8272\u306F\u5302\u3078\u3069 \u6563\u308A\u306C\u308B\u3092", // 色は匂へど 散りぬるを
+        },
+    };
+    QCOMPARE(entries.at(1).title.size(), 9); // Árvíztűrő, spec = 2 bytes
+    QCOMPARE(entries.at(1).title.toUtf8().size(), 13);
+    QCOMPARE(entries.at(2).title.size(), 5); // 日本ゲーム, spec = 3 bytes
+    QCOMPARE(entries.at(2).title.toUtf8().size(), 15);
+
+    QTemporaryDir tempdir;
+    QVERIFY(tempdir.isValid());
+    {
+
+        const QString metapath = tempdir.filePath("metadata.txt");
+        QFile metafile(metapath);
+        QVERIFY(metafile.open(QFile::WriteOnly | QFile::Text));
+        QTextStream stream(&metafile);
+        stream.setCodec("UTF-8");
+        stream << QStringLiteral("collection: Test\nextension: ext\n\n");
+
+        for (const TestEntry& entry : entries) {
+            stream
+                << "\ngame: " << entry.title
+                << "\nfile: " << entry.filename
+                << "\ndescription: " << entry.desc
+                << "\n";
+            {
+                const QString filepath = tempdir.filePath(entry.filename);
+                QFile file(filepath);
+                QVERIFY(file.open(QFile::WriteOnly));
+                QTextStream(&file) << QChar('\n');
+            }
+            {
+                const QString mediapath = "media/" + entry.title;
+                QVERIFY(QDir(tempdir.path()).mkpath(mediapath));
+                const QString filepath = tempdir.filePath(mediapath + "/box_front.png");
+                QFile file(filepath);
+                QVERIFY(file.open(QFile::WriteOnly));
+                QTextStream(&file) << QChar('\n');
+            }
+        }
+    }
+
+    providers::SearchContext ctx;
+
+    const QString ignored_msg = "Collections: found `" + tempdir.path() + "/metadata.txt`";
+    QTest::ignoreMessage(QtInfoMsg, ignored_msg.toLocal8Bit());
+    providers::pegasus::PegasusProvider provider({tempdir.path()});
+    provider.findLists(ctx);
+    provider.findStaticData(ctx);
+
+    QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
+    QCOMPARE(ctx.games.size(), entries.size());
+
+    for (const TestEntry& expected : entries) {
+        auto it = std::find_if(ctx.games.begin(), ctx.games.end(),
+            [&expected](const decltype(ctx.games)::value_type& pair){ return pair.second.title == expected.title; });
+        QVERIFY(it != ctx.games.cend());
+
+        modeldata::Game& game = it->second;
+        QCOMPARE(game.title, expected.title);
+        QCOMPARE(static_cast<int>(game.files.size()), 1);
+        QCOMPARE(game.files.front().fileinfo.absoluteFilePath(), tempdir.path() + "/" + expected.filename);
+        QCOMPARE(game.files.front().fileinfo.exists(), true);
+        QCOMPARE(game.description, expected.desc);
+
+        const QString expected_asset_path = QUrl::fromLocalFile(tempdir.path() + "/media/" + expected.title + "/box_front.png").toString();
+        QCOMPARE(game.assets.single(AssetType::BOX_FRONT), expected_asset_path);
+    }
 }
 
 
