@@ -78,24 +78,16 @@ QString abs_launchcmd(const QString& cmd, const QString& base_dir)
 
     if (!contains_slash(cmd))
         return cmd;
-    if (base_dir.isEmpty())
-        return cmd;
-    if (QFileInfo(cmd).isAbsolute())
-        return cmd;
 
-    return QDir::toNativeSeparators(base_dir % QChar('/') % cmd);
+    return QFileInfo(base_dir, cmd).absoluteFilePath();
 }
 
 QString abs_workdir(const QString& workdir, const QString& base_dir, const QString& fallback_workdir)
 {
     if (workdir.isEmpty())
         return fallback_workdir;
-    if (base_dir.isEmpty())
-        return workdir;
-    if (QFileInfo(workdir).isAbsolute())
-        return workdir;
 
-    return QDir::toNativeSeparators(base_dir % QChar('/') % workdir);
+    return QFileInfo(base_dir, workdir).absoluteFilePath();
 }
 } // namespace helpers
 

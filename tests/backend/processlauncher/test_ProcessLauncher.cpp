@@ -53,19 +53,23 @@ void test_ProcessLauncher::exe_path()
 
 void test_ProcessLauncher::exe_path_data()
 {
+    const QString app_path = QDir::currentPath();
+
     QTest::addColumn<QString>("cmd");
     QTest::addColumn<QString>("basedir");
     QTest::addColumn<QString>("expected");
 
     QTest::newRow("global") << "myapp" << "dummy" << "myapp";
 #ifdef Q_OS_WIN
-    QTest::newRow("relative A") << ".\\subdir\\app" << "c:\\some\\path" << "c:\\some\\path\\.\\subdir\\app";
-    QTest::newRow("relative B") << "./subdir/app" << "c:\\some\\path" << "c:\\some\\path\\.\\subdir\\app";
-    QTest::newRow("relative, no basedir") << ".\\subdir\\app" << QString() << ".\\subdir\\app";
-    QTest::newRow("absolute") << "c:\\subdir\\app" << "dummy" << "c:\\subdir\\app";
+    QTest::newRow("relative A") << ".\\subdir\\app" << "c:\\some\\path" << "C:/some/path/subdir/app";
+    QTest::newRow("relative B") << "./subdir/app" << "c:\\some\\path" << "C:/some/path/subdir/app";
+    QTest::newRow("relative, no basedir A") << ".\\subdir\\app" << QString() << (app_path + "/subdir/app");
+    QTest::newRow("relative, no basedir B") << "./subdir/app" << QString() << (app_path + "/subdir/app");
+    QTest::newRow("absolute A ") << "c:\\subdir\\app" << "dummy" << "C:/subdir/app";
+    QTest::newRow("absolute B") << "c:/subdir/app" << "dummy" << "C:/subdir/app";
 #else
-    QTest::newRow("relative") << "./subdir/app" << "/some/path" << "/some/path/./subdir/app";
-    QTest::newRow("relative, no basedir") << "./subdir/app" << QString() << "./subdir/app";
+    QTest::newRow("relative") << "./subdir/app" << "/some/path" << "/some/path/subdir/app";
+    QTest::newRow("relative, no basedir") << "./subdir/app" << QString() << (app_path + "/subdir/app");
     QTest::newRow("absolute") << "/subdir/app" << "dummy" << "/subdir/app";
 #endif
 }
@@ -81,19 +85,23 @@ void test_ProcessLauncher::workdir_path()
 
 void test_ProcessLauncher::workdir_path_data()
 {
+    const QString app_path = QDir::currentPath();
+
     QTest::addColumn<QString>("workdir");
     QTest::addColumn<QString>("basedir");
     QTest::addColumn<QString>("expected");
 
     QTest::newRow("null") << QString() << "dummy" << fallback_workdir();
 #ifdef Q_OS_WIN
-    QTest::newRow("relative A") << ".\\subdir" << "c:\\some\\path" << "c:\\some\\path\\.\\subdir";
-    QTest::newRow("relative B") << "./subdir" << "c:\\some\\path" << "c:\\some\\path\\.\\subdir";
-    QTest::newRow("relative, no basedir") << ".\\subdir" << QString() << ".\\subdir";
-    QTest::newRow("absolute") << "c:\\subdir" << "dummy" << "c:\\subdir";
+    QTest::newRow("relative A") << ".\\subdir" << "c:\\some\\path" << "C:/some/path/subdir";
+    QTest::newRow("relative B") << "./subdir" << "c:\\some\\path" << "C:/some/path/subdir";
+    QTest::newRow("relative, no basedir A") << ".\\subdir" << QString() << (app_path + "/subdir");
+    QTest::newRow("relative, no basedir B") << "./subdir" << QString() << (app_path + "/subdir");
+    QTest::newRow("absolute A") << "c:\\subdir" << "dummy" << "C:/subdir";
+    QTest::newRow("absolute B") << "c:/subdir" << "dummy" << "C:/subdir";
 #else
-    QTest::newRow("relative") << "./subdir" << "/some/path" << "/some/path/./subdir";
-    QTest::newRow("relative, no basedir") << "./subdir" << QString() << "./subdir";
+    QTest::newRow("relative") << "./subdir" << "/some/path" << "/some/path/subdir";
+    QTest::newRow("relative, no basedir") << "./subdir" << QString() << (app_path + "/subdir");
     QTest::newRow("absolute") << "/subdir" << "dummy" << "/subdir";
 #endif
 }
