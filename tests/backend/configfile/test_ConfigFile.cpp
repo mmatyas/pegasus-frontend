@@ -32,6 +32,7 @@ private slots:
     void file();
 
     void merge_lines();
+    void merge_lines_data();
 
 private:
     std::vector<config::Entry> m_entries;
@@ -99,7 +100,7 @@ void test_ConfigFile::file()
         config::Entry { 7, "key with spaces", {"val with spaces"} },
         config::Entry { 11, "multiline1", {"hello", "world!"} },
         config::Entry { 13, "multiline2", {"purely", "multiline"} },
-        config::Entry { 16, "multiline3", {"text", "with", "\n", "line break"} },
+        config::Entry { 16, "multiline3", {"text", "with", QString(), "line break"} },
         config::Entry { 20, "multiline4", {"text", "stops here"} },
         config::Entry { 25, "list1", {"list", "of", "items"} },
     };
@@ -116,9 +117,22 @@ void test_ConfigFile::file()
 
 void test_ConfigFile::merge_lines()
 {
-    QCOMPARE(config::mergeLines({}), QString());
-    QCOMPARE(config::mergeLines({ "aa", "bb" }), QStringLiteral("aa bb"));
-    QCOMPARE(config::mergeLines({ "\n", "aa", "\n", "bb", "\n" }), QStringLiteral("aa\nbb"));
+    QFETCH(QStringList, parts);
+    QFETCH(QString, expected);
+
+    const QVector<QString> parts_vec = parts.toVector();
+
+    QCOMPARE(config::mergeLines(parts_vec), expected);
+}
+
+void test_ConfigFile::merge_lines_data()
+{
+    QTest::addColumn<QStringList>("parts");
+    QTest::addColumn<QString>("expected");
+
+    QTest::newRow("null") << QStringList() << QString();
+    QTest::newRow("simple") << QStringList({ "aa", "bb" }) << QStringLiteral("aa bb");
+    QTest::newRow("empty lines") << QStringList({ QString(), "aa", QString(), "bb", QString() }) << QStringLiteral("aa\n\nbb");
 }
 
 

@@ -104,7 +104,7 @@ void readStream(QTextStream& stream,
             }
 
             if (trimmed_line == EMPTY_LINE_MARK) {
-                entry.values.append(QStringLiteral("\n"));
+                entry.values.append(QString());
                 continue;
             }
 
@@ -147,7 +147,7 @@ void readStream(QTextStream& stream,
 QString mergeLines(const QVector<QString>& lines)
 {
     if (lines.isEmpty())
-        return {};
+        return QString();
 
 
     constexpr QChar SPACE(' ');
@@ -160,13 +160,17 @@ QString mergeLines(const QVector<QString>& lines)
     QString out;
     out.reserve(len);
 
-    auto it = lines.cbegin();
-    out += *it++;
-    while (it != lines.cend()) {
-        if (!out.endsWith(NEWLINE) && !it->startsWith(NEWLINE))
+
+    for (const QString& line : lines) {
+        if (line.isNull()) {
+            out += QStringLiteral("\n\n");
+            continue;
+        }
+
+        if (!out.endsWith(NEWLINE))
             out += SPACE;
 
-        out += *it++;
+        out += line;
     }
 
     return out.trimmed();

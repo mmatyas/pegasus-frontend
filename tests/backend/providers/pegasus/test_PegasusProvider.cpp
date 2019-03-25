@@ -211,7 +211,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(static_cast<int>(game.player_count), 4);
         QCOMPARE(game.release_date, QDate(1998, 5, 1));
         QCOMPARE(game.summary, QStringLiteral("something short here"));
-        QCOMPARE(game.description, QStringLiteral("a very long\ndescription"));
+        QCOMPARE(game.description, QStringLiteral("a very long\n\ndescription"));
         QCOMPARE(game.rating, 0.8f);
         QCOMPARE(game.launch_cmd, common_launch);
         QCOMPARE(game.launch_workdir, common_workdir);
