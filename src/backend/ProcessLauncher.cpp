@@ -123,9 +123,13 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     command = helpers::abs_launchcmd(command, game.relative_basedir);
 
 
+    const QString default_workdir = contains_slash(command)
+        ? QFileInfo(command).absolutePath()
+        : gamefile.fileinfo.absolutePath();
+
     QString workdir = game.launch_workdir;
     replace_variables(workdir, gamefile.fileinfo);
-    workdir = helpers::abs_workdir(workdir, game.relative_basedir, gamefile.fileinfo.absolutePath());
+    workdir = helpers::abs_workdir(workdir, game.relative_basedir, default_workdir);
 
 
     beforeRun();
