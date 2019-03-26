@@ -82,6 +82,7 @@ private slots:
     void custom_directories();
     void multifile();
     void nonASCII();
+    void separate_media_dirs();
 };
 
 void test_PegasusProvider::empty()
@@ -542,6 +543,24 @@ void test_PegasusProvider::nonASCII()
         QCOMPARE(game.assets.single(AssetType::BOX_FRONT), expected_asset_path);
 #endif
     }
+}
+
+void test_PegasusProvider::separate_media_dirs()
+{
+    // NOTE: see issue 407
+
+    providers::SearchContext ctx;
+    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/separate_media_dirs/metadata/metadata.pegasus.txt`");
+    providers::pegasus::PegasusProvider provider({QStringLiteral(":/separate_media_dirs/metadata")});
+
+    provider.findLists(ctx);
+    QCOMPARE(static_cast<int>(ctx.collections.size()),  2);
+    QCOMPARE(static_cast<int>(ctx.games.size()), 2);
+
+    provider.findStaticData(ctx);
+    // NOTE: Yes, canonicalPath() returns a path with '..' in it...
+    QCOMPARE(ctx.games.at(0).assets.single(AssetType::BOX_FRONT), QStringLiteral("file::/separate_media_dirs/metadata/../games-a/media/Game 1/box_front.png"));
+    QCOMPARE(ctx.games.at(1).assets.single(AssetType::BOX_FRONT), QStringLiteral("file::/separate_media_dirs/metadata/../games-b/media/Game 2/box_front.png"));
 }
 
 

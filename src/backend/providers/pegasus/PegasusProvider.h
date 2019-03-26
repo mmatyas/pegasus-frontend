@@ -37,7 +37,7 @@ public:
     void findStaticData(SearchContext&) final;
 
 private:
-    const std::vector<QString> m_game_dirs;
+    std::vector<QString> m_game_dirs;
 };
 
 } // namespace pegasus

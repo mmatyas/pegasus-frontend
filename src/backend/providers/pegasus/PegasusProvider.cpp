@@ -71,6 +71,7 @@ PegasusProvider::PegasusProvider(std::vector<QString> game_dirs, QObject* parent
 
 void PegasusProvider::findLists(SearchContext& ctx)
 {
+    // NOTE: after this call, m_game_dirs also contains the collection directories
     find_in_dirs(m_game_dirs, ctx);
     emit gameCountChanged(static_cast<int>(ctx.games.size()));
 }

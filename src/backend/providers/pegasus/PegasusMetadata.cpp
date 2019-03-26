@@ -23,6 +23,7 @@
 #include "PegasusMetadataFilter.h"
 #include "PegasusMetadataParser.h"
 #include "providers/Provider.h"
+#include "utils/StdHelpers.h"
 
 #include <QDebug>
 #include <QDir>
@@ -117,13 +118,26 @@ void collect_metadata(const std::vector<QString>& dir_list,
             read_metafile(metafile, sctx, filters, constants);
     }
 }
+
+void move_collection_dirs_to(std::vector<QString>& out, std::vector<FileFilter>& filters)
+{
+    size_t count = out.size();
+    for (const FileFilter& filter : filters)
+        count += filter.directories.size();
+
+    out.reserve(count);
+    for (FileFilter& filter : filters)
+        vec_append_move(out, filter.directories);
+
+    VEC_REMOVE_DUPLICATES(out);
+}
 } // namespace
 
 
 namespace providers {
 namespace pegasus {
 
-void find_in_dirs(const std::vector<QString>& dir_list, providers::SearchContext& sctx)
+void find_in_dirs(std::vector<QString>& dir_list, providers::SearchContext& sctx)
 {
     std::vector<FileFilter> filters;
     filters.reserve(dir_list.size());
@@ -132,6 +146,8 @@ void find_in_dirs(const std::vector<QString>& dir_list, providers::SearchContext
 
     tidy_filters(filters);
     process_filters(filters, sctx);
+
+    move_collection_dirs_to(dir_list, filters);
 }
 
 } // namespace pegasus
