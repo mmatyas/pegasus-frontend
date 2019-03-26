@@ -30,8 +30,8 @@ namespace pegasus {
 namespace parser {
 
 struct FileFilterGroup {
-    QStringList extensions;
-    QStringList files;
+    std::vector<QString> extensions;
+    std::vector<QString> files;
     QRegularExpression regex;
 
     explicit FileFilterGroup();
@@ -40,7 +40,7 @@ struct FileFilterGroup {
 
 struct FileFilter {
     QString collection_key;
-    QStringList directories;
+    std::vector<QString> directories;
     FileFilterGroup include;
     FileFilterGroup exclude;
 

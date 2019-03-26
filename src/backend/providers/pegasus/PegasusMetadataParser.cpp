@@ -22,6 +22,7 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusUtils.h"
+#include "utils/StdHelpers.h"
 
 #include <QDebug>
 #include <QDir>
@@ -106,19 +107,18 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
                 if (finfo.isRelative())
                     finfo.setFile(m_dir_path % '/' % value);
 
-                const QString can_path = finfo.canonicalFilePath();
+                QString can_path = finfo.canonicalFilePath();
                 if (can_path.isEmpty())
                     print_error(entry.line, tr_log("directory path `%1` does not exist, ignored").arg(entry.key));
                 else
-                    m_cur_filter->directories.append(can_path);
+                    m_cur_filter->directories.emplace_back(std::move(can_path));
             }
             break;
         case CollAttrib::EXTENSIONS:
-            filter_group.extensions.append(utils::tokenize_by_comma(first_line_of(entry).toLower()));
+            vec_append_move(filter_group.extensions, utils::tokenize_by_comma(first_line_of(entry).toLower()));
             break;
         case CollAttrib::FILES:
-            for (const QString& value : entry.values)
-                filter_group.files.append(value);
+            vec_append_copy(filter_group.files, entry.values);
             break;
         case CollAttrib::REGEX:
             filter_group.regex.setPattern(first_line_of(entry));

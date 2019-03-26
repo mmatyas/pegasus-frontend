@@ -56,14 +56,14 @@ bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, con
 {
     const QString relative_path = fileinfo.filePath().mid(filter_dir.length() + 1);
 
-    const bool exclude = filter.exclude.extensions.contains(fileinfo.suffix())
-        || filter.exclude.files.contains(relative_path)
+    const bool exclude = VEC_CONTAINS(filter.exclude.extensions, fileinfo.suffix())
+        || VEC_CONTAINS(filter.exclude.files, relative_path)
         || (!filter.exclude.regex.pattern().isEmpty() && filter.exclude.regex.match(fileinfo.filePath()).hasMatch());
     if (exclude)
         return false;
 
-    const bool include = filter.include.extensions.contains(fileinfo.suffix())
-        || filter.include.files.contains(relative_path)
+    const bool include = VEC_CONTAINS(filter.include.extensions, fileinfo.suffix())
+        || VEC_CONTAINS(filter.include.files, relative_path)
         || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.match(fileinfo.filePath()).hasMatch());
     if (!include)
         return false;
@@ -121,11 +121,11 @@ FileFilter::FileFilter(QString collection, QString base_dir)
 void tidy_filters(std::vector<FileFilter>& filters)
 {
     for (FileFilter& filter : filters) {
-        filter.directories.removeDuplicates();
-        filter.include.extensions.removeDuplicates();
-        filter.include.files.removeDuplicates();
-        filter.exclude.extensions.removeDuplicates();
-        filter.exclude.files.removeDuplicates();
+        VEC_REMOVE_DUPLICATES(filter.directories);
+        VEC_REMOVE_DUPLICATES(filter.include.extensions);
+        VEC_REMOVE_DUPLICATES(filter.include.files);
+        VEC_REMOVE_DUPLICATES(filter.exclude.extensions);
+        VEC_REMOVE_DUPLICATES(filter.exclude.files);
     }
 }
 
