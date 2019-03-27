@@ -20,8 +20,8 @@
 #include "GogCommon.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "modeldata/gaming/CollectionData.h"
-#include "modeldata/gaming/GameData.h"
+#include "modeldata/CollectionData.h"
+#include "modeldata/GameData.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/MoveOnly.h"
 

@@ -18,7 +18,7 @@
 #include "PegasusMedia.h"
 
 #include "PegasusAssets.h"
-#include "modeldata/gaming/GameData.h"
+#include "modeldata/GameData.h"
 
 #include <QDir>
 #include <QDirIterator>

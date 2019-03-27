@@ -18,7 +18,6 @@
 #pragma once
 
 #include "providers/Provider.h"
-#include "utils/FwdDeclModelData.h"
 #include "utils/HashMap.h"
 
 #include <QObject>

@@ -17,11 +17,12 @@
 
 #pragma once
 
-#include "utils/FwdDeclModelData.h"
 #include "utils/HashMap.h"
 
 #include <QString>
 #include <vector>
+
+namespace modeldata { struct Game; }
 
 
 namespace providers {

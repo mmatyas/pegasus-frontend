@@ -19,8 +19,8 @@
 
 #include "GameAssets.h"
 #include "GameFile.h"
-#include "modeldata/gaming/CollectionData.h"
-#include "modeldata/gaming/GameData.h"
+#include "modeldata/CollectionData.h"
+#include "modeldata/GameData.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>

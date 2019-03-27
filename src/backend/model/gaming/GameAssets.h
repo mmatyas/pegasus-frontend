@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "modeldata/gaming/GameAssetsData.h"
+#include "modeldata/GameAssetsData.h"
 
 #include <QObject>
 

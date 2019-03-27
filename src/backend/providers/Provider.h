@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "modeldata/gaming/GameData.h"
-#include "modeldata/gaming/CollectionData.h"
+#include "modeldata/GameData.h"
+#include "modeldata/CollectionData.h"
 #include "utils/FwdDeclModel.h"
 #include "utils/HashMap.h"
 

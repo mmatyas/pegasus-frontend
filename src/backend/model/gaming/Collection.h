@@ -19,7 +19,7 @@
 
 #include "Game.h"
 #include "GameAssets.h"
-#include "modeldata/gaming/CollectionData.h"
+#include "modeldata/CollectionData.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QString>

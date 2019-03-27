@@ -17,8 +17,8 @@
 
 #include "AndroidAppsProvider.h"
 
-#include "modeldata/gaming/CollectionData.h"
-#include "modeldata/gaming/GameData.h"
+#include "modeldata/CollectionData.h"
+#include "modeldata/GameData.h"
 
 #include <QFileInfo>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
