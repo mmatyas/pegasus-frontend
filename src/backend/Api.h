@@ -52,7 +52,6 @@ public:
     void startScanning();
 
 signals:
-    void selectGameFile(model::Game* game);
     void launchGameFile(const model::GameFile*);
     void launchFailed(const QString);
     void memoryChanged();
@@ -60,11 +59,15 @@ signals:
     // triggers translation update
     void localeChanged();
 
+    // Api-side events
+    void eventSelectGameFile(const model::Game* game);
+    void eventLaunchError(const QString msg);
+
 public slots:
     // game launch communication
     void onGameFinished();
     void onGameLaunchOk();
-    void onGameLaunchError();
+    void onGameLaunchError(const QString);
 
 private slots:
     // internal communication

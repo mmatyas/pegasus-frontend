@@ -149,7 +149,7 @@ void ApiObject::onStaticDataLoaded()
 void ApiObject::onGameFileSelectorRequested()
 {
     auto game = static_cast<model::Game*>(QObject::sender());
-    emit selectGameFile(game);
+    emit eventSelectGameFile(game);
 }
 
 void ApiObject::onGameFileLaunchRequested()
@@ -167,11 +167,12 @@ void ApiObject::onGameLaunchOk()
     m_providerman.onGameLaunched(m_launch_game_file);
 }
 
-void ApiObject::onGameLaunchError()
+void ApiObject::onGameLaunchError(const QString msg)
 {
-    // TODO: show error
     Q_ASSERT(m_launch_game_file);
     m_launch_game_file = nullptr;
+
+    emit eventLaunchError(msg);
 }
 
 void ApiObject::onGameFinished()

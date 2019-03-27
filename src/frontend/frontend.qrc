@@ -72,5 +72,6 @@
         <file>menu/settings/keyeditor/KeyEditorResetButton.qml</file>
         <file>dialogs/MultifileSelector.qml</file>
         <file>dialogs/Shade.qml</file>
+        <file>dialogs/GenericOkDialog.qml</file>
     </qresource>
 </RCC>

@@ -68,6 +68,26 @@ QString serialize_command(const QString& cmd, const QStringList& args)
 {
     return (QStringList(cmd) + args).join(QLatin1String("`,`"));
 }
+
+QString processerror_to_string(QProcess::ProcessError error)
+{
+    switch (error) {
+        case QProcess::FailedToStart:
+            return tr_log("Could not launch `%1`. Either the program is missing, "
+                          "or you don't have the permission to run it.");
+        case QProcess::Crashed:
+            return tr_log("The external program `%1` has crashed");
+        case QProcess::Timedout:
+            return tr_log("The command `%1` did not start in a reasonable amount of time");
+        case QProcess::ReadError:
+        case QProcess::WriteError:
+            // We don't communicate with the launched process at the moment
+            Q_UNREACHABLE();
+            break;
+        default:
+            return tr_log("Running the command `%1` failed due to an unknown error");
+    }
+}
 } // namespace
 
 
@@ -114,10 +134,10 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()) {
-        qInfo().noquote()
-            << tr_log("Cannot launch the game `%1` because there is no launch command defined for it!")
-               .arg(game.title);
-        emit processLaunchError();
+        const QString message = tr_log("Cannot launch the game `%1` because there is no launch command defined for it.")
+            .arg(game.title);
+        qWarning().noquote() << message;
+        emit processLaunchError(message);
         return;
     }
     command = helpers::abs_launchcmd(command, game.relative_basedir);
@@ -155,17 +175,7 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_process->setWorkingDirectory(workdir);
     m_process->start(command, args, QProcess::ReadOnly);
-
-    // wait
-    const bool started_successfully = m_process->waitForStarted(-1);
-    if (started_successfully) {
-        emit processLaunchOk();
-    }
-    else {
-        emit processLaunchError();
-        m_process->deleteLater();
-        m_process = nullptr;
-    }
+    m_process->waitForStarted(-1);
 }
 
 void ProcessLauncher::onTeardownComplete()
@@ -173,8 +183,6 @@ void ProcessLauncher::onTeardownComplete()
     Q_ASSERT(m_process);
 
     m_process->waitForFinished(-1);
-    m_process->deleteLater();
-    m_process = nullptr;
     emit processFinished();
 }
 
@@ -183,37 +191,17 @@ void ProcessLauncher::onProcessStarted()
     Q_ASSERT(m_process);
     qInfo().noquote() << tr_log("Process %1 started").arg(m_process->processId());
     qInfo().noquote() << SEPARATOR;
+    emit processLaunchOk();
 }
 
 void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
 {
     Q_ASSERT(m_process);
-    switch (error) {
-        case QProcess::FailedToStart:
-            qWarning().noquote() << tr_log("Could not run the command `%1`; either the"
-                                           " invoked program is missing, or you don't have"
-                                           " the permission to run it.")
-                                    .arg(m_process->program());
-            break;
-        case QProcess::Crashed:
-            qWarning().noquote() << tr_log("The external program `%1` has crashed")
-                                    .arg(m_process->program());
-            break;
-        case QProcess::Timedout:
-            qWarning().noquote() << tr_log("The command `%1` has not started in a"
-                                           " reasonable amount of time")
-                                    .arg(m_process->program());
-            break;
-        case QProcess::ReadError:
-        case QProcess::WriteError:
-            // We don't communicate with the launched process at the moment
-            Q_UNREACHABLE();
-            break;
-        default:
-            qWarning().noquote() << tr_log("Running the command `%1` failed due to an unknown error")
-                                    .arg(m_process->program());
-            break;
-    }
+
+    const QString message = processerror_to_string(error).arg(m_process->program());
+    qWarning().noquote() << message;
+    emit processLaunchError(message);
+
     afterRun();
 }
 
@@ -247,6 +235,10 @@ void ProcessLauncher::beforeRun()
 
 void ProcessLauncher::afterRun()
 {
+    Q_ASSERT(m_process);
+    m_process->deleteLater();
+    m_process = nullptr;
+
     ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
     TerminalKbd::disable();
 }

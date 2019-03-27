@@ -163,15 +163,32 @@ Window {
         anchors.fill: parent
     }
     Connections {
+        target: multifileSelector.item
+        onCancel: content.focus = true
+    }
+
+
+    Loader {
+        id: genericMessage
+        anchors.fill: parent
+    }
+    Connections {
+        target: genericMessage.item
+        onClose: content.focus = true
+    }
+
+
+    Connections {
         target: api
-        onSelectGameFile: {
+        onEventSelectGameFile: {
             multifileSelector.setSource("dialogs/MultifileSelector.qml", {"game": game})
             multifileSelector.focus = true;
         }
-    }
-    Connections {
-        target: multifileSelector.item
-        onCancel: content.focus = true
+        onEventLaunchError: {
+            genericMessage.setSource("dialogs/GenericOkDialog.qml",
+                { "title": qsTr("Error"), "message": msg });
+            genericMessage.focus = true;
+        }
     }
 
 
