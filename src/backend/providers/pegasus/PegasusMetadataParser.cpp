@@ -22,6 +22,7 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusUtils.h"
+#include "parsers/ConfigFile.h"
 #include "utils/StdHelpers.h"
 
 #include <QDebug>

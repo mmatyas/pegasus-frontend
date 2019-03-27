@@ -17,13 +17,14 @@
 
 #pragma once
 
-#include "ConfigFile.h"
 #include "providers/Provider.h"
 #include "utils/FwdDeclModelData.h"
 #include "utils/MoveOnly.h"
 
 #include <QString>
 #include <vector>
+
+namespace config { struct Entry; }
 
 
 namespace providers {

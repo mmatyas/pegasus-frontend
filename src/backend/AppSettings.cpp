@@ -19,7 +19,7 @@
 
 #include "Paths.h"
 #include "ScriptRunner.h"
-#include "configfiles/SettingsFile.h"
+#include "parsers/SettingsFile.h"
 
 #include <QFile>
 

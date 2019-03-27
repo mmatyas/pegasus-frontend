@@ -9,7 +9,6 @@ SOURCES += \
     Api.cpp \
     AppContext.cpp \
     Backend.cpp \
-    ConfigFile.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
@@ -23,7 +22,6 @@ HEADERS += \
     Api.h \
     AppContext.h \
     Backend.h \
-    ConfigFile.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     PegasusAssets.h \
@@ -34,7 +32,7 @@ HEADERS += \
     AppSettings.h \
     Log.h \
 
-include(configfiles/configfiles.pri)
+include(parsers/parsers.pri)
 include(platform/platform.pri)
 include(providers/providers.pri)
 include(model/model.pri)

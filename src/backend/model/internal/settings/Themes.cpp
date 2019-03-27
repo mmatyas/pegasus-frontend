@@ -18,9 +18,9 @@
 #include "Themes.h"
 
 #include "AppSettings.h"
-#include "ConfigFile.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "parsers/ConfigFile.h"
 #include "utils/HashMap.h"
 #include "utils/PathCheck.h"
 

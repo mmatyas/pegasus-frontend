@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "ConfigFile.h"
+#include "parsers/ConfigFile.h"
 
 #include <tuple>
 #include <vector>
