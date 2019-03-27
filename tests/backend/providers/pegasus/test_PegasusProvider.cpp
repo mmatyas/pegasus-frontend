@@ -17,9 +17,9 @@
 
 #include <QtTest/QtTest>
 
-#include "providers/pegasus/PegasusProvider.h"
 #include "modeldata/gaming/CollectionData.h"
 #include "modeldata/gaming/GameData.h"
+#include "providers/pegasus_metadata/PegasusProvider.h"
 #include "utils/HashMap.h"
 
 #include <QString>

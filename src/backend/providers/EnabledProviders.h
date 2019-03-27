@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "providers/pegasus/PegasusProvider.h"
 #include "providers/pegasus_favorites/Favorites.h"
+#include "providers/pegasus_metadata/PegasusProvider.h"
 #include "providers/pegasus_playtime/PlaytimeStats.h"
 
 #ifdef WITH_COMPAT_ES2

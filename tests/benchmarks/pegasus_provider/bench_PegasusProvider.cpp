@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "providers/pegasus/PegasusProvider.h"
+#include "providers/pegasus_metadata/PegasusProvider.h"
 
 #include <QString>
 
