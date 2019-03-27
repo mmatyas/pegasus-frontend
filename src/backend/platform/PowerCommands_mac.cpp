@@ -18,8 +18,8 @@
 #include "PowerCommands.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
 
-#include <QDebug>
 #include <Carbon/Carbon.h>
 #include <CoreServices/CoreServices.h>
 
@@ -67,13 +67,13 @@ namespace power {
 void reboot()
 {
     if (!send_apple_event(kAERestart))
-        qWarning().noquote() << tr_log("[error] Requesting reboot has failed.");
+        Log::error(tr_log("Requesting reboot has failed."));
 }
 
 void shutdown()
 {
     if (!send_apple_event(kAEShutDown))
-        qWarning().noquote() << tr_log("[error] Requesting shutdown has failed.");
+        Log::error(("Requesting shutdown has failed."));
 }
 
 } // namespace power

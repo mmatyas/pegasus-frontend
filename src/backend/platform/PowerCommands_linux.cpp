@@ -18,8 +18,8 @@
 #include "PowerCommands.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
 
-#include <QDebug>
 #include <QProcess>
 
 
@@ -41,9 +41,9 @@ bool dbus_call(const char* const service, const char* const path, const char* co
 
     const bool success = (QProcess::execute(program, args) == 0);
     if (!success) {
-        qWarning().noquote()
-            << tr_log("[warning] Requesting shutdown/reboot from D-Bus service `%1` failed.")
-               .arg(QLatin1String(service));
+        Log::warning(
+            tr_log("Requesting shutdown/reboot from D-Bus service `%1` failed.")
+            .arg(QLatin1String(service)));
     }
 
     return success;

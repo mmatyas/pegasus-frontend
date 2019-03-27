@@ -18,8 +18,7 @@
 #include "PowerCommands.h"
 
 #include "LocaleUtils.h"
-
-#include <QDebug>
+#include "Log.h"
 
 
 namespace platform {
@@ -27,12 +26,12 @@ namespace power {
 
 void reboot()
 {
-    qCritical().noquote() << tr_log("[error] Reboot not implemented on this platform yet");
+    Log::error(tr_log("Reboot not implemented on this platform yet"));
 }
 
 void shutdown()
 {
-    qCritical().noquote() << tr_log("[error] Shutdown not implemented on this platform yet");
+    Log::error(tr_log("Shutdown not implemented on this platform yet"));
 }
 
 } // namespace power
