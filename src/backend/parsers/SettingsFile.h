@@ -73,17 +73,17 @@ public:
     void load() const;
 
 private:
-    void log_error(const int lineno, const QString& msg) const;
-    void log_unknown_key(const int lineno, const QString& key) const;
-    void log_needs_bool(const int lineno, const QString& key) const;
+    void log_error(const size_t lineno, const QString& msg) const;
+    void log_unknown_key(const size_t lineno, const QString& key) const;
+    void log_needs_bool(const size_t lineno, const QString& key) const;
 
 private:
-    void handle_entry(const int lineno, const QString& key, const QString& val) const;
-    void handle_general_attrib(const int lineno, const QString& key, const QString& val,
+    void handle_entry(const size_t lineno, const QString& key, const QString& val) const;
+    void handle_general_attrib(const size_t lineno, const QString& key, const QString& val,
                                QStringList& sections) const;
-    void handle_provider_attrib(const int lineno, const QString& key, const QString& val,
+    void handle_provider_attrib(const size_t lineno, const QString& key, const QString& val,
                                 QStringList& sections) const;
-    void handle_key_attrib(const int lineno, const QString& key, const QString& val,
+    void handle_key_attrib(const size_t lineno, const QString& key, const QString& val,
                            QStringList& sections) const;
 
 private:

@@ -92,32 +92,32 @@ void LoadContext::load() const
         log_error(error.line, error.message);
     };
     const auto on_attribute = [this](const config::Entry& entry){
-        handle_entry(entry.line, entry.key, config::mergeLines(entry.values));
+        handle_entry(entry.line, entry.key, config::merge_lines(entry.values));
     };
 
-    config::readFile(config_path, on_attribute, on_error);
+    config::read_file(config_path, on_attribute, on_error);
     qInfo().noquote() << tr_log("Program settings loaded");
 }
 
-void LoadContext::log_error(const int lineno, const QString& msg) const
+void LoadContext::log_error(const size_t lineno, const QString& msg) const
 {
     qWarning().noquote()
         << tr_log("`%1`, line %2: %3").arg(config_path, QString::number(lineno), msg);
 }
 
-void LoadContext::log_unknown_key(const int lineno, const QString& key) const
+void LoadContext::log_unknown_key(const size_t lineno, const QString& key) const
 {
     log_error(lineno,
         tr_log("unrecognized option `%1`, ignored").arg(key));
 }
 
-void LoadContext::log_needs_bool(const int lineno, const QString& key) const
+void LoadContext::log_needs_bool(const size_t lineno, const QString& key) const
 {
     log_error(lineno,
         tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
 }
 
-void LoadContext::handle_entry(const int lineno, const QString& key, const QString& val) const
+void LoadContext::handle_entry(const size_t lineno, const QString& key, const QString& val) const
 {
     QStringList sections = key.split('.');
     if (sections.size() < 2) {
@@ -145,7 +145,7 @@ void LoadContext::handle_entry(const int lineno, const QString& key, const QStri
     }
 }
 
-void LoadContext::handle_general_attrib(const int lineno, const QString& key, const QString& val,
+void LoadContext::handle_general_attrib(const size_t lineno, const QString& key, const QString& val,
                                         QStringList& sections) const
 {
     const auto option_it = maps.str_to_general_opt.find(sections.constFirst());
@@ -176,7 +176,7 @@ void LoadContext::handle_general_attrib(const int lineno, const QString& key, co
     }
 }
 
-void LoadContext::handle_provider_attrib(const int lineno, const QString& key, const QString& val,
+void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key, const QString& val,
                                          QStringList& sections) const
 {
     if (sections.size() < 2) {
@@ -201,7 +201,7 @@ void LoadContext::handle_provider_attrib(const int lineno, const QString& key, c
         [&](){ log_needs_bool(lineno, key); });
 }
 
-void LoadContext::handle_key_attrib(const int lineno, const QString& key, const QString& val,
+void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, const QString& val,
                        QStringList& sections) const
 {
     const auto key_it = maps.str_to_key_opt.find(sections.constFirst());

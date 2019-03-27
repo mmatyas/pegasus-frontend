@@ -46,7 +46,7 @@ private:
 
 void test_ConfigFile::onAttributeFound(const config::Entry& entry)
 {
-    m_entries.emplace_back(entry);
+    m_entries.emplace_back(config::Entry {entry.line, entry.key, entry.values});
 }
 
 void test_ConfigFile::onError(const config::Error& error)
@@ -57,7 +57,7 @@ void test_ConfigFile::onError(const config::Error& error)
 
 void test_ConfigFile::readStream(QTextStream& stream)
 {
-    config::readStream(stream,
+    config::read_stream(stream,
         [this](const config::Entry& entry){ this->onAttributeFound(entry); },
         [this](const config::Error& error){ this->onError(error); });
 }
@@ -90,20 +90,20 @@ void test_ConfigFile::file()
     QTest::ignoreMessage(QtWarningMsg, "line 8: attribute value missing, entry ignored");
     QTest::ignoreMessage(QtWarningMsg, "line 9: line invalid, skipped");
     QTest::ignoreMessage(QtWarningMsg, "line 23: line starts with whitespace, but no attribute has been defined yet");
-    config::readFile(":/test.cfg",
+    config::read_file(":/test.cfg",
         [this](const config::Entry& entry){ this->onAttributeFound(entry); },
         [this](const config::Error& error){ this->onError(error); });
 
-    const decltype(m_entries) expected {
-        config::Entry { 5, "key1", {"val"} },
-        config::Entry { 6, "key2", {"val"} },
-        config::Entry { 7, "key with spaces", {"val with spaces"} },
-        config::Entry { 11, "multiline1", {"hello", "world!"} },
-        config::Entry { 13, "multiline2", {"purely", "multiline"} },
-        config::Entry { 16, "multiline3", {"text", "with", QString(), "line break"} },
-        config::Entry { 20, "multiline4", {"text", "stops here"} },
-        config::Entry { 25, "list1", {"list", "of", "items"} },
-    };
+    // initializer list doesn't work for noncopyable types...
+    decltype(m_entries) expected;
+        expected.emplace_back(config::Entry { 5, "key1", {"val"} });
+        expected.emplace_back(config::Entry { 6, "key2", {"val"} });
+        expected.emplace_back(config::Entry { 7, "key with spaces", {"val with spaces"} });
+        expected.emplace_back(config::Entry { 11, "multiline1", {"hello", "world!"} });
+        expected.emplace_back(config::Entry { 13, "multiline2", {"purely", "multiline"} });
+        expected.emplace_back(config::Entry { 16, "multiline3", {"text", "with", QString(), "line break"} });
+        expected.emplace_back(config::Entry { 20, "multiline4", {"text", "stops here"} });
+        expected.emplace_back(config::Entry { 25, "list1", {"list", "of", "items"} });
 
 
     const size_t count = std::min(m_entries.size(), expected.size());
@@ -120,9 +120,9 @@ void test_ConfigFile::merge_lines()
     QFETCH(QStringList, parts);
     QFETCH(QString, expected);
 
-    const QVector<QString> parts_vec = parts.toVector();
+    const std::vector<QString> parts_vec = parts.toVector().toStdVector();
 
-    QCOMPARE(config::mergeLines(parts_vec), expected);
+    QCOMPARE(config::merge_lines(parts_vec), expected);
 }
 
 void test_ConfigFile::merge_lines_data()

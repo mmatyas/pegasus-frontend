@@ -35,9 +35,12 @@ void Entry::reset()
     values.clear();
 }
 
-bool readFile(const QString& path,
-              const std::function<void(const Entry&)>& onAttributeFound,
-              const std::function<void(const Error&)>& onError)
+
+/// Opens the file at the path, then calls the stream reading on it.
+/// Returns false if the file could not be opened.
+bool read_file(const QString& path,
+               const std::function<void(const Entry&)>& onAttributeFound,
+               const std::function<void(const Error&)>& onError)
 {
     QFile file(path);
     if (!file.open(QFile::ReadOnly | QFile::Text))
@@ -45,34 +48,35 @@ bool readFile(const QString& path,
 
     QTextStream stream(&file);
     stream.setCodec("UTF-8");
-    readStream(stream, onAttributeFound, onError);
+    read_stream(stream, onAttributeFound, onError);
     return true;
 }
 
-void readFile(QFile& file,
-              const std::function<void(const Entry&)>& onAttributeFound,
-              const std::function<void(const Error&)>& onError)
+/// Calls the stream reading on an already open, readable text file.
+void read_file(QFile& file,
+               const std::function<void(const Entry&)>& onAttributeFound,
+               const std::function<void(const Error&)>& onError)
 {
     Q_ASSERT(file.isOpen() && file.isReadable());
     QTextStream stream(&file);
     stream.setCodec("UTF-8");
-    return readStream(stream, onAttributeFound, onError);
+    return read_stream(stream, onAttributeFound, onError);
 }
 
-void readStream(QTextStream& stream,
-                const std::function<void(const Entry&)>& onAttributeFound,
-                const std::function<void(const Error&)>& onError)
+/// Read and parse the stream, calling the callbacks when necessary.
+void read_stream(QTextStream& stream,
+                 const std::function<void(const Entry&)>& onAttributeFound,
+                 const std::function<void(const Error&)>& onError)
 {
     constexpr auto EMPTY_LINE_MARK = QChar('.');
     const QRegularExpression rx_keyval(QStringLiteral(R"(^([^:]+):(.*)$)")); // key: value
 
-    Error error;
-    Entry entry;
-    entry.reset();
+    Error error {0, {}};
+    Entry entry {0, {}, {}};
 
     const auto close_current_attrib = [&](){
         if (!entry.key.isEmpty()) {
-            if (entry.values.isEmpty()) {
+            if (entry.values.empty()) {
                 onError({ entry.line, tr_log("attribute value missing, entry ignored") });
             }
             else
@@ -82,7 +86,7 @@ void readStream(QTextStream& stream,
         entry.reset();
     };
 
-    int linenum = 0;
+    size_t linenum = 0;
     QString line;
     while (stream.readLineInto(&line)) {
         linenum++;
@@ -104,11 +108,11 @@ void readStream(QTextStream& stream,
             }
 
             if (trimmed_line == EMPTY_LINE_MARK) {
-                entry.values.append(QString());
+                entry.values.emplace_back(QString());
                 continue;
             }
 
-            entry.values.append(trimmed_line.toString());
+            entry.values.emplace_back(trimmed_line.toString());
             continue;
         }
 
@@ -128,7 +132,7 @@ void readStream(QTextStream& stream,
             // the value can be empty here, if it's purely multiline
             auto value_part = rx_keyval_match.capturedRef(2).trimmed();
             if (!value_part.isEmpty())
-                entry.values.append(value_part.toString());
+                entry.values.emplace_back(value_part.toString());
 
             entry.line = linenum;
             continue;
@@ -144,9 +148,11 @@ void readStream(QTextStream& stream,
 }
 
 
-QString mergeLines(const QVector<QString>& lines)
+/// Creates a single text from the separate lines. Lines are expected to be
+/// null strings or non-empty trimmed text
+QString merge_lines(const std::vector<QString>& lines)
 {
-    if (lines.isEmpty())
+    if (lines.empty())
         return QString();
 
 

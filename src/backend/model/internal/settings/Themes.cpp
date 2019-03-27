@@ -45,10 +45,10 @@ HashMap<QString, QString> read_metafile(const QString& config_file_path)
 {
     HashMap<QString, QString> result;
 
-    config::readFile(
+    config::read_file(
         config_file_path,
         [&](const config::Entry& entry){
-            result.emplace(entry.key, config::mergeLines(entry.values));
+            result.emplace(entry.key, config::merge_lines(entry.values));
         },
         [&](const config::Error& error){
             qWarning().noquote() << tr_log("`%1`, line %2: %3")

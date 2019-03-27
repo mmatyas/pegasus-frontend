@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "ConfigFile.h"
+#include "parsers/ConfigFile.h"
 
 
 class bench_ConfigFile : public QObject {
@@ -28,10 +28,10 @@ private slots:
     void file();
 
 private:
-    QVector<config::Entry> m_entries;
+    std::vector<config::Entry> m_entries;
 
     void onAttributeFound(const config::Entry&);
-    void onError(int, const QString&);
+    void onError(size_t, const QString&);
 
     void readStream(QTextStream&);
 };
@@ -39,10 +39,10 @@ private:
 
 void bench_ConfigFile::onAttributeFound(const config::Entry& entry)
 {
-    m_entries.push_back(entry);
+    m_entries.emplace_back(config::Entry {entry.line, entry.key, entry.values});
 }
 
-void bench_ConfigFile::onError(int linenum, const QString& msg)
+void bench_ConfigFile::onError(size_t linenum, const QString& msg)
 {
     qWarning().noquote() << QObject::tr("line %1: %2")
         .arg(QString::number(linenum), msg);
@@ -50,7 +50,7 @@ void bench_ConfigFile::onError(int linenum, const QString& msg)
 
 void bench_ConfigFile::readStream(QTextStream& stream)
 {
-    config::readStream(stream,
+    config::read_stream(stream,
         [this](const config::Entry& entry){ this->onAttributeFound(entry); },
         [this](const config::Error& error){ this->onError(error.line, error.message); });
 }
@@ -73,7 +73,7 @@ void bench_ConfigFile::file()
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 8: .*"));
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 9: .*"));
 
-        config::readFile(":/test.cfg",
+        config::read_file(QStringLiteral(":/test.cfg"),
             [this](const config::Entry& entry){ this->onAttributeFound(entry); },
             [this](const config::Error& error){ this->onError(error.line, error.message); });
     }

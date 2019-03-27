@@ -40,7 +40,7 @@ public:
     explicit Parser(QString metafile_path, const Constants&);
     MOVE_ONLY(Parser)
 
-    void print_error(const int lineno, const QString& msg) const;
+    void print_error(const size_t lineno, const QString& msg) const;
     void parse_entry(const config::Entry&, providers::SearchContext&, std::vector<FileFilter>&);
 
 private:

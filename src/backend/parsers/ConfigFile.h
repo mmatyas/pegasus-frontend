@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "utils/NoCopyNoMove.h"
+#include "utils/MoveOnly.h"
 
 #include <QString>
-#include <QVector>
+#include <vector>
 #include <functional>
 
 class QFile;
@@ -30,36 +30,34 @@ class QTextStream;
 namespace config {
 
 struct Entry {
-    int line;
+    size_t line;
     QString key;
-    QVector<QString> values;
+    std::vector<QString> values;
 
     void reset();
+    MOVE_ONLY(Entry)
 };
 struct Error {
-    int line;
+    size_t line;
     QString message;
+
+    MOVE_ONLY(Error)
 };
 
-/// Read and parse the stream, calling the callbacks when necessary.
-void readStream(QTextStream& stream,
-                const std::function<void(const Entry&)>& onAttributeFound,
-                const std::function<void(const Error&)>& onError);
 
-/// Opens the file at the path, then calls the stream reading on it.
-/// Returns false if the file could not be opened.
-bool readFile(const QString& path,
-              const std::function<void(const Entry&)>& onAttributeFound,
-              const std::function<void(const Error&)>& onError);
+void read_stream(QTextStream& stream,
+                 const std::function<void(const Entry&)>& onAttributeFound,
+                 const std::function<void(const Error&)>& onError);
 
-/// Calls the stream reading on an already open, readable text file.
-void readFile(QFile& file,
-              const std::function<void(const Entry&)>& onAttributeFound,
-              const std::function<void(const Error&)>& onError);
+bool read_file(const QString& path,
+               const std::function<void(const Entry&)>& onAttributeFound,
+               const std::function<void(const Error&)>& onError);
+
+void read_file(QFile& file,
+               const std::function<void(const Entry&)>& onAttributeFound,
+               const std::function<void(const Error&)>& onError);
 
 
-/// Creates a single text from the separate lines. Lines are expected to be
-/// trimmed, or contain only a single line break.
-QString mergeLines(const QVector<QString>&);
+QString merge_lines(const std::vector<QString>&);
 
 } // namespace config

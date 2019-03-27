@@ -97,7 +97,7 @@ void read_metafile(const QString& metafile_path,
         parser.parse_entry(entry, sctx, filters);
     };
 
-    if (!config::readFile(metafile_path, on_entry, on_error)) {
+    if (!config::read_file(metafile_path, on_entry, on_error)) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("Failed to read metadata file %1, file ignored").arg(metafile_path);
         return;

@@ -37,15 +37,15 @@ static constexpr auto MSG_PREFIX = "Collections:";
 const QString& first_line_of(const config::Entry& entry)
 {
     Q_ASSERT(!entry.key.isEmpty());
-    Q_ASSERT(!entry.values.isEmpty());
+    Q_ASSERT(!entry.values.empty());
 
-    if (entry.values.count() > 1) {
+    if (entry.values.size() > 1) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("expected single line value for `%1` but got more. The rest of the lines will be ignored.")
                .arg(entry.key);
     }
 
-    return entry.values.first();
+    return entry.values.front();
 }
 
 // FIXME: duplication
@@ -72,7 +72,7 @@ Parser::Parser(QString file_path, const Constants& constants)
     Q_ASSERT(!m_dir_path.isEmpty());
 }
 
-void Parser::print_error(const int lineno, const QString& msg) const {
+void Parser::print_error(const size_t lineno, const QString& msg) const {
     qWarning().noquote()
         << tr_log("Collections: `%1`, line %2: %3").arg(m_metafile_path, QString::number(lineno), msg);
 }
@@ -97,7 +97,7 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             m_cur_coll->setShortName(first_line_of(entry));
             break;
         case CollAttrib::LAUNCH_CMD:
-            m_cur_coll->launch_cmd = config::mergeLines(entry.values);
+            m_cur_coll->launch_cmd = config::merge_lines(entry.values);
             break;
         case CollAttrib::LAUNCH_WORKDIR:
             m_cur_coll->launch_workdir = first_line_of(entry);
@@ -129,10 +129,10 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             }
             break;
         case CollAttrib::SHORT_DESC:
-            m_cur_coll->summary = config::mergeLines(entry.values);
+            m_cur_coll->summary = config::merge_lines(entry.values);
             break;
         case CollAttrib::LONG_DESC:
-            m_cur_coll->description = config::mergeLines(entry.values);
+            m_cur_coll->description = config::merge_lines(entry.values);
             break;
     }
 }
@@ -196,10 +196,10 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             }
             break;
         case GameAttrib::SHORT_DESC:
-            m_cur_game->summary = config::mergeLines(entry.values);
+            m_cur_game->summary = config::merge_lines(entry.values);
             break;
         case GameAttrib::LONG_DESC:
-            m_cur_game->description = config::mergeLines(entry.values);
+            m_cur_game->description = config::merge_lines(entry.values);
             break;
         case GameAttrib::RELEASE:
             {
@@ -234,7 +234,7 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             }
             break;
         case GameAttrib::LAUNCH_CMD:
-            m_cur_game->launch_cmd = config::mergeLines(entry.values);
+            m_cur_game->launch_cmd = config::merge_lines(entry.values);
             break;
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);
@@ -264,7 +264,7 @@ bool Parser::parse_asset_entry_maybe(const config::Entry& entry) const
         : m_cur_coll->assets;
 
     if (asset_is_single(asset_type))
-        assets.addUrlMaybe(asset_type, utils::assetline_to_url(entry.values.first(), m_dir_path));
+        assets.addUrlMaybe(asset_type, utils::assetline_to_url(entry.values.front(), m_dir_path));
     else {
         for (const QString& line : entry.values)
             assets.addUrlMaybe(asset_type, utils::assetline_to_url(line, m_dir_path));
