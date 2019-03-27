@@ -15,23 +15,38 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "GameData.h"
+#pragma once
+
+#include "utils/MoveOnly.h"
+
+#include <QDateTime>
+#include <QFileInfo>
+#include <QString>
+#include <vector>
 
 
 namespace modeldata {
 
-Game::Game(QFileInfo fi)
-    : Game(pretty_filename(fi))
-{
-    // TODO: one call to the prettifier could be optimized out here
-    files.emplace_back(std::move(fi));
-}
+QString pretty_filename(const QFileInfo&);
 
-Game::Game(QString title)
-    : title(std::move(title))
-    , player_count(1)
-    , is_favorite(false)
-    , rating(0.f)
-{}
+
+struct GameFile {
+    QFileInfo fileinfo;
+    QString name;
+    // TODO: in the future...
+    // QString summary;
+    // QString description;
+    // QString launch_cmd;
+    // QString launch_workdir;
+
+    QDateTime last_played;
+    qint64 play_time;
+    int play_count;
+
+    explicit GameFile(QFileInfo);
+    MOVE_ONLY(GameFile)
+
+    bool operator==(const GameFile&) const;
+};
 
 } // namespace modeldata

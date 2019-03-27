@@ -15,23 +15,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "GameData.h"
+#include "GameFileData.h"
 
 
 namespace modeldata {
 
-Game::Game(QFileInfo fi)
-    : Game(pretty_filename(fi))
+QString pretty_filename(const QFileInfo& fi)
 {
-    // TODO: one call to the prettifier could be optimized out here
-    files.emplace_back(std::move(fi));
+    return fi.completeBaseName()
+        .replace(QLatin1Char('_'), QLatin1Char(' '))
+        .replace(QLatin1Char('.'), QLatin1Char(' '));
 }
 
-Game::Game(QString title)
-    : title(std::move(title))
-    , player_count(1)
-    , is_favorite(false)
-    , rating(0.f)
+
+GameFile::GameFile(QFileInfo fi)
+    : fileinfo(std::move(fi))
+    , name(pretty_filename(fileinfo))
+    , play_time(0)
+    , play_count(0)
 {}
 
+bool GameFile::operator==(const GameFile& other) const {
+    return fileinfo == other.fileinfo;
+}
 } // namespace modeldata

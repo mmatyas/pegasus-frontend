@@ -18,6 +18,7 @@
 #pragma once
 
 #include "GameAssetsData.h"
+#include "GameFileData.h"
 #include "utils/MoveOnly.h"
 
 #include <QDateTime>
@@ -28,25 +29,6 @@
 
 
 namespace modeldata {
-
-struct GameFile {
-    QFileInfo fileinfo;
-    QString name;
-    // TODO: in the future...
-    // QString summary;
-    // QString description;
-    // QString launch_cmd;
-    // QString launch_workdir;
-
-    QDateTime last_played;
-    qint64 play_time;
-    int play_count;
-
-    explicit GameFile(QFileInfo);
-    MOVE_ONLY(GameFile)
-
-    bool operator==(const GameFile&) const;
-};
 
 struct Game {
     explicit Game(QFileInfo);
