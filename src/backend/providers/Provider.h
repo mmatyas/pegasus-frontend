@@ -21,6 +21,7 @@
 #include "modeldata/CollectionData.h"
 #include "utils/FwdDeclModel.h"
 #include "utils/HashMap.h"
+#include "utils/MoveOnly.h"
 
 #include <QString>
 #include <QObject>
@@ -34,6 +35,9 @@ struct SearchContext {
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<size_t>> collection_childs;
     HashMap<QString, size_t> path_to_gameid;
+
+    SearchContext() = default;
+    MOVE_ONLY(SearchContext)
 };
 
 class Provider : public QObject {
