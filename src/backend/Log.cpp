@@ -25,6 +25,10 @@
 #include <QFile>
 #include <QTextStream>
 
+#if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
+#include <android/log.h>
+#endif // defined(Q_OS_ANDROID) && defined(QT_DEBUG)
+
 
 LogSink::LogSink() = default;
 LogSink::~LogSink() = default;
@@ -114,6 +118,33 @@ private:
     }
 };
 
+#if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
+class AndroidLogcat : public LogSink {
+public:
+    AndroidLogcat() {}
+
+    void info(const QString& msg) override {
+        write_log(ANDROID_LOG_DEBUG, m_marker_info, msg);
+    }
+    void warning(const QString& msg) override {
+        write_log(ANDROID_LOG_WARN, m_marker_warning, msg);
+    }
+    void error(const QString& msg) override {
+        write_log(ANDROID_LOG_ERROR, m_marker_error, msg);
+    }
+
+private:
+    static constexpr auto m_appname = "pegasus-fe";
+    static constexpr auto m_marker_info = "[i] ";
+    static constexpr auto m_marker_warning = "[w] ";
+    static constexpr auto m_marker_error = "[e] ";
+
+    void write_log(const int prio, const char* const prefix, const QString& msg) {
+        const QString out = QLatin1String(prefix) + msg;
+        __android_log_write(prio, m_appname, out.toLocal8Bit().constData());
+    }
+};
+#endif // defined(Q_OS_ANDROID) && defined(QT_DEBUG)
 } // namespace logsinks
 
 
@@ -151,6 +182,9 @@ void Log::init()
         m_sinks.emplace_back(new logsinks::Terminal());
 
     m_sinks.emplace_back(new logsinks::LogFile());
+#if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
+    m_sinks.emplace_back(new logsinks::AndroidLogcat);
+#endif // defined(Q_OS_ANDROID) && defined(QT_DEBUG)
 
     // redirect Qt messages to the Log too
     qInstallMessageHandler(on_qt_message);
