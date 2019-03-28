@@ -52,8 +52,8 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         super.onStart();
         m_pm = getPackageManager();
 
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        m_icon_density = activityManager.getLauncherLargeIconDensity();
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        m_icon_density = am.getLauncherLargeIconDensity();
     }
 
     public static App[] appList() {

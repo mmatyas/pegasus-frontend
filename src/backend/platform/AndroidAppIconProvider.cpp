@@ -23,8 +23,7 @@
 
 AndroidAppIconProvider::AndroidAppIconProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
-{
-}
+{}
 
 QPixmap AndroidAppIconProvider::requestPixmap(const QString& id, QSize*, const QSize&)
 {
