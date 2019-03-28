@@ -68,7 +68,7 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
         if (!sctx.path_to_gameid.count(package)) {
             const size_t game_id = sctx.games.size();
             sctx.path_to_gameid.emplace(package, game_id);
-            sctx.games.emplace(game_id, QFileInfo(package));
+            sctx.games.emplace(game_id, modeldata::Game(QFileInfo(package)));
         }
 
         const size_t game_id = sctx.path_to_gameid.at(package);
