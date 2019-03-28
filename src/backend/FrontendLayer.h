@@ -20,10 +20,6 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 
-#ifdef Q_OS_ANDROID
-#include "platform/AndroidAppIconProvider.h"
-#endif
-
 
 /// Manages the dynamic reload of the frontend layer
 ///
@@ -52,8 +48,4 @@ signals:
 private:
     QObject* const m_api;
     QQmlApplicationEngine* m_engine;
-
-#ifdef Q_OS_ANDROID
-    AndroidAppIconProvider m_android_icon_provider;
-#endif
 };

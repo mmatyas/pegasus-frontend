@@ -19,6 +19,10 @@
 
 #include "Paths.h"
 
+#ifdef Q_OS_ANDROID
+#include "platform/AndroidAppIconProvider.h"
+#endif
+
 #include <QNetworkAccessManager>
 #include <QNetworkDiskCache>
 #include <QQmlContext>
@@ -65,7 +69,7 @@ void FrontendLayer::rebuild()
     m_engine->addImportPath(QStringLiteral("qml"));
     m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
 #ifdef Q_OS_ANDROID
-    m_engine->addImageProvider(QStringLiteral("androidicons"), &m_android_icon_provider);
+    m_engine->addImageProvider(QStringLiteral("androidicons"), new AndroidAppIconProvider);
 #endif
 
     m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
