@@ -28,7 +28,7 @@ namespace {
 
 bool send_apple_event(AEEventID apple_event_id)
 {
-    const ProcessSerialNumber system_psn = { 0, kSystemProcess };
+    const ProcessSerialNumber system_psn { 0, kSystemProcess };
     OSStatus error = noErr;
 
     AEAddressDesc target_desc;
@@ -38,7 +38,7 @@ bool send_apple_event(AEEventID apple_event_id)
     if (error != noErr)
         return false;
 
-    AppleEvent apple_event = { typeNull, NULL };
+    AppleEvent apple_event { typeNull, NULL };
     error = AECreateAppleEvent(kCoreEventClass, apple_event_id,
                                &target_desc,
                                kAutoGenerateReturnID, kAnyTransactionID,
@@ -47,7 +47,7 @@ bool send_apple_event(AEEventID apple_event_id)
     if (error != noErr)
         return false;
 
-    AppleEvent event_reply = { typeNull, NULL };
+    AppleEvent event_reply { typeNull, NULL };
     error = AESendMessage(&apple_event, &event_reply,
                           kAENoReply, kAEDefaultTimeout);
     AEDisposeDesc(&apple_event);

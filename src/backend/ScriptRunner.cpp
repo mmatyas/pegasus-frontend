@@ -76,7 +76,7 @@ void execute_all(const std::vector<QString>& paths)
 
 void ScriptRunner::run(ScriptEvent event)
 {
-    static const HashMap<ScriptEvent, QString, EnumHash> SCRIPT_DIRS = {
+    static const HashMap<ScriptEvent, QString, EnumHash> SCRIPT_DIRS {
         { ScriptEvent::QUIT, QStringLiteral("quit") },
         { ScriptEvent::REBOOT, QStringLiteral("reboot") },
         { ScriptEvent::SHUTDOWN, QStringLiteral("shutdown") },

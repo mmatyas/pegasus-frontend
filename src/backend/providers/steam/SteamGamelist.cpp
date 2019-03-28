@@ -116,7 +116,7 @@ void register_appmanifests(providers::SearchContext& sctx,
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     const auto dir_flags = QDirIterator::FollowSymlinks;
-    const QStringList name_filters = { QStringLiteral("appmanifest_*.acf") };
+    const QStringList name_filters { QStringLiteral("appmanifest_*.acf") };
 
     for (const QString& dir_path : installdirs) {
         QDirIterator dir_it(dir_path, name_filters, dir_filters, dir_flags);

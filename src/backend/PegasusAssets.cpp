@@ -96,7 +96,7 @@ AssetType str_to_type(const QString& str)
 
 AssetType ext_to_type(const QString& ext)
 {
-    static const HashMap<QString, AssetType> map = {
+    static const HashMap<QString, AssetType> map {
         { QStringLiteral("png"), AssetType::BOX_FRONT },
         { QStringLiteral("jpg"), AssetType::BOX_FRONT },
         { QStringLiteral("webm"), AssetType::VIDEOS },
@@ -117,9 +117,9 @@ AssetType ext_to_type(const QString& ext)
 const QStringList& allowed_asset_exts(AssetType type)
 {
     static const QStringList empty_list({});
-    static const QStringList image_exts = { "png", "jpg" };
-    static const QStringList video_exts = { "webm", "mp4", "avi" };
-    static const QStringList audio_exts = { "mp3", "ogg", "wav" };
+    static const QStringList image_exts { "png", "jpg" };
+    static const QStringList video_exts { "webm", "mp4", "avi" };
+    static const QStringList audio_exts { "mp3", "ogg", "wav" };
 
     switch (type) {
         case AssetType::UNKNOWN:
