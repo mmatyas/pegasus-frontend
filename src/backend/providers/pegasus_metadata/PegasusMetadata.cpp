@@ -22,7 +22,7 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusMetadataParser.h"
-#include "parsers/ConfigFile.h"
+#include "parsers/MetaFile.h"
 #include "providers/Provider.h"
 #include "utils/StdHelpers.h"
 
@@ -90,14 +90,14 @@ void read_metafile(const QString& metafile_path,
 {
     Parser parser(metafile_path, constants);
 
-    const auto on_error = [&](const config::Error& error){
+    const auto on_error = [&](const metafile::Error& error){
         parser.print_error(error.line, error.message);
     };
-    const auto on_entry = [&](const config::Entry& entry){
+    const auto on_entry = [&](const metafile::Entry& entry){
         parser.parse_entry(entry, sctx, filters);
     };
 
-    if (!config::read_file(metafile_path, on_entry, on_error)) {
+    if (!metafile::read_file(metafile_path, on_entry, on_error)) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("Failed to read metadata file %1, file ignored").arg(metafile_path);
         return;

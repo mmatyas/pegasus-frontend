@@ -27,7 +27,7 @@ class QFile;
 class QTextStream;
 
 
-namespace config {
+namespace metafile {
 
 struct Entry {
     size_t line;
@@ -60,4 +60,4 @@ void read_file(QFile& file,
 
 QString merge_lines(const std::vector<QString>&);
 
-} // namespace config
+} // namespace metafile

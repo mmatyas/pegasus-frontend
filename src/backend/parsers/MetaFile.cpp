@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "ConfigFile.h"
+#include "MetaFile.h"
 
 #include "LocaleUtils.h"
 
@@ -26,7 +26,7 @@
 #include <QTextStream>
 
 
-namespace config {
+namespace metafile {
 
 void Entry::reset()
 {
@@ -182,4 +182,4 @@ QString merge_lines(const std::vector<QString>& lines)
     return out.trimmed();
 }
 
-} // namespace config
+} // namespace metafile

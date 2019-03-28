@@ -20,7 +20,7 @@
 #include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "parsers/ConfigFile.h"
+#include "parsers/MetaFile.h"
 #include "utils/HashMap.h"
 #include "utils/PathCheck.h"
 
@@ -45,12 +45,12 @@ HashMap<QString, QString> read_metafile(const QString& config_file_path)
 {
     HashMap<QString, QString> result;
 
-    config::read_file(
+    metafile::read_file(
         config_file_path,
-        [&](const config::Entry& entry){
-            result.emplace(entry.key, config::merge_lines(entry.values));
+        [&](const metafile::Entry& entry){
+            result.emplace(entry.key, metafile::merge_lines(entry.values));
         },
-        [&](const config::Error& error){
+        [&](const metafile::Error& error){
             qWarning().noquote() << tr_log("`%1`, line %2: %3")
                 .arg(config_file_path, QString::number(error.line), error.message);
         });

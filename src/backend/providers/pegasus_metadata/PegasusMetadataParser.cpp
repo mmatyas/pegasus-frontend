@@ -22,7 +22,7 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusUtils.h"
-#include "parsers/ConfigFile.h"
+#include "parsers/MetaFile.h"
 #include "utils/StdHelpers.h"
 
 #include <QDebug>
@@ -34,7 +34,7 @@
 namespace {
 static constexpr auto MSG_PREFIX = "Collections:";
 
-const QString& first_line_of(const config::Entry& entry)
+const QString& first_line_of(const metafile::Entry& entry)
 {
     Q_ASSERT(!entry.key.isEmpty());
     Q_ASSERT(!entry.values.empty());
@@ -77,7 +77,7 @@ void Parser::print_error(const size_t lineno, const QString& msg) const {
         << tr_log("Collections: `%1`, line %2: %3").arg(m_metafile_path, QString::number(lineno), msg);
 }
 
-void Parser::parse_collection_entry(const config::Entry& entry) const
+void Parser::parse_collection_entry(const metafile::Entry& entry) const
 {
     Q_ASSERT(m_cur_coll);
     Q_ASSERT(m_cur_filter);
@@ -97,7 +97,7 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             m_cur_coll->setShortName(first_line_of(entry));
             break;
         case CollAttrib::LAUNCH_CMD:
-            m_cur_coll->launch_cmd = config::merge_lines(entry.values);
+            m_cur_coll->launch_cmd = metafile::merge_lines(entry.values);
             break;
         case CollAttrib::LAUNCH_WORKDIR:
             m_cur_coll->launch_workdir = first_line_of(entry);
@@ -129,15 +129,15 @@ void Parser::parse_collection_entry(const config::Entry& entry) const
             }
             break;
         case CollAttrib::SHORT_DESC:
-            m_cur_coll->summary = config::merge_lines(entry.values);
+            m_cur_coll->summary = metafile::merge_lines(entry.values);
             break;
         case CollAttrib::LONG_DESC:
-            m_cur_coll->description = config::merge_lines(entry.values);
+            m_cur_coll->description = metafile::merge_lines(entry.values);
             break;
     }
 }
 
-void Parser::parse_game_entry(const config::Entry& entry, providers::SearchContext& sctx) const
+void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchContext& sctx) const
 {
     // NOTE: m_cur_coll may be null (ie. a game entry defined before any collection)
     Q_ASSERT(m_cur_game);
@@ -196,10 +196,10 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             }
             break;
         case GameAttrib::SHORT_DESC:
-            m_cur_game->summary = config::merge_lines(entry.values);
+            m_cur_game->summary = metafile::merge_lines(entry.values);
             break;
         case GameAttrib::LONG_DESC:
-            m_cur_game->description = config::merge_lines(entry.values);
+            m_cur_game->description = metafile::merge_lines(entry.values);
             break;
         case GameAttrib::RELEASE:
             {
@@ -234,7 +234,7 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
             }
             break;
         case GameAttrib::LAUNCH_CMD:
-            m_cur_game->launch_cmd = config::merge_lines(entry.values);
+            m_cur_game->launch_cmd = metafile::merge_lines(entry.values);
             break;
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);
@@ -244,7 +244,7 @@ void Parser::parse_game_entry(const config::Entry& entry, providers::SearchConte
 
 // Returns true if the entry key matches asset regex.
 // The actual asset type check may still fail however.
-bool Parser::parse_asset_entry_maybe(const config::Entry& entry) const
+bool Parser::parse_asset_entry_maybe(const metafile::Entry& entry) const
 {
     Q_ASSERT(m_cur_coll || m_cur_game);
 
@@ -272,7 +272,7 @@ bool Parser::parse_asset_entry_maybe(const config::Entry& entry) const
     return true;
 }
 
-void Parser::parse_entry(const config::Entry& entry,
+void Parser::parse_entry(const metafile::Entry& entry,
                          providers::SearchContext& sctx,
                          std::vector<FileFilter>& filters)
 {

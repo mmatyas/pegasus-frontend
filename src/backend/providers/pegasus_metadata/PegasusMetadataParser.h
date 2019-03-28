@@ -23,7 +23,7 @@
 #include <QString>
 #include <vector>
 
-namespace config { struct Entry; }
+namespace metafile { struct Entry; }
 
 
 namespace providers {
@@ -40,7 +40,7 @@ public:
     MOVE_ONLY(Parser)
 
     void print_error(const size_t lineno, const QString& msg) const;
-    void parse_entry(const config::Entry&, providers::SearchContext&, std::vector<FileFilter>&);
+    void parse_entry(const metafile::Entry&, providers::SearchContext&, std::vector<FileFilter>&);
 
 private:
     const QString m_metafile_path;
@@ -55,9 +55,9 @@ private:
     FileFilter* m_cur_filter;
 
 private:
-    void parse_collection_entry(const config::Entry&) const;
-    void parse_game_entry(const config::Entry&, providers::SearchContext&) const;
-    bool parse_asset_entry_maybe(const config::Entry&) const;
+    void parse_collection_entry(const metafile::Entry&) const;
+    void parse_game_entry(const metafile::Entry&, providers::SearchContext&) const;
+    bool parse_asset_entry_maybe(const metafile::Entry&) const;
 };
 
 } // namespace parser

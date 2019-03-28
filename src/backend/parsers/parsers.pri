@@ -1,7 +1,7 @@
 HEADERS += \
-    $$PWD/ConfigFile.h \
+    $$PWD/MetaFile.h \
     $$PWD/SettingsFile.h \
 
 SOURCES += \
-    $$PWD/ConfigFile.cpp \
+    $$PWD/MetaFile.cpp \
     $$PWD/SettingsFile.cpp \

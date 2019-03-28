@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "parsers/ConfigFile.h"
+#include "parsers/MetaFile.h"
 
 
 class bench_ConfigFile : public QObject {
@@ -28,18 +28,18 @@ private slots:
     void file();
 
 private:
-    std::vector<config::Entry> m_entries;
+    std::vector<metafile::Entry> m_entries;
 
-    void onAttributeFound(const config::Entry&);
+    void onAttributeFound(const metafile::Entry&);
     void onError(size_t, const QString&);
 
     void readStream(QTextStream&);
 };
 
 
-void bench_ConfigFile::onAttributeFound(const config::Entry& entry)
+void bench_ConfigFile::onAttributeFound(const metafile::Entry& entry)
 {
-    m_entries.emplace_back(config::Entry {entry.line, entry.key, entry.values});
+    m_entries.emplace_back(metafile::Entry {entry.line, entry.key, entry.values});
 }
 
 void bench_ConfigFile::onError(size_t linenum, const QString& msg)
@@ -50,9 +50,9 @@ void bench_ConfigFile::onError(size_t linenum, const QString& msg)
 
 void bench_ConfigFile::readStream(QTextStream& stream)
 {
-    config::read_stream(stream,
-        [this](const config::Entry& entry){ this->onAttributeFound(entry); },
-        [this](const config::Error& error){ this->onError(error.line, error.message); });
+    metafile::read_stream(stream,
+        [this](const metafile::Entry& entry){ this->onAttributeFound(entry); },
+        [this](const metafile::Error& error){ this->onError(error.line, error.message); });
 }
 
 
@@ -73,9 +73,9 @@ void bench_ConfigFile::file()
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 8: .*"));
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("line 9: .*"));
 
-        config::read_file(QStringLiteral(":/test.cfg"),
-            [this](const config::Entry& entry){ this->onAttributeFound(entry); },
-            [this](const config::Error& error){ this->onError(error.line, error.message); });
+        metafile::read_file(QStringLiteral(":/test.cfg"),
+            [this](const metafile::Entry& entry){ this->onAttributeFound(entry); },
+            [this](const metafile::Error& error){ this->onError(error.line, error.message); });
     }
 }
 

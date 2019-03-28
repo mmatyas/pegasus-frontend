@@ -18,8 +18,8 @@
 #include "SettingsFile.h"
 
 #include "AppSettings.h"
-#include "ConfigFile.h"
 #include "LocaleUtils.h"
+#include "MetaFile.h"
 #include "Paths.h"
 
 #include <QDebug>
@@ -88,14 +88,14 @@ LoadContext::LoadContext()
 
 void LoadContext::load() const
 {
-    const auto on_error = [this](const config::Error& error){
+    const auto on_error = [this](const metafile::Error& error){
         log_error(error.line, error.message);
     };
-    const auto on_attribute = [this](const config::Entry& entry){
-        handle_entry(entry.line, entry.key, config::merge_lines(entry.values));
+    const auto on_attribute = [this](const metafile::Entry& entry){
+        handle_entry(entry.line, entry.key, metafile::merge_lines(entry.values));
     };
 
-    config::read_file(config_path, on_attribute, on_error);
+    metafile::read_file(config_path, on_attribute, on_error);
     qInfo().noquote() << tr_log("Program settings loaded");
 }
 
