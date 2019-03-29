@@ -46,7 +46,7 @@ Favorites::Favorites(QObject* parent)
 {}
 
 Favorites::Favorites(QString db_path, QObject* parent)
-    : Provider(parent)
+    : Provider(QStringLiteral("Favorites"), PROVIDES_DYNDATA, parent)
     , m_db_path(std::move(db_path))
 {}
 

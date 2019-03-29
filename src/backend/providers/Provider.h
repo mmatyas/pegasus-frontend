@@ -40,11 +40,18 @@ struct SearchContext {
     MOVE_ONLY(SearchContext)
 };
 
+
+static constexpr uint8_t
+    PROVIDES_GAMES = (1 << 0),
+    PROVIDES_ASSETS = (1 << 1),
+    PROVIDES_DYNDATA = (1 << 2);
+
+
 class Provider : public QObject {
     Q_OBJECT
 
 public:
-    explicit Provider(QObject* parent = nullptr);
+    explicit Provider(QString name, uint8_t flags, QObject* parent = nullptr);
     virtual ~Provider();
 
     /// Initialization first stage:
@@ -67,8 +74,16 @@ public:
     virtual void onGameLaunched(model::GameFile* const) {}
     virtual void onGameFinished(model::GameFile* const) {}
 
+    // common
+    const QString& name() const { return m_provider_name; }
+    uint8_t flags() const { return m_provider_flags; }
+
 signals:
     void gameCountChanged(int);
+
+private:
+    const QString m_provider_name;
+    const uint8_t m_provider_flags;
 };
 
 } // namespace providers

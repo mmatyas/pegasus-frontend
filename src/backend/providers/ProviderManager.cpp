@@ -106,19 +106,36 @@ void remove_parentless_games(providers::SearchContext& sctx)
 
 void run_list_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
 {
-    for (const ProviderPtr& ptr : providers)
+    QElapsedTimer timer;
+    timer.start();
+    for (const ProviderPtr& ptr : providers) {
+        if (!(ptr->flags() & providers::PROVIDES_GAMES))
+            continue;
+
         ptr->findLists(ctx);
+        qInfo().noquote() << tr_log("%1 provider finished game searching in %2ms")
+            .arg(ptr->name(), QString::number(timer.restart()));
+    }
 
     remove_empty_collections(ctx);
     remove_empty_games(ctx.games);
     remove_duplicate_childs(ctx.collection_childs);
     remove_parentless_games(ctx);
+    qInfo().noquote() << tr_log("Game list post-processing took %1ms").arg(timer.elapsed());
 }
 
 void run_asset_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
 {
-    for (const auto& provider : providers)
+    QElapsedTimer timer;
+    timer.start();
+    for (const auto& provider : providers) {
+        if (!(provider->flags() & providers::PROVIDES_ASSETS))
+            continue;
+
         provider->findStaticData(ctx);
+        qInfo().noquote() << tr_log("%1 provider finished asset searching in %2ms")
+            .arg(provider->name(), QString::number(timer.restart()));
+    }
 }
 
 HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& games)

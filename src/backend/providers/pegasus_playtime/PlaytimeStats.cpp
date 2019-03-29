@@ -186,7 +186,7 @@ PlaytimeStats::PlaytimeStats(QObject* parent)
 {}
 
 PlaytimeStats::PlaytimeStats(QString db_path, QObject* parent)
-    : Provider(parent)
+    : Provider(QStringLiteral("Playtime"), PROVIDES_DYNDATA, parent)
     , m_db_path(std::move(db_path))
 {}
 

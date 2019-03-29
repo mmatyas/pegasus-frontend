@@ -20,8 +20,10 @@
 
 namespace providers {
 
-Provider::Provider(QObject* parent)
+Provider::Provider(QString name, uint8_t flags, QObject* parent)
     : QObject(parent)
+    , m_provider_name(std::move(name))
+    , m_provider_flags(flags)
 {}
 
 Provider::~Provider() = default;

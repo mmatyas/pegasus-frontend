@@ -65,7 +65,7 @@ PegasusProvider::PegasusProvider(QObject* parent)
 {}
 
 PegasusProvider::PegasusProvider(std::vector<QString> game_dirs, QObject* parent)
-    : Provider(parent)
+    : Provider(QStringLiteral("Metafiles"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
     , m_game_dirs(std::move(game_dirs))
 {}
 

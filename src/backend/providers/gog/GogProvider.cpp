@@ -22,7 +22,7 @@ namespace providers {
 namespace gog {
 
 GogProvider::GogProvider(QObject* parent)
-    : Provider(parent)
+    : Provider(QStringLiteral("GOG"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
     , gamelist(this)
     , metadata(this)
 {
