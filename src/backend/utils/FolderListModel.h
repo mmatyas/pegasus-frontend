@@ -66,5 +66,6 @@ private:
     std::vector<FolderListEntry> m_files;
     QStringList m_name_filters;
 
+    const std::vector<QString> m_drives_cache;
     const QHash<int, QByteArray> m_role_names;
 };

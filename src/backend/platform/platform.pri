@@ -18,6 +18,11 @@ else {
 }
 
 android {
-    HEADERS += $$PWD/AndroidAppIconProvider.h
-    SOURCES += $$PWD/AndroidAppIconProvider.cpp
+    HEADERS += \
+        $$PWD/AndroidAppIconProvider.h \
+        $$PWD/AndroidHelpers.h
+
+    SOURCES += \
+        $$PWD/AndroidAppIconProvider.cpp \
+        $$PWD/AndroidHelpers.cpp
 }

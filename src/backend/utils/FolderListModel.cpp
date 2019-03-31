@@ -17,7 +17,12 @@
 
 #include "FolderListModel.h"
 
+#include "utils/StdHelpers.h"
+
+#ifdef Q_OS_ANDROID
+#include "platform/AndroidHelpers.h"
 #include <QStandardPaths>
+#endif
 
 
 namespace {
@@ -26,12 +31,41 @@ void remove_if(QFileInfoList& list, const std::function<bool(const QFileInfo&)>&
     const auto start_it = std::remove_if(list.begin(), list.end(), predicate);
     list.erase(start_it, list.end());
 }
-#ifdef Q_OS_ANDROID
-QString android_sdcard_path()
+
+std::vector<QString> drives()
 {
-    return QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).constFirst();
-}
+#if defined(Q_OS_ANDROID)
+    return android::storage_paths();
+
+#elif defined(Q_OS_UNIX)
+    // Fast path for *nix
+    return { QStringLiteral("/") };
+
+#else
+    std::vector<QString> out;
+
+    const auto drive_files = QDir::drives();
+    for (const auto& file : drive_files)
+        out.emplace_back(file.absolutePath());
+
+    return out;
 #endif
+}
+
+QDir startup_dir()
+{
+#ifdef Q_OS_ANDROID
+    // Avoid pointing to some internal directory, return the primary shared storage
+    return android::primary_storage_path();
+#else
+    return QDir::home();
+#endif
+}
+
+bool is_drive_root(const QString& path, const std::vector<QString>& drives)
+{
+    return VEC_CONTAINS(drives, path);
+}
 } // namespace
 
 
@@ -43,12 +77,8 @@ FolderListEntry::FolderListEntry(QString name, bool is_dir)
 
 FolderListModel::FolderListModel(QObject* parent)
     : QAbstractListModel(parent)
-#ifdef Q_OS_ANDROID
-    // it seems on Android the root is not readable
-    , m_dir(android_sdcard_path())
-#else
-    , m_dir(QDir::home())
-#endif
+    , m_dir(startup_dir())
+    , m_drives_cache(drives())
     , m_role_names({
         { EntryName, "name" },
         { EntryIsDir, "isDir" },
@@ -89,8 +119,19 @@ void FolderListModel::cd(const QString& dirName)
     beginResetModel();
     m_files.clear();
 
-    const bool success = m_dir.cd(dirName);
-    if (success) {
+    bool goto_root = (dirName == QLatin1String("..")) && is_drive_root(m_dir_path, m_drives_cache);
+    if (!goto_root) {
+        // try to step into the directory, otherwise fallback to the root
+        goto_root = (m_dir.cd(dirName) == false);
+        // TODO: update the drives cache here on error
+    }
+
+    if (goto_root) {
+        m_dir_path = QStringLiteral("/");
+        for (const QString& drive : m_drives_cache)
+            m_files.emplace_back(drive, true);
+    }
+    else {
         m_dir_path = m_dir.absolutePath();
 
         auto filist = m_dir.entryInfoList();
@@ -99,20 +140,10 @@ void FolderListModel::cd(const QString& dirName)
         });
 
         // adding dotdot manually to avoid getting stuck in the file system
-#ifdef Q_OS_ANDROID
-        if (m_dir_path != android_sdcard_path())
-#endif
-            m_files.emplace_back(QStringLiteral(".."), true);
+        m_files.emplace_back(QStringLiteral(".."), true);
 
         for (const auto& fi : qAsConst(filist))
             m_files.emplace_back(fi.fileName(), fi.isDir());
-    }
-    else {
-        m_dir_path = QStringLiteral("/");
-
-        const auto entries = QDir::drives();
-        for (const auto& entry : entries)
-            m_files.emplace_back(entry.absolutePath(), entry.isDir());
     }
 
     endResetModel();
