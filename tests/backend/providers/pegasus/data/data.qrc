@@ -5,11 +5,11 @@
         <file>simple/buggygame.ext</file>
         <file>simple/duplicategame.ext</file>
         <file>simple/mygame1.ext</file>
-        <file>simple/mygame2.ext</file>
+        <file>simple/mygame2.EXT</file>
         <file>simple/mygame3.ext</file>
         <file>simple/notgame.unk</file>
         <file>simple/media/game_ignored.ext</file>
-        <file>simple/subdir/game_in_subdir.ext</file>
+        <file>simple/subdir/game_in_subdir.EXT</file>
         <file>simple/metadata.pegasus.txt</file>
         <file>simple/favgame1.ext</file>
         <file>simple/favgame2.ext</file>

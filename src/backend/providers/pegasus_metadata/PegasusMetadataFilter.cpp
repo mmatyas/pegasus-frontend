@@ -55,14 +55,15 @@ std::vector<QString> all_valid_subdirs(const QString& filter_dir)
 bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, const QString& filter_dir)
 {
     const QString relative_path = fileinfo.filePath().mid(filter_dir.length() + 1);
+    const QString file_ext = fileinfo.suffix().toLower();
 
-    const bool exclude = VEC_CONTAINS(filter.exclude.extensions, fileinfo.suffix())
+    const bool exclude = VEC_CONTAINS(filter.exclude.extensions, file_ext)
         || VEC_CONTAINS(filter.exclude.files, relative_path)
         || (!filter.exclude.regex.pattern().isEmpty() && filter.exclude.regex.match(fileinfo.filePath()).hasMatch());
     if (exclude)
         return false;
 
-    const bool include = VEC_CONTAINS(filter.include.extensions, fileinfo.suffix())
+    const bool include = VEC_CONTAINS(filter.include.extensions, file_ext)
         || VEC_CONTAINS(filter.include.files, relative_path)
         || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.match(fileinfo.filePath()).hasMatch());
     if (!include)

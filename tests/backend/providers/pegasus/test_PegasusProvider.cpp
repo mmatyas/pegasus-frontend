@@ -122,13 +122,13 @@ void test_PegasusProvider::simple()
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("My Games"), {
             { ":/simple/mygame1.ext" },
-            { ":/simple/mygame2.ext" },
+            { ":/simple/mygame2.EXT" },
             { ":/simple/mygame3.ext" },
             { ":/simple/favgame1.ext" },
             { ":/simple/favgame2.ext" },
             { ":/simple/game with spaces.ext" },
             { ":/simple/9999-in-1.ext" },
-            { ":/simple/subdir/game_in_subdir.ext" },
+            { ":/simple/subdir/game_in_subdir.EXT" },
         }},
         { QStringLiteral("Favorite games"), {
             { ":/simple/favgame1.ext" },
