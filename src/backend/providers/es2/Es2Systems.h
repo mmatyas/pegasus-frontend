@@ -40,12 +40,9 @@ signals:
     void gameCountChanged(int count);
 
 private:
-    void readSystemsFile(QXmlStreamReader&,
-                         providers::SearchContext&,
-                         HashMap<QString, QString>&);
-    void readSystemEntry(QXmlStreamReader&,
-                         providers::SearchContext&,
-                         HashMap<QString, QString>&);
+    void read_systems_file(QXmlStreamReader&,
+                           providers::SearchContext&,
+                           HashMap<QString, QString>&);
 };
 
 } // namespace es2
