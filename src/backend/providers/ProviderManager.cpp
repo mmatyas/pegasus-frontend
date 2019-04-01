@@ -113,7 +113,7 @@ void run_list_providers(providers::SearchContext& ctx, const std::vector<Provide
             continue;
 
         ptr->findLists(ctx);
-        qInfo().noquote() << tr_log("%1 provider finished game searching in %2ms")
+        qInfo().noquote() << tr_log("%1: finished game searching in %2ms")
             .arg(ptr->name(), QString::number(timer.restart()));
     }
 
@@ -133,7 +133,7 @@ void run_asset_providers(providers::SearchContext& ctx, const std::vector<Provid
             continue;
 
         provider->findStaticData(ctx);
-        qInfo().noquote() << tr_log("%1 provider finished asset searching in %2ms")
+        qInfo().noquote() << tr_log("%1: finished asset searching in %2ms")
             .arg(provider->name(), QString::number(timer.restart()));
     }
 }
