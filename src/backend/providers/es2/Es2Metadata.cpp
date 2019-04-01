@@ -68,7 +68,7 @@ AssetCheckResult checkFile(const QFileInfo& file)
 
 namespace {
 
-static constexpr auto MSG_PREFIX = "ES2:";
+static constexpr auto MSG_PREFIX = "EmulationStation:";
 
 QString findGamelistFile(const modeldata::Collection& collection,
                          const QString& collection_dir)

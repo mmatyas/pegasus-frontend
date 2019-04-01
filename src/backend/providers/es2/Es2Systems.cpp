@@ -31,7 +31,7 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "ES2:"; // TODO: don't duplicate
+static constexpr auto MSG_PREFIX = "EmulationStation:"; // TODO: don't duplicate
 
 QString findSystemsFile()
 {
