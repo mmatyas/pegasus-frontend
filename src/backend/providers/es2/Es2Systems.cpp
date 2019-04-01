@@ -23,6 +23,7 @@
 #include "modeldata/GameData.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/PathCheck.h"
+#include "utils/StdHelpers.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -154,6 +155,47 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
     };
 }
 
+std::vector<QString> read_mame_blacklist()
+{
+    using L1Str = QLatin1String;
+
+    const QString resources_path = paths::homePath() % L1Str("/.emulationstation/resources/");
+    const std::vector<std::pair<L1Str, L1Str>> blacklists {
+        { L1Str("mamebioses.xml"), L1Str("bios") },
+        { L1Str("mamedevices.xml"), L1Str("device") },
+    };
+
+    std::vector<QString> out;
+
+    for (const auto& blacklist_entry : blacklists) {
+        const QString file_path = resources_path % blacklist_entry.first;
+        QFile file(file_path);
+        if (!file.open(QFile::ReadOnly | QFile::Text))
+            continue;
+
+        const QString line_head = QStringLiteral("<%1>").arg(blacklist_entry.second);
+        const QString line_tail = QStringLiteral("</%1>").arg(blacklist_entry.second);
+
+        QTextStream stream(&file);
+        QString line;
+        int hit_count = 0;
+        while (stream.readLineInto(&line, 128)) {
+            const bool is_valid = line.startsWith(line_head) && line.endsWith(line_tail);
+            if (!is_valid)
+                continue;
+
+            const int len = line.length() - line_head.length() - line_tail.length();
+            out.emplace_back(line.mid(line_head.length(), len));
+            hit_count++;
+        }
+
+        qInfo().noquote() << MSG_PREFIX
+            << tr_log("Found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count));
+    }
+
+    return out;
+}
+
 void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
 {
     // add the collection
@@ -171,7 +213,7 @@ void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
 
     // add the games
 
-    // pass 1: find all (sub-)directories, but ignore 'media'
+    // find all (sub-)directories, but ignore 'media'
 
     QStringList dirs;
     {
@@ -186,7 +228,12 @@ void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
         dirs.append(sysentry.path);
     }
 
-    // pass 2: scan for game files
+    // load a blacklist maybe
+    const bool load_mame_blacklist = sysentry.shortname == QLatin1String("arcade")
+                                  || sysentry.shortname == QLatin1String("neogeo");
+    const std::vector<QString> blacklist = load_mame_blacklist ? read_mame_blacklist() : decltype(blacklist)();
+
+    // scan for game files
 
     static constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     static constexpr auto entry_flags = QDirIterator::FollowSymlinks;
@@ -197,6 +244,11 @@ void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
         while (files_it.hasNext()) {
             files_it.next();
             QFileInfo fileinfo = files_it.fileInfo();
+
+            const QString filename = fileinfo.completeBaseName();
+            if (VEC_CONTAINS(blacklist, filename))
+                continue;
+
             const QString game_path = fileinfo.canonicalFilePath();
 
             if (!sctx.path_to_gameid.count(game_path)) {
