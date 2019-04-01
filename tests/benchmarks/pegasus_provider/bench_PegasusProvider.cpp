@@ -36,7 +36,7 @@ void bench_PegasusProvider::find_in_empty_dir()
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/empty")});
 
     QBENCHMARK {
-        QTest::ignoreMessage(QtWarningMsg, "Collections: No metadata file found in `:/empty`, directory ignored");
+        QTest::ignoreMessage(QtWarningMsg, "Metafiles: No metadata file found in `:/empty`, directory ignored");
         provider.findLists(sctx);
     }
 }
@@ -47,7 +47,7 @@ void bench_PegasusProvider::find_in_filled_dir()
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/filled")});
 
     QBENCHMARK {
-        QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/filled/collections.txt`");
+        QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/filled/collections.txt`");
         provider.findLists(sctx);
     }
 }

@@ -34,7 +34,7 @@ using namespace providers::pegasus::parser;
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Collections:";
+static constexpr auto MSG_PREFIX = "Metafiles:";
 
 
 QString find_metafile_in(const QString& dir_path)

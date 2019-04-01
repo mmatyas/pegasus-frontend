@@ -89,7 +89,7 @@ void test_PegasusProvider::empty()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtWarningMsg, "Collections: No metadata file found in `:/empty`, directory ignored");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: No metadata file found in `:/empty`, directory ignored");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/empty")});
     provider.findLists(ctx);
 
@@ -102,7 +102,7 @@ void test_PegasusProvider::simple()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/simple/metadata.pegasus.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/simple/metadata.pegasus.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/simple")});
     provider.findLists(ctx);
 
@@ -147,13 +147,13 @@ void test_PegasusProvider::with_meta()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/with_meta/metadata.pegasus.txt`");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 60: duplicate file `horse.ext`");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 63: failed to parse rating value");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 65: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 66: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 68: duplicate file `horse.ext`");
-    QTest::ignoreMessage(QtWarningMsg, "Collections: `:/with_meta/metadata.pegasus.txt`, line 69: unrecognized game property `asd`, ignored");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/with_meta/metadata.pegasus.txt`");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 60: duplicate file `horse.ext`");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 63: failed to parse rating value");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 65: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 66: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 68: duplicate file `horse.ext`");
+    QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 69: unrecognized game property `asd`, ignored");
 
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/with_meta")});
     provider.findLists(ctx);
@@ -292,7 +292,7 @@ void test_PegasusProvider::asset_search()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/asset_search/metadata.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/asset_search/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/asset_search")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
@@ -329,7 +329,7 @@ void test_PegasusProvider::asset_search_by_title()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/asset_search_by_title/metadata.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/asset_search_by_title/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/asset_search_by_title")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
@@ -352,7 +352,7 @@ void test_PegasusProvider::custom_assets()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_assets/metadata.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/custom_assets/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_assets")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
@@ -375,7 +375,7 @@ void test_PegasusProvider::custom_assets_multi()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_assets_multi/metadata.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/custom_assets_multi/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_assets_multi")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
@@ -405,7 +405,7 @@ void test_PegasusProvider::custom_directories()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/custom_dirs/coll/metadata.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/custom_dirs/coll/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_dirs/coll")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
@@ -435,7 +435,7 @@ void test_PegasusProvider::multifile()
 {
     providers::SearchContext ctx;
 
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/multifile/metadata.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/multifile/metadata.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/multifile")});
     provider.findLists(ctx);
 
@@ -513,7 +513,7 @@ void test_PegasusProvider::nonASCII()
 
     providers::SearchContext ctx;
 
-    const QString ignored_msg = "Collections: found `" + tempdir.path() + "/metadata.txt`";
+    const QString ignored_msg = "Metafiles: found `" + tempdir.path() + "/metadata.txt`";
     QTest::ignoreMessage(QtInfoMsg, ignored_msg.toLocal8Bit());
     providers::pegasus::PegasusProvider provider({tempdir.path()});
     provider.findLists(ctx);
@@ -550,7 +550,7 @@ void test_PegasusProvider::separate_media_dirs()
     // NOTE: see issue 407
 
     providers::SearchContext ctx;
-    QTest::ignoreMessage(QtInfoMsg, "Collections: found `:/separate_media_dirs/metadata/metadata.pegasus.txt`");
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/separate_media_dirs/metadata/metadata.pegasus.txt`");
     providers::pegasus::PegasusProvider provider({QStringLiteral(":/separate_media_dirs/metadata")});
 
     provider.findLists(ctx);

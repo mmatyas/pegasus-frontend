@@ -40,11 +40,9 @@ std::vector<QString> get_game_dirs()
         game_dirs.emplace_back(global_finfo.canonicalFilePath());
 
     AppSettings::parse_gamedirs([&game_dirs](const QString& line){
-        constexpr auto MSG_PREFIX = "Collections:";
-
         const QFileInfo finfo(line);
         if (!finfo.isDir()) {
-            qWarning().noquote() << MSG_PREFIX << tr_log("game directory `%1` not found, ignored").arg(line);
+            qWarning().noquote() << tr_log("Metafiles: game directory `%1` not found, ignored").arg(line);
             return;
         }
 
