@@ -23,7 +23,9 @@
 #include "Paths.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QKeySequence>
 
 
@@ -171,7 +173,7 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
             AppSettings::general.locale = val;
             break;
         case ConfigEntryGeneralOption::THEME:
-            AppSettings::general.theme = val;
+            AppSettings::general.theme = QFileInfo(paths::writableConfigDir(), val).absoluteFilePath();
             break;
     }
 }
@@ -271,10 +273,15 @@ void SaveContext::print_general(QTextStream& stream) const
     for (const auto& entry : maps.str_to_general_opt)
         option_names.emplace(entry.second, entry.first);
 
+    const QString configdir_path = paths::writableConfigDir() + QChar('/');
+    const QString theme_path = AppSettings::general.theme.startsWith(configdir_path)
+        ? AppSettings::general.theme.mid(configdir_path.length())
+        : AppSettings::general.theme;
+
     GeneralStrMap option_values {
         { GeneralOption::FULLSCREEN, AppSettings::general.fullscreen ? STR_TRUE : STR_FALSE },
         { GeneralOption::LOCALE, AppSettings::general.locale },
-        { GeneralOption::THEME, AppSettings::general.theme },
+        { GeneralOption::THEME, theme_path },
     };
 
     for (const auto& entry : option_values) {
