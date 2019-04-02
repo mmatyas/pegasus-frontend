@@ -212,11 +212,11 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
 
     switch (exitstatus) {
         case QProcess::NormalExit:
-            qInfo().noquote() << tr_log("The external program has finished cleanly, with exit code %2")
+            qInfo().noquote() << tr_log("The external program has finished cleanly, with exit code %1")
                                  .arg(exitcode);
             break;
         case QProcess::CrashExit:
-            qInfo().noquote() << tr_log("The external program has crashed on exit, with exit code %2")
+            qInfo().noquote() << tr_log("The external program has crashed on exit, with exit code %1")
                                  .arg(exitcode);
             break;
         default:
@@ -224,6 +224,7 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
             Q_UNREACHABLE();
             break;
     }
+
     afterRun();
 }
 
