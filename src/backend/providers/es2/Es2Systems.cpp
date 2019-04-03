@@ -155,7 +155,7 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
     };
 }
 
-std::vector<QString> read_mame_blacklist()
+std::vector<QString> read_mame_blacklists()
 {
     using L1Str = QLatin1String;
 
@@ -190,13 +190,13 @@ std::vector<QString> read_mame_blacklist()
         }
 
         qInfo().noquote() << MSG_PREFIX
-            << tr_log("Found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count));
+            << tr_log("found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count));
     }
 
     return out;
 }
 
-void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
+void find_games(const SystemEntry& sysentry, const std::vector<QString>& blacklist, providers::SearchContext& sctx)
 {
     // add the collection
 
@@ -214,7 +214,6 @@ void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
     // add the games
 
     // find all (sub-)directories, but ignore 'media'
-
     QStringList dirs;
     {
         static constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
@@ -228,10 +227,10 @@ void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
         dirs.append(sysentry.path);
     }
 
-    // load a blacklist maybe
-    const bool load_mame_blacklist = sysentry.shortname == QLatin1String("arcade")
-                                  || sysentry.shortname == QLatin1String("neogeo");
-    const std::vector<QString> blacklist = load_mame_blacklist ? read_mame_blacklist() : decltype(blacklist)();
+    // use the blacklist maybe
+    const bool use_blacklist = sysentry.shortname == QLatin1String("arcade")
+                            || sysentry.shortname == QLatin1String("neogeo");
+
 
     // scan for game files
 
@@ -246,7 +245,7 @@ void find_games(const SystemEntry& sysentry, providers::SearchContext& sctx)
             QFileInfo fileinfo = files_it.fileInfo();
 
             const QString filename = fileinfo.completeBaseName();
-            if (VEC_CONTAINS(blacklist, filename))
+            if (use_blacklist && VEC_CONTAINS(blacklist, filename))
                 continue;
 
             const QString game_path = fileinfo.canonicalFilePath();
@@ -303,6 +302,9 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
                                       providers::SearchContext& sctx,
                                       HashMap<QString, QString>& collection_dirs)
 {
+    // load the blacklist, in case it's needed
+    const std::vector<QString> mame_blacklist = read_mame_blacklists();
+
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
         xml.raiseError(tr_log("could not parse `%1`")
@@ -329,7 +331,7 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
 
         collection_dirs[sysentry.name] = sysentry.path;
 
-        find_games(sysentry, sctx);
+        find_games(sysentry, mame_blacklist, sctx);
         if (game_count != sctx.games.size()) {
             game_count = sctx.games.size();
             emit gameCountChanged(static_cast<int>(game_count));
