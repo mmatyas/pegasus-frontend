@@ -330,6 +330,7 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
             continue;
 
         collection_dirs[sysentry.name] = sysentry.path;
+        sctx.game_root_dirs.emplace_back(sysentry.path);
 
         find_games(sysentry, mame_blacklist, sctx);
         if (game_count != sctx.games.size()) {

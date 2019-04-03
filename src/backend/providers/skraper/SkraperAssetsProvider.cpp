@@ -17,7 +17,6 @@
 
 #include "SkraperAssetsProvider.h"
 
-#include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "modeldata/GameData.h"
 
@@ -27,19 +26,6 @@
 
 
 namespace {
-std::vector<QString> get_game_dirs()
-{
-    std::vector<QString> game_dirs;
-
-    AppSettings::parse_gamedirs([&game_dirs](const QString& line){
-        const QFileInfo finfo(line);
-        if (finfo.isDir())
-            game_dirs.emplace_back(finfo.canonicalFilePath());
-    });
-
-    return game_dirs;
-}
-
 HashMap<QString, modeldata::Game* const> build_gamepath_db(HashMap<size_t, modeldata::Game>& games)
 {
     HashMap<QString, modeldata::Game* const> map;
@@ -97,17 +83,15 @@ SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
 
 void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
 {
-    qInfo().noquote() << tr_log("Skraper: Looking for assets...");
     unsigned found_assets_cnt = 0;
 
-    const std::vector<QString> game_dirs = get_game_dirs();
     const HashMap<QString, modeldata::Game* const> extless_path_to_game = build_gamepath_db(sctx.games);
 
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
 
-    for (const QString& game_dir : game_dirs) {
+    for (const QString& game_dir : sctx.game_root_dirs) {
         for (const QString& media_dir : m_media_dirs) {
             const QString game_media_dir = game_dir % media_dir;
             if (!QFileInfo::exists(game_media_dir))
@@ -135,7 +119,7 @@ void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
         }
     }
 
-    qInfo().noquote() << tr_log("Skraper: %1 assets found").arg(found_assets_cnt);
+    qInfo().noquote() << tr_log("%1: %2 assets found").arg(name(), QString::number(found_assets_cnt));
 }
 
 } // namespace skraper

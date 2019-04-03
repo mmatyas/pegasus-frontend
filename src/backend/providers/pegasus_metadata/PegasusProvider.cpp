@@ -76,7 +76,7 @@ void PegasusProvider::findLists(SearchContext& ctx)
 
 void PegasusProvider::findStaticData(SearchContext& ctx)
 {
-    find_assets(m_game_dirs, ctx.games);
+    find_assets(ctx.game_root_dirs, ctx.games);
 }
 
 } // namespace pegasus

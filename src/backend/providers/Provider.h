@@ -35,6 +35,7 @@ struct SearchContext {
     HashMap<QString, modeldata::Collection> collections;
     HashMap<QString, std::vector<size_t>> collection_childs;
     HashMap<QString, size_t> path_to_gameid;
+    std::vector<QString> game_root_dirs;
 
     SearchContext() = default;
     MOVE_ONLY(SearchContext)

@@ -104,10 +104,25 @@ void remove_parentless_games(providers::SearchContext& sctx)
     }
 }
 
+void postprocess_list_results(providers::SearchContext& ctx)
+{
+    QElapsedTimer timer;
+    timer.start();
+
+    remove_empty_collections(ctx);
+    remove_empty_games(ctx.games);
+    remove_duplicate_childs(ctx.collection_childs);
+    remove_parentless_games(ctx);
+    VEC_REMOVE_DUPLICATES(ctx.game_root_dirs);
+
+    qInfo().noquote() << tr_log("Game list post-processing took %1ms").arg(timer.elapsed());
+}
+
 void run_list_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
 {
     QElapsedTimer timer;
     timer.start();
+
     for (const ProviderPtr& ptr : providers) {
         if (!(ptr->flags() & providers::PROVIDES_GAMES))
             continue;
@@ -116,12 +131,6 @@ void run_list_providers(providers::SearchContext& ctx, const std::vector<Provide
         qInfo().noquote() << tr_log("%1: finished game searching in %2ms")
             .arg(ptr->name(), QString::number(timer.restart()));
     }
-
-    remove_empty_collections(ctx);
-    remove_empty_games(ctx.games);
-    remove_duplicate_childs(ctx.collection_childs);
-    remove_parentless_games(ctx);
-    qInfo().noquote() << tr_log("Game list post-processing took %1ms").arg(timer.elapsed());
 }
 
 void run_asset_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
@@ -205,6 +214,7 @@ void ProviderManager::startStaticSearch(providers::SearchContext& out_sctx)
         timer.start();
 
         run_list_providers(ctx, m_providers);
+        postprocess_list_results(ctx);
         emit firstPhaseComplete(timer.restart());
 
         run_asset_providers(ctx, m_providers);

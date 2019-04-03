@@ -21,6 +21,7 @@
 #include "modeldata/GameData.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
 #include "utils/HashMap.h"
+#include "utils/StdHelpers.h"
 
 #include <QString>
 #include <QStringList>
@@ -301,6 +302,7 @@ void test_PegasusProvider::asset_search()
     QVERIFY(ctx.collections.size() == 1);
     QVERIFY(ctx.collections.count(collection_name) == 1);
     QVERIFY(ctx.games.size() == 4);
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/asset_search")));
 
     auto path = QStringLiteral(":/asset_search/mygame1.ext");
     QVERIFY(ctx.path_to_gameid.count(path));
@@ -338,6 +340,7 @@ void test_PegasusProvider::asset_search_by_title()
     QVERIFY(ctx.collections.size() == 1);
     QVERIFY(ctx.collections.count(collection_name) == 1);
     QVERIFY(ctx.games.size() == 1);
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/asset_search_by_title")));
 
     const QString path = QStringLiteral(":/asset_search_by_title/mygame.ext");
     QVERIFY(ctx.path_to_gameid.count(path));
@@ -556,6 +559,9 @@ void test_PegasusProvider::separate_media_dirs()
     provider.findLists(ctx);
     QCOMPARE(static_cast<int>(ctx.collections.size()),  2);
     QCOMPARE(static_cast<int>(ctx.games.size()), 2);
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata")));
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata/../games-a")));
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata/../games-b")));
 
     provider.findStaticData(ctx);
     // NOTE: Yes, canonicalPath() returns a path with '..' in it...
