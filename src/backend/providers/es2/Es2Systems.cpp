@@ -138,20 +138,20 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
 
     // construct the new platform
 
-    const QString& fullname = xml_props[QLatin1String("fullname")];
-    const QString& shortname = xml_props[QLatin1String("name")];
+    QString fullname = std::move(xml_props[QLatin1String("fullname")]);
+    QString shortname = std::move(xml_props[QLatin1String("name")]);
 
-    const QString launch_cmd = xml_props[QLatin1String("command")]
+    QString launch_cmd = xml_props[QLatin1String("command")]
         .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"));
 
     return {
         fullname.isEmpty() ? shortname : fullname,
-        shortname,
-        xml_props[QLatin1String("path")],
-        xml_props[QLatin1String("extension")],
-        launch_cmd, // assumed to be absolute
+        std::move(shortname),
+        std::move(xml_props[QLatin1String("path")]),
+        std::move(xml_props[QLatin1String("extension")]),
+        std::move(launch_cmd), // assumed to be absolute
     };
 }
 
