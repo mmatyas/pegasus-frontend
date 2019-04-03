@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QFile>
+#include <QRegularExpression>
 #include <QStringBuilder>
 
 
@@ -64,11 +65,21 @@ findByStrRef(HashMap<QLatin1String, QString>& map, const QStringRef& str)
     return it;
 }
 
+QVector<QStringRef> split_list(const QString& str)
+{
+    // FIXME: don't leave statics around
+    static const QRegularExpression separator(QStringLiteral("[,\\s]"));
+    return str.splitRef(separator, QString::SkipEmptyParts);
+}
+
 /// returns a list of unique, '*.'-prefixed lowercase file extensions
 QStringList parseFilters(const QString& filters_raw) {
-    QStringList filter_list = filters_raw.split(" ", QString::SkipEmptyParts);
-    for (auto& filter : filter_list)
-        filter = filter.prepend("*").toLower();
+    const QString filters_lowercase = filters_raw.toLower();
+    const QVector<QStringRef> filter_refs = split_list(filters_lowercase);
+
+    QStringList filter_list;
+    for (const QStringRef& filter_ref : filter_refs)
+        filter_list.append(QChar('*') + filter_ref.trimmed());
 
     filter_list.removeDuplicates();
     return filter_list;
@@ -80,6 +91,7 @@ struct SystemEntry {
     const QString shortname;
     const QString path;
     const QString extensions;
+    const QString platforms;
     const QString launch_cmd;
 };
 
@@ -103,6 +115,7 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
         { QLatin1String("path"), QString() },
         { QLatin1String("extension"), QString() },
         { QLatin1String("command"), QString() },
+        { QLatin1String("platform"), QString() },
     };
     // read
     while (xml.readNextStartElement()) {
@@ -151,6 +164,7 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
         std::move(shortname),
         std::move(xml_props[QLatin1String("path")]),
         std::move(xml_props[QLatin1String("extension")]),
+        std::move(xml_props[QLatin1String("platform")]),
         std::move(launch_cmd), // assumed to be absolute
     };
 }
@@ -228,8 +242,9 @@ void find_games(const SystemEntry& sysentry, const std::vector<QString>& blackli
     }
 
     // use the blacklist maybe
-    const bool use_blacklist = sysentry.shortname == QLatin1String("arcade")
-                            || sysentry.shortname == QLatin1String("neogeo");
+    const QVector<QStringRef> platforms = split_list(sysentry.platforms);
+    const bool use_blacklist = VEC_CONTAINS(platforms, QLatin1String("arcade"))
+                            || VEC_CONTAINS(platforms, QLatin1String("neogeo"));
 
 
     // scan for game files
