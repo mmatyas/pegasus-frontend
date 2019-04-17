@@ -16,7 +16,8 @@ SOURCES += \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
-    Log.cpp
+    Log.cpp \
+    GamepadButtonNavigation.cpp
 
 HEADERS += \
     Api.h \
@@ -31,6 +32,7 @@ HEADERS += \
     Paths.h \
     AppSettings.h \
     Log.h \
+    GamepadButtonNavigation.h
 
 include(parsers/parsers.pri)
 include(platform/platform.pri)

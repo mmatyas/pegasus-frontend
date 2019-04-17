@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,34 +17,27 @@
 
 #pragma once
 
-#include "GamepadAxisNavigation.h"
+#include "utils/HashMap.h"
 
-#include <QFile>
-
-#ifdef Q_OS_ANDROID
-#include <QGamepadKeyNavigation>
-#else
-#include "GamepadButtonNavigation.h"
-#endif
+#include <QGamepadManager>
+#include <QObject>
+#include <QTimer>
 
 
-namespace backend {
+class GamepadButtonNavigation : public QObject {
+    Q_OBJECT
 
-class AppContext {
 public:
-    AppContext();
-    AppContext(const AppContext&) = delete;
-    AppContext& operator=(const AppContext&) = delete;
+    explicit GamepadButtonNavigation(QObject* parent = nullptr);
+
+public slots:
+    void onButtonPress(int deviceId, QGamepadManager::GamepadButton button);
+    void onButtonRelease(int deviceId, QGamepadManager::GamepadButton button);
 
 private:
-#ifdef Q_OS_ANDROID
-    QGamepadKeyNavigation padkeynav;
-#else
-    GamepadButtonNavigation padbuttonnav;
-#endif
-    GamepadAxisNavigation padaxisnav;
+    const HashMap<QGamepadManager::GamepadButton, QTimer* const, EnumHash> m_timers;
+    const HashMap<QGamepadManager::GamepadButton, Qt::Key, EnumHash> m_keys;
 
-    void setup_gamepad();
+private slots:
+    void onTimerTimeout();
 };
-
-} // namespace backend

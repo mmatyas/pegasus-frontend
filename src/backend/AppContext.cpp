@@ -103,6 +103,7 @@ AppContext::AppContext()
 
 void AppContext::setup_gamepad()
 {
+#ifdef Q_OS_ANDROID
     #define SET_GAMEPAD_KEY(fnName, enumName) \
         padkeynav.setButton ## fnName ## Key(static_cast<Qt::Key>(GamepadKeyId::enumName));
     SET_GAMEPAD_KEY(A, A);
@@ -120,7 +121,11 @@ void AppContext::setup_gamepad()
     SET_GAMEPAD_KEY(Guide, GUIDE);
     #undef SET_GAMEPAD_KEY
 
-#ifndef Q_OS_ANDROID
+#else // Q_OS_ANDROID
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonPressEvent,
+                     &padbuttonnav, &GamepadButtonNavigation::onButtonPress);
+    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonReleaseEvent,
+                     &padbuttonnav, &GamepadButtonNavigation::onButtonRelease);
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
                      &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
 #endif
