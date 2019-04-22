@@ -103,7 +103,7 @@ void test_ConfigFile::file()
         expected.emplace_back(metafile::Entry { 13, "multiline2", {"purely", "multiline"} });
         expected.emplace_back(metafile::Entry { 16, "multiline3", {"text", "with", QString(), "line break"} });
         expected.emplace_back(metafile::Entry { 20, "multiline4", {"text", "stops here"} });
-        expected.emplace_back(metafile::Entry { 25, "list1", {"list", "of", "items"} });
+        expected.emplace_back(metafile::Entry { 25, "manual_break", {"manual break\nhere", "line end\n", "here"} });
 
 
     const size_t count = std::min(m_entries.size(), expected.size());
