@@ -14,7 +14,7 @@ set -o xtrace
 # Lint
 
 echo "Linting"
-find -name *.qml -exec /opt/${QT_VER}_${TARGET}/bin/qmllint {} \;
+find -name *.qml -exec /opt/${QT_VER}_${TARGET}_hosttools/bin/qmllint {} \;
 
 
 # Build
