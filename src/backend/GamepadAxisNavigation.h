@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,10 +23,8 @@
 #include <QObject>
 
 
-class GamepadAxisNavigation : public QObject
-{
+class GamepadAxisNavigation : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(GamepadAxisNavigation)
 
 public:
     explicit GamepadAxisNavigation(QObject* parent = nullptr);
@@ -34,20 +32,11 @@ public:
 public slots:
     void onAxisEvent(int deviceId, QGamepadManager::GamepadAxis axis, double axisValue);
 
+signals:
+    void buttonPressed(int deviceId, QGamepadManager::GamepadButton button);
+    void buttonReleased(int deviceId, QGamepadManager::GamepadButton button);
+
 private:
-    enum class AxisMovement : unsigned char {
-        IN_DEADZONE,
-        MOVE_POS, // the axis value has increased
-        MOVE_NEG, // the axis value has decreased
-    };
-
-    struct AxisState {
-        double value;
-        AxisMovement move;
-
-        AxisState();
-    };
-
-    using DeviceAxes = HashMap<QGamepadManager::GamepadAxis, AxisState, EnumHash>;
+    using DeviceAxes = HashMap<QGamepadManager::GamepadAxis, double, EnumHash>;
     HashMap<int, DeviceAxes> devices;
 };

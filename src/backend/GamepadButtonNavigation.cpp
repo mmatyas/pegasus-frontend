@@ -35,9 +35,10 @@ void emit_key(Qt::Key key, QEvent::Type event_type, bool autorep)
     Q_ASSERT(key != Qt::Key_unknown);
     Q_ASSERT(event_type == QEvent::KeyPress || event_type == QEvent::KeyRelease);
 
-    if (qApp) {
+    QWindow* const focus_window = qApp ? qApp->focusWindow() : nullptr;
+    if (focus_window) {
         QKeyEvent event(event_type, key, Qt::NoModifier, QString(), autorep);
-        QGuiApplication::sendEvent(qApp->focusWindow(), &event);
+        QGuiApplication::sendEvent(focus_window, &event);
     }
 }
 } // namespace

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,96 +17,89 @@
 
 #include "GamepadAxisNavigation.h"
 
-#include <QGuiApplication>
-#include <QKeyEvent>
-#include <QWindow>
-
-#include <QDebug>
-
-using GamepadAxis = QGamepadManager::GamepadAxis;
+using QGamepadButton = QGamepadManager::GamepadButton;
+using QGamepadAxis = QGamepadManager::GamepadAxis;
+using DeviceAxes = HashMap<QGamepadAxis, double, EnumHash>;
 
 
 namespace {
-void emitKey(Qt::Key key, QEvent::Type eventType)
+enum class AxisZone : unsigned char {
+    DEAD, // center
+    POSITIVE,
+    NEGATIVE,
+};
+
+AxisZone axis_zone(double axis_value)
 {
-    if (key == Qt::Key_unknown || eventType == QEvent::None)
-        return;
+    static constexpr double DEADZONE = 0.5;
 
-    Q_ASSERT(eventType == QEvent::KeyPress || eventType == QEvent::KeyRelease);
+    if (-DEADZONE < axis_value && axis_value < DEADZONE)
+        return AxisZone::DEAD;
 
+    return axis_value > 0
+        ? AxisZone::POSITIVE
+        : AxisZone::NEGATIVE;
+}
 
-    QKeyEvent event(eventType, key, Qt::NoModifier);
+QGamepadButton axis_valchange_to_button(QGamepadAxis axis, double axis_change)
+{
+    const bool is_negative = (axis_change < 0);
+    const bool is_horizontal = (axis == QGamepadManager::AxisLeftX ||
+                                axis == QGamepadManager::AxisRightX);
+    return is_horizontal
+        ? (is_negative ? QGamepadButton::ButtonLeft : QGamepadButton::ButtonRight)
+        : (is_negative ? QGamepadButton::ButtonUp : QGamepadButton::ButtonDown);
+}
 
-    QWindow* focusWindow = qApp ? qApp->focusWindow() : nullptr;
-    if (focusWindow)
-        QGuiApplication::sendEvent(focusWindow, &event);
+QGamepadButton reverse_button(QGamepadButton button)
+{
+    switch (button) {
+        case QGamepadButton::ButtonLeft: return QGamepadButton::ButtonRight;
+        case QGamepadButton::ButtonRight: return QGamepadButton::ButtonLeft;
+        case QGamepadButton::ButtonUp: return QGamepadButton::ButtonDown;
+        case QGamepadButton::ButtonDown: return QGamepadButton::ButtonUp;
+        default: Q_UNREACHABLE();
+    }
+}
+
+double axis_val_or_zero(const DeviceAxes& axes, QGamepadAxis axis)
+{
+    const auto it = axes.find(axis);
+    if (it != axes.cend())
+        return it->second;
+
+    return 0.0;
 }
 } // namespace
 
 
-GamepadAxisNavigation::AxisState::AxisState()
-    : value(0.0)
-    , move(AxisMovement::IN_DEADZONE)
-{
-}
-
 GamepadAxisNavigation::GamepadAxisNavigation(QObject* parent)
     : QObject(parent)
-{
-}
+{}
 
-void GamepadAxisNavigation::onAxisEvent(int deviceId, GamepadAxis axis, double axisValue)
+void GamepadAxisNavigation::onAxisEvent(int deviceId, QGamepadAxis axis, double axisValue)
 {
-    if (axis == GamepadAxis::AxisInvalid)
+    if (axis == QGamepadAxis::AxisInvalid)
         return;
 
     // NOTE: the point here is that if the device or axis wasn't
     // registered yet, it will be created automatically
     DeviceAxes& device_axes = devices[deviceId];
-    AxisState& prev_state = device_axes[axis];
+    const double prev_value = axis_val_or_zero(device_axes, axis);
+    device_axes[axis] = axisValue;
 
-    // default values
-    AxisMovement current_move = AxisMovement::IN_DEADZONE;
-    Qt::Key event_key = Qt::Key_unknown;
-    QEvent::Type event_type = QEvent::None;
+    const AxisZone prev_zone = axis_zone(prev_value);
+    const AxisZone curr_zone = axis_zone(axisValue);
+    if (prev_zone == curr_zone)
+        return;
 
+    const double val_change = axisValue - prev_value;
+    const QGamepadButton pressed_btn = axis_valchange_to_button(axis, val_change);
+    const QGamepadButton released_btn = reverse_button(pressed_btn);
 
-    static constexpr double DEADZONE = 0.5;
-    const bool inside_deadzone = (-DEADZONE < axisValue && axisValue < DEADZONE);
+    if (prev_zone != AxisZone::DEAD)
+        emit buttonReleased(deviceId, released_btn);
 
-    if (!inside_deadzone) {
-        // the current state depends on the relative movement
-        current_move = (prev_state.value < axisValue)
-            ? AxisMovement::MOVE_POS
-            : AxisMovement::MOVE_NEG;
-
-        // the emitted event type depends on the change in the state
-        if (current_move != prev_state.move) {
-            event_type = (prev_state.move == AxisMovement::IN_DEADZONE)
-                ? QEvent::KeyPress
-                : QEvent::KeyRelease;
-        }
-
-        // the emitted key depends on the absolute values
-        const bool is_negative = (axisValue < 0);
-        const bool is_horizontal = (axis == QGamepadManager::AxisLeftX ||
-                                    axis == QGamepadManager::AxisRightX);
-        event_key = is_horizontal
-                    ? (is_negative ? Qt::Key_Left : Qt::Key_Right)
-                    : (is_negative ? Qt::Key_Up : Qt::Key_Down);
-    }
-
-
-    // store the current values for the next run
-    if (!inside_deadzone) {
-        prev_state.value = axisValue;
-        prev_state.move = current_move;
-    }
-    else {
-        prev_state.value = 0.0;
-        prev_state.move = AxisMovement::IN_DEADZONE;
-    }
-
-    // emit the event
-    emitKey(event_key, event_type);
+    if (curr_zone != AxisZone::DEAD)
+        emit buttonPressed(deviceId, pressed_btn);
 }

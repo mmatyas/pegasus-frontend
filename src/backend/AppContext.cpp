@@ -126,8 +126,13 @@ void AppContext::setup_gamepad()
                      &padbuttonnav, &GamepadButtonNavigation::onButtonPress);
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonReleaseEvent,
                      &padbuttonnav, &GamepadButtonNavigation::onButtonRelease);
+
     QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
                      &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
+    QObject::connect(&padaxisnav, &GamepadAxisNavigation::buttonPressed,
+                     &padbuttonnav, &GamepadButtonNavigation::onButtonPress);
+    QObject::connect(&padaxisnav, &GamepadAxisNavigation::buttonReleased,
+                     &padbuttonnav, &GamepadButtonNavigation::onButtonRelease);
 #endif
 
     // config change

@@ -41,8 +41,8 @@ private:
     QGamepadKeyNavigation padkeynav;
 #else
     GamepadButtonNavigation padbuttonnav;
-#endif
     GamepadAxisNavigation padaxisnav;
+#endif
 
     void setup_gamepad();
 };
