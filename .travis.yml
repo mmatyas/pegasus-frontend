@@ -9,7 +9,7 @@ branches:
 
 env:
   global:
-    - QT_VER=qt5121
+    - QT_VER=qt5123
 
 git:
   depth: 175
