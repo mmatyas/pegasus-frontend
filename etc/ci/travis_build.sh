@@ -39,7 +39,9 @@ cd ..
 
 # Check deps
 
-if [[ $TARGET == rpi* ]]; then
+if [[ $TARGET == rpi1* ]]; then
+  CROSS=/opt/rpi-toolchain/arm-bcm2708/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+elif [[ $TARGET == rpi* ]]; then
   CROSS=/opt/linaro/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
 fi
 ${CROSS-}objdump -p installoc/usr/bin/pegasus-fe | grep NEEDED | sort

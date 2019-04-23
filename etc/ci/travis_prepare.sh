@@ -41,8 +41,13 @@ TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
 
 pushd /tmp
   wget ${TOOLS_URL}/${QT_VER}_${TARGET}.txz
-  if [[ $TARGET = rpi* ]]; then wget ${TOOLS_URL}/linaro.txz; fi
-  if [[ $TARGET = rpi* ]]; then wget ${TOOLS_URL}/rpi-sysroot_jessie_2017-07-05.txz; fi
+  if [[ $TARGET = rpi* ]]; then
+    if [[ $TARGET = rpi1* ]];
+      then wget ${TOOLS_URL}/rpi-toolchain-official.txz
+      else wget ${TOOLS_URL}/rpi-toolchain-linaro.txz
+    fi
+    wget ${TOOLS_URL}/rpi-sysroot_brcm493fix.txz
+  fi
 
   for f in *.txz; do sudo tar xJf ${f} -C /opt/; done
 
