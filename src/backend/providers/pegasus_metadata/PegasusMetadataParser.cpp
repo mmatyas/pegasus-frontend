@@ -53,6 +53,12 @@ bool asset_is_single(AssetType type)
 {
     return type != AssetType::SCREENSHOTS && type != AssetType::VIDEOS;
 }
+
+// FIXME: don't copy
+QString replace_newlines(QString str)
+{
+    return str.replace(QLatin1String("\\n"), QLatin1String("\n"));
+}
 } // namespace
 
 
@@ -129,10 +135,10 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
             }
             break;
         case CollAttrib::SHORT_DESC:
-            m_cur_coll->summary = metafile::merge_lines(entry.values);
+            m_cur_coll->summary = replace_newlines(metafile::merge_lines(entry.values));
             break;
         case CollAttrib::LONG_DESC:
-            m_cur_coll->description = metafile::merge_lines(entry.values);
+            m_cur_coll->description = replace_newlines(metafile::merge_lines(entry.values));
             break;
     }
 }
@@ -196,10 +202,10 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
             }
             break;
         case GameAttrib::SHORT_DESC:
-            m_cur_game->summary = metafile::merge_lines(entry.values);
+            m_cur_game->summary = replace_newlines(metafile::merge_lines(entry.values));
             break;
         case GameAttrib::LONG_DESC:
-            m_cur_game->description = metafile::merge_lines(entry.values);
+            m_cur_game->description = replace_newlines(metafile::merge_lines(entry.values));
             break;
         case GameAttrib::RELEASE:
             {

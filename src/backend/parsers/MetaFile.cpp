@@ -19,19 +19,10 @@
 
 #include "LocaleUtils.h"
 
-#include <QDebug>
 #include <QFile>
 #include <QRegularExpression>
 #include <QStringBuilder>
 #include <QTextStream>
-
-
-namespace {
-QString replace_newlines(const QStringRef& ref)
-{
-    return ref.toString().replace(QLatin1String("\\n"), QLatin1String("\n"));
-}
-} // namespace
 
 
 namespace metafile {
@@ -120,7 +111,7 @@ void read_stream(QTextStream& stream,
                 continue;
             }
 
-            entry.values.emplace_back(replace_newlines(trimmed_line));
+            entry.values.emplace_back(trimmed_line.toString());
             continue;
         }
 
@@ -140,7 +131,7 @@ void read_stream(QTextStream& stream,
             // the value can be empty here, if it's purely multiline
             auto value_part = rx_keyval_match.capturedRef(2).trimmed();
             if (!value_part.isEmpty())
-                entry.values.emplace_back(replace_newlines(value_part));
+                entry.values.emplace_back(value_part.toString());
 
             entry.line = linenum;
             continue;

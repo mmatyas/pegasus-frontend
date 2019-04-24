@@ -282,10 +282,12 @@ void test_PegasusProvider::with_meta()
 
         QCOMPARE(game.rating, 0.7f);
         QCOMPARE(game.launch_cmd, QStringLiteral("dummy"));
-        QCOMPARE(game.launch_workdir, QStringLiteral("my/work/dir"));
+        QCOMPARE(game.launch_workdir, QStringLiteral("some\\nice/work/dir"));
         QCOMPARE(game.relative_basedir, common_basedir);
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
+        QCOMPARE(game.summary, QStringLiteral("manual break\nhere"));
+        QCOMPARE(game.description, QStringLiteral("manual break\nhere\n\nline end\n here"));
     }
 }
 
