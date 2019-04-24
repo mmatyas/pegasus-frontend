@@ -53,12 +53,6 @@ bool asset_is_single(AssetType type)
 {
     return type != AssetType::SCREENSHOTS && type != AssetType::VIDEOS;
 }
-
-// FIXME: don't copy
-QString replace_newlines(QString str)
-{
-    return str.replace(QLatin1String("\\n"), QLatin1String("\n"));
-}
 } // namespace
 
 
@@ -81,6 +75,14 @@ Parser::Parser(QString file_path, const Constants& constants)
 void Parser::print_error(const size_t lineno, const QString& msg) const {
     qWarning().noquote() << MSG_PREFIX
         << tr_log("`%1`, line %2: %3").arg(m_metafile_path, QString::number(lineno), msg);
+}
+
+// FIXME: don't copy
+QString Parser::replace_newlines(QString str) const
+{
+    return str
+        .replace(m_constants.rx_linebreak, QStringLiteral("\n"))
+        .replace(QLatin1String(R"(\\n)"), QLatin1String(R"(\n)"));
 }
 
 void Parser::parse_collection_entry(const metafile::Entry& entry) const

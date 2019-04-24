@@ -73,3 +73,5 @@ description:
   .
   line end\n
   here
+  .
+  escaped\\nbreak

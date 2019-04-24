@@ -287,7 +287,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(static_cast<int>(game.files.size()), 1);
         QCOMPARE(contains_path(file_path, game.files), 1);
         QCOMPARE(game.summary, QStringLiteral("manual break\nhere"));
-        QCOMPARE(game.description, QStringLiteral("manual break\nhere\n\nline end\n here"));
+        QCOMPARE(game.description, QStringLiteral("manual break\nhere\n\nline end\n here\n\nescaped\\nbreak"));
     }
 }
 

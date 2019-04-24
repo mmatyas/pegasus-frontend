@@ -78,6 +78,7 @@ Constants::Constants()
     , rx_percent(QStringLiteral("^\\d+%$"))
     , rx_float(QStringLiteral("^\\d(\\.\\d+)?$"))
     , rx_date(QStringLiteral("^(\\d{4})(-(\\d{1,2}))?(-(\\d{1,2}))?$"))
+    , rx_linebreak(QStringLiteral(R"((?<!\\)\\n)"))
 {}
 
 } // namespace parser

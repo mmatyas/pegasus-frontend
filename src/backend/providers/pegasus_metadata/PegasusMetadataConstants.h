@@ -72,6 +72,7 @@ struct Constants {
     const QRegularExpression rx_percent;
     const QRegularExpression rx_float;
     const QRegularExpression rx_date;
+    const QRegularExpression rx_linebreak;
 
     explicit Constants();
     MOVE_ONLY(Constants)

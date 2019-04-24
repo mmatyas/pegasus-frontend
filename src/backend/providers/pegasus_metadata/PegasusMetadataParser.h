@@ -58,6 +58,7 @@ private:
     void parse_collection_entry(const metafile::Entry&) const;
     void parse_game_entry(const metafile::Entry&, providers::SearchContext&) const;
     bool parse_asset_entry_maybe(const metafile::Entry&) const;
+    QString replace_newlines(QString) const;
 };
 
 } // namespace parser
