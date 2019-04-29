@@ -59,9 +59,9 @@ signals:
     // triggers translation update
     void localeChanged();
 
-    // Api-side events
-    void eventSelectGameFile(const model::Game* game);
-    void eventLaunchError(const QString msg);
+    // Api events for QML -- no const here
+    void eventSelectGameFile(model::Game* game);
+    void eventLaunchError(QString msg);
 
 public slots:
     // game launch communication

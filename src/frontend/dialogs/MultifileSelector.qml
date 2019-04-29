@@ -23,9 +23,10 @@ FocusScope {
 
     property var game: null
 
-    property int textSize: vpx(16)
-    property int titleTextSize: vpx(18)
+    readonly property int textSize: vpx(16)
+    readonly property int titleTextSize: vpx(18)
 
+    signal accept()
     signal cancel()
 
     focus: true
@@ -114,7 +115,7 @@ FocusScope {
 
                     function launchEntry() {
                         modelData.launch();
-                        root.cancel();
+                        root.accept();
                     }
 
                     width: dialogBox.width
