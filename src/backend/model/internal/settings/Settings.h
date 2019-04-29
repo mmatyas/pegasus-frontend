@@ -36,6 +36,9 @@ class Settings : public QObject {
     Q_PROPERTY(bool fullscreen
                READ fullscreen WRITE setFullscreen
                NOTIFY fullscreenChanged)
+    Q_PROPERTY(bool mouseSupport
+               READ mouseSupport WRITE setMouseSupport
+               NOTIFY mouseSupportChanged)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
 
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
@@ -49,12 +52,16 @@ public:
     bool fullscreen() const { return AppSettings::general.fullscreen; }
     void setFullscreen(bool);
 
+    bool mouseSupport() const { return AppSettings::general.mouse_support; }
+    void setMouseSupport(bool);
+
     QStringList gameDirs() const;
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
 
 signals:
     void fullscreenChanged();
+    void mouseSupportChanged();
     void gameDirsChanged();
 };
 

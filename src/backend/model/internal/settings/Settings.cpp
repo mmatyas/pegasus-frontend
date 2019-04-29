@@ -21,9 +21,11 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 
+#include <QCursor>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QSet>
 
 
@@ -45,6 +47,14 @@ void rewrite_gamedircfg(const std::function<void(QTextStream&)>& callback)
     qInfo().noquote() << tr_log("Game directory list saved");
 }
 
+void change_mouse_support(bool enabled)
+{
+    if (enabled)
+        QGuiApplication::restoreOverrideCursor();
+    else
+        QGuiApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+}
+
 } // namespace
 
 
@@ -52,7 +62,9 @@ namespace model {
 
 Settings::Settings(QObject* parent)
     : QObject(parent)
-{}
+{
+    change_mouse_support(AppSettings::general.mouse_support);
+}
 
 void Settings::setFullscreen(bool new_val)
 {
@@ -63,6 +75,19 @@ void Settings::setFullscreen(bool new_val)
     AppSettings::save_config();
 
     emit fullscreenChanged();
+}
+
+void Settings::setMouseSupport(bool new_val)
+{
+    if (new_val == AppSettings::general.mouse_support)
+        return;
+
+    AppSettings::general.mouse_support = new_val;
+    AppSettings::save_config();
+
+    change_mouse_support(AppSettings::general.mouse_support);
+
+    emit mouseSupportChanged();
 }
 
 QStringList Settings::gameDirs() const

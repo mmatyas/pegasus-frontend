@@ -73,6 +73,7 @@ General::General()
     , portable(false)
     , silent(false)
     , fullscreen(true)
+    , mouse_support(true)
     , locale(DEFAULT_LOCALE)
     , theme(DEFAULT_THEME)
 {}

@@ -55,6 +55,7 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("portable"), GeneralOption::PORTABLE },
         { QStringLiteral("silent"), GeneralOption::SILENT },
         { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
+        { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
         { QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
     }
@@ -169,6 +170,10 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
             strconv.store_maybe(AppSettings::general.fullscreen, val,
                 [&](){ log_needs_bool(lineno, key); });
             break;
+        case ConfigEntryGeneralOption::MOUSE_SUPPORT:
+            strconv.store_maybe(AppSettings::general.mouse_support, val,
+                [&](){ log_needs_bool(lineno, key); });
+            break;
         case ConfigEntryGeneralOption::LOCALE:
             AppSettings::general.locale = val;
             break;
@@ -280,6 +285,7 @@ void SaveContext::print_general(QTextStream& stream) const
 
     GeneralStrMap option_values {
         { GeneralOption::FULLSCREEN, AppSettings::general.fullscreen ? STR_TRUE : STR_FALSE },
+        { GeneralOption::MOUSE_SUPPORT, AppSettings::general.mouse_support ? STR_TRUE : STR_FALSE },
         { GeneralOption::LOCALE, AppSettings::general.locale },
         { GeneralOption::THEME, theme_path },
     };

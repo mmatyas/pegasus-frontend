@@ -143,7 +143,7 @@ FocusScope {
                     id: optFullscreen
 
                     label: qsTr("Fullscreen mode") + api.tr
-                    note: qsTr("On some platforms this setting may have no effect") + api.tr
+                    note: qsTr("On some platforms this setting may have no effect.") + api.tr
 
                     checked: api.internal.settings.fullscreen
                     onCheckedChanged: {
@@ -179,6 +179,22 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         root.openGamepadSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optHideMouse
+                }
+
+                ToggleOption {
+                    id: optHideMouse
+
+                    label: qsTr("Enable mouse support") + api.tr
+                    note: qsTr("By default the cursor is visible if there are any pointer devices connected.") + api.tr
+
+                    checked: api.internal.settings.mouseSupport
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.settings.mouseSupport = checked;
                     }
                     onFocusChanged: container.onFocus(this)
 
