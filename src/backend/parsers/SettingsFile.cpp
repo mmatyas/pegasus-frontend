@@ -198,14 +198,13 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
     }
 
     const auto option = sections.takeFirst();
-    if (option != QStringLiteral("enabled")) {
-        log_unknown_key(lineno, key);
+    if (option == QLatin1String("enabled")) {
+        bool& enabled = AppSettings::ext_providers.enabled_mut(provider_it->second);
+        strconv.store_maybe(enabled, val, [&](){ log_needs_bool(lineno, key); });
         return;
     }
 
-    auto& provider = AppSettings::ext_providers.mut(provider_it->second);
-    strconv.store_maybe(provider.enabled, val,
-        [&](){ log_needs_bool(lineno, key); });
+    log_unknown_key(lineno, key);
 }
 
 void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, const QString& val,
@@ -304,7 +303,7 @@ void SaveContext::print_providers(QTextStream& stream) const
         stream << LINE_TEMPLATE.arg(
             category_names.at(ConfigEntryCategory::PROVIDERS),
             entry.first + QStringLiteral(".enabled"),
-            AppSettings::ext_providers[entry.second].enabled ? STR_TRUE : STR_FALSE);
+            AppSettings::ext_providers.enabled(entry.second) ? STR_TRUE : STR_FALSE);
     }
 }
 

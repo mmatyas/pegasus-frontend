@@ -110,7 +110,7 @@ const QVector<QKeySequence>& Keys::operator[](KeyEvent event) const {
 
 
 Providers::Providers()
-    : m_providers {
+    : m_providers_enabled {
         { ExtProvider::ES2, { true } },
         { ExtProvider::STEAM, { true } },
         { ExtProvider::GOG, { true } },
@@ -118,14 +118,11 @@ Providers::Providers()
         { ExtProvider::SKRAPER, { true } },
     }
 {}
-Providers::ExtProviderInfo& Providers::mut(ExtProvider key) {
-    return m_providers.at(key);
+bool Providers::enabled(ExtProvider key) const {
+    return m_providers_enabled.at(key);
 }
-const Providers::ExtProviderInfo& Providers::at(ExtProvider key) const {
-    return m_providers.at(key);
-}
-const Providers::ExtProviderInfo& Providers::operator[](ExtProvider key) const {
-    return at(key);
+bool& Providers::enabled_mut(ExtProvider key) {
+    return m_providers_enabled.at(key);
 }
 
 } // namespace appsettings

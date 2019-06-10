@@ -28,12 +28,12 @@ ProviderEntry::ProviderEntry(ExtProvider id, QString name)
 
 bool ProviderEntry::enabled() const
 {
-    return AppSettings::ext_providers.at(m_id).enabled;
+    return AppSettings::ext_providers.enabled(m_id);
 }
 
 void ProviderEntry::setEnabled(bool value)
 {
-    AppSettings::ext_providers.mut(m_id).enabled = value;
+    AppSettings::ext_providers.enabled_mut(m_id) = value;
 }
 
 

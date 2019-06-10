@@ -67,20 +67,15 @@ private:
 
 
 class Providers {
-    struct ExtProviderInfo {
-        bool enabled;
-    };
-
 public:
     Providers();
     NO_COPY_NO_MOVE(Providers)
 
-    ExtProviderInfo& mut(ExtProvider);
-    const ExtProviderInfo& at(ExtProvider) const;
-    const ExtProviderInfo& operator[](ExtProvider) const;
+    bool enabled(ExtProvider) const;
+    bool& enabled_mut(ExtProvider);
 
 private:
-    HashMap<ExtProvider, ExtProviderInfo, EnumHash> m_providers;
+    HashMap<ExtProvider, bool, EnumHash> m_providers_enabled;
 };
 
 } // namespace appsettings

@@ -177,23 +177,23 @@ ProviderManager::ProviderManager(QObject* parent)
     m_providers.emplace_back(new providers::favorites::Favorites());
     m_providers.emplace_back(new providers::playtime::PlaytimeStats());
 #ifdef WITH_COMPAT_STEAM
-    if (AppSettings::ext_providers.at(ExtProvider::STEAM).enabled)
+    if (AppSettings::ext_providers.enabled(ExtProvider::STEAM))
         m_providers.emplace_back(new providers::steam::SteamProvider());
 #endif
 #ifdef WITH_COMPAT_GOG
-    if (AppSettings::ext_providers.at(ExtProvider::GOG).enabled)
+    if (AppSettings::ext_providers.enabled(ExtProvider::GOG))
         m_providers.emplace_back(new providers::gog::GogProvider());
 #endif
 #ifdef WITH_COMPAT_ES2
-    if (AppSettings::ext_providers.at(ExtProvider::ES2).enabled)
+    if (AppSettings::ext_providers.enabled(ExtProvider::ES2))
         m_providers.emplace_back(new providers::es2::Es2Provider());
 #endif
 #ifdef WITH_COMPAT_ANDROIDAPPS
-    if (AppSettings::ext_providers.at(ExtProvider::ANDROIDAPPS).enabled)
+    if (AppSettings::ext_providers.enabled(ExtProvider::ANDROIDAPPS))
         m_providers.emplace_back(new providers::android::AndroidAppsProvider());
 #endif
 #ifdef WITH_COMPAT_SKRAPER
-    if (AppSettings::ext_providers.at(ExtProvider::SKRAPER).enabled)
+    if (AppSettings::ext_providers.enabled(ExtProvider::SKRAPER))
         m_providers.emplace_back(new providers::skraper::SkraperAssetsProvider());
 #endif
 
