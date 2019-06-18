@@ -113,7 +113,7 @@ Providers::Providers()
     : m_providers_enabled {
         { ExtProvider::ES2, { true } },
         { ExtProvider::STEAM, { true } },
-        { ExtProvider::GOG, { true } },
+        { ExtProvider::GOG, { false } },
         { ExtProvider::ANDROIDAPPS, { true } },
         { ExtProvider::SKRAPER, { true } },
     }
