@@ -65,6 +65,7 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("gog"), ExtProvider::GOG },
         { QStringLiteral("androidapps"), ExtProvider::ANDROIDAPPS },
         { QStringLiteral("skraper"), ExtProvider::SKRAPER },
+        { QStringLiteral("launchbox"), ExtProvider::LAUNCHBOX },
     }
     , str_to_key_opt {
         { QStringLiteral("accept"), KeyEvent::ACCEPT },

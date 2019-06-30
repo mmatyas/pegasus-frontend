@@ -41,4 +41,8 @@
   #include "providers/skraper/SkraperAssetsProvider.h"
 #endif
 
+#ifdef WITH_COMPAT_LAUNCHBOX
+  #include "providers/launchbox/LaunchboxProvider.h"
+#endif
+
 // TODO: return std::vector<Provider*>

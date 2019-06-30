@@ -196,6 +196,10 @@ ProviderManager::ProviderManager(QObject* parent)
     if (AppSettings::ext_providers.enabled(ExtProvider::SKRAPER))
         m_providers.emplace_back(new providers::skraper::SkraperAssetsProvider());
 #endif
+#ifdef WITH_COMPAT_LAUNCHBOX
+    if (AppSettings::ext_providers.enabled(ExtProvider::LAUNCHBOX))
+        m_providers.emplace_back(new providers::launchbox::LaunchboxProvider());
+#endif
 
     for (const auto& provider : m_providers) {
         connect(provider.get(), &providers::Provider::gameCountChanged,
