@@ -116,7 +116,7 @@ Providers::Providers()
         { ExtProvider::GOG, false },
         { ExtProvider::ANDROIDAPPS, true },
         { ExtProvider::SKRAPER, true },
-        { ExtProvider::LAUNCHBOX, true },
+        { ExtProvider::LAUNCHBOX, false },
     }
 {}
 bool Providers::enabled(ExtProvider key) const {
