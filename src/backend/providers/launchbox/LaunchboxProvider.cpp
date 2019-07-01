@@ -103,7 +103,7 @@ void find_assets(const QString& lb_dir, const QString& collection_name,
     }
 }
 
-void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString>& fields,
+void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
                        const HashMap<QString, QString>& emulators)
 {
     for (const auto& pair : fields) {
@@ -161,7 +161,7 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString>&
     game.launch_workdir = QLatin1String("{file.dir}");
 }
 
-void store_game(const QFileInfo& finfo, const HashMap<GameField, QString>& fields,
+void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
                 const HashMap<QString, QString>& emulators,
                 providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
@@ -187,7 +187,7 @@ void xml_read_game(const QString& lb_dir, QXmlStreamReader& xml,
                    const HashMap<QString, GameField>& field_map, const HashMap<QString, QString>& emulators,
                    providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
-    HashMap<GameField, QString> game_values;
+    HashMap<GameField, QString, EnumHash> game_values;
 
     while (xml.readNextStartElement()) {
         const auto field_it = field_map.find(xml.name().toString());
