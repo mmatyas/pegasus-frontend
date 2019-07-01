@@ -111,12 +111,12 @@ const QVector<QKeySequence>& Keys::operator[](KeyEvent event) const {
 
 Providers::Providers()
     : m_providers_enabled {
-        { ExtProvider::ES2, { true } },
-        { ExtProvider::STEAM, { true } },
-        { ExtProvider::GOG, { false } },
-        { ExtProvider::ANDROIDAPPS, { true } },
-        { ExtProvider::SKRAPER, { true } },
-        { ExtProvider::LAUNCHBOX, { true } },
+        { ExtProvider::ES2, true },
+        { ExtProvider::STEAM, true },
+        { ExtProvider::GOG, false },
+        { ExtProvider::ANDROIDAPPS, true },
+        { ExtProvider::SKRAPER, true },
+        { ExtProvider::LAUNCHBOX, true },
     }
 {}
 bool Providers::enabled(ExtProvider key) const {
