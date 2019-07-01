@@ -19,9 +19,12 @@
 
 #include "Paths.h"
 #include "LocaleUtils.h"
+#include "types/AssetType.h"
+#include "utils/StdHelpers.h"
 
 #include <QDebug>
 #include <QDirIterator>
+#include <QStringBuilder>
 #include <QXmlStreamReader>
 #include <unordered_set>
 
@@ -40,6 +43,64 @@ enum class GameField : unsigned char {
     GENRE,
     STARS,
 };
+
+// FIXME: Very slow!
+HashMap<size_t, modeldata::Game>::iterator
+find_game_by_title(const QString& title,
+                   const std::vector<size_t>& coll_childs, HashMap<size_t, modeldata::Game>& games)
+{
+    const auto child_it = std::find_if(coll_childs.cbegin(), coll_childs.cend(),
+        [&title, &games](const size_t gameid){
+            Q_ASSERT(games.find(gameid) != games.cend());
+            return games.at(gameid).title == title;
+        });
+
+    if (child_it != coll_childs.cend())
+        return games.find(*child_it);
+
+    return games.end();
+}
+
+void find_assets(const QString& lb_dir, const QString& collection_name,
+                 const std::vector<std::pair<QString, AssetType>>& assetdir_map,
+                 providers::SearchContext& sctx)
+{
+    const auto coll_childs_it = sctx.collection_childs.find(collection_name);
+    if (coll_childs_it == sctx.collection_childs.cend())
+        return;
+
+    std::vector<size_t>& collection_childs = coll_childs_it->second;
+
+
+    const QString images_root = lb_dir % QLatin1String("Images/") % collection_name % QChar('/');
+
+    // constexpr auto dirs_only = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto recursive = QDirIterator::Subdirectories;
+
+    for (const auto& assetdir_pair : assetdir_map) {
+        const QString assetdir_path = images_root + assetdir_pair.first;
+        const AssetType assetdir_type = assetdir_pair.second;
+
+        std::vector<QString> paths; // for manual sorting
+        QDirIterator file_it(assetdir_path, files_only, recursive);
+        while (file_it.hasNext())
+            paths.emplace_back(file_it.next());
+
+        VEC_SORT(paths);
+        for (const QString& path : paths) {
+            const QString basename = QFileInfo(path).completeBaseName();
+            const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
+
+            const auto it = find_game_by_title(game_title, collection_childs, sctx.games);
+            if (it == sctx.games.cend())
+                continue;
+
+            modeldata::Game& game = it->second;
+            game.assets.addFileMaybe(assetdir_type, path);
+        }
+    }
+}
 
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString>& fields)
 {
@@ -189,7 +250,7 @@ void xml_read_root(const QString& lb_dir, QXmlStreamReader& xml, const HashMap<Q
 }
 
 void process_xml(const QString& lb_dir, const QString& xml_path, const HashMap<QString, GameField> field_map,
-                 providers::SearchContext& sctx)
+                 const QString collection_name, providers::SearchContext& sctx)
 {
     Q_ASSERT(!lb_dir.isEmpty());
     Q_ASSERT(!xml_path.isEmpty());
@@ -199,8 +260,6 @@ void process_xml(const QString& lb_dir, const QString& xml_path, const HashMap<Q
         qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(xml_path);
         return;
     }
-
-    const QString collection_name = QFileInfo(xml_path).baseName();
 
     QXmlStreamReader xml(&xml_file);
     xml_read_root(lb_dir, xml, field_map, collection_name, sctx);
@@ -273,8 +332,41 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         { QStringLiteral("Genre"), GameField::GENRE },
         { QStringLiteral("CommunityStarRating"), GameField::STARS },
     };
-    for (const QString& path : xml_paths)
-        process_xml(lb_dir, path, game_field_map, sctx);
+    const std::vector<std::pair<QString, AssetType>> assetdir_map { // ordered by priority
+        { QStringLiteral("Box - Front"), AssetType::BOX_FRONT },
+        { QStringLiteral("Box - Front - Reconstructed"), AssetType::BOX_FRONT },
+        { QStringLiteral("Fanart - Box - Front"), AssetType::BOX_FRONT },
+
+        { QStringLiteral("Box - Back"), AssetType::BOX_BACK },
+        { QStringLiteral("Box - Back - Reconstructed"), AssetType::BOX_BACK },
+        { QStringLiteral("Fanart - Box - Back"), AssetType::BOX_BACK },
+
+        { QStringLiteral("Arcade - Marquee"), AssetType::ARCADE_MARQUEE },
+        { QStringLiteral("Banner"), AssetType::ARCADE_MARQUEE },
+
+        { QStringLiteral("Cart - Front"), AssetType::CARTRIDGE },
+        { QStringLiteral("Disc"), AssetType::CARTRIDGE },
+        { QStringLiteral("Fanart - Cart - Front"), AssetType::CARTRIDGE },
+        { QStringLiteral("Fanart - Disc"), AssetType::CARTRIDGE },
+
+        { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOTS },
+
+        { QStringLiteral("Advertisement Flyer - Front"), AssetType::POSTER },
+        { QStringLiteral("Arcade - Control Panel"), AssetType::ARCADE_PANEL },
+        { QStringLiteral("Clear Logo"), AssetType::LOGO },
+        { QStringLiteral("Fanart - Background"), AssetType::BACKGROUND },
+        { QStringLiteral("Steam Banner"), AssetType::UI_STEAMGRID },
+    };
+
+    for (const QString& path : xml_paths) {
+        const QString collection_name = QFileInfo(path).baseName();
+        process_xml(lb_dir, path, game_field_map, collection_name, sctx);
+        find_assets(lb_dir, collection_name, assetdir_map, sctx);
+    }
 }
 
 } // namespace steam
