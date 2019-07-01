@@ -41,13 +41,64 @@ enum class GameField : unsigned char {
     STARS,
 };
 
-void store_game(const QFileInfo& finfo, const HashMap<GameField, QString>&,
+void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString>& fields)
+{
+    for (const auto& pair : fields) {
+        switch (pair.first) {
+            case GameField::TITLE:
+                game.title = pair.second;
+                break;
+            case GameField::NOTES:
+                if (game.description.isEmpty())
+                    game.description = pair.second;
+                break;
+            case GameField::DEVELOPER:
+                game.developers.append(pair.second);
+                game.developers.removeDuplicates();
+                break;
+            case GameField::PUBLISHER:
+                game.publishers.append(pair.second);
+                game.publishers.removeDuplicates();
+                break;
+            case GameField::GENRE:
+                game.genres.append(pair.second);
+                game.genres.removeDuplicates();
+                break;
+            case GameField::RELEASE:
+                if (!game.release_date.isValid())
+                    game.release_date = QDate::fromString(pair.second, Qt::ISODate);
+                break;
+            case GameField::STARS:
+                if (game.rating < 0.0001f) {
+                    bool ok = false;
+                    const float fval = pair.second.toFloat(&ok);
+                    if (ok && fval > game.rating)
+                        game.rating = fval;
+                }
+                break;
+            case GameField::PLAYMODE:
+                for (const QStringRef& ref : pair.second.splitRef(QChar(';')))
+                    game.genres.append(ref.trimmed().toString());
+
+                game.genres.removeDuplicates();
+                break;
+            case GameField::PATH:
+                break;
+            default:
+                Q_UNREACHABLE();
+        }
+    }
+}
+
+void store_game(const QFileInfo& finfo, const HashMap<GameField, QString>& fields,
                 providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
     const QString can_path = finfo.canonicalFilePath();
 
     if (!sctx.path_to_gameid.count(can_path)) {
         modeldata::Game game(finfo);
+
+        store_game_fields(game, fields);
         // FIXME: launch cmd
 
         const size_t game_id = sctx.games.size();
@@ -220,7 +271,7 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         { QStringLiteral("Notes"), GameField::NOTES },
         { QStringLiteral("PlayMode"), GameField::PLAYMODE },
         { QStringLiteral("Genre"), GameField::GENRE },
-        { QStringLiteral("StarsFloat"), GameField::STARS },
+        { QStringLiteral("CommunityStarRating"), GameField::STARS },
     };
     for (const QString& path : xml_paths)
         process_xml(lb_dir, path, game_field_map, sctx);
