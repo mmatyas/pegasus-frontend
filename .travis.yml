@@ -38,7 +38,6 @@ jobs:
   - env: TARGET=rpi1-static
   - env: TARGET=rpi2-static
   - env: TARGET=rpi3-static
-  - env: TARGET=rpi4-static
 
   # Collect and deploy artifacts
   - stage: deploy
