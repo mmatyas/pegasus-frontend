@@ -4,20 +4,16 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-android
     environment:
-      - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-      - QT_TARGET: qt5124_android
+      - QT_VERSION: qt5124
+      - QT_TARGET: android
       - ANDROID_NDK_ROOT: /opt/android-ndk
     steps:
-      - run: git clone https://github.com/mmatyas/pegasus-frontend .
-      - run: git checkout -qf ${CIRCLE_SHA1}
-      - run: git submodule update --init --recursive
-      - run: curl -L ${TOOLS_URL}/${QT_TARGET}.txz | tar xJf - -C /opt/
-      - run: /opt/${QT_TARGET}/bin/qmake .
-      - run: make
-      - run: make install INSTALL_ROOT=${PWD}/installdir
-      - run: curl -LO ${TOOLS_URL}/aks.enc
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: curl -LO https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/aks.enc
       - run: openssl aes-256-cbc -k "${AKS_ENC_KEY}" -in aks.enc -out aks -d
-      - run: /opt/${QT_TARGET}/bin/androiddeployqt
+      - run: /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
           --input src/app/android-libpegasus-fe.so-deployment-settings.json
           --output ${PWD}/installdir
           --android-platform android-22
@@ -26,58 +22,44 @@ jobs:
           --storepass "${AKS_STOREPASS}"
           --keypass "${AKS_KEYPASS}"
       # Deploy
-      - run: mkdir dist
       - run: cp
           installdir/build/outputs/apk/release/installdir-release-signed.apk
           dist/pegasus-fe_$(git describe --always)_android.apk
-      - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
-      - run: bash ./upload.sh dist/*.apk
+      - run: .circleci/release.sh
   mingw:
     docker:
       - image: mmatyas/pegasus-qt-mingw
     environment:
-      - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-      - QT_TARGET: qt5124_win32-mingw-static
+      - QT_VERSION: qt5124
+      - QT_TARGET: win32-mingw-static
     steps:
-      - run: git clone https://github.com/mmatyas/pegasus-frontend .
-      - run: git checkout -qf ${CIRCLE_SHA1}
-      - run: git submodule update --init --recursive
-      - run: curl -L ${TOOLS_URL}/${QT_TARGET}.txz | tar xJf - -C /opt/
-      - run: /opt/${QT_TARGET}_hosttools/bin/qmake .
-      - run: make
-      - run: make install INSTALL_ROOT=${PWD}/installdir
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
       - run: i686-w64-mingw32-objdump -p installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe | grep 'DLL Name' | sort
       # Deploy
-      - run: mkdir dist
       - run: zip -j dist/pegasus-fe_$(git describe --always)_win-mingw-static.zip
           installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe
           README.md
           LICENSE.md
-      - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
-      - run: bash ./upload.sh dist/*.zip
+      - run: .circleci/release.sh
   buster-pi4:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-      - QT_TARGET: qt5124_rpi4-static
+      - QT_VERSION: qt5124
+      - QT_TARGET: rpi4-static
     steps:
-      - run: git clone https://github.com/mmatyas/pegasus-frontend .
-      - run: git checkout -qf ${CIRCLE_SHA1}
-      - run: git submodule update --init --recursive
-      - run: curl -L ${TOOLS_URL}/${QT_TARGET}.txz | tar xJf - -C /opt/
-      - run: /opt/${QT_TARGET}_hosttools/bin/qmake .
-      - run: make
-      - run: make install INSTALL_ROOT=${PWD}/installdir
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
       - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
       # Deploy
-      - run: mkdir dist
       - run: zip -j dist/pegasus-fe_$(git describe --always)_rpi4-static.zip
           installdir/opt/pegasus-frontend/pegasus-fe
           README.md
           LICENSE.md
-      - run: curl -L -O https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
-      - run: bash ./upload.sh dist/*.zip
+      - run: .circleci/release.sh
 workflows:
   version: 2
   all:
