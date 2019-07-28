@@ -9,14 +9,14 @@ branches:
 
 env:
   global:
-    - QT_VER=qt5124
+    - QT_VER=5.12.4
 
 git:
   depth: 175
 
 
 install: .travis/install.sh
-script: .travis/build.sh && .travis/stage.sh
+script: .travis/script.sh
 deploy:
   - provider: bintray
     file: "$TRAVIS_BUILD_DIR/.travis/bintray_deb.json"
@@ -49,7 +49,7 @@ jobs:
   - stage: test
     name: Coverage
     env: TARGET=x11-static RUN_COV=1
-    script: .travis/build.sh
+    script: .travis/script.sh
     deploy: null
 
 services:

@@ -3,17 +3,13 @@
 set -o errexit
 set -o nounset
 
-if [[ -z ${QT_VER-} || -z ${TARGET-} ]]; then
-  echo "Please define QT_VER and TARGET first"
-  exit 1
-fi
-if [[ $TARGET != x11* ]]; then
-  echo "This script support X11 only at the moment"
+if [[ -z "${QT_HOSTDIR-}" ]]; then
+  echo "Please define QT_HOSTDIR first"
   exit 1
 fi
 
 
-/opt/${QT_VER}_${TARGET}_hosttools/bin/qmake .. \
+${QT_HOSTDIR}/bin/qmake .. \
   QMAKE_CXXFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
   QMAKE_LDFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
   LIBS+="-lgcov" \
