@@ -10,6 +10,7 @@ build*/
 !.travis.yml
 !.appveyor.yml
 !.circleci
+!.travis
 
 # ignore IDE project files
 *.pro.user

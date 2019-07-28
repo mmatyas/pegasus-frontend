@@ -22,7 +22,7 @@ find -name *.qml -exec /opt/${QT_VER}_${TARGET}_hosttools/bin/qmllint {} \;
 echo "Building"
 mkdir build && cd build
 if [[ -n ${RUN_COV-} ]]; then
-  source ../etc/ci/build-lcov.sh
+  source build_lcov.sh
   (cd .. && coveralls-lcov build/coverage.clean)
 else
   /opt/${QT_VER}_${TARGET}_hosttools/bin/qmake .. \
