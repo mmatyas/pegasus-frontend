@@ -59,10 +59,13 @@ public:
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
 
+    Q_INVOKABLE void reloadProviders();
+
 signals:
     void fullscreenChanged();
     void mouseSupportChanged();
     void gameDirsChanged();
+    void providerReloadingRequested();
 };
 
 } // namespace model

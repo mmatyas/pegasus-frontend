@@ -60,6 +60,7 @@ signals:
     void localeChanged();
 
     // Api events for QML -- no const here
+    void eventLoadingStarted();
     void eventSelectGameFile(model::Game* game);
     void eventLaunchError(QString msg);
 

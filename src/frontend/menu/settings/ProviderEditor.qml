@@ -16,11 +16,14 @@
 
 
 import "common"
+import "../../dialogs"
 import QtQuick 2.6
 
 
 FocusScope {
     id: root
+
+    property bool mSettingsChanged: false
 
     signal close
 
@@ -31,10 +34,17 @@ FocusScope {
     opacity: focus ? 1.0 : 0.0
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
+    function closeMaybe() {
+        if (mSettingsChanged)
+            reloadDialog.focus = true;
+        else
+            root.close();
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
-            root.close();
+            root.closeMaybe();
         }
     }
 
@@ -49,7 +59,7 @@ FocusScope {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onClicked: root.close()
+            onClicked: root.closeMaybe()
         }
     }
 
@@ -176,7 +186,14 @@ FocusScope {
 
                 focus: true
                 checked: model.enabled
-                onCheckedChanged: model.enabled = checked
+                onCheckedChanged: {
+                    model.enabled = checked;
+                    if (isComplete)
+                        root.mSettingsChanged = true;
+                }
+
+                property bool isComplete: false
+                Component.onCompleted: isComplete = true
             }
 
             MouseArea {
@@ -192,5 +209,20 @@ FocusScope {
         }
     }
 
-    NeedsRestartNotice {}
+    GenericOkCancelDialog {
+        id: reloadDialog
+
+        title: qsTr("Reload") + api.tr
+        message: qsTr("Would you like to reload the game list now? This may take some time.") + api.tr
+
+        onAccept: {
+            list.focus = true;
+            root.mSettingsChanged = false;
+            api.internal.settings.reloadProviders();
+        }
+        onCancel: {
+            list.focus = true;
+            root.close();
+        }
+    }
 }

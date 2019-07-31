@@ -105,6 +105,8 @@ ApiObject::ApiObject(QObject* parent)
             &m_keys, &model::Keys::refresh_keys);
     connect(&m_internal.settings().themes(), &model::Themes::themeChanged,
             this, &ApiObject::onThemeChanged);
+    connect(&m_internal.settings(), &model::Settings::providerReloadingRequested,
+            this, &ApiObject::startScanning);
 
     connect(&m_providerman, &ProviderManager::gameCountChanged,
             &m_internal.meta(), &model::Meta::onGameCountUpdate);
@@ -120,6 +122,12 @@ ApiObject::ApiObject(QObject* parent)
 
 void ApiObject::startScanning()
 {
+    m_internal.meta().startLoading();
+    emit eventLoadingStarted();
+
+    m_collections.clear();
+    m_allGames.clear();
+
     m_providerman.startStaticSearch(m_providerman_sctx);
 }
 

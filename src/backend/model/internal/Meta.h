@@ -38,9 +38,11 @@ class Meta : public QObject {
 public:
     explicit Meta(QObject* parent = nullptr);
 
+    void startLoading();
     void onUiReady();
 
 public:
+    Q_INVOKABLE void resetLoadingState();
     Q_INVOKABLE void clearQMLCache();
 
     bool isLoading() const { return m_loading; }

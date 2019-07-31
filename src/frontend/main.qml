@@ -189,6 +189,9 @@ Window {
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
+        onEventLoadingStarted: {
+            splashScreen.focus = true;
+        }
     }
 
 
@@ -196,18 +199,15 @@ Window {
         id: splashScreen
         focus: true
         enabled: false
+        visible: focus
 
         property bool dataLoading: api.internal.meta.loading
         property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
 
         function hideMaybe() {
-            if (visible && !dataLoading && !skinLoading) {
-                visible = false;
+            if (focus && !dataLoading && !skinLoading) {
                 content.focus = true;
-
-                // break bindings
-                dataLoading = false;
-                skinLoading = false;
+                api.internal.meta.resetLoadingState();
             }
         }
 

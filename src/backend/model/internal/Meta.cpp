@@ -34,7 +34,21 @@ Meta::Meta(QObject* parent)
     , m_loading(true)
     , m_loading_progress(0.f)
     , m_game_count(0)
+{}
+
+void Meta::resetLoadingState()
 {
+    m_loading_progress = 0.f;
+    m_game_count = 0;
+
+    emit loadingProgressChanged();
+    emit gameCountChanged();
+}
+
+void Meta::startLoading()
+{
+    m_loading = true;
+    emit loadingChanged();
 }
 
 void Meta::clearQMLCache()

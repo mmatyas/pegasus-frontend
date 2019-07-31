@@ -175,4 +175,9 @@ void Settings::removeGameDirs(const QVariantList& idx_var_list)
     emit gameDirsChanged();
 }
 
+void Settings::reloadProviders()
+{
+    emit providerReloadingRequested();
+}
+
 } // namespace model
