@@ -42,13 +42,18 @@ namespace providers {
 namespace favorites {
 
 Favorites::Favorites(QObject* parent)
-    : Favorites(default_db_path(), parent)
+    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), INTERNAL | PROVIDES_DYNDATA, parent)
 {}
 
-Favorites::Favorites(QString db_path, QObject* parent)
-    : Provider(QStringLiteral("Favorites"), PROVIDES_DYNDATA, parent)
-    , m_db_path(std::move(db_path))
-{}
+void Favorites::load() {
+    load_with_dbpath(default_db_path());
+}
+void Favorites::load_with_dbpath(QString db_path) {
+    m_db_path = std::move(db_path);
+}
+void Favorites::unload() {
+    m_db_path.clear();
+}
 
 void Favorites::findDynamicData(const QVector<model::Collection*>&,
                                 const QVector<model::Game*>&,

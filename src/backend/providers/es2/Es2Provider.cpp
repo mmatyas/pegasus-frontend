@@ -23,7 +23,7 @@ namespace es2 {
 
 
 Es2Provider::Es2Provider(QObject* parent)
-    : Provider(QStringLiteral("EmulationStation"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
+    : Provider(QLatin1String("es2"), QStringLiteral("EmulationStation"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
     , systems(this)
     , metadata(this)
 {

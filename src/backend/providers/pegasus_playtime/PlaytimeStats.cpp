@@ -182,13 +182,18 @@ namespace providers {
 namespace playtime {
 
 PlaytimeStats::PlaytimeStats(QObject* parent)
-    : PlaytimeStats(default_db_path(), parent)
+    : Provider(QLatin1String("pegasus_playtime"), QStringLiteral("Playtime"), INTERNAL | PROVIDES_DYNDATA, parent)
 {}
 
-PlaytimeStats::PlaytimeStats(QString db_path, QObject* parent)
-    : Provider(QStringLiteral("Playtime"), PROVIDES_DYNDATA, parent)
-    , m_db_path(std::move(db_path))
-{}
+void PlaytimeStats::load() {
+    load_with_dbpath(default_db_path());
+}
+void PlaytimeStats::load_with_dbpath(QString db_path) {
+    m_db_path = std::move(db_path);
+}
+void PlaytimeStats::unload() {
+    m_db_path.clear();
+}
 
 void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
                                     const QVector<model::Game*>&,

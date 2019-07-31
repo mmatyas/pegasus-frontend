@@ -59,13 +59,18 @@ namespace providers {
 namespace pegasus {
 
 PegasusProvider::PegasusProvider(QObject* parent)
-    : PegasusProvider(get_game_dirs(), parent)
+    : Provider(QLatin1String("pegasus_metafiles"), QStringLiteral("Metafiles"), INTERNAL | PROVIDES_GAMES | PROVIDES_ASSETS, parent)
 {}
 
-PegasusProvider::PegasusProvider(std::vector<QString> game_dirs, QObject* parent)
-    : Provider(QStringLiteral("Metafiles"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
-    , m_game_dirs(std::move(game_dirs))
-{}
+void PegasusProvider::load() {
+    load_with_gamedirs(get_game_dirs());
+}
+void PegasusProvider::load_with_gamedirs(std::vector<QString> game_dirs) {
+    m_game_dirs = std::move(game_dirs);
+}
+void PegasusProvider::unload() {
+    m_game_dirs.clear();
+}
 
 void PegasusProvider::findLists(SearchContext& ctx)
 {

@@ -30,7 +30,10 @@ class Favorites : public Provider {
 
 public:
     explicit Favorites(QObject* parent = nullptr);
-    explicit Favorites(QString db_path, QObject* parent = nullptr);
+
+    void load() final;
+    void unload() final;
+    void load_with_dbpath(QString);
 
     void findDynamicData(const QVector<model::Collection*>&,
                          const QVector<model::Game*>&,
@@ -42,7 +45,7 @@ signals:
     void finishedWriting();
 
 private:
-    const QString m_db_path;
+    QString m_db_path;
 
     QStringList m_pending_task;
     QStringList m_active_task;

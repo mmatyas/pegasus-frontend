@@ -408,7 +408,7 @@ namespace providers {
 namespace launchbox {
 
 LaunchboxProvider::LaunchboxProvider(QObject* parent)
-    : Provider(QStringLiteral("LaunchBox"), PROVIDES_GAMES, parent)
+    : Provider(QLatin1String("launchbox"), QStringLiteral("LaunchBox"), PROVIDES_GAMES, parent)
 {}
 
 void LaunchboxProvider::findLists(providers::SearchContext& sctx)

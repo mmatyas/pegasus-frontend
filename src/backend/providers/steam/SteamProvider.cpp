@@ -22,7 +22,7 @@ namespace providers {
 namespace steam {
 
 SteamProvider::SteamProvider(QObject* parent)
-    : Provider(QStringLiteral("Steam"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
+    : Provider(QLatin1String("steam"), QStringLiteral("Steam"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
     , gamelist(this)
     , metadata(this)
 {

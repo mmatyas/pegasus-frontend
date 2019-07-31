@@ -20,12 +20,19 @@
 
 namespace providers {
 
-Provider::Provider(QString name, uint8_t flags, QObject* parent)
+Provider::Provider(QLatin1String codename, QString name, uint8_t flags, QObject* parent)
     : QObject(parent)
+    , m_codename(std::move(codename))
     , m_provider_name(std::move(name))
     , m_provider_flags(flags)
+    , m_enabled(true)
 {}
 
 Provider::~Provider() = default;
+
+void Provider::setEnabled(bool val)
+{
+    m_enabled = val;
+}
 
 } // namespace providers

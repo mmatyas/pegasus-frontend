@@ -33,7 +33,8 @@ private slots:
 void bench_PegasusProvider::find_in_empty_dir()
 {
     providers::SearchContext sctx;
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/empty")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/empty")});
 
     QBENCHMARK {
         QTest::ignoreMessage(QtWarningMsg, "Metafiles: No metadata file found in `:/empty`, directory ignored");
@@ -44,7 +45,8 @@ void bench_PegasusProvider::find_in_empty_dir()
 void bench_PegasusProvider::find_in_filled_dir()
 {
     providers::SearchContext sctx;
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/filled")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/filled")});
 
     QBENCHMARK {
         QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/filled/collections.txt`");

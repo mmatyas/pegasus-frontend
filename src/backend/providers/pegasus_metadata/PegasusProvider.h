@@ -31,7 +31,10 @@ class PegasusProvider : public Provider {
 
 public:
     explicit PegasusProvider(QObject* parent = nullptr);
-    explicit PegasusProvider(std::vector<QString> game_dirs, QObject* parent = nullptr);
+
+    void load() final;
+    void unload() final;
+    void load_with_gamedirs(std::vector<QString>);
 
     void findLists(SearchContext&) final;
     void findStaticData(SearchContext&) final;

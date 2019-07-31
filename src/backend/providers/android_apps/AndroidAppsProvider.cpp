@@ -29,7 +29,7 @@ namespace providers {
 namespace android {
 
 AndroidAppsProvider::AndroidAppsProvider(QObject* parent)
-    : Provider(QStringLiteral("Android Apps"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
+    : Provider(QLatin1String("androidapps"), QStringLiteral("Android Apps"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
 {}
 
 void AndroidAppsProvider::findLists(SearchContext& sctx)

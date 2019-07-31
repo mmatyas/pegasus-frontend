@@ -55,7 +55,7 @@ SkraperAssetsProvider::SkraperDir::SkraperDir(AssetType type, QString dir)
 
 
 SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
-    : Provider(QStringLiteral("Skraper"), PROVIDES_ASSETS, parent)
+    : Provider(QLatin1String("skraper"), QStringLiteral("Skraper Assets"), PROVIDES_ASSETS, parent)
     , m_asset_dirs {
         // NOTE: The entries are ordered by priority
         { AssetType::ARCADE_MARQUEE, QStringLiteral("screenmarquee") },

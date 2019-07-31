@@ -59,7 +59,8 @@ void test_FavoriteDB::write()
     tmp_file.close();
 
 
-    providers::favorites::Favorites favorite_db(db_path);
+    providers::favorites::Favorites favorite_db;
+    favorite_db.load_with_dbpath(db_path);
 
     QSignalSpy spy_start(&favorite_db, &providers::favorites::Favorites::startedWriting);
     QSignalSpy spy_end(&favorite_db, &providers::favorites::Favorites::finishedWriting);
@@ -114,7 +115,8 @@ void test_FavoriteDB::rewrite_empty()
     tmp_file.close();
 
 
-    providers::favorites::Favorites favorite_db(db_path);
+    providers::favorites::Favorites favorite_db;
+    favorite_db.load_with_dbpath(db_path);
     QSignalSpy spy_end(&favorite_db, &providers::favorites::Favorites::finishedWriting);
     QVERIFY(spy_end.isValid());
 
@@ -163,7 +165,8 @@ void test_FavoriteDB::read()
     const QString db_path = tmp_file.fileName();
     tmp_file.close();
 
-    providers::favorites::Favorites favorite_db(db_path);
+    providers::favorites::Favorites favorite_db;
+    favorite_db.load_with_dbpath(db_path);
 
     HashMap<QString, model::GameFile*> path_map;
     for (const model::Game* const game : games) {

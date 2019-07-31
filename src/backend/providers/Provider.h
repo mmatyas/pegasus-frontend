@@ -43,17 +43,24 @@ struct SearchContext {
 
 
 static constexpr uint8_t
-    PROVIDES_GAMES = (1 << 0),
-    PROVIDES_ASSETS = (1 << 1),
-    PROVIDES_DYNDATA = (1 << 2);
+    INTERNAL = (1 << 0),
+    PROVIDES_GAMES = (1 << 1),
+    PROVIDES_ASSETS = (1 << 2),
+    PROVIDES_DYNDATA = (1 << 3);
 
 
 class Provider : public QObject {
     Q_OBJECT
 
 public:
-    explicit Provider(QString name, uint8_t flags, QObject* parent = nullptr);
+    explicit Provider(QLatin1String codename, QString name, uint8_t flags, QObject* parent = nullptr);
     virtual ~Provider();
+
+    bool enabled() const { return m_enabled; }
+    void setEnabled(bool);
+
+    virtual void load() {}
+    virtual void unload() {}
 
     /// Initialization first stage:
     /// Find all games and collections.
@@ -76,6 +83,7 @@ public:
     virtual void onGameFinished(model::GameFile* const) {}
 
     // common
+    const QLatin1String& codename() const { return m_codename; }
     const QString& name() const { return m_provider_name; }
     uint8_t flags() const { return m_provider_flags; }
 
@@ -83,8 +91,11 @@ signals:
     void gameCountChanged(int);
 
 private:
+    const QLatin1String m_codename;
     const QString m_provider_name;
     const uint8_t m_provider_flags;
+
+    bool m_enabled;
 };
 
 } // namespace providers

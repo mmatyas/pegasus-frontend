@@ -74,7 +74,8 @@ void test_Playtime::read()
     QFile::copy(QStringLiteral(":/data.db"), db_path);
 
 
-    PlaytimeStats playtime(db_path);
+    PlaytimeStats playtime;
+    playtime.load_with_dbpath(db_path);
     playtime.findDynamicData(collections, games, path_map);
 
     QCOMPARE(games.at(0)->playCount(), 4);
@@ -93,7 +94,8 @@ void test_Playtime::write()
     QVERIFY(db_file.open());
 
 
-    PlaytimeStats playtime(db_file.fileName());
+    PlaytimeStats playtime;
+    playtime.load_with_dbpath(db_file.fileName());
 
     QSignalSpy spy_start(&playtime, &providers::playtime::PlaytimeStats::startedWriting);
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
@@ -121,7 +123,8 @@ void test_Playtime::write_queue()
     QVERIFY(db_file.open());
 
 
-    PlaytimeStats playtime(db_file.fileName());
+    PlaytimeStats playtime;
+    playtime.load_with_dbpath(db_file.fileName());
 
     QSignalSpy spy_start(&playtime, &providers::playtime::PlaytimeStats::startedWriting);
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);

@@ -22,10 +22,12 @@ namespace providers {
 namespace gog {
 
 GogProvider::GogProvider(QObject* parent)
-    : Provider(QStringLiteral("GOG"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
+    : Provider(QLatin1String("gog"), QStringLiteral("GOG"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
     , gamelist(this)
     , metadata(this)
 {
+    setEnabled(false); // issue #464
+
     connect(&gamelist, &Gamelist::gameCountChanged,
             this, &GogProvider::gameCountChanged);
 }

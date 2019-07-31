@@ -31,7 +31,10 @@ class PlaytimeStats : public Provider {
 
 public:
     explicit PlaytimeStats(QObject* parent = nullptr);
-    explicit PlaytimeStats(QString db_path, QObject* parent = nullptr);
+
+    void load() final;
+    void unload() final;
+    void load_with_dbpath(QString);
 
     void findDynamicData(const QVector<model::Collection*>&,
                          const QVector<model::Game*>&,
@@ -44,7 +47,7 @@ signals:
     void finishedWriting();
 
 private:
-    const QString m_db_path;
+    QString m_db_path;
 
     QDateTime m_last_launch_time;
 

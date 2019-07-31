@@ -91,7 +91,8 @@ void test_PegasusProvider::empty()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtWarningMsg, "Metafiles: No metadata file found in `:/empty`, directory ignored");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/empty")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/empty")});
     provider.findLists(ctx);
 
     QVERIFY(ctx.games.empty());
@@ -104,7 +105,8 @@ void test_PegasusProvider::simple()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/simple/metadata.pegasus.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/simple")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/simple")});
     provider.findLists(ctx);
 
     // finds the correct collections
@@ -156,7 +158,8 @@ void test_PegasusProvider::with_meta()
     QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 68: duplicate file `horse.ext`");
     QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 69: unrecognized game property `asd`, ignored");
 
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/with_meta")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/with_meta")});
     provider.findLists(ctx);
 
     QCOMPARE(static_cast<int>(ctx.collections.size()), 1);
@@ -296,7 +299,8 @@ void test_PegasusProvider::asset_search()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/asset_search/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/asset_search")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/asset_search")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
 
@@ -334,7 +338,8 @@ void test_PegasusProvider::asset_search_by_title()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/asset_search_by_title/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/asset_search_by_title")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/asset_search_by_title")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
 
@@ -358,7 +363,8 @@ void test_PegasusProvider::custom_assets()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/custom_assets/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_assets")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/custom_assets")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
 
@@ -381,7 +387,8 @@ void test_PegasusProvider::custom_assets_multi()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/custom_assets_multi/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_assets_multi")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/custom_assets_multi")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
 
@@ -411,7 +418,8 @@ void test_PegasusProvider::custom_directories()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/custom_dirs/coll/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/custom_dirs/coll")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/custom_dirs/coll")});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
 
@@ -441,7 +449,8 @@ void test_PegasusProvider::multifile()
     providers::SearchContext ctx;
 
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/multifile/metadata.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/multifile")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/multifile")});
     provider.findLists(ctx);
 
     QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
@@ -520,7 +529,8 @@ void test_PegasusProvider::nonASCII()
 
     const QString ignored_msg = "Metafiles: found `" + tempdir.path() + "/metadata.txt`";
     QTest::ignoreMessage(QtInfoMsg, ignored_msg.toLocal8Bit());
-    providers::pegasus::PegasusProvider provider({tempdir.path()});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({tempdir.path()});
     provider.findLists(ctx);
     provider.findStaticData(ctx);
 
@@ -556,7 +566,8 @@ void test_PegasusProvider::separate_media_dirs()
 
     providers::SearchContext ctx;
     QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/separate_media_dirs/metadata/metadata.pegasus.txt`");
-    providers::pegasus::PegasusProvider provider({QStringLiteral(":/separate_media_dirs/metadata")});
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/separate_media_dirs/metadata")});
 
     provider.findLists(ctx);
     QCOMPARE(static_cast<int>(ctx.collections.size()),  2);
