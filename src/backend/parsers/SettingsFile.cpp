@@ -21,6 +21,7 @@
 #include "LocaleUtils.h"
 #include "MetaFile.h"
 #include "Paths.h"
+#include "providers/Provider.h"
 
 #include <QDebug>
 #include <QDir>
@@ -58,14 +59,6 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
         { QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
-    }
-    , str_to_extprovider {
-        { QStringLiteral("es2"), ExtProvider::ES2 },
-        { QStringLiteral("steam"), ExtProvider::STEAM },
-        { QStringLiteral("gog"), ExtProvider::GOG },
-        { QStringLiteral("androidapps"), ExtProvider::ANDROIDAPPS },
-        { QStringLiteral("skraper"), ExtProvider::SKRAPER },
-        { QStringLiteral("launchbox"), ExtProvider::LAUNCHBOX },
     }
     , str_to_key_opt {
         { QStringLiteral("accept"), KeyEvent::ACCEPT },
@@ -192,16 +185,28 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
         return;
     }
 
-    const auto provider_it = maps.str_to_extprovider.find(sections.takeFirst());
-    if (provider_it == maps.str_to_extprovider.cend()) {
+    const auto provider_name = QLatin1String(sections.takeFirst().toLatin1());
+    const auto provider_it = std::find_if(
+        AppSettings::providers.cbegin(),
+        AppSettings::providers.cend(),
+        [&provider_name](const decltype(AppSettings::providers)::value_type& p){
+            return p->codename() == provider_name;
+        });
+    if (provider_it == AppSettings::providers.cend()
+        || (*provider_it)->flags() & providers::INTERNAL)
+    {
         log_unknown_key(lineno, key);
         return;
     }
 
     const auto option = sections.takeFirst();
     if (option == QLatin1String("enabled")) {
-        bool& enabled = AppSettings::ext_providers.enabled_mut(provider_it->second);
-        strconv.store_maybe(enabled, val, [&](){ log_needs_bool(lineno, key); });
+        bool success = false;
+        bool enabled = strconv.to_bool(val, success);
+        if (success)
+            (*provider_it)->setEnabled(enabled);
+        else
+            log_needs_bool(lineno, key);
         return;
     }
 
@@ -300,11 +305,14 @@ void SaveContext::print_general(QTextStream& stream) const
 
 void SaveContext::print_providers(QTextStream& stream) const
 {
-    for (const auto& entry : maps.str_to_extprovider) {
+    for (const auto& entry : AppSettings::providers) {
+        if (entry->flags() & providers::INTERNAL)
+            continue;
+
         stream << LINE_TEMPLATE.arg(
             category_names.at(ConfigEntryCategory::PROVIDERS),
-            entry.first + QStringLiteral(".enabled"),
-            AppSettings::ext_providers.enabled(entry.second) ? STR_TRUE : STR_FALSE);
+            entry->codename() + QStringLiteral(".enabled"),
+            entry->enabled() ? STR_TRUE : STR_FALSE);
     }
 }
 

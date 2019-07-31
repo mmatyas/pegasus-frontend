@@ -19,7 +19,6 @@
 
 #include "types/GamepadKeyId.h"
 #include "types/KeyEventType.h"
-#include "types/ProviderType.h"
 #include "utils/HashMap.h"
 #include "utils/NoCopyNoMove.h"
 
@@ -28,6 +27,9 @@
 #include <QKeySequence>
 #include <functional>
 #include <map>
+#include <memory>
+
+namespace providers { class Provider; }
 
 
 namespace appsettings {
@@ -65,25 +67,11 @@ private:
     HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> m_event_keymap;
 };
 
-
-class Providers {
-public:
-    Providers();
-    NO_COPY_NO_MOVE(Providers)
-
-    bool enabled(ExtProvider) const;
-    bool& enabled_mut(ExtProvider);
-
-private:
-    HashMap<ExtProvider, bool, EnumHash> m_providers_enabled;
-};
-
 } // namespace appsettings
 
 
 struct AppSettings {
     static appsettings::General general;
-    static appsettings::Providers ext_providers;
     static appsettings::Keys keys;
 
     static void load_config();
@@ -91,4 +79,5 @@ struct AppSettings {
     static void parse_gamedirs(const std::function<void(const QString&)>&);
 
     static const std::map<QKeySequence, QString> gamepadButtonNames;
+    static const std::vector<std::unique_ptr<providers::Provider>> providers;
 };

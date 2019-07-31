@@ -18,7 +18,6 @@
 #pragma once
 
 #include "types/KeyEventType.h"
-#include "types/ProviderType.h"
 #include "utils/HashMap.h"
 #include "utils/StrBoolConverter.h"
 
@@ -53,7 +52,6 @@ struct ConfigEntryMaps {
 
     const HashMap<QString, Category> str_to_category;
     const HashMap<QString, GeneralOption> str_to_general_opt;
-    const HashMap<QString, ExtProvider> str_to_extprovider;
     const HashMap<QString, KeyEvent> str_to_key_opt;
 };
 

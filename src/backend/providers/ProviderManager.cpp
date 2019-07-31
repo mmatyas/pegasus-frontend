@@ -18,7 +18,6 @@
 #include "ProviderManager.h"
 
 #include "AppSettings.h"
-#include "EnabledProviders.h"
 #include "LocaleUtils.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
@@ -29,8 +28,20 @@
 #include <QtConcurrent/QtConcurrent>
 #include <unordered_set>
 
+using ProviderPtr = providers::Provider*;
+
 
 namespace {
+std::vector<ProviderPtr> enabled_providers()
+{
+    std::vector<ProviderPtr> out;
+    for (const auto& provider : AppSettings::providers) {
+        if (provider->enabled())
+            out.emplace_back(provider.get());
+    }
+    return out;
+}
+
 void remove_empty_collections(providers::SearchContext& ctx)
 {
     const auto childs_end = ctx.collection_childs.cend();
@@ -173,35 +184,7 @@ HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& g
 ProviderManager::ProviderManager(QObject* parent)
     : QObject(parent)
 {
-    m_providers.emplace_back(new providers::pegasus::PegasusProvider());
-    m_providers.emplace_back(new providers::favorites::Favorites());
-    m_providers.emplace_back(new providers::playtime::PlaytimeStats());
-#ifdef WITH_COMPAT_STEAM
-    if (AppSettings::ext_providers.enabled(ExtProvider::STEAM))
-        m_providers.emplace_back(new providers::steam::SteamProvider());
-#endif
-#ifdef WITH_COMPAT_GOG
-    if (AppSettings::ext_providers.enabled(ExtProvider::GOG))
-        m_providers.emplace_back(new providers::gog::GogProvider());
-#endif
-#ifdef WITH_COMPAT_ES2
-    if (AppSettings::ext_providers.enabled(ExtProvider::ES2))
-        m_providers.emplace_back(new providers::es2::Es2Provider());
-#endif
-#ifdef WITH_COMPAT_ANDROIDAPPS
-    if (AppSettings::ext_providers.enabled(ExtProvider::ANDROIDAPPS))
-        m_providers.emplace_back(new providers::android::AndroidAppsProvider());
-#endif
-#ifdef WITH_COMPAT_SKRAPER
-    if (AppSettings::ext_providers.enabled(ExtProvider::SKRAPER))
-        m_providers.emplace_back(new providers::skraper::SkraperAssetsProvider());
-#endif
-#ifdef WITH_COMPAT_LAUNCHBOX
-    if (AppSettings::ext_providers.enabled(ExtProvider::LAUNCHBOX))
-        m_providers.emplace_back(new providers::launchbox::LaunchboxProvider());
-#endif
-
-    for (const auto& provider : m_providers) {
+    for (const auto& provider : AppSettings::providers) {
         connect(provider.get(), &providers::Provider::gameCountChanged,
                 this, &ProviderManager::gameCountChanged);
     }
@@ -217,11 +200,15 @@ void ProviderManager::startStaticSearch(providers::SearchContext& out_sctx)
         QElapsedTimer timer;
         timer.start();
 
-        run_list_providers(ctx, m_providers);
+        const std::vector<ProviderPtr> providers = enabled_providers();
+        for (const auto& provider : providers)
+            provider->load();
+
+        run_list_providers(ctx, providers);
         postprocess_list_results(ctx);
         emit firstPhaseComplete(timer.restart());
 
-        run_asset_providers(ctx, m_providers);
+        run_asset_providers(ctx, providers);
         emit secondPhaseComplete(timer.restart());
 
         std::swap(ctx, out_sctx);
@@ -239,7 +226,7 @@ void ProviderManager::startDynamicSearch(const QVector<model::Game*>& games,
         timer.start();
 
         const HashMap<QString, model::GameFile*> path_map = build_path_map(games);
-        for (const auto& provider : m_providers)
+        for (const auto& provider : AppSettings::providers)
             provider->findDynamicData(collections, games, path_map);
 
         emit dynamicDataReady(timer.elapsed());
@@ -251,7 +238,7 @@ void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_gam
     if (m_future.isRunning())
         return;
 
-    for (const auto& provider : m_providers)
+    for (const auto& provider : AppSettings::providers)
         provider->onGameFavoriteChanged(all_games);
 }
 
@@ -260,7 +247,7 @@ void ProviderManager::onGameLaunched(model::GameFile* const game)
     if (m_future.isRunning())
         return;
 
-    for (const auto& provider : m_providers)
+    for (const auto& provider : AppSettings::providers)
         provider->onGameLaunched(game);
 }
 
@@ -269,6 +256,6 @@ void ProviderManager::onGameFinished(model::GameFile* const game)
     if (m_future.isRunning())
         return;
 
-    for (const auto& provider : m_providers)
+    for (const auto& provider : AppSettings::providers)
         provider->onGameFinished(game);
 }

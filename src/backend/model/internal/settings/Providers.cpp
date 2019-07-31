@@ -18,22 +18,24 @@
 #include "Providers.h"
 
 #include "AppSettings.h"
+#include "providers/Provider.h"
 
 
 namespace model {
-ProviderEntry::ProviderEntry(ExtProvider id, QString name)
-    : name(std::move(name))
-    , m_id(id)
+ProviderEntry::ProviderEntry(const size_t idx)
+    : m_idx(idx)
 {}
 
-bool ProviderEntry::enabled() const
-{
-    return AppSettings::ext_providers.enabled(m_id);
+bool ProviderEntry::enabled() const {
+    return AppSettings::providers.at(m_idx)->enabled();
 }
 
-void ProviderEntry::setEnabled(bool value)
-{
-    AppSettings::ext_providers.enabled_mut(m_id) = value;
+void ProviderEntry::setEnabled(bool value) {
+    AppSettings::providers.at(m_idx)->setEnabled(value);
+}
+
+const QString& ProviderEntry::name() const {
+    return AppSettings::providers.at(m_idx)->name();
 }
 
 
@@ -44,22 +46,11 @@ Providers::Providers(QObject* parent)
         { Roles::Enabled, QByteArrayLiteral("enabled") },
     })
 {
-#ifdef WITH_COMPAT_ES2
-    m_providers.emplace_back(ExtProvider::ES2, QStringLiteral("EmulationStation"));
-#endif
-#ifdef WITH_COMPAT_STEAM
-    m_providers.emplace_back(ExtProvider::STEAM, QStringLiteral("Steam"));
-#endif
-#ifdef WITH_COMPAT_GOG
-    m_providers.emplace_back(ExtProvider::GOG, QStringLiteral("GOG"));
-#endif
-#ifdef WITH_COMPAT_ANDROIDAPPS
-    m_providers.emplace_back(ExtProvider::ANDROIDAPPS, QStringLiteral("Android Apps"));
-#endif
-#ifdef WITH_COMPAT_SKRAPER
-    m_providers.emplace_back(ExtProvider::SKRAPER, QStringLiteral("Skraper Assets"));
-#endif
-
+    for (size_t i = 0; i < AppSettings::providers.size(); i++) {
+        const auto& ptr = AppSettings::providers.at(i);
+        if ((ptr->flags() & providers::INTERNAL) == 0)
+            m_providers.emplace_back(i);
+    }
 }
 
 int Providers::count() const
@@ -83,7 +74,7 @@ QVariant Providers::data(const QModelIndex& index, int role) const
     const auto& provider = m_providers.at(static_cast<size_t>(index.row()));
     switch (role) {
         case Roles::Name:
-            return provider.name;
+            return provider.name();
         case Roles::Enabled:
             return provider.enabled();
         default:

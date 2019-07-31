@@ -45,3 +45,12 @@ void StrBoolConverter::store_maybe(bool& target, const QString& str,
 
     target = it->second;
 }
+
+bool StrBoolConverter::to_bool(const QString& str, bool& success) const
+{
+    const auto it = m_strmap.find(str.toLower());
+    success = (it != m_strmap.cend());
+    return success
+        ? it->second
+        : false;
+}

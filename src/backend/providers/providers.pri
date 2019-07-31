@@ -1,7 +1,6 @@
 HEADERS += \
     $$PWD/Provider.h \
     $$PWD/ProviderManager.h \
-    $$PWD/EnabledProviders.h \
 
 SOURCES += \
     $$PWD/Provider.cpp \

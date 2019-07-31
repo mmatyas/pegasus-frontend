@@ -25,16 +25,12 @@
 #include <memory>
 #include <vector>
 
-using ProviderPtr = std::unique_ptr<providers::Provider>;
-
 
 class ProviderManager : public QObject {
     Q_OBJECT
 
 public:
     explicit ProviderManager(QObject* parent);
-
-    size_t providerCount() const { return m_providers.size(); }
 
     void startStaticSearch(providers::SearchContext&);
     void startDynamicSearch(const QVector<model::Game*>&, const QVector<model::Collection*>&);
@@ -53,6 +49,5 @@ signals:
     void dynamicDataReady(qint64);
 
 private:
-    std::vector<ProviderPtr> m_providers;
     QFuture<void> m_future;
 };

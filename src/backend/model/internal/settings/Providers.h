@@ -21,21 +21,18 @@
 
 #include <QAbstractListModel>
 
-enum class ExtProvider : unsigned char;
-
 
 namespace model {
 struct ProviderEntry {
-    const QString name;
-
-    ProviderEntry(ExtProvider id, QString name);
+    ProviderEntry(size_t idx);
     MOVE_ONLY(ProviderEntry)
 
     bool enabled() const;
     void setEnabled(bool);
+    const QString& name() const;
 
 private:
-    const ExtProvider m_id;
+    const size_t m_idx;
 };
 
 

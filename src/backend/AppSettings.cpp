@@ -21,6 +21,28 @@
 #include "ScriptRunner.h"
 #include "parsers/SettingsFile.h"
 
+#include "providers/pegasus_favorites/Favorites.h"
+#include "providers/pegasus_metadata/PegasusProvider.h"
+#include "providers/pegasus_playtime/PlaytimeStats.h"
+#ifdef WITH_COMPAT_ES2
+  #include "providers/es2/Es2Provider.h"
+#endif
+#ifdef WITH_COMPAT_STEAM
+  #include "providers/steam/SteamProvider.h"
+#endif
+#ifdef WITH_COMPAT_GOG
+  #include "providers/gog/GogProvider.h"
+#endif
+#ifdef WITH_COMPAT_ANDROIDAPPS
+  #include "providers/android_apps/AndroidAppsProvider.h"
+#endif
+#ifdef WITH_COMPAT_SKRAPER
+  #include "providers/skraper/SkraperAssetsProvider.h"
+#endif
+#ifdef WITH_COMPAT_LAUNCHBOX
+  #include "providers/launchbox/LaunchboxProvider.h"
+#endif
+
 #include <QFile>
 
 
@@ -62,6 +84,39 @@ std::map<QKeySequence, QString> gamepad_button_names()
         { QKeySequence(GamepadKeyId::GUIDE), QStringLiteral("Guide") },
     };
 }
+
+std::vector<std::unique_ptr<providers::Provider>> create_providers()
+{
+#define MKENTRY(T) out.emplace_back(new providers::T());
+
+    std::vector<std::unique_ptr<providers::Provider>> out;
+        MKENTRY(pegasus::PegasusProvider)
+        MKENTRY(favorites::Favorites)
+        MKENTRY(playtime::PlaytimeStats)
+#ifdef WITH_COMPAT_STEAM
+        MKENTRY(steam::SteamProvider)
+#endif
+#ifdef WITH_COMPAT_GOG
+        MKENTRY(gog::GogProvider)
+#endif
+#ifdef WITH_COMPAT_ES2
+        MKENTRY(es2::Es2Provider)
+#endif
+#ifdef WITH_COMPAT_ANDROIDAPPS
+        MKENTRY(android::AndroidAppsProvider)
+#endif
+#ifdef WITH_COMPAT_SKRAPER
+        MKENTRY(skraper::SkraperAssetsProvider)
+#endif
+#ifdef WITH_COMPAT_LAUNCHBOX
+        MKENTRY(launchbox::LaunchboxProvider)
+#endif
+    out.shrink_to_fit();
+    return out;
+
+#undef MKENTRY
+}
+
 } // namespace
 
 
@@ -108,24 +163,6 @@ const QVector<QKeySequence>& Keys::operator[](KeyEvent event) const {
     return at(event);
 }
 
-
-Providers::Providers()
-    : m_providers_enabled {
-        { ExtProvider::ES2, true },
-        { ExtProvider::STEAM, true },
-        { ExtProvider::GOG, false },
-        { ExtProvider::ANDROIDAPPS, true },
-        { ExtProvider::SKRAPER, true },
-        { ExtProvider::LAUNCHBOX, false },
-    }
-{}
-bool Providers::enabled(ExtProvider key) const {
-    return m_providers_enabled.at(key);
-}
-bool& Providers::enabled_mut(ExtProvider key) {
-    return m_providers_enabled.at(key);
-}
-
 } // namespace appsettings
 
 
@@ -138,8 +175,8 @@ namespace {
 
 appsettings::General AppSettings::general;
 appsettings::Keys AppSettings::keys;
-appsettings::Providers AppSettings::ext_providers;
 const std::map<QKeySequence, QString> AppSettings::gamepadButtonNames = gamepad_button_names();
+const std::vector<std::unique_ptr<providers::Provider>> AppSettings::providers = create_providers();
 
 void AppSettings::load_config()
 {
