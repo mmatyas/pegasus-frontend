@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,16 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import "../../../dialogs"
 
-
-Text {
-    text: "Alpha Notice: The changes on this screen will be effective the next time you start Pegasus."
-    color: "#f43"
-    font.family: globalFonts.sans
-    font.pixelSize: vpx(16)
-
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.bottom
-    anchors.bottomMargin: font.pixelSize
+GenericOkCancelDialog {
+    title: qsTr("Reload") + api.tr
+    message: qsTr("Would you like to reload the game list now? This may take some time.") + api.tr
 }

@@ -23,6 +23,8 @@ import QtQuick 2.6
 FocusScope {
     id: root
 
+    property bool mSettingsChanged: false
+
     signal close
 
     anchors.fill: parent
@@ -32,10 +34,17 @@ FocusScope {
     opacity: focus ? 1.0 : 0.0
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
+    function closeMaybe() {
+        if (mSettingsChanged)
+            reloadDialog.focus = true;
+        else
+            root.close();
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
-            root.close();
+            root.closeMaybe();
         }
     }
 
@@ -93,7 +102,7 @@ FocusScope {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onClicked: root.close()
+            onClicked: root.closeMaybe()
         }
     }
 
@@ -184,6 +193,15 @@ FocusScope {
                 highlightMoveDuration: 0
 
                 KeyNavigation.down: buttonAdd
+
+                onModelChanged: {
+                    if (isComplete)
+                        root.mSettingsChanged = true;
+                }
+
+                property bool isComplete: false
+                Component.onCompleted: isComplete = true
+
 
                 MouseArea {
                     anchors.fill: parent
@@ -296,7 +314,20 @@ FocusScope {
         }
     }
 
-    NeedsRestartNotice {}
+
+    ReloadQuestion {
+        id: reloadDialog
+        onAccept: {
+            list.focus = true;
+            root.mSettingsChanged = false;
+            api.internal.settings.reloadProviders();
+        }
+        onCancel: {
+            list.focus = true;
+            root.mSettingsChanged = false;
+            root.close();
+        }
+    }
 
 
     FilePicker {

@@ -16,7 +16,6 @@
 
 
 import "common"
-import "../../dialogs"
 import QtQuick 2.6
 
 
@@ -209,12 +208,8 @@ FocusScope {
         }
     }
 
-    GenericOkCancelDialog {
+    ReloadQuestion {
         id: reloadDialog
-
-        title: qsTr("Reload") + api.tr
-        message: qsTr("Would you like to reload the game list now? This may take some time.") + api.tr
-
         onAccept: {
             list.focus = true;
             root.mSettingsChanged = false;
@@ -222,6 +217,7 @@ FocusScope {
         }
         onCancel: {
             list.focus = true;
+            root.mSettingsChanged = false;
             root.close();
         }
     }

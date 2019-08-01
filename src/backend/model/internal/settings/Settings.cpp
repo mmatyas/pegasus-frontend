@@ -177,6 +177,7 @@ void Settings::removeGameDirs(const QVariantList& idx_var_list)
 
 void Settings::reloadProviders()
 {
+    qInfo().noquote() << tr_log("Reloading...");
     emit providerReloadingRequested();
 }
 
