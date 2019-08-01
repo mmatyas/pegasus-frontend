@@ -5,18 +5,18 @@ set -o nounset
 set +o xtrace # !
 
 
-if [ "$CIRCLE_BRANCH" != "master" ] ; then
+pushd dist
+
+if [[ "$CIRCLE_BRANCH" != "master" ]]; then
   echo "Release uploading disabled for pull requests, uploading to transfer.sh instead"
   for FILE in ./*; do
     BASENAME="$(basename "${FILE}")"
     curl --upload-file $FILE https://transfer.sh/$BASENAME
     echo ""
   done
+  popd
   exit 0
 fi
-
-
-pushd dist
 
 git config --global user.email "autodeploy@circleci.com"
 git config --global user.name "Circle CI"
