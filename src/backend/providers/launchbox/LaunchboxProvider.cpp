@@ -413,7 +413,12 @@ LaunchboxProvider::LaunchboxProvider(QObject* parent)
 
 void LaunchboxProvider::findLists(providers::SearchContext& sctx)
 {
-    const QString lb_dir = find_installation();
+    const QString lb_dir = [this]{
+        const auto option_it = options().find(QLatin1String("installdir"));
+        return (option_it != options().cend())
+            ? option_it->second.front()
+            : find_installation();
+    }();
     if (lb_dir.isEmpty())
         return;
 
