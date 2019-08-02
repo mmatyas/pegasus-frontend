@@ -311,6 +311,8 @@ void SaveContext::print_general(QTextStream& stream) const
 
 void SaveContext::print_providers(QTextStream& stream) const
 {
+    const QString TEMPLATE_KEY(QStringLiteral("%1.%2.%3:"));
+
     for (const auto& entry : AppSettings::providers) {
         if (entry->flags() & providers::INTERNAL)
             continue;
@@ -319,6 +321,22 @@ void SaveContext::print_providers(QTextStream& stream) const
             category_names.at(ConfigEntryCategory::PROVIDERS),
             entry->codename() + QStringLiteral(".enabled"),
             entry->enabled() ? STR_TRUE : STR_FALSE);
+
+        for (const auto& option : entry->options()) {
+            stream << TEMPLATE_KEY.arg(
+                    category_names.at(ConfigEntryCategory::PROVIDERS),
+                    entry->codename(),
+                    option.first);
+
+            if (option.second.size() == 1) {
+                stream << QChar(' ') << option.second.front() << QChar('\n');
+                continue;
+            }
+
+            stream << QChar('\n');
+            for (const QString& val : option.second)
+                stream << QLatin1String("  ") << val << QChar('\n');
+        }
     }
 }
 
