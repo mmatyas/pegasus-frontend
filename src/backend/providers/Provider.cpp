@@ -37,7 +37,16 @@ void Provider::setEnabled(bool val)
 
 void Provider::setOption(const QString& key, QString val)
 {
-    m_options[key] = std::move(val);
+    Q_ASSERT(!key.isEmpty());
+    Q_ASSERT(!val.isEmpty());
+    setOption(key, std::vector<QString>{ std::move(val) });
+}
+
+void Provider::setOption(const QString& key, std::vector<QString> vals)
+{
+    Q_ASSERT(!key.isEmpty());
+    Q_ASSERT(!vals.empty());
+    m_options[key] = std::move(vals);
 }
 
 } // namespace providers

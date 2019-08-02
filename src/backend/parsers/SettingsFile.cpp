@@ -89,7 +89,7 @@ void LoadContext::load() const
         log_error(error.line, error.message);
     };
     const auto on_attribute = [this](const metafile::Entry& entry){
-        handle_entry(entry.line, entry.key, metafile::merge_lines(entry.values));
+        handle_entry(entry.line, entry.key, entry.values);
     };
 
     metafile::read_file(config_path, on_attribute, on_error);
@@ -114,7 +114,9 @@ void LoadContext::log_needs_bool(const size_t lineno, const QString& key) const
         tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
 }
 
-void LoadContext::handle_entry(const size_t lineno, const QString& key, const QString& val) const
+void LoadContext::handle_entry(const size_t lineno,
+                               const QString& key,
+                               const std::vector<QString>& vals) const
 {
     QStringList sections = key.split('.');
     if (sections.size() < 2) {
@@ -131,13 +133,13 @@ void LoadContext::handle_entry(const size_t lineno, const QString& key, const QS
 
     switch (category_it->second) {
         case ConfigEntryCategory::GENERAL:
-            handle_general_attrib(lineno, key, val, sections);
+            handle_general_attrib(lineno, key, metafile::merge_lines(vals), sections);
             break;
         case ConfigEntryCategory::PROVIDERS:
-            handle_provider_attrib(lineno, key, val, sections);
+            handle_provider_attrib(lineno, key, vals, sections);
             break;
         case ConfigEntryCategory::KEYS:
-            handle_key_attrib(lineno, key, val, sections);
+            handle_key_attrib(lineno, key, metafile::merge_lines(vals), sections);
             break;
     }
 }
@@ -177,7 +179,8 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
     }
 }
 
-void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key, const QString& val,
+void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key,
+                                         const std::vector<QString>& vals,
                                          QStringList& sections) const
 {
     if (sections.size() < 2) {
@@ -201,16 +204,19 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
 
     const QString option = sections.takeFirst();
     if (option == QLatin1String("enabled")) {
+        const QString val = metafile::merge_lines(vals);
+
         bool success = false;
         bool enabled = strconv.to_bool(val, success);
         if (success)
             (*provider_it)->setEnabled(enabled);
         else
             log_needs_bool(lineno, key);
+
         return;
     }
 
-    (*provider_it)->setOption(option, val);
+    (*provider_it)->setOption(option, vals);
 }
 
 void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, const QString& val,

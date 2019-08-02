@@ -77,10 +77,11 @@ private:
     void log_needs_bool(const size_t lineno, const QString& key) const;
 
 private:
-    void handle_entry(const size_t lineno, const QString& key, const QString& val) const;
+    void handle_entry(const size_t lineno, const QString& key, const std::vector<QString>& vals) const;
     void handle_general_attrib(const size_t lineno, const QString& key, const QString& val,
                                QStringList& sections) const;
-    void handle_provider_attrib(const size_t lineno, const QString& key, const QString& val,
+    void handle_provider_attrib(const size_t lineno, const QString& key,
+                                const std::vector<QString>& vals,
                                 QStringList& sections) const;
     void handle_key_attrib(const size_t lineno, const QString& key, const QString& val,
                            QStringList& sections) const;
