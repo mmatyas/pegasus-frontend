@@ -51,11 +51,13 @@ struct GogEntry {
     MOVE_ONLY(GogEntry)
 };
 
-std::vector<GogEntry> find_game_entries()
+std::vector<GogEntry> find_game_entries(const HashMap<QString, std::vector<QString>>& options)
 {
     std::vector<GogEntry> entries;
 
 #ifdef Q_OS_WIN
+    Q_UNUSED(options);
+
     QSettings reg_base(QStringLiteral("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\GOG.com\\Games"),
                        QSettings::NativeFormat);
 
@@ -76,47 +78,58 @@ std::vector<GogEntry> find_game_entries()
 #endif
 
 #ifdef Q_OS_LINUX
-    const QString gogdir = paths::homePath() + QStringLiteral("/GOG Games");
+    const std::vector<QString> directories = [&options]{
+        std::vector<QString> out {
+            paths::homePath() + QStringLiteral("/GOG Games"),
+        };
+        const auto directories_it = options.find(QLatin1String("directories"));
+        if (directories_it != options.cend())
+            out.insert(out.end(), directories_it->second.cbegin(), directories_it->second.cend());
 
-    constexpr auto dir_filters = QDir::Dirs | QDir::NoDotAndDotDot;
+        return out;
+    }();
+
+    constexpr auto dir_filters = QDir::Dirs | QDir::NoDotDot;
     constexpr auto dir_flags = QDirIterator::FollowSymlinks;
     const QRegularExpression re_numeric(QStringLiteral("^\\d+$"));
 
-    QDirIterator dir_it(gogdir, dir_filters, dir_flags);
-    while (dir_it.hasNext()) {
-        const QString gamedir(dir_it.next());
+    for (const QString& root : directories) {
+        QDirIterator dir_it(root, dir_filters, dir_flags);
+        while (dir_it.hasNext()) {
+            const QString gamedir(dir_it.next());
 
-        const QString launcher_path(gamedir + QStringLiteral("/start.sh"));
-        const QFileInfo launcher_file(launcher_path);
-        if (!launcher_file.exists() || !launcher_file.isFile() || !launcher_file.isExecutable())
-            continue;
+            const QString launcher_path(gamedir + QStringLiteral("/start.sh"));
+            const QFileInfo launcher_file(launcher_path);
+            if (!launcher_file.exists() || !launcher_file.isFile() || !launcher_file.isExecutable())
+                continue;
 
-        GogEntry entry {
-            QString(),
-            dir_it.fileName(),
-            launcher_path,
-            launcher_path,
-            dir_it.filePath(),
-        };
+            GogEntry entry {
+                QString(),
+                dir_it.fileName(),
+                launcher_path,
+                launcher_path,
+                dir_it.filePath(),
+            };
 
-        const QString gameinfo_path(gamedir + QStringLiteral("/gameinfo"));
-        QFile config_file(gameinfo_path);
-        if (config_file.open(QFile::ReadOnly | QFile::Text)) {
-            QTextStream stream(&config_file);
-            QString line;
-            unsigned short lineno = 0;
-            while (stream.readLineInto(&line, 256) && lineno <= 3) {
-                if (lineno == 0 && !line.isEmpty())
-                    entry.name = line;
+            const QString gameinfo_path(gamedir + QStringLiteral("/gameinfo"));
+            QFile config_file(gameinfo_path);
+            if (config_file.open(QFile::ReadOnly | QFile::Text)) {
+                QTextStream stream(&config_file);
+                QString line;
+                unsigned short lineno = 0;
+                while (stream.readLineInto(&line, 256) && lineno <= 3) {
+                    if (lineno == 0 && !line.isEmpty())
+                        entry.name = line;
 
-                if (lineno == 3 && re_numeric.match(line).hasMatch())
-                    entry.id = line;
+                    if (lineno == 3 && re_numeric.match(line).hasMatch())
+                        entry.id = line;
 
-                lineno++;
+                    lineno++;
+                }
             }
-        }
 
-        entries.emplace_back(std::move(entry));
+            entries.emplace_back(std::move(entry));
+        }
     }
 #endif
 
@@ -169,12 +182,13 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(providers::SearchContext& sctx, HashMap<size_t, QString>& gogids)
+void Gamelist::find(providers::SearchContext& sctx, HashMap<size_t, QString>& gogids,
+                    const HashMap<QString, std::vector<QString>>& options)
 {
     static constexpr auto MSG_PREFIX = "GOG:";
 
 
-    std::vector<GogEntry> entries(find_game_entries());
+    std::vector<GogEntry> entries(find_game_entries(options));
     entries.erase(std::remove_if(entries.begin(), entries.end(), invalid_entry), entries.end());
 
     qInfo().noquote() << MSG_PREFIX << tr_log("%1 games found").arg(entries.size());

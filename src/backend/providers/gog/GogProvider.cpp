@@ -34,7 +34,7 @@ GogProvider::GogProvider(QObject* parent)
 
 void GogProvider::findLists(SearchContext& sctx)
 {
-    gamelist.find(sctx, m_gogids);
+    gamelist.find(sctx, m_gogids, options());
 }
 
 void GogProvider::findStaticData(SearchContext& sctx)
