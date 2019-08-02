@@ -199,7 +199,7 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
         return;
     }
 
-    const auto option = sections.takeFirst();
+    const QString option = sections.takeFirst();
     if (option == QLatin1String("enabled")) {
         bool success = false;
         bool enabled = strconv.to_bool(val, success);
@@ -210,7 +210,7 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
         return;
     }
 
-    log_unknown_key(lineno, key);
+    (*provider_it)->setOption(option, val);
 }
 
 void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, const QString& val,

@@ -35,4 +35,9 @@ void Provider::setEnabled(bool val)
     m_enabled = val;
 }
 
+void Provider::setOption(const QString& key, QString val)
+{
+    m_options[key] = std::move(val);
+}
+
 } // namespace providers

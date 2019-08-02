@@ -87,6 +87,9 @@ public:
     const QString& name() const { return m_provider_name; }
     uint8_t flags() const { return m_provider_flags; }
 
+    void setOption(const QString&, QString);
+    const HashMap<QString, QString>& options() const { return m_options; }
+
 signals:
     void gameCountChanged(int);
 
@@ -96,6 +99,7 @@ private:
     const uint8_t m_provider_flags;
 
     bool m_enabled;
+    HashMap<QString, QString> m_options;
 };
 
 } // namespace providers
