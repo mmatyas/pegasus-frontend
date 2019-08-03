@@ -391,14 +391,11 @@ HashMap<QString, QString> load_emulators(const QString& lb_dir)
 
 QString find_installation()
 {
-    // TODO: This should be configurable on the UI side
     const QString possible_path = paths::homePath() + QStringLiteral("/LaunchBox/");
     if (QFileInfo::exists(possible_path)) {
         qInfo().noquote() << MSG_PREFIX << tr_log("found directory: `%1`").arg(possible_path);
         return possible_path;
     }
-
-    qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
     return {};
 }
 } // namespace
@@ -416,11 +413,13 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
     const QString lb_dir = [this]{
         const auto option_it = options().find(QLatin1String("installdir"));
         return (option_it != options().cend())
-            ? option_it->second.front()
+            ? QDir::cleanPath(option_it->second.front()) + QLatin1Char('/')
             : find_installation();
     }();
-    if (lb_dir.isEmpty())
+    if (lb_dir.isEmpty()) {
+        qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
         return;
+    }
 
     const HashMap<QString, QString> emulators = load_emulators(lb_dir);
     if (emulators.empty()) {
