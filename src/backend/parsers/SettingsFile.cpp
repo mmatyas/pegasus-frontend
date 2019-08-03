@@ -188,7 +188,7 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
         return;
     }
 
-    const auto provider_name = QLatin1String(sections.takeFirst().toLatin1());
+    const QString provider_name = sections.takeFirst();
     const auto provider_it = std::find_if(
         AppSettings::providers.cbegin(),
         AppSettings::providers.cend(),
