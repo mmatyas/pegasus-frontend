@@ -41,6 +41,16 @@ std::map<QString, QKeySequence> gen_gamepad_names() {
     return result;
 }
 
+bool store_bool_maybe(const StrBoolConverter& converter, const QString& str, bool& target)
+{
+    bool success = false;
+    bool value = converter.to_bool(str, success);
+    if (success)
+        target = value;
+
+    return success;
+}
+
 } // namespace
 
 
@@ -155,20 +165,20 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
 
     switch (option_it->second) {
         case ConfigEntryGeneralOption::PORTABLE:
-            strconv.store_maybe(AppSettings::general.portable, val,
-                [&](){ log_needs_bool(lineno, key); });
+            if (!store_bool_maybe(strconv, val, AppSettings::general.portable))
+                log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::SILENT:
-            strconv.store_maybe(AppSettings::general.silent, val,
-                [&](){ log_needs_bool(lineno, key); });
+            if (!store_bool_maybe(strconv, val, AppSettings::general.silent))
+                log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::FULLSCREEN:
-            strconv.store_maybe(AppSettings::general.fullscreen, val,
-                [&](){ log_needs_bool(lineno, key); });
+            if (!store_bool_maybe(strconv, val, AppSettings::general.fullscreen))
+                log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::MOUSE_SUPPORT:
-            strconv.store_maybe(AppSettings::general.mouse_support, val,
-                [&](){ log_needs_bool(lineno, key); });
+            if (!store_bool_maybe(strconv, val, AppSettings::general.mouse_support))
+                log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::LOCALE:
             AppSettings::general.locale = val;

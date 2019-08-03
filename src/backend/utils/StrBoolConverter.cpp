@@ -29,18 +29,6 @@ StrBoolConverter::StrBoolConverter()
     }
 {}
 
-void StrBoolConverter::store_maybe(bool& target, const QString& str,
-                                   const std::function<void()>& fail_cb) const
-{
-    const auto it = m_strmap.find(str.toLower());
-    if (it == m_strmap.cend()) {
-        fail_cb();
-        return;
-    }
-
-    target = it->second;
-}
-
 bool StrBoolConverter::to_bool(const QString& str, bool& success) const
 {
     const auto it = m_strmap.find(str.toLower());

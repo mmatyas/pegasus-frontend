@@ -25,12 +25,12 @@
 
 
 // A class is used in order to free the hashmap after parsing
+// TODO: use a static constexpr hashmap
 class StrBoolConverter {
 public:
     StrBoolConverter();
     NO_COPY_NO_MOVE(StrBoolConverter)
 
-    void store_maybe(bool& target, const QString& str, const std::function<void()>& fail_cb) const;
     bool to_bool(const QString& str, bool& success) const;
 
 private:
