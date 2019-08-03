@@ -19,13 +19,16 @@
 
 #include "modeldata/GameData.h"
 #include "modeldata/CollectionData.h"
-#include "utils/FwdDeclModel.h"
 #include "utils/HashMap.h"
 #include "utils/MoveOnly.h"
 
 #include <QString>
 #include <QObject>
 #include <vector>
+
+namespace model { class Collection; }
+namespace model { class Game; }
+namespace model { class GameFile; }
 
 
 namespace providers {

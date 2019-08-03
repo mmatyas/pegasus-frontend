@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "utils/FwdDeclModel.h"
-
 #include <QObject>
 #include <QProcess>
+
+namespace model { class GameFile; }
 
 
 namespace helpers {

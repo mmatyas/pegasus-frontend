@@ -18,12 +18,14 @@
 #pragma once
 
 #include "Provider.h"
-#include "utils/FwdDeclModel.h"
 
 #include <QObject>
 #include <QFuture>
 #include <memory>
 #include <vector>
+
+namespace model { class Collection; }
+namespace model { class Game; }
 
 
 class ProviderManager : public QObject {

@@ -2,7 +2,6 @@ HEADERS += \
     $$PWD/CommandTokenizer.h \
     $$PWD/FakeQKeyEvent.h \
     $$PWD/FolderListModel.h \
-    $$PWD/FwdDeclModel.h \
     $$PWD/HashMap.h \
     $$PWD/KeySequenceTools.h \
     $$PWD/MoveOnly.h \

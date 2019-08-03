@@ -19,8 +19,8 @@
 
 #include "LocaleUtils.h"
 #include "ScriptRunner.h"
-#include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
 #include "platform/TerminalKbd.h"
 #include "utils/CommandTokenizer.h"
 
