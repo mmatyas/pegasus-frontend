@@ -29,11 +29,6 @@ StrBoolConverter::StrBoolConverter()
     }
 {}
 
-bool StrBoolConverter::isBool(const QString& str) const
-{
-    return m_strmap.count(str.toLower());
-}
-
 void StrBoolConverter::store_maybe(bool& target, const QString& str,
                                    const std::function<void()>& fail_cb) const
 {

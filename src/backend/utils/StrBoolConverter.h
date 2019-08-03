@@ -30,7 +30,6 @@ public:
     StrBoolConverter();
     NO_COPY_NO_MOVE(StrBoolConverter)
 
-    bool isBool(const QString&) const;
     void store_maybe(bool& target, const QString& str, const std::function<void()>& fail_cb) const;
     bool to_bool(const QString& str, bool& success) const;
 
