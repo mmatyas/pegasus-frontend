@@ -214,12 +214,11 @@ void xml_read_game(const QString& lb_dir, QXmlStreamReader& xml,
         return;
     }
 
-    const QString game_path = lb_dir + path_it->second;
-    const QFileInfo game_finfo(game_path);
+    const QFileInfo game_finfo(lb_dir, path_it->second);
     if (!game_finfo.exists()) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("in `%1`, game file `%2` doesn't seem to exist, entry ignored")
-               .arg(xmlpath, game_path);
+               .arg(xmlpath, path_it->second);
         return;
     }
 
@@ -351,7 +350,7 @@ HashMap<QString, QString> load_emulators(const QString& lb_dir)
                     continue;
                 }
                 if (xml.name() == QLatin1String("ApplicationPath")) {
-                    const QFileInfo finfo(lb_dir + xml.readElementText().trimmed());
+                    const QFileInfo finfo(lb_dir, xml.readElementText().trimmed());
                     if (!finfo.exists()) {
                         qWarning().noquote() << MSG_PREFIX
                             << tr_log("emulator `%1` doesn't seem to exist, entry ignored")
