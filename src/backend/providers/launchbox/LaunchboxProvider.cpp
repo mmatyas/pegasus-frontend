@@ -43,7 +43,29 @@ enum class GameField : unsigned char {
     GENRE,
     STARS,
     EMULATOR,
+    EMULATOR_PARAMS,
 };
+
+using EmulatorId = QString;
+struct Emulator {
+    QString app_path;
+    QString cmd_params;
+
+    bool incomplete() const { return app_path.isEmpty(); }
+    MOVE_ONLY(Emulator)
+};
+struct Platform {
+    EmulatorId default_emu_id;
+    QString name;
+    QString cmd_params;
+    QString xml_path;
+
+    bool incomplete() const {
+        return default_emu_id.isEmpty() || name.isEmpty() || xml_path.isEmpty();
+    }
+    MOVE_ONLY(Platform)
+};
+
 
 // FIXME: Very slow!
 HashMap<size_t, modeldata::Game>::iterator
@@ -62,18 +84,18 @@ find_game_by_title(const QString& title,
     return games.end();
 }
 
-void find_assets(const QString& lb_dir, const QString& collection_name,
+void find_assets(const QString& lb_dir, const Platform& platform,
                  const std::vector<std::pair<QString, AssetType>>& assetdir_map,
                  providers::SearchContext& sctx)
 {
-    const auto coll_childs_it = sctx.collection_childs.find(collection_name);
+    const auto coll_childs_it = sctx.collection_childs.find(platform.name);
     if (coll_childs_it == sctx.collection_childs.cend())
         return;
 
     std::vector<size_t>& collection_childs = coll_childs_it->second;
 
 
-    const QString images_root = lb_dir % QLatin1String("Images/") % collection_name % QChar('/');
+    const QString images_root = lb_dir % QLatin1String("Images/") % platform.name % QChar('/');
 
     // constexpr auto dirs_only = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
@@ -104,8 +126,13 @@ void find_assets(const QString& lb_dir, const QString& collection_name,
 }
 
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
-                       const HashMap<QString, QString>& emulators)
+                       const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators)
 {
+    QString emu_app = emulators.at(platform.default_emu_id).app_path;
+    QString emu_params = platform.cmd_params.isEmpty()
+        ? emulators.at(platform.default_emu_id).app_path
+        : platform.cmd_params;
+
     for (const auto& pair : fields) {
         switch (pair.first) {
             case GameField::TITLE:
@@ -146,9 +173,13 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
                 game.genres.removeDuplicates();
                 break;
             case GameField::EMULATOR: {
-                const auto it = emulators.find((pair.second));
-                if (it != emulators.cend())
-                    game.launch_cmd = it->second;
+                const auto emu_it = emulators.find((pair.second));
+                if (emu_it != emulators.cend())
+                    emu_app = emu_it->second.app_path;
+                break;
+            }
+            case GameField::EMULATOR_PARAMS: {
+                emu_params = pair.second;
                 break;
             }
             case GameField::PATH:
@@ -158,11 +189,12 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
         }
     }
 
+    game.launch_cmd = QStringLiteral("\"%1\" %2 {file.path}").arg(emu_app, emu_params);
     game.launch_workdir = QLatin1String("{file.dir}");
 }
 
 void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
-                const HashMap<QString, QString>& emulators,
+                const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
                 providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
     const QString can_path = finfo.canonicalFilePath();
@@ -170,7 +202,7 @@ void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHa
     if (!sctx.path_to_gameid.count(can_path)) {
         modeldata::Game game(finfo);
 
-        store_game_fields(game, fields, emulators);
+        store_game_fields(game, fields, platform, emulators);
         if (game.launch_cmd.isEmpty())
             qWarning().noquote() << MSG_PREFIX << tr_log("game '%1' has no launch command").arg(game.title);
 
@@ -183,9 +215,10 @@ void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHa
     collection_childs.emplace_back(game_id);
 }
 
-void xml_read_game(const QString& lb_dir, QXmlStreamReader& xml,
-                   const HashMap<QString, GameField>& field_map, const HashMap<QString, QString>& emulators,
-                   providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
+void platform_xml_read_game(QXmlStreamReader& xml, const HashMap<QString, GameField>& field_map,
+                            const QString& lb_dir,
+                            const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
+                            providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
     HashMap<GameField, QString, EnumHash> game_values;
 
@@ -222,13 +255,13 @@ void xml_read_game(const QString& lb_dir, QXmlStreamReader& xml,
         return;
     }
 
-
-    store_game(game_finfo, game_values, emulators, sctx, collection_childs);
+    store_game(game_finfo, game_values, platform, emulators, sctx, collection_childs);
 }
 
-void xml_read_root(const QString& lb_dir, QXmlStreamReader& xml, const HashMap<QString, GameField> field_map,
-                   const QString& collection_name, const HashMap<QString, QString>& emulators,
-                   providers::SearchContext& sctx)
+void platform_xml_read_root(QXmlStreamReader& xml, const HashMap<QString, GameField> field_map,
+                            const QString& lb_dir,
+                            const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
+                            providers::SearchContext& sctx)
 {
     if (!xml.readNextStartElement()) {
         xml.raiseError(tr_log("could not parse `%1`")
@@ -242,10 +275,10 @@ void xml_read_root(const QString& lb_dir, QXmlStreamReader& xml, const HashMap<Q
     }
 
 
-    if (sctx.collections.find(collection_name) == sctx.collections.end())
-        sctx.collections.emplace(collection_name, modeldata::Collection(collection_name));
+    if (sctx.collections.find(platform.name) == sctx.collections.end())
+        sctx.collections.emplace(platform.name, modeldata::Collection(platform.name));
 
-    std::vector<size_t>& collection_childs = sctx.collection_childs[collection_name];
+    std::vector<size_t>& collection_childs = sctx.collection_childs[platform.name];
 
 
     while (xml.readNextStartElement()) {
@@ -253,60 +286,36 @@ void xml_read_root(const QString& lb_dir, QXmlStreamReader& xml, const HashMap<Q
             xml.skipCurrentElement();
             continue;
         }
-        xml_read_game(lb_dir, xml, field_map, emulators, sctx, collection_childs);
+        platform_xml_read_game(xml, field_map, lb_dir, platform, emulators, sctx, collection_childs);
     }
 }
 
-void process_xml(const QString& lb_dir, const QString& xml_path, const HashMap<QString, GameField> field_map,
-                 const QString& collection_name, const HashMap<QString, QString>& emulators,
-                 providers::SearchContext& sctx)
+void process_platform_xml(const HashMap<QString, GameField> field_map,
+                          const QString& lb_dir,
+                          const Platform& platform,
+                          const HashMap<EmulatorId, Emulator>& emulators,
+                          providers::SearchContext& sctx)
 {
-    Q_ASSERT(!lb_dir.isEmpty());
-    Q_ASSERT(!xml_path.isEmpty());
-
-    QFile xml_file(xml_path);
+    QFile xml_file(platform.xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(xml_path);
+        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(platform.xml_path);
         return;
     }
 
     QXmlStreamReader xml(&xml_file);
-    xml_read_root(lb_dir, xml, field_map, collection_name, emulators, sctx);
+    platform_xml_read_root(xml, field_map, lb_dir, platform, emulators, sctx);
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }
 
-std::vector<QString> find_xmls(const QString& lb_dir)
-{
-    Q_ASSERT(!lb_dir.isEmpty());
-
-    const QString xml_dir = lb_dir + QLatin1String("Data/Platforms/");
-    const QStringList name_filters { QStringLiteral("*.xml") };
-    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-
-    const QFileInfoList finfos = QDir(xml_dir).entryInfoList(name_filters, dir_filters);
-    if (finfos.isEmpty()) {
-        qInfo().noquote() << MSG_PREFIX << tr_log("no platforms seem to be set up yet");
-        return {};
-    }
-
-    std::vector<QString> out;
-    out.reserve(static_cast<size_t>(finfos.size()));
-    for (const QFileInfo& finfo : finfos)
-        out.emplace_back(finfo.canonicalFilePath());
-
-    return out;
-}
-
-QString quote(const QString& str)
-{
-    constexpr QChar quote('"');
-    return quote % str % quote;
-}
-
-HashMap<QString, QString> load_emulators(const QString& lb_dir)
+struct EmulatorData {
+    HashMap<EmulatorId, Emulator> emus;
+    std::vector<Platform> platforms;
+};
+EmulatorData read_emulators_xml(const QString& lb_dir)
 {
     const QString xml_path = lb_dir + QLatin1String("Data/Emulators.xml");
+    const QString platforms_dir = lb_dir + QLatin1String("Data/Platforms/");
 
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
@@ -314,77 +323,88 @@ HashMap<QString, QString> load_emulators(const QString& lb_dir)
         return {};
     }
 
-    HashMap<QString, QString> emu_exes; // id, path
-    HashMap<QString, QString> emu_params; // parent_id, launch_cmd
-
+    EmulatorData out;
     QXmlStreamReader xml(&xml_file);
 
     if (xml.readNextStartElement() && xml.name() != QLatin1String("LaunchBox")) {
         xml.raiseError(tr_log("`%1` does not have a `<LaunchBox>` root node!")
             .arg(static_cast<QFile*>(xml.device())->fileName()));
     }
-
     while (xml.readNextStartElement() && !xml.hasError()) {
         if (xml.name() == QLatin1String("EmulatorPlatform")) {
-            std::pair<QString, QString> platform;
+            Platform platform {};
             while (xml.readNextStartElement()) {
                 if (xml.name() == QLatin1String("Emulator")) {
-                    platform.first = xml.readElementText().trimmed();
+                    platform.default_emu_id = xml.readElementText().trimmed();
+                    continue;
+                }
+                if (xml.name() == QLatin1String("Platform")) {
+                    platform.name = xml.readElementText().trimmed();
                     continue;
                 }
                 if (xml.name() == QLatin1String("CommandLine")) {
-                    platform.second = xml.readElementText().trimmed();
+                    platform.cmd_params = xml.readElementText().trimmed();
                     continue;
                 }
                 xml.skipCurrentElement();
             }
-            if (!platform.first.isEmpty())
-                emu_params.emplace(std::move(platform));
+            if (!platform.name.isEmpty()) {
+                platform.xml_path = QFileInfo(platforms_dir % platform.name % QLatin1String(".xml"))
+                    .canonicalFilePath();
+            }
+            if (!platform.incomplete())
+                out.platforms.emplace_back(std::move(platform));
             continue;
         }
+
         if (xml.name() == QLatin1String("Emulator")) {
-            std::pair<QString, QString> emu;
+            EmulatorId emu_id;
+            Emulator emu {};
             while (xml.readNextStartElement()) {
                 if (xml.name() == QLatin1String("ID")) {
-                    emu.first = xml.readElementText().trimmed();
+                    emu_id = xml.readElementText().trimmed();
                     continue;
                 }
                 if (xml.name() == QLatin1String("ApplicationPath")) {
                     const QFileInfo finfo(lb_dir, xml.readElementText().trimmed());
-                    if (!finfo.exists()) {
+                    emu.app_path = finfo.canonicalFilePath();
+                    if (emu.app_path.isEmpty()) {
                         qWarning().noquote() << MSG_PREFIX
                             << tr_log("emulator `%1` doesn't seem to exist, entry ignored")
                                .arg(finfo.filePath());
-                        continue;
                     }
-                    emu.second = finfo.canonicalFilePath();
+                    continue;
+                }
+                if (xml.name() == QLatin1String("CommandLine")) {
+                    emu.cmd_params = xml.readElementText().trimmed();
                     continue;
                 }
                 xml.skipCurrentElement();
             }
-            if (!emu.first.isEmpty() && !emu.second.isEmpty())
-                emu_exes.emplace(std::move(emu));
+            // assume no collision
+            if (!emu_id.isEmpty() && !emu.incomplete())
+                out.emus.emplace(std::move(emu_id), std::move(emu));
             continue;
         }
+
         xml.skipCurrentElement();
     }
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 
-
-    HashMap<QString, QString> out;
-    constexpr QChar space(' ');
-
-    for (const auto& emu_param : emu_params) {
-        const auto parent_it = emu_exes.find(emu_param.first);
-        if (parent_it == emu_exes.cend())
-            continue;
-
-        QString launch_cmd = quote(parent_it->second) % space
-            % emu_param.second % space
-            % QLatin1String("{file.path}");
-        out.emplace(emu_param.first, std::move(launch_cmd));
+    // remove platforms without emulator
+    for (auto it = out.platforms.begin(); it != out.platforms.end();) {
+        const EmulatorId& emu_id = it->default_emu_id;
+        if (out.emus.find(emu_id) == out.emus.cend()) {
+            qWarning().noquote() << MSG_PREFIX
+                << tr_log("emulator platform `%1` refers to an missing emulator id, entry ignored")
+                   .arg(it->name);
+            it = out.platforms.erase(it);
+        }
+        else
+            ++it;
     }
+
     return out;
 }
 
@@ -420,15 +440,15 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         return;
     }
 
-    const HashMap<QString, QString> emulators = load_emulators(lb_dir);
-    if (emulators.empty()) {
+    const EmulatorData emu_data = read_emulators_xml(lb_dir);
+    if (emu_data.emus.empty()) {
         qWarning().noquote() << MSG_PREFIX << tr_log("no emulator settings found");
         return;
     }
-
-    const std::vector<QString> xml_paths = find_xmls(lb_dir);
-    if (xml_paths.empty())
+    if (emu_data.platforms.empty()) {
+        qWarning().noquote() << MSG_PREFIX << tr_log("no platforms found");
         return;
+    }
 
     const HashMap<QString, GameField> game_field_map {
         { QStringLiteral("ApplicationPath"), GameField::PATH },
@@ -441,6 +461,7 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         { QStringLiteral("Genre"), GameField::GENRE },
         { QStringLiteral("CommunityStarRating"), GameField::STARS },
         { QStringLiteral("Emulator"), GameField::EMULATOR },
+        { QStringLiteral("CommandLine"), GameField::EMULATOR_PARAMS },
     };
     const std::vector<std::pair<QString, AssetType>> assetdir_map { // ordered by priority
         { QStringLiteral("Box - Front"), AssetType::BOX_FRONT },
@@ -471,11 +492,9 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         { QStringLiteral("Fanart - Background"), AssetType::BACKGROUND },
         { QStringLiteral("Steam Banner"), AssetType::UI_STEAMGRID },
     };
-
-    for (const QString& path : xml_paths) {
-        const QString collection_name = QFileInfo(path).baseName();
-        process_xml(lb_dir, path, game_field_map, collection_name, emulators, sctx);
-        find_assets(lb_dir, collection_name, assetdir_map, sctx);
+    for (const Platform& platform : emu_data.platforms) {
+        process_platform_xml(game_field_map, lb_dir, platform, emu_data.emus, sctx);
+        find_assets(lb_dir, platform, assetdir_map, sctx);
     }
 }
 
