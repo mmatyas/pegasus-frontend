@@ -190,7 +190,7 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
     }
 
     game.launch_cmd = QStringLiteral("\"%1\" %2 {file.path}").arg(emu_app, emu_params);
-    game.launch_workdir = QLatin1String("{file.dir}");
+    game.launch_workdir = QFileInfo(emu_app).absolutePath();
 }
 
 void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
