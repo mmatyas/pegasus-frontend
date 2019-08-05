@@ -66,7 +66,7 @@ bool contains_slash(const QString& str)
 
 QString serialize_command(const QString& cmd, const QStringList& args)
 {
-    return (QStringList(cmd) + args).join(QLatin1String("`,`"));
+    return (QStringList(QDir::toNativeSeparators(cmd)) + args).join(QLatin1String("`,`"));
 }
 
 QString processerror_to_string(QProcess::ProcessError error)
