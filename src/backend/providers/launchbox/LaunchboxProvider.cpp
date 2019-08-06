@@ -67,21 +67,14 @@ struct Platform {
 };
 
 
-// FIXME: Very slow!
-HashMap<size_t, modeldata::Game>::iterator
-find_game_by_title(const QString& title,
-                   const std::vector<size_t>& coll_childs, HashMap<size_t, modeldata::Game>& games)
+HashMap<QString, const size_t>
+build_title_map(const std::vector<size_t>& coll_childs, const HashMap<size_t, modeldata::Game>& games)
 {
-    const auto child_it = std::find_if(coll_childs.cbegin(), coll_childs.cend(),
-        [&title, &games](const size_t gameid){
-            Q_ASSERT(games.find(gameid) != games.cend());
-            return games.at(gameid).title == title;
-        });
+    HashMap<QString, const size_t> out;
+    for (const size_t gameid : coll_childs)
+        out.emplace(games.at(gameid).title, gameid);
 
-    if (child_it != coll_childs.cend())
-        return games.find(*child_it);
-
-    return games.end();
+    return out;
 }
 
 void find_assets(const QString& lb_dir, const Platform& platform,
@@ -92,8 +85,8 @@ void find_assets(const QString& lb_dir, const Platform& platform,
     if (coll_childs_it == sctx.collection_childs.cend())
         return;
 
-    std::vector<size_t>& collection_childs = coll_childs_it->second;
-
+    const std::vector<size_t>& collection_childs = coll_childs_it->second;
+    const HashMap<QString, const size_t> title_to_gameid_map = build_title_map(collection_childs, sctx.games);
 
     const QString images_root = lb_dir % QLatin1String("Images/") % platform.name % QChar('/');
 
@@ -115,11 +108,11 @@ void find_assets(const QString& lb_dir, const Platform& platform,
             const QString basename = QFileInfo(path).completeBaseName();
             const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
 
-            const auto it = find_game_by_title(game_title, collection_childs, sctx.games);
-            if (it == sctx.games.cend())
+            const auto it = title_to_gameid_map.find(game_title);
+            if (it == title_to_gameid_map.cend())
                 continue;
 
-            modeldata::Game& game = it->second;
+            modeldata::Game& game = sctx.games.at(it->second);
             game.assets.addFileMaybe(assetdir_type, path);
         }
     }
