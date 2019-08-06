@@ -83,6 +83,30 @@ build_title_map(const std::vector<size_t>& coll_childs, const HashMap<size_t, mo
     return out;
 }
 
+void find_assets_in(const QString& asset_dir,
+                    const AssetType asset_type,
+                    const HashMap<QString, const size_t>& title_to_gameid_map,
+                    HashMap<size_t, modeldata::Game>& games)
+{
+    constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto recursive = QDirIterator::Subdirectories;
+
+    QDirIterator file_it(asset_dir, files_only, recursive);
+    while (file_it.hasNext()) {
+        file_it.next();
+
+        const QString basename = file_it.fileInfo().completeBaseName();
+        const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
+
+        const auto it = title_to_gameid_map.find(game_title);
+        if (it == title_to_gameid_map.cend())
+            continue;
+
+        modeldata::Game& game = games.at(it->second);
+        game.assets.addFileMaybe(asset_type, file_it.filePath());
+    }
+}
+
 void find_assets(const QString& lb_dir, const Platform& platform,
                  const std::vector<std::pair<QString, AssetType>>& assetdir_map,
                  providers::SearchContext& sctx)
@@ -94,34 +118,16 @@ void find_assets(const QString& lb_dir, const Platform& platform,
     const std::vector<size_t>& collection_childs = coll_childs_it->second;
     const HashMap<QString, const size_t> title_to_gameid_map = build_title_map(collection_childs, sctx.games);
 
-    const QString images_root = lb_dir % QLatin1String("Images/") % platform.name % QChar('/');
 
-    // constexpr auto dirs_only = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    constexpr auto recursive = QDirIterator::Subdirectories;
-
+    const QString images_root = lb_dir % QLatin1String("Images/") % platform.name % QLatin1Char('/');
     for (const auto& assetdir_pair : assetdir_map) {
         const QString assetdir_path = images_root + assetdir_pair.first;
         const AssetType assetdir_type = assetdir_pair.second;
-
-        std::vector<QString> paths; // for manual sorting
-        QDirIterator file_it(assetdir_path, files_only, recursive);
-        while (file_it.hasNext())
-            paths.emplace_back(file_it.next());
-
-        VEC_SORT(paths);
-        for (const QString& path : paths) {
-            const QString basename = QFileInfo(path).completeBaseName();
-            const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
-
-            const auto it = title_to_gameid_map.find(game_title);
-            if (it == title_to_gameid_map.cend())
-                continue;
-
-            modeldata::Game& game = sctx.games.at(it->second);
-            game.assets.addFileMaybe(assetdir_type, path);
-        }
+        find_assets_in(assetdir_path, assetdir_type, title_to_gameid_map, sctx.games);
     }
+
+    const QString music_root = lb_dir % QLatin1String("Music/") % platform.name % QLatin1Char('/');
+    find_assets_in(music_root, AssetType::MUSIC, title_to_gameid_map, sctx.games);
 }
 
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
