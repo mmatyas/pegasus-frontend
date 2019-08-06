@@ -24,6 +24,7 @@
 
 #include <QDebug>
 #include <QDirIterator>
+#include <QRegularExpression>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 #include <unordered_set>
@@ -70,10 +71,15 @@ struct Platform {
 HashMap<QString, const size_t>
 build_title_map(const std::vector<size_t>& coll_childs, const HashMap<size_t, modeldata::Game>& games)
 {
-    HashMap<QString, const size_t> out;
-    for (const size_t gameid : coll_childs)
-        out.emplace(games.at(gameid).title, gameid);
+    const QRegularExpression rx_invalid(QStringLiteral(R"([<>:"\/\\|?*'])"));
+    const QString underscore(QLatin1Char('_'));
 
+    HashMap<QString, const size_t> out;
+    for (const size_t gameid : coll_childs) {
+        QString title = games.at(gameid).title;
+        title.replace(rx_invalid, underscore);
+        out.emplace(std::move(title), gameid);
+    }
     return out;
 }
 
