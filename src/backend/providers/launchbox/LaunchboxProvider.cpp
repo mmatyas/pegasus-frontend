@@ -46,6 +46,53 @@ enum class GameField : unsigned char {
     EMULATOR,
     EMULATOR_PARAMS,
 };
+HashMap<QString, GameField> create_gamefield_literals() {
+    return {
+        { QStringLiteral("ApplicationPath"), GameField::PATH },
+        { QStringLiteral("Title"), GameField::TITLE },
+        { QStringLiteral("Developer"), GameField::DEVELOPER },
+        { QStringLiteral("Publisher"), GameField::PUBLISHER },
+        { QStringLiteral("ReleaseDate"), GameField::RELEASE },
+        { QStringLiteral("Notes"), GameField::NOTES },
+        { QStringLiteral("PlayMode"), GameField::PLAYMODE },
+        { QStringLiteral("Genre"), GameField::GENRE },
+        { QStringLiteral("CommunityStarRating"), GameField::STARS },
+        { QStringLiteral("Emulator"), GameField::EMULATOR },
+        { QStringLiteral("CommandLine"), GameField::EMULATOR_PARAMS },
+    };
+};
+std::vector<std::pair<QString, AssetType>> create_assetdir_literals() {
+    // ordered by priority
+    return {
+        { QStringLiteral("Box - Front"), AssetType::BOX_FRONT },
+        { QStringLiteral("Box - Front - Reconstructed"), AssetType::BOX_FRONT },
+        { QStringLiteral("Fanart - Box - Front"), AssetType::BOX_FRONT },
+
+        { QStringLiteral("Box - Back"), AssetType::BOX_BACK },
+        { QStringLiteral("Box - Back - Reconstructed"), AssetType::BOX_BACK },
+        { QStringLiteral("Fanart - Box - Back"), AssetType::BOX_BACK },
+
+        { QStringLiteral("Arcade - Marquee"), AssetType::ARCADE_MARQUEE },
+        { QStringLiteral("Banner"), AssetType::ARCADE_MARQUEE },
+
+        { QStringLiteral("Cart - Front"), AssetType::CARTRIDGE },
+        { QStringLiteral("Disc"), AssetType::CARTRIDGE },
+        { QStringLiteral("Fanart - Cart - Front"), AssetType::CARTRIDGE },
+        { QStringLiteral("Fanart - Disc"), AssetType::CARTRIDGE },
+
+        { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOTS },
+
+        { QStringLiteral("Advertisement Flyer - Front"), AssetType::POSTER },
+        { QStringLiteral("Arcade - Control Panel"), AssetType::ARCADE_PANEL },
+        { QStringLiteral("Clear Logo"), AssetType::LOGO },
+        { QStringLiteral("Fanart - Background"), AssetType::BACKGROUND },
+        { QStringLiteral("Steam Banner"), AssetType::UI_STEAMGRID },
+    };
+};
 
 using EmulatorId = QString;
 struct Emulator {
@@ -458,48 +505,9 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         return;
     }
 
-    const HashMap<QString, GameField> game_field_map {
-        { QStringLiteral("ApplicationPath"), GameField::PATH },
-        { QStringLiteral("Title"), GameField::TITLE },
-        { QStringLiteral("Developer"), GameField::DEVELOPER },
-        { QStringLiteral("Publisher"), GameField::PUBLISHER },
-        { QStringLiteral("ReleaseDate"), GameField::RELEASE },
-        { QStringLiteral("Notes"), GameField::NOTES },
-        { QStringLiteral("PlayMode"), GameField::PLAYMODE },
-        { QStringLiteral("Genre"), GameField::GENRE },
-        { QStringLiteral("CommunityStarRating"), GameField::STARS },
-        { QStringLiteral("Emulator"), GameField::EMULATOR },
-        { QStringLiteral("CommandLine"), GameField::EMULATOR_PARAMS },
-    };
-    const std::vector<std::pair<QString, AssetType>> assetdir_map { // ordered by priority
-        { QStringLiteral("Box - Front"), AssetType::BOX_FRONT },
-        { QStringLiteral("Box - Front - Reconstructed"), AssetType::BOX_FRONT },
-        { QStringLiteral("Fanart - Box - Front"), AssetType::BOX_FRONT },
+    const HashMap<QString, GameField> game_field_map = create_gamefield_literals();
+    const std::vector<std::pair<QString, AssetType>> assetdir_map = create_assetdir_literals();
 
-        { QStringLiteral("Box - Back"), AssetType::BOX_BACK },
-        { QStringLiteral("Box - Back - Reconstructed"), AssetType::BOX_BACK },
-        { QStringLiteral("Fanart - Box - Back"), AssetType::BOX_BACK },
-
-        { QStringLiteral("Arcade - Marquee"), AssetType::ARCADE_MARQUEE },
-        { QStringLiteral("Banner"), AssetType::ARCADE_MARQUEE },
-
-        { QStringLiteral("Cart - Front"), AssetType::CARTRIDGE },
-        { QStringLiteral("Disc"), AssetType::CARTRIDGE },
-        { QStringLiteral("Fanart - Cart - Front"), AssetType::CARTRIDGE },
-        { QStringLiteral("Fanart - Disc"), AssetType::CARTRIDGE },
-
-        { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOTS },
-
-        { QStringLiteral("Advertisement Flyer - Front"), AssetType::POSTER },
-        { QStringLiteral("Arcade - Control Panel"), AssetType::ARCADE_PANEL },
-        { QStringLiteral("Clear Logo"), AssetType::LOGO },
-        { QStringLiteral("Fanart - Background"), AssetType::BACKGROUND },
-        { QStringLiteral("Steam Banner"), AssetType::UI_STEAMGRID },
-    };
     for (const Platform& platform : emu_data.platforms) {
         process_platform_xml(game_field_map, lb_dir, platform, emu_data.emus, sctx);
         find_assets(lb_dir, platform, assetdir_map, sctx);
