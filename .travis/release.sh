@@ -41,5 +41,7 @@ done
 
 # Deploy
 
+sed -i "s/{{GIT_TAG}}/$(git describe --always --abbrev=0)/g" .travis/bintray_deb.json
+
 wget https://github.com/mmatyas/uploadtool/raw/master/upload.sh;
 bash ./upload.sh $FILES

@@ -5,10 +5,11 @@
         "name": "pegasus-frontend"
     },
     "version": {
-        "name": "continuous"
+        "name": "{{GIT_TAG}}",
+        "desc": "{{GIT_TAG}} series"
     },
     "files": [{
-        "includePattern": "dist/(.*\\.deb)",
+        "includePattern": "dist-x11-static/(.*\\.deb)",
         "uploadPattern": "pool/main/p/pegasus-frontend/$1",
         "matrixParams": {
             "deb_distribution": "testing",
