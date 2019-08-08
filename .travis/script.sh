@@ -29,7 +29,7 @@ if [[ $TARGET == macos* ]]; then
   INSTALLED_FILE=usr/local/pegasus-frontend/Pegasus.app
   INSTALLED_BINARY=${INSTALLED_FILE}/Contents/MacOS/pegasus-fe
 else
-  INSTALLED_FILE=opt/pegasus-frontend/pegasus-fe
+  INSTALLED_FILE=usr/bin/pegasus-fe
   INSTALLED_BINARY=${INSTALLED_FILE}
 fi
 
@@ -66,7 +66,7 @@ ${CROSS-}objdump -p "installoc/${INSTALLED_BINARY}" | grep NEEDED | sort
 # Create artifacts
 mkdir dist && pushd dist
   zip -j pegasus-fe_$(git describe --always)_${TARGET}.zip \
-    ../installoc/usr/bin/pegasus-fe \
+    "../installoc/${INSTALLED_FILE}" \
     ../README.md \
     ../LICENSE.md
 
