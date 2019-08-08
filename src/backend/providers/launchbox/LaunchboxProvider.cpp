@@ -128,6 +128,9 @@ void find_assets(const QString& lb_dir, const Platform& platform,
 
     const QString music_root = lb_dir % QLatin1String("Music/") % platform.name % QLatin1Char('/');
     find_assets_in(music_root, AssetType::MUSIC, title_to_gameid_map, sctx.games);
+
+    const QString video_root = lb_dir % QLatin1String("Videos/") % platform.name % QLatin1Char('/');
+    find_assets_in(video_root, AssetType::VIDEOS, title_to_gameid_map, sctx.games);
 }
 
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
