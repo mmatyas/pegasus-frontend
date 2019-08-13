@@ -34,7 +34,9 @@
 namespace {
 static constexpr auto MSG_PREFIX = "LaunchBox:";
 
+using GameId = QString;
 enum class GameField : unsigned char {
+    ID,
     PATH,
     TITLE,
     RELEASE,
@@ -47,13 +49,21 @@ enum class GameField : unsigned char {
     EMULATOR,
     EMULATOR_PARAMS,
 };
+enum class AdditionalAppField : unsigned char {
+    ID,
+    GAME_ID,
+    PATH,
+    NAME,
+};
 
 struct Literals {
     const HashMap<QString, GameField> gamefield_map;
+    const HashMap<QString, AdditionalAppField> addiappfield_map;
     const std::vector<std::pair<QString, AssetType>> assetdir_map;
 
     Literals()
         : gamefield_map({
+            { QStringLiteral("ID"), GameField::ID },
             { QStringLiteral("ApplicationPath"), GameField::PATH },
             { QStringLiteral("Title"), GameField::TITLE },
             { QStringLiteral("Developer"), GameField::DEVELOPER },
@@ -65,6 +75,12 @@ struct Literals {
             { QStringLiteral("CommunityStarRating"), GameField::STARS },
             { QStringLiteral("Emulator"), GameField::EMULATOR },
             { QStringLiteral("CommandLine"), GameField::EMULATOR_PARAMS },
+        })
+        , addiappfield_map({
+            { QStringLiteral("Id"), AdditionalAppField::ID },
+            { QStringLiteral("ApplicationPath"), AdditionalAppField::PATH },
+            { QStringLiteral("GameID"), AdditionalAppField::GAME_ID },
+            { QStringLiteral("Name"), AdditionalAppField::NAME },
         })
         , assetdir_map({ // ordered by priority
             { QStringLiteral("Box - Front"), AssetType::BOX_FRONT },
@@ -243,6 +259,7 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
                 emu_params = pair.second;
                 break;
             }
+            case GameField::ID:
             case GameField::PATH:
                 break;
             default:
@@ -254,9 +271,9 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
     game.launch_workdir = QFileInfo(emu_app).absolutePath();
 }
 
-void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
-                const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
-                providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
+size_t store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
+                  const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
+                  providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
     const QString can_path = finfo.canonicalFilePath();
 
@@ -274,12 +291,15 @@ void store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHa
 
     const size_t game_id = sctx.path_to_gameid.at(can_path);
     collection_childs.emplace_back(game_id);
+
+    return game_id;
 }
 
 void platform_xml_read_game(QXmlStreamReader& xml, const HashMap<QString, GameField>& field_map,
                             const QString& lb_dir,
                             const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
-                            providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
+                            providers::SearchContext& sctx, std::vector<size_t>& collection_childs,
+                            HashMap<GameId, size_t>& gameid_map)
 {
     HashMap<GameField, QString, EnumHash> game_values;
 
@@ -301,10 +321,16 @@ void platform_xml_read_game(QXmlStreamReader& xml, const HashMap<QString, GameFi
     // sanity check
     const QString xmlpath = static_cast<QFile*>(xml.device())->fileName();
 
+    const auto id_it = game_values.find(GameField::ID);
+    if (id_it == game_values.cend()) {
+        qWarning().noquote() << MSG_PREFIX << tr_log("in `%1`, a game has no ID, entry ignored").arg(xmlpath);
+        return;
+    }
+
     const auto path_it = game_values.find(GameField::PATH);
-    const bool has_path = path_it != game_values.cend();
-    if (!has_path) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("a game in `%1` has no path, entry ignored").arg(xmlpath);
+    if (path_it == game_values.cend()) {
+        qWarning().noquote() << MSG_PREFIX << tr_log("in `%1`, game `%1` has no path, entry ignored")
+            .arg(xmlpath, id_it->second);
         return;
     }
 
@@ -316,10 +342,101 @@ void platform_xml_read_game(QXmlStreamReader& xml, const HashMap<QString, GameFi
         return;
     }
 
-    store_game(game_finfo, game_values, platform, emulators, sctx, collection_childs);
+    const size_t gameid = store_game(game_finfo, game_values, platform, emulators, sctx, collection_childs);
+
+    gameid_map.emplace(game_values.at(GameField::ID), gameid);
 }
 
-void platform_xml_read_root(QXmlStreamReader& xml, const HashMap<QString, GameField> field_map,
+HashMap<AdditionalAppField, QString, EnumHash>
+platform_xml_read_addiapp(QXmlStreamReader& xml,
+                          const HashMap<QString, AdditionalAppField>& field_map)
+{
+    HashMap<AdditionalAppField, QString, EnumHash> entries;
+
+    while (xml.readNextStartElement()) {
+        const auto field_it = field_map.find(xml.name().toString());
+        if (field_it == field_map.cend()) {
+            xml.skipCurrentElement();
+            continue;
+        }
+
+        const QString contents = xml.readElementText().trimmed(); // TODO: maybe strrefs
+        if (contents.isEmpty())
+            continue;
+
+        entries.emplace(field_it->second, contents);
+    }
+
+    return entries;
+}
+
+void store_addiapp(const QString& xmlpath,
+                   const QString& lb_dir,
+                   const HashMap<AdditionalAppField, QString, EnumHash>& values,
+                   const HashMap<GameId, size_t>& gameid_map,
+                   providers::SearchContext& sctx)
+{
+    const auto id_it = values.find(AdditionalAppField::ID);
+    if (id_it == values.cend()) {
+        qWarning().noquote() << MSG_PREFIX
+            << tr_log("in `%1`, an additional application entry has no ID, entry ignored").arg(xmlpath);
+        return;
+    }
+
+    const auto lb_gameid_it = values.find(AdditionalAppField::GAME_ID);
+    if (lb_gameid_it == values.cend()) {
+        qWarning().noquote() << MSG_PREFIX
+            << tr_log("in `%1`, additional application entry `%2` has no GameID field, entry ignored")
+               .arg(xmlpath, id_it->second);
+        return;
+    }
+    const auto gameid_it = gameid_map.find(lb_gameid_it->second);
+    if (gameid_it == gameid_map.cend()) {
+        qWarning().noquote() << MSG_PREFIX
+            << tr_log("in `%1`, additional application entry `%2` refers to nonexisting game `%3`, entry ignored")
+               .arg(xmlpath, id_it->second, lb_gameid_it->second);
+        return;
+    }
+
+    const auto path_it = values.find(AdditionalAppField::PATH);
+    if (path_it == values.cend()) {
+        qWarning().noquote() << MSG_PREFIX
+            << tr_log("in `%1`, additional application entry `%2` has no path, entry ignored")
+               .arg(xmlpath, id_it->second);
+        return;
+    }
+    QFileInfo path_finfo(lb_dir, path_it->second);
+    if (!path_finfo.exists()) {
+        qWarning().noquote() << MSG_PREFIX
+            << tr_log("in `%1`, additional application entry `%2` refers to nonexisting file `%3`, entry ignored")
+               .arg(xmlpath, path_it->second);
+        return;
+    }
+
+    const size_t gameid = gameid_it->second;
+    const auto name_it = values.find(AdditionalAppField::NAME);
+    QString can_path = path_finfo.canonicalFilePath();
+
+    modeldata::Game& game = sctx.games.at(gameid);
+
+    // if it refers to an existing path, do not duplicate, but try to give it a name
+    const auto file_it = std::find_if(game.files.begin(), game.files.end(),
+        [&path_finfo](const modeldata::GameFile& gf){ return gf.fileinfo == path_finfo; });
+    if (file_it != game.files.end()) {
+        if (name_it != values.cend())
+            file_it->name = name_it->second;
+    }
+    else {
+        game.files.emplace_back(std::move(path_finfo));
+        if (name_it != values.cend())
+            game.files.back().name = name_it->second;
+    }
+
+    sctx.path_to_gameid.emplace(std::move(can_path), gameid);
+}
+
+void platform_xml_read_root(QXmlStreamReader& xml,
+                            const Literals& lit,
                             const QString& lb_dir,
                             const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
                             providers::SearchContext& sctx)
@@ -341,17 +458,28 @@ void platform_xml_read_root(QXmlStreamReader& xml, const HashMap<QString, GameFi
 
     std::vector<size_t>& collection_childs = sctx.collection_childs[platform.name];
 
+    // should be handled after all games have been found
+    std::vector<HashMap<AdditionalAppField, QString, EnumHash>> addiapps;
+    HashMap<GameId, size_t> gameid_map;
 
     while (xml.readNextStartElement()) {
-        if (xml.name() != QLatin1String("Game")) {
-            xml.skipCurrentElement();
+        if (xml.name() == QLatin1String("Game")) {
+            platform_xml_read_game(xml, lit.gamefield_map, lb_dir, platform, emulators, sctx, collection_childs, gameid_map);
             continue;
         }
-        platform_xml_read_game(xml, field_map, lb_dir, platform, emulators, sctx, collection_childs);
+        if (xml.name() == QLatin1String("AdditionalApplication")) {
+            addiapps.emplace_back(platform_xml_read_addiapp(xml, lit.addiappfield_map));
+            continue;
+        }
+        xml.skipCurrentElement();
     }
+
+    const QString xmlpath = static_cast<QFile*>(xml.device())->fileName();
+    for (const auto& values : addiapps)
+        store_addiapp(xmlpath, lb_dir, values, gameid_map, sctx);
 }
 
-void process_platform_xml(const HashMap<QString, GameField> field_map,
+void process_platform_xml(const Literals& literals,
                           const QString& lb_dir,
                           const Platform& platform,
                           const HashMap<EmulatorId, Emulator>& emulators,
@@ -364,7 +492,7 @@ void process_platform_xml(const HashMap<QString, GameField> field_map,
     }
 
     QXmlStreamReader xml(&xml_file);
-    platform_xml_read_root(xml, field_map, lb_dir, platform, emulators, sctx);
+    platform_xml_read_root(xml, literals, lb_dir, platform, emulators, sctx);
     if (xml.error())
         qWarning().noquote() << MSG_PREFIX << xml.errorString();
 }
@@ -513,7 +641,7 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
 
     const Literals literals;
     for (const Platform& platform : emu_data.platforms) {
-        process_platform_xml(literals.gamefield_map, lb_dir, platform, emu_data.emus, sctx);
+        process_platform_xml(literals, lb_dir, platform, emu_data.emus, sctx);
         find_assets(lb_dir, platform, literals.assetdir_map, sctx);
     }
 }
