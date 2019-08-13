@@ -175,7 +175,7 @@ void ApiObject::onGameLaunchOk()
     m_providerman.onGameLaunched(m_launch_game_file);
 }
 
-void ApiObject::onGameLaunchError(const QString msg)
+void ApiObject::onGameLaunchError(QString msg)
 {
     Q_ASSERT(m_launch_game_file);
     m_launch_game_file = nullptr;

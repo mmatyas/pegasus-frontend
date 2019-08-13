@@ -247,7 +247,7 @@ void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, con
     QVector<QKeySequence> keyseqs;
 
     const auto key_strs = val.splitRef(',');
-    for (QStringRef strref : key_strs) {
+    for (const QStringRef& strref : key_strs) {
         const QString str = strref.trimmed().toString();
 
         const auto gamepadbtn_it = reverse_gamepadButtonNames.find(str);

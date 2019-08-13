@@ -83,7 +83,7 @@ QJsonDocument read_json_from_cache(const QString& provider_prefix,
     if (!json_file.open(QIODevice::ReadOnly))
         return {};
 
-    QJsonParseError parse_result;
+    QJsonParseError parse_result {};
     auto json = QJsonDocument::fromJson(json_file.readAll(), &parse_result);
     if (parse_result.error != QJsonParseError::NoError) {
         qWarning().noquote()

@@ -85,7 +85,7 @@ QVariantMap load_map_maybe(const QString& settings_dir, const QString& theme_id)
         return {};
     }
 
-    QJsonParseError parse_error;
+    QJsonParseError parse_error {};
     const auto json_doc = QJsonDocument::fromJson(json_file.readAll(), &parse_error);
     if (json_doc.isNull()) {
         qWarning().noquote()

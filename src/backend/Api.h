@@ -53,7 +53,7 @@ public:
 
 signals:
     void launchGameFile(const model::GameFile*);
-    void launchFailed(const QString);
+    void launchFailed(QString);
     void memoryChanged();
 
     // triggers translation update
@@ -68,7 +68,7 @@ public slots:
     // game launch communication
     void onGameFinished();
     void onGameLaunchOk();
-    void onGameLaunchError(const QString);
+    void onGameLaunchError(QString);
 
 private slots:
     // internal communication

@@ -40,7 +40,7 @@ public:
 
 signals:
     void processLaunchOk();
-    void processLaunchError(const QString);
+    void processLaunchError(QString);
     void processFinished();
 
 public slots:

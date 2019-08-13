@@ -38,7 +38,7 @@
 template<typename List1, typename List2>
 typename List1::iterator vec_append_move(List1& dest, List2&& src)
 {
-    typename List1::iterator result = dest.insert(
+    auto result = dest.insert(
         dest.end(),
         std::make_move_iterator(src.begin()),
         std::make_move_iterator(src.end()));
