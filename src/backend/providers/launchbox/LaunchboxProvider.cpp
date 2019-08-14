@@ -154,6 +154,7 @@ build_title_map(const std::vector<size_t>& coll_childs, const HashMap<size_t, mo
 
 void find_assets_in(const QString& asset_dir,
                     const AssetType asset_type,
+                    const bool has_num_suffix,
                     const HashMap<QString, const size_t>& title_to_gameid_map,
                     HashMap<size_t, modeldata::Game>& games)
 {
@@ -165,7 +166,9 @@ void find_assets_in(const QString& asset_dir,
         file_it.next();
 
         const QString basename = file_it.fileInfo().completeBaseName();
-        const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
+        const QString game_title = has_num_suffix
+            ? basename.left(basename.length() - 3) // gamename "-xx" .ext
+            : basename;
 
         const auto it = title_to_gameid_map.find(game_title);
         if (it == title_to_gameid_map.cend())
@@ -192,14 +195,14 @@ void find_assets(const QString& lb_dir, const Platform& platform,
     for (const auto& assetdir_pair : assetdir_map) {
         const QString assetdir_path = images_root + assetdir_pair.first;
         const AssetType assetdir_type = assetdir_pair.second;
-        find_assets_in(assetdir_path, assetdir_type, title_to_gameid_map, sctx.games);
+        find_assets_in(assetdir_path, assetdir_type, true, title_to_gameid_map, sctx.games);
     }
 
     const QString music_root = lb_dir % QLatin1String("Music/") % platform.name % QLatin1Char('/');
-    find_assets_in(music_root, AssetType::MUSIC, title_to_gameid_map, sctx.games);
+    find_assets_in(music_root, AssetType::MUSIC, false, title_to_gameid_map, sctx.games);
 
     const QString video_root = lb_dir % QLatin1String("Videos/") % platform.name % QLatin1Char('/');
-    find_assets_in(video_root, AssetType::VIDEOS, title_to_gameid_map, sctx.games);
+    find_assets_in(video_root, AssetType::VIDEOS, false, title_to_gameid_map, sctx.games);
 }
 
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
