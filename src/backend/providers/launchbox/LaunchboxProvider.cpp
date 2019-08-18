@@ -138,7 +138,7 @@ struct Platform {
 
 
 HashMap<QString, const size_t>
-build_title_map(const std::vector<size_t>& coll_childs, const HashMap<size_t, modeldata::Game>& games)
+build_escaped_title_map(const std::vector<size_t>& coll_childs, const HashMap<size_t, modeldata::Game>& games)
 {
     const QRegularExpression rx_invalid(QStringLiteral(R"([<>:"\/\\|?*'])"));
     const QString underscore(QLatin1Char('_'));
@@ -179,6 +179,47 @@ void find_assets_in(const QString& asset_dir,
     }
 }
 
+void find_videos_in(const QString& asset_dir,
+                    const HashMap<QString, const size_t>& title_to_gameid_map,
+                    HashMap<size_t, modeldata::Game>& games)
+{
+    constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto recursive = QDirIterator::Subdirectories;
+
+    QDirIterator file_it(asset_dir, files_only, recursive);
+    while (file_it.hasNext()) {
+        file_it.next();
+
+        const QString basename = file_it.fileInfo().completeBaseName();
+
+        int title_range_end = basename.size();
+        if (basename.endsWith(QLatin1Char(')'))) {
+            const int idx = basename.lastIndexOf(QLatin1Char('('), -2);
+            if (0 < idx)
+                title_range_end = idx;
+        }
+
+        QString game_title = basename
+            .leftRef(title_range_end)
+            .trimmed()
+            .toString();
+
+        auto it = title_to_gameid_map.find(game_title);
+        if (it == title_to_gameid_map.cend()) {
+            game_title.replace(QLatin1String(" - "), QLatin1String(": "));
+            if (game_title.endsWith(QLatin1String(", The")))
+                game_title = QLatin1String("The ") + game_title.leftRef(game_title.length() - 5);
+
+            it = title_to_gameid_map.find(game_title);
+            if (it == title_to_gameid_map.cend())
+                continue;
+        }
+
+        modeldata::Game& game = games.at(it->second);
+        game.assets.addFileMaybe(AssetType::VIDEOS, file_it.filePath());
+    }
+}
+
 void find_assets(const QString& lb_dir, const Platform& platform,
                  const std::vector<std::pair<QString, AssetType>>& assetdir_map,
                  providers::SearchContext& sctx)
@@ -188,21 +229,27 @@ void find_assets(const QString& lb_dir, const Platform& platform,
         return;
 
     const std::vector<size_t>& collection_childs = coll_childs_it->second;
-    const HashMap<QString, const size_t> title_to_gameid_map = build_title_map(collection_childs, sctx.games);
+    {
+        const HashMap<QString, const size_t> esctitle_to_gameid_map = build_escaped_title_map(collection_childs, sctx.games);
 
+        const QString images_root = lb_dir % QLatin1String("Images/") % platform.name % QLatin1Char('/');
+        for (const auto& assetdir_pair : assetdir_map) {
+            const QString assetdir_path = images_root + assetdir_pair.first;
+            const AssetType assetdir_type = assetdir_pair.second;
+            find_assets_in(assetdir_path, assetdir_type, true, esctitle_to_gameid_map, sctx.games);
+        }
 
-    const QString images_root = lb_dir % QLatin1String("Images/") % platform.name % QLatin1Char('/');
-    for (const auto& assetdir_pair : assetdir_map) {
-        const QString assetdir_path = images_root + assetdir_pair.first;
-        const AssetType assetdir_type = assetdir_pair.second;
-        find_assets_in(assetdir_path, assetdir_type, true, title_to_gameid_map, sctx.games);
+        const QString music_root = lb_dir % QLatin1String("Music/") % platform.name % QLatin1Char('/');
+        find_assets_in(music_root, AssetType::MUSIC, false, esctitle_to_gameid_map, sctx.games);
     }
+    {
+        HashMap<QString, const size_t> title_to_gameid_map;
+        for (const size_t gameid : collection_childs)
+            title_to_gameid_map.emplace(sctx.games.at(gameid).title, gameid);
 
-    const QString music_root = lb_dir % QLatin1String("Music/") % platform.name % QLatin1Char('/');
-    find_assets_in(music_root, AssetType::MUSIC, false, title_to_gameid_map, sctx.games);
-
-    const QString video_root = lb_dir % QLatin1String("Videos/") % platform.name % QLatin1Char('/');
-    find_assets_in(video_root, AssetType::VIDEOS, false, title_to_gameid_map, sctx.games);
+        const QString video_root = lb_dir % QLatin1String("Videos/") % platform.name % QLatin1Char('/');
+        find_videos_in(video_root, title_to_gameid_map, sctx.games);
+    }
 }
 
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
