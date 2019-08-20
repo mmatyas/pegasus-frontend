@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
 
 
 import QtQuick 2.8
-import QtGamepad 1.0
 
 Item {
     id: padContainer
@@ -25,7 +24,7 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     anchors.verticalCenterOffset: vpx(45)
 
-    property Gamepad gamepad
+    property var gamepad
     property string currentButton: ""
 
 
@@ -54,7 +53,7 @@ Item {
         }
 
         shortName: "l2"
-        pressed: gamepad.buttonL2
+        pressed: gamepad && gamepad.buttonL2
     }
     PadShoulder {
         id: padL1
@@ -67,7 +66,7 @@ Item {
         }
 
         shortName: "l1"
-        pressed: gamepad.buttonL1
+        pressed: gamepad && gamepad.buttonL1
     }
     PadTrigger {
         id: padR2
@@ -80,7 +79,7 @@ Item {
         }
 
         shortName: "r2"
-        pressed: gamepad.buttonR2
+        pressed: gamepad && gamepad.buttonR2
     }
     PadShoulder {
         id: padR1
@@ -93,7 +92,7 @@ Item {
         }
 
         shortName: "r1"
-        pressed: gamepad.buttonR1
+        pressed: gamepad && gamepad.buttonR1
     }
 
     Item {
@@ -111,7 +110,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "select"
-            pressed: gamepad.buttonSelect
+            pressed: gamepad && gamepad.buttonSelect
         }
         PadButton {
             id: padStart
@@ -120,7 +119,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "start"
-            pressed: gamepad.buttonStart
+            pressed: gamepad && gamepad.buttonStart
         }
         PadButton {
             id: padGuide
@@ -128,7 +127,7 @@ Item {
             anchors.centerIn: parent
 
             shortName: "guide"
-            pressed: gamepad.buttonGuide
+            pressed: gamepad && gamepad.buttonGuide
         }
     }
 
@@ -149,7 +148,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             shortName: "a"
-            pressed: gamepad.buttonA
+            pressed: gamepad && gamepad.buttonA
         }
         PadButton {
             id: padB
@@ -158,7 +157,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "b"
-            pressed: gamepad.buttonB
+            pressed: gamepad && gamepad.buttonB
         }
         PadButton {
             id: padX
@@ -167,7 +166,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "x"
-            pressed: gamepad.buttonX
+            pressed: gamepad && gamepad.buttonX
         }
         PadButton {
             id: padY
@@ -175,7 +174,7 @@ Item {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             shortName: "y"
-            pressed: gamepad.buttonY
+            pressed: gamepad && gamepad.buttonY
         }
     }
     Dpad {
@@ -202,9 +201,9 @@ Item {
         }
 
         side: "l"
-        pressed: gamepad.buttonL3
-        xPercent: gamepad.axisLeftX
-        yPercent: gamepad.axisLeftY
+        pressed: gamepad && gamepad.buttonL3
+        xPercent: (gamepad && gamepad.axisLeftX) || 0.0
+        yPercent: (gamepad && gamepad.axisLeftY) || 0.0
     }
     Stick {
         id: padRightStick
@@ -216,8 +215,8 @@ Item {
             leftMargin: padLeftStick.anchors.rightMargin
         }
         side: "r"
-        pressed: gamepad.buttonR3
-        xPercent: gamepad.axisRightX
-        yPercent: gamepad.axisRightY
+        pressed: gamepad && gamepad.buttonR3
+        xPercent: (gamepad && gamepad.axisRightX) || 0.0
+        yPercent: (gamepad && gamepad.axisRightY) || 0.0
     }
 }

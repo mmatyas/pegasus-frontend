@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,10 +16,9 @@
 
 
 import QtQuick 2.8
-import QtGamepad 1.0
 
 Item {
-    property Gamepad gamepad
+    property var gamepad
 
     Image {
         z: 100
@@ -38,27 +37,27 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         highlighted: padContainer.currentButton === "dpleft"
-        pressed: gamepad.buttonLeft
+        pressed: gamepad && gamepad.buttonLeft
     }
     DpadHighlight {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
         highlighted: padContainer.currentButton === "dpright"
-        pressed: gamepad.buttonRight
+        pressed: gamepad && gamepad.buttonRight
     }
     DpadHighlight {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
         highlighted: padContainer.currentButton === "dpup"
-        pressed: gamepad.buttonUp
+        pressed: gamepad && gamepad.buttonUp
     }
     DpadHighlight {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
 
         highlighted: padContainer.currentButton === "dpdown"
-        pressed: gamepad.buttonDown
+        pressed: gamepad && gamepad.buttonDown
     }
 }
