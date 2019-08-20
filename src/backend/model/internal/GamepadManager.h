@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,25 +17,34 @@
 
 #pragma once
 
-#include "GamepadManager.h"
-#include "Meta.h"
-#include "System.h"
-#include "settings/Settings.h"
-#include "utils/QmlHelpers.h"
+#include "utils/HashMap.h"
 
+#include "QtQmlTricks/QQmlObjectListModel.h"
+#include <QtGamepad>
 #include <QObject>
+#include <QString>
+#include <QVector>
 
 
 namespace model {
-class Internal : public QObject {
+
+class GamepadManager : public QObject {
     Q_OBJECT
 
-    QML_CONST_PROPERTY(model::Meta, meta)
-    QML_CONST_PROPERTY(model::Settings, settings)
-    QML_CONST_PROPERTY(model::System, system)
-    QML_CONST_PROPERTY(model::GamepadManager, gamepad)
+    QML_OBJMODEL_PROPERTY(QGamepad, devices)
 
 public:
-    explicit Internal();
+    explicit GamepadManager(QObject* parent = nullptr);
+
+signals:
+    void connected(int);
+    void disconnected(QString);
+
+private slots:
+    void bkOnConnected(int);
+    void bkOnDisconnected(int);
+    void bkOnNameChanged(int, QString);
 };
+
 } // namespace model
+
