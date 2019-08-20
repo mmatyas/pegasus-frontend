@@ -17,9 +17,9 @@
 
 #pragma once
 
+#include "types/GamepadKeyId.h"
 #include "utils/HashMap.h"
 
-#include <QGamepadManager>
 #include <QObject>
 #include <QTimer>
 
@@ -31,12 +31,11 @@ public:
     explicit GamepadButtonNavigation(QObject* parent = nullptr);
 
 public slots:
-    void onButtonPress(int deviceId, QGamepadManager::GamepadButton button);
-    void onButtonRelease(int deviceId, QGamepadManager::GamepadButton button);
+    void onButtonChanged(int deviceId, GamepadButton button, bool pressed);
 
 private:
-    const HashMap<QGamepadManager::GamepadButton, QTimer* const, EnumHash> m_timers;
-    const HashMap<QGamepadManager::GamepadButton, Qt::Key, EnumHash> m_keys;
+    const HashMap<GamepadButton, QTimer* const, EnumHash> m_timers;
+    const HashMap<GamepadButton, Qt::Key, EnumHash> m_keys;
 
 private slots:
     void onTimerTimeout();

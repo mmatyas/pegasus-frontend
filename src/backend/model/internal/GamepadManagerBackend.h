@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "types/GamepadKeyId.h"
+
 #include <QObject>
 #include <QString>
 
@@ -34,6 +36,11 @@ signals:
     void connected(int);
     void disconnected(int);
     void nameChanged(int, QString);
+
+    void buttonChanged(int, GamepadButton, bool);
+    void axisChanged(int, GamepadAxis, double);
+
+    void configChanged();
 };
 
 } // namespace model

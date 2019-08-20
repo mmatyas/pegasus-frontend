@@ -17,7 +17,17 @@
 
 #include "GamepadManager.h"
 
+#include "ScriptRunner.h"
 #include "GamepadManagerQt.h"
+
+
+namespace {
+void on_gamepad_reconfig()
+{
+    ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
+    ScriptRunner::run(ScriptEvent::CONTROLS_CHANGED);
+}
+} // namespace
 
 
 namespace model {
@@ -25,7 +35,42 @@ namespace model {
 GamepadManager::GamepadManager(QObject* parent)
     : QObject(parent)
     , m_backend(new GamepadManagerQt(this))
-{}
+{
+    connect(m_backend, &GamepadManagerBackend::connected,
+            this, &GamepadManager::bkOnConnected);
+    connect(m_backend, &GamepadManagerBackend::disconnected,
+            this, &GamepadManager::bkOnDisconnected);
+    connect(m_backend, &GamepadManagerBackend::nameChanged,
+            this, &GamepadManager::bkOnNameChanged);
+    connect(m_backend, &GamepadManagerBackend::configChanged, on_gamepad_reconfig);
+
+#ifdef Q_OS_ANDROID
+    #define SET_GAMEPAD_KEY(fnName, enumName) \
+        padkeynav.setButton ## fnName ## Key(static_cast<Qt::Key>(GamepadKeyId::enumName));
+    SET_GAMEPAD_KEY(A, A);
+    SET_GAMEPAD_KEY(B, B);
+    SET_GAMEPAD_KEY(X, X);
+    SET_GAMEPAD_KEY(Y, Y);
+    SET_GAMEPAD_KEY(L1, L1);
+    SET_GAMEPAD_KEY(L2, L2);
+    SET_GAMEPAD_KEY(L3, L3);
+    SET_GAMEPAD_KEY(R1, R1);
+    SET_GAMEPAD_KEY(R2, R2);
+    SET_GAMEPAD_KEY(R3, R3);
+    SET_GAMEPAD_KEY(Select, SELECT);
+    SET_GAMEPAD_KEY(Start, START);
+    SET_GAMEPAD_KEY(Guide, GUIDE);
+    #undef SET_GAMEPAD_KEY
+#else
+    connect(m_backend, &GamepadManagerBackend::buttonChanged,
+            &padbuttonnav, &GamepadButtonNavigation::onButtonChanged);
+    connect(m_backend, &GamepadManagerBackend::axisChanged,
+            &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
+
+    connect(&padaxisnav, &GamepadAxisNavigation::buttonChanged,
+            &padbuttonnav, &GamepadButtonNavigation::onButtonChanged);
+#endif // Q_OS_ANDROID
+}
 
 void GamepadManager::bkOnConnected(int device_id)
 {

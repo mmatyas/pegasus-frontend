@@ -17,9 +17,9 @@
 
 #pragma once
 
+#include "types/GamepadKeyId.h"
 #include "utils/HashMap.h"
 
-#include <QGamepadManager>
 #include <QObject>
 
 
@@ -30,13 +30,12 @@ public:
     explicit GamepadAxisNavigation(QObject* parent = nullptr);
 
 public slots:
-    void onAxisEvent(int deviceId, QGamepadManager::GamepadAxis axis, double axisValue);
+    void onAxisEvent(int deviceId, GamepadAxis axis, double axisValue);
 
 signals:
-    void buttonPressed(int deviceId, QGamepadManager::GamepadButton button);
-    void buttonReleased(int deviceId, QGamepadManager::GamepadButton button);
+    void buttonChanged(int deviceId, GamepadButton button, bool pressed);
 
 private:
-    using DeviceAxes = HashMap<QGamepadManager::GamepadAxis, double, EnumHash>;
+    using DeviceAxes = HashMap<GamepadAxis, double, EnumHash>;
     HashMap<int, DeviceAxes> devices;
 };

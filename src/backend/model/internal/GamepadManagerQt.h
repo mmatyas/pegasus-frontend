@@ -19,12 +19,19 @@
 
 #include "GamepadManagerBackend.h"
 
+#include <QGamepadManager>
+
 
 namespace model {
 
 class GamepadManagerQt : public GamepadManagerBackend {
 public:
     explicit GamepadManagerQt(QObject* parent = nullptr);
+
+private slots:
+    void fwd_button_press(int, QGamepadManager::GamepadButton);
+    void fwd_button_release(int, QGamepadManager::GamepadButton);
+    void fwd_axis_event(int, QGamepadManager::GamepadAxis, double);
 };
 
 } // namespace model

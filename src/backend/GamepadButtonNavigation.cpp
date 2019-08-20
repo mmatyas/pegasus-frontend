@@ -17,13 +17,9 @@
 
 #include "GamepadButtonNavigation.h"
 
-#include "types/GamepadKeyId.h"
-
 #include <QGuiApplication>
 #include <QKeyEvent>
 #include <QWindow>
-
-using QGamepadButton = QGamepadManager::GamepadButton;
 
 
 namespace {
@@ -46,42 +42,42 @@ void emit_key(Qt::Key key, QEvent::Type event_type, bool autorep)
 GamepadButtonNavigation::GamepadButtonNavigation(QObject* parent)
     : QObject(parent)
     , m_timers {
-        { QGamepadButton::ButtonUp, new QTimer(this) },
-        { QGamepadButton::ButtonDown, new QTimer(this) },
-        { QGamepadButton::ButtonLeft, new QTimer(this) },
-        { QGamepadButton::ButtonRight, new QTimer(this) },
-        { QGamepadButton::ButtonA, new QTimer(this) },
-        { QGamepadButton::ButtonB, new QTimer(this) },
-        { QGamepadButton::ButtonX, new QTimer(this) },
-        { QGamepadButton::ButtonY, new QTimer(this) },
-        { QGamepadButton::ButtonL1, new QTimer(this) },
-        { QGamepadButton::ButtonL2, new QTimer(this) },
-        { QGamepadButton::ButtonL3, new QTimer(this) },
-        { QGamepadButton::ButtonR1, new QTimer(this) },
-        { QGamepadButton::ButtonR2, new QTimer(this) },
-        { QGamepadButton::ButtonR3, new QTimer(this) },
-        { QGamepadButton::ButtonSelect, new QTimer(this) },
-        { QGamepadButton::ButtonStart, new QTimer(this) },
-        { QGamepadButton::ButtonGuide, new QTimer(this) },
+        { GamepadButton::UP, new QTimer(this) },
+        { GamepadButton::DOWN, new QTimer(this) },
+        { GamepadButton::LEFT, new QTimer(this) },
+        { GamepadButton::RIGHT, new QTimer(this) },
+        { GamepadButton::NORTH, new QTimer(this) },
+        { GamepadButton::SOUTH, new QTimer(this) },
+        { GamepadButton::EAST, new QTimer(this) },
+        { GamepadButton::WEST, new QTimer(this) },
+        { GamepadButton::L1, new QTimer(this) },
+        { GamepadButton::L2, new QTimer(this) },
+        { GamepadButton::L3, new QTimer(this) },
+        { GamepadButton::R1, new QTimer(this) },
+        { GamepadButton::R2, new QTimer(this) },
+        { GamepadButton::R3, new QTimer(this) },
+        { GamepadButton::SELECT, new QTimer(this) },
+        { GamepadButton::START, new QTimer(this) },
+        { GamepadButton::GUIDE, new QTimer(this) },
     }
     , m_keys {
-        { QGamepadButton::ButtonUp, Qt::Key_Up },
-        { QGamepadButton::ButtonDown, Qt::Key_Down },
-        { QGamepadButton::ButtonLeft, Qt::Key_Left },
-        { QGamepadButton::ButtonRight, Qt::Key_Right },
-        { QGamepadButton::ButtonA, static_cast<Qt::Key>(GamepadKeyId::A) },
-        { QGamepadButton::ButtonB, static_cast<Qt::Key>(GamepadKeyId::B) },
-        { QGamepadButton::ButtonX, static_cast<Qt::Key>(GamepadKeyId::X) },
-        { QGamepadButton::ButtonY, static_cast<Qt::Key>(GamepadKeyId::Y) },
-        { QGamepadButton::ButtonL1, static_cast<Qt::Key>(GamepadKeyId::L1) },
-        { QGamepadButton::ButtonL2, static_cast<Qt::Key>(GamepadKeyId::L2) },
-        { QGamepadButton::ButtonL3, static_cast<Qt::Key>(GamepadKeyId::L3) },
-        { QGamepadButton::ButtonR1, static_cast<Qt::Key>(GamepadKeyId::R1) },
-        { QGamepadButton::ButtonR2, static_cast<Qt::Key>(GamepadKeyId::R2) },
-        { QGamepadButton::ButtonR3, static_cast<Qt::Key>(GamepadKeyId::R3) },
-        { QGamepadButton::ButtonSelect, static_cast<Qt::Key>(GamepadKeyId::SELECT) },
-        { QGamepadButton::ButtonStart, static_cast<Qt::Key>(GamepadKeyId::START) },
-        { QGamepadButton::ButtonGuide, static_cast<Qt::Key>(GamepadKeyId::GUIDE) },
+        { GamepadButton::UP, Qt::Key_Up },
+        { GamepadButton::DOWN, Qt::Key_Down },
+        { GamepadButton::LEFT, Qt::Key_Left },
+        { GamepadButton::RIGHT, Qt::Key_Right },
+        { GamepadButton::SOUTH, static_cast<Qt::Key>(GamepadKeyId::A) },
+        { GamepadButton::EAST, static_cast<Qt::Key>(GamepadKeyId::B) },
+        { GamepadButton::WEST, static_cast<Qt::Key>(GamepadKeyId::X) },
+        { GamepadButton::NORTH, static_cast<Qt::Key>(GamepadKeyId::Y) },
+        { GamepadButton::L1, static_cast<Qt::Key>(GamepadKeyId::L1) },
+        { GamepadButton::L2, static_cast<Qt::Key>(GamepadKeyId::L2) },
+        { GamepadButton::L3, static_cast<Qt::Key>(GamepadKeyId::L3) },
+        { GamepadButton::R1, static_cast<Qt::Key>(GamepadKeyId::R1) },
+        { GamepadButton::R2, static_cast<Qt::Key>(GamepadKeyId::R2) },
+        { GamepadButton::R3, static_cast<Qt::Key>(GamepadKeyId::R3) },
+        { GamepadButton::SELECT, static_cast<Qt::Key>(GamepadKeyId::SELECT) },
+        { GamepadButton::START, static_cast<Qt::Key>(GamepadKeyId::START) },
+        { GamepadButton::GUIDE, static_cast<Qt::Key>(GamepadKeyId::GUIDE) },
     }
 {
     for (const auto& pair : m_timers) {
@@ -90,24 +86,19 @@ GamepadButtonNavigation::GamepadButtonNavigation(QObject* parent)
     }
 }
 
-void GamepadButtonNavigation::onButtonPress(int, QGamepadManager::GamepadButton button)
+void GamepadButtonNavigation::onButtonChanged(int, GamepadButton button, bool pressed)
 {
     const auto it = m_timers.find(button);
     if (it == m_timers.cend())
         return;
 
-    emit_key(m_keys.at(it->first), QEvent::KeyPress, false);
-    it->second->start(KEYDELAY_FIRST);
-}
+    const auto event_type = pressed ? QEvent::KeyPress : QEvent::KeyRelease;
+    emit_key(m_keys.at(it->first), event_type, false);
 
-void GamepadButtonNavigation::onButtonRelease(int, QGamepadManager::GamepadButton button)
-{
-    const auto it = m_timers.find(button);
-    if (it == m_timers.cend())
-        return;
-
-    emit_key(m_keys.at(it->first), QEvent::KeyRelease, false);
-    it->second->stop();
+    if (pressed)
+        it->second->start(KEYDELAY_FIRST);
+    else
+        it->second->stop();
 }
 
 void GamepadButtonNavigation::onTimerTimeout()

@@ -17,16 +17,6 @@
 
 #pragma once
 
-#include "GamepadAxisNavigation.h"
-
-#include <QFile>
-
-#ifdef Q_OS_ANDROID
-#include <QGamepadKeyNavigation>
-#else
-#include "GamepadButtonNavigation.h"
-#endif
-
 
 namespace backend {
 
@@ -35,16 +25,6 @@ public:
     AppContext();
     AppContext(const AppContext&) = delete;
     AppContext& operator=(const AppContext&) = delete;
-
-private:
-#ifdef Q_OS_ANDROID
-    QGamepadKeyNavigation padkeynav;
-#else
-    GamepadButtonNavigation padbuttonnav;
-    GamepadAxisNavigation padaxisnav;
-#endif
-
-    void setup_gamepad();
 };
 
 } // namespace backend

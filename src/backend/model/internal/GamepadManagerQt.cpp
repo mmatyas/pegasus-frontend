@@ -17,7 +17,50 @@
 
 #include "GamepadManagerQt.h"
 
-#include <QGamepadManager>
+#include "types/GamepadKeyId.h"
+
+
+namespace {
+GamepadButton translate_button(QGamepadManager::GamepadButton button)
+{
+#define GEN(from, to) case QGamepadManager::GamepadButton::Button##from: return GamepadButton::to
+    switch (button) {
+        GEN(Up, UP);
+        GEN(Down, DOWN);
+        GEN(Left, LEFT);
+        GEN(Right, RIGHT);
+        GEN(A, SOUTH);
+        GEN(B, EAST);
+        GEN(X, WEST);
+        GEN(Y, NORTH);
+        GEN(L1, L1);
+        GEN(L2, L2);
+        GEN(L3, L3);
+        GEN(R1, R1);
+        GEN(R2, R2);
+        GEN(R3, R3);
+        GEN(Select, SELECT);
+        GEN(Start, START);
+        GEN(Guide, GUIDE);
+        default:
+            return GamepadButton::INVALID;
+    }
+#undef GEN
+}
+GamepadAxis translate_axis(QGamepadManager::GamepadAxis axis)
+{
+#define GEN(from, to) case QGamepadManager::GamepadAxis::Axis##from: return GamepadAxis::to
+    switch (axis) {
+        GEN(LeftX, LEFTX);
+        GEN(LeftY, LEFTY);
+        GEN(RightX, RIGHTX);
+        GEN(RightY, RIGHTY);
+        default:
+            return GamepadAxis::INVALID;
+    }
+#undef GEN
+}
+} // namespace
 
 
 namespace model {
@@ -25,17 +68,44 @@ namespace model {
 GamepadManagerQt::GamepadManagerQt(QObject* parent)
     : GamepadManagerBackend(parent)
 {
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadConnected,
-                     this, &GamepadManagerBackend::connected);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadDisconnected,
-                     this, &GamepadManagerBackend::disconnected);
+    connect(QGamepadManager::instance(), &QGamepadManager::gamepadConnected,
+            this, &GamepadManagerBackend::connected);
+    connect(QGamepadManager::instance(), &QGamepadManager::gamepadDisconnected,
+            this, &GamepadManagerBackend::disconnected);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadNameChanged,
-                     this, &GamepadManagerBackend::nameChanged);
+    connect(QGamepadManager::instance(), &QGamepadManager::gamepadNameChanged,
+            this, &GamepadManagerBackend::nameChanged);
 #endif
+
+    connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonPressEvent,
+            this, &GamepadManagerQt::fwd_button_press);
+    connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonReleaseEvent,
+            this, &GamepadManagerQt::fwd_button_release);
+    connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
+            this, &GamepadManagerQt::fwd_axis_event);
+    connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured,
+            this, &GamepadManagerQt::configChanged);
+    connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured,
+            this, &GamepadManagerQt::configChanged);
+
 
     for (const int device_id : QGamepadManager::instance()->connectedGamepads())
         emit connected(device_id);
+}
+
+void GamepadManagerQt::fwd_button_press(int device_id, QGamepadManager::GamepadButton button)
+{
+    emit buttonChanged(device_id, translate_button(button), true);
+}
+
+void GamepadManagerQt::fwd_button_release(int device_id, QGamepadManager::GamepadButton button)
+{
+    emit buttonChanged(device_id, translate_button(button), false);
+}
+
+void GamepadManagerQt::fwd_axis_event(int device_id, QGamepadManager::GamepadAxis axis, double value)
+{
+    emit axisChanged(device_id, translate_axis(axis), value);
 }
 
 } // namespace model

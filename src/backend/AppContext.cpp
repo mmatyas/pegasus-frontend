@@ -22,7 +22,6 @@
 #include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
-#include "ScriptRunner.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameAssets.h"
@@ -51,12 +50,6 @@ void print_metainfo()
         QSysInfo::prettyProductName(),
         QSysInfo::currentCpuArchitecture(),
         QGuiApplication::platformName()));
-}
-
-void on_gamepad_config()
-{
-    ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
-    ScriptRunner::run(ScriptEvent::CONTROLS_CHANGED);
 }
 
 void register_api_classes()
@@ -97,47 +90,7 @@ namespace backend {
 AppContext::AppContext()
 {
     print_metainfo();
-    setup_gamepad();
     register_api_classes();
-}
-
-void AppContext::setup_gamepad()
-{
-#ifdef Q_OS_ANDROID
-    #define SET_GAMEPAD_KEY(fnName, enumName) \
-        padkeynav.setButton ## fnName ## Key(static_cast<Qt::Key>(GamepadKeyId::enumName));
-    SET_GAMEPAD_KEY(A, A);
-    SET_GAMEPAD_KEY(B, B);
-    SET_GAMEPAD_KEY(X, X);
-    SET_GAMEPAD_KEY(Y, Y);
-    SET_GAMEPAD_KEY(L1, L1);
-    SET_GAMEPAD_KEY(L2, L2);
-    SET_GAMEPAD_KEY(L3, L3);
-    SET_GAMEPAD_KEY(R1, R1);
-    SET_GAMEPAD_KEY(R2, R2);
-    SET_GAMEPAD_KEY(R3, R3);
-    SET_GAMEPAD_KEY(Select, SELECT);
-    SET_GAMEPAD_KEY(Start, START);
-    SET_GAMEPAD_KEY(Guide, GUIDE);
-    #undef SET_GAMEPAD_KEY
-
-#else // Q_OS_ANDROID
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonPressEvent,
-                     &padbuttonnav, &GamepadButtonNavigation::onButtonPress);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadButtonReleaseEvent,
-                     &padbuttonnav, &GamepadButtonNavigation::onButtonRelease);
-
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
-                     &padaxisnav, &GamepadAxisNavigation::onAxisEvent);
-    QObject::connect(&padaxisnav, &GamepadAxisNavigation::buttonPressed,
-                     &padbuttonnav, &GamepadButtonNavigation::onButtonPress);
-    QObject::connect(&padaxisnav, &GamepadAxisNavigation::buttonReleased,
-                     &padbuttonnav, &GamepadButtonNavigation::onButtonRelease);
-#endif
-
-    // config change
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured, on_gamepad_config);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured, on_gamepad_config);
 }
 
 } // namespace backend

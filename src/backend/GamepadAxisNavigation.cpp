@@ -17,9 +17,7 @@
 
 #include "GamepadAxisNavigation.h"
 
-using QGamepadButton = QGamepadManager::GamepadButton;
-using QGamepadAxis = QGamepadManager::GamepadAxis;
-using DeviceAxes = HashMap<QGamepadAxis, double, EnumHash>;
+using DeviceAxes = HashMap<GamepadAxis, double, EnumHash>;
 
 
 namespace {
@@ -41,28 +39,28 @@ AxisZone axis_zone(double axis_value)
         : AxisZone::NEGATIVE;
 }
 
-QGamepadButton axis_valchange_to_button(QGamepadAxis axis, double axis_change)
+GamepadButton axis_valchange_to_button(GamepadAxis axis, double axis_change)
 {
     const bool is_negative = (axis_change < 0);
-    const bool is_horizontal = (axis == QGamepadManager::AxisLeftX ||
-                                axis == QGamepadManager::AxisRightX);
+    const bool is_horizontal = (axis == GamepadAxis::LEFTX ||
+                                axis == GamepadAxis::RIGHTX);
     return is_horizontal
-        ? (is_negative ? QGamepadButton::ButtonLeft : QGamepadButton::ButtonRight)
-        : (is_negative ? QGamepadButton::ButtonUp : QGamepadButton::ButtonDown);
+        ? (is_negative ? GamepadButton::LEFT : GamepadButton::RIGHT)
+        : (is_negative ? GamepadButton::UP : GamepadButton::DOWN);
 }
 
-QGamepadButton reverse_button(QGamepadButton button)
+GamepadButton reverse_button(GamepadButton button)
 {
     switch (button) {
-        case QGamepadButton::ButtonLeft: return QGamepadButton::ButtonRight;
-        case QGamepadButton::ButtonRight: return QGamepadButton::ButtonLeft;
-        case QGamepadButton::ButtonUp: return QGamepadButton::ButtonDown;
-        case QGamepadButton::ButtonDown: return QGamepadButton::ButtonUp;
+        case GamepadButton::LEFT: return GamepadButton::RIGHT;
+        case GamepadButton::RIGHT: return GamepadButton::LEFT;
+        case GamepadButton::UP: return GamepadButton::DOWN;
+        case GamepadButton::DOWN: return GamepadButton::UP;
         default: Q_UNREACHABLE();
     }
 }
 
-double axis_val_or_zero(const DeviceAxes& axes, QGamepadAxis axis)
+double axis_val_or_zero(const DeviceAxes& axes, GamepadAxis axis)
 {
     const auto it = axes.find(axis);
     if (it != axes.cend())
@@ -77,9 +75,9 @@ GamepadAxisNavigation::GamepadAxisNavigation(QObject* parent)
     : QObject(parent)
 {}
 
-void GamepadAxisNavigation::onAxisEvent(int deviceId, QGamepadAxis axis, double axisValue)
+void GamepadAxisNavigation::onAxisEvent(int deviceId, GamepadAxis axis, double axisValue)
 {
-    if (axis == QGamepadAxis::AxisInvalid)
+    if (axis == GamepadAxis::INVALID)
         return;
 
     // NOTE: the point here is that if the device or axis wasn't
@@ -94,12 +92,12 @@ void GamepadAxisNavigation::onAxisEvent(int deviceId, QGamepadAxis axis, double 
         return;
 
     const double val_change = axisValue - prev_value;
-    const QGamepadButton pressed_btn = axis_valchange_to_button(axis, val_change);
-    const QGamepadButton released_btn = reverse_button(pressed_btn);
+    const GamepadButton pressed_btn = axis_valchange_to_button(axis, val_change);
+    const GamepadButton released_btn = reverse_button(pressed_btn);
 
     if (prev_zone != AxisZone::DEAD)
-        emit buttonReleased(deviceId, released_btn);
+        emit buttonChanged(deviceId, released_btn, false);
 
     if (curr_zone != AxisZone::DEAD)
-        emit buttonPressed(deviceId, pressed_btn);
+        emit buttonChanged(deviceId, pressed_btn, true);
 }

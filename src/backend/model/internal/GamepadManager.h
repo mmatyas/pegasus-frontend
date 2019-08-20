@@ -26,6 +26,13 @@
 #include <QString>
 #include <QVector>
 
+#ifdef Q_OS_ANDROID
+#include <QGamepadKeyNavigation>
+#else
+#include "GamepadAxisNavigation.h"
+#include "GamepadButtonNavigation.h"
+#endif
+
 
 namespace model {
 
@@ -48,6 +55,13 @@ private slots:
 
 private:
     GamepadManagerBackend* const m_backend;
+
+#ifdef Q_OS_ANDROID
+    QGamepadKeyNavigation padkeynav;
+#else
+    GamepadButtonNavigation padbuttonnav;
+    GamepadAxisNavigation padaxisnav;
+#endif
 };
 
 } // namespace model

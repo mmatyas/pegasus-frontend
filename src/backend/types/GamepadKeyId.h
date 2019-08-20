@@ -27,3 +27,20 @@ enum GamepadKeyId {
     START,
     GUIDE,
 };
+
+
+enum class GamepadButton : unsigned char {
+    INVALID,
+    UP, DOWN, LEFT, RIGHT,
+    NORTH, SOUTH, EAST, WEST,
+    L1, L2, L3,
+    R1, R2, R3,
+    SELECT,
+    START,
+    GUIDE,
+};
+enum class GamepadAxis : unsigned char {
+    INVALID,
+    LEFTX, LEFTY,
+    RIGHTX, RIGHTY,
+};
