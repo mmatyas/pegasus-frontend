@@ -17,26 +17,15 @@
 
 #include "GamepadManager.h"
 
-#include <QGamepadManager>
+#include "GamepadManagerQt.h"
 
 
 namespace model {
 
 GamepadManager::GamepadManager(QObject* parent)
     : QObject(parent)
-{
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadConnected,
-                     this, &GamepadManager::bkOnConnected);
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadDisconnected,
-                     this, &GamepadManager::bkOnDisconnected);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
-    QObject::connect(QGamepadManager::instance(), &QGamepadManager::gamepadNameChanged,
-                     this, &GamepadManager::bkOnNameChanged);
-#endif
-
-    for (const int device_id : QGamepadManager::instance()->connectedGamepads())
-        m_devices.append(new QGamepad(device_id, &m_devices));
-}
+    , m_backend(new GamepadManagerQt(this))
+{}
 
 void GamepadManager::bkOnConnected(int device_id)
 {

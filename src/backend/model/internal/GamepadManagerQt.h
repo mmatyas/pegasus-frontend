@@ -18,37 +18,13 @@
 #pragma once
 
 #include "GamepadManagerBackend.h"
-#include "utils/HashMap.h"
-
-#include "QtQmlTricks/QQmlObjectListModel.h"
-#include <QtGamepad>
-#include <QObject>
-#include <QString>
-#include <QVector>
 
 
 namespace model {
 
-class GamepadManager : public QObject {
-    Q_OBJECT
-
-    QML_OBJMODEL_PROPERTY(QGamepad, devices)
-
+class GamepadManagerQt : public GamepadManagerBackend {
 public:
-    explicit GamepadManager(QObject* parent = nullptr);
-
-signals:
-    void connected(int);
-    void disconnected(QString);
-
-private slots:
-    void bkOnConnected(int);
-    void bkOnDisconnected(int);
-    void bkOnNameChanged(int, QString);
-
-private:
-    GamepadManagerBackend* const m_backend;
+    explicit GamepadManagerQt(QObject* parent = nullptr);
 };
 
 } // namespace model
-
