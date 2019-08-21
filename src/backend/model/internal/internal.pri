@@ -1,4 +1,5 @@
 HEADERS += \
+    $$PWD/Gamepad.h \
     $$PWD/GamepadManager.h \
     $$PWD/GamepadManagerBackend.h \
     $$PWD/GamepadManagerQt.h \
@@ -7,6 +8,7 @@ HEADERS += \
     $$PWD/System.h \
 
 SOURCES += \
+    $$PWD/Gamepad.cpp \
     $$PWD/GamepadManager.cpp \
     $$PWD/GamepadManagerBackend.cpp \
     $$PWD/GamepadManagerQt.cpp \

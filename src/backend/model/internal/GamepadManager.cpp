@@ -27,6 +27,15 @@ void on_gamepad_reconfig()
     ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::run(ScriptEvent::CONTROLS_CHANGED);
 }
+
+QQmlObjectListModel<model::Gamepad>::const_iterator
+find_by_deviceid(QQmlObjectListModel<model::Gamepad>& model, int device_id)
+{
+    return std::find_if(
+        model.constBegin(),
+        model.constEnd(),
+        [device_id](const model::Gamepad* const gp){ return gp->deviceId() == device_id; });
+}
 } // namespace
 
 
@@ -57,22 +66,19 @@ GamepadManager::GamepadManager(QObject* parent)
     m_backend->start();
 }
 
-void GamepadManager::bkOnConnected(int device_id)
+void GamepadManager::bkOnConnected(const int device_id)
 {
-    m_devices.append(new QGamepad(device_id, &m_devices));
+    m_devices.append(new Gamepad(device_id, &m_devices));
 
     qInfo() << "Gamepad: connected" << device_id << m_devices.last()->name();
     emit connected(device_id);
 }
 
-void GamepadManager::bkOnDisconnected(int device_id)
+void GamepadManager::bkOnDisconnected(const int device_id)
 {
     QString name;
 
-    const auto it = std::find_if(
-        m_devices.constBegin(),
-        m_devices.constEnd(),
-        [device_id](const QGamepad* const gp){ return gp->deviceId() == device_id; });
+    const auto it = find_by_deviceid(m_devices, device_id);
     if (it != m_devices.constEnd()) {
         name = (*it)->name();
         m_devices.remove(*it);
@@ -82,8 +88,11 @@ void GamepadManager::bkOnDisconnected(int device_id)
     emit disconnected(std::move(name));
 }
 
-void GamepadManager::bkOnNameChanged(int, QString)
+void GamepadManager::bkOnNameChanged(int device_id, QString name)
 {
+    const auto it = find_by_deviceid(m_devices, device_id);
+    if (it != m_devices.constEnd())
+        (*it)->setName(name);
 }
 
 } // namespace model

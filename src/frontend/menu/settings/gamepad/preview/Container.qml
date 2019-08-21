@@ -148,7 +148,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             shortName: "a"
-            pressed: gamepad && gamepad.buttonA
+            pressed: gamepad && gamepad.buttonSouth
         }
         PadButton {
             id: padB
@@ -157,7 +157,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "b"
-            pressed: gamepad && gamepad.buttonB
+            pressed: gamepad && gamepad.buttonEast
         }
         PadButton {
             id: padX
@@ -166,7 +166,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "x"
-            pressed: gamepad && gamepad.buttonX
+            pressed: gamepad && gamepad.buttonWest
         }
         PadButton {
             id: padY
@@ -174,7 +174,7 @@ Item {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             shortName: "y"
-            pressed: gamepad && gamepad.buttonY
+            pressed: gamepad && gamepad.buttonNorth
         }
     }
     Dpad {

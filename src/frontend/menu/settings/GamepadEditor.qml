@@ -425,7 +425,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "a"
 
-                pressed: gamepad && gamepad.buttonA
+                pressed: gamepad && gamepad.buttonSouth
                 Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     recordConfig(this);
@@ -443,7 +443,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "b"
 
-                pressed: gamepad && gamepad.buttonB
+                pressed: gamepad && gamepad.buttonEast
                 Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     recordConfig(this);
@@ -461,7 +461,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "x"
 
-                pressed: gamepad && gamepad.buttonX
+                pressed: gamepad && gamepad.buttonWest
                 Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     recordConfig(this);
@@ -479,7 +479,7 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "y"
 
-                pressed: gamepad && gamepad.buttonY
+                pressed: gamepad && gamepad.buttonNorth
                 Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     recordConfig(this);

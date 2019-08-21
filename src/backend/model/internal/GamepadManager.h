@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include "Gamepad.h"
 #include "GamepadManagerBackend.h"
 #include "utils/HashMap.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
-#include <QtGamepad>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -37,7 +37,7 @@ namespace model {
 class GamepadManager : public QObject {
     Q_OBJECT
 
-    QML_OBJMODEL_PROPERTY(QGamepad, devices)
+    QML_OBJMODEL_PROPERTY(Gamepad, devices)
 
 public:
     explicit GamepadManager(QObject* parent = nullptr);
