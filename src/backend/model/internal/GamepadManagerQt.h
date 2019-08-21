@@ -20,6 +20,9 @@
 #include "GamepadManagerBackend.h"
 
 #include <QGamepadManager>
+#ifdef Q_OS_ANDROID
+#include <QGamepadKeyNavigation>
+#endif
 
 
 namespace model {
@@ -34,6 +37,11 @@ private slots:
     void fwd_button_press(int, QGamepadManager::GamepadButton);
     void fwd_button_release(int, QGamepadManager::GamepadButton);
     void fwd_axis_event(int, QGamepadManager::GamepadAxis, double);
+
+private:
+#ifdef Q_OS_ANDROID
+    QGamepadKeyNavigation padkeynav;
+#endif
 };
 
 } // namespace model

@@ -26,11 +26,9 @@
 #include <QString>
 #include <QVector>
 
-#ifdef Q_OS_ANDROID
-#include <QGamepadKeyNavigation>
-#else
-#include "GamepadAxisNavigation.h"
-#include "GamepadButtonNavigation.h"
+#ifndef Q_OS_ANDROID
+#  include "GamepadAxisNavigation.h"
+#  include "GamepadButtonNavigation.h"
 #endif
 
 
@@ -56,9 +54,7 @@ private slots:
 private:
     GamepadManagerBackend* const m_backend;
 
-#ifdef Q_OS_ANDROID
-    QGamepadKeyNavigation padkeynav;
-#else
+#ifndef Q_OS_ANDROID
     GamepadButtonNavigation padbuttonnav;
     GamepadAxisNavigation padaxisnav;
 #endif
