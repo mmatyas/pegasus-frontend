@@ -28,6 +28,8 @@ class GamepadManagerQt : public GamepadManagerBackend {
 public:
     explicit GamepadManagerQt(QObject* parent = nullptr);
 
+    void start() final;
+
 private slots:
     void fwd_button_press(int, QGamepadManager::GamepadButton);
     void fwd_button_release(int, QGamepadManager::GamepadButton);

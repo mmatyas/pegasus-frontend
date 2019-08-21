@@ -70,6 +70,8 @@ GamepadManager::GamepadManager(QObject* parent)
     connect(&padaxisnav, &GamepadAxisNavigation::buttonChanged,
             &padbuttonnav, &GamepadButtonNavigation::onButtonChanged);
 #endif // Q_OS_ANDROID
+
+    m_backend->start();
 }
 
 void GamepadManager::bkOnConnected(int device_id)

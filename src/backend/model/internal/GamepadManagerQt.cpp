@@ -87,8 +87,10 @@ GamepadManagerQt::GamepadManagerQt(QObject* parent)
             this, &GamepadManagerQt::configChanged);
     connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured,
             this, &GamepadManagerQt::configChanged);
+}
 
-
+void GamepadManagerQt::start()
+{
     for (const int device_id : QGamepadManager::instance()->connectedGamepads())
         emit connected(device_id);
 }

@@ -32,6 +32,8 @@ public:
     GamepadManagerBackend(QObject* parent = nullptr);
     virtual ~GamepadManagerBackend() = default;
 
+    virtual void start() {}
+
 signals:
     void connected(int);
     void disconnected(int);
