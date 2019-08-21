@@ -19,6 +19,7 @@
 
 #include "ScriptRunner.h"
 #include "GamepadManagerQt.h"
+#include "GamepadManagerSDL2.h"
 
 
 namespace {
@@ -43,7 +44,7 @@ namespace model {
 
 GamepadManager::GamepadManager(QObject* parent)
     : QObject(parent)
-    , m_backend(new GamepadManagerQt(this))
+    , m_backend(new GamepadManagerSDL2(this))
 {
     connect(m_backend, &GamepadManagerBackend::connected,
             this, &GamepadManager::bkOnConnected);

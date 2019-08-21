@@ -17,31 +17,36 @@
 
 #pragma once
 
+#include "utils/HashMap.h"
 #include "GamepadManagerBackend.h"
 
-#include <QGamepadManager>
-#ifdef Q_OS_ANDROID
-#include <QGamepadKeyNavigation>
-#endif
+#include <SDL.h>
+#include <QTimer>
+#include <memory>
 
 
 namespace model {
 
-class GamepadManagerQt : public GamepadManagerBackend {
+class GamepadManagerSDL2 : public GamepadManagerBackend {
 public:
-    explicit GamepadManagerQt(QObject* parent);
+    explicit GamepadManagerSDL2(QObject* parent);
+    ~GamepadManagerSDL2();
 
     void start() final;
 
 private slots:
-    void fwd_button_press(int, QGamepadManager::GamepadButton);
-    void fwd_button_release(int, QGamepadManager::GamepadButton);
-    void fwd_axis_event(int, QGamepadManager::GamepadAxis, double);
+    void poll();
 
 private:
-#ifdef Q_OS_ANDROID
-    QGamepadKeyNavigation padkeynav;
-#endif
+    QTimer m_poll_timer;
+
+    using device_deleter = void(*)(SDL_GameController*);
+    using device_ptr = std::unique_ptr<SDL_GameController, device_deleter>;
+    HashMap<int, const device_ptr> m_idx_to_device;
+    HashMap<SDL_JoystickID, const int> m_iid_to_idx;
+
+    void add_controller_by_idx(int);
+    void remove_pad_by_iid(SDL_JoystickID);
 };
 
 } // namespace model
