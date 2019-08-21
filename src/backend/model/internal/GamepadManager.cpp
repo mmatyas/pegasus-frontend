@@ -74,8 +74,9 @@ GamepadManager::GamepadManager(QObject* parent)
 
 void GamepadManager::bkOnConnected(int device_id)
 {
-    qDebug() << "connected" << device_id;
     m_devices.append(new QGamepad(device_id, &m_devices));
+
+    qInfo() << "Gamepad: connected" << device_id << m_devices.last()->name();
     emit connected(device_id);
 }
 
@@ -92,7 +93,7 @@ void GamepadManager::bkOnDisconnected(int device_id)
         m_devices.remove(*it);
     }
 
-    qDebug() << "disconnected" << device_id;
+    qInfo() << "Gamepad: disconnected" << device_id << name;
     emit disconnected(std::move(name));
 }
 
