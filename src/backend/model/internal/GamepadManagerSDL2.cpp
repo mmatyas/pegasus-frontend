@@ -52,6 +52,54 @@ void try_register_default_mapping(int device_idx)
     }
     qInfo().noquote() << "SDL2: set default mapping for joystick" << guid_raw_str.data();
 }
+
+GamepadButton translate_button(Uint8 button)
+{
+#define GEN(from, to) case SDL_CONTROLLER_BUTTON_##from: return GamepadButton::to
+    switch (button) {
+        GEN(DPAD_UP, UP);
+        GEN(DPAD_DOWN, DOWN);
+        GEN(DPAD_LEFT, LEFT);
+        GEN(DPAD_RIGHT, RIGHT);
+        GEN(A, SOUTH);
+        GEN(B, EAST);
+        GEN(X, WEST);
+        GEN(Y, NORTH);
+        GEN(LEFTSHOULDER, L1);
+        GEN(LEFTSTICK, L3);
+        GEN(RIGHTSHOULDER, R1);
+        GEN(RIGHTSTICK, R3);
+        GEN(BACK, SELECT);
+        GEN(START, START);
+        GEN(GUIDE, GUIDE);
+        default:
+            return GamepadButton::INVALID;
+    }
+#undef GEN
+}
+
+GamepadAxis translate_axis(Uint8 axis)
+{
+#define GEN(from, to) case SDL_CONTROLLER_AXIS_##from: return GamepadAxis::to
+    switch (axis) {
+        GEN(LEFTX, LEFTX);
+        GEN(LEFTY, LEFTY);
+        GEN(RIGHTX, RIGHTX);
+        GEN(RIGHTY, RIGHTY);
+        default:
+            return GamepadAxis::INVALID;
+    }
+#undef GEN
+}
+
+GamepadButton detect_trigger_axis(Uint8 axis)
+{
+    switch (axis) {
+        case SDL_CONTROLLER_AXIS_TRIGGERLEFT: return GamepadButton::L2;
+        case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: return GamepadButton::R2;
+        default: return GamepadButton::INVALID;
+    }
+}
 } // namespace
 
 
@@ -97,13 +145,20 @@ void GamepadManagerSDL2::poll()
             case SDL_JOYDEVICEREMOVED:
                 // ignored in favor of SDL_CONTROLLERDEVICEREMOVED
                 break;
+            case SDL_CONTROLLERBUTTONUP:
+            case SDL_CONTROLLERBUTTONDOWN:
+                fwd_button_event(event.cbutton.which, event.cbutton.button, event.cbutton.state == SDL_PRESSED);
+                break;
+            case SDL_CONTROLLERAXISMOTION:
+                fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
+                break;
             default:
                 break;
         }
     }
 }
 
-void GamepadManagerSDL2::add_controller_by_idx(const int device_idx)
+void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 {
     Q_ASSERT(m_idx_to_device.count(device_idx) == 0);
 
@@ -118,7 +173,7 @@ void GamepadManagerSDL2::add_controller_by_idx(const int device_idx)
     }
 
     SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
-    SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
+    const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
 
     m_idx_to_device.emplace(device_idx, device_ptr(pad, SDL_GameControllerClose));
     m_iid_to_idx.emplace(iid, device_idx);
@@ -126,7 +181,7 @@ void GamepadManagerSDL2::add_controller_by_idx(const int device_idx)
     emit connected(device_idx);
 }
 
-void GamepadManagerSDL2::remove_pad_by_iid(const SDL_JoystickID instance_id)
+void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
 {
     Q_ASSERT(m_iid_to_idx.count(instance_id) == 1);
     Q_ASSERT(m_idx_to_device.count(m_iid_to_idx.at(instance_id)) == 1);
@@ -136,6 +191,26 @@ void GamepadManagerSDL2::remove_pad_by_iid(const SDL_JoystickID instance_id)
     m_iid_to_idx.erase(instance_id);
 
     emit disconnected(device_idx);
+}
+
+void GamepadManagerSDL2::fwd_button_event(SDL_JoystickID instance_id, Uint8 button, bool pressed)
+{
+    const int device_idx = m_iid_to_idx.at(instance_id);
+    emit buttonChanged(device_idx, translate_button(button), pressed);
+}
+
+void GamepadManagerSDL2::fwd_axis_event(SDL_JoystickID instance_id, Uint8 axis, Sint16 value)
+{
+    const int device_idx = m_iid_to_idx.at(instance_id);
+
+    const GamepadButton button = detect_trigger_axis(axis);
+    if (button != GamepadButton::INVALID) {
+        emit buttonChanged(device_idx, button, value != 0);
+        return;
+    }
+
+    const double dblval = value / static_cast<double>(std::numeric_limits<Sint16>::max());
+    emit axisChanged(device_idx, translate_axis(axis), dblval);
 }
 
 } // namespace model
