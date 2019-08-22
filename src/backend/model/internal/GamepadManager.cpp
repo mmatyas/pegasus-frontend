@@ -17,9 +17,11 @@
 
 #include "GamepadManager.h"
 
-#include "ScriptRunner.h"
+#include "LocaleUtils.h"
+#include "Log.h"
 #include "GamepadManagerQt.h"
 #include "GamepadManagerSDL2.h"
+#include "ScriptRunner.h"
 
 
 namespace {
@@ -36,6 +38,10 @@ find_by_deviceid(QQmlObjectListModel<model::Gamepad>& model, int device_id)
         model.constBegin(),
         model.constEnd(),
         [device_id](const model::Gamepad* const gp){ return gp->deviceId() == device_id; });
+}
+
+inline QString pretty_id(int device_id) {
+    return QLatin1String("0x") % QString::number(device_id, 16);
 }
 } // namespace
 
@@ -73,7 +79,8 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
         name = QLatin1String("generic");
 
     m_devices.append(new Gamepad(device_id, name, &m_devices));
-    qInfo() << "Gamepad: connected" << device_id << m_devices.last()->name();
+
+    Log::info(tr_log("Gamepad: connected device %1 (%2)").arg(pretty_id(device_id), name));
     emit connected(device_id);
 }
 
@@ -87,15 +94,17 @@ void GamepadManager::bkOnDisconnected(int device_id)
         m_devices.remove(*it);
     }
 
-    qInfo() << "Gamepad: disconnected" << device_id << name;
+    Log::info(tr_log("Gamepad: disconnected device %1 (%2)").arg(pretty_id(device_id), name));
     emit disconnected(std::move(name));
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)
 {
     const auto it = find_by_deviceid(m_devices, device_id);
-    if (it != m_devices.constEnd())
+    if (it != m_devices.constEnd()) {
+        Log::info(tr_log("Gamepad: set name of device %1 to '%2'").arg(pretty_id(device_id), name));
         (*it)->setName(name);
+    }
 }
 
 } // namespace model
