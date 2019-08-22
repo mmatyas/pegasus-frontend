@@ -21,12 +21,17 @@
 #include "Log.h"
 
 #include <QDebug>
+#include <QStringBuilder>
 
 
 namespace {
 void print_sdl_error()
 {
     qCritical().noquote() << "Error reported by SDL2:" << SDL_GetError();
+}
+
+QString pretty_idx(int device_idx) {
+    return QLatin1Char('#') % QString::number(device_idx);
 }
 
 void try_register_default_mapping(int device_idx)
@@ -38,19 +43,21 @@ void try_register_default_mapping(int device_idx)
     // concatenation doesn't work with QLatin1Strings...
     const std::string guid_str(guid_raw_str.data());
     const std::string name(SDL_JoystickNameForIndex(device_idx));
-    constexpr auto default_mapping(","
-        "a:b0,b:b1,back:b8,dpdown:b13,dpleft:b14,dpright:b15,dpup:b12,"
-        "guide:b16,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,"
-        "rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a2,righty:a3,"
-        "start:b9,x:b2,y:b3");
+    constexpr auto default_mapping("," // emscripten default
+        "a:b0,b:b1,x:b2,y:b3,"
+        "dpup:b12,dpdown:b13,dpleft:b14,dpright:b15,"
+        "leftshoulder:b4,rightshoulder:b5,lefttrigger:b6,righttrigger:b7,"
+        "back:b8,start:b9,guide:b16,"
+        "leftstick:b10,rightstick:b11,"
+        "leftx:a0,lefty:a1,rightx:a2,righty:a3");
     const std::string new_mapping = guid_str + ',' + name + default_mapping;
 
     if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
-        qCritical().noquote() << "SDL2: failed to add default mapping to joystick.";
+        qCritical().noquote() << "SDL2: failed to set the default layout for gamepad" << pretty_idx(device_idx);
         print_sdl_error();
         return;
     }
-    qInfo().noquote() << "SDL2: set default mapping for joystick" << guid_raw_str.data();
+    qInfo().noquote() << "SDL2: using default layout for gamepad" << pretty_idx(device_idx);
 }
 
 GamepadButton translate_button(Uint8 button)
@@ -168,9 +175,15 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 
     SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
     if (!pad) {
-        qCritical().noquote() << "SDL2: could not open gamepad";
+        qCritical().noquote() << "SDL2: could not open gamepad" << pretty_idx(device_idx);
         print_sdl_error();
         return;
+    }
+
+    const QLatin1String mapping(SDL_GameControllerMapping(pad));
+    if (!mapping.isEmpty()) {
+        qInfo().noquote().nospace()
+            << "SDL2: layout for gamepad " << pretty_idx(device_idx) << " set to `" << mapping << '`';
     }
 
     QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
