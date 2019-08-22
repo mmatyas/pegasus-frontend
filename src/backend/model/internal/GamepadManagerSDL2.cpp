@@ -125,7 +125,8 @@ void GamepadManagerSDL2::start()
 GamepadManagerSDL2::~GamepadManagerSDL2()
 {
     m_poll_timer.stop();
-    SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
+    m_idx_to_device.clear();
+    SDL_Quit();
 }
 
 void GamepadManagerSDL2::poll()
