@@ -20,8 +20,11 @@
 #include "LocaleUtils.h"
 #include "Log.h"
 
+#include <QDataStream>
 #include <QDebug>
+#include <QFile>
 #include <QStringBuilder>
+#include <QVersionNumber>
 
 
 namespace {
@@ -32,6 +35,49 @@ void print_sdl_error()
 
 QString pretty_idx(int device_idx) {
     return QLatin1Char('#') % QString::number(device_idx);
+}
+
+QVersionNumber sdl_version()
+{
+    SDL_version raw_linked;
+    SDL_GetVersion(&raw_linked);
+    return QVersionNumber(raw_linked.major, raw_linked.minor, raw_linked.patch);
+}
+
+QLatin1String gamepaddb_file_suffix(const QVersionNumber& linked_ver)
+{
+    if (QVersionNumber(2, 0, 9) <= linked_ver)
+        return QLatin1String("209");
+
+    if (QVersionNumber(2, 0, 5) <= linked_ver)
+        return QLatin1String("205");
+
+    return QLatin1String("204");
+}
+
+bool load_gamepaddb(const QVersionNumber& linked_ver)
+{
+    const QString path = QLatin1String(":/sdl2/gamecontrollerdb_")
+        % gamepaddb_file_suffix(linked_ver)
+        % QLatin1String(".txt");
+    QFile dbfile(path);
+    dbfile.open(QFile::ReadOnly);
+    Q_ASSERT(dbfile.isOpen()); // it's embedded
+
+    const auto size = static_cast<int>(dbfile.size());
+    QByteArray contents(size, 0);
+    QDataStream stream(&dbfile);
+    stream.readRawData(contents.data(), size);
+
+    SDL_RWops* const rw = SDL_RWFromConstMem(contents.constData(), contents.size());
+    if (!rw)
+        return false;
+
+    const int entry_cnt = SDL_GameControllerAddMappingsFromRW(rw, 1);
+    if (entry_cnt < 0)
+        return false;
+
+    return true;
 }
 
 void try_register_default_mapping(int device_idx)
@@ -120,11 +166,17 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
 
 void GamepadManagerSDL2::start()
 {
+    const QVersionNumber sdl_ver = sdl_version();
+    qInfo().noquote() << "SDL2 version" << sdl_ver;
+
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
         qCritical().noquote() << "Failed to initialize SDL2. Gamepad support may not work.";
         print_sdl_error();
         return;
     }
+
+    if (!load_gamepaddb(sdl_ver))
+        print_sdl_error();
 
     m_poll_timer.start(16);
 }

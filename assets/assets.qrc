@@ -11,5 +11,8 @@
         <file>buttons/xb_b.png</file>
         <file>buttons/xb_x.png</file>
         <file>buttons/xb_y.png</file>
+        <file>sdl2/gamecontrollerdb_204.txt</file>
+        <file>sdl2/gamecontrollerdb_205.txt</file>
+        <file>sdl2/gamecontrollerdb_209.txt</file>
     </qresource>
 </RCC>
