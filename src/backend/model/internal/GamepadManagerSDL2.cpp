@@ -172,13 +172,15 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         return;
     }
 
+    QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
+
     SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
     const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
 
     m_idx_to_device.emplace(device_idx, device_ptr(pad, SDL_GameControllerClose));
     m_iid_to_idx.emplace(iid, device_idx);
 
-    emit connected(device_idx);
+    emit connected(device_idx, name);
 }
 
 void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)

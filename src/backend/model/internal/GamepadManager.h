@@ -47,7 +47,7 @@ signals:
     void disconnected(QString);
 
 private slots:
-    void bkOnConnected(int);
+    void bkOnConnected(int, QString);
     void bkOnDisconnected(int);
     void bkOnNameChanged(int, QString);
 

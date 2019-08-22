@@ -35,7 +35,7 @@ public:
     virtual void start() {}
 
 signals:
-    void connected(int);
+    void connected(int, QString);
     void disconnected(int);
     void nameChanged(int, QString);
 

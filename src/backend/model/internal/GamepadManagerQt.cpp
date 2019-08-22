@@ -69,7 +69,7 @@ GamepadManagerQt::GamepadManagerQt(QObject* parent)
     : GamepadManagerBackend(parent)
 {
     connect(QGamepadManager::instance(), &QGamepadManager::gamepadConnected,
-            this, &GamepadManagerBackend::connected);
+            this, &GamepadManagerQt::fwd_connection);
     connect(QGamepadManager::instance(), &QGamepadManager::gamepadDisconnected,
             this, &GamepadManagerBackend::disconnected);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
@@ -111,7 +111,12 @@ GamepadManagerQt::GamepadManagerQt(QObject* parent)
 void GamepadManagerQt::start()
 {
     for (const int device_id : QGamepadManager::instance()->connectedGamepads())
-        emit connected(device_id);
+        fwd_connection(device_id);
+}
+
+void GamepadManagerQt::fwd_connection(int device_id)
+{
+    emit connected(device_id, QString());
 }
 
 void GamepadManagerQt::fwd_button_press(int device_id, QGamepadManager::GamepadButton button)

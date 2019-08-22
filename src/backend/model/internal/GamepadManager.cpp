@@ -67,15 +67,17 @@ GamepadManager::GamepadManager(QObject* parent)
     m_backend->start();
 }
 
-void GamepadManager::bkOnConnected(const int device_id)
+void GamepadManager::bkOnConnected(int device_id, QString name)
 {
-    m_devices.append(new Gamepad(device_id, &m_devices));
+    if (name.isEmpty())
+        name = QLatin1String("generic");
 
+    m_devices.append(new Gamepad(device_id, name, &m_devices));
     qInfo() << "Gamepad: connected" << device_id << m_devices.last()->name();
     emit connected(device_id);
 }
 
-void GamepadManager::bkOnDisconnected(const int device_id)
+void GamepadManager::bkOnDisconnected(int device_id)
 {
     QString name;
 

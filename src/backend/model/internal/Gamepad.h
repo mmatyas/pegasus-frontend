@@ -71,7 +71,7 @@ class Gamepad : public QObject {
     Q_PROPERTY(int deviceId READ deviceId CONSTANT)
 
 public:
-    explicit Gamepad(int device_id, QObject* parent);
+    explicit Gamepad(int device_id, QString name, QObject* parent);
 
     int deviceId() const { return m_device_id; }
     const QString& name() const { return m_name; }
