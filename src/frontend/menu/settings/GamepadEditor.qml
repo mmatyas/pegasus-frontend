@@ -18,8 +18,8 @@
 import "gamepad/preview" as GamepadPreview
 import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
+import Pegasus.Model 0.12
 import QtQuick 2.8
-import QtGamepad 1.0
 
 
 FocusScope {
@@ -90,7 +90,7 @@ FocusScope {
     }
 
     Connections {
-        target: GamepadManager
+        target: api.internal.gamepad
         onButtonConfigured: recordConfig(null)
         onAxisConfigured: recordConfig(null)
         onConfigurationCanceled: recordConfig(null)
@@ -182,7 +182,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL1);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L1);
                 }
 
                 KeyNavigation.right: configSelect
@@ -201,7 +201,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL2);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L2);
                 }
 
                 KeyNavigation.right: configR2
@@ -230,7 +230,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonUp);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Up);
                 }
 
                 KeyNavigation.right: configA
@@ -249,7 +249,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonDown);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Down);
                 }
 
                 KeyNavigation.right: configB
@@ -268,7 +268,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonLeft);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Left);
                 }
 
                 KeyNavigation.right: configX
@@ -287,7 +287,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonRight);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Right);
                 }
 
                 KeyNavigation.right: configY
@@ -317,7 +317,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftX);
+                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftX);
                 }
 
                 KeyNavigation.right: configRightStickX
@@ -336,7 +336,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisLeftY);
+                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftY);
                 }
 
                 KeyNavigation.right: configRightStickY
@@ -355,7 +355,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonL3);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L3);
                 }
 
                 KeyNavigation.right: configR3
@@ -385,7 +385,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR1);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R1);
                 }
 
                 KeyNavigation.down: configR2
@@ -403,7 +403,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR2);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R2);
                 }
 
                 KeyNavigation.down: configA
@@ -432,7 +432,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonA);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.South);
                 }
 
                 KeyNavigation.down: configB
@@ -450,7 +450,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonB);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.East);
                 }
 
                 KeyNavigation.down: configX
@@ -468,7 +468,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonX);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.West);
                 }
 
                 KeyNavigation.down: configY
@@ -486,7 +486,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonY);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.North);
                 }
 
                 KeyNavigation.down: configRightStickX
@@ -516,7 +516,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightX);
+                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightX);
                 }
 
                 KeyNavigation.down: configRightStickY
@@ -534,7 +534,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureAxis(gamepad.deviceId, GamepadManager.AxisRightY);
+                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightY);
                 }
 
                 KeyNavigation.down: configR3
@@ -552,7 +552,7 @@ FocusScope {
                 }
                 Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
-                    GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonR3);
+                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R3);
                 }
             }
         }
@@ -586,7 +586,7 @@ FocusScope {
                     }
                     Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonSelect);
+                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Select);
                     }
 
                     KeyNavigation.up: deviceSelect
@@ -606,7 +606,7 @@ FocusScope {
                     }
                     Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonGuide);
+                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Guide);
                     }
 
                     KeyNavigation.up: deviceSelect
@@ -625,7 +625,7 @@ FocusScope {
                     }
                     Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        GamepadManager.configureButton(gamepad.deviceId, GamepadManager.ButtonStart);
+                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Start);
                     }
 
                     KeyNavigation.up: deviceSelect

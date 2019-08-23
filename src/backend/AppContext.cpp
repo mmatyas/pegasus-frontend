@@ -69,6 +69,7 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::Providers>(API_URI, 0, 11, "Providers", error_msg);
     qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
     qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
+    qmlRegisterUncreatableType<model::GamepadManager>(API_URI, 0, 12, "GamepadManager", error_msg);
 
     // QML utilities
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
