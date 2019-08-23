@@ -34,6 +34,10 @@ public:
 
     void start() final;
 
+    void start_recording(int, GamepadButton) final;
+    void start_recording(int, GamepadAxis) final;
+    void cancel_recording() final;
+
 private slots:
     void poll();
 
@@ -49,6 +53,15 @@ private:
     void remove_pad_by_iid(SDL_JoystickID);
     void fwd_button_event(SDL_JoystickID, Uint8, bool);
     void fwd_axis_event(SDL_JoystickID, Uint8, Sint16);
+
+    int m_recording_device;
+    GamepadButton m_recording_button;
+    GamepadAxis m_recording_axis;
+    bool is_recording() const;
+
+    void record_joy_button_maybe(SDL_JoystickID, Uint8);
+    void record_joy_axis_maybe(SDL_JoystickID, Uint8, Sint16);
+    void record_joy_hat_maybe(SDL_JoystickID, Uint8, Uint8);
 };
 
 } // namespace model
