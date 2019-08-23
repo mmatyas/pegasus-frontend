@@ -84,9 +84,11 @@ GamepadManagerQt::GamepadManagerQt(QObject* parent)
     connect(QGamepadManager::instance(), &QGamepadManager::gamepadAxisEvent,
             this, &GamepadManagerQt::fwd_axis_event);
     connect(QGamepadManager::instance(), &QGamepadManager::axisConfigured,
-            this, &GamepadManagerQt::configChanged);
+            this, &GamepadManagerQt::fwd_axis_cfg);
     connect(QGamepadManager::instance(), &QGamepadManager::buttonConfigured,
-            this, &GamepadManagerQt::configChanged);
+            this, &GamepadManagerQt::fwd_button_cfg);
+    connect(QGamepadManager::instance(), &QGamepadManager::configurationCanceled,
+            this, &GamepadManagerQt::configurationCanceled);
 
 #ifdef Q_OS_ANDROID
     #define SET_GAMEPAD_KEY(fnName, enumName) \
@@ -132,6 +134,16 @@ void GamepadManagerQt::fwd_button_release(int device_id, QGamepadManager::Gamepa
 void GamepadManagerQt::fwd_axis_event(int device_id, QGamepadManager::GamepadAxis axis, double value)
 {
     emit axisChanged(device_id, translate_axis(axis), value);
+}
+
+void GamepadManagerQt::fwd_button_cfg(int device_id, QGamepadManager::GamepadButton button)
+{
+    emit buttonConfigured(device_id, translate_button(button));
+}
+
+void GamepadManagerQt::fwd_axis_cfg(int device_id, QGamepadManager::GamepadAxis axis)
+{
+    emit axisConfigured(device_id, translate_axis(axis));
 }
 
 } // namespace model

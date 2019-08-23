@@ -38,6 +38,8 @@ private slots:
     void fwd_button_press(int, QGamepadManager::GamepadButton);
     void fwd_button_release(int, QGamepadManager::GamepadButton);
     void fwd_axis_event(int, QGamepadManager::GamepadAxis, double);
+    void fwd_button_cfg(int, QGamepadManager::GamepadButton);
+    void fwd_axis_cfg(int, QGamepadManager::GamepadAxis);
 
 private:
 #ifdef Q_OS_ANDROID
