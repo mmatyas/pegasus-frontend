@@ -24,7 +24,6 @@
 #include <QDebug>
 #include <QFile>
 #include <QStringBuilder>
-#include <QVersionNumber>
 
 
 namespace {
@@ -37,11 +36,11 @@ QString pretty_idx(int device_idx) {
     return QLatin1Char('#') % QString::number(device_idx);
 }
 
-QVersionNumber sdl_version()
+QVersionNumber linked_sdl_version()
 {
-    SDL_version raw_linked;
-    SDL_GetVersion(&raw_linked);
-    return QVersionNumber(raw_linked.major, raw_linked.minor, raw_linked.patch);
+    SDL_version raw;
+    SDL_GetVersion(&raw);
+    return QVersionNumber(raw.major, raw.minor, raw.patch);
 }
 
 QLatin1String gamepaddb_file_suffix(const QVersionNumber& linked_ver)
@@ -168,8 +167,7 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
 
 void GamepadManagerSDL2::start()
 {
-    const QVersionNumber sdl_ver = sdl_version();
-    qInfo().noquote() << "SDL2 version" << sdl_ver;
+    qInfo().noquote() << "SDL2 version" << m_sdl_version;
 
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
         qCritical().noquote() << "Failed to initialize SDL2. Gamepad support may not work.";
@@ -177,7 +175,7 @@ void GamepadManagerSDL2::start()
         return;
     }
 
-    if (!load_gamepaddb(sdl_ver))
+    if (!load_gamepaddb(m_sdl_version))
         print_sdl_error();
 
     m_poll_timer.start(16);
