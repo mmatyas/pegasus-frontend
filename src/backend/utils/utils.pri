@@ -9,6 +9,7 @@ HEADERS += \
     $$PWD/PathCheck.h \
     $$PWD/QmlHelpers.h \
     $$PWD/StdHelpers.h \
+    $$PWD/StdStringHelpers.h \
     $$PWD/StrBoolConverter.h \
 
 SOURCES += \
@@ -17,4 +18,5 @@ SOURCES += \
     $$PWD/FolderListModel.cpp \
     $$PWD/KeySequenceTools.cpp \
     $$PWD/PathCheck.cpp \
+    $$PWD/StdStringHelpers.cpp \
     $$PWD/StrBoolConverter.cpp \

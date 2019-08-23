@@ -19,6 +19,7 @@
 
 #include "utils/CommandTokenizer.h"
 #include "utils/PathCheck.h"
+#include "utils/StdStringHelpers.h"
 
 
 class test_Utils : public QObject
@@ -34,6 +35,9 @@ private slots:
 
     void escape_command();
     void escape_command_data();
+
+    void trimmed_str();
+    void trimmed_str_data();
 };
 
 void test_Utils::validExtPath_data()
@@ -100,6 +104,27 @@ void test_Utils::escape_command_data()
     QTest::newRow("single quote") << "test's cmd" << "\"test's cmd\"";
     QTest::newRow("double quote") << "test \"my\" cmd" << "'test \"my\" cmd'";
     QTest::newRow("mixed") << "test's \"my\" cmd" << "test's \"my\" cmd"; // no change
+}
+
+void test_Utils::trimmed_str()
+{
+    QFETCH(QString, str);
+    QFETCH(QString, expected);
+
+    QCOMPARE(QString::fromStdString(utils::trimmed(str.toLocal8Bit().data())), expected);
+}
+
+void test_Utils::trimmed_str_data()
+{
+    QTest::addColumn<QString>("str");
+    QTest::addColumn<QString>("expected");
+
+    QTest::newRow("null") << QString() << QString();
+    QTest::newRow("empty") << "    " << QString();
+    QTest::newRow("left") << "   test" << "test";
+    QTest::newRow("right") << "test   " << "test";
+    QTest::newRow("both") << "   test   " << "test";
+    QTest::newRow("none") << "test" << "test";
 }
 
 
