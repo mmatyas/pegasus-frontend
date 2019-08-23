@@ -25,7 +25,7 @@
 
 
 namespace {
-void on_gamepad_reconfig()
+void call_gamepad_reconfig_scripts()
 {
     ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::run(ScriptEvent::CONTROLS_CHANGED);
@@ -58,7 +58,13 @@ GamepadManager::GamepadManager(QObject* parent)
             this, &GamepadManager::bkOnDisconnected);
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
-    connect(m_backend, &GamepadManagerBackend::configChanged, on_gamepad_reconfig);
+
+    connect(m_backend, &GamepadManagerBackend::buttonConfigured,
+            this, &GamepadManager::bkOnButtonCfg);
+    connect(m_backend, &GamepadManagerBackend::axisConfigured,
+            this, &GamepadManager::bkOnAxisCfg);
+    connect(m_backend, &GamepadManagerBackend::configurationCanceled,
+            this, &GamepadManager::configurationCanceled);
 
 #ifndef Q_OS_ANDROID
     connect(m_backend, &GamepadManagerBackend::buttonChanged,
@@ -73,11 +79,15 @@ GamepadManager::GamepadManager(QObject* parent)
     m_backend->start();
 }
 
-void GamepadManager::configureButton(int deviceId, GamepadButton button) {
-    m_backend->start_recording(deviceId, button);
+void GamepadManager::configureButton(int deviceId, GMButton button)
+{
+    Q_ASSERT(button != GMButton::Invalid);
+    m_backend->start_recording(deviceId, static_cast<GamepadButton>(button));
 }
-void GamepadManager::configureAxis(int deviceId, GamepadAxis axis) {
-    m_backend->start_recording(deviceId, axis);
+void GamepadManager::configureAxis(int deviceId, GMAxis axis)
+{
+    Q_ASSERT(axis != GMAxis::Invalid);
+    m_backend->start_recording(deviceId, static_cast<GamepadAxis>(axis));
 }
 void GamepadManager::cancelConfiguration() {
     m_backend->cancel_recording();
@@ -115,6 +125,18 @@ void GamepadManager::bkOnNameChanged(int device_id, QString name)
         Log::info(tr_log("Gamepad: set name of device %1 to '%2'").arg(pretty_id(device_id), name));
         (*it)->setName(name);
     }
+}
+
+void GamepadManager::bkOnButtonCfg(int device_id, GamepadButton button)
+{
+    call_gamepad_reconfig_scripts();
+    emit buttonConfigured(device_id, static_cast<GMButton>(button));
+}
+
+void GamepadManager::bkOnAxisCfg(int device_id, GamepadAxis axis)
+{
+    call_gamepad_reconfig_scripts();
+    emit axisConfigured(device_id, static_cast<GMAxis>(axis));
 }
 
 } // namespace model

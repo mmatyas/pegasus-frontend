@@ -46,7 +46,9 @@ signals:
     void buttonChanged(int, GamepadButton, bool);
     void axisChanged(int, GamepadAxis, double);
 
-    void configChanged();
+    void buttonConfigured(int, GamepadButton);
+    void axisConfigured(int, GamepadAxis);
+    void configurationCanceled(int);
 };
 
 } // namespace model

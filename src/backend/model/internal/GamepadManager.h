@@ -36,31 +36,50 @@ namespace model {
 
 class GamepadManager : public QObject {
     Q_OBJECT
+    Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
 
     QML_OBJMODEL_PROPERTY(Gamepad, devices)
 
 public:
     explicit GamepadManager(QObject* parent = nullptr);
 
-    Q_ENUM(GamepadButton)
-    Q_ENUM(GamepadAxis)
+    enum class GMButton {
+        Invalid,
+        Up, Down, Left, Right,
+        North, South, East, West,
+        L1, L2, L3,
+        R1, R2, R3,
+        Select,
+        Start,
+        Guide,
+    };
+    Q_ENUM(GMButton)
 
-    Q_INVOKABLE void configureButton(int deviceId, GamepadButton button);
-    Q_INVOKABLE void configureAxis(int deviceId, GamepadAxis axis);
+    enum class GMAxis {
+        Invalid,
+        LeftX, LeftY,
+        RightX, RightY,
+    };
+    Q_ENUM(GMAxis)
+
+    Q_INVOKABLE void configureButton(int deviceId, GMButton button);
+    Q_INVOKABLE void configureAxis(int deviceId, GMAxis axis);
     Q_INVOKABLE void cancelConfiguration();
 
 signals:
-    void connected(int);
-    void disconnected(QString);
+    void connected(int deviceId);
+    void disconnected(QString deviceId);
 
-    void buttonConfigured();
-    void axisConfigured();
-    void configurationCanceled();
+    void buttonConfigured(int deviceId, GMButton button);
+    void axisConfigured(int deviceId, GMAxis axis);
+    void configurationCanceled(int deviceId);
 
 private slots:
     void bkOnConnected(int, QString);
     void bkOnDisconnected(int);
     void bkOnNameChanged(int, QString);
+    void bkOnButtonCfg(int, GamepadButton);
+    void bkOnAxisCfg(int, GamepadAxis);
 
 private:
     GamepadManagerBackend* const m_backend;
