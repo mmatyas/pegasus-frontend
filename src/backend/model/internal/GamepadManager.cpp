@@ -73,6 +73,16 @@ GamepadManager::GamepadManager(QObject* parent)
     m_backend->start();
 }
 
+void GamepadManager::configureButton(int deviceId, GamepadButton button) {
+    m_backend->start_recording(deviceId, button);
+}
+void GamepadManager::configureAxis(int deviceId, GamepadAxis axis) {
+    m_backend->start_recording(deviceId, axis);
+}
+void GamepadManager::cancelConfiguration() {
+    m_backend->cancel_recording();
+}
+
 void GamepadManager::bkOnConnected(int device_id, QString name)
 {
     if (name.isEmpty())

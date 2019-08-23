@@ -42,9 +42,20 @@ class GamepadManager : public QObject {
 public:
     explicit GamepadManager(QObject* parent = nullptr);
 
+    Q_ENUM(GamepadButton)
+    Q_ENUM(GamepadAxis)
+
+    Q_INVOKABLE void configureButton(int deviceId, GamepadButton button);
+    Q_INVOKABLE void configureAxis(int deviceId, GamepadAxis axis);
+    Q_INVOKABLE void cancelConfiguration();
+
 signals:
     void connected(int);
     void disconnected(QString);
+
+    void buttonConfigured();
+    void axisConfigured();
+    void configurationCanceled();
 
 private slots:
     void bkOnConnected(int, QString);
