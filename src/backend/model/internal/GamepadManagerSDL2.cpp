@@ -144,6 +144,51 @@ GamepadAxis translate_axis(Uint8 axis)
 #undef GEN
 }
 
+const char* to_fieldname(GamepadButton button)
+{
+#define GEN(from, to) case GamepadButton::from: return SDL_GameControllerGetStringForButton(SDL_CONTROLLER_BUTTON_##to);
+    switch (button) {
+        GEN(UP, DPAD_UP);
+        GEN(DOWN, DPAD_DOWN);
+        GEN(LEFT, DPAD_LEFT);
+        GEN(RIGHT, DPAD_RIGHT);
+        GEN(SOUTH, A);
+        GEN(EAST, B);
+        GEN(WEST, X);
+        GEN(NORTH, Y);
+        GEN(L1, LEFTSHOULDER);
+        GEN(L3, LEFTSTICK);
+        GEN(R1, RIGHTSHOULDER);
+        GEN(R3, RIGHTSTICK);
+        GEN(SELECT, BACK);
+        GEN(START, START);
+        GEN(GUIDE, GUIDE);
+        case GamepadButton::L2:
+            return SDL_GameControllerGetStringForAxis(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+        case GamepadButton::R2:
+            return SDL_GameControllerGetStringForAxis(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+        default:
+            Q_UNREACHABLE();
+            return nullptr;
+    }
+#undef GEN
+}
+
+const char* to_fieldname(GamepadAxis axis)
+{
+#define GEN(from, to) case GamepadAxis::from: return SDL_GameControllerGetStringForAxis(SDL_CONTROLLER_AXIS_##to);
+    switch (axis) {
+        GEN(LEFTX, LEFTX);
+        GEN(LEFTY, LEFTY);
+        GEN(RIGHTX, RIGHTX);
+        GEN(RIGHTY, RIGHTY);
+        default:
+            Q_UNREACHABLE();
+            return nullptr;
+    }
+#undef GEN
+}
+
 GamepadButton detect_trigger_axis(Uint8 axis)
 {
     switch (axis) {
@@ -161,7 +206,6 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
     : GamepadManagerBackend(parent)
     , m_sdl_version(linked_sdl_version())
 {
-    cancel_recording();
     connect(&m_poll_timer, &QTimer::timeout, this, &GamepadManagerSDL2::poll);
 }
 
@@ -197,21 +241,23 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)
 {
     cancel_recording();
     m_recording_device = device_idx;
-    m_recording_button = button;
+    m_recording_field = QLatin1String(to_fieldname(button));
+    Q_ASSERT(!m_recording_field.isEmpty());
 }
 
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
 {
     cancel_recording();
     m_recording_device = device_idx;
-    m_recording_axis = axis;
+    m_recording_field = QLatin1String(to_fieldname(axis));
+    Q_ASSERT(!m_recording_field.isEmpty());
 }
 
 void GamepadManagerSDL2::cancel_recording()
 {
     m_recording_device = -1;
-    m_recording_button = GamepadButton::INVALID;
-    m_recording_axis = GamepadAxis::INVALID;
+    m_recording_field = QLatin1String();
+    m_recording_value = QLatin1String();
 }
 
 void GamepadManagerSDL2::poll()

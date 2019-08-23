@@ -56,9 +56,9 @@ private:
     void fwd_button_event(SDL_JoystickID, Uint8, bool);
     void fwd_axis_event(SDL_JoystickID, Uint8, Sint16);
 
-    int m_recording_device;
-    GamepadButton m_recording_button;
-    GamepadAxis m_recording_axis;
+    int m_recording_device = -1;
+    QLatin1String m_recording_field;
+    QLatin1String m_recording_value;
     bool is_recording() const;
 
     void record_joy_button_maybe(SDL_JoystickID, Uint8);
