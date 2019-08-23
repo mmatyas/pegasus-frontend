@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "Log.h"
+#include "utils/StdStringHelpers.h"
 
 #include <QDataStream>
 #include <QDebug>
@@ -202,6 +203,32 @@ GamepadButton detect_trigger_axis(Uint8 axis)
         default: return GamepadButton::INVALID;
     }
 }
+
+std::string generate_hat_str(int hat_idx, int hat_value)
+{
+    return 'h' + std::to_string(hat_idx) + '.' + std::to_string(hat_value);
+}
+std::string generate_axis_str(int axis_idx)
+{
+    return 'a' + std::to_string(axis_idx);
+}
+std::string generate_button_str(int button_idx)
+{
+    return 'b' + std::to_string(button_idx);
+}
+std::string generate_binding_str(const SDL_GameControllerButtonBind& bind)
+{
+    switch (bind.bindType) {
+        case SDL_CONTROLLER_BINDTYPE_BUTTON:
+            return generate_button_str(bind.value.button);
+        case SDL_CONTROLLER_BINDTYPE_AXIS:
+            return generate_axis_str(bind.value.axis);
+        case SDL_CONTROLLER_BINDTYPE_HAT:
+            return generate_hat_str(bind.value.hat.hat, bind.value.hat.hat_mask);
+        default:
+            return {};
+    }
+}
 } // namespace
 
 
@@ -254,6 +281,8 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)
     m_recording.device = device_idx;
     m_recording.field = to_fieldname(button);
     Q_ASSERT(m_recording.field);
+
+    qDebug() << "recording" << m_recording.device << m_recording.field;
 }
 
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
@@ -262,6 +291,8 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
     m_recording.device = device_idx;
     m_recording.field = to_fieldname(axis);
     Q_ASSERT(m_recording.field);
+
+    qDebug() << "recording" << m_recording.device << m_recording.field;
 }
 
 void GamepadManagerSDL2::cancel_recording()
@@ -353,6 +384,9 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
     m_iid_to_idx.emplace(iid, device_idx);
 
     emit connected(device_idx, name);
+
+
+    qDebug() << generate_mapping(device_idx).c_str();
 }
 
 void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
@@ -399,7 +433,9 @@ void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uin
     if (m_recording.device != device_idx)
         return;
 
-    qDebug() << "REC BTN" << button;
+    m_recording.value = generate_button_str(button);
+    qDebug().nospace().noquote() << "REC BTN" << m_recording.field << ':' << m_recording.value.c_str();
+    qDebug() << generate_mapping(device_idx).c_str();
     cancel_recording();
 }
 
@@ -412,7 +448,10 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
     if (m_recording.device != device_idx)
         return;
 
+    m_recording.value = generate_axis_str(axis);
     qDebug() << "REC AXIS" << axis << value;
+    qDebug().nospace().noquote() << "REC AXIS" << m_recording.field << ':' << m_recording.value.c_str();
+    qDebug() << generate_mapping(device_idx).c_str();
     cancel_recording();
 }
 
@@ -429,7 +468,77 @@ void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 
         return;
 
     qDebug() << "REC HAT" << hat << hat_value;
+    m_recording.value = generate_hat_str(hat, hat_value);
+    qDebug().nospace().noquote() << "REC HAT" << m_recording.field << ':' << m_recording.value.c_str();
+    qDebug() << generate_mapping(device_idx).c_str();
     cancel_recording();
+}
+
+std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const field, const SDL_GameControllerButtonBind& current_bind)
+{
+    // new mapping
+    if (field == m_recording.field)
+        return std::string(field) + ':' + m_recording.value;
+
+    // old mapping
+    const std::string value = generate_binding_str(current_bind);
+    if (value.empty() || value == m_recording.value)
+        return {};
+
+    // unaffected mapping
+    return std::string(field) + ':' + value;
+}
+
+std::string GamepadManagerSDL2::generate_mapping(int device_idx)
+{
+    Q_ASSERT(m_idx_to_device.count(device_idx) == 1);
+    const auto& pad_ptr = m_idx_to_device.at(device_idx);
+
+    std::array<char, 33> guid_raw_str;
+    const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
+    SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
+
+    std::vector<std::string> list;
+        list.emplace_back(utils::trimmed(guid_raw_str.data()));
+        list.emplace_back(SDL_GameControllerName(pad_ptr.get()));
+
+    for (int btn_idx = 0; btn_idx < SDL_CONTROLLER_BUTTON_MAX; btn_idx++) {
+        const auto button = static_cast<SDL_GameControllerButton>(btn_idx);
+
+        const char* const field = SDL_GameControllerGetStringForButton(button);
+        const auto current_bind = SDL_GameControllerGetBindForButton(pad_ptr.get(), button);
+
+        std::string mapping = generate_mapping_for_field(field, current_bind);
+        if (!mapping.empty())
+            list.emplace_back(std::move(mapping));
+    }
+
+    for (int axis_idx = 0; axis_idx < SDL_CONTROLLER_AXIS_MAX; axis_idx++) {
+        const auto axis = static_cast<SDL_GameControllerAxis>(axis_idx);
+
+        const char* const field = SDL_GameControllerGetStringForAxis(axis);
+        const auto current_bind = SDL_GameControllerGetBindForAxis(pad_ptr.get(), axis);
+
+        std::string mapping = generate_mapping_for_field(field, current_bind);
+        if (!mapping.empty())
+            list.emplace_back(std::move(mapping));
+    }
+
+    std::sort(list.begin() + 2, list.end());
+    if (version(2, 0, 5) <= m_sdl_version)
+        list.emplace_back(std::string("platform:") + SDL_GetPlatform());
+
+    size_t out_len = 0;
+    for (const std::string& item : list)
+        out_len += item.size() + 1;
+
+    std::string out;
+    out.reserve(out_len);
+    for (const std::string& item : list)
+        out += std::move(item) + ',';
+
+    qDebug() << out.c_str();
+    return out;
 }
 
 } // namespace model
