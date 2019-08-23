@@ -207,6 +207,17 @@ GamepadButton detect_trigger_axis(Uint8 axis)
 
 namespace model {
 
+bool GamepadManagerSDL2::RecordingState::is_active() const
+{
+    return device >= 0;
+}
+void GamepadManagerSDL2::RecordingState::reset()
+{
+    device = -1;
+    field = nullptr;
+    value.clear();
+}
+
 GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
     : GamepadManagerBackend(parent)
     , m_sdl_version(linked_sdl_version())
@@ -237,32 +248,28 @@ GamepadManagerSDL2::~GamepadManagerSDL2()
     SDL_Quit();
 }
 
-bool GamepadManagerSDL2::is_recording() const
-{
-    return m_recording_device >= 0;
-}
-
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)
 {
-    cancel_recording();
-    m_recording_device = device_idx;
-    m_recording_field = QLatin1String(to_fieldname(button));
-    Q_ASSERT(!m_recording_field.isEmpty());
+    m_recording.reset();
+    m_recording.device = device_idx;
+    m_recording.field = to_fieldname(button);
+    Q_ASSERT(m_recording.field);
 }
 
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
 {
-    cancel_recording();
-    m_recording_device = device_idx;
-    m_recording_field = QLatin1String(to_fieldname(axis));
-    Q_ASSERT(!m_recording_field.isEmpty());
+    m_recording.reset();
+    m_recording.device = device_idx;
+    m_recording.field = to_fieldname(axis);
+    Q_ASSERT(m_recording.field);
 }
 
 void GamepadManagerSDL2::cancel_recording()
 {
-    m_recording_device = -1;
-    m_recording_field = QLatin1String();
-    m_recording_value = QLatin1String();
+    if (m_recording.is_active())
+        emit configurationCanceled(m_recording.device);
+
+    m_recording.reset();
 }
 
 void GamepadManagerSDL2::poll()
@@ -287,14 +294,15 @@ void GamepadManagerSDL2::poll()
                 break;
             case SDL_CONTROLLERBUTTONUP:
             case SDL_CONTROLLERBUTTONDOWN:
-                if (!is_recording()) {
+                // also ignore input from other (non-recording) gamepads
+                if (!m_recording.is_active()) {
                     qDebug() << "CBTN";
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
                     fwd_button_event(event.cbutton.which, event.cbutton.button, pressed);
                 }
                 break;
             case SDL_CONTROLLERAXISMOTION:
-                if (!is_recording())
+                if (!m_recording.is_active())
                     fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
                 break;
             case SDL_JOYBUTTONUP:
@@ -356,10 +364,10 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
     m_idx_to_device.erase(device_idx);
     m_iid_to_idx.erase(instance_id);
 
-    emit disconnected(device_idx);
-
-    if (m_recording_device == device_idx)
+    if (m_recording.device == device_idx)
         cancel_recording();
+
+    emit disconnected(device_idx);
 }
 
 void GamepadManagerSDL2::fwd_button_event(SDL_JoystickID instance_id, Uint8 button, bool pressed)
@@ -384,11 +392,11 @@ void GamepadManagerSDL2::fwd_axis_event(SDL_JoystickID instance_id, Uint8 axis, 
 
 void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uint8 button)
 {
-    if (!is_recording())
+    if (!m_recording.is_active())
         return;
 
     const int device_idx = m_iid_to_idx.at(instance_id);
-    if (m_recording_device != device_idx)
+    if (m_recording.device != device_idx)
         return;
 
     qDebug() << "REC BTN" << button;
@@ -397,30 +405,30 @@ void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uin
 
 void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8 axis, Sint16 value)
 {
-    if (!is_recording())
+    if (!m_recording.is_active())
         return;
 
     const int device_idx = m_iid_to_idx.at(instance_id);
-    if (m_recording_device != device_idx)
+    if (m_recording.device != device_idx)
         return;
 
     qDebug() << "REC AXIS" << axis << value;
     cancel_recording();
 }
 
-void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 value)
+void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 hat_value)
 {
-    if (!is_recording())
+    if (!m_recording.is_active())
         return;
 
     const int device_idx = m_iid_to_idx.at(instance_id);
-    if (m_recording_device != device_idx)
+    if (m_recording.device != device_idx)
         return;
 
-    if (value == SDL_HAT_CENTERED)
+    if (hat_value == SDL_HAT_CENTERED)
         return;
 
-    qDebug() << "REC HAT" << hat << value;
+    qDebug() << "REC HAT" << hat << hat_value;
     cancel_recording();
 }
 

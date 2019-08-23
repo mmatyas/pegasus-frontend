@@ -55,10 +55,14 @@ private:
     void fwd_button_event(SDL_JoystickID, Uint8, bool);
     void fwd_axis_event(SDL_JoystickID, Uint8, Sint16);
 
-    int m_recording_device = -1;
-    QLatin1String m_recording_field;
-    QLatin1String m_recording_value;
-    bool is_recording() const;
+    struct RecordingState {
+        int device = -1;
+        const char* field = nullptr;
+        std::string value;
+
+        bool is_active() const;
+        void reset();
+    } m_recording;
 
     void record_joy_button_maybe(SDL_JoystickID, Uint8);
     void record_joy_axis_maybe(SDL_JoystickID, Uint8, Sint16);
