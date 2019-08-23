@@ -22,7 +22,6 @@
 
 #include <SDL.h>
 #include <QTimer>
-#include <QVersionNumber>
 #include <memory>
 
 
@@ -43,7 +42,7 @@ private slots:
     void poll();
 
 private:
-    const QVersionNumber m_sdl_version;
+    const int m_sdl_version;
     QTimer m_poll_timer;
 
     using device_deleter = void(*)(SDL_GameController*);

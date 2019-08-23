@@ -27,6 +27,11 @@
 
 
 namespace {
+constexpr int version(int major, int minor, int micro)
+{
+    return major * 1000 + minor * 100 + micro;
+}
+
 void print_sdl_error()
 {
     qCritical().noquote() << "Error reported by SDL2:" << SDL_GetError();
@@ -36,25 +41,25 @@ QString pretty_idx(int device_idx) {
     return QLatin1Char('#') % QString::number(device_idx);
 }
 
-QVersionNumber linked_sdl_version()
+int linked_sdl_version()
 {
     SDL_version raw;
     SDL_GetVersion(&raw);
-    return QVersionNumber(raw.major, raw.minor, raw.patch);
+    return version(raw.major, raw.minor, raw.patch);
 }
 
-QLatin1String gamepaddb_file_suffix(const QVersionNumber& linked_ver)
+QLatin1String gamepaddb_file_suffix(int linked_ver)
 {
-    if (QVersionNumber(2, 0, 9) <= linked_ver)
+    if (version(2, 0, 9) <= linked_ver)
         return QLatin1String("209");
 
-    if (QVersionNumber(2, 0, 5) <= linked_ver)
+    if (version(2, 0, 5) <= linked_ver)
         return QLatin1String("205");
 
     return QLatin1String("204");
 }
 
-bool load_gamepaddb(const QVersionNumber& linked_ver)
+bool load_gamepaddb(int linked_ver)
 {
     const QString path = QLatin1String(":/sdl2/gamecontrollerdb_")
         % gamepaddb_file_suffix(linked_ver)
