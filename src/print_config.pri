@@ -19,5 +19,22 @@ unix:!macx {
 }
 
 
+# Gamepad backend
+!isEmpty(USE_SDL_GAMEPAD) {
+    message("Using SDL2 gamepad backend")
+    isEmpty(SDL_LIBS):isEmpty(SDL_INCLUDES) {
+        unix|win32-g++: message("  - using pkg-config to find it")
+        else: error("Please set SDL_LIBS and SDL_INCLUDES")
+    }
+    else {
+        message("  - Libraries:")
+        for(part, SDL_LIBS): message("    - $${part}")
+        message("  - Include paths:")
+        for(path, SDL_INCLUDES): message("    - $${path}")
+    }
+}
+else: message("Using Qt gamepad backend")
+
+
 # Print Git revision
 message("Git revision: '$${GIT_REVISION}'")

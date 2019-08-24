@@ -1,11 +1,11 @@
 # Link the project that includes this file to the Backend
 
 QT *= qml quick multimedia svg sql
-QT *= gamepad
 CONFIG += c++11 warn_on
 
 win32: LIBS += -luser32 -ladvapi32
 macx: LIBS += -framework Cocoa
+
 
 # based on the auto-generated code by Qt Creator
 
@@ -22,7 +22,7 @@ else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${TOP_B
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${TOP_BUILDDIR}/src/backend/debug/backend.lib
 else:unix: PRE_TARGETDEPS += $${TOP_BUILDDIR}/src/backend/libbackend.a
 
-# third-party deps
 
-unix: CONFIG += link_pkgconfig
-unix: PKGCONFIG += sdl2
+# Gamepad backend
+!isEmpty(USE_SDL_GAMEPAD): include($${TOP_SRCDIR}/src/link_to_sdl.pri)
+else: QT *= gamepad

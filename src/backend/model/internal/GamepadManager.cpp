@@ -19,9 +19,13 @@
 
 #include "LocaleUtils.h"
 #include "Log.h"
-#include "GamepadManagerQt.h"
-#include "GamepadManagerSDL2.h"
 #include "ScriptRunner.h"
+
+#ifdef WITH_SDL_GAMEPAD
+#  include "GamepadManagerSDL2.h"
+#else
+#  include "GamepadManagerQt.h"
+#endif
 
 
 namespace {
@@ -50,7 +54,11 @@ namespace model {
 
 GamepadManager::GamepadManager(QObject* parent)
     : QObject(parent)
+#ifdef WITH_SDL_GAMEPAD
     , m_backend(new GamepadManagerSDL2(this))
+#else
+    , m_backend(new GamepadManagerQt(this))
+#endif
 {
     connect(m_backend, &GamepadManagerBackend::connected,
             this, &GamepadManager::bkOnConnected);

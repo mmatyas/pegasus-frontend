@@ -1,9 +1,11 @@
 TEMPLATE = lib
 
 QT += qml quick sql
-QT += gamepad
 CONFIG += c++11 staticlib warn_on exceptions_off
 android: QT += androidextras
+
+!isEmpty(USE_SDL_GAMEPAD): include($${TOP_SRCDIR}/src/link_to_sdl.pri)
+else: QT += gamepad
 
 
 SOURCES += \
@@ -49,8 +51,3 @@ DEFINES *= \
     INSTALL_DATADIR=\\\"$${INSTALL_DATADIR}\\\"
 
 include($${TOP_SRCDIR}/thirdparty/thirdparty.pri)
-
-# system deps
-
-unix: CONFIG += link_pkgconfig
-unix: PKGCONFIG += sdl2
