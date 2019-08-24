@@ -50,6 +50,7 @@ if [[ -n ${RUN_COV-} ]]; then
 fi
 
 ${QT_HOSTDIR}/bin/qmake .. \
+  USE_SDL_GAMEPAD=1
   INSTALL_BINDIR=/usr/bin \
   INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps \
   INSTALL_DESKTOPDIR=/usr/share/applications
