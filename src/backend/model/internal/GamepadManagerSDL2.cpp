@@ -447,7 +447,7 @@ void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uin
     cancel_recording();
 }
 
-void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8 axis, Sint16 value)
+void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8 axis, Sint16 axis_value)
 {
     if (!m_recording.is_active())
         return;
@@ -456,8 +456,15 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
     if (m_recording.device != device_idx)
         return;
 
+    constexpr Sint16 deadzone = std::numeric_limits<Sint16>::max() / 2;
+    if (-deadzone < axis_value && axis_value < deadzone)
+        return;
+
+    if (axis_value == std::numeric_limits<Sint16>::min()) // some triggers start from negative
+        return;
+
     m_recording.value = generate_axis_str(axis);
-    qDebug() << "REC AXIS" << axis << value;
+    qDebug() << "REC AXIS" << axis << axis_value;
     qDebug().nospace().noquote() << "REC AXIS" << m_recording.field << ':' << m_recording.value.c_str();
     qDebug() << generate_mapping(device_idx).c_str();
     cancel_recording();
