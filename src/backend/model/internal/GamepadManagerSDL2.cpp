@@ -33,6 +33,11 @@ constexpr uint16_t version(uint16_t major, uint16_t minor, uint16_t micro)
     return major * 1000u + minor * 100u + micro;
 }
 
+std::unique_ptr<char, void(*)(void*)> freeable_str(char* const str)
+{
+    return { str, SDL_free };
+}
+
 void print_sdl_error()
 {
     qCritical().noquote() << "Error reported by SDL2:" << SDL_GetError();
@@ -377,10 +382,10 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         return;
     }
 
-    const QLatin1String mapping(SDL_GameControllerMapping(pad));
-    if (!mapping.isEmpty()) {
+    const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
+    if (!mapping) {
         qInfo().noquote().nospace()
-            << "SDL2: layout for gamepad " << pretty_idx(device_idx) << " set to `" << mapping << '`';
+            << "SDL2: layout for gamepad " << pretty_idx(device_idx) << " set to `" << mapping.get() << '`';
     }
 
     QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
