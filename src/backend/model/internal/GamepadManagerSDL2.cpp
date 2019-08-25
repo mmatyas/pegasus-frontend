@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "Log.h"
+#include "Paths.h"
 #include "utils/StdStringHelpers.h"
 
 #include <QDataStream>
@@ -28,6 +29,8 @@
 
 
 namespace {
+constexpr size_t GUID_LEN = 33;
+
 constexpr uint16_t version(uint16_t major, uint16_t minor, uint16_t micro)
 {
     return major * 1000u + minor * 100u + micro;
@@ -100,7 +103,7 @@ bool load_gamepaddb(uint16_t linked_ver)
 
 void try_register_default_mapping(int device_idx)
 {
-    std::array<char, 33> guid_raw_str;
+    std::array<char, GUID_LEN> guid_raw_str;
     const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
     SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
 
@@ -241,6 +244,23 @@ std::string generate_binding_str(const SDL_GameControllerButtonBind& bind)
         default:
             return {};
     }
+}
+
+void write_mappings(const std::vector<std::string>& mappings)
+{
+    const QString db_path = paths::writableConfigDir() + QLatin1String("/sdl_controllers.txt");
+
+    QFile db_file(db_path);
+    if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qCritical().noquote()
+            << tr_log("SDL: could not open `%1` for writing, gamepad config cannot be saved.")
+                      .arg(db_path);
+        return;
+    }
+
+    QTextStream db_stream(&db_file);
+    for (const std::string& mapping : mappings)
+        db_stream << mapping.data();
 }
 } // namespace
 
@@ -514,7 +534,7 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
     Q_ASSERT(m_idx_to_device.count(device_idx) == 1);
     const auto& pad_ptr = m_idx_to_device.at(device_idx);
 
-    std::array<char, 33> guid_raw_str;
+    std::array<char, GUID_LEN> guid_raw_str;
     const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
     SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
 
@@ -551,8 +571,41 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
     for (const std::string& item : list)
         out += std::move(item) + ',';
 
-    qDebug() << out.c_str();
     return out;
+}
+
+void GamepadManagerSDL2::update_mapping_store(std::string new_mapping)
+{
+    const auto it = std::find_if(m_custom_mappings.begin(), m_custom_mappings.end(),
+        [&new_mapping](const std::string& mapping){
+            return mapping.compare(0, GUID_LEN, new_mapping, 0, GUID_LEN) == 0;
+        });
+    if (it != m_custom_mappings.end())
+        (*it) = std::move(new_mapping);
+    else
+        m_custom_mappings.emplace_back(std::move(new_mapping));
+}
+
+void GamepadManagerSDL2::finish_recording()
+{
+    Q_ASSERT(m_recording.is_active());
+    std::string new_mapping = generate_mapping(m_recording.device).c_str();
+
+    if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
+        print_sdl_error();
+        return;
+    }
+
+    update_mapping_store(std::move(new_mapping));
+    write_mappings(m_custom_mappings);
+
+    if (m_recording.target_button != GamepadButton::INVALID)
+        emit buttonConfigured(m_recording.device, m_recording.target_button);
+    else
+        emit axisConfigured(m_recording.device, m_recording.target_axis);
+
+    m_recording.reset();
+    qDebug() << "rec done";
 }
 
 } // namespace model

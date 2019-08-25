@@ -67,9 +67,12 @@ private:
     void record_joy_button_maybe(SDL_JoystickID, Uint8);
     void record_joy_axis_maybe(SDL_JoystickID, Uint8, Sint16);
     void record_joy_hat_maybe(SDL_JoystickID, Uint8, Uint8);
+    void finish_recording();
+    void update_mapping_store(std::string);
 
-    std::string generate_mapping_for_field(const char* const, const SDL_GameControllerButtonBind&);
+    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&);
     std::string generate_mapping(int);
+    std::vector<std::string> m_custom_mappings;
 };
 
 } // namespace model
