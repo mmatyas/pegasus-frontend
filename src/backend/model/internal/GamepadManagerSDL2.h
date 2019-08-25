@@ -57,7 +57,8 @@ private:
 
     struct RecordingState {
         int device = -1;
-        const char* field = nullptr;
+        GamepadButton target_button = GamepadButton::INVALID;
+        GamepadAxis target_axis = GamepadAxis::INVALID;
         std::string value;
 
         bool is_active() const;

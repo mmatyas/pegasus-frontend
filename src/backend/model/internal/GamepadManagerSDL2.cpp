@@ -274,7 +274,8 @@ bool GamepadManagerSDL2::RecordingState::is_active() const
 void GamepadManagerSDL2::RecordingState::reset()
 {
     device = -1;
-    field = nullptr;
+    target_button = GamepadButton::INVALID;
+    target_axis = GamepadAxis::INVALID;
     value.clear();
 }
 
@@ -312,20 +313,16 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)
 {
     m_recording.reset();
     m_recording.device = device_idx;
-    m_recording.field = to_fieldname(button);
-    Q_ASSERT(m_recording.field);
-
-    qDebug() << "recording" << m_recording.device << m_recording.field;
+    m_recording.target_button = button;
+    qDebug() << "rec btn start";
 }
 
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
 {
     m_recording.reset();
     m_recording.device = device_idx;
-    m_recording.field = to_fieldname(axis);
-    Q_ASSERT(m_recording.field);
-
-    qDebug() << "recording" << m_recording.device << m_recording.field;
+    m_recording.target_axis = axis;
+    qDebug() << "rec axis start";
 }
 
 void GamepadManagerSDL2::cancel_recording()
@@ -334,6 +331,7 @@ void GamepadManagerSDL2::cancel_recording()
         emit configurationCanceled(m_recording.device);
 
     m_recording.reset();
+    qDebug() << "rec cancel";
 }
 
 void GamepadManagerSDL2::poll()
@@ -360,8 +358,8 @@ void GamepadManagerSDL2::poll()
             case SDL_CONTROLLERBUTTONDOWN:
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
-                    qDebug() << "CBTN";
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
+                    qDebug() << "CBTN" << event.cbutton.button << pressed;
                     fwd_button_event(event.cbutton.which, event.cbutton.button, pressed);
                 }
                 break;
@@ -370,10 +368,11 @@ void GamepadManagerSDL2::poll()
                     fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
                 break;
             case SDL_JOYBUTTONUP:
+                qDebug() << "JBTN UP" << event.jbutton.which << event.jbutton.button;
                 // ignored
                 break;
             case SDL_JOYBUTTONDOWN:
-                qDebug() << "JBTN" << event.jbutton.which << event.jbutton.button;
+                qDebug() << "JBTN DN" << event.jbutton.which << event.jbutton.button;
                 record_joy_button_maybe(event.jbutton.which, event.jbutton.button);
                 break;
             case SDL_JOYHATMOTION:
@@ -419,7 +418,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
     emit connected(device_idx, name);
 
 
-    qDebug() << generate_mapping(device_idx).c_str();
+    qDebug() << "current mapping" << generate_mapping(device_idx).c_str();
 }
 
 void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
@@ -467,9 +466,8 @@ void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uin
         return;
 
     m_recording.value = generate_button_str(button);
-    qDebug().nospace().noquote() << "REC BTN" << m_recording.field << ':' << m_recording.value.c_str();
-    qDebug() << generate_mapping(device_idx).c_str();
-    cancel_recording();
+    qDebug() << "record BTN" << button << m_recording.value.c_str();
+    finish_recording();
 }
 
 void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8 axis, Sint16 axis_value)
@@ -489,10 +487,8 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         return;
 
     m_recording.value = generate_axis_str(axis);
-    qDebug() << "REC AXIS" << axis << axis_value;
-    qDebug().nospace().noquote() << "REC AXIS" << m_recording.field << ':' << m_recording.value.c_str();
-    qDebug() << generate_mapping(device_idx).c_str();
-    cancel_recording();
+    qDebug() << "record AXIS" << axis << axis_value << m_recording.value.c_str();
+    finish_recording();
 }
 
 void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 hat_value)
@@ -507,17 +503,16 @@ void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 
     if (hat_value == SDL_HAT_CENTERED)
         return;
 
-    qDebug() << "REC HAT" << hat << hat_value;
     m_recording.value = generate_hat_str(hat, hat_value);
-    qDebug().nospace().noquote() << "REC HAT" << m_recording.field << ':' << m_recording.value.c_str();
-    qDebug() << generate_mapping(device_idx).c_str();
-    cancel_recording();
+    qDebug() << "record HAT" << hat << hat_value << m_recording.value.c_str();
+    finish_recording();
 }
 
-std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const field, const SDL_GameControllerButtonBind& current_bind)
+std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const field, const char* const recording_field,
+                                                           const SDL_GameControllerButtonBind& current_bind)
 {
     // new mapping
-    if (field == m_recording.field)
+    if (field == recording_field)
         return std::string(field) + ':' + m_recording.value;
 
     // old mapping
@@ -542,6 +537,12 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
         list.emplace_back(utils::trimmed(guid_raw_str.data()));
         list.emplace_back(SDL_GameControllerName(pad_ptr.get()));
 
+    const char* const recording_field = m_recording.is_active()
+        ? (m_recording.target_button != GamepadButton::INVALID)
+            ? to_fieldname(m_recording.target_button)
+            : to_fieldname(m_recording.target_axis)
+        : nullptr;
+
 #define GEN(TYPE, MAX) \
     for (int idx = 0; idx < MAX; idx++) { \
         const auto item = static_cast<SDL_GameController##TYPE>(idx); \
@@ -549,7 +550,7 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
         const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
         const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
     \
-        std::string mapping = generate_mapping_for_field(field, current_bind); \
+        std::string mapping = generate_mapping_for_field(field, recording_field, current_bind); \
         if (!mapping.empty()) \
             list.emplace_back(std::move(mapping)); \
     }
