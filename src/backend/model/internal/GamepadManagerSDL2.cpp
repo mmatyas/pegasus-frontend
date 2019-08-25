@@ -522,27 +522,21 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
         list.emplace_back(utils::trimmed(guid_raw_str.data()));
         list.emplace_back(SDL_GameControllerName(pad_ptr.get()));
 
-    for (int btn_idx = 0; btn_idx < SDL_CONTROLLER_BUTTON_MAX; btn_idx++) {
-        const auto button = static_cast<SDL_GameControllerButton>(btn_idx);
-
-        const char* const field = SDL_GameControllerGetStringForButton(button);
-        const auto current_bind = SDL_GameControllerGetBindForButton(pad_ptr.get(), button);
-
-        std::string mapping = generate_mapping_for_field(field, current_bind);
-        if (!mapping.empty())
-            list.emplace_back(std::move(mapping));
+#define GEN(TYPE, MAX) \
+    for (int idx = 0; idx < MAX; idx++) { \
+        const auto item = static_cast<SDL_GameController##TYPE>(idx); \
+    \
+        const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
+        const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
+    \
+        std::string mapping = generate_mapping_for_field(field, current_bind); \
+        if (!mapping.empty()) \
+            list.emplace_back(std::move(mapping)); \
     }
 
-    for (int axis_idx = 0; axis_idx < SDL_CONTROLLER_AXIS_MAX; axis_idx++) {
-        const auto axis = static_cast<SDL_GameControllerAxis>(axis_idx);
-
-        const char* const field = SDL_GameControllerGetStringForAxis(axis);
-        const auto current_bind = SDL_GameControllerGetBindForAxis(pad_ptr.get(), axis);
-
-        std::string mapping = generate_mapping_for_field(field, current_bind);
-        if (!mapping.empty())
-            list.emplace_back(std::move(mapping));
-    }
+    GEN(Button, SDL_CONTROLLER_BUTTON_MAX)
+    GEN(Axis, SDL_CONTROLLER_AXIS_MAX)
+#undef GEN
 
     std::sort(list.begin() + 2, list.end());
     if (version(2, 0, 5) <= m_sdl_version)
