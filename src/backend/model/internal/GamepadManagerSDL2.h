@@ -42,7 +42,7 @@ private slots:
     void poll();
 
 private:
-    const int m_sdl_version;
+    const uint16_t m_sdl_version;
     QTimer m_poll_timer;
 
     using device_deleter = void(*)(SDL_GameController*);

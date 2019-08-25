@@ -28,9 +28,9 @@
 
 
 namespace {
-constexpr int version(int major, int minor, int micro)
+constexpr uint16_t version(uint16_t major, uint16_t minor, uint16_t micro)
 {
-    return major * 1000 + minor * 100 + micro;
+    return major * 1000u + minor * 100u + micro;
 }
 
 void print_sdl_error()
@@ -42,14 +42,22 @@ QString pretty_idx(int device_idx) {
     return QLatin1Char('#') % QString::number(device_idx);
 }
 
-int linked_sdl_version()
+uint16_t linked_sdl_version()
 {
     SDL_version raw;
     SDL_GetVersion(&raw);
     return version(raw.major, raw.minor, raw.patch);
 }
 
-QLatin1String gamepaddb_file_suffix(int linked_ver)
+void print_sdl_version()
+{
+    SDL_version raw;
+    SDL_GetVersion(&raw);
+    qInfo().noquote().nospace()
+        << "SDL version " << raw.major << '.' << raw.minor << '.' << raw.patch;
+}
+
+QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
 {
     if (version(2, 0, 9) <= linked_ver)
         return QLatin1String("209");
@@ -60,7 +68,7 @@ QLatin1String gamepaddb_file_suffix(int linked_ver)
     return QLatin1String("204");
 }
 
-bool load_gamepaddb(int linked_ver)
+bool load_gamepaddb(uint16_t linked_ver)
 {
     const QString path = QLatin1String(":/sdl2/gamecontrollerdb_")
         % gamepaddb_file_suffix(linked_ver)
@@ -254,7 +262,7 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
 
 void GamepadManagerSDL2::start()
 {
-    qInfo().noquote() << "SDL2 version" << m_sdl_version;
+    print_sdl_version();
 
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
         qCritical().noquote() << "Failed to initialize SDL2. Gamepad support may not work.";
