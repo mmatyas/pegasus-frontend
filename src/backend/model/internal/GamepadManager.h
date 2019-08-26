@@ -78,8 +78,12 @@ private slots:
     void bkOnConnected(int, QString);
     void bkOnDisconnected(int);
     void bkOnNameChanged(int, QString);
+
     void bkOnButtonCfg(int, GamepadButton);
     void bkOnAxisCfg(int, GamepadAxis);
+
+    void bkOnButtonChanged(int, GamepadButton, bool);
+    void bkOnAxisChanged(int, GamepadAxis, double);
 
 private:
     GamepadManagerBackend* const m_backend;

@@ -74,6 +74,11 @@ GamepadManager::GamepadManager(QObject* parent)
     connect(m_backend, &GamepadManagerBackend::configurationCanceled,
             this, &GamepadManager::configurationCanceled);
 
+    connect(m_backend, &GamepadManagerBackend::buttonChanged,
+            this, &GamepadManager::bkOnButtonChanged);
+    connect(m_backend, &GamepadManagerBackend::axisChanged,
+            this, &GamepadManager::bkOnAxisChanged);
+
 #ifndef Q_OS_ANDROID
     connect(m_backend, &GamepadManagerBackend::buttonChanged,
             &padbuttonnav, &GamepadButtonNavigation::onButtonChanged);
@@ -145,6 +150,20 @@ void GamepadManager::bkOnAxisCfg(int device_id, GamepadAxis axis)
 {
     call_gamepad_reconfig_scripts();
     emit axisConfigured(device_id, static_cast<GMAxis>(axis));
+}
+
+void GamepadManager::bkOnButtonChanged(int device_id, GamepadButton button, bool pressed)
+{
+    const auto it = find_by_deviceid(m_devices, device_id);
+    if (it != m_devices.constEnd())
+        (*it)->setButtonState(button, pressed);
+}
+
+void GamepadManager::bkOnAxisChanged(int device_id, GamepadAxis axis, double value)
+{
+    const auto it = find_by_deviceid(m_devices, device_id);
+    if (it != m_devices.constEnd())
+        (*it)->setAxisState(axis, value);
 }
 
 } // namespace model
