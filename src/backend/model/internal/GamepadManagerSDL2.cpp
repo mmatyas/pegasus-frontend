@@ -54,15 +54,9 @@ uint16_t linked_sdl_version()
 {
     SDL_version raw;
     SDL_GetVersion(&raw);
-    return version(raw.major, raw.minor, raw.patch);
-}
-
-void print_sdl_version()
-{
-    SDL_version raw;
-    SDL_GetVersion(&raw);
     qInfo().noquote().nospace()
         << "SDL version " << raw.major << '.' << raw.minor << '.' << raw.patch;
+    return version(raw.major, raw.minor, raw.patch);
 }
 
 QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
@@ -288,8 +282,6 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
 
 void GamepadManagerSDL2::start()
 {
-    print_sdl_version();
-
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
         qCritical().noquote() << "Failed to initialize SDL2. Gamepad support may not work.";
         print_sdl_error();
