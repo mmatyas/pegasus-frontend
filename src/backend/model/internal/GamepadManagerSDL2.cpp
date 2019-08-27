@@ -365,7 +365,6 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)
     m_recording.reset();
     m_recording.device = device_idx;
     m_recording.target_button = button;
-    qDebug() << "rec btn start";
 }
 
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
@@ -373,7 +372,6 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
     m_recording.reset();
     m_recording.device = device_idx;
     m_recording.target_axis = axis;
-    qDebug() << "rec axis start";
 }
 
 void GamepadManagerSDL2::cancel_recording()
@@ -382,7 +380,6 @@ void GamepadManagerSDL2::cancel_recording()
         emit configurationCanceled(m_recording.device);
 
     m_recording.reset();
-    qDebug() << "rec cancel";
 }
 
 void GamepadManagerSDL2::poll()
@@ -397,7 +394,7 @@ void GamepadManagerSDL2::poll()
                 remove_pad_by_iid(event.cdevice.which);
                 break;
             case SDL_CONTROLLERDEVICEREMAPPED:
-                qDebug() << "remapped" << event.cdevice.which;
+                // ignored, could be logged
                 break;
             case SDL_JOYDEVICEADDED:
                 add_controller_by_idx(event.jdevice.which);
@@ -410,7 +407,6 @@ void GamepadManagerSDL2::poll()
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
-                    qDebug() << "CBTN" << event.cbutton.button << pressed;
                     fwd_button_event(event.cbutton.which, event.cbutton.button, pressed);
                 }
                 break;
@@ -419,11 +415,9 @@ void GamepadManagerSDL2::poll()
                     fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
                 break;
             case SDL_JOYBUTTONUP:
-                qDebug() << "JBTN UP" << event.jbutton.which << event.jbutton.button;
                 // ignored
                 break;
             case SDL_JOYBUTTONDOWN:
-                qDebug() << "JBTN DN" << event.jbutton.which << event.jbutton.button;
                 record_joy_button_maybe(event.jbutton.which, event.jbutton.button);
                 break;
             case SDL_JOYHATMOTION:
@@ -467,9 +461,6 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
     m_iid_to_idx.emplace(iid, device_idx);
 
     emit connected(device_idx, name);
-
-
-    qDebug() << "current mapping" << generate_mapping(device_idx).c_str();
 }
 
 void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
@@ -517,7 +508,6 @@ void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uin
         return;
 
     m_recording.value = generate_button_str(button);
-    qDebug() << "record BTN" << button << m_recording.value.c_str();
     finish_recording();
 }
 
@@ -538,7 +528,6 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         return;
 
     m_recording.value = generate_axis_str(axis);
-    qDebug() << "record AXIS" << axis << axis_value << m_recording.value.c_str();
     finish_recording();
 }
 
@@ -555,7 +544,6 @@ void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 
         return;
 
     m_recording.value = generate_hat_str(hat, hat_value);
-    qDebug() << "record HAT" << hat << hat_value << m_recording.value.c_str();
     finish_recording();
 }
 
@@ -657,7 +645,6 @@ void GamepadManagerSDL2::finish_recording()
         emit axisConfigured(m_recording.device, m_recording.target_axis);
 
     m_recording.reset();
-    qDebug() << "rec done";
 }
 
 } // namespace model
