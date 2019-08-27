@@ -75,3 +75,7 @@ mkdir dist && pushd dist
     source ../.travis/script__create_deb.sh
   fi
 popd
+
+for FILE in dist/*; do
+    curl --upload-file $FILE https://transfer.sh/$(basename $FILE)
+done
