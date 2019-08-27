@@ -17,6 +17,7 @@
 
 #include "StdStringHelpers.h"
 
+#include <cctype>
 #include <cstring>
 
 
