@@ -25,11 +25,13 @@
 #include <QDataStream>
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #include <QStringBuilder>
 
 
 namespace {
-constexpr size_t GUID_LEN = 33;
+constexpr size_t GUID_LEN = 33; // 16x2 + null
+constexpr auto USERCFG_FILE = "/sdl_controllers.txt";
 
 constexpr uint16_t version(uint16_t major, uint16_t minor, uint16_t micro)
 {
@@ -70,7 +72,7 @@ QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
     return QLatin1String("204");
 }
 
-bool load_gamepaddb(uint16_t linked_ver)
+bool load_internal_gamepaddb(uint16_t linked_ver)
 {
     const QString path = QLatin1String(":/sdl2/gamecontrollerdb_")
         % gamepaddb_file_suffix(linked_ver)
@@ -242,7 +244,7 @@ std::string generate_binding_str(const SDL_GameControllerButtonBind& bind)
 
 void write_mappings(const std::vector<std::string>& mappings)
 {
-    const QString db_path = paths::writableConfigDir() + QLatin1String("/sdl_controllers.txt");
+    const QString db_path = paths::writableConfigDir() + QLatin1String(USERCFG_FILE);
 
     QFile db_file(db_path);
     if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -288,8 +290,11 @@ void GamepadManagerSDL2::start()
         return;
     }
 
-    if (!load_gamepaddb(m_sdl_version))
+    if (Q_UNLIKELY(!load_internal_gamepaddb(m_sdl_version)))
         print_sdl_error();
+
+    for (const QString& dir : paths::configDirs())
+        load_user_gamepaddb(dir);
 
     m_poll_timer.start(16);
 }
@@ -299,6 +304,60 @@ GamepadManagerSDL2::~GamepadManagerSDL2()
     m_poll_timer.stop();
     m_idx_to_device.clear();
     SDL_Quit();
+}
+
+void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
+{
+    constexpr size_t GUID_HEX_CNT = 16;
+    constexpr size_t GUID_STR_LEN = GUID_HEX_CNT * 2;
+
+    const QString path = dir + QLatin1String(USERCFG_FILE);
+    if (!QFileInfo::exists(path))
+        return;
+
+    QFile db_file(path);
+    if (!db_file.open(QFile::ReadOnly | QFile::Text)) {
+        qWarning().noquote() << tr_log("SDL: could not open `%1`, ignored").arg(path);
+        return;
+    }
+    qInfo().noquote() << tr_log("SDL: loading controller mappings from `%1`").arg(path);
+
+    QTextStream db_stream(&db_file);
+    QString line;
+    int linenum = 0;
+    while (db_stream.readLineInto(&line)) {
+        linenum++;
+
+        if (line.startsWith('#'))
+            continue;
+
+        const std::string guid_str = line.left(GUID_STR_LEN).toStdString();
+        const bool has_comma = line.length() > static_cast<int>(GUID_STR_LEN)
+            && line.at(GUID_STR_LEN + 1) == QLatin1Char(',');
+        if (guid_str.length() != GUID_STR_LEN || has_comma) {
+            qWarning().noquote() << tr_log("SDL: in `%1` line #%2, the line format is incorrect, skipped")
+                .arg(path, QString::number(linenum));
+            continue;
+        }
+        const auto bytes = QByteArray::fromHex(QByteArray::fromRawData(guid_str.data(), GUID_STR_LEN));
+        if (bytes.count() != GUID_HEX_CNT) {
+            qWarning().noquote() << tr_log("SDL: in `%1` line #%2, the GUID is incorrect, skipped")
+                .arg(path, QString::number(linenum));
+            continue;
+        }
+
+        SDL_JoystickGUID guid;
+        memmove(guid.data, bytes.data(), GUID_HEX_CNT);
+
+        std::string new_mapping = line.toStdString();
+        if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
+            qWarning().noquote() << tr_log("SDL: in `%1` line #%2, could not add controller mapping, skipped")
+                .arg(path, QString::number(linenum));
+            print_sdl_error();
+            continue;
+        }
+        update_mapping_store(std::move(new_mapping));
+    }
 }
 
 void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)

@@ -74,6 +74,7 @@ private:
     std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&);
     std::string generate_mapping(int);
     std::vector<std::string> m_custom_mappings;
+    void load_user_gamepaddb(const QString&);
 };
 
 } // namespace model
