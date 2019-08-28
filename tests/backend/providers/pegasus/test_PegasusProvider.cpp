@@ -115,6 +115,9 @@ void test_PegasusProvider::simple()
     QVERIFY(ctx.collections.count(QStringLiteral("My Games")));
     QVERIFY(ctx.collections.count(QStringLiteral("Favorite games")));
     QVERIFY(ctx.collections.count(QStringLiteral("Multi-game ROMs")));
+    QVERIFY(ctx.collection_childs.count(QStringLiteral("My Games")));
+    QVERIFY(ctx.collection_childs.count(QStringLiteral("Favorite games")));
+    QVERIFY(ctx.collection_childs.count(QStringLiteral("Multi-game ROMs")));
 
     // finds the correct amount of games
     QCOMPARE(static_cast<int>(ctx.games.size()), 8);
