@@ -1,0 +1,6 @@
+collection: myfiles
+files:
+  game_here.ext
+  ../a/game_a.ext
+  b/game_b.ext
+  ./c/game_c.ext

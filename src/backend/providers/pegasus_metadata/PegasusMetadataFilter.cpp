@@ -52,20 +52,18 @@ std::vector<QString> all_valid_subdirs(const QString& filter_dir)
     return result;
 }
 
-bool file_passes_filter(const QFileInfo& fileinfo, const FileFilter& filter, const QString& filter_dir)
+bool file_passes_filter(const QFileInfo& finfo, const FileFilter& filter)
 {
-    const QString relative_path = fileinfo.filePath().mid(filter_dir.length() + 1);
-    const QString file_ext = fileinfo.suffix().toLower();
+    const QString file_ext = finfo.suffix().toLower();
 
     const bool exclude = VEC_CONTAINS(filter.exclude.extensions, file_ext)
-        || VEC_CONTAINS(filter.exclude.files, relative_path)
-        || (!filter.exclude.regex.pattern().isEmpty() && filter.exclude.regex.match(fileinfo.filePath()).hasMatch());
+        || VEC_CONTAINS(filter.exclude.files, finfo.canonicalFilePath())
+        || (!filter.exclude.regex.pattern().isEmpty() && filter.exclude.regex.match(finfo.filePath()).hasMatch());
     if (exclude)
         return false;
 
     const bool include = VEC_CONTAINS(filter.include.extensions, file_ext)
-        || VEC_CONTAINS(filter.include.files, relative_path)
-        || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.match(fileinfo.filePath()).hasMatch());
+        || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.match(finfo.filePath()).hasMatch());
     if (!include)
         return false;
 
@@ -76,6 +74,7 @@ void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection
                           providers::SearchContext& sctx)
 {
     const QString game_path = fileinfo.canonicalFilePath();
+    Q_ASSERT(!game_path.isEmpty());
     if (!sctx.path_to_gameid.count(game_path)) {
         // This means there weren't any game entries with matching file entry
         // in any of the parsed metadata files. There is no existing game data
@@ -146,10 +145,15 @@ void process_filter(const FileFilter& filter, providers::SearchContext& sctx)
                 subdir_it.next();
                 const QFileInfo fileinfo = subdir_it.fileInfo();
 
-                if (file_passes_filter(fileinfo, filter, filter_dir))
+                if (file_passes_filter(fileinfo, filter))
                     accept_filtered_file(fileinfo, collection, sctx);
             }
         }
+    }
+
+    for (const QString& can_path: filter.include.files) {
+        if (!VEC_CONTAINS(filter.exclude.files, can_path))
+            accept_filtered_file(QFileInfo(can_path), collection, sctx);
     }
 }
 

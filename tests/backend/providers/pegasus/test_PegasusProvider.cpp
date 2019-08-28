@@ -84,6 +84,7 @@ private slots:
     void multifile();
     void nonASCII();
     void separate_media_dirs();
+    void relative_files_only();
 };
 
 void test_PegasusProvider::empty()
@@ -580,6 +581,30 @@ void test_PegasusProvider::separate_media_dirs()
     // NOTE: Yes, canonicalPath() returns a path with '..' in it...
     QCOMPARE(ctx.games.at(0).assets.single(AssetType::BOX_FRONT), QStringLiteral("file::/separate_media_dirs/metadata/../games-a/media/Game 1/box_front.png"));
     QCOMPARE(ctx.games.at(1).assets.single(AssetType::BOX_FRONT), QStringLiteral("file::/separate_media_dirs/metadata/../games-b/media/Game 2/box_front.png"));
+}
+
+void test_PegasusProvider::relative_files_only()
+{
+    providers::SearchContext ctx;
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/relative_files/coll/metadata.txt`");
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/relative_files/coll")});
+    provider.findLists(ctx);
+
+    QVERIFY(ctx.collections.size() == 1);
+    QVERIFY(ctx.collections.count(QStringLiteral("myfiles")) == 1);
+    QVERIFY(ctx.collection_childs.count(QStringLiteral("myfiles")) == 1);
+    QVERIFY(ctx.collection_childs.at(QStringLiteral("myfiles")).size() == ctx.games.size());
+
+    const HashMap<QString, QStringList> coll_files_map {
+        { QStringLiteral("myfiles"), {
+            { ":/relative_files/coll/../a/game_a.ext" },
+            { ":/relative_files/coll/game_here.ext" },
+            { ":/relative_files/coll/b/game_b.ext" },
+            { ":/relative_files/coll/./c/game_c.ext" },
+        }},
+    };
+    verify_collected_files(ctx, coll_files_map);
 }
 
 

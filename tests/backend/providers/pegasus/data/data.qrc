@@ -64,5 +64,10 @@
         <file>separate_media_dirs/games-b/game2.ext</file>
         <file>separate_media_dirs/games-b/media/Game 2/box_front.png</file>
         <file>separate_media_dirs/metadata/metadata.pegasus.txt</file>
+        <file>relative_files/a/game_a.ext</file>
+        <file>relative_files/coll/metadata.txt</file>
+        <file>relative_files/coll/game_here.ext</file>
+        <file>relative_files/coll/b/game_b.ext</file>
+        <file>relative_files/coll/c/game_c.ext</file>
     </qresource>
 </RCC>
