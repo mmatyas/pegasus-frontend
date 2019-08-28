@@ -78,4 +78,5 @@ popd
 
 for FILE in dist/*; do
     curl --upload-file $FILE https://transfer.sh/$(basename $FILE)
+    echo ""
 done
