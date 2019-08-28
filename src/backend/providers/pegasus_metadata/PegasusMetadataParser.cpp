@@ -112,13 +112,10 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
             break;
         case CollAttrib::DIRECTORIES:
             for (const QString& value : entry.values) {
-                QFileInfo finfo(value);
-                if (finfo.isRelative())
-                    finfo.setFile(m_dir_path % '/' % value);
-
+                const QFileInfo finfo(m_dir_path, value);
                 QString can_path = finfo.canonicalFilePath();
                 if (can_path.isEmpty())
-                    print_error(entry.line, tr_log("directory path `%1` does not exist, ignored").arg(entry.key));
+                    print_error(entry.line, tr_log("directory path `%1` not found").arg(finfo.absoluteFilePath()));
                 else
                     m_cur_filter->directories.emplace_back(std::move(can_path));
             }
