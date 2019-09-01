@@ -1,4 +1,6 @@
-DEFINES *= WITH_SDL_GAMEPAD
+DEFINES *= \
+    WITH_SDL_GAMEPAD \
+    SDL_MAIN_HANDLED
 
 isEmpty(SDL_LIBS):isEmpty(SDL_INCLUDES) {
     unix|win32-g++: {
