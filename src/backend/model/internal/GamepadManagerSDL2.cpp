@@ -27,6 +27,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QStringBuilder>
+#include <array>
 
 
 namespace {
@@ -566,7 +567,7 @@ std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const fie
 std::string GamepadManagerSDL2::generate_mapping(int device_idx)
 {
     Q_ASSERT(m_idx_to_device.count(device_idx) == 1);
-    const auto& pad_ptr = m_idx_to_device.at(device_idx);
+    const device_ptr& pad_ptr = m_idx_to_device.at(device_idx);
 
     std::array<char, GUID_LEN> guid_raw_str;
     const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
