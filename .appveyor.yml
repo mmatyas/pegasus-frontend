@@ -16,9 +16,11 @@ environment:
   matrix:
     - flavor: mingw
       QTDIR: C:\Qt\5.12\mingw73_32
+      MAKE: mingw32-make
 
     - flavor: msvc
       QTDIR: C:\Qt\5.12\msvc2017_64
+      MAKE: "nmake /NOLOGO"
 
 init:
   - if %flavor%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
@@ -33,9 +35,9 @@ build_script:
   - md build
   - cd build
   - qmake ..
-  - if %flavor%==msvc (nmake /NOLOGO) else (mingw32-make)
-  - if %flavor%==msvc (nmake /NOLOGO check) else (mingw32-make check)
-  - if %flavor%==msvc (nmake /NOLOGO install) else (mingw32-make install)
+  - "%MAKE%"
+  - "%MAKE% check"
+  - "%MAKE% install"
 
   - windeployqt
       --release
