@@ -61,7 +61,8 @@ popd
 
 
 # Check deps
-${CROSS-}objdump -p "installoc/${INSTALLED_BINARY}" | grep NEEDED | sort
+BINHEAD=$(${CROSS-}objdump -p "installoc/${INSTALLED_BINARY}")
+echo "${BINHEAD}" | grep NEEDED | sort
 
 
 # Create artifacts
