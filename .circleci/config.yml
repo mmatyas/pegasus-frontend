@@ -32,9 +32,12 @@ jobs:
     environment:
       - QT_VERSION: qt5123
       - QT_TARGET: win32-mingw-static
+      - SDL_ROOT: /opt/SDL2-2.0.10/i686-w64-mingw32/
+      - SDL_LIBS: "-lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi"
     steps:
       - checkout
       - run: .circleci/prepare.sh
+      - run: curl "https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz" | tar xzf - -C /opt/
       - run: .circleci/build.sh
       - run: i686-w64-mingw32-objdump -p installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe | grep 'DLL Name' | sort
       # Deploy
