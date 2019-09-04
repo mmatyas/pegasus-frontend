@@ -69,5 +69,6 @@
         <file>relative_files/coll/game_here.ext</file>
         <file>relative_files/coll/b/game_b.ext</file>
         <file>relative_files/coll/c/game_c.ext</file>
+        <file>relative_files/ignored/ignoreme.ext</file>
     </qresource>
 </RCC>

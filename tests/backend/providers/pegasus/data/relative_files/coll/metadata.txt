@@ -4,3 +4,9 @@ files:
   ../a/game_a.ext
   b/game_b.ext
   ./c/game_c.ext
+
+# Ignored files
+files:
+  ../ignored/ignoreme.ext
+ignore-files:
+  ../ignored/ignoreme.ext
