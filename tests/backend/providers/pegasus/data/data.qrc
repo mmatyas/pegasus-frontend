@@ -70,5 +70,13 @@
         <file>relative_files/coll/b/game_b.ext</file>
         <file>relative_files/coll/c/game_c.ext</file>
         <file>relative_files/ignored/ignoreme.ext</file>
+        <file>relative_files_with_dirs/coll/metadata.txt</file>
+        <file>relative_files_with_dirs/coll/ignoreme.x</file>
+        <file>relative_files_with_dirs/coll/game_here.x</file>
+        <file>relative_files_with_dirs/coll/ignoredir/game_ign.x</file>
+        <file>relative_files_with_dirs/b/game_b.x</file>
+        <file>relative_files_with_dirs/b/ignoredir/game_ign.x</file>
+        <file>relative_files_with_dirs/a/ignoreme.x</file>
+        <file>relative_files_with_dirs/a/game_a.x</file>
     </qresource>
 </RCC>

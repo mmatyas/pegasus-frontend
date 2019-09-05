@@ -1,0 +1,7 @@
+collection: myfiles
+extension: x
+directory: ../a
+ignore-file:
+  ignoreme.x
+  ignoredir/game_ign.x
+directories: ../b

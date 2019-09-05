@@ -85,6 +85,7 @@ private slots:
     void nonASCII();
     void separate_media_dirs();
     void relative_files_only();
+    void relative_files_with_dirs();
 };
 
 void test_PegasusProvider::empty()
@@ -605,6 +606,29 @@ void test_PegasusProvider::relative_files_only()
             { ":/relative_files/coll/game_here.ext" },
             { ":/relative_files/coll/b/game_b.ext" },
             { ":/relative_files/coll/./c/game_c.ext" },
+        }},
+    };
+    verify_collected_files(ctx, coll_files_map);
+}
+
+void test_PegasusProvider::relative_files_with_dirs()
+{
+    providers::SearchContext ctx;
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/relative_files_with_dirs/coll/metadata.txt`");
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/relative_files_with_dirs/coll")});
+    provider.findLists(ctx);
+
+    QVERIFY(ctx.collections.size() == 1);
+    QVERIFY(ctx.collections.count(QStringLiteral("myfiles")) == 1);
+    QVERIFY(ctx.collection_childs.count(QStringLiteral("myfiles")) == 1);
+    QVERIFY(ctx.collection_childs.at(QStringLiteral("myfiles")).size() == ctx.games.size());
+
+    const HashMap<QString, QStringList> coll_files_map {
+        { QStringLiteral("myfiles"), {
+            { ":/relative_files_with_dirs/coll/../a/game_a.x" },
+            { ":/relative_files_with_dirs/coll/../b/game_b.x" },
+            { ":/relative_files_with_dirs/coll/game_here.x" },
         }},
     };
     verify_collected_files(ctx, coll_files_map);

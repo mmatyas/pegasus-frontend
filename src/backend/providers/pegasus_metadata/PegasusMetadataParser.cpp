@@ -124,14 +124,8 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
             vec_append_move(filter_group.extensions, utils::tokenize_by_comma(first_line_of(entry).toLower()));
             break;
         case CollAttrib::FILES:
-            for (const QString& path : entry.values) {
-                const QFileInfo finfo(m_dir_path, path);
-                QString can_path = finfo.canonicalFilePath();
-                if (path.isEmpty())
-                    print_error(entry.line, tr_log("file `%1` not found").arg(finfo.absoluteFilePath()));
-                else
-                    filter_group.files.emplace_back(std::move(can_path));
-            }
+            for (const QString& path : entry.values)
+                filter_group.files.emplace_back(std::move(path));
             break;
         case CollAttrib::REGEX:
             filter_group.regex.setPattern(first_line_of(entry));

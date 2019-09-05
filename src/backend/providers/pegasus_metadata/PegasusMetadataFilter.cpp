@@ -25,9 +25,12 @@
 #include <QDirIterator>
 
 
-
 namespace {
 using FileFilter = providers::pegasus::parser::FileFilter;
+
+bool rx_match(const QRegularExpression& rx, const QString& str) {
+    return !rx.pattern().isEmpty() && rx.match(str).hasMatch();
+}
 
 // Find all dirs and subdirectories, but ignore 'media'
 std::vector<QString> all_valid_subdirs(const QString& filter_dir)
@@ -52,18 +55,34 @@ std::vector<QString> all_valid_subdirs(const QString& filter_dir)
     return result;
 }
 
-bool file_passes_filter(const QFileInfo& finfo, const FileFilter& filter)
+std::vector<QString> resolve_filelist(const std::vector<QString>& files, const QString& rootdir)
+{
+    std::vector<QString> can_paths;
+    can_paths.reserve(files.size());
+
+    for (const QString& file : files) {
+        const QFileInfo finfo(rootdir, file);
+        QString can_path = finfo.canonicalFilePath();
+        if (!can_path.isEmpty())
+            can_paths.emplace_back(std::move(can_path));
+    }
+
+    return can_paths;
+}
+
+bool file_passes_filter(const QFileInfo& finfo, const FileFilter& filter,
+                        const std::vector<QString>& exclude_files)
 {
     const QString file_ext = finfo.suffix().toLower();
 
     const bool exclude = VEC_CONTAINS(filter.exclude.extensions, file_ext)
-        || VEC_CONTAINS(filter.exclude.files, finfo.canonicalFilePath())
-        || (!filter.exclude.regex.pattern().isEmpty() && filter.exclude.regex.match(finfo.filePath()).hasMatch());
+        || VEC_CONTAINS(exclude_files, finfo.canonicalFilePath())
+        || rx_match(filter.exclude.regex, finfo.filePath());
     if (exclude)
         return false;
 
     const bool include = VEC_CONTAINS(filter.include.extensions, file_ext)
-        || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.match(finfo.filePath()).hasMatch());
+        || rx_match(filter.include.regex, finfo.filePath());
     if (!include)
         return false;
 
@@ -136,8 +155,15 @@ void process_filter(const FileFilter& filter, providers::SearchContext& sctx)
 
     const modeldata::Collection& collection = sctx.collections.at(filter.collection_key);
 
+    std::vector<QString> all_include_files;
+    std::vector<QString> all_exclude_files;
+    all_include_files.reserve(filter.directories.size() * filter.include.files.size());
+    all_exclude_files.reserve(filter.directories.size() * filter.exclude.files.size());
+
     for (const QString& filter_dir : filter.directories) {
         const std::vector<QString> dirs_to_check = all_valid_subdirs(filter_dir);
+        std::vector<QString> include_files = resolve_filelist(filter.include.files, filter_dir);
+        std::vector<QString> exclude_files = resolve_filelist(filter.exclude.files, filter_dir);
 
         for (const QString& subdir : dirs_to_check) {
             QDirIterator subdir_it(subdir, entry_filters, entry_flags);
@@ -145,14 +171,19 @@ void process_filter(const FileFilter& filter, providers::SearchContext& sctx)
                 subdir_it.next();
                 const QFileInfo fileinfo = subdir_it.fileInfo();
 
-                if (file_passes_filter(fileinfo, filter))
+                if (file_passes_filter(fileinfo, filter, exclude_files))
                     accept_filtered_file(fileinfo, collection, sctx);
             }
         }
+
+        vec_append_move(all_include_files, std::move(include_files));
+        vec_append_move(all_exclude_files, std::move(exclude_files));
     }
 
-    for (const QString& can_path: filter.include.files) {
-        if (!VEC_CONTAINS(filter.exclude.files, can_path))
+    VEC_REMOVE_DUPLICATES(all_include_files);
+    VEC_REMOVE_DUPLICATES(all_exclude_files);
+    for (const QString& can_path: all_include_files) {
+        if (!VEC_CONTAINS(all_exclude_files, can_path))
             accept_filtered_file(QFileInfo(can_path), collection, sctx);
     }
 }
