@@ -32,8 +32,10 @@ jobs:
     environment:
       - QT_VERSION: qt5123
       - QT_TARGET: win32-mingw-static
-      - SDL_ROOT: /opt/SDL2-2.0.10/i686-w64-mingw32/
-      - SDL_LIBS: "-lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi"
+      - BUILDOPTS:
+          USE_SDL_GAMEPAD=1
+          SDL_LIBS='-L/opt/SDL2-2.0.10/i686-w64-mingw32/lib/ -lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi'
+          SDL_INCLUDES=/opt/SDL2-2.0.10/i686-w64-mingw32/include/SDL2/
     steps:
       - checkout
       - run: .circleci/prepare.sh
