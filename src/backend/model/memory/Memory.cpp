@@ -109,11 +109,6 @@ Memory::Memory(QString settings_dir, QObject* parent)
     , m_settings_dir(std::move(settings_dir))
 {}
 
-Memory::~Memory()
-{
-    flush();
-}
-
 void Memory::flush() const
 {
     save_map_maybe(m_data, m_settings_dir, m_current_theme);
@@ -142,18 +137,20 @@ void Memory::set(const QString& key, QVariant value)
 
     m_data[key] = std::move(value);
     emit dataChanged();
+
+    flush();
 }
 
 void Memory::unset(const QString& key)
 {
     m_data.remove(key);
     emit dataChanged();
+
+    flush();
 }
 
 void Memory::changeTheme(const QString& theme_root_dir)
 {
-    flush();
-
     Q_ASSERT(theme_root_dir.endsWith('/'));
     const int dir_name_start = theme_root_dir.lastIndexOf('/', -2) + 1;
     const int dir_name_len = theme_root_dir.length() - dir_name_start - 1;

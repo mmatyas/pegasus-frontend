@@ -28,14 +28,12 @@ class Memory : public QObject {
 public:
     explicit Memory(QObject* parent = nullptr);
     explicit Memory(QString settings_dir, QObject* parent = nullptr);
-    ~Memory();
 
     Q_INVOKABLE QVariant get(const QString&) const;
     Q_INVOKABLE bool has(const QString&) const;
     Q_INVOKABLE void set(const QString&, QVariant);
     Q_INVOKABLE void unset(const QString&);
 
-    void flush() const;
     void changeTheme(const QString&);
 
 signals:
@@ -48,5 +46,7 @@ private:
     const QString m_settings_dir;
     QString m_current_theme;
     QVariantMap m_data;
+
+    void flush() const;
 };
 } // namespace model
