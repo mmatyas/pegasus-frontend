@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.pegasus_frontend.Pegasus</id>
+  <name>Pegasus</name>
+  <metadata_license>CC-BY-SA-3.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <summary>Cross platform, customizable graphical frontend for launching emulators</summary>
+  <description>
+    <p>Pegasus is a graphical frontend for browsing your game library (especially retro games) and launching them from one place. It's focusing on customizability, cross platform support (including embedded devices) and high performance.</p>
+    <p><em>A modern retro-gaming setup:</em> Instead of launching different games with different emulators one by one manually, you can add them to Pegasus and launch the games from a friendly graphical screen from your couch. You can add all kinds of artworks, metadata or video previews for each game to make it look even better!</p>
+  </description>
+
+  <launchable type="desktop-id">org.pegasus_frontend.Pegasus.desktop</launchable>
+  <icon type="stock">org.pegasus_frontend.Pegasus</icon>
+
+  <screenshots>
+    <screenshot type="default"><image>https://pegasus-frontend.org/img/screens/s0.jpg</image></screenshot>
+    <screenshot><image>https://pegasus-frontend.org/img/screens/s1.jpg</image></screenshot>
+    <screenshot><image>https://pegasus-frontend.org/img/screens/s2.jpg</image></screenshot>
+  </screenshots>
+  <categories>
+    <category>Game</category>
+    <category>Player</category>
+  </categories>
+  <keywords>
+    <keyword>emulator</keyword>
+    <keyword>retro</keyword>
+    <keyword>game</keyword>
+    <keyword>frontend</keyword>
+    <keyword>player</keyword>
+  </keywords>
+
+  <url type="homepage">https://pegasus-frontend.org/</url>
+  <url type="bugtracker">https://github.com/mmatyas/pegasus-frontend/issues</url>
+  <url type="help">https://pegasus-frontend.org/docs/</url>
+  <url type="donation">https://www.paypal.me/MatyasMustoha</url>
+  <developer_name>Mátyás Mustoha</developer_name>
+  <update_contact>matyas.mustoha_AT_gmail.com</update_contact>
+
+  <releases>
+    <release date="2019-07-31" version="0.12 Alpha 12" />
+    <release date="2019-03-10" version="0.11 Alpha 11" />
+    <release date="2018-11-05" version="0.10 Alpha 10" />
+    <release date="2018-09-03" version="0.9 Alpha 9" />
+    <release date="2018-07-27" version="0.8 Alpha 8" />
+    <release date="2018-04-20" version="0.7 Alpha 7" />
+    <release date="2018-03-05" version="0.6 Alpha 6" />
+    <release date="2017-11-26" version="0.5 Alpha 5" />
+    <release date="2017-10-02" version="0.4 Alpha 4" />
+    <release date="2017-08-07" version="0.3 Alpha 3" />
+    <release date="2017-06-10" version="0.2 Alpha 2" />
+    <release date="2017-05-03" version="0.1 Alpha 1" />
+  </releases>
+</component>

@@ -16,6 +16,12 @@ unix:!macx {
     } else {
         message("  - X11: Desktop file (`INSTALL_DESKTOPDIR`): `$${INSTALL_DESKTOPDIR}`")
     }
+
+    isEmpty(INSTALL_APPSTREAMDIR) {
+        message("  - X11: AppStream file: will not install")
+    } else {
+        message("  - X11: AppStream file: `$${INSTALL_DESKTOPDIR}`")
+    }
 }
 
 
