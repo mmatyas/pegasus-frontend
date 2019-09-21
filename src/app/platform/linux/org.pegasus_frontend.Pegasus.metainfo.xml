@@ -11,7 +11,9 @@
   </description>
 
   <launchable type="desktop-id">org.pegasus_frontend.Pegasus.desktop</launchable>
-  <icon type="stock">org.pegasus_frontend.Pegasus</icon>
+  <provides>
+    <binary>pegasus-fe</binary>
+  </provides>
 
   <screenshots>
     <screenshot type="default"><image>https://pegasus-frontend.org/img/screens/s0.jpg</image></screenshot>

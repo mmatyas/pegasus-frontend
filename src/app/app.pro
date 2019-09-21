@@ -75,7 +75,7 @@ unix:!macx {
         INSTALLS += desktop
     }
     !isEmpty(INSTALL_APPSTREAMDIR) {
-        appstream.files += platform/linux/org.pegasus_frontend.Pegasus.appdata.xml
+        appstream.files += platform/linux/org.pegasus_frontend.Pegasus.metainfo.xml
         appstream.path = $${INSTALL_APPSTREAMDIR}
         OTHER_FILES += $${appstream.files}
         INSTALLS += appstream

@@ -54,7 +54,7 @@ ${QT_HOSTDIR}/bin/qmake .. \
   INSTALL_BINDIR=/usr/bin \
   INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps \
   INSTALL_DESKTOPDIR=/usr/share/applications \
-  INSTALL_APPSTREAMDIR=/usr/share/appdata
+  INSTALL_APPSTREAMDIR=/usr/share/metainfo
 make
 make install INSTALL_ROOT=$PWD/../installoc
 
