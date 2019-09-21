@@ -20,7 +20,7 @@ unix:!macx {
     isEmpty(INSTALL_APPSTREAMDIR) {
         message("  - X11: AppStream file: will not install")
     } else {
-        message("  - X11: AppStream file: `$${INSTALL_DESKTOPDIR}`")
+        message("  - X11: AppStream file: `$${INSTALL_APPSTREAMDIR}`")
     }
 }
 
