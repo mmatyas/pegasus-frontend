@@ -166,7 +166,7 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
 
     // set up signals and slots
     connect(m_process, &QProcess::started, this, &ProcessLauncher::onProcessStarted);
-    connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessFailed);
+    connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
     connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
             this, &ProcessLauncher::onProcessFinished);
 
@@ -194,15 +194,24 @@ void ProcessLauncher::onProcessStarted()
     emit processLaunchOk();
 }
 
-void ProcessLauncher::onProcessFailed(QProcess::ProcessError error)
+void ProcessLauncher::onProcessError(QProcess::ProcessError error)
 {
     Q_ASSERT(m_process);
 
     const QString message = processerror_to_string(error).arg(m_process->program());
-    qWarning().noquote() << message;
-    emit processLaunchError(message);
 
-    afterRun();
+    switch (m_process->state()) {
+        case QProcess::Starting:
+        case QProcess::NotRunning:
+            emit processLaunchError(message);
+            qWarning().noquote() << message;
+            afterRun(); // finished() won't run
+            break;
+
+        case QProcess::Running:
+            emit processRuntimeError(message);
+            break;
+    }
 }
 
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)

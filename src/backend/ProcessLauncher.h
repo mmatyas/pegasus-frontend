@@ -41,6 +41,7 @@ public:
 signals:
     void processLaunchOk();
     void processLaunchError(QString);
+    void processRuntimeError(QString);
     void processFinished();
 
 public slots:
@@ -49,7 +50,7 @@ public slots:
 
 private slots:
     void onProcessStarted();
-    void onProcessFailed(QProcess::ProcessError);
+    void onProcessError(QProcess::ProcessError);
     void onProcessFinished(int, QProcess::ExitStatus);
 
 private:
