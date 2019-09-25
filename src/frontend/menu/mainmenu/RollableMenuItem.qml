@@ -79,7 +79,9 @@ FocusScope {
         width: parent.width
         height: submenu.height
 
-        visible: root.height > head.height
+        property int heightDiff: root.height - head.height
+
+        visible: heightDiff > 0
         anchors.bottom: parent.bottom
 
         Keys.onPressed: {
