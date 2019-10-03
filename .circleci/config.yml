@@ -56,6 +56,7 @@ jobs:
       - QT_TARGET: rpi4-static
     steps:
       - checkout
+      - run: git apply ./etc/rpi4/kms_launch_fix.diff
       - run: .circleci/prepare.sh
       - run: .circleci/build.sh
       - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
