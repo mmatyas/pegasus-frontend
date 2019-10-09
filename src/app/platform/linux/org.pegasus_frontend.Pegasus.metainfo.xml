@@ -7,8 +7,9 @@
   <summary>Cross platform, customizable graphical frontend for launching emulators</summary>
   <description>
     <p>Pegasus is a graphical frontend for browsing your game library (especially retro games) and launching them from one place. It's focusing on customizability, cross platform support (including embedded devices) and high performance.</p>
-    <p><em>A modern retro-gaming setup:</em> Instead of launching different games with different emulators one by one manually, you can add them to Pegasus and launch the games from a friendly graphical screen from your couch. You can add all kinds of artworks, metadata or video previews for each game to make it look even better!</p>
+    <p>A modern retro-gaming setup: Instead of launching different games with different emulators one by one manually, you can add them to Pegasus and launch the games from a friendly graphical screen from your couch. You can add all kinds of artworks, metadata or video previews for each game to make it look even better!</p>
   </description>
+  <content_rating type="oars-1.1" />
 
   <launchable type="desktop-id">org.pegasus_frontend.Pegasus.desktop</launchable>
   <provides>
