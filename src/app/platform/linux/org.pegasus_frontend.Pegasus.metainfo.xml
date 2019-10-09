@@ -41,6 +41,7 @@
   <update_contact>matyas.mustoha_AT_gmail.com</update_contact>
 
   <releases>
+    <release date="2019-10-09" version="0.13 Alpha 13" />
     <release date="2019-07-31" version="0.12 Alpha 12" />
     <release date="2019-03-10" version="0.11 Alpha 11" />
     <release date="2018-11-05" version="0.10 Alpha 10" />
