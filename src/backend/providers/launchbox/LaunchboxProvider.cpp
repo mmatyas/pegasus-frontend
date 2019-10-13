@@ -48,6 +48,8 @@ enum class GameField : unsigned char {
     STARS,
     EMULATOR,
     EMULATOR_PARAMS,
+    ASSETPATH_VIDEO,
+    ASSETPATH_MUSIC,
 };
 enum class AdditionalAppField : unsigned char {
     ID,
@@ -75,6 +77,8 @@ struct Literals {
             { QStringLiteral("CommunityStarRating"), GameField::STARS },
             { QStringLiteral("Emulator"), GameField::EMULATOR },
             { QStringLiteral("CommandLine"), GameField::EMULATOR_PARAMS },
+            { QStringLiteral("VideoPath"), GameField::ASSETPATH_VIDEO },
+            { QStringLiteral("MusicPath"), GameField::ASSETPATH_MUSIC },
         })
         , addiappfield_map({
             { QStringLiteral("Id"), AdditionalAppField::ID },
@@ -204,8 +208,22 @@ void find_assets(const QString& lb_dir, const Platform& platform,
     find_assets_in(video_root, AssetType::VIDEOS, false, esctitle_to_gameid_map, sctx.games);
 }
 
+void add_raw_asset_maybe(modeldata::GameAssets& assets, const AssetType type,
+                         const QString& lb_root, const QString& path)
+{
+    QString can_path = QFileInfo(lb_root, path).canonicalFilePath();
+    if (can_path.isEmpty()) {
+        qWarning().noquote() << MSG_PREFIX
+            << tr_log("asset path `%1` doesn't exist, ignored").arg(path);
+        return;
+    }
+
+    assets.addFileMaybe(type, std::move(can_path));
+}
+
 void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, EnumHash>& fields,
-                       const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators)
+                       const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
+                       const QString& lb_dir)
 {
     QString emu_app = emulators.at(platform.default_emu_id).app_path;
     QString emu_params = platform.cmd_params.isEmpty()
@@ -257,10 +275,15 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
                     emu_app = emu_it->second.app_path;
                 break;
             }
-            case GameField::EMULATOR_PARAMS: {
+            case GameField::EMULATOR_PARAMS:
                 emu_params = pair.second;
                 break;
-            }
+            case GameField::ASSETPATH_VIDEO:
+                add_raw_asset_maybe(game.assets, AssetType::VIDEOS, lb_dir, pair.second);
+                break;
+            case GameField::ASSETPATH_MUSIC:
+                add_raw_asset_maybe(game.assets, AssetType::MUSIC, lb_dir, pair.second);
+                break;
             case GameField::ID:
             case GameField::PATH:
                 break;
@@ -273,7 +296,7 @@ void store_game_fields(modeldata::Game& game, const HashMap<GameField, QString, 
     game.launch_workdir = QFileInfo(emu_app).absolutePath();
 }
 
-size_t store_game(const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
+size_t store_game(const QString& lb_dir, const QFileInfo& finfo, const HashMap<GameField, QString, EnumHash>& fields,
                   const Platform& platform, const HashMap<EmulatorId, Emulator>& emulators,
                   providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
 {
@@ -282,7 +305,7 @@ size_t store_game(const QFileInfo& finfo, const HashMap<GameField, QString, Enum
     if (!sctx.path_to_gameid.count(can_path)) {
         modeldata::Game game(finfo);
 
-        store_game_fields(game, fields, platform, emulators);
+        store_game_fields(game, fields, platform, emulators, lb_dir);
         if (game.launch_cmd.isEmpty())
             qWarning().noquote() << MSG_PREFIX << tr_log("game '%1' has no launch command").arg(game.title);
 
@@ -344,7 +367,7 @@ void platform_xml_read_game(QXmlStreamReader& xml, const HashMap<QString, GameFi
         return;
     }
 
-    const size_t gameid = store_game(game_finfo, game_values, platform, emulators, sctx, collection_childs);
+    const size_t gameid = store_game(lb_dir, game_finfo, game_values, platform, emulators, sctx, collection_childs);
 
     gameid_map.emplace(game_values.at(GameField::ID), gameid);
 }
