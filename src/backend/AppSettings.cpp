@@ -40,7 +40,7 @@
   #include "providers/skraper/SkraperAssetsProvider.h"
 #endif
 #ifdef WITH_COMPAT_LAUNCHBOX
-  #include "providers/launchbox/LaunchboxProvider.h"
+  #include "providers/launchbox/LaunchBoxProvider.h"
 #endif
 
 #include <QFile>

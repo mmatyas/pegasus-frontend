@@ -17,20 +17,21 @@
 
 #pragma once
 
+#include "LaunchBoxCommon.h"
 #include "providers/Provider.h"
 
 
 namespace providers {
 namespace launchbox {
+namespace gamelist_xml {
 
-class LaunchboxProvider : public Provider {
-    Q_OBJECT
+void read(
+    const Literals& literals,
+    const QString& lb_dir,
+    const QString& platform_name,
+    const HashMap<EmulatorId, Emulator>& emulators,
+    providers::SearchContext& sctx);
 
-public:
-    explicit LaunchboxProvider(QObject* parent = nullptr);
-
-    void findLists(providers::SearchContext&) final;
-};
-
-} // namespace steam
+} // namespace gamelist_xml
+} // namespace launchbox
 } // namespace providers

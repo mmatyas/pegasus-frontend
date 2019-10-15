@@ -3,7 +3,15 @@ ENABLED_COMPATS += LaunchBox
 DEFINES *= WITH_COMPAT_LAUNCHBOX
 
 HEADERS += \
-    $$PWD/LaunchboxProvider.h \
+    $$PWD/LaunchBoxCommon.h \
+    $$PWD/LaunchBoxEmulatorsXml.h \
+    $$PWD/LaunchBoxGamelistXml.h \
+    $$PWD/LaunchBoxPlatformsXml.h \
+    $$PWD/LaunchBoxProvider.h
 
 SOURCES += \
-    $$PWD/LaunchboxProvider.cpp \
+    $$PWD/LaunchBoxCommon.cpp \
+    $$PWD/LaunchBoxEmulatorsXml.cpp \
+    $$PWD/LaunchBoxGamelistXml.cpp \
+    $$PWD/LaunchBoxPlatformsXml.cpp \
+    $$PWD/LaunchBoxProvider.cpp
