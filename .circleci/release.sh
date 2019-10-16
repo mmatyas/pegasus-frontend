@@ -11,7 +11,7 @@ if [[ "$CIRCLE_BRANCH" != "master" ]]; then
   echo "Release uploading disabled for pull requests, uploading to transfer.sh instead"
   for FILE in ./*; do
     BASENAME="$(basename "${FILE}")"
-    curl --upload-file $FILE https://transfer.sh/$BASENAME
+    timeout 5m curl --upload-file $FILE https://transfer.sh/$BASENAME || true
     echo ""
   done
   popd
