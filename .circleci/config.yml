@@ -26,6 +26,7 @@ jobs:
           installdir/build/outputs/apk/release/installdir-release-signed.apk
           dist/pegasus-fe_$(git describe --always)_android.apk
       - run: .circleci/release.sh
+
   mingw:
     docker:
       - image: mmatyas/pegasus-qt-mingw
@@ -48,6 +49,7 @@ jobs:
           README.md
           LICENSE.md
       - run: .circleci/release.sh
+
   buster-pi4:
     docker:
       - image: mmatyas/pegasus-qt-buster
@@ -66,6 +68,64 @@ jobs:
           README.md
           LICENSE.md
       - run: .circleci/release.sh
+
+  odroid-c1:
+    docker:
+      - image: mmatyas/pegasus-qt_odroid-c1
+    environment:
+      - QT_VERSION: qt5125
+      - QT_TARGET: odroid-c1-static
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: patchelf --replace-needed /opt/odroid-c1_bionic/usr/lib/arm-linux-gnueabihf/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
+      - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      # Deploy
+      - run: zip -j dist/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip
+          installdir/opt/pegasus-frontend/pegasus-fe
+          README.md
+          LICENSE.md
+      - run: .circleci/release.sh
+
+  odroid-c2:
+    docker:
+      - image: mmatyas/pegasus-qt_odroid-c2
+    environment:
+      - QT_VERSION: qt5125
+      - QT_TARGET: odroid-c2-static
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: patchelf --replace-needed /opt/odroid-c2_bionic/usr/lib/aarch64-linux-gnu/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
+      - run: aarch64-linux-gnu-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      # Deploy
+      - run: zip -j dist/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip
+          installdir/opt/pegasus-frontend/pegasus-fe
+          README.md
+          LICENSE.md
+      - run: .circleci/release.sh
+
+  odroid-xu3:
+    docker:
+      - image: mmatyas/pegasus-qt_odroid-xu3
+    environment:
+      - QT_VERSION: qt5125
+      - QT_TARGET: odroid-xu3-static
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: patchelf --replace-needed /opt/odroid-5422s_bionic/usr/lib/arm-linux-gnueabihf/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
+      - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      # Deploy
+      - run: zip -j dist/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip
+          installdir/opt/pegasus-frontend/pegasus-fe
+          README.md
+          LICENSE.md
+      - run: .circleci/release.sh
+
 workflows:
   version: 2
   all:
@@ -73,3 +133,6 @@ workflows:
       - android
       - mingw
       - buster-pi4
+      - odroid-c1
+      - odroid-c2
+      - odroid-xu3
