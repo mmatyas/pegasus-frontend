@@ -22,6 +22,7 @@ win32|defined(pclinux,var): include(gog/gog.pri)
 win32|macx|defined(pclinux,var)|defined(armlinux,var): include(es2/es2.pri)
 win32: include(launchbox/launchbox.pri)
 android: include(android_apps/android.pri)
+defined(pclinux,var): include(lutris/lutris.pri)
 # All platforms
 include(skraper/skraper.pri)
 

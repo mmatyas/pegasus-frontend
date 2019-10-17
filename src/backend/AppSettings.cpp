@@ -42,6 +42,9 @@
 #ifdef WITH_COMPAT_LAUNCHBOX
   #include "providers/launchbox/LaunchBoxProvider.h"
 #endif
+#ifdef WITH_COMPAT_LUTRIS
+  #include "providers/lutris/LutrisProvider.h"
+#endif
 
 #include <QFile>
 
@@ -110,6 +113,9 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #endif
 #ifdef WITH_COMPAT_LAUNCHBOX
         MKENTRY(launchbox::LaunchboxProvider)
+#endif
+#ifdef WITH_COMPAT_LUTRIS
+        MKENTRY(lutris::LutrisProvider)
 #endif
     out.shrink_to_fit();
     return out;
