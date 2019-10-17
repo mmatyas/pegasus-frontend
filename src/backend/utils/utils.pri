@@ -8,6 +8,7 @@ HEADERS += \
     $$PWD/NoCopyNoMove.h \
     $$PWD/PathCheck.h \
     $$PWD/QmlHelpers.h \
+    $$PWD/SqliteDb.h \
     $$PWD/StdHelpers.h \
     $$PWD/StdStringHelpers.h \
     $$PWD/StrBoolConverter.h \
@@ -18,5 +19,6 @@ SOURCES += \
     $$PWD/FolderListModel.cpp \
     $$PWD/KeySequenceTools.cpp \
     $$PWD/PathCheck.cpp \
+    $$PWD/SqliteDb.cpp \
     $$PWD/StdStringHelpers.cpp \
     $$PWD/StrBoolConverter.cpp \

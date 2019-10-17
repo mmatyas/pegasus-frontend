@@ -20,6 +20,7 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
+#include "utils/SqliteDb.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -37,39 +38,6 @@ QString default_db_path()
     return paths::writableConfigDir() + QStringLiteral("/stats.db");
 }
 
-// Wrapper above Qt for auto-closing and freeing the connection
-struct SqlDefaultConnection {
-    explicit SqlDefaultConnection(const QString& db_path)
-        : m_db(QSqlDatabase::addDatabase(QStringLiteral("QSQLITE")))
-    {
-        m_db.setDatabaseName(db_path);
-    }
-    ~SqlDefaultConnection()
-    {
-        if (!m_db.isOpen())
-            return;
-
-        m_db.rollback();
-
-        const auto connection = m_db.connectionName();
-        m_db = QSqlDatabase();
-        QSqlDatabase::removeDatabase(connection);
-    }
-    SqlDefaultConnection(const SqlDefaultConnection&) = delete;
-    SqlDefaultConnection& operator=(const SqlDefaultConnection&) = delete;
-
-    bool open() { return m_db.open(); }
-    bool startTransaction() { return m_db.transaction(); }
-    bool commit() { return m_db.commit(); }
-
-    bool hasTable(const QString& table_name) {
-        return m_db.tables().contains(table_name);
-    }
-
-private:
-    QSqlDatabase m_db;
-};
-
 void print_query_error(const QSqlQuery& query)
 {
     const auto error = query.lastError();
@@ -83,7 +51,7 @@ void on_create_table_fail(QSqlQuery& query)
     print_query_error(query);
 }
 
-bool create_missing_tables(SqlDefaultConnection& channel)
+bool create_missing_tables(SqliteDb& channel)
 {
     if (!channel.hasTable(QStringLiteral("paths"))) {
         QSqlQuery query;
@@ -202,7 +170,7 @@ void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
     if (!QFileInfo::exists(m_db_path))
         return;
 
-    SqlDefaultConnection channel(m_db_path);
+    SqliteDb channel(m_db_path);
     if (!channel.open()) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("Could not open `%1`, play times will not be loaded")
@@ -289,7 +257,7 @@ void PlaytimeStats::start_processing()
         emit startedWriting();
 
         while (!m_active_tasks.empty()) {
-            SqlDefaultConnection channel(m_db_path);
+            SqliteDb channel(m_db_path);
             if (!channel.open()) {
                 qWarning().noquote() << MSG_PREFIX
                     << tr_log("Could not open or create `%1`, play time will not be saved")
