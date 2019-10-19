@@ -11,7 +11,19 @@ fi
 
 STAGING_REPO=https://github.com/mmatyas/pegasus-deploy-staging.git
 GIT_REV=$(git describe --always)
-TARGETS='x11-static rpi1-static rpi2-static rpi3-static rpi4-static macos-static android win32-mingw-static'
+TARGETS=" \
+  x11-static \
+  rpi1-static \
+  rpi2-static \
+  rpi3-static \
+  rpi4-static \
+  macos-static \
+  android \
+  win32-mingw-static \
+  odroid-c1-static \
+  odroid-c2-static \
+  odroid-xu3-static \
+"
 EXPECTED_FILE_CNT=$(echo $TARGETS | wc -w)  # regular releases
 ((EXPECTED_FILE_CNT++))  # + 1 deb
 
