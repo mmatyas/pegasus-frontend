@@ -30,6 +30,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QStringBuilder>
+#include <array>
 
 
 namespace {
@@ -106,8 +107,16 @@ std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
 
 bool should_ignore(const QString& filename)
 {
-    // Steamworks Common Redistributables
-    return filename == QLatin1String("appmanifest_228980.acf");
+    const std::array<QLatin1String, 7> ignored {
+        QLatin1String("appmanifest_228980.acf"), // Steamworks Common Redistributables
+        QLatin1String("appmanifest_1113280.acf"), // Proton 4.11
+        QLatin1String("appmanifest_1054830.acf"), // Proton 4.2
+        QLatin1String("appmanifest_996510.acf"), // Proton 3.16 Beta
+        QLatin1String("appmanifest_961940.acf"), // Proton 3.16
+        QLatin1String("appmanifest_930400.acf"), // Proton 3.7 Beta
+        QLatin1String("appmanifest_858280.acf"), // Proton 3.7
+    };
+    return std::find(ignored.cbegin(), ignored.cend(), filename) != ignored.cend();
 }
 
 void register_appmanifests(providers::SearchContext& sctx,
