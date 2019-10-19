@@ -91,6 +91,8 @@ LutrisProvider::LutrisProvider(QObject* parent)
 void LutrisProvider::findLists(SearchContext& sctx)
 {
     const QString datadir = find_datadir();
+    if (datadir.isEmpty())
+        return;
 
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
