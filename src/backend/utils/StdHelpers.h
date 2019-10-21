@@ -31,6 +31,9 @@
 #define VEC_REMOVE_VALUE(vec, val) \
     vec.erase(std::remove(vec.begin(), vec.end(), val), vec.end())
 
+#define VEC_REMOVE_IF(vec, unary) \
+    vec.erase(std::remove_if(vec.begin(), vec.end(), unary), vec.end())
+
 #define VEC_CONTAINS(vec, val) \
     (std::find(vec.cbegin(), vec.cend(), val) != vec.cend())
 
