@@ -57,6 +57,8 @@ Constants::Constants()
         { QStringLiteral("publishers"), GameAttrib::PUBLISHERS },
         { QStringLiteral("genre"), GameAttrib::GENRES },
         { QStringLiteral("genres"), GameAttrib::GENRES },
+        { QStringLiteral("tag"), GameAttrib::TAGS },
+        { QStringLiteral("tags"), GameAttrib::TAGS },
         { QStringLiteral("players"), GameAttrib::PLAYER_COUNT },
         { QStringLiteral("summary"), GameAttrib::SHORT_DESC },
         { QStringLiteral("description"), GameAttrib::LONG_DESC },

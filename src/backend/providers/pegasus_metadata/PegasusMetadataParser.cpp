@@ -191,6 +191,10 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
             for (const QString& line : entry.values)
                 m_cur_game->genres.append(line);
             break;
+        case GameAttrib::TAGS:
+            for (const QString& line : entry.values)
+                m_cur_game->tags.append(line);
+            break;
         case GameAttrib::PLAYER_COUNT:
             {
                 const auto rx_match = m_constants.rx_count_range.match(first_line_of(entry));

@@ -57,6 +57,7 @@ class Game : public QObject {
     CPROP_REF(QStringList, developerList, developers)
     CPROP_REF(QStringList, publisherList, publishers)
     CPROP_REF(QStringList, genreList, genres)
+    CPROP_REF(QStringList, tagList, tags)
 
     CPROP_POD(int, players, player_count)
     CPROP_POD(float, rating, rating)

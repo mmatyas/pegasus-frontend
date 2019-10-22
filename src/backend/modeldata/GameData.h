@@ -52,6 +52,7 @@ struct Game {
     QStringList developers;
     QStringList publishers;
     QStringList genres;
+    QStringList tags;
 
     GameAssets assets;
 };

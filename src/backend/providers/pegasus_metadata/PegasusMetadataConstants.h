@@ -44,6 +44,7 @@ enum class GameAttrib : unsigned char {
     DEVELOPERS,
     PUBLISHERS,
     GENRES,
+    TAGS,
     PLAYER_COUNT,
     SHORT_DESC,
     LONG_DESC,
