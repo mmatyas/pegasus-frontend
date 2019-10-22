@@ -32,6 +32,10 @@ void handle_cli_args(QGuiApplication&);
 
 int main(int argc, char *argv[])
 {
+    Q_INIT_RESOURCE(frontend);
+    Q_INIT_RESOURCE(themes);
+    Q_INIT_RESOURCE(qmlutils);
+
     TerminalKbd::on_startup();
 
     QCoreApplication::addLibraryPath(QStringLiteral("lib/plugins"));

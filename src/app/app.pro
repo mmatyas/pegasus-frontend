@@ -3,21 +3,17 @@ TARGET = pegasus-fe
 
 SOURCES += main.cpp
 RESOURCES += \
-    ../qmlutils/qmlutils.qrc \
-    ../frontend/frontend.qrc \
-    ../themes/themes.qrc \
     $${TOP_SRCDIR}/assets/assets.qrc
 OTHER_FILES += \
     qmlplugins.qml
 
 DEFINES *= $${COMMON_DEFINES}
 
-greaterThan(QT_MINOR_VERSION, 10): CONFIG += qtquickcompiler
-
 
 # Linking
 
 include($${TOP_SRCDIR}/src/link_to_backend.pri)
+include($${TOP_SRCDIR}/src/link_to_frontend.pri)
 
 
 # Translations

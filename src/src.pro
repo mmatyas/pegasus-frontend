@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     app \
-    backend
+    backend \
+    frontend
 
-app.depends = backend
+app.depends = backend frontend
