@@ -36,22 +36,32 @@ Window {
         api.internal.system.quit();
     }
 
-    readonly property int globalWidth: appWindow.width
-    readonly property int globalHeight: appWindow.height
-    // provide relative pixel value calculation, for convenience
-    readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
-    function vpx(value) {
-        return winScale * value;
-    }
-
-    // register custom global fonts
-    QtObject {
-        id: globalFonts
-        readonly property string sans: sansFont.name
-        readonly property string condensed: condensedFont.name
-    }
     FontLoader { id: sansFont; source: "/fonts/Roboto.ttf" }
     FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed.ttf" }
+
+
+    // a globally avalable utility object
+    QtObject {
+        id: global
+
+        readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
+
+        readonly property var fonts: QtObject {
+            readonly property string sans: sansFont.name
+            readonly property string condensed: condensedFont.name
+        }
+    }
+
+
+    // legacy global objects
+    QtObject {
+        id: globalFonts
+        readonly property string sans: global.fonts.sans
+        readonly property string condensed: global.fonts.condensed
+    }
+    function vpx(value) {
+        return global.winScale * value;
+    }
 
 
     // the main content

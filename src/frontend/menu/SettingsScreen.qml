@@ -18,6 +18,7 @@
 import "settings"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
+import QtQuick.Window 2.2
 
 
 FocusScope {
@@ -38,7 +39,7 @@ FocusScope {
 
     anchors.fill: parent
     enabled: focus
-    visible: 0 < (x + width) && x < globalWidth
+    visible: 0 < (x + width) && x < Window.window.width
 
 
     SettingsMain {

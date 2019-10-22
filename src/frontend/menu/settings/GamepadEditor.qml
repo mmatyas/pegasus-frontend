@@ -20,6 +20,7 @@ import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
 import QtQuick 2.8
+import QtQuick.Window 2.2
 
 
 FocusScope {
@@ -29,7 +30,7 @@ FocusScope {
 
     anchors.fill: parent
     enabled: focus
-    visible: 0 < (x + width) && x < globalWidth
+    visible: 0 < (x + width) && x < Window.window.width
 
     function triggerClose() {
         root.stopEscapeTimer();
@@ -701,7 +702,7 @@ FocusScope {
                 text: "B"
                 color: escapeStartTime ? "#eee" : "#777"
                 font {
-                    family: globalFonts.sans
+                    family: global.fonts.sans
                     pixelSize: parent.height * 0.7
                 }
                 anchors.centerIn: parent
@@ -715,7 +716,7 @@ FocusScope {
 
             color: escapeStartTime ? "#eee" : "#777"
             font {
-                family: globalFonts.sans
+                family: global.fonts.sans
                 pixelSize: vpx(22)
                 capitalization: Font.SmallCaps
             }
