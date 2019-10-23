@@ -26,11 +26,11 @@ elif [[ $TARGET == rpi* ]]; then
 fi
 # Platform settings - install path
 if [[ $TARGET == macos* ]]; then
-  INSTALLED_FILE=usr/local/pegasus-frontend/Pegasus.app
-  INSTALLED_BINARY=${INSTALLED_FILE}/Contents/MacOS/pegasus-fe
+  INSTALLED_RUNNABLE=usr/local/pegasus-frontend/Pegasus.app
+  INSTALLED_BINARY=${INSTALLED_RUNNABLE}/Contents/MacOS/pegasus-fe
 else
-  INSTALLED_FILE=usr/bin/pegasus-fe
-  INSTALLED_BINARY=${INSTALLED_FILE}
+  INSTALLED_RUNNABLE=usr/bin/pegasus-fe
+  INSTALLED_BINARY=${INSTALLED_RUNNABLE}
 fi
 
 
@@ -55,6 +55,7 @@ ${QT_HOSTDIR}/bin/qmake .. \
   INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps \
   INSTALL_DESKTOPDIR=/usr/share/applications \
   INSTALL_APPSTREAMDIR=/usr/share/metainfo \
+  INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend \
   QMAKE_CXXFLAGS+=-fno-rtti
 make
 make install INSTALL_ROOT=$PWD/../installoc
@@ -70,7 +71,7 @@ echo "${BINHEAD}" | grep NEEDED | sort
 # Create artifacts
 mkdir dist && pushd dist
   zip -j pegasus-fe_$(git describe --always)_${TARGET}.zip \
-    "../installoc/${INSTALLED_FILE}" \
+    "../installoc/${INSTALLED_RUNNABLE}" \
     ../README.md \
     ../LICENSE.md
 

@@ -52,6 +52,15 @@ RESOURCES += $${locales_qrc.output}
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
 
+!isEmpty(INSTALL_DOCDIR) {
+    md.files += \
+        $${TOP_SRCDIR}/LICENSE.md \
+        $${TOP_SRCDIR}/README.md
+    md.path = $${INSTALL_DOCDIR}
+    OTHER_FILES += $${icon.files}
+    INSTALLS += md
+}
+
 unix:!macx {
     target.path = $${INSTALL_BINDIR}
 

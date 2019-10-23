@@ -11,6 +11,7 @@ defineTest(printSimpleOpt) {
 
 message("Deployment (`make install`) paths:")
 printSimpleOpt("Binaries", INSTALL_BINDIR)
+printSimpleOpt("License and Readme", INSTALL_DOCDIR)
 
 
 unix:!macx {
