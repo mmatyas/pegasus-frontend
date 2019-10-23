@@ -174,6 +174,17 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
             game.genres.append(genre);
     }
 
+    const auto category_arr = app_data[QLatin1String("categories")].toArray();
+    for (const auto& arr_entry : category_arr) {
+        const auto cat_obj = arr_entry.toObject();
+        if (cat_obj.isEmpty())
+            break; // assume the rest will fail too
+
+        const QString category = cat_obj[QLatin1String("description")].toString();
+        if (!category.isEmpty())
+            game.tags.append(category);
+    }
+
     const QString background_image = app_data[QLatin1String("background")].toString();
     if (!background_image.isEmpty())
         assets.setSingle(AssetType::BACKGROUND, background_image);
