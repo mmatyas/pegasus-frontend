@@ -29,6 +29,7 @@ Game::Game(QFileInfo fi)
 
 Game::Game(QString title)
     : title(std::move(title))
+    , sort_title(this->title)
     , player_count(1)
     , is_favorite(false)
     , rating(0.f)

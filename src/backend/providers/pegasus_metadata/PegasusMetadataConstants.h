@@ -52,7 +52,7 @@ enum class GameAttrib : unsigned char {
     RATING,
     LAUNCH_CMD,
     LAUNCH_WORKDIR,
-    // TODO: COLLECTION,
+    SORT_TITLE,
 };
 // TODO: in the future
 /*enum class GameFileAttrib : unsigned char {

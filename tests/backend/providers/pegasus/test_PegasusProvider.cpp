@@ -86,6 +86,7 @@ private slots:
     void separate_media_dirs();
     void relative_files_only();
     void relative_files_with_dirs();
+    void sort_title();
 };
 
 void test_PegasusProvider::empty()
@@ -632,6 +633,37 @@ void test_PegasusProvider::relative_files_with_dirs()
         }},
     };
     verify_collected_files(ctx, coll_files_map);
+}
+
+void test_PegasusProvider::sort_title()
+{
+    providers::SearchContext ctx;
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/sort_title/metadata.txt`");
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/sort_title")});
+    provider.findLists(ctx);
+
+    QVERIFY(ctx.games.size() == 4);
+    QVERIFY(ctx.collections.size() == 1);
+    QVERIFY(ctx.collections.count(QStringLiteral("test")) == 1);
+    QVERIFY(ctx.collection_childs.count(QStringLiteral("test")) == 1);
+    QVERIFY(ctx.collection_childs.at(QStringLiteral("test")).size() == ctx.games.size());
+
+    std::vector<modeldata::Game> games;
+    games.reserve(ctx.games.size());
+    for (auto& keyval : ctx.games)
+        games.emplace_back(std::move(keyval.second));
+
+    std::sort(games.begin(), games.end(),
+        [](const modeldata::Game& a, const modeldata::Game& b) {
+            return QString::localeAwareCompare(a.sort_title, b.sort_title) < 0;
+        }
+    );
+
+    QCOMPARE(games.at(0).title, QStringLiteral("Game I"));
+    QCOMPARE(games.at(1).title, QStringLiteral("Game IV"));
+    QCOMPARE(games.at(2).title, QStringLiteral("Game 8"));
+    QCOMPARE(games.at(3).title, QStringLiteral("Game IX"));
 }
 
 

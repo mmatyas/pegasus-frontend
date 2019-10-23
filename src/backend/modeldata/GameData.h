@@ -36,6 +36,7 @@ struct Game {
     MOVE_ONLY(Game)
 
     QString title;
+    QString sort_title;
     QString summary;
     QString description;
 

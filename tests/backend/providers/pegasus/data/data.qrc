@@ -78,5 +78,10 @@
         <file>relative_files_with_dirs/b/ignoredir/game_ign.x</file>
         <file>relative_files_with_dirs/a/ignoreme.x</file>
         <file>relative_files_with_dirs/a/game_a.x</file>
+        <file>sort_title/metadata.txt</file>
+        <file>sort_title/a.ext</file>
+        <file>sort_title/b.ext</file>
+        <file>sort_title/c.ext</file>
+        <file>sort_title/d.ext</file>
     </qresource>
 </RCC>

@@ -48,6 +48,7 @@ class Game : public QObject {
     Q_OBJECT
 
     CPROP_REF(QString, title, title)
+    CPROP_REF(QString, sortTitle, sort_title)
     CPROP_REF(QString, summary, summary)
     CPROP_REF(QString, description, description)
 

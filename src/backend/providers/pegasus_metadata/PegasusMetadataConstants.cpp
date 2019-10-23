@@ -64,6 +64,13 @@ Constants::Constants()
         { QStringLiteral("description"), GameAttrib::LONG_DESC },
         { QStringLiteral("release"), GameAttrib::RELEASE },
         { QStringLiteral("rating"), GameAttrib::RATING },
+        // sort title variations
+        { QStringLiteral("sorttitle"), GameAttrib::SORT_TITLE },
+        { QStringLiteral("sortname"), GameAttrib::SORT_TITLE },
+        { QStringLiteral("sort_title"), GameAttrib::SORT_TITLE },
+        { QStringLiteral("sort_name"), GameAttrib::SORT_TITLE },
+        { QStringLiteral("sort-title"), GameAttrib::SORT_TITLE },
+        { QStringLiteral("sort-name"), GameAttrib::SORT_TITLE },
     }
     /*, gamefile_attribs {
         { QStringLiteral("name"), GameFileAttrib::TITLE },

@@ -249,6 +249,9 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->launch_workdir = first_line_of(entry);
             break;
+        case GameAttrib::SORT_TITLE:
+            m_cur_game->sort_title = first_line_of(entry);
+            break;
     }
 }
 
