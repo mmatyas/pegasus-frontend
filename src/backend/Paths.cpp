@@ -104,10 +104,6 @@ QStringList configDirs()
 
 
         if (!AppSettings::general.portable) {
-#ifdef INSTALL_DATADIR
-            if (QFileInfo::exists(INSTALL_DATADIR))
-                paths << QString(INSTALL_DATADIR);
-#endif
             paths << writableConfigDir();
             paths << QSP::standardLocations(QSP::AppConfigLocation);
             paths << QSP::standardLocations(QSP::AppDataLocation);

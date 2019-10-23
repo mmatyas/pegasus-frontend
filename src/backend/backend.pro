@@ -45,9 +45,6 @@ include(modeldata/modeldata.pri)
 include(utils/utils.pri)
 include(types/types.pri)
 
-
-DEFINES *= \
-    $${COMMON_DEFINES} \
-    INSTALL_DATADIR=\\\"$${INSTALL_DATADIR}\\\"
+DEFINES *= $${COMMON_DEFINES}
 
 include($${TOP_SRCDIR}/thirdparty/thirdparty.pri)

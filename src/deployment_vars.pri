@@ -17,4 +17,3 @@ isEmpty(INSTALLDIR) {
 # Linux: installations are portable by default
 # Windows and Mac: installations should always be portable (one-dir)
 isEmpty(INSTALL_BINDIR): INSTALL_BINDIR = $${INSTALLDIR}
-isEmpty(INSTALL_DATADIR): INSTALL_DATADIR = $${INSTALLDIR}
