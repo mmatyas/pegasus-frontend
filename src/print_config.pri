@@ -1,27 +1,22 @@
 # Print deployment information
+
+defineTest(printSimpleOpt) {
+    name = $$1
+    value = "unset, will not install"
+    !isEmpty($$2): value = `$$eval($$2)`
+
+    message("  - $${name}: $${value}")
+    return(true)
+}
+
 message("Deployment (`make install`) paths:")
-message("  - Default (`INSTALLDIR`): `$${INSTALLDIR}`")
-message("  - Binaries (`INSTALL_BINDIR`): `$${INSTALL_BINDIR}`")
-message("  - Data files (`INSTALL_DATADIR`): `$${INSTALL_DATADIR}`")
+printSimpleOpt("Binaries", INSTALL_BINDIR)
+
 
 unix:!macx {
-    isEmpty(INSTALL_ICONDIR) {
-        message("  - X11: Icon file (`INSTALL_ICONDIR`): not set, skipped")
-    } else {
-        message("  - X11: Icon file (`INSTALL_ICONDIR`): `$${INSTALL_ICONDIR}`")
-    }
-
-    isEmpty(INSTALL_DESKTOPDIR) {
-        message("  - X11: Desktop file (`INSTALL_DESKTOPDIR`): not set, skipped")
-    } else {
-        message("  - X11: Desktop file (`INSTALL_DESKTOPDIR`): `$${INSTALL_DESKTOPDIR}`")
-    }
-
-    isEmpty(INSTALL_APPSTREAMDIR) {
-        message("  - X11: AppStream file: will not install")
-    } else {
-        message("  - X11: AppStream file: `$${INSTALL_APPSTREAMDIR}`")
-    }
+    printSimpleOpt("X11: Icon file", INSTALL_ICONDIR)
+    printSimpleOpt("X11: Desktop file", INSTALL_DESKTOPDIR)
+    printSimpleOpt("X11: AppStream file", INSTALL_APPSTREAMDIR)
 }
 
 
