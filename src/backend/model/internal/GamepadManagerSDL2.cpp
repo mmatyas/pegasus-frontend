@@ -165,7 +165,7 @@ GamepadAxis translate_axis(Uint8 axis)
 
 const char* to_fieldname(GamepadButton button)
 {
-#define GEN(from, to) case GamepadButton::from: return SDL_GameControllerGetStringForButton(SDL_CONTROLLER_BUTTON_##to);
+#define GEN(from, to) case GamepadButton::from: return SDL_GameControllerGetStringForButton(SDL_CONTROLLER_BUTTON_##to)
     switch (button) {
         GEN(UP, DPAD_UP);
         GEN(DOWN, DPAD_DOWN);
@@ -195,7 +195,7 @@ const char* to_fieldname(GamepadButton button)
 
 const char* to_fieldname(GamepadAxis axis)
 {
-#define GEN(from, to) case GamepadAxis::from: return SDL_GameControllerGetStringForAxis(SDL_CONTROLLER_AXIS_##to);
+#define GEN(from, to) case GamepadAxis::from: return SDL_GameControllerGetStringForAxis(SDL_CONTROLLER_AXIS_##to)
     switch (axis) {
         GEN(LEFTX, LEFTX);
         GEN(LEFTY, LEFTY);
