@@ -257,7 +257,7 @@ void write_mappings(const std::vector<std::string>& mappings)
 
     QTextStream db_stream(&db_file);
     for (const std::string& mapping : mappings)
-        db_stream << mapping.data();
+        db_stream << mapping.data() << '\n';
 }
 } // namespace
 
