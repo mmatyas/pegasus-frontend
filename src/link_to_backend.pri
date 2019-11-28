@@ -1,7 +1,6 @@
 # Link the project that includes this file to the Backend
 
 QT *= qml quick multimedia svg sql
-CONFIG += c++11 warn_on
 
 win32: LIBS += -luser32 -ladvapi32
 macx: LIBS += -framework Cocoa

@@ -1,14 +1,11 @@
-TEMPLATE = app
 TARGET = pegasus-fe
-CONFIG += exceptions_off rtti_off
+CONFIG += c++11 warn_on exceptions_off rtti_off
 
 SOURCES += main.cpp
-RESOURCES += \
-    $${TOP_SRCDIR}/assets/assets.qrc
-OTHER_FILES += \
-    qmlplugins.qml
-
 DEFINES *= $${COMMON_DEFINES}
+
+RESOURCES += $${TOP_SRCDIR}/assets/assets.qrc
+OTHER_FILES += qmlplugins.qml
 
 
 # Linking

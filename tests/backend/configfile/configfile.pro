@@ -1,13 +1,5 @@
-CONFIG += testcase no_testcase_installs
-
-QT += qml testlib
-CONFIG += c++11 warn_on exceptions_off
-
 TARGET = test_ConfigFile
 SOURCES = $${TARGET}.cpp
-DEFINES *= $${COMMON_DEFINES}
+RESOURCES += configfile.qrc
 
-include($${TOP_SRCDIR}/src/link_to_backend.pri)
-
-RESOURCES += \
-    configfile.qrc
+include($${TOP_SRCDIR}/tests/cxxtest_common.pri)
