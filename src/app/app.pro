@@ -4,7 +4,7 @@ CONFIG += c++11 warn_on exceptions_off rtti_off
 SOURCES += main.cpp
 DEFINES *= $${COMMON_DEFINES}
 
-RESOURCES += $${TOP_SRCDIR}/assets/assets.qrc
+RESOURCES += "$${TOP_SRCDIR}/assets/assets.qrc"
 OTHER_FILES += qmlplugins.qml
 
 
@@ -17,7 +17,7 @@ include($${TOP_SRCDIR}/src/link_to_frontend.pri)
 # Translations
 
 LOCALE_TS_FILES = $$files($${TOP_SRCDIR}/lang/pegasus_*.ts)
-LOCALE_QRC_IN = $${TOP_SRCDIR}/lang/translations.qrc.in
+LOCALE_QRC_IN = "$${TOP_SRCDIR}/lang/translations.qrc.in"
 
 qtPrepareTool(LRELEASE, lrelease)
 locales.name = Compile translations
