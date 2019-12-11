@@ -11,6 +11,7 @@
         <file>pegasus-theme-grid/layer_gameinfo/PanelLeft.qml</file>
         <file>pegasus-theme-grid/layer_gameinfo/PanelRight.qml</file>
         <file>pegasus-theme-grid/layer_grid/BackgroundImage.qml</file>
+        <file>pegasus-theme-grid/layer_grid/FavoriteHeart.qml</file>
         <file>pegasus-theme-grid/layer_grid/GameGrid.qml</file>
         <file>pegasus-theme-grid/layer_grid/GameGridItem.qml</file>
         <file>pegasus-theme-grid/layer_platform/PlatformBar.qml</file>
