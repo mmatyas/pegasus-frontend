@@ -266,15 +266,16 @@ void find_games(const SystemEntry& sysentry, const std::vector<QString>& blackli
             const QString game_path = fileinfo.canonicalFilePath();
 
             if (!sctx.path_to_gameid.count(game_path)) {
-                modeldata::Game game(fileinfo);
-                game.launch_cmd = collection.launch_cmd;
-
                 const size_t game_id = sctx.games.size();
                 sctx.path_to_gameid.emplace(game_path, game_id);
-                sctx.games.emplace(game_id, std::move(game));
+                sctx.games.emplace(game_id, modeldata::Game(fileinfo));
             }
 
             const size_t game_id = sctx.path_to_gameid.at(game_path);
+            modeldata::Game& game = sctx.games.at(game_id);
+            if (game.launch_cmd.isEmpty())
+                game.launch_cmd = collection.launch_cmd;
+
             childs.emplace_back(game_id);
         }
     }
