@@ -213,6 +213,7 @@ Window {
 
         property bool dataLoading: api.internal.meta.loading
         property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
+        showDataProgressText: dataLoading
 
         function hideMaybe() {
             if (focus && !dataLoading && !skinLoading) {

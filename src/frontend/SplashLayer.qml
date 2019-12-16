@@ -24,6 +24,7 @@ Rectangle {
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
+    property bool showDataProgressText: true
 
     Behavior on progress { NumberAnimation {} }
 
@@ -113,6 +114,7 @@ Rectangle {
 
     Text {
         id: gameCounter
+        visible: showDataProgressText
 
         text: qsTr("%1 games found").arg(api.internal.meta.gameCount)
         color: "#999"
