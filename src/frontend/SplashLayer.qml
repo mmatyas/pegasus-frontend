@@ -59,7 +59,8 @@ Rectangle {
         Image {
             source: "assets/pbar.png"
 
-            width: vpx(720)
+            property int animatedWidth: 0
+            width: parent.width + animatedWidth
             height: parent.height - progressRoot.padding * 2
 
             fillMode: Image.Tile
@@ -69,11 +70,10 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: parent.width * (1.0 - root.progress)
 
-
-            SequentialAnimation on width {
+            SequentialAnimation on animatedWidth {
                 loops: Animation.Infinite
-                PropertyAnimation { duration: 500; to: vpx(720 + 68) }
-                PropertyAnimation { duration: 0; to: vpx(720) }
+                PropertyAnimation { duration: 500; to: vpx(68) }
+                PropertyAnimation { duration: 0; to: 0 }
             }
 
 
