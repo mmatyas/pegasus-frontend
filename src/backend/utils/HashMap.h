@@ -26,6 +26,7 @@
 template <typename Key, typename Val, typename Hash = std::hash<Key>>
 using HashMap = std::unordered_map<Key, Val, Hash>;
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
 // hash for strings
 namespace std {
     template<> struct hash<QString> {
@@ -39,6 +40,7 @@ namespace std {
         }
     };
 }
+#endif
 
 // hash for enum classes
 struct EnumHash {
