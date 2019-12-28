@@ -119,7 +119,7 @@ void test_ConfigFile::merge_lines()
     QFETCH(QStringList, parts);
     QFETCH(QString, expected);
 
-    const std::vector<QString> parts_vec = parts.toVector().toStdVector();
+    const std::vector<QString> parts_vec(parts.cbegin(), parts.cend());
 
     QCOMPARE(metafile::merge_lines(parts_vec), expected);
 }
