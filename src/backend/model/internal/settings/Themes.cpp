@@ -126,7 +126,7 @@ std::vector<model::ThemeEntry> find_available_themes()
 
     std::sort(themes.begin(), themes.end(),
         [](const model::ThemeEntry& a, const model::ThemeEntry& b) {
-            return QString::localeAwareCompare(a.name, b.name);
+            return QString::localeAwareCompare(a.name, b.name) < 0;
         }
     );
 
