@@ -181,13 +181,17 @@ bool Themes::select_theme(const QString& root_dir)
     if (root_dir.isEmpty())
         return false;
 
+    const QFileInfo root_finfo(paths::writableConfigDir(), root_dir);
+
     for (size_t idx = 0; idx < m_themes.size(); idx++) {
-        if (m_themes.at(idx).root_dir == root_dir) {
+        if (QFileInfo(m_themes.at(idx).root_dir) == root_finfo) {
             m_current_idx = idx;
             return true;
         }
     }
 
+    qWarning().noquote() << tr_log("Requested theme `%1` not found, falling back to default")
+        .arg(root_finfo.absoluteFilePath());
     return false;
 }
 
