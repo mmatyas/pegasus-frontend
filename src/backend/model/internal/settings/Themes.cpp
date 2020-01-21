@@ -119,7 +119,7 @@ std::vector<model::ThemeEntry> find_available_themes()
                 metadata[META_KEY_SUMMARY],
                 metadata[META_KEY_DESC]);
 
-            qInfo().noquote() << tr_log("Found theme '%1' (`%2`)")
+            qInfo().noquote() << tr_log("Found theme `%1` at `%2`")
                                  .arg(themes.back().name, themes.back().root_dir);
         }
     }
@@ -199,7 +199,7 @@ void Themes::print_change() const
 {
     const auto& current = m_themes.at(m_current_idx);
 
-    qInfo().noquote() << tr_log("Theme set to '%1' (`%2`)")
+    qInfo().noquote() << tr_log("Theme set to `%1` (`%2`)")
                          .arg(current.name, current.root_dir);
 }
 
