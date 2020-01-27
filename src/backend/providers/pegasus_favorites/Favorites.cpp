@@ -76,8 +76,9 @@ void Favorites::findDynamicData(const QVector<model::Collection*>&,
         if (line.startsWith('#'))
             continue;
 
-        if (path_map.count(line)) {
-            auto parent = static_cast<model::Game* const>(path_map.at(line)->parent());
+        const QString path = QFileInfo(paths::writableConfigDir(), line).canonicalFilePath();
+        if (path_map.count(path)) {
+            auto parent = static_cast<model::Game* const>(path_map.at(path)->parent());
             parent->setFavorite(true);
         }
     }
