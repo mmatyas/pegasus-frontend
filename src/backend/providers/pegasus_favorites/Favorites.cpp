@@ -17,6 +17,7 @@
 
 #include "Favorites.h"
 
+#include "AppSettings.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
@@ -86,16 +87,20 @@ void Favorites::findDynamicData(const QVector<model::Collection*>&,
 
 void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
 {
-    QMutexLocker lock(&m_task_guard);
+    const QMutexLocker lock(&m_task_guard);
+    const QDir config_dir(paths::writableConfigDir());
 
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const model::Game* const game : game_list) {
         if (game->favorite()) {
             for (const model::GameFile* const file : game->filesConst()) {
-                const QString path = file->data().fileinfo.canonicalFilePath();
-                if (Q_LIKELY(!path.isEmpty()))
-                    m_pending_task << path;
+                const QString full_path = file->data().fileinfo.canonicalFilePath();
+                const QString written_path = AppSettings::general.portable
+                    ? config_dir.relativeFilePath(full_path)
+                    : full_path;
+                if (Q_LIKELY(!written_path.isEmpty()))
+                    m_pending_task << written_path;
             }
         }
     }
