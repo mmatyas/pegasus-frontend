@@ -57,7 +57,7 @@ std::vector<QString> find_scripts_in(const QString& dirname)
     return all_scripts;
 }
 
-void execute_all(const std::vector<QString>& paths)
+void execute_all(const std::vector<QString>& paths, const QStringList& args)
 {
     Q_ASSERT(!paths.empty());
 
@@ -68,13 +68,18 @@ void execute_all(const std::vector<QString>& paths)
             .arg(i + 1, num_field_width)
             .arg(paths.size())
             .arg(paths[i]);
-        QProcess::execute(paths[i]);
+        QProcess::execute(paths[i], args);
     }
 }
 } // namespace
 
 
 void ScriptRunner::run(ScriptEvent event)
+{
+    run(event, {});
+}
+
+void ScriptRunner::run(ScriptEvent event, const QStringList& args)
 {
     static const HashMap<ScriptEvent, QString, EnumHash> SCRIPT_DIRS {
         { ScriptEvent::QUIT, QStringLiteral("quit") },
@@ -96,5 +101,5 @@ void ScriptRunner::run(ScriptEvent event)
         return;
 
     qInfo().noquote() << tr_log("Running `%1` scripts...").arg(dirname);
-    execute_all(scripts);
+    execute_all(scripts, args);
 }

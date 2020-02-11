@@ -17,6 +17,8 @@
 
 #pragma once
 
+class QStringList;
+
 
 enum class ScriptEvent : unsigned char {
     QUIT,
@@ -34,4 +36,5 @@ enum class ScriptEvent : unsigned char {
 class ScriptRunner {
 public:
     static void run(ScriptEvent);
+    static void run(ScriptEvent, const QStringList&);
 };

@@ -152,7 +152,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     workdir = helpers::abs_workdir(workdir, game.relative_basedir, default_workdir);
 
 
-    beforeRun();
+    beforeRun(gamefile.fileinfo.absoluteFilePath());
     runProcess(command, args, workdir);
 }
 
@@ -234,10 +234,10 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
     afterRun();
 }
 
-void ProcessLauncher::beforeRun()
+void ProcessLauncher::beforeRun(const QString& game_path)
 {
     TerminalKbd::enable();
-    ScriptRunner::run(ScriptEvent::PROCESS_STARTED);
+    ScriptRunner::run(ScriptEvent::PROCESS_STARTED, { game_path });
 }
 
 void ProcessLauncher::afterRun()
