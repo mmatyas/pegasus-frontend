@@ -58,10 +58,10 @@ index d39cce9..b994aeb 100644
  
 @@ -236,7 +256,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
  
- void ProcessLauncher::beforeRun()
+ void ProcessLauncher::beforeRun(const QString& game_path)
  {
 -    TerminalKbd::enable();
-     ScriptRunner::run(ScriptEvent::PROCESS_STARTED);
+     ScriptRunner::run(ScriptEvent::PROCESS_STARTED, { game_path });
  }
  
 @@ -247,5 +266,4 @@ void ProcessLauncher::afterRun()
