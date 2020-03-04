@@ -8,12 +8,16 @@ set +o xtrace # !
 pushd dist
 
 if [[ "$CIRCLE_BRANCH" != "master" ]]; then
-  echo "Release uploading disabled for pull requests, uploading to transfer.sh instead"
+  echo "Release uploading disabled for pull requests, uploading to Send instead"
+  pushd /tmp
+  curl -L -O https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/ffsend-v0.2.58-linux-x64-static
+  chmod +x ffsend-v0.2.58-linux-x64-static
+  popd
+
   for FILE in ./*; do
-    BASENAME="$(basename "${FILE}")"
-    timeout 5m curl --upload-file $FILE https://transfer.sh/$BASENAME || true
-    echo ""
+    timeout 5m /tmp/ffsend-v0.2.58-linux-x64-static upload $FILE || true
   done
+
   popd
   exit 0
 fi
