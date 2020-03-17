@@ -46,6 +46,11 @@ You can find downloads and platform-specific notes on the [project's website](ht
     - Gamepad
     - SQL (SQLite v3)
 
+These can be installed on Ubuntu 19.10 with:
+```
+$ sudo apt install qtdeclarative5-dev libqt5gamepad5-dev qt5-qmake libqt5svg5-dev qtbase5-dev qtmultimedia5-dev qttools5-dev-tools g++-9
+```
+
 For more information, please see the detailed [build guide](http://pegasus-frontend.org/docs/dev/build).
 
 **Downloading the source**
