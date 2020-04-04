@@ -18,40 +18,21 @@ elif [[ $TARGET == x11* ]]; then
 else
   QT_HOSTDIR=/opt/qt${QT_VER//./}_${TARGET}_hosttools
 fi
-# Platform settings - Cross prefix
-if [[ $TARGET == rpi1* ]]; then
-  CROSS=/opt/rpi-toolchain/arm-bcm2708/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
-elif [[ $TARGET == rpi* ]]; then
-  CROSS=/opt/linaro/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
-fi
 # Platform settings - install path
 if [[ $TARGET == macos* ]]; then
   INSTALLED_RUNNABLE=usr/local/pegasus-frontend/Pegasus.app
   INSTALLED_BINARY=${INSTALLED_RUNNABLE}/Contents/MacOS/pegasus-fe
 else
-  INSTALLED_RUNNABLE=usr/bin/pegasus-fe
+  INSTALLED_RUNNABLE=opt/pegasus-frontend/pegasus-fe
   INSTALLED_BINARY=${INSTALLED_RUNNABLE}
 fi
-
-
-# Lint
-find -name *.qml -exec ${QT_HOSTDIR}/bin/qmllint {} \;
 
 
 # Build
 
 mkdir build && pushd build
 
-if [[ -n ${RUN_COV-} ]]; then
-  source ../.travis/script__build_with_lcov.sh
-  (cd .. && coveralls-lcov build/coverage.clean)
-  popd
-  exit 0
-fi
-
 ${QT_HOSTDIR}/bin/qmake .. \
-  USE_SDL_GAMEPAD=1 \
-  INSTALL_BINDIR=/usr/bin \
   INSTALL_ICONDIR=/usr/share/icons/hicolor/128x128/apps \
   INSTALL_DESKTOPDIR=/usr/share/applications \
   INSTALL_APPSTREAMDIR=/usr/share/metainfo \
@@ -64,7 +45,7 @@ popd
 
 
 # Check deps
-BINHEAD=$(${CROSS-}objdump -p "installoc/${INSTALLED_BINARY}")
+BINHEAD=$(objdump -p "installoc/${INSTALLED_BINARY}")
 echo "${BINHEAD}" | grep NEEDED | sort
 
 
@@ -74,10 +55,6 @@ mkdir dist && pushd dist
     "../installoc/${INSTALLED_RUNNABLE}" \
     ../README.md \
     ../LICENSE.md
-
-  if [[ $TARGET = x11* ]]; then
-    source ../.travis/script__create_deb.sh
-  fi
 popd
 
 for FILE in dist/*; do
