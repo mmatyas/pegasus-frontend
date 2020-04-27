@@ -19,10 +19,8 @@ else
   QT_HOSTDIR=/opt/qt${QT_VER//./}_${TARGET}_hosttools
 fi
 # Platform settings - Cross prefix
-if [[ $TARGET == rpi1* ]]; then
-  CROSS=/opt/rpi-toolchain/arm-bcm2708/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
-elif [[ $TARGET == rpi* ]]; then
-  CROSS=/opt/linaro/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+if [[ $TARGET == rpi* ]]; then
+  CROSS=arm-linux-gnueabihf-
 fi
 # Platform settings - install path
 if [[ $TARGET == macos* ]]; then

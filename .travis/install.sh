@@ -26,8 +26,12 @@ if [[ $TARGET = x11* ]]; then
     libxkbcommon-dev \
     libxkbcommon-x11-dev \
     libsdl2-dev \
-    ruby2.4
+    ruby
   gem install fpm -v 1.10.2
+fi
+
+if [[ $TARGET = rpi* ]]; then
+  sudo apt-get install -y g++-arm-linux-gnueabihf
 fi
 
 if [[ -n ${RUN_COV-} ]]; then
@@ -41,16 +45,15 @@ fi
 TOOLS_URL=https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
 
 pushd /tmp
-  wget ${TOOLS_URL}/qt${QT_VER//./}_${TARGET}.txz
+  wget ${TOOLS_URL}/qt${QT_VER//./}_${TARGET}.tar.xz
 
   if [[ $TARGET = rpi* ]]; then
-    if [[ $TARGET = rpi1* ]];
-    then wget ${TOOLS_URL}/rpi-toolchain-official.txz
-    else wget ${TOOLS_URL}/rpi-toolchain-linaro.txz
+    if [[ $TARGET = rpi4* ]];
+    then wget ${TOOLS_URL}/rpi-sysroot_buster_mesa.tar.xz
+    else wget ${TOOLS_URL}/rpi-sysroot_buster_brcm.tar.xz
     fi
-    wget ${TOOLS_URL}/rpi-sysroot_brcm493fix.txz
   fi
 
   if [[ $TARGET == macos* ]]; then OUTDIR=/usr/local; else OUTDIR=/opt; fi
-  for f in *.txz; do sudo tar xJf ${f} -C ${OUTDIR}/; done
+  for f in *.tar.xz; do sudo tar xJf ${f} -C ${OUTDIR}/; done
 popd

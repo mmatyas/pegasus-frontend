@@ -131,8 +131,8 @@ android {
 
     ANDROID_PACKAGE_SOURCE_DIR = $${ANDROID_CFGDIR_OUT}
     ANDROID_EXTRA_LIBS += \
-        /opt/openssl-111a_android/libcrypto.so \
-        /opt/openssl-111a_android/libssl.so
+        /opt/openssl-111d_android/lib/libcrypto.so \
+        /opt/openssl-111d_android/lib/libssl.so
 }
 
 !isEmpty(target.path): INSTALLS += target

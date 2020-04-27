@@ -1,7 +1,7 @@
 language: cpp
 
 sudo: required
-dist: xenial
+dist: bionic
 
 branches:
   only:
@@ -9,7 +9,7 @@ branches:
 
 env:
   global:
-    - QT_VER=5.12.3
+    - QT_VER=5.12.8
 
 git:
   depth: 175
