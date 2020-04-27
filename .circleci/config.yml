@@ -40,7 +40,7 @@ jobs:
     steps:
       - checkout
       - run: .circleci/prepare.sh
-      - run: curl "https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz" | tar xzf - -C /opt/
+      - run: curl -L "https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz" | tar xzf - -C /opt/
       - run: .circleci/build.sh
       - run: i686-w64-mingw32-objdump -p installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe | grep 'DLL Name' | sort
       # Deploy
@@ -61,12 +61,9 @@ jobs:
       - run: git apply ./etc/rpi4/kms_launch_fix.diff
       - run: .circleci/prepare.sh
       - run: .circleci/build.sh
-      - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
       # Deploy
-      - run: zip -j dist/pegasus-fe_$(git describe --always)_rpi4-static.zip
-          installdir/opt/pegasus-frontend/pegasus-fe
-          README.md
-          LICENSE.md
+      - run: .circleci/zip_linux.sh
       - run: .circleci/release.sh
 
   odroid-c1:
@@ -80,12 +77,9 @@ jobs:
       - run: .circleci/prepare.sh
       - run: .circleci/build.sh
       - run: patchelf --replace-needed /opt/odroid-c1_bionic/usr/lib/arm-linux-gnueabihf/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
-      - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
       # Deploy
-      - run: zip -j dist/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip
-          installdir/opt/pegasus-frontend/pegasus-fe
-          README.md
-          LICENSE.md
+      - run: .circleci/zip_linux.sh
       - run: .circleci/release.sh
 
   odroid-c2:
@@ -99,12 +93,9 @@ jobs:
       - run: .circleci/prepare.sh
       - run: .circleci/build.sh
       - run: patchelf --replace-needed /opt/odroid-c2_bionic/usr/lib/aarch64-linux-gnu/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
-      - run: aarch64-linux-gnu-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      - run: .circleci/objdump_linux.sh aarch64-linux-gnu-
       # Deploy
-      - run: zip -j dist/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip
-          installdir/opt/pegasus-frontend/pegasus-fe
-          README.md
-          LICENSE.md
+      - run: .circleci/zip_linux.sh
       - run: .circleci/release.sh
 
   odroid-xu3:
@@ -118,12 +109,9 @@ jobs:
       - run: .circleci/prepare.sh
       - run: .circleci/build.sh
       - run: patchelf --replace-needed /opt/odroid-5422s_bionic/usr/lib/arm-linux-gnueabihf/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
-      - run: arm-linux-gnueabihf-objdump -p installdir/opt/pegasus-frontend/pegasus-fe | grep 'NEEDED' | sort
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
       # Deploy
-      - run: zip -j dist/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip
-          installdir/opt/pegasus-frontend/pegasus-fe
-          README.md
-          LICENSE.md
+      - run: .circleci/zip_linux.sh
       - run: .circleci/release.sh
 
 workflows:

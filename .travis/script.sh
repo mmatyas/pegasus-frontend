@@ -56,7 +56,8 @@ ${QT_HOSTDIR}/bin/qmake .. \
   INSTALL_DESKTOPDIR=/usr/share/applications \
   INSTALL_APPSTREAMDIR=/usr/share/metainfo \
   INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend \
-  QMAKE_CXXFLAGS+=-fno-rtti
+  QMAKE_CXXFLAGS+='-fno-rtti -static-libstdc++ -static-libgcc' \
+  QMAKE_LFLAGS+='-fno-rtti -static-libstdc++ -static-libgcc'
 make
 make install INSTALL_ROOT=$PWD/../installoc
 
