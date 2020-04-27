@@ -50,6 +50,54 @@ jobs:
           LICENSE.md
       - run: .circleci/release.sh
 
+  buster-pi1:
+    docker:
+      - image: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5128
+      - QT_TARGET: rpi1-static
+      - BUILDOPTS: USE_SDL_GAMEPAD=1 QMAKE_LFLAGS+='-static-libstdc++ -static-libgcc'
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      - run: .circleci/release.sh
+
+  buster-pi2:
+    docker:
+      - image: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5128
+      - QT_TARGET: rpi2-static
+      - BUILDOPTS: USE_SDL_GAMEPAD=1 QMAKE_LFLAGS+='-static-libstdc++ -static-libgcc'
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      - run: .circleci/release.sh
+
+  buster-pi3:
+    docker:
+      - image: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5128
+      - QT_TARGET: rpi3-static
+      - BUILDOPTS: USE_SDL_GAMEPAD=1 QMAKE_LFLAGS+='-static-libstdc++ -static-libgcc'
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      - run: .circleci/release.sh
+
   buster-pi4:
     docker:
       - image: mmatyas/pegasus-qt-buster
@@ -120,6 +168,9 @@ workflows:
     jobs:
       - android
       - mingw
+      - buster-pi1
+      - buster-pi2
+      - buster-pi3
       - buster-pi4
       - odroid-c1
       - odroid-c2

@@ -28,9 +28,6 @@ deploy:
 jobs:
   include:
   - env: TARGET=x11-static
-  - env: TARGET=rpi1-static
-  - env: TARGET=rpi2-static
-  - env: TARGET=rpi3-static
 
   # Collect and deploy artifacts
   - stage: release
