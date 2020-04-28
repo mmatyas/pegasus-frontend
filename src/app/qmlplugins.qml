@@ -29,5 +29,7 @@ import QtCanvas3D 1.1
 import QtGraphicalEffects 1.0
 import QtMultimedia 5.8
 
+import QtQml.Models 2.8
+
 
 Item {}
