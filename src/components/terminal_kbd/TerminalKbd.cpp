@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2018-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,8 +34,10 @@
 #endif
 
 
-int TerminalKbd::m_tty = -1;
-int TerminalKbd::m_old_kbd_mode = 0;
+namespace {
+    int m_tty = -1;
+    int m_old_kbd_mode = 0;
+}
 
 void TerminalKbd::on_startup()
 {

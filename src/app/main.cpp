@@ -20,7 +20,7 @@
 #include "Backend.h"
 #include "LocaleUtils.h"
 #include "Log.h"
-#include "platform/TerminalKbd.h"
+#include "terminal_kbd/TerminalKbd.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
