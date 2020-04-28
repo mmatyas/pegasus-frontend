@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2018-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,20 +17,9 @@
 
 #pragma once
 
-#include "utils/NoCopyNoMove.h"
 
-#include <QtGlobal>
-
-
-class TerminalKbd {
-public:
-    static void on_startup();
-    static void enable();
-    static void disable();
-
-private:
-#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-    static int m_tty;
-    static int m_old_kbd_mode;
-#endif
-};
+namespace TerminalKbd {
+void on_startup();
+void enable();
+void disable();
+}; // namespace TerminalKbd
