@@ -186,19 +186,7 @@ const std::vector<std::unique_ptr<providers::Provider>> AppSettings::providers =
 
 void AppSettings::load_config()
 {
-    // push CLI arguments
-    const struct CliArgs {
-        const bool silent = AppSettings::general.silent;
-        const bool portable = AppSettings::general.portable;
-    } cli_args;
-
-
     appsettings::LoadContext().load();
-
-
-    // pop CLI arguments
-    AppSettings::general.silent |= cli_args.silent;
-    AppSettings::general.portable |= cli_args.portable;
 }
 
 void AppSettings::save_config()

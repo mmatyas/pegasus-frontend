@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "AppContext.h"
+#include "PreInit.h"
 
 #include "Api.h"
 #include "AppSettings.h"
@@ -88,8 +88,14 @@ void register_api_classes()
 
 namespace backend {
 
-AppContext::AppContext()
+PreInit::PreInit(const CliArgs& args)
 {
+    AppSettings::load_config();
+    AppSettings::general.silent |= args.silent;
+    AppSettings::general.portable |= args.portable;
+
+    Log::init();
+
     print_metainfo();
     register_api_classes();
 }

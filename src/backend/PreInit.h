@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2018-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,14 +17,16 @@
 
 #pragma once
 
+#include "CliArgs.h"
+#include "utils/MoveOnly.h"
+
 
 namespace backend {
 
-class AppContext {
+class PreInit {
 public:
-    AppContext();
-    AppContext(const AppContext&) = delete;
-    AppContext& operator=(const AppContext&) = delete;
+    explicit PreInit(const CliArgs&);
+    MOVE_ONLY(PreInit)
 };
 
 } // namespace backend
