@@ -10,11 +10,11 @@ else: QT += gamepad
 
 SOURCES += \
     Api.cpp \
-    AppContext.cpp \
     Backend.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
+    PreInit.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
@@ -24,11 +24,12 @@ SOURCES += \
 
 HEADERS += \
     Api.h \
-    AppContext.h \
     Backend.h \
+    CliArgs.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     PegasusAssets.h \
+    PreInit.h \
     ProcessLauncher.h \
     ScriptRunner.h \
     LocaleUtils.h \

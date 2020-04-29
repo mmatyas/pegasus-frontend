@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,11 +15,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "AppSettings.h"
-#include "AppContext.h"
-#include "Backend.h"
-#include "LocaleUtils.h"
-#include "Log.h"
+#include "backend/Backend.h"
+#include "backend/LocaleUtils.h"
 #include "terminal_kbd/TerminalKbd.h"
 
 #include <QCommandLineParser>
@@ -28,7 +25,7 @@
 #include <QSettings>
 
 
-void handle_cli_args(QGuiApplication&);
+backend::CliArgs handle_cli_args(QGuiApplication&);
 
 int main(int argc, char *argv[])
 {
@@ -49,18 +46,14 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
-    handle_cli_args(app);
-    Log::init();
-    AppSettings::load_config();
-
-    backend::AppContext context;
-    backend::Backend backend;
+    backend::CliArgs cli_args = handle_cli_args(app);
+    backend::Backend backend(cli_args);
     backend.start();
 
     return app.exec();
 }
 
-void handle_cli_args(QGuiApplication& app)
+backend::CliArgs handle_cli_args(QGuiApplication& app)
 {
     QCommandLineParser argparser;
     argparser.setApplicationDescription(tr_log(
@@ -80,7 +73,8 @@ void handle_cli_args(QGuiApplication& app)
     argparser.addVersionOption();
     argparser.process(app); // may quit!
 
-
-    AppSettings::general.portable = argparser.isSet(arg_portable);
-    AppSettings::general.silent = argparser.isSet(arg_silent);
+    auto args = backend::CliArgs {};
+    args.portable = argparser.isSet(arg_portable);
+    args.silent = argparser.isSet(arg_silent);
+    return args;
 }

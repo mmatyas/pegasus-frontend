@@ -63,7 +63,12 @@ void on_app_close(AppCloseType type)
 namespace backend {
 
 Backend::Backend()
-    : frontend(&api)
+    : Backend(CliArgs {})
+{}
+
+Backend::Backend(const CliArgs& args)
+    : init(args)
+    , frontend(&api)
 {
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
