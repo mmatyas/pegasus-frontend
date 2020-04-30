@@ -20,12 +20,14 @@
 #include <QString>
 #include <vector>
 
+namespace providers { class Provider; }
+
 
 namespace providers {
 namespace launchbox {
 namespace platforms_xml {
 
-std::vector<QString> read(const QString& lb_dir);
+std::vector<QString> read(const providers::Provider* const provider, const QString& lb_dir);
 
 } // namespace platforms_xml
 } // namespace launchbox
