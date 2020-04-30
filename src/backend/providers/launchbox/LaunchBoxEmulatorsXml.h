@@ -19,6 +19,8 @@
 
 #include "LaunchBoxCommon.h"
 
+namespace providers { class Provider; }
+
 
 namespace providers {
 namespace launchbox {
