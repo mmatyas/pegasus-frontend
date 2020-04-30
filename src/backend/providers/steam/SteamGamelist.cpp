@@ -34,8 +34,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Steam:";
-
 QString find_steam_datadir()
 {
     QStringList possible_dirs;
@@ -63,17 +61,14 @@ QString find_steam_datadir()
 
 
     for (const auto& dir : qAsConst(possible_dirs)) {
-        if (QFileInfo::exists(dir)) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found data directory: `%1`").arg(dir);
+        if (QFileInfo::exists(dir))
             return dir;
-        }
     }
 
-    qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
     return {};
 }
 
-std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
+std::vector<QString> find_steam_installdirs(const providers::Provider* const provider, const QString& steam_datadir)
 {
     std::vector<QString> installdirs;
     installdirs.emplace_back(steam_datadir % QLatin1String("steamapps"));
@@ -82,9 +77,8 @@ std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
     const QString config_path = steam_datadir % QLatin1String("config/config.vdf");
     QFile configfile(config_path);
     if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("while Steam seems to be installed, "
-                      "the config file `%1` could not be opened").arg(config_path);
+        provider->warn(tr_log("while Steam seems to be installed, "
+                      "the config file `%1` could not be opened").arg(config_path));
         return installdirs;
     }
 
@@ -163,12 +157,16 @@ Gamelist::Gamelist(QObject* parent)
 void Gamelist::find(providers::SearchContext& sctx)
 {
     const QString steamdir = find_steam_datadir();
-    if (steamdir.isEmpty())
+    if (steamdir.isEmpty()) {
+        static_cast<Provider*>(parent())->info(tr_log("no installation found"));
         return;
+    }
 
-    const std::vector<QString> installdirs = find_steam_installdirs(steamdir);
+    static_cast<Provider*>(parent())->info(tr_log("found data directory: `%1`").arg(steamdir));
+
+    const std::vector<QString> installdirs = find_steam_installdirs(static_cast<Provider*>(parent()), steamdir);
     if (installdirs.empty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("no installation directories found");
+        static_cast<Provider*>(parent())->warn(tr_log("no installation directories found"));
         return;
     }
 

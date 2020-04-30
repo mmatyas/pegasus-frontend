@@ -40,7 +40,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Steam:";
 static constexpr auto JSON_CACHE_DIR = "steam";
 
 QString find_steam_call()
@@ -74,7 +73,7 @@ SteamGameEntry read_manifest(const QString& manifest_path)
 {
     QFile manifest(manifest_path);
     if (!manifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(manifest_path);
+        qWarning().noquote() << tr_log("Steam: could not open `%1`").arg(manifest_path);
         return {};
     }
 
@@ -220,13 +219,12 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
 bool fill_from_cache(const SteamGameEntry& entry)
 {
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
-    const auto json = providers::read_json_from_cache(message_prefix, cache_dir, entry.appid);
+    const auto json = providers::read_json_from_cache(cache_dir, entry.appid);
     const bool json_success = read_json(*entry.game_ptr, json);
     if (!json_success) {
-        providers::delete_cached_json(message_prefix, cache_dir, entry.appid);
+        providers::delete_cached_json(cache_dir, entry.appid);
         return false;
     }
 
@@ -238,7 +236,6 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
     const int TIMEOUT_MS(5000);
     const QString APPDETAILS_URL(QLatin1String("https://store.steampowered.com/api/appdetails/?appids="));
 
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
 
@@ -267,19 +264,19 @@ void download_metadata(const std::vector<SteamGameEntry>& entries, QNetworkAcces
 
 
                 if (reply->error()) {
-                    qWarning().noquote() << MSG_PREFIX
-                        << tr_log("downloading metadata for `%1` failed (%2)")
+                    qWarning().noquote()
+                        << tr_log("Steam: downloading metadata for `%1` failed (%2)")
                            .arg(entries[i].title, reply->errorString());
                 }
                 else {
                     const auto raw_data = reply->readAll();
                     const bool json_success = read_json(*entries[i].game_ptr, QJsonDocument::fromJson(raw_data));
                     if (json_success) {
-                        providers::cache_json(message_prefix, cache_dir, entries[i].appid, raw_data);
+                        providers::cache_json(cache_dir, entries[i].appid, raw_data);
                     }
                     else {
-                        qWarning().noquote() << MSG_PREFIX
-                            << tr_log("failed to parse the response of the server "
+                        qWarning().noquote()
+                            << tr_log("Steam: failed to parse the response of the server "
                                       "for game `%1` - perhaps the Steam API changed?")
                                       .arg(entries[i].title);
                     }
@@ -347,7 +344,7 @@ void Metadata::enhance(providers::SearchContext& sctx)
     }
 
     if (entries.empty()) {
-        qInfo().noquote() << MSG_PREFIX << tr_log("couldn't find any installed games");
+        static_cast<Provider*>(parent())->warn(tr_log("couldn't find any installed games"));
         return;
     }
 
@@ -367,8 +364,7 @@ void Metadata::enhance(providers::SearchContext& sctx)
 
     QNetworkAccessManager netman; // TODO: move NAM to global
     if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("no internet connection - most game data may be missing");
+        static_cast<Provider*>(parent())->warn(tr_log("no internet connection - most game data may be missing"));
         return;
     }
 

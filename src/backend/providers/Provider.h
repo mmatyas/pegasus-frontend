@@ -87,8 +87,8 @@ public:
 
     // common
     const QLatin1String& codename() const { return m_codename; }
-    const QString& name() const { return m_provider_name; }
-    uint8_t flags() const { return m_provider_flags; }
+    const QString& name() const { return m_name; }
+    uint8_t flags() const { return m_flags; }
 
     void setOption(const QString&, QString);
     void setOption(const QString&, std::vector<QString>);
@@ -97,10 +97,14 @@ public:
 signals:
     void gameCountChanged(int);
 
+protected:
+    void info(const QString&) const;
+    void warn(const QString&) const;
+
 private:
     const QLatin1String m_codename;
-    const QString m_provider_name;
-    const uint8_t m_provider_flags;
+    const QString m_name;
+    const uint8_t m_flags;
 
     bool m_enabled;
     HashMap<QString, std::vector<QString>> m_options;

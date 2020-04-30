@@ -39,7 +39,6 @@
 
 namespace {
 
-static constexpr auto MSG_PREFIX = "Android Apps:";
 static constexpr auto JSON_CACHE_DIR = "androidapps";
 
 bool read_json(modeldata::Game& game, const QJsonDocument& json)
@@ -86,7 +85,6 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
 bool fill_from_cached_json(const QString& package, modeldata::Game& game)
 {
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
     const auto json = providers::read_json_from_cache(message_prefix, cache_dir, package);
@@ -104,8 +102,9 @@ bool fill_from_cached_json(const QString& package, modeldata::Game& game)
 namespace providers {
 namespace android {
 
-Metadata::Metadata()
-    : rx_meta_itemprops(QStringLiteral(R""(<meta itemprop="(.+?)" content="(.+?)")""), QRegularExpression::DotMatchesEverythingOption)
+Metadata::Metadata(Provider* parent)
+    : m_parent(parent)
+    , rx_meta_itemprops(QStringLiteral(R""(<meta itemprop="(.+?)" content="(.+?)")""), QRegularExpression::DotMatchesEverythingOption)
     , rx_background(QStringLiteral(R""(<meta property="og:image" content="(.+?)")""))
     , rx_developer(QStringLiteral(R""(<a +href="https:\/\/play\.google\.com\/store\/apps\/dev(eloper)?\?id=.+?".*?>([^<]+)<\/a>)""))
     , rx_category(QStringLiteral(R""(<a itemprop="genre".*?>([^<]+)<\/a>)""))
@@ -152,15 +151,13 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
         return;
 
     if (!QSslSocket::supportsSsl()) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("secure connection (SSL) support not available, downloading metadata is not possible");
+        m_parent->warn(tr_log("secure connection (SSL) support not available, downloading metadata is not possible"));
         return;
     }
 
     QNetworkAccessManager netman; // TODO: move NAM to global
     if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("no internet connection - most game data may be missing");
+        m_parent->warn(tr_log("no internet connection - most game data may be missing"));
         return;
     }
 
@@ -169,7 +166,6 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
     const QString GPLAY_URL(QStringLiteral("https://play.google.com/store/apps/details?id=%1&hl=")
                             + QLocale::system().name());
 
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
 
@@ -202,9 +198,8 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
 
 
                 if (reply->error()) {
-                    qWarning().noquote() << MSG_PREFIX
-                        << tr_log("downloading metadata for `%1` failed (%2)")
-                           .arg(package, reply->errorString());
+                    m_parent->warn(tr_log("downloading metadata for `%1` failed (%2)")
+                           .arg(package, reply->errorString()));
                     return;
                 }
 
@@ -216,15 +211,14 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
                     modeldata::Game& game = all_games.at(idx);
 
                     if (read_json(game, json_doc)) {
-                        providers::cache_json(message_prefix, cache_dir, package, json_doc.toJson(QJsonDocument::Compact));
+                        providers::cache_json(cache_dir, package, json_doc.toJson(QJsonDocument::Compact));
                         return;
                     }
                 }
 
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("failed to parse the response of the server "
+                m_parent->warn(tr_log("failed to parse the response of the server "
                               "for app `%1` - perhaps the Google Play sites have changed?")
-                              .arg(package);
+                              .arg(package));
             });
 
         listeners << reply;

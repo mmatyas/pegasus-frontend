@@ -18,6 +18,7 @@
 #include "LaunchBoxEmulatorsXml.h"
 
 #include "LocaleUtils.h"
+#include "providers/Provider.h"
 
 #include <QDebug>
 #include <QDir>
@@ -110,14 +111,14 @@ namespace providers {
 namespace launchbox {
 namespace emulators_xml {
 
-HashMap<EmulatorId, Emulator> read(const QString& lb_dir)
+HashMap<EmulatorId, Emulator> read(const Provider* const provider, const QString& lb_dir)
 {
     const QLatin1String xml_rel_path("Data/Emulators.xml");
     const QString xml_path = lb_dir + xml_rel_path;
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`")
-            .arg(QDir::toNativeSeparators(xml_rel_path));
+        provider->warn(tr_log("could not open `%1`")
+            .arg(QDir::toNativeSeparators(xml_rel_path)));
         return {};
     }
 
@@ -146,16 +147,16 @@ HashMap<EmulatorId, Emulator> read(const QString& lb_dir)
         xml.skipCurrentElement();
     }
     if (xml.error())
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        provider->warn(xml.errorString());
 
 
     for (const auto& entry : emu_platforms_for_id) {
         const auto emu_it = emus_by_id.find(entry.first);
         if (emu_it == emus_by_id.cend()) {
             for (const EmulatorPlatform& platform : entry.second) {
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("%1: emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
-                        .arg(QDir::toNativeSeparators(xml_rel_path), platform.name, entry.first);
+                provider->warn(
+                    tr_log("%1: emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
+                        .arg(QDir::toNativeSeparators(xml_rel_path), platform.name, entry.first));
             }
             continue;
         }

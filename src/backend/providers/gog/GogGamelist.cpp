@@ -185,13 +185,10 @@ Gamelist::Gamelist(QObject* parent)
 void Gamelist::find(providers::SearchContext& sctx, HashMap<size_t, QString>& gogids,
                     const HashMap<QString, std::vector<QString>>& options)
 {
-    static constexpr auto MSG_PREFIX = "GOG:";
-
-
     std::vector<GogEntry> entries(find_game_entries(options));
     entries.erase(std::remove_if(entries.begin(), entries.end(), invalid_entry), entries.end());
 
-    qInfo().noquote() << MSG_PREFIX << tr_log("%1 games found").arg(entries.size());
+    static_cast<Provider*>(parent())->info(tr_log("%1 games found").arg(entries.size()));
     if (entries.empty())
         return;
 

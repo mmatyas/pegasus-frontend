@@ -85,8 +85,7 @@ Literals::Literals()
 void log_xml_warning(const QXmlStreamReader& xml, const QString& xml_rel_path, const QString& msg)
 {
     qWarning().noquote()
-        << MSG_PREFIX
-        << QStringLiteral("%1:%2: %3")
+        << QStringLiteral("LaunchBox: %1:%2: %3")
            .arg(QDir::toNativeSeparators(xml_rel_path), QString::number(xml.lineNumber()), msg);
 }
 

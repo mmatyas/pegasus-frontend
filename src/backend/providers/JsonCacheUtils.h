@@ -23,15 +23,12 @@
 
 namespace providers {
 
-void cache_json(const QString& provider_prefix,
-                const QString& provider_dir,
+void cache_json(const QString& provider_dir,
                 const QString& entryname,
                 const QByteArray& bytes);
-QJsonDocument read_json_from_cache(const QString& provider_prefix,
-                                   const QString& provider_dir,
+QJsonDocument read_json_from_cache(const QString& provider_dir,
                                    const QString& entryname);
-void delete_cached_json(const QString& provider_prefix,
-                        const QString& provider_dir,
+void delete_cached_json(const QString& provider_dir,
                         const QString& entryname);
 
 } // namespace providers

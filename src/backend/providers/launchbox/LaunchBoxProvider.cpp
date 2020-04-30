@@ -102,11 +102,9 @@ void find_assets(const QString& lb_dir, const QString& platform_name,
 QString find_installation()
 {
     const QString possible_path = paths::homePath() + QStringLiteral("/LaunchBox/");
-    if (QFileInfo::exists(possible_path)) {
-        qInfo().noquote() << providers::launchbox::MSG_PREFIX
-            << tr_log("found directory: `%1`").arg(QDir::toNativeSeparators(possible_path));
+    if (QFileInfo::exists(possible_path))
         return possible_path;
-    }
+
     return {};
 }
 } // namespace
@@ -128,19 +126,21 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
             : find_installation();
     }();
     if (lb_dir.isEmpty()) {
-        qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
+        Provider::info(tr_log("no installation found"));
         return;
     }
 
+    Provider::info(tr_log("found directory: `%1`").arg(QDir::toNativeSeparators(lb_dir)));
+
     const std::vector<QString> platform_names = platforms_xml::read(lb_dir);
     if (platform_names.empty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("no platforms found");
+        Provider::warn(tr_log("no platforms found"));
         return;
     }
 
     const HashMap<EmulatorId, Emulator> emulators = emulators_xml::read(lb_dir);
     if (emulators.empty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("no emulator settings found");
+        Provider::warn(tr_log("no emulator settings found"));
         return;
     }
 

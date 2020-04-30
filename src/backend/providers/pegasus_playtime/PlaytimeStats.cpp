@@ -31,8 +31,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Playtime:";
-
 QString default_db_path()
 {
     return paths::writableConfigDir() + QStringLiteral("/stats.db");
@@ -47,7 +45,7 @@ void print_query_error(const QSqlQuery& query)
 
 void on_create_table_fail(QSqlQuery& query)
 {
-    qWarning().noquote() << MSG_PREFIX << tr_log("failed to create database tables");
+    qWarning().noquote() << tr_log("Playtime: failed to create database tables");
     print_query_error(query);
 }
 
@@ -172,9 +170,8 @@ void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
 
     SqliteDb channel(m_db_path);
     if (!channel.open()) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("Could not open `%1`, play times will not be loaded")
-                      .arg(m_db_path);
+        Provider::warn(tr_log("Could not open `%1`, play times will not be loaded")
+                      .arg(m_db_path));
         return;
     }
     // No entries yet
@@ -259,9 +256,8 @@ void PlaytimeStats::start_processing()
         while (!m_active_tasks.empty()) {
             SqliteDb channel(m_db_path);
             if (!channel.open()) {
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("Could not open or create `%1`, play time will not be saved")
-                              .arg(m_db_path);
+                Provider::warn(tr_log("Could not open or create `%1`, play time will not be saved")
+                              .arg(m_db_path));
                 break;
             }
 

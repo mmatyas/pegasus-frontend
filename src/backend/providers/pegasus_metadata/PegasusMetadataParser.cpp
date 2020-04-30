@@ -32,16 +32,14 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Metafiles:";
-
 const QString& first_line_of(const metafile::Entry& entry)
 {
     Q_ASSERT(!entry.key.isEmpty());
     Q_ASSERT(!entry.values.empty());
 
     if (entry.values.size() > 1) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("expected single line value for `%1` but got more. The rest of the lines will be ignored.")
+        qWarning().noquote()
+            << tr_log("Metafiles: expected single line value for `%1` but got more. The rest of the lines will be ignored.")
                .arg(entry.key);
     }
 
@@ -73,8 +71,8 @@ Parser::Parser(QString file_path, const Constants& constants)
 }
 
 void Parser::print_error(const size_t lineno, const QString& msg) const {
-    qWarning().noquote() << MSG_PREFIX
-        << tr_log("`%1`, line %2: %3").arg(m_metafile_path, QString::number(lineno), msg);
+    qWarning().noquote()
+        << tr_log("Metafiles: `%1`, line %2: %3").arg(m_metafile_path, QString::number(lineno), msg);
 }
 
 // FIXME: don't copy

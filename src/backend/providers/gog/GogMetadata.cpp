@@ -31,7 +31,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "GOG:";
 static constexpr auto JSON_CACHE_DIR = "gog";
 
 struct GogEntry {
@@ -135,31 +134,29 @@ bool read_embed_json(GogEntry& entry, const QJsonDocument& json)
 
 bool fill_from_cache(GogEntry& entry)
 {
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
     const QString entry_api = entry.gogid + providers::gog::json_api_suffix();
     const QString entry_embed = entry.gogid + providers::gog::json_embed_suffix();
 
-    const auto json_api = providers::read_json_from_cache(message_prefix, cache_dir, entry_api);
+    const auto json_api = providers::read_json_from_cache(cache_dir, entry_api);
     const bool json_api_success = read_api_json(entry, json_api);
     if (!json_api_success)
-        providers::delete_cached_json(message_prefix, cache_dir, entry_api);
+        providers::delete_cached_json(cache_dir, entry_api);
 
-    const auto json_embed = providers::read_json_from_cache(message_prefix, cache_dir, entry_embed);
+    const auto json_embed = providers::read_json_from_cache(cache_dir, entry_embed);
     const bool json_embed_success = read_embed_json(entry, json_embed);
     if (!json_embed_success)
-        providers::delete_cached_json(message_prefix, cache_dir, entry_embed);
+        providers::delete_cached_json(cache_dir, entry_embed);
 
     return json_api_success && json_embed_success;
 }
 
-void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& netman)
+void download_metadata(const providers::Provider* const provider, std::vector<GogEntry>& entries, QNetworkAccessManager& netman)
 {
     const int TIMEOUT_MS(5000);
     const auto API_URL(QStringLiteral("https://api.gog.com/products/%1?expand=description,screenshots,videos"));
     const auto EMBED_URL(QStringLiteral("https://embed.gog.com/games/ajax/filtered?mediaType=game&search=%1"));
 
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
 
@@ -194,22 +191,20 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
                     loop.quit();
 
                 if (reply->error()) {
-                    qWarning().noquote() << MSG_PREFIX
-                        << tr_log("downloading metadata for `%1` failed (%2)")
-                           .arg(game->title, reply->errorString());
+                    provider->warn(tr_log("downloading metadata for `%1` failed (%2)")
+                           .arg(game->title, reply->errorString()));
                 }
                 else {
                     const auto raw_data = reply->readAll();
                     const bool json_success = read_api_json(entries[i], QJsonDocument::fromJson(raw_data));
                     if (json_success) {
                         const QString json_name = gog_id + providers::gog::json_api_suffix();
-                        providers::cache_json(message_prefix, cache_dir, json_name, raw_data);
+                        providers::cache_json(cache_dir, json_name, raw_data);
                     }
                     else {
-                        qWarning().noquote() << MSG_PREFIX
-                            << tr_log("failed to parse the response of the server "
+                        provider->warn(tr_log("failed to parse the response of the server "
                                       "for game `%1` - perhaps the GOG API changed?")
-                                      .arg(game->title);
+                                      .arg(game->title));
                     }
                 }
 
@@ -235,22 +230,20 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
                     loop.quit();
 
                 if (reply->error()) {
-                    qWarning().noquote() << MSG_PREFIX
-                        << tr_log("downloading secondary metadata for `%1` failed (%2)")
-                           .arg(game->title, reply->errorString());
+                    provider->warn(tr_log("downloading secondary metadata for `%1` failed (%2)")
+                        .arg(game->title, reply->errorString()));
                 }
                 else {
                     const auto raw_data = reply->readAll();
                     const bool json_success = read_embed_json(entries[i], QJsonDocument::fromJson(raw_data));
                     if (json_success) {
                         const QString json_name = gog_id + providers::gog::json_embed_suffix();
-                        providers::cache_json(message_prefix, cache_dir, json_name, raw_data);
+                        providers::cache_json(cache_dir, json_name, raw_data);
                     }
                     else {
-                        qWarning().noquote() << MSG_PREFIX
-                            << tr_log("failed to parse the response of the server "
-                                      "for game `%1` - perhaps the GOG API changed?")
-                                      .arg(game->title);
+                        provider->warn(tr_log("failed to parse the response of the server "
+                                              "for game `%1` - perhaps the GOG API changed?")
+                                              .arg(game->title));
                     }
                 }
 
@@ -315,12 +308,10 @@ void Metadata::enhance(providers::SearchContext& sctx, HashMap<size_t, QString>&
 
     QNetworkAccessManager netman; // TODO: move NAM to global
     if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
-        qWarning().noquote()
-            << MSG_PREFIX
-            << tr_log("no internet connection - most game data may be missing");
+        static_cast<Provider*>(parent())->warn(tr_log("no internet connection - most game data may be missing"));
         return;
     }
-    download_metadata(entries, netman);
+    download_metadata(static_cast<Provider*>(parent()), entries, netman);
 }
 
 } // namespace gog

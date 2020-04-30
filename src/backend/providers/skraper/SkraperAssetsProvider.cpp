@@ -119,7 +119,7 @@ void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
         }
     }
 
-    qInfo().noquote() << tr_log("%1: %2 assets found").arg(name(), QString::number(found_assets_cnt));
+    Provider::info(tr_log("%1 assets found").arg(QString::number(found_assets_cnt)));
 }
 
 } // namespace skraper

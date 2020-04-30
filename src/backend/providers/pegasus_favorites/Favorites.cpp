@@ -30,8 +30,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Favorites:";
-
 QString default_db_path()
 {
     return paths::writableConfigDir() + QStringLiteral("/favorites.txt");
@@ -65,9 +63,8 @@ void Favorites::findDynamicData(const QVector<model::Collection*>&,
 
     QFile db_file(m_db_path);
     if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("could not open `%1` for reading, favorites are not loaded.")
-                      .arg(m_db_path);
+        Provider::warn(tr_log("could not open `%1` for reading, favorites are not loaded.")
+            .arg(m_db_path));
         return;
     }
 
@@ -120,9 +117,9 @@ void Favorites::start_processing()
         while (true) {
             QFile db_file(m_db_path);
             if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("could not open `%1` for writing, favorites are not saved.")
-                              .arg(m_db_path);
+                Provider::warn(
+                    tr_log("could not open `%1` for writing, favorites are not saved.")
+                        .arg(m_db_path));
                 break;
             }
 

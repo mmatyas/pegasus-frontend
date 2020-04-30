@@ -22,17 +22,21 @@
 
 #include <QRegularExpression>
 
+namespace providers { class Provider; }
+
 
 namespace providers {
 namespace android {
 
 class Metadata {
 public:
-    Metadata();
+    explicit Metadata(Provider*);
 
     void findStaticData(SearchContext&);
 
 private:
+    const Provider* const m_parent;
+
     const QRegularExpression rx_meta_itemprops;
     const QRegularExpression rx_background;
     const QRegularExpression rx_developer;

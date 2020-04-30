@@ -34,9 +34,6 @@ using namespace providers::pegasus::parser;
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Metafiles:";
-
-
 QString find_metafile_in(const QString& dir_path)
 {
     Q_ASSERT(!dir_path.isEmpty());
@@ -50,19 +47,14 @@ QString find_metafile_in(const QString& dir_path)
     };
 
     for (const QString& path : possible_paths) {
-        if (QFileInfo::exists(path)) {
-            qInfo().noquote() << MSG_PREFIX
-                << tr_log("found `%1`").arg(path);
+        if (QFileInfo::exists(path))
             return path;
-        }
     }
 
-    qWarning().noquote() << MSG_PREFIX
-        << tr_log("No metadata file found in `%1`, directory ignored").arg(dir_path);
     return QString();
 }
 
-std::vector<QString> find_global_metafiles()
+std::vector<QString> find_global_metafiles(const providers::Provider* const provider)
 {
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::FollowSymlinks;
@@ -75,7 +67,7 @@ std::vector<QString> find_global_metafiles()
     while (dir_it.hasNext()) {
         QString path = dir_it.next();
         if (rx_path.match(dir_it.fileName()).hasMatch()) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
+            provider->info(tr_log("found `%1`").arg(path));
             result.emplace_back(std::move(path));
         }
     }
@@ -83,7 +75,8 @@ std::vector<QString> find_global_metafiles()
     return result;
 }
 
-void read_metafile(const QString& metafile_path,
+void read_metafile(const providers::Provider* const provider,
+                   const QString& metafile_path,
                    providers::SearchContext& sctx,
                    std::vector<FileFilter>& filters,
                    const Constants& constants)
@@ -98,27 +91,31 @@ void read_metafile(const QString& metafile_path,
     };
 
     if (!metafile::read_file(metafile_path, on_entry, on_error)) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("Failed to read metadata file %1, file ignored").arg(metafile_path);
+        provider->warn(tr_log("Failed to read metadata file %1, file ignored").arg(metafile_path));
         return;
     }
 }
 
-void collect_metadata(const std::vector<QString>& dir_list,
+void collect_metadata(const providers::Provider* const provider,
+                      const std::vector<QString>& dir_list,
                       providers::SearchContext& sctx,
                       std::vector<FileFilter>& filters)
 {
     const Constants constants;
 
-    for (const QString& metafile : find_global_metafiles())
-        read_metafile(metafile, sctx, filters, constants);
+    for (const QString& metafile : find_global_metafiles(provider))
+        read_metafile(provider, metafile, sctx, filters, constants);
 
     for (const QString& dir_path : dir_list) {
         const QString metafile = find_metafile_in(dir_path);
-        if (!metafile.isEmpty()) {
-            sctx.game_root_dirs.emplace_back(dir_path);
-            read_metafile(metafile, sctx, filters, constants);
+        if (metafile.isEmpty()) {
+            provider->warn(tr_log("No metadata file found in `%1`, directory ignored").arg(dir_path));
+            continue;
         }
+
+        provider->info(tr_log("found `%1`").arg(metafile));
+        sctx.game_root_dirs.emplace_back(dir_path);
+        read_metafile(provider, metafile, sctx, filters, constants);
     }
 }
 
@@ -138,12 +135,14 @@ void move_collection_dirs_to(std::vector<QString>& out, std::vector<FileFilter>&
 namespace providers {
 namespace pegasus {
 
-void find_in_dirs(std::vector<QString>& dir_list, providers::SearchContext& sctx)
+void find_in_dirs(const providers::Provider* const provider,
+                  std::vector<QString>& dir_list,
+                  providers::SearchContext& sctx)
 {
     std::vector<FileFilter> filters;
     filters.reserve(dir_list.size());
 
-    collect_metadata(dir_list, sctx, filters);
+    collect_metadata(provider, dir_list, sctx, filters);
 
     tidy_filters(filters);
     process_filters(filters, sctx);

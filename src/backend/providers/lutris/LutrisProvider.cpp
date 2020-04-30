@@ -28,7 +28,6 @@
 
 
 namespace {
-constexpr auto MSG_PREFIX = "Lutris:";
 
 QString find_datadir()
 {
@@ -37,12 +36,10 @@ QString find_datadir()
     for (const QString& commondir : QSP::standardLocations(QSP::GenericDataLocation)) {
         QString lutrisdir = commondir + QLatin1String("/lutris/");
         if (QFileInfo::exists(lutrisdir)) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found data directory: `%1`").arg(lutrisdir);
             return lutrisdir;
         }
     }
 
-    qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
     return {};
 }
 
@@ -91,18 +88,22 @@ LutrisProvider::LutrisProvider(QObject* parent)
 void LutrisProvider::findLists(SearchContext& sctx)
 {
     const QString datadir = find_datadir();
-    if (datadir.isEmpty())
+    if (datadir.isEmpty()) {
+        Provider::info(tr_log("no installation found"));
         return;
+    }
+
+    Provider::info(tr_log("found data directory: `%1`").arg(datadir));
 
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("database not found");
+        Provider::warn(tr_log("database not found"));
         return;
     }
 
     SqliteDb channel(db_path);
     if (!channel.open()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open the database");
+        Provider::warn(tr_log("could not open the database"));
         return;
     }
     // No entries yet
@@ -112,7 +113,7 @@ void LutrisProvider::findLists(SearchContext& sctx)
     QSqlQuery query;
     query.prepare(QLatin1String("SELECT id, slug, name, playtime FROM games"));
     if (!query.exec()) {
-        qWarning().noquote() << MSG_PREFIX << query.lastError().text();
+        Provider::warn(query.lastError().text());
         return;
     }
 

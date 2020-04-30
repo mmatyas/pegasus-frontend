@@ -33,8 +33,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "EmulationStation:"; // TODO: don't duplicate
-
 QString findSystemsFile()
 {
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
@@ -45,10 +43,8 @@ QString findSystemsFile()
     };
 
     for (const auto& path : possible_paths) {
-        if (::validFile(path)) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
+        if (::validFile(path))
             return path;
-        }
     }
 
     return QString();
@@ -95,7 +91,7 @@ struct SystemEntry {
     const QString launch_cmd;
 };
 
-SystemEntry read_system_entry(QXmlStreamReader& xml)
+SystemEntry read_system_entry(const providers::Provider* const provider, QXmlStreamReader& xml)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -126,19 +122,18 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
             xml.skipCurrentElement();
     }
     if (xml.error()) {
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        provider->warn(xml.errorString());
         return {};
     }
 
     // check if all required params are present
     for (const QLatin1String& key : required_keys) {
         if (xml_props[key].isEmpty()) {
-            qWarning().noquote()
-                << MSG_PREFIX
-                << tr_log("the `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
+            provider->warn(
+                tr_log("the `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
                    .arg(static_cast<QFile*>(xml.device())->fileName())
                    .arg(xml.lineNumber())
-                   .arg(key);
+                   .arg(key));
             return {};
         }
     }
@@ -169,7 +164,7 @@ SystemEntry read_system_entry(QXmlStreamReader& xml)
     };
 }
 
-std::vector<QString> read_mame_blacklists()
+std::vector<QString> read_mame_blacklists(const providers::Provider* const provider)
 {
     using L1Str = QLatin1String;
 
@@ -203,8 +198,8 @@ std::vector<QString> read_mame_blacklists()
             hit_count++;
         }
 
-        qInfo().noquote() << MSG_PREFIX
-            << tr_log("found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count));
+        provider->info(tr_log("found `%1`, %2 entries loaded")
+            .arg(file_path, QString::number(hit_count)));
     }
 
     return out;
@@ -296,14 +291,16 @@ void SystemsParser::find(providers::SearchContext& sctx,
     // find the systems file
     const QString xml_path = findSystemsFile();
     if (xml_path.isEmpty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("system config file not found");
+        static_cast<Provider*>(parent())->info(tr_log("system config file not found"));
         return;
     }
+
+    static_cast<Provider*>(parent())->info(tr_log("found `%1`").arg(xml_path));
 
     // open the systems file
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(xml_path);
+        static_cast<Provider*>(parent())->warn(tr_log("could not open `%1`").arg(xml_path));
         return;
     }
 
@@ -311,7 +308,7 @@ void SystemsParser::find(providers::SearchContext& sctx,
     QXmlStreamReader xml(&xml_file);
     read_systems_file(xml, sctx, collection_dirs);
     if (xml.error())
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        static_cast<Provider*>(parent())->warn(xml.errorString());
 }
 
 void SystemsParser::read_systems_file(QXmlStreamReader& xml,
@@ -319,7 +316,7 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
                                       HashMap<QString, QString>& collection_dirs)
 {
     // load the blacklist, in case it's needed
-    const std::vector<QString> mame_blacklist = read_mame_blacklists();
+    const std::vector<QString> mame_blacklist = read_mame_blacklists(static_cast<Provider*>(parent()));
 
     // read the root <systemList> element
     if (!xml.readNextStartElement()) {
@@ -341,7 +338,7 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
             continue;
         }
 
-        const SystemEntry sysentry = read_system_entry(xml);
+        const SystemEntry sysentry = read_system_entry(static_cast<Provider*>(parent()), xml);
         if (sysentry.name.isEmpty())
             continue;
 

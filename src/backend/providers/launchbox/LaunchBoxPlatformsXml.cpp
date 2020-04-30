@@ -19,6 +19,7 @@
 
 #include "LaunchBoxCommon.h"
 #include "LocaleUtils.h"
+#include "providers/Provider.h"
 
 #include <QDebug>
 #include <QDir>
@@ -29,14 +30,14 @@ namespace providers {
 namespace launchbox {
 namespace platforms_xml {
 
-std::vector<QString> read(const QString& lb_dir)
+std::vector<QString> read(const providers::Provider* const provider, const QString& lb_dir)
 {
     const QLatin1String xml_rel_path("Data/Platforms.xml");
     const QString xml_path = lb_dir + xml_rel_path;
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`")
-            .arg(QDir::toNativeSeparators(xml_rel_path));
+        provider->warn(tr_log("could not open `%1`")
+            .arg(QDir::toNativeSeparators(xml_rel_path)));
         return {};
     }
 
@@ -62,7 +63,7 @@ std::vector<QString> read(const QString& lb_dir)
         }
     }
     if (xml.error())
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        provider->warn(xml.errorString());
 
     return out;
 }

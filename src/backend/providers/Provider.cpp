@@ -17,14 +17,16 @@
 
 #include "Provider.h"
 
+#include <QDebug>
+
 
 namespace providers {
 
 Provider::Provider(QLatin1String codename, QString name, uint8_t flags, QObject* parent)
     : QObject(parent)
     , m_codename(std::move(codename))
-    , m_provider_name(std::move(name))
-    , m_provider_flags(flags)
+    , m_name(std::move(name))
+    , m_flags(flags)
     , m_enabled(true)
 {}
 
@@ -47,6 +49,16 @@ void Provider::setOption(const QString& key, std::vector<QString> vals)
     Q_ASSERT(!key.isEmpty());
     Q_ASSERT(!vals.empty());
     m_options[key] = std::move(vals);
+}
+
+void Provider::info(const QString& msg) const
+{
+    qInfo().noquote().nospace() << m_name << QLatin1String(": ") << msg;
+}
+
+void Provider::warn(const QString& msg) const
+{
+    qWarning().noquote().nospace() << m_name << QLatin1String(": ") << msg;
 }
 
 } // namespace providers

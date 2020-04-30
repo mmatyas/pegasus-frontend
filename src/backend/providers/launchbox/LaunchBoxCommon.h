@@ -29,8 +29,6 @@
 namespace providers {
 namespace launchbox {
 
-static constexpr auto MSG_PREFIX = "LaunchBox:";
-
 using GameId = QString;
 enum class GameField : unsigned char {
     ID,

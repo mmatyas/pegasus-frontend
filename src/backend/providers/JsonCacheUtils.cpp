@@ -26,9 +26,7 @@
 
 
 namespace {
-QString cached_json_path(const QString& provider_prefix,
-                         const QString& provider_dir,
-                         const QString& entryname)
+QString cached_json_path(const QString& provider_dir, const QString& entryname)
 {
     Q_ASSERT(!paths::writableCacheDir().isEmpty()); // according to the Qt docs
 
@@ -38,8 +36,7 @@ QString cached_json_path(const QString& provider_prefix,
     QDir cache_dir(cache_path);
     if (!cache_dir.mkpath(QStringLiteral("."))) {
         qWarning().noquote()
-            << provider_prefix
-            << tr_log("could not create cache directory `%1`").arg(cache_path);
+            << tr_log("Could not create cache directory `%1`").arg(cache_path);
         return QString();
     }
 
@@ -50,34 +47,25 @@ QString cached_json_path(const QString& provider_prefix,
 
 namespace providers {
 
-void cache_json(const QString& provider_prefix,
-                const QString& provider_dir,
-                const QString& entryname,
-                const QByteArray& bytes)
+void cache_json(const QString& provider_dir, const QString& entryname, const QByteArray& bytes)
 {
-    const QString json_path = cached_json_path(provider_prefix, provider_dir, entryname);
+    const QString json_path = cached_json_path(provider_dir, entryname);
 
     QFile json_file(json_path);
     if (!json_file.open(QIODevice::WriteOnly)) {
-        qWarning().noquote()
-            << provider_prefix
-            << tr_log("could not create cache file `%1`").arg(json_path);
+        qWarning().noquote() << tr_log("Could not create cache file `%1`").arg(json_path);
         return;
     }
 
     if (json_file.write(bytes) != bytes.length()) {
-        qWarning().noquote()
-            << provider_prefix
-            << tr_log("writing cache file `%1` failed").arg(json_path);
+        qWarning().noquote() << tr_log("Writing cache file `%1` failed").arg(json_path);
         json_file.remove();
     }
 }
 
-QJsonDocument read_json_from_cache(const QString& provider_prefix,
-                                   const QString& provider_dir,
-                                   const QString& entryname)
+QJsonDocument read_json_from_cache(const QString& provider_dir, const QString& entryname)
 {
-    const QString json_path = cached_json_path(provider_prefix, provider_dir, entryname);
+    const QString json_path = cached_json_path(provider_dir, entryname);
 
     QFile json_file(json_path);
     if (!json_file.open(QIODevice::ReadOnly))
@@ -87,8 +75,7 @@ QJsonDocument read_json_from_cache(const QString& provider_prefix,
     auto json = QJsonDocument::fromJson(json_file.readAll(), &parse_result);
     if (parse_result.error != QJsonParseError::NoError) {
         qWarning().noquote()
-            << provider_prefix
-            << tr_log("could not parse cached file `%1`").arg(json_path)
+            << tr_log("Could not parse cached file `%1`").arg(json_path)
             << parse_result.errorString();
         json_file.remove();
         return {};
@@ -97,12 +84,9 @@ QJsonDocument read_json_from_cache(const QString& provider_prefix,
     return json;
 }
 
-void delete_cached_json(const QString& provider_prefix,
-                        const QString& provider_dir,
-                        const QString& entryname)
+void delete_cached_json(const QString& provider_dir, const QString& entryname)
 {
-    const QString json_path = cached_json_path(provider_prefix, provider_dir, entryname);
-
+    const QString json_path = cached_json_path(provider_dir, entryname);
     QFile::remove(json_path);
 }
 

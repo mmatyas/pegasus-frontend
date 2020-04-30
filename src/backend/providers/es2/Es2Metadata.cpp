@@ -68,8 +68,6 @@ AssetCheckResult checkFile(const QFileInfo& file)
 
 namespace {
 
-static constexpr auto MSG_PREFIX = "EmulationStation:";
-
 QString findGamelistFile(const modeldata::Collection& collection,
                          const QString& collection_dir)
 {
@@ -92,7 +90,6 @@ QString findGamelistFile(const modeldata::Collection& collection,
 
     for (const auto& path : possible_files) {
         if (::validFile(path)) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found `%1`").arg(path);
             return path;
         }
     }
@@ -262,11 +259,12 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
         if (gamelist_path.isEmpty())
             continue;
 
+        static_cast<Provider*>(parent())->info(tr_log("found `%1`").arg(path));
+
         // open the file
         QFile xml_file(gamelist_path);
         if (!xml_file.open(QIODevice::ReadOnly)) {
-            qWarning().noquote() << MSG_PREFIX
-                                 << tr_log("could not open `%1`").arg(gamelist_path);
+            static_cast<Provider*>(parent())->warn(tr_log("could not open `%1`").arg(gamelist_path));
             continue;
         }
 
@@ -274,7 +272,7 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
         QXmlStreamReader xml(&xml_file);
         parseGamelistFile(xml, sctx, collection_dir);
         if (xml.error())
-            qWarning().noquote() << MSG_PREFIX << xml.errorString();
+            static_cast<Provider*>(parent())->warn(xml.errorString());
 
         // search for assets in `downloaded_images`
         if (!collection.shortName().isEmpty()) {
@@ -330,18 +328,17 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
         xml_props[map_iter->second] = xml.readElementText();
     }
     if (xml.error()) {
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        static_cast<Provider*>(parent())->warn(xml.errorString());
         return;
     }
 
     // check if all required params are present
     QString& game_path = xml_props[MetaTypes::PATH];
     if (game_path.isEmpty()) {
-        qWarning().noquote()
-            << MSG_PREFIX
-            << tr_log("the `<game>` node in `%1` that ends at line %2 has no `<path>` parameter")
+        static_cast<Provider*>(parent())->warn(
+            tr_log("the `<game>` node in `%1` that ends at line %2 has no `<path>` parameter")
                .arg(static_cast<QFile*>(xml.device())->fileName())
-               .arg(xml.lineNumber());
+               .arg(xml.lineNumber()));
         return;
     }
 

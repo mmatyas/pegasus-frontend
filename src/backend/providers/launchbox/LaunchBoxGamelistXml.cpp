@@ -34,8 +34,8 @@ void add_raw_asset_maybe(modeldata::GameAssets& assets, const AssetType type,
 {
     QString can_path = QFileInfo(lb_root, path).canonicalFilePath();
     if (can_path.isEmpty()) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("asset path `%1` doesn't exist, ignored").arg(path);
+        qWarning().noquote()
+            << tr_log("LaunchBox: asset path `%1` doesn't exist, ignored").arg(path);
         return;
     }
 
@@ -235,7 +235,7 @@ size_t store_game(
 
         store_game_fields(lb_dir, emulators, fields, game);
         if (game.launch_cmd.isEmpty())
-            qWarning().noquote() << MSG_PREFIX << tr_log("game '%1' has no launch command").arg(game.title);
+            qWarning().noquote() << tr_log("LaunchBox: game '%1' has no launch command").arg(game.title));
 
         const size_t game_id = sctx.games.size();
         sctx.path_to_gameid.emplace(can_path, game_id);
@@ -328,6 +328,7 @@ namespace providers {
 namespace launchbox {
 namespace gamelist_xml {
 void read(
+    const Provider* const provider,
     const Literals& literals,
     const QString& lb_dir,
     const QString& platform_name,
@@ -338,7 +339,7 @@ void read(
     const QString xml_path = lb_dir + xml_rel_path;
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(QDir::toNativeSeparators(xml_rel_path));
+        provider->warn(tr_log("could not open `%1`").arg(QDir::toNativeSeparators(xml_rel_path)));
         return;
     }
 
@@ -379,9 +380,9 @@ void read(
         const auto pegasus_gameid_it = gameid_map.find(lb_gameid);
 
         if (pegasus_gameid_it == gameid_map.cend()) {
-            qWarning().noquote() << MSG_PREFIX
-                << tr_log("%1: additional application entry `%2` refers to missing or invalid game `%3`, entry ignored")
-                   .arg(QDir::toNativeSeparators(xml_rel_path), addiapp_fields.at(AdditionalAppField::ID), lb_gameid);
+            provider->warn(
+                tr_log("%1: additional application entry `%2` refers to missing or invalid game `%3`, entry ignored")
+                   .arg(QDir::toNativeSeparators(xml_rel_path), addiapp_fields.at(AdditionalAppField::ID), lb_gameid));
             continue;
         }
 
