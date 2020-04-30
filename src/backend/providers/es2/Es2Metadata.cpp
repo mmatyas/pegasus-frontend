@@ -259,7 +259,7 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
         if (gamelist_path.isEmpty())
             continue;
 
-        static_cast<Provider*>(parent())->info(tr_log("found `%1`").arg(path));
+        static_cast<Provider*>(parent())->info(tr_log("found `%1`").arg(gamelist_path));
 
         // open the file
         QFile xml_file(gamelist_path);
