@@ -235,7 +235,7 @@ size_t store_game(
 
         store_game_fields(lb_dir, emulators, fields, game);
         if (game.launch_cmd.isEmpty())
-            qWarning().noquote() << tr_log("LaunchBox: game '%1' has no launch command").arg(game.title));
+            qWarning().noquote() << tr_log("LaunchBox: game '%1' has no launch command").arg(game.title);
 
         const size_t game_id = sctx.games.size();
         sctx.path_to_gameid.emplace(can_path, game_id);
