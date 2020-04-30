@@ -132,7 +132,7 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
 
     Provider::info(tr_log("found directory: `%1`").arg(QDir::toNativeSeparators(lb_dir)));
 
-    const std::vector<QString> platform_names = platforms_xml::read(lb_dir);
+    const std::vector<QString> platform_names = platforms_xml::read(this, lb_dir);
     if (platform_names.empty()) {
         Provider::warn(tr_log("no platforms found"));
         return;
