@@ -24,7 +24,7 @@ namespace providers {
 namespace launchbox {
 namespace emulators_xml {
 
-HashMap<EmulatorId, Emulator> read(const QString& lb_dir);
+HashMap<EmulatorId, Emulator> read(const Provider* const provider, const QString& lb_dir);
 
 } // namespace emulators_xml
 } // namespace launchbox

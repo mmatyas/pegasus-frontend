@@ -138,7 +138,7 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         return;
     }
 
-    const HashMap<EmulatorId, Emulator> emulators = emulators_xml::read(lb_dir);
+    const HashMap<EmulatorId, Emulator> emulators = emulators_xml::read(this, lb_dir);
     if (emulators.empty()) {
         Provider::warn(tr_log("no emulator settings found"));
         return;
