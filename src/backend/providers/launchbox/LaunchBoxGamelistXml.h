@@ -26,6 +26,7 @@ namespace launchbox {
 namespace gamelist_xml {
 
 void read(
+    const Provider* const provider,
     const Literals& literals,
     const QString& lb_dir,
     const QString& platform_name,
