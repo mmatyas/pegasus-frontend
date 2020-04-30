@@ -94,12 +94,12 @@ public:
     void setOption(const QString&, std::vector<QString>);
     const HashMap<QString, std::vector<QString>>& options() const { return m_options; }
 
-signals:
-    void gameCountChanged(int);
-
-protected:
+    // logging
     void info(const QString&) const;
     void warn(const QString&) const;
+
+signals:
+    void gameCountChanged(int);
 
 private:
     const QLatin1String m_codename;
