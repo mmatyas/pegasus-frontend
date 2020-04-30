@@ -21,12 +21,13 @@
 #include <vector>
 
 namespace providers { struct SearchContext; }
+namespace providers { class Provider; }
 
 
 namespace providers {
 namespace pegasus {
 
-void find_in_dirs(std::vector<QString>&, providers::SearchContext&);
+void find_in_dirs(const providers::Provider* const, std::vector<QString>&, providers::SearchContext&);
 
 } // namespace pegasus
 } // namespace providers
