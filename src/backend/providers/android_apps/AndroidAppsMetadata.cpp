@@ -87,9 +87,9 @@ bool fill_from_cached_json(const QString& package, modeldata::Game& game)
 {
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
 
-    const auto json = providers::read_json_from_cache(message_prefix, cache_dir, package);
+    const auto json = providers::read_json_from_cache(cache_dir, package);
     if (!read_json(game, json)) {
-        providers::delete_cached_json(message_prefix, cache_dir, package);
+        providers::delete_cached_json(cache_dir, package);
         return false;
     }
 

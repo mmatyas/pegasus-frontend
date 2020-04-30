@@ -146,7 +146,7 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
 
     const Literals literals;
     for (const QString& platform_name : platform_names) {
-        gamelist_xml::read(literals, lb_dir, platform_name, emulators, sctx);
+        gamelist_xml::read(this, literals, lb_dir, platform_name, emulators, sctx);
         find_assets(lb_dir, platform_name, literals.assetdir_map, sctx);
     }
 }
