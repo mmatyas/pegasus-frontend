@@ -34,20 +34,20 @@ void create_dummy_data(QVector<model::Collection*>& collections,
                        QObject* parent)
 {
     collections = {
-        new model::Collection(modeldata::Collection("coll1"), parent),
-        new model::Collection(modeldata::Collection("coll2"), parent),
+        new model::Collection("coll1", parent),
+        new model::Collection("coll2", parent),
     };
     games = {
-        new model::Game(modeldata::Game(QFileInfo("dummy1")), parent),
-        new model::Game(modeldata::Game(QFileInfo("dummy2")), parent),
+        new model::Game(QFileInfo("dummy1"), parent),
+        new model::Game(QFileInfo("dummy2"), parent),
     };
     path_map = {
         { "dummy1", games.at(0)->files()->first() },
         { "dummy2", games.at(1)->files()->first() },
     };
 
-    collections.at(0)->setGameList({ games.at(0) });
-    collections.at(1)->setGameList({ games.at(1) });
+    collections.at(0)->games()->append(games.at(0));
+    collections.at(1)->games()->append(games.at(1));
 }
 
 } // namespace

@@ -36,20 +36,20 @@ private slots:
 void test_FavoriteDB::write()
 {
     QVector<model::Collection*> collections = {
-        new model::Collection(modeldata::Collection("coll1"), this),
-        new model::Collection(modeldata::Collection("coll2"), this),
+        new model::Collection("coll1", this),
+        new model::Collection("coll2", this),
     };
     QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo(":/a/b/coll1dummy1")), this),
-        new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
-        new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
+        new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
+        new model::Game(QFileInfo(":/coll1dummy2"), this),
+        new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
     };
 
     games.at(1)->setFavorite(true);
     games.at(2)->setFavorite(true);
 
-    collections.at(0)->setGameList({ games.at(0), games.at(1) });
-    collections.at(1)->setGameList({ games.at(2) });
+    collections.at(0)->games()->append({ games.at(0), games.at(1) });
+    collections.at(1)->games()->append(games.at(2));
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -96,16 +96,16 @@ void test_FavoriteDB::write()
 void test_FavoriteDB::rewrite_empty()
 {
     QVector<model::Collection*> collections = {
-        new model::Collection(modeldata::Collection("coll1"), this),
-        new model::Collection(modeldata::Collection("coll2"), this),
+        new model::Collection("coll1", this),
+        new model::Collection("coll2", this),
     };
     QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo(":/a/b/coll1dummy1")), this),
-        new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
-        new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
+        new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
+        new model::Game(QFileInfo(":/coll1dummy2"), this),
+        new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
     };
-    collections.at(0)->setGameList({ games.at(0), games.at(1) });
-    collections.at(1)->setGameList({ games.at(2) });
+    collections.at(0)->games()->append({ games.at(0), games.at(1) });
+    collections.at(1)->games()->append(games.at(2));
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -147,9 +147,9 @@ void test_FavoriteDB::rewrite_empty()
 void test_FavoriteDB::read()
 {
     QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo(":/a/b/coll1dummy1")), this),
-        new model::Game(modeldata::Game(QFileInfo(":/coll1dummy2")), this),
-        new model::Game(modeldata::Game(QFileInfo(":/x/y/z/coll2dummy1")), this),
+        new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
+        new model::Game(QFileInfo(":/coll1dummy2"), this),
+        new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
     };
 
     QTemporaryFile tmp_file;
@@ -158,8 +158,8 @@ void test_FavoriteDB::read()
     {
         QTextStream tmp_stream(&tmp_file);
         tmp_stream << QStringLiteral("# Favorite reader test") << endl;
-        tmp_stream << games[2]->filesConst().first()->data().fileinfo.canonicalFilePath() << endl;
-        tmp_stream << games[1]->filesConst().first()->data().fileinfo.canonicalFilePath() << endl;
+        tmp_stream << games[2]->filesConst().first()->fileinfo().canonicalFilePath() << endl;
+        tmp_stream << games[1]->filesConst().first()->fileinfo().canonicalFilePath() << endl;
         tmp_stream << QStringLiteral(":/somethingfake") << endl;
     }
     const QString db_path = tmp_file.fileName();
@@ -171,16 +171,16 @@ void test_FavoriteDB::read()
     HashMap<QString, model::GameFile*> path_map;
     for (const model::Game* const game : games) {
         model::GameFile* const gamefile = game->filesConst().first();
-        QString path = gamefile->data().fileinfo.canonicalFilePath();
+        QString path = gamefile->fileinfo().canonicalFilePath();
         QVERIFY(!path.isEmpty());
         path_map.emplace(std::move(path), gamefile);
     }
 
     favorite_db.findDynamicData({}, games, path_map);
 
-    QVERIFY(!games[0]->data().is_favorite);
-    QVERIFY(games[1]->data().is_favorite);
-    QVERIFY(games[2]->data().is_favorite);
+    QVERIFY(!games[0]->isFavorite());
+    QVERIFY(games[1]->isFavorite());
+    QVERIFY(games[2]->isFavorite());
 
     QFile::remove(db_path);
 }
