@@ -54,6 +54,7 @@ namespace model {
 
 GamepadManager::GamepadManager(QObject* parent)
     : QObject(parent)
+    , m_devices(new QQmlObjectListModel<model::Gamepad>(this))
 #ifdef WITH_SDL_GAMEPAD
     , m_backend(new GamepadManagerSDL2(this))
 #else
@@ -111,7 +112,7 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
     if (name.isEmpty())
         name = QLatin1String("generic");
 
-    m_devices.append(new Gamepad(device_id, name, &m_devices));
+    m_devices->append(new Gamepad(device_id, name, m_devices));
 
     Log::info(tr_log("Gamepad: connected device %1 (%2)").arg(pretty_id(device_id), name));
     emit connected(device_id);
@@ -121,10 +122,10 @@ void GamepadManager::bkOnDisconnected(int device_id)
 {
     QString name;
 
-    const auto it = find_by_deviceid(m_devices, device_id);
-    if (it != m_devices.constEnd()) {
+    const auto it = find_by_deviceid(*m_devices, device_id);
+    if (it != m_devices->constEnd()) {
         name = (*it)->name();
-        m_devices.remove(*it);
+        m_devices->remove(*it);
     }
 
     Log::info(tr_log("Gamepad: disconnected device %1 (%2)").arg(pretty_id(device_id), name));
@@ -133,8 +134,8 @@ void GamepadManager::bkOnDisconnected(int device_id)
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)
 {
-    const auto it = find_by_deviceid(m_devices, device_id);
-    if (it != m_devices.constEnd()) {
+    const auto it = find_by_deviceid(*m_devices, device_id);
+    if (it != m_devices->constEnd()) {
         Log::info(tr_log("Gamepad: set name of device %1 to '%2'").arg(pretty_id(device_id), name));
         (*it)->setName(name);
     }
@@ -154,15 +155,15 @@ void GamepadManager::bkOnAxisCfg(int device_id, GamepadAxis axis)
 
 void GamepadManager::bkOnButtonChanged(int device_id, GamepadButton button, bool pressed)
 {
-    const auto it = find_by_deviceid(m_devices, device_id);
-    if (it != m_devices.constEnd())
+    const auto it = find_by_deviceid(*m_devices, device_id);
+    if (it != m_devices->constEnd())
         (*it)->setButtonState(button, pressed);
 }
 
 void GamepadManager::bkOnAxisChanged(int device_id, GamepadAxis axis, double value)
 {
-    const auto it = find_by_deviceid(m_devices, device_id);
-    if (it != m_devices.constEnd())
+    const auto it = find_by_deviceid(*m_devices, device_id);
+    if (it != m_devices->constEnd())
         (*it)->setAxisState(axis, value);
 }
 
