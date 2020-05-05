@@ -19,8 +19,8 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/PathCheck.h"
 #include "utils/StdHelpers.h"
@@ -212,20 +212,10 @@ std::vector<QString> read_mame_blacklists()
 
 void find_games(const SystemEntry& sysentry, const std::vector<QString>& blacklist, providers::SearchContext& sctx)
 {
-    // add the collection
-
-    auto collection_it = sctx.collections.find(sysentry.name);
-    if (collection_it == sctx.collections.end())
-        collection_it = sctx.collections.emplace(sysentry.name, modeldata::Collection(sysentry.name)).first;
-
-    modeldata::Collection& collection = collection_it->second;
-    std::vector<size_t>& childs = sctx.collection_childs[sysentry.name];
-
+    model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
     collection.setShortName(sysentry.shortname);
-    collection.launch_cmd = sysentry.launch_cmd;
+    collection.setCommonLaunchCmd(sysentry.launch_cmd);
 
-
-    // add the games
 
     // find all (sub-)directories, but ignore 'media'
     QStringList dirs;
@@ -263,20 +253,7 @@ void find_games(const SystemEntry& sysentry, const std::vector<QString>& blackli
             if (use_blacklist && VEC_CONTAINS(blacklist, filename))
                 continue;
 
-            const QString game_path = fileinfo.canonicalFilePath();
-
-            if (!sctx.path_to_gameid.count(game_path)) {
-                const size_t game_id = sctx.games.size();
-                sctx.path_to_gameid.emplace(game_path, game_id);
-                sctx.games.emplace(game_id, modeldata::Game(fileinfo));
-            }
-
-            const size_t game_id = sctx.path_to_gameid.at(game_path);
-            modeldata::Game& game = sctx.games.at(game_id);
-            if (game.launch_cmd.isEmpty())
-                game.launch_cmd = collection.launch_cmd;
-
-            childs.emplace_back(game_id);
+            sctx.add_or_create_game_for(std::move(fileinfo), collection);
         }
     }
 }

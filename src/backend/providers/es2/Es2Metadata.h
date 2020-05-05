@@ -49,7 +49,7 @@ private:
     void parseGameEntry(QXmlStreamReader&,
                         providers::SearchContext&,
                         const QString&) const;
-    void applyMetadata(modeldata::Game&,
+    void applyMetadata(model::Game&,
                        HashMap<MetaTypes, QString, EnumHash>&) const;
 };
 

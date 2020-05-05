@@ -20,8 +20,8 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "PegasusAssets.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "utils/PathCheck.h"
 
 #include <QDebug>
@@ -70,7 +70,7 @@ namespace {
 
 static constexpr auto MSG_PREFIX = "EmulationStation:";
 
-QString findGamelistFile(const modeldata::Collection& collection,
+QString findGamelistFile(const model::Collection& collection,
                          const QString& collection_dir)
 {
     // static const QString FALLBACK_MSG = "`%1` not found, trying next fallback";
@@ -115,7 +115,7 @@ void convertToCanonicalPath(QString& path, const QString& containing_dir)
 }
 
 void findPegasusAssetsInScrapedir(const QDir& scrapedir,
-                                  const HashMap<QString, modeldata::Game* const>& games_by_shortpath)
+                                  const HashMap<QString, model::Game* const>& games_by_shortpath)
 {
     // FIXME: except the short path, this function is the same as the Pegasus asset code
     if (!scrapedir.exists())
@@ -133,8 +133,8 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir,
         if (!games_by_shortpath.count(shortpath))
             continue;
 
-        modeldata::Game* const game = games_by_shortpath.at(shortpath);
-        game->assets.addFileMaybe(detection_result.asset_type, dir_it.filePath());
+        model::Game* const game = games_by_shortpath.at(shortpath);
+        game->assets().add_file(detection_result.asset_type, dir_it.filePath());
     }
 }
 
@@ -173,29 +173,29 @@ HashMap<QString, MetaTypes>::const_iterator find_by_strref(const HashMap<QString
     return it;
 }
 
-void findAssets(modeldata::Game& game,
+void findAssets(model::Game& game,
                 HashMap<MetaTypes, QString, EnumHash>& xml_props,
                 const QString& collection_dir)
 {
     const QString rom_dir = collection_dir % '/';
 
-    if (game.assets.single(AssetType::BOX_FRONT).isEmpty()) {
+    if (game.assets().boxFront().isEmpty()) {
         QString& path = xml_props[MetaTypes::IMAGE];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
-            game.assets.addFileMaybe(AssetType::BOX_FRONT, path);
+            game.assets().add_file(AssetType::BOX_FRONT, path);
     }
-    if (game.assets.single(AssetType::ARCADE_MARQUEE).isEmpty()) {
+    if (game.assets().marquee().isEmpty()) {
         QString& path = xml_props[MetaTypes::MARQUEE];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
-            game.assets.addFileMaybe(AssetType::ARCADE_MARQUEE, path);
+            game.assets().add_file(AssetType::ARCADE_MARQUEE, path);
     }
     if (xml_props.count(MetaTypes::VIDEO)) {
         QString& path = xml_props[MetaTypes::VIDEO];
         resolveShellChars(path, rom_dir);
         if (!path.isEmpty() && ::validExtPath(path))
-            game.assets.addFileMaybe(AssetType::VIDEOS, path);
+            game.assets().add_file(AssetType::VIDEO, path);
     }
 }
 
@@ -227,37 +227,36 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
 {
     const QString imgdir_base = paths::homePath()
                               % QStringLiteral("/.emulationstation/downloaded_images/");
+
     // shortpath: dir name + extensionless filename
-    HashMap<QString, modeldata::Game* const> games_by_shortpath;
+    HashMap<QString, model::Game* const> games_by_shortpath;
     games_by_shortpath.reserve(sctx.games.size());
-    for (const auto& entry : sctx.collection_childs) {
-        Q_ASSERT(sctx.collections.count(entry.first));
-        const QString coll_shortname = sctx.collections.at(entry.first).shortName();
 
-        for (const size_t game_idx : entry.second) {
-            Q_ASSERT(game_idx < sctx.games.size());
-            modeldata::Game* const game = &sctx.games.at(game_idx);
+    for (const auto& collslot : sctx.collections) {
+        const model::Collection& coll = *collslot.second;
+        const QString coll_shortname = coll.shortName();
 
-            const QString gamefile = game->files.cbegin()->fileinfo.completeBaseName();
+        for (model::Game* const game_ptr : coll.gamesConst()) {
+            const QString gamefile = game_ptr->files()->first()->fileinfo().completeBaseName();
             const QString shortpath = coll_shortname % '/' % gamefile;
-            games_by_shortpath.emplace(shortpath, game);
+            games_by_shortpath.emplace(shortpath, game_ptr);
         }
     }
 
 
-    for (const auto& pair : sctx.collections) {
-        const modeldata::Collection& collection = pair.second;
+    for (const auto& collslot : sctx.collections) {
+        const model::Collection& collection = *collslot.second;
 
         // ignore Steam
         if (collection.shortName() == QLatin1String("steam"))
             continue;
 
         // ignore unknown collections
-        if (!collection_dirs.count(collection.name))
+        if (!collection_dirs.count(collection.name()))
             continue;
 
         // find the metadata file
-        const QString& collection_dir = collection_dirs.at(collection.name);
+        const QString& collection_dir = collection_dirs.at(collection.name());
         const QString gamelist_path = findGamelistFile(collection, collection_dir);
         if (gamelist_path.isEmpty())
             continue;
@@ -352,24 +351,24 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
         return;
 
     const size_t game_id = sctx.path_to_gameid.at(game_path);
-    modeldata::Game& game = sctx.games.at(game_id);
+    model::Game& game = *sctx.games.at(game_id);
     applyMetadata(game, xml_props);
     findAssets(game, xml_props, collection_dir);
 }
 
-void MetadataParser::applyMetadata(modeldata::Game& game,
+void MetadataParser::applyMetadata(model::Game& game,
                                    HashMap<MetaTypes, QString, EnumHash>& xml_props) const
 {
     // first, the simple strings
-    game.title = xml_props[MetaTypes::NAME];
-    game.description = xml_props[MetaTypes::DESC];
-    game.developers.append(xml_props[MetaTypes::DEVELOPER]);
-    game.publishers.append(xml_props[MetaTypes::PUBLISHER]);
-    game.genres.append(xml_props[MetaTypes::GENRE]);
+    game.setTitle(xml_props[MetaTypes::NAME])
+        .setDescription(xml_props[MetaTypes::DESC]);
+    game.developerList().append(xml_props[MetaTypes::DEVELOPER]);
+    game.publisherList().append(xml_props[MetaTypes::PUBLISHER]);
+    game.genreList().append(xml_props[MetaTypes::GENRE]);
 
     // then the numbers
-    game.files.front().play_count += xml_props[MetaTypes::PLAYCOUNT].toInt();
-    game.rating = qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f);
+    const int play_count = xml_props[MetaTypes::PLAYCOUNT].toInt();
+    game.setRating(qBound(0.f, xml_props[MetaTypes::RATING].toFloat(), 1.f));
 
     // the player count can be a range
     const QString players_field = xml_props[MetaTypes::PLAYERS];
@@ -378,7 +377,7 @@ void MetadataParser::applyMetadata(modeldata::Game& game,
         short a = 0, b = 0;
         a = players_match.captured(1).toShort();
         b = players_match.captured(3).toShort();
-        game.player_count = std::max(a, b);
+        game.setPlayerCount(std::max(a, b));
     }
 
     // then the bools
@@ -386,16 +385,18 @@ void MetadataParser::applyMetadata(modeldata::Game& game,
     if (favorite_val.compare(QLatin1String("yes"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("true"), Qt::CaseInsensitive) == 0
         || favorite_val.compare(QLatin1String("1")) == 0) {
-        game.is_favorite |= true;
+        game.setFavorite(true);
     }
 
     // then dates
     // NOTE: QDateTime::fromString returns a null (invalid) date on error
 
-    game.files.front().last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
+    const QDateTime last_played = QDateTime::fromString(xml_props[MetaTypes::LASTPLAYED], m_date_format);
 
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
-    game.release_date = release_time.date();
+    game.setReleaseDate(release_time.date());
+
+    game.files()->first()->update_playstats(play_count, 0, last_played);
 }
 
 } // namespace es2
