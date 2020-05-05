@@ -1,11 +1,11 @@
 HEADERS += \
+    $$PWD/Assets.h \
     $$PWD/Collection.h \
     $$PWD/Game.h \
-    $$PWD/GameAssets.h \
-    $$PWD/GameFile.h
+    $$PWD/GameFile.h \
 
 SOURCES += \
+    $$PWD/Assets.cpp \
     $$PWD/Collection.cpp \
     $$PWD/Game.cpp \
-    $$PWD/GameAssets.cpp \
-    $$PWD/GameFile.cpp
+    $$PWD/GameFile.cpp \

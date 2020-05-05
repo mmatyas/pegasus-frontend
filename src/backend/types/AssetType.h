@@ -40,6 +40,6 @@ enum class AssetType : unsigned char {
     BACKGROUND,
     MUSIC,
 
-    SCREENSHOTS,
-    VIDEOS,
+    SCREENSHOT,
+    VIDEO,
 };
