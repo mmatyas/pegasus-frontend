@@ -20,8 +20,8 @@
 #include "GogCommon.h"
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/MoveOnly.h"
 
@@ -145,31 +145,21 @@ bool invalid_entry(const GogEntry& entry)
 }
 
 void register_entries(const std::vector<GogEntry>& entries,
+                      model::Collection& collection,
                       providers::SearchContext& sctx,
-                      HashMap<size_t, QString>& gogids)
+                      HashMap<model::Game*, QString>& gogids)
 {
-    std::vector<size_t>& childs = sctx.collection_childs[providers::gog::gog_tag()];
-
     for (const GogEntry& entry : entries) {
         QFileInfo finfo(entry.exe);
-        const QString game_path = finfo.canonicalFilePath();
 
-        if (!sctx.path_to_gameid.count(game_path)) {
-            modeldata::Game game(std::move(finfo));
-            game.title = entry.name;
-            game.launch_cmd = ::utils::escape_command(entry.launch_cmd);
-            game.launch_workdir = entry.workdir;
-
-            const size_t game_id = sctx.games.size();
-            sctx.path_to_gameid.emplace(game_path, game_id);
-            sctx.games.emplace(game_id, std::move(game));
-        }
-
-        const size_t game_id = sctx.path_to_gameid.at(game_path);
-        childs.emplace_back(game_id);
+        auto slot = sctx.add_or_create_game_for(std::move(finfo), collection);
+        model::Game& game = *slot.second;
+        game.setTitle(entry.name);
+        game.setLaunchCmd(::utils::escape_command(entry.launch_cmd));
+        game.setLaunchWorkdir(entry.workdir);
 
         if (!entry.id.isEmpty())
-            gogids.emplace(game_id, entry.id);
+            gogids.emplace(slot.second, entry.id);
     }
 }
 } // namespace
@@ -182,7 +172,7 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(providers::SearchContext& sctx, HashMap<size_t, QString>& gogids,
+void Gamelist::find(providers::SearchContext& sctx, HashMap<model::Game*, QString>& gogids,
                     const HashMap<QString, std::vector<QString>>& options)
 {
     static constexpr auto MSG_PREFIX = "GOG:";
@@ -195,13 +185,10 @@ void Gamelist::find(providers::SearchContext& sctx, HashMap<size_t, QString>& go
     if (entries.empty())
         return;
 
-
-    const QString GOG_TAG(gog_tag());
-    if (!sctx.collections.count(GOG_TAG))
-        sctx.collections.emplace(GOG_TAG, modeldata::Collection(GOG_TAG));
+    model::Collection& coll = *sctx.get_or_create_collection(gog_tag());
 
     const size_t game_count_before = sctx.games.size();
-    register_entries(entries, sctx, gogids);
+    register_entries(entries, coll, sctx, gogids);
     if (game_count_before != sctx.games.size())
         emit gameCountChanged(static_cast<int>(sctx.games.size()));
 }

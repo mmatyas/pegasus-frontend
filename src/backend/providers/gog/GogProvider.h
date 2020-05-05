@@ -30,13 +30,13 @@ class GogProvider : public Provider {
     Q_OBJECT
 
 public:
-    GogProvider(QObject* parent = nullptr);
+    explicit GogProvider(QObject* parent = nullptr);
 
     void findLists(SearchContext&) final;
     void findStaticData(SearchContext&) final;
 
 private:
-    HashMap<size_t, QString> m_gogids;
+    HashMap<model::Game*, QString> m_gogids;
 
     Gamelist gamelist;
     Metadata metadata;

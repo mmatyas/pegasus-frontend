@@ -19,7 +19,8 @@
 
 #include "GogCommon.h"
 #include "LocaleUtils.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
 
 #include <QEventLoop>
@@ -36,9 +37,9 @@ static constexpr auto JSON_CACHE_DIR = "gog";
 
 struct GogEntry {
     QString gogid;
-    modeldata::Game* game;
+    model::Game* game;
 
-    GogEntry(QString gogid, modeldata::Game* const game)
+    GogEntry(QString gogid, model::Game* const game)
         : gogid(std::move(gogid))
         , game(game)
     {
@@ -59,19 +60,19 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
         return false;
 
 
-    modeldata::Game& game = *entry.game;
+    model::Game& game = *entry.game;
 
     const auto desc = json_root[QLatin1String("description")].toObject();
     if (!desc.isEmpty()) {
-        game.summary = desc[QLatin1String("lead")].toString().replace('\n', ' ');
-        game.description = desc[QLatin1String("full")].toString().replace('\n', ' ');
+        game.setSummary(desc[QLatin1String("lead")].toString().replace('\n', ' '))
+            .setDescription(desc[QLatin1String("full")].toString().replace('\n', ' '));
     }
 
     const auto date_raw = json_root[QLatin1String("release_date")].toString();
-    game.release_date = QDate::fromString(date_raw, Qt::ISODate);
+    game.setReleaseDate(QDate::fromString(date_raw, Qt::ISODate));
 
 
-    modeldata::GameAssets& assets = game.assets;
+    model::Assets& assets = entry.game->assets();
 
     const auto images = json_root[QLatin1String("images")].toObject();
     if (!images.isEmpty()) {
@@ -82,11 +83,11 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
         const QString logo = images[QLatin1String("icon")].toString();
 
         if (!box_front.isEmpty())
-            assets.setSingle(AssetType::BOX_FRONT, prefix + box_front);
+            assets.add_url(AssetType::BOX_FRONT, prefix + box_front);
         if (!background.isEmpty())
-            assets.setSingle(AssetType::BACKGROUND, prefix + background);
+            assets.add_url(AssetType::BACKGROUND, prefix + background);
         if (!logo.isEmpty())
-            assets.setSingle(AssetType::LOGO, prefix + logo);
+            assets.add_url(AssetType::LOGO, prefix + logo);
     }
 
     const auto screenshots = json_root[QLatin1String("screenshots")].toArray();
@@ -96,7 +97,7 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
             .replace(QStringLiteral("{formatter}"), QStringLiteral("ggvgm_2x"));
 
         if (!url.isEmpty())
-            assets.appendMulti(AssetType::SCREENSHOTS, url);
+            assets.add_url(AssetType::SCREENSHOT, url);
     }
 
     return true;
@@ -120,14 +121,14 @@ bool read_embed_json(GogEntry& entry, const QJsonDocument& json)
         if (id == 0 || QString::number(id) != entry.gogid)
             continue;
 
-        modeldata::Game& game = *entry.game;
+        model::Game& game = *entry.game;
 
-        game.developers.append(product[QLatin1String("developer")].toString());
-        game.publishers.append(product[QLatin1String("publisher")].toString());
+        game.developerList().append(product[QLatin1String("developer")].toString());
+        game.publisherList().append(product[QLatin1String("publisher")].toString());
 
         const auto genres = product[QLatin1String("genres")].toArray();
         for (const auto& genres_entry : genres)
-            game.genres.append(genres_entry.toString());
+            game.genreList().append(genres_entry.toString());
     }
 
     return true;
@@ -180,7 +181,7 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
 
     for (size_t i = 0; i < entries.size(); i++) {
         const QString gog_id = entries[i].gogid;
-        modeldata::Game* const game = entries[i].game;
+        model::Game* const game = entries[i].game;
 
         const QUrl url(API_URL.arg(gog_id));
         QNetworkRequest request(url);
@@ -196,7 +197,7 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
                 if (reply->error()) {
                     qWarning().noquote() << MSG_PREFIX
                         << tr_log("downloading metadata for `%1` failed (%2)")
-                           .arg(game->title, reply->errorString());
+                           .arg(game->title(), reply->errorString());
                 }
                 else {
                     const auto raw_data = reply->readAll();
@@ -209,7 +210,7 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
                         qWarning().noquote() << MSG_PREFIX
                             << tr_log("failed to parse the response of the server "
                                       "for game `%1` - perhaps the GOG API changed?")
-                                      .arg(game->title);
+                                      .arg(game->title());
                     }
                 }
 
@@ -221,9 +222,9 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
 
     for (size_t i = 0; i < entries.size(); i++) {
         const QString gog_id = entries[i].gogid;
-        modeldata::Game* const game = entries[i].game;
+        model::Game* const game = entries[i].game;
 
-        const QUrl url(EMBED_URL.arg(game->title)); // TODO: this seems to work, but shouldn't it be escaped?
+        const QUrl url(EMBED_URL.arg(game->title())); // TODO: this seems to work, but shouldn't it be escaped?
         QNetworkRequest request(url);
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         QNetworkReply* reply = netman.get(request);
@@ -237,7 +238,7 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
                 if (reply->error()) {
                     qWarning().noquote() << MSG_PREFIX
                         << tr_log("downloading secondary metadata for `%1` failed (%2)")
-                           .arg(game->title, reply->errorString());
+                           .arg(game->title(), reply->errorString());
                 }
                 else {
                     const auto raw_data = reply->readAll();
@@ -250,7 +251,7 @@ void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& ne
                         qWarning().noquote() << MSG_PREFIX
                             << tr_log("failed to parse the response of the server "
                                       "for game `%1` - perhaps the GOG API changed?")
-                                      .arg(game->title);
+                                      .arg(game->title());
                     }
                 }
 
@@ -288,18 +289,20 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(providers::SearchContext& sctx, HashMap<size_t, QString>& gogid_map)
+void Metadata::enhance(providers::SearchContext& sctx, HashMap<model::Game*, QString>& gogid_map)
 {
     const QString GOG_TAG(QStringLiteral("GOG"));
-    if (!sctx.collection_childs.count(GOG_TAG))
+    const auto slot = sctx.collections.find(GOG_TAG);
+    if (slot == sctx.collections.end())
         return;
+
+    const model::Collection& coll = *slot->second;
 
     std::vector<GogEntry> entries;
 
-    const std::vector<size_t>& childs = sctx.collection_childs.at(GOG_TAG);
-    for (const size_t game_idx : childs) {
-        if (Q_LIKELY(gogid_map.count(game_idx)))
-            entries.emplace_back(gogid_map.at(game_idx), &sctx.games.at(game_idx));
+    for (model::Game* game_ptr : coll.gamesConst()) {
+        if (Q_LIKELY(gogid_map.count(game_ptr)))
+            entries.emplace_back(gogid_map.at(game_ptr), game_ptr);
     }
 
     // try to fill using cached jsons

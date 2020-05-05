@@ -32,7 +32,7 @@ class Gamelist : public QObject {
 public:
     explicit Gamelist(QObject* parent);
 
-    void find(providers::SearchContext&, HashMap<size_t, QString>&,
+    void find(providers::SearchContext&, HashMap<model::Game*, QString>&,
               const HashMap<QString, std::vector<QString>>&);
 
 signals:
