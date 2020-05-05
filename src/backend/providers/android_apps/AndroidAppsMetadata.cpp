@@ -18,8 +18,7 @@
 #include "AndroidAppsMetadata.h"
 
 #include "LocaleUtils.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
 #include "utils/HashMap.h"
 
@@ -42,7 +41,7 @@ namespace {
 static constexpr auto MSG_PREFIX = "Android Apps:";
 static constexpr auto JSON_CACHE_DIR = "androidapps";
 
-bool read_json(modeldata::Game& game, const QJsonDocument& json)
+bool read_json(model::Game& game, const QJsonDocument& json)
 {
     using Lat = QLatin1String;
 
@@ -61,30 +60,30 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
     const QString developer = root[Lat("developer")].toString();
     if (!developer.isEmpty())
-        game.developers << root[Lat("developer")].toString();
+        game.developerList().append(root[Lat("developer")].toString());
 
-    game.description = root[Lat("description")].toString();
-    game.summary = game.description.section(QChar('\n'), 0, 0);
+    game.setDescription(root[Lat("description")].toString());
+    game.setSummary(game.description().section(QChar('\n'), 0, 0));
 
     const double rating = root[Lat("rating")].toDouble(-1);
     if (0.0 <= rating && rating <= 5.0)
-        game.rating = static_cast<float>(rating / 5.0);
+        game.setRating(static_cast<float>(rating / 5.0));
 
     const QString background = root[Lat("background")].toString();
     if (!background.isEmpty())
-        game.assets.setSingle(AssetType::BACKGROUND, background);
+        game.assets().add_url(AssetType::BACKGROUND, background);
 
     const auto sshot_arr = root[Lat("screenshots")].toArray();
     for (const auto& arr_entry : sshot_arr) {
         const auto sshot = arr_entry.toString();
         if (!sshot.isEmpty())
-            game.assets.appendMulti(AssetType::SCREENSHOTS, sshot);
+            game.assets().add_url(AssetType::SCREENSHOT, sshot);
     }
 
     return true;
 }
 
-bool fill_from_cached_json(const QString& package, modeldata::Game& game)
+bool fill_from_cached_json(const QString& package, model::Game& game)
 {
     const QString message_prefix = QLatin1String(MSG_PREFIX);
     const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
@@ -120,35 +119,32 @@ Metadata::Metadata()
 
 void Metadata::findStaticData(SearchContext& sctx)
 {
-    const auto cc_it = sctx.collection_childs.find(QStringLiteral("Android"));
-    if (cc_it == sctx.collection_childs.cend())
+    const auto coll_it = sctx.collections.find(QStringLiteral("Android"));
+    if (coll_it == sctx.collections.cend() || coll_it->second->gamesConst().isEmpty())
         return;
 
-    const auto uncached_entries = fill_from_cache(cc_it->second, sctx.games);
-    fill_from_network(uncached_entries, sctx.games);
+    const auto uncached_entries = fill_from_cache(coll_it->second->gamesConst());
+    fill_from_network(uncached_entries);
 }
 
-std::vector<size_t> Metadata::fill_from_cache(const std::vector<size_t>& child_ids,
-                                              HashMap<size_t, modeldata::Game>& all_games)
+std::vector<model::Game*> Metadata::fill_from_cache(const QVector<model::Game*>& childs)
 {
-    std::vector<size_t> uncached_entries;
+    std::vector<model::Game*> uncached_entries;
 
-    for (size_t idx : child_ids) {
-        modeldata::Game& game = all_games.at(idx);
-        const QString& package = game.files.cbegin()->fileinfo.fileName();
+    for (model::Game* const game_ptr : childs) {
+        const QString& package = game_ptr->filesConst().constFirst()->fileinfo().fileName();
 
-        const bool filled = fill_from_cached_json(package, game);
+        const bool filled = fill_from_cached_json(package, *game_ptr);
         if (!filled)
-            uncached_entries.push_back(idx);
+            uncached_entries.push_back(game_ptr);
     }
 
     return uncached_entries;
 }
 
-void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
-                                 HashMap<size_t, modeldata::Game>& all_games)
+void Metadata::fill_from_network(const std::vector<model::Game*>& childs)
 {
-    if (child_ids.empty())
+    if (childs.empty())
         return;
 
     if (!QSslSocket::supportsSsl()) {
@@ -184,8 +180,8 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
     QObject::connect(&loop_timeout, &QTimer::timeout,
                      &loop, &QEventLoop::quit);
 
-    for (size_t idx : child_ids) {
-        const QString package = all_games.at(idx).files.cbegin()->fileinfo.fileName();
+    for (model::Game* const game_ptr : childs) {
+        const QString package = game_ptr->filesConst().constFirst()->fileinfo().fileName();
         const QUrl url(GPLAY_URL.arg(package));
 
         QNetworkRequest request(url);
@@ -193,7 +189,7 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
         QNetworkReply* reply = netman.get(request);
 
         QObject::connect(reply, &QNetworkReply::finished,
-            [&, idx, package, reply](){
+            [&, game_ptr, package, reply](){
                 completed_transfers++;
                 if (completed_transfers == listeners.count())
                     loop.quit();
@@ -213,9 +209,7 @@ void Metadata::fill_from_network(const std::vector<size_t>& child_ids,
                 QByteArray html_raw = reply->readAll();
                 if (parse_reply(html_raw, json)) {
                     const QJsonDocument json_doc(json);
-                    modeldata::Game& game = all_games.at(idx);
-
-                    if (read_json(game, json_doc)) {
+                    if (read_json(*game_ptr, json_doc)) {
                         providers::cache_json(message_prefix, cache_dir, package, json_doc.toJson(QJsonDocument::Compact));
                         return;
                     }

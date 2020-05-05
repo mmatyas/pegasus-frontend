@@ -39,8 +39,8 @@ private:
     const QRegularExpression rx_category;
     const QRegularExpression rx_screenshots;
 
-    std::vector<size_t> fill_from_cache(const std::vector<size_t>&, HashMap<size_t, modeldata::Game>&);
-    void fill_from_network(const std::vector<size_t>&, HashMap<size_t, modeldata::Game>&);
+    std::vector<model::Game*> fill_from_cache(const QVector<model::Game*>&);
+    void fill_from_network(const std::vector<model::Game*>&);
     bool parse_reply(QByteArray&, QJsonObject&);
 };
 

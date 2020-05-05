@@ -17,8 +17,7 @@
 
 #include "AndroidAppsProvider.h"
 
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Game.h"
 
 #include <QFileInfo>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
@@ -44,11 +43,7 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
 
 
     const QString COLLECTION_TAG(QStringLiteral("Android"));
-    if (!sctx.collections.count(COLLECTION_TAG))
-        sctx.collections.emplace(COLLECTION_TAG, modeldata::Collection(COLLECTION_TAG));
-
-    modeldata::Collection& collection = sctx.collections.at(COLLECTION_TAG);
-    std::vector<size_t>& childs = sctx.collection_childs[COLLECTION_TAG];
+    model::Collection& collection = *sctx.get_or_create_collection(COLLECTION_TAG);
     collection.setShortName(COLLECTION_TAG);
 
 
@@ -65,21 +60,27 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
         const QString action = jni_app.callObjectMethod<jstring>(APP_LAUNCH_ACT).toString();
         const QString component = jni_app.callObjectMethod<jstring>(APP_LAUNCH_CPT).toString();
 
-        if (!sctx.path_to_gameid.count(package)) {
-            const size_t game_id = sctx.games.size();
+        model::Game* game = nullptr;
+
+        auto found = sctx.path_to_gameid.find(package);
+        if (found != sctx.path_to_gameid.end()) {
+            game = sctx.games[found->second];
+        }
+        else {
+            game = new model::Game(QFileInfo(package));
+            size_t game_id = sctx.games.size();
             sctx.path_to_gameid.emplace(package, game_id);
-            sctx.games.emplace(game_id, modeldata::Game(QFileInfo(package)));
+            sctx.games.emplace(game_id, game);
         }
 
-        const size_t game_id = sctx.path_to_gameid.at(package);
-        childs.emplace_back(game_id);
+        collection.games()->append(game);
+        game->collections()->append(&collection);
 
-        modeldata::Game& game = sctx.games.at(game_id);
-        game.title = appname;
-        game.launch_cmd = QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component);
+        game->setTitle(appname);
+        game->setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component));
 
-        game.assets.setSingle(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
-        game.assets.setSingle(AssetType::UI_TILE, game.assets.single(AssetType::BOX_FRONT));
+        game->assets().add_url(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
+        game->assets().add_url(AssetType::UI_TILE, game->assets().boxFront());
     }
 }
 
