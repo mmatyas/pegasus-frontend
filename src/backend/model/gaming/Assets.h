@@ -64,6 +64,11 @@ public:
     GEN(video, VIDEO)
 #undef GEN
 
+    // deprecated fallacks
+    // TODO: remove
+    Q_PROPERTY(QStringList screenshots READ screenshotList CONSTANT)
+    Q_PROPERTY(QStringList videos READ videoList CONSTANT)
+
 public:
     explicit Assets(QObject* parent);
 
