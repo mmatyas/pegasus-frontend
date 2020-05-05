@@ -44,19 +44,15 @@ std::vector<ProviderPtr> enabled_providers()
 
 void remove_empty_collections(providers::SearchContext& ctx)
 {
-    const auto childs_end = ctx.collection_childs.cend();
-
     auto it = ctx.collections.begin();
     while (it != ctx.collections.end()) {
-        const QString& key = it->first;
-        const auto childs_it = ctx.collection_childs.find(key);
+        model::Collection& coll = *it->second;
 
-        const bool is_empty = childs_it == childs_end || childs_it->second.empty();
+        const bool is_empty = coll.games()->isEmpty();
         if (is_empty) {
             qWarning().noquote()
-                << tr_log("No games found for collection '%1', ignored").arg(key);
+                << tr_log("No games found for collection '%1', ignored").arg(coll.name());
 
-            ctx.collection_childs.erase(key);
             it = ctx.collections.erase(it);
             continue;
         }
@@ -65,14 +61,15 @@ void remove_empty_collections(providers::SearchContext& ctx)
     }
 }
 
-void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
+void remove_empty_games(HashMap<size_t, model::Game*>& games)
 {
     auto it = games.begin();
     while (it != games.end()) {
-        const modeldata::Game& game = it->second;
-        if (game.files.empty()) {
+        model::Game& game = *it->second;
+
+        if (game.files()->isEmpty()) {
             qWarning().noquote()
-                << tr_log("No files defined for game '%1', ignored").arg(game.title);
+                << tr_log("No files defined for game '%1', ignored").arg(game.title());
             it = games.erase(it);
             continue;
         }
@@ -81,50 +78,37 @@ void remove_empty_games(HashMap<size_t, modeldata::Game>& games)
     }
 }
 
-void remove_duplicate_childs(HashMap<QString, std::vector<size_t>>& coll_childs)
-{
-    for (auto& entry : coll_childs) {
-        std::vector<size_t>& child_list = entry.second;
-        VEC_REMOVE_DUPLICATES(child_list);
-    }
-}
-
 void remove_parentless_games(providers::SearchContext& sctx)
 {
-    // prepare
-    std::unordered_set<size_t> parented_game_ids;
-    size_t parented_game_cnt = 0; // TODO: map-reduce
-    for (const auto& entry : sctx.collection_childs)
-        parented_game_cnt += entry.second.size();
-
-    parented_game_ids.reserve(parented_game_cnt);
-    for (const auto& entry : sctx.collection_childs)
-        parented_game_ids.insert(entry.second.cbegin(), entry.second.cend());
-
-    // remove
     auto it = sctx.games.begin();
     while (it != sctx.games.end()) {
-        const bool has_parent = parented_game_ids.count(it->first);
-        if (!has_parent) {
+        model::Game& game = *it->second;
+
+        if (game.collections()->isEmpty()) {
             qWarning().noquote()
-                << tr_log("Game '%1' does not belong to any collections, ignored").arg(it->second.title);
+                << tr_log("Game '%1' does not belong to any collections, ignored").arg(game.title());
             it = sctx.games.erase(it);
             continue;
         }
+
         ++it;
     }
 }
 
-void postprocess_list_results(providers::SearchContext& ctx)
+void postprocess_list_results(providers::SearchContext& sctx, QThread* const target_thread)
 {
     QElapsedTimer timer;
     timer.start();
 
-    remove_empty_collections(ctx);
-    remove_empty_games(ctx.games);
-    remove_duplicate_childs(ctx.collection_childs);
-    remove_parentless_games(ctx);
-    VEC_REMOVE_DUPLICATES(ctx.game_root_dirs);
+    remove_empty_collections(sctx);
+    remove_empty_games(sctx.games);
+    remove_parentless_games(sctx);
+    VEC_REMOVE_DUPLICATES(sctx.game_root_dirs);
+
+    for (auto& entry : sctx.games)
+        entry.second->moveToThread(target_thread);
+    for (auto& entry : sctx.collections)
+        entry.second->moveToThread(target_thread);
 
     qInfo().noquote() << tr_log("Game list post-processing took %1ms").arg(timer.elapsed());
 }
@@ -163,7 +147,7 @@ HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& g
     // prepare
     size_t gamefile_cnt = 0; // TODO: map-reduce
     for (const model::Game* const q_game : games)
-        gamefile_cnt += q_game->data().files.size();
+        gamefile_cnt += q_game->filesConst().size();
 
     // build
     HashMap<QString, model::GameFile*> result;
@@ -171,7 +155,7 @@ HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& g
     for (const model::Game* const q_game : games) {
         for (model::GameFile* const q_gamefile : q_game->filesConst()) {
             // NOTE: canonical file path is empty for Android apps
-            QString path = q_gamefile->data().fileinfo.canonicalFilePath();
+            QString path = q_gamefile->fileinfo().canonicalFilePath();
             if (Q_LIKELY(!path.isEmpty()))
                 result.emplace(std::move(path), q_gamefile);
         }
@@ -205,7 +189,7 @@ void ProviderManager::startStaticSearch(providers::SearchContext& out_sctx)
             provider->load();
 
         run_list_providers(ctx, providers);
-        postprocess_list_results(ctx);
+        postprocess_list_results(ctx, this->thread());
         emit firstPhaseComplete(timer.restart());
 
         run_asset_providers(ctx, providers);
