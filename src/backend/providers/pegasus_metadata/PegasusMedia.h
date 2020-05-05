@@ -22,13 +22,13 @@
 #include <QString>
 #include <vector>
 
-namespace modeldata { struct Game; }
+namespace model { struct Game; }
 
 
 namespace providers {
 namespace pegasus {
 
-void find_assets(const std::vector<QString>&, HashMap<size_t, modeldata::Game>&);
+void find_assets(const std::vector<QString>&, HashMap<size_t, model::Game*>&);
 
 } // namespace pegasus
 } // namespace providers

@@ -140,7 +140,7 @@ void save_play_entry(const int path_id, const QDateTime& start_time, const qint6
 void update_modelgame(model::GameFile* const gamefile, const QDateTime& start_time, const qint64 duration)
 {
     Q_ASSERT(gamefile);
-    gamefile->updatePlayTime(duration, start_time.addSecs(duration));
+    gamefile->update_playstats(1, duration, start_time.addSecs(duration));
 }
 
 } // namespace
@@ -217,7 +217,7 @@ void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
     for (const auto& pair : stat_map) {
         model::GameFile* gamefile = path_map.at(pair.first);
         const Stats& stats = stat_map.at(pair.first);
-        gamefile->addPlayStats(stats.playcount, stats.playtime, stats.last_played);
+        gamefile->update_playstats(stats.playcount, stats.playtime, stats.last_played);
     }
 }
 
@@ -271,7 +271,7 @@ void PlaytimeStats::start_processing()
                 break;
 
             for (const QueueEntry& entry : m_active_tasks) {
-                const QString path = entry.gamefile->data().fileinfo.canonicalFilePath();
+                const QString path = entry.gamefile->fileinfo().canonicalFilePath();
                 const int path_id = get_path_id(path);
                 if (path_id == -1)
                     continue;

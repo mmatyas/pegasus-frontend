@@ -50,8 +50,8 @@ private:
 
     // NOTE: while these would be highly unsafe normally, we can use the fact
     // that no games/filters are added during the time their pointer is used
-    modeldata::Collection* m_cur_coll;
-    modeldata::Game* m_cur_game;
+    model::Collection* m_cur_coll;
+    model::Game* m_cur_game;
     FileFilter* m_cur_filter;
 
 private:

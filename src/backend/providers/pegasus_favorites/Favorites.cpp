@@ -93,9 +93,9 @@ void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const model::Game* const game : game_list) {
-        if (game->favorite()) {
+        if (game->isFavorite()) {
             for (const model::GameFile* const file : game->filesConst()) {
-                const QString full_path = file->data().fileinfo.canonicalFilePath();
+                const QString full_path = file->fileinfo().canonicalFilePath();
                 const QString written_path = AppSettings::general.portable
                     ? config_dir.relativeFilePath(full_path)
                     : full_path;

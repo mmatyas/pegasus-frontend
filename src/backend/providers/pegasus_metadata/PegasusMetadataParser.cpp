@@ -22,6 +22,8 @@
 #include "PegasusMetadataConstants.h"
 #include "PegasusMetadataFilter.h"
 #include "PegasusUtils.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "parsers/MetaFile.h"
 #include "utils/StdHelpers.h"
 
@@ -46,12 +48,6 @@ const QString& first_line_of(const metafile::Entry& entry)
     }
 
     return entry.values.front();
-}
-
-// FIXME: duplication
-bool asset_is_single(AssetType type)
-{
-    return type != AssetType::SCREENSHOTS && type != AssetType::VIDEOS;
 }
 } // namespace
 
@@ -105,10 +101,10 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
             m_cur_coll->setShortName(first_line_of(entry));
             break;
         case CollAttrib::LAUNCH_CMD:
-            m_cur_coll->launch_cmd = metafile::merge_lines(entry.values);
+            m_cur_coll->setCommonLaunchCmd(metafile::merge_lines(entry.values));
             break;
         case CollAttrib::LAUNCH_WORKDIR:
-            m_cur_coll->launch_workdir = first_line_of(entry);
+            m_cur_coll->setCommonLaunchWorkdir(first_line_of(entry));
             break;
         case CollAttrib::DIRECTORIES:
             for (const QString& value : entry.values) {
@@ -135,10 +131,10 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
             }
             break;
         case CollAttrib::SHORT_DESC:
-            m_cur_coll->summary = replace_newlines(metafile::merge_lines(entry.values));
+            m_cur_coll->setSummary(replace_newlines(metafile::merge_lines(entry.values)));
             break;
         case CollAttrib::LONG_DESC:
-            m_cur_coll->description = replace_newlines(metafile::merge_lines(entry.values));
+            m_cur_coll->setDescription(replace_newlines(metafile::merge_lines(entry.values)));
             break;
     }
 }
@@ -158,7 +154,6 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
             {
                 const size_t game_id = sctx.games.size() - 1; // FIXME: improve this
 
-                auto& files = m_cur_game->files;
                 for (const QString& line : entry.values) {
                     QFileInfo fi(m_dir_path, line);
 
@@ -175,25 +170,25 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
                     // NOTE: the case when a file is set for multiple games
                     // is not handled at the moment
                     sctx.path_to_gameid.emplace(std::move(path), game_id);
-                    files.emplace_back(std::move(fi));
+                    m_cur_game->addFile(std::move(fi));
                 }
             }
             break;
         case GameAttrib::DEVELOPERS:
             for (const QString& line : entry.values)
-                m_cur_game->developers.append(line);
+                m_cur_game->developerList().append(line);
             break;
         case GameAttrib::PUBLISHERS:
             for (const QString& line : entry.values)
-                m_cur_game->publishers.append(line);
+                m_cur_game->publisherList().append(line);
             break;
         case GameAttrib::GENRES:
             for (const QString& line : entry.values)
-                m_cur_game->genres.append(line);
+                m_cur_game->genreList().append(line);
             break;
         case GameAttrib::TAGS:
             for (const QString& line : entry.values)
-                m_cur_game->tags.append(line);
+                m_cur_game->tagList().append(line);
             break;
         case GameAttrib::PLAYER_COUNT:
             {
@@ -201,15 +196,15 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
                 if (rx_match.hasMatch()) {
                     const short a = rx_match.capturedRef(1).toShort();
                     const short b = rx_match.capturedRef(3).toShort();
-                    m_cur_game->player_count = std::max({static_cast<short>(1), a, b});
+                    m_cur_game->setPlayerCount(std::max({static_cast<short>(1), a, b}));
                 }
             }
             break;
         case GameAttrib::SHORT_DESC:
-            m_cur_game->summary = replace_newlines(metafile::merge_lines(entry.values));
+            m_cur_game->setSummary(replace_newlines(metafile::merge_lines(entry.values)));
             break;
         case GameAttrib::LONG_DESC:
-            m_cur_game->description = replace_newlines(metafile::merge_lines(entry.values));
+            m_cur_game->setDescription(replace_newlines(metafile::merge_lines(entry.values)));
             break;
         case GameAttrib::RELEASE:
             {
@@ -222,7 +217,7 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
                 const int y = qMax(1, rx_match.captured(1).toInt());
                 const int m = qBound(1, rx_match.captured(3).toInt(), 12);
                 const int d = qBound(1, rx_match.captured(5).toInt(), 31);
-                m_cur_game->release_date = QDate(y, m, d);
+                m_cur_game->setReleaseDate(QDate(y, m, d));
             }
             break;
         case GameAttrib::RATING:
@@ -231,12 +226,12 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
 
                 const auto rx_match_a = m_constants.rx_percent.match(line);
                 if (rx_match_a.hasMatch()) {
-                    m_cur_game->rating = qBound(0.f, line.leftRef(line.length() - 1).toFloat() / 100.f, 1.f);
+                    m_cur_game->setRating(qBound(0.f, line.leftRef(line.length() - 1).toFloat() / 100.f, 1.f));
                     return;
                 }
                 const auto rx_match_b = m_constants.rx_float.match(line);
                 if (rx_match_b.hasMatch()) {
-                    m_cur_game->rating = qBound(0.f, line.toFloat(), 1.f);
+                    m_cur_game->setRating(qBound(0.f, line.toFloat(), 1.f));
                     return;
                 }
 
@@ -244,13 +239,13 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
             }
             break;
         case GameAttrib::LAUNCH_CMD:
-            m_cur_game->launch_cmd = metafile::merge_lines(entry.values);
+            m_cur_game->setLaunchCmd(metafile::merge_lines(entry.values));
             break;
         case GameAttrib::LAUNCH_WORKDIR:
-            m_cur_game->launch_workdir = first_line_of(entry);
+            m_cur_game->setLaunchWorkdir(first_line_of(entry));
             break;
         case GameAttrib::SORT_TITLE:
-            m_cur_game->sort_title = first_line_of(entry);
+            m_cur_game->setSortTitle(first_line_of(entry));
             break;
     }
 }
@@ -272,16 +267,12 @@ bool Parser::parse_asset_entry_maybe(const metafile::Entry& entry) const
         return true;
     }
 
-    modeldata::GameAssets& assets = m_cur_game
-        ? m_cur_game->assets
-        : m_cur_coll->assets;
+    model::Assets& assets = m_cur_game
+        ? m_cur_game->assets()
+        : m_cur_coll->assets();
+    for (const QString& line : entry.values)
+        assets.add_url(asset_type, utils::assetline_to_url(line, m_dir_path));
 
-    if (asset_is_single(asset_type))
-        assets.addUrlMaybe(asset_type, utils::assetline_to_url(entry.values.front(), m_dir_path));
-    else {
-        for (const QString& line : entry.values)
-            assets.addUrlMaybe(asset_type, utils::assetline_to_url(line, m_dir_path));
-    }
     return true;
 }
 
@@ -294,10 +285,10 @@ void Parser::parse_entry(const metafile::Entry& entry,
         const QString& name = first_line_of(entry);
 
         if (!sctx.collections.count(name))
-            sctx.collections.emplace(name, modeldata::Collection(name));
+            sctx.collections.emplace(name, new model::Collection(name));
 
-        m_cur_coll = &sctx.collections.at(name);
-        m_cur_coll->relative_basedir = m_dir_path;
+        m_cur_coll = sctx.collections.at(name);
+        m_cur_coll->setCommonLaunchCmdBasedir(m_dir_path);
         m_cur_game = nullptr;
 
         filters.emplace_back(name, m_dir_path);
@@ -306,15 +297,9 @@ void Parser::parse_entry(const metafile::Entry& entry,
     }
 
     if (entry.key == QLatin1String("game")) {
-        modeldata::Game game(first_line_of(entry));
-        game.relative_basedir = m_dir_path;
-        if (m_cur_coll) {
-            game.launch_cmd = m_cur_coll->launch_cmd;
-            game.launch_workdir = m_cur_coll->launch_workdir;
-        }
-        const size_t game_id = sctx.games.size();
-        sctx.games.emplace(game_id, std::move(game));
-        m_cur_game = &sctx.games.at(game_id);
+        auto slot = sctx.new_empty_game(first_line_of(entry), m_cur_coll);
+        m_cur_game = slot.second;
+        m_cur_game->setLaunchCmdBasedir(m_dir_path);
         return;
     }
 

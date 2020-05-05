@@ -17,8 +17,8 @@
 
 #include "PegasusMetadataFilter.h"
 
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "utils/StdHelpers.h"
 
 #include <QDir>
@@ -89,35 +89,19 @@ bool file_passes_filter(const QFileInfo& finfo, const FileFilter& filter,
     return true;
 }
 
-void accept_filtered_file(const QFileInfo& fileinfo, const modeldata::Collection& parent,
+void accept_filtered_file(const QFileInfo& fileinfo, model::Collection& parent,
                           providers::SearchContext& sctx)
 {
-    const QString game_path = fileinfo.canonicalFilePath();
-    Q_ASSERT(!game_path.isEmpty());
-    if (!sctx.path_to_gameid.count(game_path)) {
-        // This means there weren't any game entries with matching file entry
-        // in any of the parsed metadata files. There is no existing game data
-        // created yet either.
-        modeldata::Game game(fileinfo);
-        game.launch_cmd = parent.launch_cmd;
-        game.launch_workdir = parent.launch_workdir;
-        game.relative_basedir = parent.relative_basedir;
-
-        const size_t game_id = sctx.games.size();
-        sctx.path_to_gameid.emplace(game_path, game_id);
-        sctx.games.emplace(game_id, std::move(game));
-    }
-    const size_t game_id = sctx.path_to_gameid.at(game_path);
-    sctx.collection_childs[parent.name].emplace_back(game_id);
+    const auto entry = sctx.add_or_create_game_for(fileinfo, parent);
 
     // When a game was defined earlier than its collection
-    modeldata::Game& game = sctx.games.at(game_id);
-    if (game.launch_cmd.isEmpty())
-        game.launch_cmd = parent.launch_cmd;
-    if (game.launch_workdir.isEmpty())
-        game.launch_workdir = parent.launch_workdir;
-    if (game.relative_basedir.isEmpty())
-        game.relative_basedir = parent.relative_basedir;
+    model::Game& game = *entry.second;
+    if (game.launchCmd().isEmpty())
+        game.setLaunchCmd(parent.commonLaunchCmd());
+    if (game.launchWorkdir().isEmpty())
+        game.setLaunchWorkdir(parent.commonLaunchWorkdir());
+    if (game.launchCmdBasedir().isEmpty())
+        game.setLaunchCmdBasedir(parent.commonLaunchCmdBasedir());
 }
 } // namespace
 
@@ -150,7 +134,7 @@ void tidy_filters(std::vector<FileFilter>& filters)
 
 void process_filter(const FileFilter& filter, providers::SearchContext& sctx)
 {
-    const modeldata::Collection& collection = sctx.collections.at(filter.collection_key);
+    model::Collection& collection = *sctx.collections.at(filter.collection_key);
 
     const std::vector<QString> include_files = resolve_filelist(filter.include.files, filter.directories);
     const std::vector<QString> exclude_files = resolve_filelist(filter.exclude.files, filter.directories);

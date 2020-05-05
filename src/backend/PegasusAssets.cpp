@@ -81,10 +81,10 @@ AssetType str_to_type(const QString& str)
         { QStringLiteral("background"), AssetType::BACKGROUND },
         { QStringLiteral("music"), AssetType::MUSIC },
 
-        { QStringLiteral("screenshot"), AssetType::SCREENSHOTS },
-        { QStringLiteral("screenshots"), AssetType::SCREENSHOTS },
-        { QStringLiteral("video"), AssetType::VIDEOS },
-        { QStringLiteral("videos"), AssetType::VIDEOS },
+        { QStringLiteral("screenshot"), AssetType::SCREENSHOT },
+        { QStringLiteral("screenshots"), AssetType::SCREENSHOT },
+        { QStringLiteral("video"), AssetType::VIDEO },
+        { QStringLiteral("videos"), AssetType::VIDEO },
     };
 
     const auto it = map.find(str);
@@ -99,9 +99,9 @@ AssetType ext_to_type(const QString& ext)
     static const HashMap<QString, AssetType> map {
         { QStringLiteral("png"), AssetType::BOX_FRONT },
         { QStringLiteral("jpg"), AssetType::BOX_FRONT },
-        { QStringLiteral("webm"), AssetType::VIDEOS },
-        { QStringLiteral("mp4"), AssetType::VIDEOS },
-        { QStringLiteral("avi"), AssetType::VIDEOS },
+        { QStringLiteral("webm"), AssetType::VIDEO },
+        { QStringLiteral("mp4"), AssetType::VIDEO },
+        { QStringLiteral("avi"), AssetType::VIDEO },
         { QStringLiteral("mp3"), AssetType::MUSIC },
         { QStringLiteral("ogg"), AssetType::MUSIC },
         { QStringLiteral("wav"), AssetType::MUSIC },
@@ -124,7 +124,7 @@ const QStringList& allowed_asset_exts(AssetType type)
     switch (type) {
         case AssetType::UNKNOWN:
             return empty_list;
-        case AssetType::VIDEOS:
+        case AssetType::VIDEO:
             return video_exts;
         case AssetType::MUSIC:
             return audio_exts;
