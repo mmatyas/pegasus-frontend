@@ -19,9 +19,37 @@
 
 
 namespace model {
-GameFile::GameFile(modeldata::GameFile data, QObject* parent)
+QString pretty_filename(const QFileInfo& fi)
+{
+    return fi.completeBaseName()
+        .replace(QLatin1Char('_'), QLatin1Char(' '))
+        .replace(QLatin1Char('.'), QLatin1Char(' '));
+}
+
+
+GameFileData::GameFileData(QFileInfo fi)
+    : fileinfo(std::move(fi))
+    , name(pretty_filename(fileinfo))
+{}
+
+GameFileData::GameFileData(QFileInfo fi, QString name)
+    : fileinfo(std::move(fi))
+    , name(std::move(name))
+{}
+
+bool GameFileData::operator==(const GameFileData& other) const {
+    return fileinfo == other.fileinfo;
+}
+
+
+GameFile::GameFile(QFileInfo finfo, QObject* parent)
     : QObject(parent)
-    , m_data(std::move(data))
+    , m_data(std::move(finfo))
+{}
+
+GameFile::GameFile(QFileInfo finfo, QString name, QObject* parent)
+    : QObject(parent)
+    , m_data(std::move(finfo), std::move(name))
 {}
 
 void GameFile::launch()
@@ -29,21 +57,11 @@ void GameFile::launch()
     emit launchRequested();
 }
 
-// This one is for summing the play times provided by multiple Providers.
-void GameFile::addPlayStats(int playcount, qint64 playtime, const QDateTime& last_played)
+void GameFile::update_playstats(int playcount, qint64 playtime, QDateTime last_played)
 {
-    m_data.last_played = std::max(m_data.last_played, last_played);
-    m_data.play_time += playtime;
-    m_data.play_count += playcount;
-    emit playStatsChanged();
-}
-
-// This one is a single update for playtime when the game finishes.
-void GameFile::updatePlayTime(qint64 duration, QDateTime time_finished)
-{
-    m_data.last_played = std::move(time_finished);
-    m_data.play_time += duration;
-    m_data.play_count++;
+    m_data.playstats.last_played = std::max(m_data.playstats.last_played, std::move(last_played));
+    m_data.playstats.play_time += playtime;
+    m_data.playstats.play_count += playcount;
     emit playStatsChanged();
 }
 } // namespace model

@@ -17,44 +17,73 @@
 
 #pragma once
 
-#include "modeldata/GameFileData.h"
+#include "utils/MoveOnly.h"
 
+#include <QDateTime>
+#include <QFileInfo>
 #include <QObject>
 #include <QString>
 
 
 namespace model {
+QString pretty_filename(const QFileInfo& fi);
+
+
+struct GameFileData {
+    explicit GameFileData(QFileInfo);
+    explicit GameFileData(QFileInfo, QString);
+
+    const QFileInfo fileinfo;
+    QString name;
+
+    // TODO: in the future...
+    // QString summary;
+    // QString description;
+    // QString launch_cmd;
+    // QString launch_workdir;
+
+    bool operator==(const GameFileData&) const;
+
+    struct PlayStats {
+        QDateTime last_played;
+        qint64 play_time = 0;
+        int play_count = 0;
+    } playstats;
+};
+
+
 class GameFile : public QObject {
     Q_OBJECT
+
+public:
+    const QString& name() const { return m_data.name; }
+    GameFile& setName(QString val) { m_data.name = std::move(val); return *this; }
+    QString path() const { return m_data.fileinfo.filePath(); }
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString path READ path CONSTANT)
+
+    int playCount() const { return m_data.playstats.play_count; }
+    qint64 playTime() const { return m_data.playstats.play_time; }
+    const QDateTime& lastPlayed() const { return m_data.playstats.last_played; }
     Q_PROPERTY(int playCount READ playCount NOTIFY playStatsChanged)
     Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
 
+    const QFileInfo& fileinfo() const { return m_data.fileinfo; }
+
 public:
-    explicit GameFile(modeldata::GameFile, QObject*);
+    explicit GameFile(QFileInfo, QObject*);
+    explicit GameFile(QFileInfo, QString, QObject*);
 
     Q_INVOKABLE void launch();
 
-    const modeldata::GameFile& data() const { return m_data; }
-
-public:
-    const QString& name() const { return m_data.name; }
-    QString path() const { return m_data.fileinfo.filePath(); }
-    int playCount() const { return m_data.play_count; }
-    qint64 playTime() const { return m_data.play_time; }
-    QDateTime lastPlayed() const { return m_data.last_played; }
-
-public:
-    void addPlayStats(int playcount, qint64 playtime, const QDateTime& last_played);
-    void updatePlayTime(qint64 duration, QDateTime time_finished);
+    void update_playstats(int playcount, qint64 playtime, QDateTime last_played);
 
 signals:
     void launchRequested();
     void playStatsChanged();
 
 private:
-    modeldata::GameFile m_data;
+    GameFileData m_data;
 };
 } // namespace model
