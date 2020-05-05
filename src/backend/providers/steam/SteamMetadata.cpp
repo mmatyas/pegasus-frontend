@@ -19,8 +19,8 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
 #include "utils/CommandTokenizer.h"
 
@@ -65,7 +65,7 @@ QString find_steam_call()
 struct SteamGameEntry {
     QString title;
     QString appid;
-    modeldata::Game* game_ptr { nullptr };
+    model::Game* game_ptr { nullptr };
 
     bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
 };
@@ -103,7 +103,7 @@ SteamGameEntry read_manifest(const QString& manifest_path)
     return entry;
 }
 
-bool read_json(modeldata::Game& game, const QJsonDocument& json)
+bool read_json(model::Game& game, const QJsonDocument& json)
 {
     if (json.isNull())
         return false;
@@ -126,12 +126,11 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
     // now the actual field reading
 
-    modeldata::GameAssets& assets = game.assets;
+    model::Assets& assets = game.assets();
 
-    game.title = app_data[QLatin1String("name")].toString();
-
-    game.summary = app_data[QLatin1String("short_description")].toString();
-    game.description = app_data[QLatin1String("about_the_game")].toString();
+    game.setTitle(app_data[QLatin1String("name")].toString())
+        .setSummary(app_data[QLatin1String("short_description")].toString())
+        .setDescription(app_data[QLatin1String("about_the_game")].toString());
 
     const auto reldate_obj = app_data[QLatin1String("release_date")].toObject();
     if (!reldate_obj.isEmpty()) {
@@ -140,27 +139,27 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
         // FIXME: the date format will likely fail for non-English locales (see Qt docs)
         const QDateTime datetime(QDateTime::fromString(date_str, QLatin1String("d MMM, yyyy")));
         if (datetime.isValid())
-            game.release_date = datetime.date();
+            game.setReleaseDate(datetime.date());
     }
 
     const QString header_image = app_data[QLatin1String("header_image")].toString();
-    assets.setSingle(AssetType::LOGO, header_image);
-    assets.setSingle(AssetType::UI_STEAMGRID, header_image);
-    assets.setSingle(AssetType::BOX_FRONT, header_image);
+    assets.add_url(AssetType::LOGO, header_image);
+    assets.add_url(AssetType::UI_STEAMGRID, header_image);
+    assets.add_url(AssetType::BOX_FRONT, header_image);
 
     const QJsonArray developer_arr = app_data[QLatin1String("developers")].toArray();
     for (const auto& arr_entry : developer_arr)
-        game.developers.append(arr_entry.toString());
+        game.developerList().append(arr_entry.toString());
 
     const QJsonArray publisher_arr = app_data[QLatin1String("publishers")].toArray();
     for (const auto& arr_entry : publisher_arr)
-        game.publishers.append(arr_entry.toString());
+        game.publisherList().append(arr_entry.toString());
 
     const auto metacritic_obj = app_data[QLatin1String("metacritic")].toObject();
     if (!metacritic_obj.isEmpty()) {
         const double score = metacritic_obj[QLatin1String("score")].toDouble(-1);
         if (0.0 <= score && score <= 100.0)
-            game.rating = static_cast<float>(score / 100.0);
+            game.setRating(static_cast<float>(score / 100.0));
     }
 
     const auto genre_arr = app_data[QLatin1String("genres")].toArray();
@@ -171,7 +170,7 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
         const QString genre = genre_obj[QLatin1String("description")].toString();
         if (!genre.isEmpty())
-            game.genres.append(genre);
+            game.genreList().append(genre);
     }
 
     const auto category_arr = app_data[QLatin1String("categories")].toArray();
@@ -182,12 +181,12 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
         const QString category = cat_obj[QLatin1String("description")].toString();
         if (!category.isEmpty())
-            game.tags.append(category);
+            game.tagList().append(category);
     }
 
     const QString background_image = app_data[QLatin1String("background")].toString();
     if (!background_image.isEmpty())
-        assets.setSingle(AssetType::BACKGROUND, background_image);
+        assets.add_url(AssetType::BACKGROUND, background_image);
 
     const auto screenshots_arr = app_data[QLatin1String("screenshots")].toArray();
     for (const auto& arr_entry : screenshots_arr) {
@@ -197,7 +196,7 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
         const QString thumb_path = screenshot_obj[QLatin1String("path_thumbnail")].toString();
         if (!thumb_path.isEmpty())
-            assets.appendMulti(AssetType::SCREENSHOTS, thumb_path);
+            assets.add_url(AssetType::SCREENSHOT, thumb_path);
     }
 
     const auto movies_arr = app_data[QLatin1String("movies")].toArray();
@@ -212,7 +211,7 @@ bool read_json(modeldata::Game& game, const QJsonDocument& json)
 
         const QString p480_path = webm_obj[QLatin1String("480")].toString();
         if (!p480_path.isEmpty())
-            assets.appendMulti(AssetType::VIDEOS, p480_path);
+            assets.add_url(AssetType::VIDEO, p480_path);
     }
 
     return true;
@@ -316,30 +315,32 @@ Metadata::Metadata(QObject* parent)
 void Metadata::enhance(providers::SearchContext& sctx)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
-    if (!sctx.collection_childs.count(STEAM_TAG))
+
+    const auto slot = sctx.collections.find(STEAM_TAG);
+    if (slot == sctx.collections.end())
         return;
 
-    const std::vector<size_t>& childs = sctx.collection_childs.at(STEAM_TAG);
+    const model::Collection& coll = *slot->second;
     const QString steam_call = find_steam_call();
 
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
 
-    for (const size_t game_idx : childs) {
-        modeldata::Game& game = sctx.games.at(game_idx);
+    for (model::Game* const game_ptr : coll.gamesConst()) {
+        model::Game& game = *game_ptr;
 
         // Steam games can have only one manifest file
-        Q_ASSERT(game.files.size() == 1);
-        const QString path = game.files.cbegin()->fileinfo.absoluteFilePath();
+        Q_ASSERT(game.filesConst().size() == 1);
+        const QString path = game.filesConst().first()->fileinfo().absoluteFilePath();
 
         SteamGameEntry entry = read_manifest(path);
         if (!entry.appid.isEmpty()) {
             if (entry.title.isEmpty())
                 entry.title = QLatin1String("App #") % entry.appid;
 
-            game.title = entry.title;
-            game.launch_cmd = steam_call % QLatin1String(" steam://rungameid/") % entry.appid;
+            game.setTitle(entry.title);
+            game.setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % entry.appid);
             entry.game_ptr = &game;
 
             entries.push_back(std::move(entry));

@@ -19,8 +19,8 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
 
 #include <QDebug>
 #include <QDir>
@@ -120,7 +120,7 @@ bool should_ignore(const QString& filename)
 }
 
 void register_appmanifests(providers::SearchContext& sctx,
-                           std::vector<size_t>& collection_childs,
+                           model::Collection& collection,
                            const std::vector<QString>& installdirs)
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
@@ -132,20 +132,11 @@ void register_appmanifests(providers::SearchContext& sctx,
         while (dir_it.hasNext()) {
             dir_it.next();
 
-            const QFileInfo fileinfo = dir_it.fileInfo();
+            QFileInfo fileinfo = dir_it.fileInfo();
             if (should_ignore(fileinfo.fileName()))
                 continue;
 
-            const QString game_path = fileinfo.canonicalFilePath();
-            if (!sctx.path_to_gameid.count(game_path)) {
-                modeldata::Game game(fileinfo);
-                const size_t game_id = sctx.games.size();
-                sctx.path_to_gameid.emplace(game_path, game_id);
-                sctx.games.emplace(game_id, std::move(game));
-            }
-
-            const size_t game_id = sctx.path_to_gameid.at(game_path);
-            collection_childs.emplace_back(game_id);
+            sctx.add_or_create_game_for(std::move(fileinfo), collection);
         }
     }
 }
@@ -172,14 +163,10 @@ void Gamelist::find(providers::SearchContext& sctx)
         return;
     }
 
-    const QString STEAM_TAG(QStringLiteral("Steam"));
-    if (!sctx.collections.count(STEAM_TAG))
-        sctx.collections.emplace(STEAM_TAG, modeldata::Collection(STEAM_TAG));
-
-    std::vector<size_t>& childs = sctx.collection_childs[STEAM_TAG];
+    model::Collection& coll = *sctx.get_or_create_collection(QStringLiteral("Steam"));
 
     const size_t game_count_before = sctx.games.size();
-    register_appmanifests(sctx, childs, installdirs);
+    register_appmanifests(sctx, coll, installdirs);
     if (game_count_before != sctx.games.size())
         emit gameCountChanged(static_cast<int>(sctx.games.size()));
 }
