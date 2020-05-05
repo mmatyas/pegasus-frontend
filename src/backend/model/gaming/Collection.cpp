@@ -20,17 +20,22 @@
 
 namespace model {
 
-Collection::Collection(modeldata::Collection collection, QObject* parent)
-    : QObject(parent)
-    , m_games(this)
-    , m_collection(std::move(collection))
-    , m_assets(&m_collection.assets, this)
+CollectionData::CollectionData(QString new_name)
+    : name(std::move(new_name))
+    , m_short_name(name.toLower())
 {}
 
-void Collection::setGameList(QVector<Game*> games)
+void CollectionData::set_short_name(const QString& name)
 {
-    m_games.clear();
-    m_games.append(std::move(games));
+    Q_ASSERT(!name.isEmpty());
+    m_short_name = name.toLower();
 }
+
+Collection::Collection(QString name, QObject* parent)
+    : QObject(parent)
+    , m_games(new QQmlObjectListModel<model::Game>(this))
+    , m_data(name)
+    , m_assets(new model::Assets(this))
+{}
 
 } // namespace model

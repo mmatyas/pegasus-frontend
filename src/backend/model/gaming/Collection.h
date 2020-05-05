@@ -17,43 +17,82 @@
 
 #pragma once
 
+#include "Assets.h"
 #include "Game.h"
-#include "GameAssets.h"
-#include "modeldata/CollectionData.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QString>
-#include <QVector>
 
 namespace model { class Game; }
 
 
 namespace model {
+struct CollectionData {
+    explicit CollectionData(QString name);
+
+    const QString name;
+    QString summary;
+    QString description;
+
+    QString common_launch_cmd;
+    QString common_launch_workdir;
+    QString common_relative_basedir;
+
+    void set_short_name(const QString&);
+    const QString& short_name() const { return m_short_name; }
+
+private:
+    QString m_short_name;
+};
+
+
 class Collection : public QObject {
     Q_OBJECT
+
+public:
+#define GETTER(type, name, field) \
+    type name() const { return m_data.field; }
+
+    GETTER(const QString&, name, name)
+    GETTER(const QString&, shortName, short_name())
+    GETTER(const QString&, summary, summary)
+    GETTER(const QString&, description, description)
+    GETTER(const QString&, commonLaunchCmd, common_launch_cmd)
+    GETTER(const QString&, commonLaunchWorkdir, common_launch_workdir)
+    GETTER(const QString&, commonLaunchCmdBasedir, common_relative_basedir)
+#undef GETTER
+
+
+#define SETTER(type, name, field) \
+    Collection& set##name(type val) { m_data.field = std::move(val); return *this; }
+
+    SETTER(QString, Summary, summary)
+    SETTER(QString, Description, description)
+    SETTER(QString, CommonLaunchCmd, common_launch_cmd)
+    SETTER(QString, CommonLaunchWorkdir, common_launch_workdir)
+    SETTER(QString, CommonLaunchCmdBasedir, common_relative_basedir)
+    Collection& setShortName(QString val) { m_data.set_short_name(std::move(val)); return *this; }
+#undef SETTER
+
 
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
-    Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
+
+
+    Assets& assets() { return *m_assets; }
+    Assets* assetsPtr() { return m_assets; }
+    Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
+
+    const QVector<model::Game*>& gamesConst() const { return m_games->asList(); }
     QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
-    explicit Collection(modeldata::Collection, QObject* parent = nullptr);
-
-    void setGameList(QVector<Game*>);
-
-public:
-    const QString& name() const { return m_collection.name; }
-    const QString& shortName() const { return m_collection.shortName(); }
-    const QString& summary() const { return m_collection.summary; }
-    const QString& description() const { return m_collection.description; }
-
-    GameAssets* assetsPtr() { return &m_assets; }
+    explicit Collection(QString name, QObject* parent = nullptr);
 
 private:
-    modeldata::Collection m_collection;
-    GameAssets m_assets;
+    CollectionData m_data;
+    Assets* const m_assets;
 };
 } // namespace model
