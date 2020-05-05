@@ -18,6 +18,7 @@
 #include "LutrisProvider.h"
 
 #include "LocaleUtils.h"
+#include "model/gaming/Game.h"
 #include "utils/SqliteDb.h"
 
 #include <QDebug>
@@ -46,7 +47,7 @@ QString find_datadir()
     return {};
 }
 
-void find_banner_for(modeldata::Game& game, const QString& slug, const QString& base_path)
+void find_banner_for(model::Game& game, const QString& slug, const QString& base_path)
 {
     const std::array<QLatin1String, 2> exts {
         QLatin1String(".png"),
@@ -55,29 +56,18 @@ void find_banner_for(modeldata::Game& game, const QString& slug, const QString& 
     for (const QLatin1String& ext : exts) {
         QString path = base_path % slug % ext;
         if (QFileInfo::exists(path)) {
-            game.assets.addFileMaybe(AssetType::UI_STEAMGRID, path);
+            game.assets().add_file(AssetType::UI_STEAMGRID, path);
             return;
         }
     }
 }
 
-void find_icon_for(modeldata::Game& game, const QString& slug, const QString& base_path)
+void find_icon_for(model::Game& game, const QString& slug, const QString& base_path)
 {
     const QString path = base_path % slug % QLatin1String(".png");
     if (QFileInfo::exists(path))
-        game.assets.addFileMaybe(AssetType::UI_TILE, path);
+        game.assets().add_file(AssetType::UI_TILE, path);
 }
-
-void register_game(
-    modeldata::Game&& game, QString&& path,
-    providers::SearchContext& sctx, std::vector<size_t>& collection_childs)
-{
-    const size_t game_id = sctx.games.size();
-    sctx.path_to_gameid.emplace(std::move(path), game_id);
-    sctx.games.emplace(game_id, std::move(game));
-    collection_childs.emplace_back(game_id);
-}
-
 } // namespace
 
 
@@ -117,10 +107,7 @@ void LutrisProvider::findLists(SearchContext& sctx)
     }
 
 
-    const QString COLLECTION_TAG(QStringLiteral("Lutris"));
-    std::vector<size_t>& collection_childs = sctx.collection_childs[COLLECTION_TAG];
-    if (!sctx.collections.count(COLLECTION_TAG))
-        sctx.collections.emplace(COLLECTION_TAG, modeldata::Collection(COLLECTION_TAG));
+    model::Collection& collection = *sctx.get_or_create_collection(QStringLiteral("Lutris"));
 
     using QSP = QStandardPaths;
     const QString base_path_banners = datadir + QLatin1String("banners/");
@@ -135,14 +122,13 @@ void LutrisProvider::findLists(SearchContext& sctx)
         const QString title = query.value(2).toString();
         QString protocol_id = QLatin1String("lutris:") + slug;
 
-        modeldata::Game game { QFileInfo(protocol_id) };
-        game.title = title;
-        game.launch_cmd = QLatin1String("lutris rungameid/") + id_str;
+        const auto slot = sctx.add_or_create_game_for(QFileInfo(protocol_id), collection);
+        model::Game& game = *slot.second;
+        game.setTitle(title);
+        game.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
 
         find_banner_for(game, slug, base_path_banners);
         find_icon_for(game, slug, base_path_icons);
-
-        register_game(std::move(game), std::move(protocol_id), sctx, collection_childs);
     }
     if (game_count_before != sctx.games.size())
         emit gameCountChanged(static_cast<int>(sctx.games.size()));
