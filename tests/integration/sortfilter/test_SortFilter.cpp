@@ -54,7 +54,7 @@ private:
 
         qmlRegisterUncreatableType<model::Collection>(api, 1, 0, "Collection", err);
         qmlRegisterUncreatableType<model::Game>(api, 1, 0, "Game", err);
-        qmlRegisterUncreatableType<model::GameAssets>(api, 1, 0, "GameAssets", err);
+        qmlRegisterUncreatableType<model::Assets>(api, 1, 0, "Assets", err);
 
         qqsfpm::registerSorterTypes();
         qqsfpm::registerFiltersTypes();
@@ -64,12 +64,12 @@ private:
 
     void create_model() {
         QVector<model::Game*> games = {
-            new model::Game(modeldata::Game(QFileInfo("ccc"))),
-            new model::Game(modeldata::Game(QFileInfo("aaa"))),
-            new model::Game(modeldata::Game(QFileInfo("bbb"))),
+            new model::Game(QFileInfo("ccc"), this),
+            new model::Game(QFileInfo("aaa"), this),
+            new model::Game(QFileInfo("bbb"), this),
         };
-        auto collection = new model::Collection(modeldata::Collection("test"), this);
-        collection->setGameList(std::move(games));
+        auto collection = new model::Collection("test", this);
+        collection->games()->append(std::move(games));
 
         m_collection_model.append(collection);
     }
