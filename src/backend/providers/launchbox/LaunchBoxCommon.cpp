@@ -67,11 +67,11 @@ Literals::Literals()
         { QStringLiteral("Fanart - Cart - Front"), AssetType::CARTRIDGE },
         { QStringLiteral("Fanart - Disc"), AssetType::CARTRIDGE },
 
-        { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOTS },
-        { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOTS },
+        { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOT },
+        { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOT },
+        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOT },
+        { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOT },
+        { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOT },
 
         { QStringLiteral("Advertisement Flyer - Front"), AssetType::POSTER },
         { QStringLiteral("Arcade - Control Panel"), AssetType::ARCADE_PANEL },

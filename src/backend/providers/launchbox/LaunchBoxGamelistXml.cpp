@@ -19,6 +19,7 @@
 
 #include "LaunchBoxCommon.h"
 #include "LocaleUtils.h"
+#include "model/gaming/Game.h"
 
 #include <QDebug>
 #include <QDir>
@@ -29,7 +30,7 @@
 namespace providers {
 namespace launchbox {
 
-void add_raw_asset_maybe(modeldata::GameAssets& assets, const AssetType type,
+void add_raw_asset_maybe(model::Assets& assets, const AssetType type,
                          const QString& lb_root, const QString& path)
 {
     QString can_path = QFileInfo(lb_root, path).canonicalFilePath();
@@ -39,7 +40,7 @@ void add_raw_asset_maybe(modeldata::GameAssets& assets, const AssetType type,
         return;
     }
 
-    assets.addFileMaybe(type, std::move(can_path));
+    assets.add_file(type, std::move(can_path));
 }
 
 void store_addiapp(
@@ -51,18 +52,18 @@ void store_addiapp(
     const QFileInfo finfo(lb_dir, fields.at(AdditionalAppField::PATH));
     const auto name_it = fields.find(AdditionalAppField::NAME);
 
-    modeldata::Game& game = sctx.games.at(gameid);
+    model::Game& game = *sctx.games.at(gameid);
 
-    auto file_it = std::find_if(game.files.begin(), game.files.end(),
-        [&finfo](const modeldata::GameFile& gf){ return gf.fileinfo == finfo; });
+    auto file_it = std::find_if(game.filesConst().begin(), game.filesConst().end(),
+        [&finfo](const model::GameFile* const gf){ return gf->fileinfo() == finfo; });
 
     // if it refers to an existing path, do not duplicate, just try to give it a name
-    if (file_it == game.files.end()) {
-        game.files.emplace_back(std::move(finfo));
-        file_it = std::prev(game.files.end());
+    if (file_it == game.filesConst().end()) {
+        game.addFile(std::move(finfo));
+        file_it = std::prev(game.filesConst().end());
     }
     if (name_it != fields.cend())
-        file_it->name = name_it->second;
+        (*file_it)->setName(name_it->second);
 
     sctx.path_to_gameid.emplace(finfo.canonicalFilePath(), gameid);
 }
@@ -126,7 +127,7 @@ void store_game_fields(
     const QString& lb_dir,
     const HashMap<EmulatorId, Emulator>& emulators,
     const HashMap<GameField, QString, EnumHash>& fields,
-    modeldata::Game& game)
+    model::Game& game)
 {
     EmulatorId emu_id;
     QString emu_params;
@@ -135,41 +136,42 @@ void store_game_fields(
     for (const auto& pair : fields) {
         switch (pair.first) {
             case GameField::TITLE:
-                game.title = pair.second;
+                if (game.title().isEmpty())
+                    game.setTitle(pair.second);
                 break;
             case GameField::NOTES:
-                if (game.description.isEmpty())
-                    game.description = pair.second;
+                if (game.description().isEmpty())
+                    game.setDescription(pair.second);
                 break;
             case GameField::DEVELOPER:
-                game.developers.append(pair.second);
-                game.developers.removeDuplicates();
+                game.developerList().append(pair.second);
+                game.developerList().removeDuplicates();
                 break;
             case GameField::PUBLISHER:
-                game.publishers.append(pair.second);
-                game.publishers.removeDuplicates();
+                game.publisherList().append(pair.second);
+                game.publisherList().removeDuplicates();
                 break;
             case GameField::GENRE:
-                game.genres.append(pair.second);
-                game.genres.removeDuplicates();
+                game.genreList().append(pair.second);
+                game.genreList().removeDuplicates();
                 break;
             case GameField::RELEASE:
-                if (!game.release_date.isValid())
-                    game.release_date = QDate::fromString(pair.second, Qt::ISODate);
+                if (!game.releaseDate().isValid())
+                    game.setReleaseDate(QDate::fromString(pair.second, Qt::ISODate));
                 break;
             case GameField::STARS:
-                if (game.rating < 0.0001f) {
+                if (game.rating() < 0.0001f) {
                     bool ok = false;
                     const float fval = pair.second.toFloat(&ok);
-                    if (ok && fval > game.rating)
-                        game.rating = fval;
+                    if (ok && fval > game.rating())
+                        game.setRating(fval);
                 }
                 break;
             case GameField::PLAYMODE:
                 for (const QStringRef& ref : pair.second.splitRef(QChar(';')))
-                    game.genres.append(ref.trimmed().toString());
+                    game.genreList().append(ref.trimmed().toString());
 
-                game.genres.removeDuplicates();
+                game.genreList().removeDuplicates();
                 break;
             case GameField::EMULATOR_ID:
                 emu_id = pair.second;
@@ -181,10 +183,10 @@ void store_game_fields(
                 emu_params = pair.second;
                 break;
             case GameField::ASSETPATH_VIDEO:
-                add_raw_asset_maybe(game.assets, AssetType::VIDEOS, lb_dir, pair.second);
+                add_raw_asset_maybe(game.assets(), AssetType::VIDEO, lb_dir, pair.second);
                 break;
             case GameField::ASSETPATH_MUSIC:
-                add_raw_asset_maybe(game.assets, AssetType::MUSIC, lb_dir, pair.second);
+                add_raw_asset_maybe(game.assets(), AssetType::MUSIC, lb_dir, pair.second);
                 break;
             case GameField::ID:
             case GameField::PATH:
@@ -197,8 +199,8 @@ void store_game_fields(
     }
 
     if (emu_id.isEmpty()) {
-        game.launch_cmd = QStringLiteral("{file.path}");
-        game.launch_workdir = QFileInfo(fields.at(GameField::PATH)).absolutePath();
+        game.setLaunchCmd(QStringLiteral("{file.path}"));
+        game.setLaunchWorkdir(QFileInfo(fields.at(GameField::PATH)).absolutePath());
         return;
     }
 
@@ -216,8 +218,8 @@ void store_game_fields(
                 emu_params = emu_platform_it->cmd_params;
         }
     }
-    game.launch_cmd = QStringLiteral("\"%1\" %2 {file.path}").arg(emu.app_path, emu_params);
-    game.launch_workdir = QFileInfo(emu.app_path).absolutePath();
+    game.setLaunchCmd(QStringLiteral("\"%1\" %2 {file.path}").arg(emu.app_path, emu_params));
+    game.setLaunchWorkdir(QFileInfo(emu.app_path).absolutePath());
 }
 
 size_t store_game(
@@ -225,27 +227,15 @@ size_t store_game(
     const HashMap<EmulatorId, Emulator>& emulators,
     const HashMap<GameField, QString, EnumHash>& fields,
     providers::SearchContext& sctx,
-    std::vector<size_t>& collection_childs)
+    model::Collection& collection)
 {
     const QFileInfo finfo(lb_dir, fields.at(GameField::PATH));
     const QString can_path = finfo.canonicalFilePath();
 
-    if (!sctx.path_to_gameid.count(can_path)) {
-        modeldata::Game game(finfo);
+    auto entry = sctx.add_or_create_game_for(std::move(finfo), collection);
+    store_game_fields(lb_dir, emulators, fields, *entry.second);
 
-        store_game_fields(lb_dir, emulators, fields, game);
-        if (game.launch_cmd.isEmpty())
-            qWarning().noquote() << MSG_PREFIX << tr_log("game '%1' has no launch command").arg(game.title);
-
-        const size_t game_id = sctx.games.size();
-        sctx.path_to_gameid.emplace(can_path, game_id);
-        sctx.games.emplace(game_id, std::move(game));
-    }
-
-    const size_t game_id = sctx.path_to_gameid.at(can_path);
-    collection_childs.emplace_back(game_id);
-
-    return game_id;
+    return entry.first;
 }
 
 bool game_fields_valid(
@@ -342,10 +332,7 @@ void read(
         return;
     }
 
-
-    std::vector<size_t>& collection_childs = sctx.collection_childs[platform_name];
-    if (sctx.collections.find(platform_name) == sctx.collections.end())
-        sctx.collections.emplace(platform_name, modeldata::Collection(platform_name));
+    model::Collection& collection = *sctx.get_or_create_collection(platform_name);
 
     // should be handled after all games have been found
     std::vector<HashMap<AdditionalAppField, QString, EnumHash>> addiapps;
@@ -359,7 +346,7 @@ void read(
         if (xml.name() == QLatin1String("Game")) {
             const HashMap<GameField, QString, EnumHash> fields = read_game(xml, literals);
             if (game_fields_valid(xml, lb_dir, xml_rel_path, emulators, fields)) {
-                const size_t gameid = store_game(lb_dir, emulators, fields, sctx, collection_childs);
+                const size_t gameid = store_game(lb_dir, emulators, fields, sctx, collection);
                 gameid_map.emplace(fields.at(GameField::ID), gameid);
             }
             continue;
