@@ -39,40 +39,26 @@ void sort_q_collections(QVector<model::Collection*>& collections)
     );
 }
 
-void build_ui_layer(providers::SearchContext& sctx,
-                    QQmlObjectListModel<model::Game>& game_model,
-                    QQmlObjectListModel<model::Collection>& collection_model)
+void fill_game_model(providers::SearchContext& sctx, QQmlObjectListModel<model::Game>& model)
 {
-    HashMap<size_t, model::Game*> q_game_map;
-    q_game_map.reserve(sctx.games.size());
+    QObject* const parent = model.parent();
 
+    QVector<model::Game*> items;
+    items.reserve(static_cast<int>(sctx.games.size()));
     for (auto& keyval : sctx.games) {
-        auto q_game = new model::Game(std::move(keyval.second));
-        q_game_map.emplace(keyval.first, q_game);
+        model::Game* const game = keyval.second;
+
+        Q_ASSERT(game->parent() == nullptr);
+        game->setParent(parent);
+
+        items.append(game);
     }
 
-    QVector<model::Game*> q_game_list;
-    q_game_list.reserve(static_cast<int>(sctx.games.size()));
-    for (auto& keyval : q_game_map)
-        q_game_list.append(keyval.second);
+    sort_q_games(items);
+    model.append(std::move(items));
 
-    sort_q_games(q_game_list);
-    game_model.append(q_game_list);
-
-
-    QVector<model::Collection*> q_collections;
-    q_collections.reserve(static_cast<int>(sctx.collections.size()));
-
-    for (auto& keyval : sctx.collections) {
-        auto q_coll = new model::Collection(std::move(keyval.second));
-        q_collections.append(q_coll);
-    }
-
-    sort_q_collections(q_collections);
-    collection_model.append(q_collections);
-
-
-    for (model::Collection* const q_coll : q_collections) {
+    // TODO: re-add game sorting and deduplication
+    /*for (model::Collection* const q_coll : q_collection_list) {
         Q_ASSERT(sctx.collection_childs.count(q_coll->name()));
         const std::vector<size_t>& game_ids = sctx.collection_childs[q_coll->name()];
 
@@ -86,13 +72,34 @@ void build_ui_layer(providers::SearchContext& sctx,
 
         sort_q_games(q_childs);
         q_coll->setGameList(q_childs);
+     }*/
+ }
+
+void fill_collection_model(providers::SearchContext& sctx, QQmlObjectListModel<model::Collection>& model)
+{
+    QObject* const parent = model.parent();
+
+    QVector<model::Collection*> items;
+    items.reserve(static_cast<int>(sctx.collections.size()));
+    for (auto& keyval : sctx.collections) {
+        model::Collection* const coll = keyval.second;
+
+        Q_ASSERT(coll->parent() == nullptr);
+        coll->setParent(parent);
+
+        items.append(coll);
     }
+
+    sort_q_collections(items);
+    model.append(std::move(items));
 }
 } // namespace
 
 
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
+    , m_collections(new QQmlObjectListModel<model::Collection>(this))
+    , m_allGames(new QQmlObjectListModel<model::Game>(this))
     , m_launch_game_file(nullptr)
     , m_providerman(this)
 {
@@ -125,17 +132,18 @@ void ApiObject::startScanning()
     m_internal.meta().startLoading();
     emit eventLoadingStarted();
 
-    m_collections.clear();
-    m_allGames.clear();
+    m_collections->clear();
+    m_allGames->clear();
 
     m_providerman.startStaticSearch(m_providerman_sctx);
 }
 
 void ApiObject::onStaticDataLoaded()
 {
-    build_ui_layer(m_providerman_sctx, m_allGames, m_collections);
+    fill_game_model(m_providerman_sctx, *m_allGames);
+    fill_collection_model(m_providerman_sctx, *m_collections);
 
-    for (model::Game* const game : qAsConst(m_allGames)) {
+    for (model::Game* const game : qAsConst(*m_allGames)) {
         connect(game, &model::Game::launchFileSelectorRequested,
                 this, &ApiObject::onGameFileSelectorRequested);
         connect(game, &model::Game::favoriteChanged,
@@ -148,10 +156,10 @@ void ApiObject::onStaticDataLoaded()
     }
 
     m_internal.meta().onUiReady();
-    qInfo().noquote() << tr_log("%1 games found").arg(m_allGames.count());
+    qInfo().noquote() << tr_log("%1 games found").arg(m_allGames->count());
 
     m_providerman_sctx = providers::SearchContext();
-    m_providerman.startDynamicSearch(m_allGames.asList(), m_collections.asList());
+    m_providerman.startDynamicSearch(m_allGames->asList(), m_collections->asList());
 }
 
 void ApiObject::onGameFileSelectorRequested()
@@ -193,7 +201,7 @@ void ApiObject::onGameFinished()
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_providerman.onGameFavoriteChanged(m_allGames.asList());
+    m_providerman.onGameFavoriteChanged(m_allGames->asList());
 }
 
 void ApiObject::onThemeChanged()

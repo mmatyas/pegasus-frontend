@@ -24,7 +24,7 @@
 #include "Paths.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
-#include "model/gaming/GameAssets.h"
+#include "model/gaming/Assets.h"
 #include "model/keys/Key.h"
 #include "utils/FolderListModel.h"
 
@@ -63,7 +63,7 @@ void register_api_classes()
 
     qmlRegisterUncreatableType<model::Collection>(API_URI, 0, 7, "Collection", error_msg);
     qmlRegisterUncreatableType<model::Game>(API_URI, 0, 2, "Game", error_msg);
-    qmlRegisterUncreatableType<model::GameAssets>(API_URI, 0, 2, "GameAssets", error_msg);
+    qmlRegisterUncreatableType<model::Assets>(API_URI, 0, 2, "GameAssets", error_msg);
     qmlRegisterUncreatableType<model::Locales>(API_URI, 0, 11, "Locales", error_msg);
     qmlRegisterUncreatableType<model::Themes>(API_URI, 0, 11, "Themes", error_msg);
     qmlRegisterUncreatableType<model::Providers>(API_URI, 0, 11, "Providers", error_msg);

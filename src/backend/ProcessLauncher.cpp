@@ -121,38 +121,37 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 {
     Q_ASSERT(q_gamefile);
 
-    const auto q_game = static_cast<const model::Game* const>(q_gamefile->parent());
-    const modeldata::Game& game = q_game->data();
-    const modeldata::GameFile& gamefile = q_gamefile->data();
+    const model::GameFile& gamefile = *q_gamefile;
+    const model::Game& game = static_cast<model::Game&>(*gamefile.parent());
 
 
     // TODO: in the future, check the gamefile's own launch command first
 
-    QStringList args = ::utils::tokenize_command(game.launch_cmd);
+    QStringList args = ::utils::tokenize_command(game.launchCmd());
     for (QString& arg : args)
-        replace_variables(arg, gamefile.fileinfo);
+        replace_variables(arg, gamefile.fileinfo());
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()) {
         const QString message = tr_log("Cannot launch the game `%1` because there is no launch command defined for it.")
-            .arg(game.title);
+            .arg(game.title());
         qWarning().noquote() << message;
         emit processLaunchError(message);
         return;
     }
-    command = helpers::abs_launchcmd(command, game.relative_basedir);
+    command = helpers::abs_launchcmd(command, game.launchCmdBasedir());
 
 
     const QString default_workdir = contains_slash(command)
         ? QFileInfo(command).absolutePath()
-        : gamefile.fileinfo.absolutePath();
+        : gamefile.fileinfo().absolutePath();
 
-    QString workdir = game.launch_workdir;
-    replace_variables(workdir, gamefile.fileinfo);
-    workdir = helpers::abs_workdir(workdir, game.relative_basedir, default_workdir);
+    QString workdir = game.launchWorkdir();
+    replace_variables(workdir, gamefile.fileinfo());
+    workdir = helpers::abs_workdir(workdir, game.launchCmdBasedir(), default_workdir);
 
 
-    beforeRun(gamefile.fileinfo.absoluteFilePath());
+    beforeRun(gamefile.fileinfo().absoluteFilePath());
     runProcess(command, args, workdir);
 }
 
