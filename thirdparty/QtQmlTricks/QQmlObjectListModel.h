@@ -359,9 +359,9 @@ protected: // internal stuff
     }
     void referenceItem (ItemType * item) {
         if (item != Q_NULLPTR) {
-            if (!item->parent ()) {
+            /*if (!item->parent ()) {
                 item->setParent (this);
-            }
+            }*/
             for (QHash<int, int>::const_iterator it = m_signalIdxToRole.constBegin (); it != m_signalIdxToRole.constEnd (); ++it) {
                 connect (item, item->metaObject ()->method (it.key ()), this, m_handler, Qt::UniqueConnection);
             }
@@ -441,8 +441,8 @@ private: // data members
 
 #define QML_OBJMODEL_PROPERTY(type, name) \
     protected: Q_PROPERTY (QQmlObjectListModelBase * name READ name CONSTANT) \
-    private: QQmlObjectListModel<type> m_##name; \
-    public: QQmlObjectListModel<type> * name (void) { return &m_##name; } \
+    private: QQmlObjectListModel<type> * const m_##name; \
+    public: QQmlObjectListModel<type> * name (void) const { return m_##name; } \
     private:
 
 #endif // QQMLOBJECTLISTMODEL_H
