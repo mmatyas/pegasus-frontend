@@ -18,7 +18,7 @@
 #include "SkraperAssetsProvider.h"
 
 #include "LocaleUtils.h"
-#include "modeldata/GameData.h"
+#include "model/gaming/Game.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -26,14 +26,14 @@
 
 
 namespace {
-HashMap<QString, modeldata::Game* const> build_gamepath_db(HashMap<size_t, modeldata::Game>& games)
+HashMap<QString, model::Game* const> build_gamepath_db(HashMap<size_t, model::Game*>& games)
 {
-    HashMap<QString, modeldata::Game* const> map;
+    HashMap<QString, model::Game* const> map;
 
     for (auto& entry : games) {
-        modeldata::Game& game = entry.second;
-        for (const modeldata::GameFile& file_entry : game.files) {
-            const QFileInfo& finfo = file_entry.fileinfo;
+        model::Game& game = *entry.second;
+        for (const model::GameFile* const file_ptr : game.filesConst()) {
+            const QFileInfo& finfo = file_ptr->fileinfo();
 
             QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
             map.emplace(std::move(path), &game);
@@ -70,10 +70,10 @@ SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
         { AssetType::LOGO, QStringLiteral("wheel") },
         { AssetType::LOGO, QStringLiteral("wheelcarbon") },
         { AssetType::LOGO, QStringLiteral("wheelsteel") },
-        { AssetType::SCREENSHOTS, QStringLiteral("screenshot") },
-        { AssetType::SCREENSHOTS, QStringLiteral("screenshottitle") },
+        { AssetType::SCREENSHOT, QStringLiteral("screenshot") },
+        { AssetType::SCREENSHOT, QStringLiteral("screenshottitle") },
         { AssetType::UI_STEAMGRID, QStringLiteral("steamgrid") },
-        { AssetType::VIDEOS, QStringLiteral("videos") },
+        { AssetType::VIDEO, QStringLiteral("videos") },
     }
     , m_media_dirs {
         QStringLiteral("/skraper/"),
@@ -85,7 +85,7 @@ void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
 {
     unsigned found_assets_cnt = 0;
 
-    const HashMap<QString, modeldata::Game* const> extless_path_to_game = build_gamepath_db(sctx.games);
+    const HashMap<QString, model::Game* const> extless_path_to_game = build_gamepath_db(sctx.games);
 
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
@@ -111,8 +111,8 @@ void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
                     if (!extless_path_to_game.count(game_path))
                         continue;
 
-                    modeldata::Game* const game = extless_path_to_game.at(game_path);
-                    game->assets.addFileMaybe(asset_dir.asset_type, dir_it.filePath());
+                    model::Game* const game = extless_path_to_game.at(game_path);
+                    game->assets().add_file(asset_dir.asset_type, dir_it.filePath());
                     found_assets_cnt++;
                 }
             }
