@@ -42,7 +42,6 @@ include(parsers/parsers.pri)
 include(platform/platform.pri)
 include(providers/providers.pri)
 include(model/model.pri)
-include(modeldata/modeldata.pri)
 include(utils/utils.pri)
 include(types/types.pri)
 
