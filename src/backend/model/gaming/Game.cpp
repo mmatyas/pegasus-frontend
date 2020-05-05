@@ -18,62 +18,85 @@
 #include "Game.h"
 
 
+namespace {
+QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
+} // namespace
+
+
 namespace model {
+GameData::GameData(QString new_title)
+    : title(std::move(new_title))
+    , sort_title(title)
+{}
 
-Game::Game(modeldata::Game game, QObject* parent)
+
+Game::Game(QFileInfo fi, QObject* parent)
+    : Game(pretty_filename(fi), parent)
+{
+    addFile(std::move(fi), title());
+}
+
+Game::Game(QString name, QObject* parent)
     : QObject(parent)
-    , m_files(this)
-    , m_game(std::move(game))
-    , m_assets(&m_game.assets, this)
+    , m_files(new QQmlObjectListModel<model::GameFile>(this))
+    , m_collections(new QQmlObjectListModel<model::Collection>(this))
+    , m_data(name)
+    , m_assets(new model::Assets(this))
+{}
+
+QString Game::developerStr() const { return joined_list(m_data.developers); }
+QString Game::publisherStr() const { return joined_list(m_data.publishers); }
+QString Game::genreStr() const { return joined_list(m_data.genres); }
+QString Game::tagStr() const { return joined_list(m_data.tags); }
+
+Game& Game::setFavorite(bool new_val)
 {
-    for (modeldata::GameFile& entry : m_game.files) {
-        auto gamefile = new model::GameFile(std::move(entry), this);
-
-        connect(gamefile, &model::GameFile::playStatsChanged,
-                this, &model::Game::playStatsChanged);
-
-        m_files.append(gamefile);
-    }
-
-    m_game.files.clear();
-}
-
-void Game::setFavorite(bool new_val)
-{
-    m_game.is_favorite = new_val;
+    m_data.is_favorite = new_val;
     emit favoriteChanged();
+    return *this;
 }
 
-
-int Game::playCount() const
+void Game::addFile(model::GameFile* ptr)
 {
-    return std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
+    connect(ptr, &model::GameFile::playStatsChanged,
+            this, &model::Game::onEntryPlayStatsChanged);
+    m_files->append(ptr);
+}
+
+void Game::addFile(QFileInfo fi)
+{
+    addFile(new model::GameFile(std::move(fi), this));
+}
+
+void Game::addFile(QFileInfo fi, QString name)
+{
+    addFile(new model::GameFile(std::move(fi), std::move(name), this));
+}
+
+void Game::onEntryPlayStatsChanged()
+{
+    m_data.playstats.play_count = std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
         [](int sum, const model::GameFile* const gamefile){
             return sum + gamefile->playCount();
         });
-}
-qint64 Game::playTime() const
-{
-    return std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
+    m_data.playstats.play_time = std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
         [](qint64 sum, const model::GameFile* const gamefile){
             return sum + gamefile->playTime();
         });
-}
-QDateTime Game::lastPlayed() const
-{
-    const auto it = std::max_element(filesConst().cbegin(), filesConst().cend(),
-        [](const model::GameFile* const a, const model::GameFile* const b){
-            return a->lastPlayed() < b->lastPlayed();
+    m_data.playstats.last_played = std::accumulate(filesConst().cbegin(), filesConst().cend(), QDateTime(),
+        [](QDateTime current_max, const model::GameFile* const gamefile){
+            return std::max(current_max, gamefile->lastPlayed());
         });
-    return (*it)->lastPlayed();
+
+    emit playStatsChanged();
 }
 
 void Game::launch()
 {
-    Q_ASSERT(m_files.count() > 0);
+    Q_ASSERT(m_files->count() > 0);
 
-    if (m_files.count() == 1)
-        m_files.first()->launch();
+    if (m_files->count() == 1)
+        m_files->first()->launch();
     else
         emit launchFileSelectorRequested();
 }

@@ -17,100 +17,167 @@
 
 #pragma once
 
-#include "GameAssets.h"
+#include "Assets.h"
 #include "GameFile.h"
-#include "modeldata/CollectionData.h"
-#include "modeldata/GameData.h"
+#include "utils/MoveOnly.h"
+#include "model/gaming/Collection.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 
-
-namespace {
-QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
-} // namespace
-
-
-#define CPROP_Q(type, apiName) \
-    private: Q_PROPERTY(type apiName READ apiName CONSTANT)
-
-#define CPROP_REF(type, apiName, dataField) \
-    public: const type& apiName() const { return m_game.dataField; } \
-    CPROP_Q(type, apiName)
-
-#define CPROP_POD(type, apiName, dataField) \
-    public: type apiName() const { return m_game.dataField; } \
-    CPROP_Q(type, apiName)
+namespace model { class Collection; }
 
 
 namespace model {
+struct GameData {
+    explicit GameData(QString);
+
+    QString title;
+    QString sort_title;
+    QString summary;
+    QString description;
+
+    QStringList developers;
+    QStringList publishers;
+    QStringList genres;
+    QStringList tags;
+
+    short player_count = 1;
+    float rating = 0.0;
+    QDate release_date;
+
+    struct PlayStats {
+        int play_count = 0;
+        int play_time = 0;
+        QDateTime last_played;
+    } playstats;
+
+    bool is_favorite = false;
+
+    struct LaunchParams {
+        QString launch_cmd;
+        QString launch_workdir;
+        QString relative_basedir; // TODO: check if needed
+    } launch_params;
+};
+
+
 class Game : public QObject {
     Q_OBJECT
 
-    CPROP_REF(QString, title, title)
-    CPROP_REF(QString, sortTitle, sort_title)
-    CPROP_REF(QString, summary, summary)
-    CPROP_REF(QString, description, description)
+public:
+#define GETTER(type, name, field) \
+    type name() const { return m_data.field; }
 
-    Q_PROPERTY(QString developer READ developerString CONSTANT)
-    Q_PROPERTY(QString publisher READ publisherString CONSTANT)
-    Q_PROPERTY(QString genre READ genreString CONSTANT)
-    CPROP_REF(QStringList, developerList, developers)
-    CPROP_REF(QStringList, publisherList, publishers)
-    CPROP_REF(QStringList, genreList, genres)
-    CPROP_REF(QStringList, tagList, tags)
+    GETTER(const QString&, title, title)
+    GETTER(const QString&, sortTitle, sort_title)
+    GETTER(const QString&, summary, summary)
+    GETTER(const QString&, description, description)
+    GETTER(const QDate&, releaseDate, release_date)
+    GETTER(int, playerCount, player_count)
+    GETTER(float, rating, rating)
 
-    CPROP_POD(int, players, player_count)
-    CPROP_POD(float, rating, rating)
+    GETTER(const QStringList&, developerListConst, developers)
+    GETTER(const QStringList&, publisherListConst, publishers)
+    GETTER(const QStringList&, genreListConst, genres)
+    GETTER(const QStringList&, tagListConst, tags)
 
-    CPROP_REF(QDate, release, release_date)
-    CPROP_POD(int, releaseYear, release_date.year())
-    CPROP_POD(int, releaseMonth, release_date.month())
-    CPROP_POD(int, releaseDay, release_date.day())
+    GETTER(int, releaseYear, release_date.year())
+    GETTER(int, releaseMonth, release_date.month())
+    GETTER(int, releaseDay, release_date.day())
 
-    Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
+    GETTER(int, playCount, playstats.play_count)
+    GETTER(int, playTime, playstats.play_time)
+    GETTER(const QDateTime&, lastPlayed, playstats.last_played)
+    GETTER(bool, isFavorite, is_favorite)
+
+    GETTER(const QString&, launchCmd, launch_params.launch_cmd)
+    GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
+    GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
+#undef GETTER
+
+
+#define SETTER(type, name, field) \
+    Game& set##name(type val) { m_data.field = std::move(val); return *this; }
+
+    SETTER(QString, Title, title)
+    SETTER(QString, SortTitle, sort_title)
+    SETTER(QString, Summary, summary)
+    SETTER(QString, Description, description)
+    SETTER(QDate, ReleaseDate, release_date)
+    SETTER(int, PlayerCount, player_count)
+    SETTER(float, Rating, rating)
+
+    SETTER(QString, LaunchCmd, launch_params.launch_cmd)
+    SETTER(QString, LaunchWorkdir, launch_params.launch_workdir)
+    SETTER(QString, LaunchCmdBasedir, launch_params.relative_basedir)
+
+    Game& setFavorite(bool val);
+#undef SETTER
+
+
+#define STRLIST(singular, field) \
+    QString singular##Str() const; \
+    QStringList& singular##List() { return m_data.field; } \
+    Q_PROPERTY(QString singular READ singular##Str CONSTANT) \
+    Q_PROPERTY(QStringList singular##List READ singular##ListConst CONSTANT)
+
+    STRLIST(developer, developers)
+    STRLIST(publisher, publishers)
+    STRLIST(genre, genres)
+    STRLIST(tag, tags)
+#undef GEN
+
+
+    Q_PROPERTY(QString title READ title CONSTANT)
+    Q_PROPERTY(QString sortTitle READ sortTitle CONSTANT)
+    Q_PROPERTY(QString summary READ summary CONSTANT)
+    Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QDate release READ releaseDate CONSTANT)
+    Q_PROPERTY(int players READ playerCount CONSTANT)
+    Q_PROPERTY(float rating READ rating CONSTANT)
+
+    Q_PROPERTY(int releaseYear READ releaseYear CONSTANT)
+    Q_PROPERTY(int releaseMonth READ releaseMonth CONSTANT)
+    Q_PROPERTY(int releaseDay READ releaseDay CONSTANT)
+
     Q_PROPERTY(int playCount READ playCount NOTIFY playStatsChanged)
     Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
+    Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
-    Q_PROPERTY(model::GameAssets* assets READ assetsPtr CONSTANT)
+
+    Assets& assets() { return *m_assets; }
+    Assets* assetsPtr() { return m_assets; }
+    Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
+
+    void addFile(model::GameFile*);
+    void addFile(QFileInfo);
+    void addFile(QFileInfo, QString);
     QML_OBJMODEL_PROPERTY(model::GameFile, files)
+    public: const QVector<model::GameFile*>& filesConst() const { return m_files->asList(); }
 
-public:
-    explicit Game(modeldata::Game, QObject* parent = nullptr);
+    QML_OBJMODEL_PROPERTY(model::Collection, collections)
+    public: const QVector<model::Collection*>& collectionsConst() const { return m_collections->asList(); }
 
-    Q_INVOKABLE void launch();
+private:
+    GameData m_data;
+    Assets* const m_assets;
 
-    const modeldata::Game& data() const { return m_game; }
-    void setFavorite(bool);
-
-public:
-    // a workaround for const pointer issues with the model
-    const QVector<model::GameFile*>& filesConst() const { return m_files.asList(); }
-
-    QString developerString() const { return joined_list(m_game.developers); }
-    QString publisherString() const { return joined_list(m_game.publishers); }
-    QString genreString() const { return joined_list(m_game.genres); }
-
-    bool favorite() const { return m_game.is_favorite; }
-    int playCount() const;
-    qint64 playTime() const;
-    QDateTime lastPlayed() const;
-
-    GameAssets* assetsPtr() { return &m_assets; }
 
 signals:
     void launchFileSelectorRequested();
     void favoriteChanged();
     void playStatsChanged();
 
-private:
-    modeldata::Game m_game;
-    GameAssets m_assets;
+private slots:
+    void onEntryPlayStatsChanged();
+
+
+public:
+    explicit Game(QString name, QObject* parent = nullptr);
+    explicit Game(QFileInfo first_file, QObject* parent = nullptr);
+
+    Q_INVOKABLE void launch();
 };
 } // namespace model
-
-
-#undef CPROP_REF
-#undef CPROP_POD
-#undef CPROP_Q
