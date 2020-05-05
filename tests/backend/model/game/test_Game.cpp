@@ -35,16 +35,14 @@ private slots:
     void launchMulti();
 };
 
-void testStrAndList(const std::function<void(modeldata::Game&, const QString&)>& fn_add,
+void testStrAndList(const std::function<void(model::Game&, const QString&)>& fn_add,
                     const char* str_name,
                     const char* list_name)
 {
-    modeldata::Game modeldata("test");
-    fn_add(modeldata, "test1");
-    fn_add(modeldata, "test2");
-    fn_add(modeldata, "test3");
-
-    model::Game game(std::move(modeldata));
+    model::Game game("test");
+    fn_add(game, "test1");
+    fn_add(game, "test2");
+    fn_add(game, "test3");
 
     QCOMPARE(game.property(str_name).toString(), QStringLiteral("test1, test2, test3"));
     QCOMPARE(game.property(list_name).toStringList(), QStringList({"test1", "test2", "test3"}));
@@ -52,28 +50,27 @@ void testStrAndList(const std::function<void(modeldata::Game&, const QString&)>&
 
 void test_Game::developers()
 {
-    auto fn = [](modeldata::Game& game, const QString& val){ game.developers.append(val); };
+    auto fn = [](model::Game& game, const QString& val){ game.developerList().append(val); };
     testStrAndList(fn, "developer", "developerList");
 }
 
 void test_Game::publishers()
 {
-    auto fn = [](modeldata::Game& game, const QString& val){ game.publishers.append(val); };
+    auto fn = [](model::Game& game, const QString& val){ game.publisherList().append(val); };
     testStrAndList(fn, "publisher", "publisherList");
 }
 
 void test_Game::genres()
 {
-    auto fn = [](modeldata::Game& game, const QString& val){ game.genres.append(val); };
+    auto fn = [](model::Game& game, const QString& val){ game.genreList().append(val); };
     testStrAndList(fn, "genre", "genreList");
 }
 
 void test_Game::release()
 {
-    modeldata::Game modeldata("test");
-    modeldata.release_date = QDate(1999,1,2);
+    model::Game game("test");
+    game.setReleaseDate(QDate(1999,1,2));
 
-    model::Game game(std::move(modeldata));
     QCOMPARE(game.property("releaseYear").toInt(), 1999);
     QCOMPARE(game.property("releaseMonth").toInt(), 1);
     QCOMPARE(game.property("releaseDay").toInt(), 2);
@@ -81,10 +78,9 @@ void test_Game::release()
 
 void test_Game::files()
 {
-    modeldata::Game gamedata("test");
-    gamedata.files.emplace_back(QFileInfo("test1"));
-    gamedata.files.emplace_back(QFileInfo("test2"));
-    model::Game game(std::move(gamedata));
+    model::Game game("test");
+    game.files()->append(new model::GameFile(QFileInfo("test1"), this));
+    game.files()->append(new model::GameFile(QFileInfo("test2"), this));
 
     QCOMPARE(game.files()->count(), 2);
     QCOMPARE(game.files()->get(0)->property("name").toString(), QStringLiteral("test1"));
@@ -93,9 +89,8 @@ void test_Game::files()
 
 void test_Game::launchSingle()
 {
-    modeldata::Game gamedata("test");
-    gamedata.files.emplace_back(QFileInfo("test"));
-    model::Game game(std::move(gamedata));
+    model::Game game("test");
+    game.files()->append(new model::GameFile(QFileInfo("test"), this));
 
     QSignalSpy spy_launch(game.files()->first(), &model::GameFile::launchRequested);
     QVERIFY(spy_launch.isValid());
@@ -106,10 +101,9 @@ void test_Game::launchSingle()
 
 void test_Game::launchMulti()
 {
-    modeldata::Game gamedata("test");
-    gamedata.files.emplace_back(QFileInfo("test1"));
-    gamedata.files.emplace_back(QFileInfo("test2"));
-    model::Game game(std::move(gamedata));
+    model::Game game("test");
+    game.files()->append(new model::GameFile(QFileInfo("test1"), this));
+    game.files()->append(new model::GameFile(QFileInfo("test2"), this));
 
     QSignalSpy spy_launch(&game, &model::Game::launchFileSelectorRequested);
     QVERIFY(spy_launch.isValid());

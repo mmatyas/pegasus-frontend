@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "model/gaming/GameAssets.h"
+#include "model/gaming/Assets.h"
 
 
 class test_GameAssets : public QObject
@@ -31,21 +31,20 @@ private slots:
 
 void test_GameAssets::setSingle()
 {
-    modeldata::GameAssets modeldata;
-    modeldata.setSingle(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
-
-    model::GameAssets assets(&modeldata);
+    model::Assets assets(this);
+    assets.add_url(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
     QCOMPARE(assets.property("boxFront").toString(), QLatin1String("file:///dummy"));
 }
 
 void test_GameAssets::appendMulti()
 {
-    modeldata::GameAssets modeldata;
-    modeldata.appendMulti(AssetType::VIDEOS, QUrl::fromLocalFile("/dummy").toString());
+    model::Assets assets(this);
+    assets.add_url(AssetType::VIDEO, QUrl::fromLocalFile("/dummy1").toString());
+    assets.add_url(AssetType::VIDEO, QUrl::fromLocalFile("/dummy2").toString());
 
-    model::GameAssets assets(&modeldata);
-    QCOMPARE(assets.property("videos").toStringList().count(), 1);
-    QCOMPARE(assets.property("videos").toStringList().constFirst(), QLatin1String("file:///dummy"));
+    QCOMPARE(assets.property("videoList").toStringList().count(), 2);
+    QCOMPARE(assets.property("videoList").toStringList().constFirst(), QLatin1String("file:///dummy1"));
+    QCOMPARE(assets.property("videoList").toStringList().constLast(), QLatin1String("file:///dummy2"));
 }
 
 

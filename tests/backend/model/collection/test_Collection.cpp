@@ -31,11 +31,9 @@ private slots:
 
 void test_Collection::names()
 {
-    modeldata::Collection modeldata("myname");
-    modeldata.setShortName("abbrev");
-    modeldata.launch_cmd = "runner";
-    model::Collection collection(std::move(modeldata));
-    collection.setGameList({});
+    model::Collection collection("myname");
+    collection.setShortName("AbbReV");
+    collection.setCommonLaunchCmd("runner");
 
     // the properties are read-only and should be called only after the initial setup
     QCOMPARE(collection.property("shortName").toString(), QStringLiteral("abbrev"));
@@ -45,12 +43,12 @@ void test_Collection::names()
 void test_Collection::games()
 {
     QVector<model::Game*> games = {
-        new model::Game(modeldata::Game(QFileInfo("a")), this),
-        new model::Game(modeldata::Game(QFileInfo("b")), this),
-        new model::Game(modeldata::Game(QFileInfo("c")), this),
+        new model::Game(QFileInfo("a"), this),
+        new model::Game(QFileInfo("b"), this),
+        new model::Game(QFileInfo("c"), this),
     };
-    model::Collection collection(modeldata::Collection("test"));
-    collection.setGameList(std::move(games));
+    model::Collection collection("test");
+    collection.games()->append(std::move(games));
 
     // matching count and sorted by title
     QCOMPARE(collection.games()->count(), 3);
