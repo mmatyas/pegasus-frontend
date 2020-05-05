@@ -17,11 +17,10 @@
 
 #pragma once
 
-#include "modeldata/GameData.h"
-#include "modeldata/CollectionData.h"
 #include "utils/HashMap.h"
 #include "utils/MoveOnly.h"
 
+#include <QFileInfo>
 #include <QString>
 #include <QObject>
 #include <vector>
@@ -34,14 +33,19 @@ namespace model { class GameFile; }
 namespace providers {
 
 struct SearchContext {
-    HashMap<size_t, modeldata::Game> games;
-    HashMap<QString, modeldata::Collection> collections;
-    HashMap<QString, std::vector<size_t>> collection_childs;
+    HashMap<size_t, model::Game*> games;
+    HashMap<QString, model::Collection*> collections;
     HashMap<QString, size_t> path_to_gameid;
     std::vector<QString> game_root_dirs;
 
     SearchContext() = default;
     MOVE_ONLY(SearchContext)
+
+    std::pair<size_t, model::Game*> new_game(QFileInfo fi, model::Collection* parent);
+    std::pair<size_t, model::Game*> new_empty_game(QString name, model::Collection* parent);
+    std::pair<size_t, model::Game*> get_or_create_game(QFileInfo fi);
+    std::pair<size_t, model::Game*> add_or_create_game_for(QFileInfo fi, model::Collection& parent);
+    model::Collection* get_or_create_collection(QString name);
 };
 
 

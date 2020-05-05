@@ -17,8 +17,91 @@
 
 #include "Provider.h"
 
+#include "model/gaming/Game.h"
+#include "model/gaming/Collection.h"
+
+namespace {
+void add_new_game_to_parent_maybe(model::Game* game, model::Collection* collection)
+{
+    if (collection) {
+        game->collections()->append(collection);
+        game->setLaunchCmd(collection->commonLaunchCmd());
+        game->setLaunchWorkdir(collection->commonLaunchWorkdir());
+        game->setLaunchCmdBasedir(collection->commonLaunchCmdBasedir());
+        collection->games()->append(game);
+    }
+}
+} // namespace
+
 
 namespace providers {
+std::pair<size_t, model::Game*> SearchContext::new_game(QFileInfo fi, model::Collection* collection)
+{
+    QString file_path = fi.canonicalFilePath();
+
+    auto game = new model::Game(std::move(fi));
+    add_new_game_to_parent_maybe(game, collection);
+
+    size_t game_id = games.size();
+    path_to_gameid.emplace(file_path, game_id);
+    games.emplace(game_id, game);
+
+    return std::make_pair(game_id, game);
+}
+
+std::pair<size_t, model::Game*> SearchContext::new_empty_game(QString name, model::Collection* collection)
+{
+    auto game = new model::Game(name);
+    add_new_game_to_parent_maybe(game, collection);
+
+    size_t game_id = games.size();
+    games.emplace(game_id, game);
+
+    return std::make_pair(game_id, game);
+}
+
+std::pair<size_t, model::Game*> SearchContext::get_or_create_game(QFileInfo fi)
+{
+    QString file_path = fi.canonicalFilePath();
+    Q_ASSERT(!file_path.isEmpty());
+
+    auto found = path_to_gameid.find(file_path);
+    if (found != path_to_gameid.end()) {
+        Q_ASSERT(games.count(found->second));
+        return std::make_pair(found->second, games[found->second]);
+    }
+
+    return new_game(std::move(fi), nullptr);
+}
+
+std::pair<size_t, model::Game*> SearchContext::add_or_create_game_for(QFileInfo fi, model::Collection& collection)
+{
+    QString file_path = fi.canonicalFilePath();
+    Q_ASSERT(!file_path.isEmpty());
+
+    auto found = path_to_gameid.find(file_path);
+    if (found != path_to_gameid.end()) {
+        Q_ASSERT(games.count(found->second));
+        model::Game* game = games[found->second];
+        collection.games()->append(game);
+        game->collections()->append(&collection);
+        return std::make_pair(found->second, game);
+    }
+
+    return new_game(std::move(fi), &collection);
+}
+
+model::Collection* SearchContext::get_or_create_collection(QString name)
+{
+    auto found = collections.find(name);
+    if (found != collections.end())
+        return found->second;
+
+    auto coll = new model::Collection(name);
+    collections.emplace(std::move(name), coll);
+    return coll;
+}
+
 
 Provider::Provider(QLatin1String codename, QString name, uint8_t flags, QObject* parent)
     : QObject(parent)
