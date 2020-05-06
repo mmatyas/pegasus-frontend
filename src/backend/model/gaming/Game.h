@@ -180,4 +180,7 @@ public:
 
     Q_INVOKABLE void launch();
 };
+
+
+bool sort_games(const model::Game* const, const model::Game* const);
 } // namespace model

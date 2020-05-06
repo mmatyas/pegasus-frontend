@@ -95,6 +95,16 @@ void remove_parentless_games(providers::SearchContext& sctx)
     }
 }
 
+void sort_and_dedup(providers::SearchContext& sctx)
+{
+    for (auto& entry : sctx.games) {
+        entry.second->collections()->sort_uniq(model::sort_collections);
+        entry.second->files()->sort_uniq(model::sort_gamefiles);
+    }
+    for (auto& entry : sctx.collections)
+        entry.second->games()->sort_uniq(model::sort_games);
+}
+
 void postprocess_list_results(providers::SearchContext& sctx, QThread* const target_thread)
 {
     QElapsedTimer timer;
@@ -103,6 +113,7 @@ void postprocess_list_results(providers::SearchContext& sctx, QThread* const tar
     remove_empty_collections(sctx);
     remove_empty_games(sctx.games);
     remove_parentless_games(sctx);
+    sort_and_dedup(sctx);
     VEC_REMOVE_DUPLICATES(sctx.game_root_dirs);
 
     for (auto& entry : sctx.games)

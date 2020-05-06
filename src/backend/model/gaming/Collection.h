@@ -95,4 +95,7 @@ private:
     CollectionData m_data;
     Assets* const m_assets;
 };
+
+
+bool sort_collections(const model::Collection* const, const model::Collection* const);
 } // namespace model

@@ -101,4 +101,7 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
+bool sort_games(const model::Game* const a, const model::Game* const b) {
+   return QString::localeAwareCompare(a->sortTitle(), b->sortTitle()) < 0;
+};
 } // namespace model

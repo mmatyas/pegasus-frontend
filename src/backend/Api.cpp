@@ -21,24 +21,6 @@
 
 
 namespace {
-void sort_q_games(QVector<model::Game*>& games)
-{
-    std::sort(games.begin(), games.end(),
-        [](const model::Game* const a, const model::Game* const b) {
-            return QString::localeAwareCompare(a->sortTitle(), b->sortTitle()) < 0;
-        }
-    );
-}
-
-void sort_q_collections(QVector<model::Collection*>& collections)
-{
-    std::sort(collections.begin(), collections.end(),
-        [](const model::Collection* const a, const model::Collection* const b) {
-            return QString::localeAwareCompare(a->name(), b->name()) < 0;
-        }
-    );
-}
-
 void fill_game_model(providers::SearchContext& sctx, QQmlObjectListModel<model::Game>& model)
 {
     QObject* const parent = model.parent();
@@ -54,25 +36,10 @@ void fill_game_model(providers::SearchContext& sctx, QQmlObjectListModel<model::
         items.append(game);
     }
 
-    sort_q_games(items);
+    std::sort(items.begin(), items.end(), model::sort_games);
+    items.erase(std::unique(items.begin(), items.end()), items.end());
+
     model.append(std::move(items));
-
-    // TODO: re-add game sorting and deduplication
-    /*for (model::Collection* const q_coll : q_collection_list) {
-        Q_ASSERT(sctx.collection_childs.count(q_coll->name()));
-        const std::vector<size_t>& game_ids = sctx.collection_childs[q_coll->name()];
-
-        QVector<model::Game*> q_childs;
-        q_childs.reserve(static_cast<int>(game_ids.size()));
-
-        for (size_t game_id : game_ids) {
-            Q_ASSERT(q_game_map.count(game_id));
-            q_childs.append(q_game_map.at(game_id));
-        }
-
-        sort_q_games(q_childs);
-        q_coll->setGameList(q_childs);
-     }*/
  }
 
 void fill_collection_model(providers::SearchContext& sctx, QQmlObjectListModel<model::Collection>& model)
@@ -90,7 +57,9 @@ void fill_collection_model(providers::SearchContext& sctx, QQmlObjectListModel<m
         items.append(coll);
     }
 
-    sort_q_collections(items);
+    std::sort(items.begin(), items.end(), model::sort_collections);
+    items.erase(std::unique(items.begin(), items.end()), items.end());
+
     model.append(std::move(items));
 }
 } // namespace

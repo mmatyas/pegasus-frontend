@@ -86,4 +86,7 @@ signals:
 private:
     GameFileData m_data;
 };
+
+
+bool sort_gamefiles(const model::GameFile* const, const model::GameFile* const);
 } // namespace model
