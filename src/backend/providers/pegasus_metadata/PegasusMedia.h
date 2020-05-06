@@ -22,7 +22,7 @@
 #include <QString>
 #include <vector>
 
-namespace model { struct Game; }
+namespace model { class Game; }
 
 
 namespace providers {
