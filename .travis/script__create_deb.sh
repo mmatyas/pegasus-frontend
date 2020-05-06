@@ -31,6 +31,6 @@ fpm -s dir -t deb \
   -d 'gstreamer1.0-plugins-good' \
   -d 'policykit-1' \
   -d 'libsdl2-2.0-0 >= 2.0.4' \
-  -d 'libc6 >= 2.17' \
+  -d 'libc6 >= 2.25' \
   -d 'libstdc++6 >= 4.8' \
   $PWD/../installoc/=/
