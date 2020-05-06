@@ -56,7 +56,7 @@ jobs:
     environment:
       - QT_VERSION: qt5128
       - QT_TARGET: rpi1-static
-      - BUILDOPTS: USE_SDL_GAMEPAD=1 QMAKE_LFLAGS+='-static-libstdc++ -static-libgcc'
+      - BUILDOPTS: USE_SDL_GAMEPAD=1
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -72,7 +72,7 @@ jobs:
     environment:
       - QT_VERSION: qt5128
       - QT_TARGET: rpi2-static
-      - BUILDOPTS: USE_SDL_GAMEPAD=1 QMAKE_LFLAGS+='-static-libstdc++ -static-libgcc'
+      - BUILDOPTS: USE_SDL_GAMEPAD=1
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -88,7 +88,7 @@ jobs:
     environment:
       - QT_VERSION: qt5128
       - QT_TARGET: rpi3-static
-      - BUILDOPTS: USE_SDL_GAMEPAD=1 QMAKE_LFLAGS+='-static-libstdc++ -static-libgcc'
+      - BUILDOPTS: USE_SDL_GAMEPAD=1
     steps:
       - checkout
       - run: .circleci/prepare.sh
