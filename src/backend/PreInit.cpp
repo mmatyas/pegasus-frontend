@@ -90,9 +90,9 @@ namespace backend {
 
 PreInit::PreInit(const CliArgs& args)
 {
+    AppSettings::general.silent = args.silent;
+    AppSettings::general.portable = args.portable;
     AppSettings::load_config();
-    AppSettings::general.silent |= args.silent;
-    AppSettings::general.portable |= args.portable;
 
     Log::init();
 
