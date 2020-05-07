@@ -39,7 +39,6 @@ struct General {
     const QString DEFAULT_THEME;
 
     bool portable;
-    bool silent;
     bool fullscreen;
     bool mouse_support;
     QString locale;

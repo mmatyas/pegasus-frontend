@@ -51,16 +51,6 @@ bool store_bool_maybe(const StrBoolConverter& converter, const QString& str, boo
     return success;
 }
 
-bool merge_bool_maybe(const StrBoolConverter& converter, const QString& str, bool& target)
-{
-    bool success = false;
-    bool value = converter.to_bool(str, success);
-    if (success)
-        target |= value;
-
-    return success;
-}
-
 } // namespace
 
 
@@ -73,7 +63,6 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("keys"), Category::KEYS },
     }
     , str_to_general_opt {
-        { QStringLiteral("silent"), GeneralOption::SILENT },
         { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
         { QStringLiteral("locale"), GeneralOption::LOCALE },
@@ -173,10 +162,6 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
     }
 
     switch (option_it->second) {
-        case ConfigEntryGeneralOption::SILENT:
-            if (!merge_bool_maybe(strconv, val, AppSettings::general.silent))
-                log_needs_bool(lineno, key);
-            break;
         case ConfigEntryGeneralOption::FULLSCREEN:
             if (!store_bool_maybe(strconv, val, AppSettings::general.fullscreen))
                 log_needs_bool(lineno, key);

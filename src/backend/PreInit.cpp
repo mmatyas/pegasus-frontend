@@ -90,13 +90,13 @@ namespace backend {
 
 PreInit::PreInit(const CliArgs& args)
 {
-    AppSettings::general.silent = args.silent;
+    // Make sure this comes before any file related operations
     AppSettings::general.portable = args.portable;
+
+    Log::init(args.silent);
+    print_metainfo();
     AppSettings::load_config();
 
-    Log::init();
-
-    print_metainfo();
     register_api_classes();
 }
 

@@ -36,7 +36,6 @@ enum class ConfigEntryCategory : unsigned char {
 };
 
 enum class ConfigEntryGeneralOption : unsigned char {
-    SILENT,
     FULLSCREEN,
     MOUSE_SUPPORT,
     LOCALE,

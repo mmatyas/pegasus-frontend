@@ -176,9 +176,9 @@ void on_qt_message(QtMsgType type, const QMessageLogContext& context, const QStr
 
 std::vector<std::unique_ptr<LogSink>> Log::m_sinks {};
 
-void Log::init()
+void Log::init(bool silent)
 {
-    if (!AppSettings::general.silent)
+    if (!silent)
         m_sinks.emplace_back(new logsinks::Terminal());
 
     m_sinks.emplace_back(new logsinks::LogFile());
