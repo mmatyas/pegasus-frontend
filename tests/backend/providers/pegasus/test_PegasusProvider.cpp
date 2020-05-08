@@ -321,7 +321,6 @@ void test_PegasusProvider::asset_search()
     QVERIFY(ctx.path_to_gameid.count(path));
     model::Game* game = ctx.games.at(ctx.path_to_gameid.at(path));
     QCOMPARE(game->assets().boxFront(), QStringLiteral("file::/asset_search/media/mygame1/box_front.png"));
-    qDebug() << game->assets().videoList();
     QCOMPARE(game->assets().videoList(), { QStringLiteral("file::/asset_search/media/mygame1/video.mp4") });
 
     path = QStringLiteral(":/asset_search/mygame3.ext");
@@ -644,16 +643,10 @@ void test_PegasusProvider::sort_title()
 
     std::vector<model::Game*> games;
     games.reserve(ctx.games.size());
-    for (auto& keyval : ctx.games) {
-        qDebug() << keyval.second << keyval.second->sortTitle() << keyval.second->title();
+    for (auto& keyval : ctx.games)
         games.emplace_back(keyval.second);
-    }
 
-    std::sort(games.begin(), games.end(),
-        [](const model::Game* const a, const model::Game* const b) {
-            return QString::localeAwareCompare(a->sortTitle(), b->sortTitle()) < 0;
-        }
-    );
+    std::sort(games.begin(), games.end(), model::sort_games);
 
     QCOMPARE(games.at(0)->title(), QStringLiteral("Game I"));
     QCOMPARE(games.at(1)->title(), QStringLiteral("Game IV"));
