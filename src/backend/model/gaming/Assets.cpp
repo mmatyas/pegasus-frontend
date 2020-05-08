@@ -56,7 +56,7 @@ void Assets::add_url(AssetType key, QString url)
 {
     QStringList& target = m_asset_lists[key];
 
-    if (!target.contains(url))
+    if (!url.isEmpty() && !target.contains(url))
         target.append(std::move(url));
 }
 
