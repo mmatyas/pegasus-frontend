@@ -91,6 +91,7 @@ private slots:
     void relative_files_only();
     void relative_files_with_dirs();
     void sort_title();
+    void sort_collections();
 };
 
 void test_PegasusProvider::empty()
@@ -658,6 +659,30 @@ void test_PegasusProvider::sort_title()
     QCOMPARE(games.at(1)->title(), QStringLiteral("Game IV"));
     QCOMPARE(games.at(2)->title(), QStringLiteral("Game 8"));
     QCOMPARE(games.at(3)->title(), QStringLiteral("Game IX"));
+}
+
+void test_PegasusProvider::sort_collections()
+{
+    providers::SearchContext ctx;
+    QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/sort_collections/metadata.pegasus.txt`");
+    providers::pegasus::PegasusProvider provider;
+    provider.load_with_gamedirs({QStringLiteral(":/sort_collections")});
+    provider.findLists(ctx);
+
+    QVERIFY(ctx.games.size() == 1);
+    QVERIFY(ctx.collections.size() == 4);
+
+    std::vector<model::Collection*> collections;
+    collections.reserve(ctx.collections.size());
+    for (auto& keyval : ctx.collections)
+        collections.emplace_back(keyval.second);
+
+    std::sort(collections.begin(), collections.end(), model::sort_collections);
+
+    QCOMPARE(collections.at(0)->name(), QStringLiteral("Collection I"));
+    QCOMPARE(collections.at(1)->name(), QStringLiteral("Collection IV"));
+    QCOMPARE(collections.at(2)->name(), QStringLiteral("Collection 8"));
+    QCOMPARE(collections.at(3)->name(), QStringLiteral("Collection IX"));
 }
 
 

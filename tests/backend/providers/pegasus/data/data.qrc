@@ -83,5 +83,7 @@
         <file>sort_title/b.ext</file>
         <file>sort_title/c.ext</file>
         <file>sort_title/d.ext</file>
+        <file>sort_collections/metadata.pegasus.txt</file>
+        <file>sort_collections/test.ext</file>
     </qresource>
 </RCC>

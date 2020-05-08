@@ -43,6 +43,10 @@ Constants::Constants()
         { QStringLiteral("ignore-regex"), CollAttrib::REGEX },
         { QStringLiteral("summary"), CollAttrib::SHORT_DESC },
         { QStringLiteral("description"), CollAttrib::LONG_DESC },
+        // sort name variations
+        { QStringLiteral("sortname"), CollAttrib::SORT_NAME },
+        { QStringLiteral("sort_name"), CollAttrib::SORT_NAME },
+        { QStringLiteral("sort-name"), CollAttrib::SORT_NAME },
     }
     , game_attribs {
         { QStringLiteral("file"), GameAttrib::FILES },

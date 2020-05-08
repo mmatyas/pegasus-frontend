@@ -136,6 +136,9 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
         case CollAttrib::LONG_DESC:
             m_cur_coll->setDescription(replace_newlines(metafile::merge_lines(entry.values)));
             break;
+        case CollAttrib::SORT_NAME:
+            m_cur_coll->setSortName(first_line_of(entry));
+            break;
     }
 }
 
