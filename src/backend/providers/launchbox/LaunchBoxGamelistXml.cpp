@@ -136,8 +136,7 @@ void store_game_fields(
     for (const auto& pair : fields) {
         switch (pair.first) {
             case GameField::TITLE:
-                if (game.title().isEmpty())
-                    game.setTitle(pair.second);
+                game.setTitle(pair.second);
                 break;
             case GameField::NOTES:
                 if (game.description().isEmpty())
