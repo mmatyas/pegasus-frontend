@@ -301,7 +301,9 @@ public: // C++ API
     using SorterFn = std::function<bool(const ItemType* const, const ItemType* const)>;
     void sort_uniq(const SorterFn& sorter) {
         beginResetModel();
-        std::sort(m_items.begin(), m_items.end(), sorter);
+
+        // keep only unique pointers
+        std::sort(m_items.begin(), m_items.end());
         const auto del_it = std::unique(m_items.begin(), m_items.end());
         for (auto it = del_it; it != m_items.end(); ++it) {
             if (*it != Q_NULLPTR) {
@@ -311,6 +313,11 @@ public: // C++ API
         }
         m_items.erase(del_it, m_items.end());
         m_items.squeeze();
+
+        // sort the actual entries
+        // TODO: avoid double sorting
+        std::sort(m_items.begin(), m_items.end(), sorter);
+
         updateCounter();
         endResetModel();
     }
