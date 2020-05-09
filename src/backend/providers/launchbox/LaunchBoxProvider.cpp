@@ -51,8 +51,7 @@ build_escaped_title_map(const QVector<model::Game*>& coll_childs)
 void find_assets_in(const QString& asset_dir,
                     const AssetType asset_type,
                     const bool has_num_suffix,
-                    const HashMap<QString, model::Game*>& title_to_game_map,
-                    HashMap<size_t, model::Game*>& games)
+                    const HashMap<QString, model::Game*>& title_to_game_map)
 {
     constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto recursive = QDirIterator::Subdirectories;
@@ -90,14 +89,14 @@ void find_assets(const QString& lb_dir, const QString& platform_name,
     for (const auto& assetdir_pair : assetdir_map) {
         const QString assetdir_path = images_root + assetdir_pair.first;
         const AssetType assetdir_type = assetdir_pair.second;
-        find_assets_in(assetdir_path, assetdir_type, true, esctitle_to_game_map, sctx.games);
+        find_assets_in(assetdir_path, assetdir_type, true, esctitle_to_game_map);
     }
 
     const QString music_root = lb_dir % QLatin1String("Music/") % platform_name % QLatin1Char('/');
-    find_assets_in(music_root, AssetType::MUSIC, false, esctitle_to_game_map, sctx.games);
+    find_assets_in(music_root, AssetType::MUSIC, false, esctitle_to_game_map);
 
     const QString video_root = lb_dir % QLatin1String("Videos/") % platform_name % QLatin1Char('/');
-    find_assets_in(video_root, AssetType::VIDEO, false, esctitle_to_game_map, sctx.games);
+    find_assets_in(video_root, AssetType::VIDEO, false, esctitle_to_game_map);
 }
 
 QString find_installation()
