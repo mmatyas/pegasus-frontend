@@ -137,6 +137,7 @@ void store_game_fields(
         switch (pair.first) {
             case GameField::TITLE:
                 game.setTitle(pair.second);
+                game.setSortTitle(pair.second);
                 break;
             case GameField::NOTES:
                 if (game.description().isEmpty())
