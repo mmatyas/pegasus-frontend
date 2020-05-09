@@ -89,6 +89,7 @@ void find_assets(const QString& lb_dir, const QString& platform_name,
     for (const auto& assetdir_pair : assetdir_map) {
         const QString assetdir_path = images_root + assetdir_pair.first;
         const AssetType assetdir_type = assetdir_pair.second;
+        find_assets_in(assetdir_path, assetdir_type, false, esctitle_to_game_map);
         find_assets_in(assetdir_path, assetdir_type, true, esctitle_to_game_map);
     }
 
