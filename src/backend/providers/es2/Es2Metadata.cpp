@@ -237,7 +237,7 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
         const QString coll_shortname = coll.shortName();
 
         for (model::Game* const game_ptr : coll.gamesConst()) {
-            const QString gamefile = game_ptr->files()->first()->fileinfo().completeBaseName();
+            const QString gamefile = game_ptr->filesConst().first()->fileinfo().completeBaseName();
             const QString shortpath = coll_shortname % '/' % gamefile;
             games_by_shortpath.emplace(shortpath, game_ptr);
         }
@@ -396,7 +396,7 @@ void MetadataParser::applyMetadata(model::Game& game,
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaTypes::RELEASE], m_date_format));
     game.setReleaseDate(release_time.date());
 
-    game.files()->first()->update_playstats(play_count, 0, last_played);
+    game.filesConst().first()->update_playstats(play_count, 0, last_played);
 }
 
 } // namespace es2

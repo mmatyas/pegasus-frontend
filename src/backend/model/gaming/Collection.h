@@ -22,6 +22,7 @@
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QString>
+#include <unordered_set>
 
 namespace model { class Game; }
 
@@ -90,15 +91,23 @@ public:
     Assets* assetsPtr() { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
-    const QVector<model::Game*>& gamesConst() const { return m_games->asList(); }
+    Collection& addGame(model::Game*);
+    std::unordered_set<model::Game*>& gameSet() { Q_ASSERT(m_games->isEmpty()); return m_game_set; }
+    const std::unordered_set<model::Game*>& gameSetConst() const { Q_ASSERT(m_games->isEmpty()); return m_game_set; }
+    const QVector<model::Game*>& gamesConst() const { Q_ASSERT(m_game_set.empty()); return m_games->asList(); }
     QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
     explicit Collection(QString name, QObject* parent = nullptr);
 
+    void finalize();
+
 private:
     CollectionData m_data;
     Assets* const m_assets;
+
+    // TODO: optimize away
+    std::unordered_set<model::Game*> m_game_set;
 };
 
 

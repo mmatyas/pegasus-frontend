@@ -42,12 +42,14 @@ void create_dummy_data(QVector<model::Collection*>& collections,
         new model::Game(QFileInfo("dummy2"), parent),
     };
     path_map = {
-        { "dummy1", games.at(0)->files()->first() },
-        { "dummy2", games.at(1)->files()->first() },
+        { "dummy1", *games.at(0)->fileSetConst().cbegin() },
+        { "dummy2", *games.at(1)->fileSetConst().cbegin() },
     };
 
-    collections.at(0)->games()->append(games.at(0));
-    collections.at(1)->games()->append(games.at(1));
+    collections.at(0)->addGame(games.at(0)).finalize();
+    collections.at(1)->addGame(games.at(1)).finalize();
+    games.at(0)->addCollection(collections.at(0)).finalize();
+    games.at(1)->addCollection(collections.at(1)).finalize();
 }
 
 } // namespace
@@ -101,8 +103,8 @@ void test_Playtime::write()
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
-    playtime.onGameLaunched(games.at(0)->files()->first());
-    playtime.onGameFinished(games.at(0)->files()->first());
+    playtime.onGameLaunched(games.at(0)->filesConst().first());
+    playtime.onGameFinished(games.at(0)->filesConst().first());
 
     QVERIFY(spy_start.count() || spy_start.wait());
     QVERIFY(spy_end.count() || spy_end.wait());
@@ -131,14 +133,14 @@ void test_Playtime::write_queue()
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
 
-    playtime.onGameLaunched(games.at(0)->files()->first());
-    playtime.onGameFinished(games.at(0)->files()->first());
+    playtime.onGameLaunched(games.at(0)->filesConst().first());
+    playtime.onGameFinished(games.at(0)->filesConst().first());
 
-    playtime.onGameLaunched(games.at(0)->files()->first());
-    playtime.onGameFinished(games.at(0)->files()->first());
+    playtime.onGameLaunched(games.at(0)->filesConst().first());
+    playtime.onGameFinished(games.at(0)->filesConst().first());
 
-    playtime.onGameLaunched(games.at(0)->files()->first());
-    playtime.onGameFinished(games.at(0)->files()->first());
+    playtime.onGameLaunched(games.at(0)->filesConst().first());
+    playtime.onGameFinished(games.at(0)->filesConst().first());
 
 
     QVERIFY(spy_start.count() || spy_start.wait());

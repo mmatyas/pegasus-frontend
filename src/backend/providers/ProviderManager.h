@@ -34,7 +34,7 @@ class ProviderManager : public QObject {
 public:
     explicit ProviderManager(QObject* parent);
 
-    void startStaticSearch(providers::SearchContext&);
+    void startStaticSearch(QVector<model::Collection*>&, QVector<model::Game*>&);
     void startDynamicSearch(const QVector<model::Game*>&, const QVector<model::Collection*>&);
 
     void onGameLaunched(model::GameFile* const);

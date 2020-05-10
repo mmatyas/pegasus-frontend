@@ -24,6 +24,7 @@
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
+#include <unordered_set>
 
 namespace model { class Collection; }
 
@@ -151,18 +152,24 @@ public:
     Assets* assetsPtr() { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
-    void addFile(model::GameFile*);
-    void addFile(QFileInfo);
-    void addFile(QFileInfo, QString);
+    Game& addCollection(model::Collection*);
+    Game& addFile(model::GameFile*);
+    Game& createFile(QFileInfo);
+    Game& createFile(QFileInfo, QString);
+    const std::unordered_set<model::GameFile*>& fileSetConst() const { Q_ASSERT(m_files->isEmpty()); return m_file_set; }
+    const std::unordered_set<model::Collection*>& collectionSetConst() const { Q_ASSERT(m_collections->isEmpty()); return m_collection_set; }
+    const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(m_file_set.empty()); return m_files->asList(); }
+    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(m_collection_set.empty()); return m_collections->asList(); }
     QML_OBJMODEL_PROPERTY(model::GameFile, files)
-    public: const QVector<model::GameFile*>& filesConst() const { return m_files->asList(); }
-
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
-    public: const QVector<model::Collection*>& collectionsConst() const { return m_collections->asList(); }
 
 private:
     GameData m_data;
     Assets* const m_assets;
+
+    // TODO: optimize away
+    std::unordered_set<model::Collection*> m_collection_set;
+    std::unordered_set<model::GameFile*> m_file_set;
 
 
 signals:
@@ -179,6 +186,8 @@ public:
     explicit Game(QFileInfo first_file, QObject* parent = nullptr);
 
     Q_INVOKABLE void launch();
+
+    void finalize();
 };
 
 

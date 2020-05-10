@@ -20,51 +20,6 @@
 #include "LocaleUtils.h"
 
 
-namespace {
-void fill_game_model(providers::SearchContext& sctx, QQmlObjectListModel<model::Game>& model)
-{
-    QObject* const parent = model.parent();
-
-    QVector<model::Game*> items;
-    items.reserve(static_cast<int>(sctx.games.size()));
-    for (auto& keyval : sctx.games) {
-        model::Game* const game = keyval.second;
-
-        Q_ASSERT(game->parent() == nullptr);
-        game->setParent(parent);
-
-        items.append(game);
-    }
-
-    std::sort(items.begin(), items.end(), model::sort_games);
-    items.erase(std::unique(items.begin(), items.end()), items.end());
-
-    model.append(std::move(items));
- }
-
-void fill_collection_model(providers::SearchContext& sctx, QQmlObjectListModel<model::Collection>& model)
-{
-    QObject* const parent = model.parent();
-
-    QVector<model::Collection*> items;
-    items.reserve(static_cast<int>(sctx.collections.size()));
-    for (auto& keyval : sctx.collections) {
-        model::Collection* const coll = keyval.second;
-
-        Q_ASSERT(coll->parent() == nullptr);
-        coll->setParent(parent);
-
-        items.append(coll);
-    }
-
-    std::sort(items.begin(), items.end(), model::sort_collections);
-    items.erase(std::unique(items.begin(), items.end()), items.end());
-
-    model.append(std::move(items));
-}
-} // namespace
-
-
 ApiObject::ApiObject(QObject* parent)
     : QObject(parent)
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
@@ -104,30 +59,41 @@ void ApiObject::startScanning()
     m_collections->clear();
     m_allGames->clear();
 
-    m_providerman.startStaticSearch(m_providerman_sctx);
+    m_providerman.startStaticSearch(m_providerman_collections, m_providerman_games);
 }
 
 void ApiObject::onStaticDataLoaded()
 {
-    fill_game_model(m_providerman_sctx, *m_allGames);
-    fill_collection_model(m_providerman_sctx, *m_collections);
+    for (model::Game* const game : m_providerman_games) {
+        Q_ASSERT(game->parent() == nullptr);
+        game->setParent(this);
 
-    for (model::Game* const game : qAsConst(*m_allGames)) {
         connect(game, &model::Game::launchFileSelectorRequested,
                 this, &ApiObject::onGameFileSelectorRequested);
         connect(game, &model::Game::favoriteChanged,
                 this, &ApiObject::onGameFavoriteChanged);
 
-        for (model::GameFile* const gamefile : *game->files()) {
+        for (model::GameFile* const gamefile : game->filesConst()) {
             connect(gamefile, &model::GameFile::launchRequested,
                     this, &ApiObject::onGameFileLaunchRequested);
         }
     }
+    for (model::Collection* const coll : m_providerman_collections) {
+        Q_ASSERT(coll->parent() == nullptr);
+        coll->setParent(this);
+    }
+
+    QVector<model::Game*> game_vec;
+    std::swap(m_providerman_games, game_vec);
+    m_allGames->append(std::move(game_vec));
+
+    QVector<model::Collection*> coll_vec;
+    std::swap(m_providerman_collections, coll_vec);
+    m_collections->append(std::move(coll_vec));
 
     m_internal.meta().onUiReady();
     qInfo().noquote() << tr_log("%1 games found").arg(m_allGames->count());
 
-    m_providerman_sctx = providers::SearchContext();
     m_providerman.startDynamicSearch(m_allGames->asList(), m_collections->asList());
 }
 

@@ -300,7 +300,7 @@ void Metadata::enhance(providers::SearchContext& sctx, HashMap<model::Game*, QSt
 
     std::vector<GogEntry> entries;
 
-    for (model::Game* game_ptr : coll.gamesConst()) {
+    for (model::Game* const game_ptr : coll.gameSetConst()) {
         if (Q_LIKELY(gogid_map.count(game_ptr)))
             entries.emplace_back(gogid_map.at(game_ptr), game_ptr);
     }

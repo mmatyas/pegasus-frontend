@@ -24,11 +24,11 @@ namespace {
 void add_new_game_to_parent_maybe(model::Game* game, model::Collection* collection)
 {
     if (collection) {
-        game->collections()->append(collection);
-        game->setLaunchCmd(collection->commonLaunchCmd());
-        game->setLaunchWorkdir(collection->commonLaunchWorkdir());
-        game->setLaunchCmdBasedir(collection->commonLaunchCmdBasedir());
-        collection->games()->append(game);
+        game->addCollection(collection)
+            .setLaunchCmd(collection->commonLaunchCmd())
+            .setLaunchWorkdir(collection->commonLaunchWorkdir())
+            .setLaunchCmdBasedir(collection->commonLaunchCmdBasedir());
+        collection->addGame(game);
     }
 }
 } // namespace
@@ -83,8 +83,8 @@ std::pair<size_t, model::Game*> SearchContext::add_or_create_game_for(QFileInfo 
     if (found != path_to_gameid.end()) {
         Q_ASSERT(games.count(found->second));
         model::Game* game = games[found->second];
-        collection.games()->append(game);
-        game->collections()->append(&collection);
+        collection.addGame(game);
+        game->addCollection(&collection);
         return std::make_pair(found->second, game);
     }
 

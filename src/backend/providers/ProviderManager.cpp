@@ -42,84 +42,77 @@ std::vector<ProviderPtr> enabled_providers()
     return out;
 }
 
-void remove_empty_collections(providers::SearchContext& ctx)
+void remove_invalid_items(providers::SearchContext& ctx)
 {
-    auto it = ctx.collections.begin();
-    while (it != ctx.collections.end()) {
-        model::Collection& coll = *it->second;
+    // NOTE: as Collections depend on Games, make sure Games are removed first
+    std::unordered_set<model::Collection*> affected_collections;
+    std::unordered_set<model::Game*> affected_games;
 
-        const bool is_empty = coll.games()->isEmpty();
-        if (is_empty) {
-            qWarning().noquote()
-                << tr_log("No games found for collection '%1', ignored").arg(coll.name());
 
-            it = ctx.collections.erase(it);
+    auto game_it = ctx.games.begin();
+    while (game_it != ctx.games.end()) {
+        model::Game* const ptr = game_it->second;
+        const bool has_files = !ptr->fileSetConst().empty();
+        const bool has_colls = !ptr->collectionSetConst().empty();
+        if (has_files && has_colls) {
+            ++game_it;
             continue;
         }
 
-        ++it;
-    }
-}
-
-void remove_empty_games(HashMap<size_t, model::Game*>& games)
-{
-    auto it = games.begin();
-    while (it != games.end()) {
-        model::Game& game = *it->second;
-
-        if (game.files()->isEmpty()) {
+        if (!has_files) {
             qWarning().noquote()
-                << tr_log("No files defined for game '%1', ignored").arg(game.title());
-            it = games.erase(it);
+                << tr_log("No files defined for game '%1', ignored").arg(ptr->title());
+        }
+        else if (!has_colls) {
+            qWarning().noquote()
+                << tr_log("Game '%1' does not belong to any collections, ignored").arg(ptr->title());
+        }
+
+        affected_collections.insert(ptr->collectionSetConst().cbegin(), ptr->collectionSetConst().cend());
+        affected_games.insert(ptr);
+        delete ptr;
+        game_it = ctx.games.erase(game_it);
+    }
+
+
+    for (model::Collection* const coll : affected_collections) {
+        for (model::Game* const game: affected_games)
+            coll->gameSet().erase(game);
+    }
+
+
+    auto coll_it = ctx.collections.begin();
+    while (coll_it != ctx.collections.end()) {
+        model::Collection* const ptr = coll_it->second;
+        const bool has_games = !ptr->gameSetConst().empty();
+        if (has_games) {
+            ++coll_it;
             continue;
         }
 
-        ++it;
+        qWarning().noquote()
+            << tr_log("No valid games found for collection '%1', ignored").arg(ptr->name());
+        delete ptr;
+        coll_it = ctx.collections.erase(coll_it);
     }
 }
 
-void remove_parentless_games(providers::SearchContext& sctx)
+void finalize_entries(providers::SearchContext& sctx)
 {
-    auto it = sctx.games.begin();
-    while (it != sctx.games.end()) {
-        model::Game& game = *it->second;
-
-        if (game.collections()->isEmpty()) {
-            qWarning().noquote()
-                << tr_log("Game '%1' does not belong to any collections, ignored").arg(game.title());
-            it = sctx.games.erase(it);
-            continue;
-        }
-
-        ++it;
-    }
-}
-
-void sort_and_dedup(providers::SearchContext& sctx)
-{
-    for (auto& entry : sctx.games) {
-        entry.second->collections()->sort_uniq(model::sort_collections);
-        entry.second->files()->sort_uniq(model::sort_gamefiles);
-    }
+    for (auto& entry : sctx.games)
+        entry.second->finalize();
     for (auto& entry : sctx.collections)
-        entry.second->games()->sort_uniq(model::sort_games);
+        entry.second->finalize();
 }
 
-void postprocess_list_results(providers::SearchContext& sctx, QThread* const target_thread)
+void postprocess_list_results(providers::SearchContext& sctx)
 {
     QElapsedTimer timer;
     timer.start();
 
-    remove_empty_collections(sctx);
-    remove_empty_games(sctx.games);
-    remove_parentless_games(sctx);
-    sort_and_dedup(sctx);
+    remove_invalid_items(sctx);
+    finalize_entries(sctx);
     VEC_REMOVE_DUPLICATES(sctx.game_root_dirs);
-
-    for (auto& entry : sctx.games)
-        entry.second->moveToThread(target_thread);
-    for (auto& entry : sctx.collections)
-        entry.second->moveToThread(target_thread);
 
     qInfo().noquote() << tr_log("Game list post-processing took %1ms").arg(timer.elapsed());
 }
@@ -173,6 +166,29 @@ HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& g
     }
     return result;
 }
+
+void prepare_output(
+    const providers::SearchContext& sctx,
+    QVector<model::Collection*>& out_collections,
+    QVector<model::Game*>& out_games,
+    QThread* const target_thread)
+{
+    out_collections.reserve(sctx.collections.size());
+    out_games.reserve(sctx.games.size());
+
+    for (auto& entry : sctx.games)
+        out_games.push_back(entry.second);
+    for (auto& entry : sctx.collections)
+        out_collections.push_back(entry.second);
+
+    std::sort(out_collections.begin(), out_collections.end(), model::sort_collections);
+    std::sort(out_games.begin(), out_games.end(), model::sort_games);
+
+    for (model::Collection* const coll : out_collections)
+        coll->moveToThread(target_thread);
+    for (model::Game* const game : out_games)
+        game->moveToThread(target_thread);
+}
 } // namespace
 
 
@@ -185,11 +201,13 @@ ProviderManager::ProviderManager(QObject* parent)
     }
 }
 
-void ProviderManager::startStaticSearch(providers::SearchContext& out_sctx)
+void ProviderManager::startStaticSearch(
+    QVector<model::Collection*>& out_collections,
+    QVector<model::Game*>& out_games)
 {
     Q_ASSERT(!m_future.isRunning());
 
-    m_future = QtConcurrent::run([this, &out_sctx]{
+    m_future = QtConcurrent::run([this, &out_collections, &out_games]{
         providers::SearchContext ctx;
 
         QElapsedTimer timer;
@@ -200,13 +218,17 @@ void ProviderManager::startStaticSearch(providers::SearchContext& out_sctx)
             provider->load();
 
         run_list_providers(ctx, providers);
-        postprocess_list_results(ctx, this->thread());
+        postprocess_list_results(ctx);
         emit firstPhaseComplete(timer.restart());
 
         run_asset_providers(ctx, providers);
         emit secondPhaseComplete(timer.restart());
 
-        std::swap(ctx, out_sctx);
+        QVector<model::Collection*> collections;
+        QVector<model::Game*> games;
+        prepare_output(ctx, collections, games, this->thread());
+        std::swap(collections, out_collections);
+        std::swap(games, out_games);
         emit staticDataReady();
     });
 }

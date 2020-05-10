@@ -39,6 +39,24 @@ Collection::Collection(QString name, QObject* parent)
     , m_assets(new model::Assets(this))
 {}
 
+Collection& Collection::addGame(model::Game* ptr)
+{
+    Q_ASSERT(ptr);
+    m_game_set.insert(ptr);
+    return *this;
+}
+
+void Collection::finalize()
+{
+    // TODO: C++17 set.extract
+    QVector<model::Game*> vec;
+    vec.reserve(m_game_set.size());
+    std::copy(m_game_set.begin(), m_game_set.end(), std::back_inserter(vec));
+    std::sort(vec.begin(), vec.end(), model::sort_games);
+    m_games->append(std::move(vec));
+    m_game_set.clear();
+}
+
 bool sort_collections(const model::Collection* const a, const model::Collection* const b) {
     return QString::localeAwareCompare(a->sortName(), b->sortName()) < 0;
 };

@@ -62,12 +62,20 @@ void verify_collected_files(providers::SearchContext& sctx, const HashMap<QStrin
         }
 
         model::Collection& collection = *sctx.collections.at(coll_name);
-        QVector<model::Game*> actual_ptrs = collection.games()->asList();
+        QVector<model::Game*> actual_ptrs(collection.gamesConst());
 
         std::sort(actual_ptrs.begin(), actual_ptrs.end());
         std::sort(expected_ptrs.begin(), expected_ptrs.end());
         QCOMPARE(actual_ptrs, actual_ptrs);
     }
+}
+
+void finalize_lists(providers::SearchContext& sctx)
+{
+    for (auto& entry : sctx.games)
+        entry.second->finalize();
+    for (auto& entry : sctx.collections)
+        entry.second->finalize();
 }
 
 } // namespace
@@ -115,6 +123,7 @@ void test_PegasusProvider::simple()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/simple")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     // finds the correct collections
     QCOMPARE(static_cast<int>(ctx.collections.size()), 3);
@@ -168,6 +177,7 @@ void test_PegasusProvider::with_meta()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/with_meta")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     QCOMPARE(static_cast<int>(ctx.collections.size()), 1);
     QCOMPARE(static_cast<int>(ctx.games.size()), 6);
@@ -309,6 +319,7 @@ void test_PegasusProvider::asset_search()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/asset_search")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
     provider.findStaticData(ctx);
 
     const QString collection_name(QStringLiteral("mygames"));
@@ -346,6 +357,7 @@ void test_PegasusProvider::asset_search_by_title()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/asset_search_by_title")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
     provider.findStaticData(ctx);
 
     const QString collection_name(QStringLiteral("mygames"));
@@ -371,6 +383,7 @@ void test_PegasusProvider::custom_assets()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/custom_assets")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
     provider.findStaticData(ctx);
 
     QVERIFY(ctx.collections.size() == 1);
@@ -395,6 +408,7 @@ void test_PegasusProvider::custom_assets_multi()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/custom_assets_multi")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
     provider.findStaticData(ctx);
 
     QVERIFY(ctx.collections.size() == 1);
@@ -426,6 +440,7 @@ void test_PegasusProvider::custom_directories()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/custom_dirs/coll")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
     provider.findStaticData(ctx);
 
     QVERIFY(ctx.collections.size() == 2);
@@ -457,11 +472,12 @@ void test_PegasusProvider::multifile()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/multifile")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
     QCOMPARE(static_cast<int>(ctx.games.size()), 2);
-    QCOMPARE(static_cast<int>(ctx.games.at(0)->files()->size()), 1);
-    QCOMPARE(static_cast<int>(ctx.games.at(1)->files()->size()), 2);
+    QCOMPARE(static_cast<int>(ctx.games.at(0)->filesConst().size()), 1);
+    QCOMPARE(static_cast<int>(ctx.games.at(1)->filesConst().size()), 2);
     QCOMPARE(static_cast<int>(ctx.path_to_gameid.size()), 3);
 
     const QVector<model::Game*>& child_vec = ctx.collections.cbegin()->second->gamesConst();
@@ -536,6 +552,7 @@ void test_PegasusProvider::nonASCII()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({tempdir.path()});
     provider.findLists(ctx);
+    finalize_lists(ctx);
     provider.findStaticData(ctx);
 
     QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
@@ -574,6 +591,7 @@ void test_PegasusProvider::separate_media_dirs()
     provider.load_with_gamedirs({QStringLiteral(":/separate_media_dirs/metadata")});
 
     provider.findLists(ctx);
+    finalize_lists(ctx);
     QCOMPARE(static_cast<int>(ctx.collections.size()),  2);
     QCOMPARE(static_cast<int>(ctx.games.size()), 2);
     QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata")));
@@ -593,6 +611,7 @@ void test_PegasusProvider::relative_files_only()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/relative_files/coll")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     QVERIFY(ctx.collections.size() == 1);
     QVERIFY(ctx.collections.count(QStringLiteral("myfiles")) == 1);
@@ -615,6 +634,7 @@ void test_PegasusProvider::relative_files_with_dirs()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/relative_files_with_dirs/coll")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     QVERIFY(ctx.collections.size() == 1);
     QVERIFY(ctx.collections.count(QStringLiteral("myfiles")) == 1);
@@ -636,6 +656,7 @@ void test_PegasusProvider::sort_title()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/sort_title")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     QVERIFY(ctx.games.size() == 4);
     QVERIFY(ctx.collections.size() == 1);
@@ -661,6 +682,7 @@ void test_PegasusProvider::sort_collections()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/sort_collections")});
     provider.findLists(ctx);
+    finalize_lists(ctx);
 
     QVERIFY(ctx.games.size() == 1);
     QVERIFY(ctx.collections.size() == 4);

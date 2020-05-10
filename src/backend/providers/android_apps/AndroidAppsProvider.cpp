@@ -73,12 +73,11 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
             sctx.games.emplace(game_id, game);
         }
 
-        collection.games()->append(game);
-        game->collections()->append(&collection);
-
-        game->setTitle(appname);
-        game->setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component));
-
+        collection.addGame(game);
+        (*game)
+            .addCollection(&collection)
+            .setTitle(appname)
+            .setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component));
         game->assets().add_url(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
         game->assets().add_url(AssetType::UI_TILE, game->assets().boxFront());
     }

@@ -30,26 +30,47 @@ private slots:
     void write();
     void rewrite_empty();
     void read();
+
+private:
+    void create_dummy_data(QVector<model::Collection*>& out_collections, QVector<model::Game*>& out_games)
+    {
+        out_collections = {
+            new model::Collection("coll1", this),
+            new model::Collection("coll2", this),
+        };
+        out_games = {
+            new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
+            new model::Game(QFileInfo(":/coll1dummy2"), this),
+            new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
+        };
+        (*out_collections.at(0))
+            .addGame(out_games.at(0))
+            .addGame(out_games.at(1))
+            .finalize();
+        (*out_collections.at(1))
+            .addGame(out_games.at(2))
+            .finalize();
+        (*out_games.at(0))
+            .addCollection(out_collections.at(0))
+            .finalize();
+        (*out_games.at(1))
+            .addCollection(out_collections.at(0))
+            .finalize();
+        (*out_games.at(2))
+            .addCollection(out_collections.at(1))
+            .finalize();
+    }
 };
 
 
 void test_FavoriteDB::write()
 {
-    QVector<model::Collection*> collections = {
-        new model::Collection("coll1", this),
-        new model::Collection("coll2", this),
-    };
-    QVector<model::Game*> games = {
-        new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
-        new model::Game(QFileInfo(":/coll1dummy2"), this),
-        new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
-    };
+    QVector<model::Collection*> collections;
+    QVector<model::Game*> games;
+    create_dummy_data(collections, games);
 
     games.at(1)->setFavorite(true);
     games.at(2)->setFavorite(true);
-
-    collections.at(0)->games()->append({ games.at(0), games.at(1) });
-    collections.at(1)->games()->append(games.at(2));
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -95,17 +116,9 @@ void test_FavoriteDB::write()
 
 void test_FavoriteDB::rewrite_empty()
 {
-    QVector<model::Collection*> collections = {
-        new model::Collection("coll1", this),
-        new model::Collection("coll2", this),
-    };
-    QVector<model::Game*> games = {
-        new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
-        new model::Game(QFileInfo(":/coll1dummy2"), this),
-        new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
-    };
-    collections.at(0)->games()->append({ games.at(0), games.at(1) });
-    collections.at(1)->games()->append(games.at(2));
+    QVector<model::Collection*> collections;
+    QVector<model::Game*> games;
+    create_dummy_data(collections, games);
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -146,11 +159,9 @@ void test_FavoriteDB::rewrite_empty()
 
 void test_FavoriteDB::read()
 {
-    QVector<model::Game*> games = {
-        new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
-        new model::Game(QFileInfo(":/coll1dummy2"), this),
-        new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
-    };
+    QVector<model::Collection*> collections;
+    QVector<model::Game*> games;
+    create_dummy_data(collections, games);
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);

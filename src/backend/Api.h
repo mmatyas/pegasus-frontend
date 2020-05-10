@@ -83,7 +83,8 @@ private:
     model::GameFile* m_launch_game_file;
 
     // initialization
-    providers::SearchContext m_providerman_sctx;
+    QVector<model::Collection*> m_providerman_collections;
+    QVector<model::Game*> m_providerman_games;
     ProviderManager m_providerman;
 
     // used to trigger re-rendering of texts on locale change

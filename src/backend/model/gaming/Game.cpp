@@ -33,7 +33,7 @@ GameData::GameData(QString new_title)
 Game::Game(QFileInfo fi, QObject* parent)
     : Game(pretty_filename(fi), parent)
 {
-    addFile(std::move(fi), title());
+    createFile(std::move(fi), title());
 }
 
 Game::Game(QString name, QObject* parent)
@@ -56,21 +56,28 @@ Game& Game::setFavorite(bool new_val)
     return *this;
 }
 
-void Game::addFile(model::GameFile* ptr)
+Game& Game::addCollection(model::Collection* ptr)
 {
-    connect(ptr, &model::GameFile::playStatsChanged,
-            this, &model::Game::onEntryPlayStatsChanged);
-    m_files->append(ptr);
+    Q_ASSERT(ptr);
+    m_collection_set.insert(ptr);
+    return *this;
 }
 
-void Game::addFile(QFileInfo fi)
+Game& Game::addFile(model::GameFile* ptr)
 {
-    addFile(new model::GameFile(std::move(fi), this));
+    Q_ASSERT(ptr);
+    m_file_set.insert(ptr);
+    return *this;
 }
 
-void Game::addFile(QFileInfo fi, QString name)
+Game& Game::createFile(QFileInfo fi)
 {
-    addFile(new model::GameFile(std::move(fi), std::move(name), this));
+    return addFile(new model::GameFile(std::move(fi), this));
+}
+
+Game& Game::createFile(QFileInfo fi, QString name)
+{
+    return addFile(new model::GameFile(std::move(fi), std::move(name), this));
 }
 
 void Game::onEntryPlayStatsChanged()
@@ -99,6 +106,29 @@ void Game::launch()
         m_files->first()->launch();
     else
         emit launchFileSelectorRequested();
+}
+
+void Game::finalize()
+{
+    for (model::GameFile* const gamefile : m_file_set) {
+        connect(gamefile, &model::GameFile::playStatsChanged,
+                this, &model::Game::onEntryPlayStatsChanged);
+    }
+
+    // TODO: C++17 set.extract
+    QVector<model::Collection*> coll_vec;
+    coll_vec.reserve(m_collection_set.size());
+    std::copy(m_collection_set.begin(), m_collection_set.end(), std::back_inserter(coll_vec));
+    std::sort(coll_vec.begin(), coll_vec.end(), model::sort_collections);
+    m_collections->append(std::move(coll_vec));
+    m_collection_set.clear();
+
+    QVector<model::GameFile*> file_vec;
+    file_vec.reserve(m_file_set.size());
+    std::copy(m_file_set.begin(), m_file_set.end(), std::back_inserter(file_vec));
+    std::sort(file_vec.begin(), file_vec.end(), model::sort_gamefiles);
+    m_files->append(std::move(file_vec));
+    m_file_set.clear();
 }
 
 bool sort_games(const model::Game* const a, const model::Game* const b) {

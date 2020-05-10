@@ -298,29 +298,6 @@ public: // C++ API
     const QVector<ItemType *> & asList (void) const {
         return m_items;
     }
-    using SorterFn = std::function<bool(const ItemType* const, const ItemType* const)>;
-    void sort_uniq(const SorterFn& sorter) {
-        beginResetModel();
-
-        // keep only unique pointers
-        std::sort(m_items.begin(), m_items.end());
-        const auto del_it = std::unique(m_items.begin(), m_items.end());
-        for (auto it = del_it; it != m_items.end(); ++it) {
-            if (*it != Q_NULLPTR) {
-                disconnect(this, Q_NULLPTR, *it, Q_NULLPTR);
-                disconnect(*it, Q_NULLPTR, this, Q_NULLPTR);
-            }
-        }
-        m_items.erase(del_it, m_items.end());
-        m_items.squeeze();
-
-        // sort the actual entries
-        // TODO: avoid double sorting
-        std::sort(m_items.begin(), m_items.end(), sorter);
-
-        updateCounter();
-        endResetModel();
-    }
 
 public: // QML slots implementation
     void append (QObject * item) Q_DECL_FINAL {
@@ -465,7 +442,7 @@ private: // data members
 #define QML_OBJMODEL_PROPERTY(type, name) \
     protected: Q_PROPERTY (QQmlObjectListModelBase * name READ name CONSTANT) \
     private: QQmlObjectListModel<type> * const m_##name; \
-    public: QQmlObjectListModel<type> * name (void) const { return m_##name; } \
+    protected: QQmlObjectListModel<type> * name (void) const { return m_##name; } \
     private:
 
 #endif // QQMLOBJECTLISTMODEL_H

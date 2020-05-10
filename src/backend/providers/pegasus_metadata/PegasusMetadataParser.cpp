@@ -173,7 +173,7 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
                     // NOTE: the case when a file is set for multiple games
                     // is not handled at the moment
                     sctx.path_to_gameid.emplace(std::move(path), game_id);
-                    m_cur_game->addFile(std::move(fi));
+                    m_cur_game->createFile(std::move(fi));
                 }
             }
             break;

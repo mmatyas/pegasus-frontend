@@ -59,7 +59,7 @@ void store_addiapp(
 
     // if it refers to an existing path, do not duplicate, just try to give it a name
     if (file_it == game.filesConst().end()) {
-        game.addFile(std::move(finfo));
+        game.createFile(std::move(finfo));
         file_it = std::prev(game.filesConst().end());
     }
     if (name_it != fields.cend())
