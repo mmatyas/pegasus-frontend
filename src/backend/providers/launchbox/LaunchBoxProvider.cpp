@@ -34,7 +34,7 @@
 namespace {
 
 HashMap<QString, model::Game*>
-build_escaped_title_map(const QVector<model::Game*>& coll_childs)
+build_escaped_title_map(const std::unordered_set<model::Game*>& coll_childs)
 {
     const QRegularExpression rx_invalid(QStringLiteral(R"([<>:"\/\\|?*'])"));
     const QString underscore(QLatin1Char('_'));
@@ -79,11 +79,11 @@ void find_assets(const QString& lb_dir, const QString& platform_name,
                  providers::SearchContext& sctx)
 {
     const auto coll_it = sctx.collections.find(platform_name);
-    if (coll_it == sctx.collections.cend() || coll_it->second->gamesConst().isEmpty())
+    if (coll_it == sctx.collections.cend() || coll_it->second->gameSetConst().empty())
         return;
 
     const model::Collection& collection = *coll_it->second;
-    const HashMap<QString, model::Game*> esctitle_to_game_map = build_escaped_title_map(collection.gamesConst());
+    const HashMap<QString, model::Game*> esctitle_to_game_map = build_escaped_title_map(collection.gameSetConst());
 
     const QString images_root = lb_dir % QLatin1String("Images/") % platform_name % QLatin1Char('/');
     for (const auto& assetdir_pair : assetdir_map) {
