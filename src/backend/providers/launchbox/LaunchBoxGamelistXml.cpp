@@ -214,8 +214,10 @@ void store_game_fields(
                 [&emu_platform_name](const EmulatorPlatform& emu_platform){
                     return emu_platform.name == emu_platform_name;
                 });
-            if (emu_platform_it != emu.platforms.cend())
-                emu_params = emu_platform_it->cmd_params;
+            if (emu_platform_it != emu.platforms.cend()) {
+                if (!emu_platform_it->cmd_params.isEmpty())
+                    emu_params = emu_platform_it->cmd_params;
+            }
         }
     }
     game.setLaunchCmd(QStringLiteral("\"%1\" %2 {file.path}").arg(emu.app_path, emu_params));
