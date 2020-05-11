@@ -44,9 +44,9 @@ Constants::Constants()
         { QStringLiteral("summary"), CollAttrib::SHORT_DESC },
         { QStringLiteral("description"), CollAttrib::LONG_DESC },
         // sort name variations
-        { QStringLiteral("sortname"), CollAttrib::SORT_NAME },
-        { QStringLiteral("sort_name"), CollAttrib::SORT_NAME },
-        { QStringLiteral("sort-name"), CollAttrib::SORT_NAME },
+        { QStringLiteral("sortby"), CollAttrib::SORT_BY },
+        { QStringLiteral("sort_by"), CollAttrib::SORT_BY },
+        { QStringLiteral("sort-by"), CollAttrib::SORT_BY },
     }
     , game_attribs {
         { QStringLiteral("file"), GameAttrib::FILES },
@@ -69,12 +69,15 @@ Constants::Constants()
         { QStringLiteral("release"), GameAttrib::RELEASE },
         { QStringLiteral("rating"), GameAttrib::RATING },
         // sort title variations
-        { QStringLiteral("sorttitle"), GameAttrib::SORT_TITLE },
-        { QStringLiteral("sortname"), GameAttrib::SORT_TITLE },
-        { QStringLiteral("sort_title"), GameAttrib::SORT_TITLE },
-        { QStringLiteral("sort_name"), GameAttrib::SORT_TITLE },
-        { QStringLiteral("sort-title"), GameAttrib::SORT_TITLE },
-        { QStringLiteral("sort-name"), GameAttrib::SORT_TITLE },
+        { QStringLiteral("sorttitle"), GameAttrib::SORT_BY },
+        { QStringLiteral("sortname"), GameAttrib::SORT_BY },
+        { QStringLiteral("sort_title"), GameAttrib::SORT_BY },
+        { QStringLiteral("sort_name"), GameAttrib::SORT_BY },
+        { QStringLiteral("sort-title"), GameAttrib::SORT_BY },
+        { QStringLiteral("sort-name"), GameAttrib::SORT_BY },
+        { QStringLiteral("sortby"), GameAttrib::SORT_BY },
+        { QStringLiteral("sort_by"), GameAttrib::SORT_BY },
+        { QStringLiteral("sort-by"), GameAttrib::SORT_BY },
     }
     /*, gamefile_attribs {
         { QStringLiteral("name"), GameFileAttrib::TITLE },

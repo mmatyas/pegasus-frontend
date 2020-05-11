@@ -136,8 +136,8 @@ void Parser::parse_collection_entry(const metafile::Entry& entry) const
         case CollAttrib::LONG_DESC:
             m_cur_coll->setDescription(replace_newlines(metafile::merge_lines(entry.values)));
             break;
-        case CollAttrib::SORT_NAME:
-            m_cur_coll->setSortName(first_line_of(entry));
+        case CollAttrib::SORT_BY:
+            m_cur_coll->setSortBy(first_line_of(entry));
             break;
     }
 }
@@ -247,8 +247,8 @@ void Parser::parse_game_entry(const metafile::Entry& entry, providers::SearchCon
         case GameAttrib::LAUNCH_WORKDIR:
             m_cur_game->setLaunchWorkdir(first_line_of(entry));
             break;
-        case GameAttrib::SORT_TITLE:
-            m_cur_game->setSortTitle(first_line_of(entry));
+        case GameAttrib::SORT_BY:
+            m_cur_game->setSortBy(first_line_of(entry));
             break;
     }
 }

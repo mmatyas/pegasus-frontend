@@ -22,7 +22,7 @@ namespace model {
 
 CollectionData::CollectionData(QString new_name)
     : name(std::move(new_name))
-    , sort_name(name)
+    , sort_by(name)
     , m_short_name(name.toLower())
 {}
 
@@ -58,6 +58,6 @@ void Collection::finalize()
 }
 
 bool sort_collections(const model::Collection* const a, const model::Collection* const b) {
-    return QString::localeAwareCompare(a->sortName(), b->sortName()) < 0;
+    return QString::localeAwareCompare(a->sortBy(), b->sortBy()) < 0;
 };
 } // namespace model

@@ -26,7 +26,7 @@ QString joined_list(const QStringList& list) { return list.join(QLatin1String(",
 namespace model {
 GameData::GameData(QString new_title)
     : title(std::move(new_title))
-    , sort_title(title)
+    , sort_by(title)
 {}
 
 
@@ -132,6 +132,6 @@ void Game::finalize()
 }
 
 bool sort_games(const model::Game* const a, const model::Game* const b) {
-   return QString::localeAwareCompare(a->sortTitle(), b->sortTitle()) < 0;
+   return QString::localeAwareCompare(a->sortBy(), b->sortBy()) < 0;
 };
 } // namespace model

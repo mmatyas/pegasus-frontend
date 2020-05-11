@@ -32,7 +32,7 @@ struct CollectionData {
     explicit CollectionData(QString name);
 
     const QString name;
-    QString sort_name;
+    QString sort_by;
 
     QString summary;
     QString description;
@@ -57,7 +57,7 @@ public:
     type name() const { return m_data.field; }
 
     GETTER(const QString&, name, name)
-    GETTER(const QString&, sortName, sort_name)
+    GETTER(const QString&, sortBy, sort_by)
     GETTER(const QString&, shortName, short_name())
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
@@ -70,7 +70,7 @@ public:
 #define SETTER(type, name, field) \
     Collection& set##name(type val) { m_data.field = std::move(val); return *this; }
 
-    SETTER(QString, SortName, sort_name)
+    SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
     SETTER(QString, CommonLaunchCmd, common_launch_cmd)
@@ -81,7 +81,7 @@ public:
 
 
     Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(QString sortName READ sortName CONSTANT)
+    Q_PROPERTY(QString sortBy READ sortBy CONSTANT)
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)

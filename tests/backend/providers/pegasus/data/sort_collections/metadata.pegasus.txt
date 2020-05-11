@@ -1,13 +1,13 @@
 collection: Collection I
-sortname: Collection 1
+sort-by: Collection 1
 file: test.ext
 
 collection: Collection IX
-sortname: Collection 9
+sort-by: Collection 9
 file: test.ext
 
 collection: Collection IV
-sortname: Collection 4
+sort-by: Collection 4
 file: test.ext
 
 collection: Collection 8

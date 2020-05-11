@@ -38,7 +38,7 @@ enum class CollAttrib : unsigned char {
     LONG_DESC,
     LAUNCH_CMD,
     LAUNCH_WORKDIR,
-    SORT_NAME,
+    SORT_BY,
 };
 enum class GameAttrib : unsigned char {
     FILES,
@@ -53,7 +53,7 @@ enum class GameAttrib : unsigned char {
     RATING,
     LAUNCH_CMD,
     LAUNCH_WORKDIR,
-    SORT_TITLE,
+    SORT_BY,
 };
 // TODO: in the future
 /*enum class GameFileAttrib : unsigned char {

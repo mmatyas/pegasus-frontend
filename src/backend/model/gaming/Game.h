@@ -34,7 +34,7 @@ struct GameData {
     explicit GameData(QString);
 
     QString title;
-    QString sort_title;
+    QString sort_by;
     QString summary;
     QString description;
 
@@ -71,7 +71,7 @@ public:
     type name() const { return m_data.field; }
 
     GETTER(const QString&, title, title)
-    GETTER(const QString&, sortTitle, sort_title)
+    GETTER(const QString&, sortBy, sort_by)
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
     GETTER(const QDate&, releaseDate, release_date)
@@ -102,7 +102,7 @@ public:
     Game& set##name(type val) { m_data.field = std::move(val); return *this; }
 
     SETTER(QString, Title, title)
-    SETTER(QString, SortTitle, sort_title)
+    SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
     SETTER(QDate, ReleaseDate, release_date)
@@ -131,7 +131,8 @@ public:
 
 
     Q_PROPERTY(QString title READ title CONSTANT)
-    Q_PROPERTY(QString sortTitle READ sortTitle CONSTANT)
+    Q_PROPERTY(QString sortTitle READ sortBy CONSTANT)
+    Q_PROPERTY(QString sortBy READ sortBy CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
     Q_PROPERTY(QDate release READ releaseDate CONSTANT)
