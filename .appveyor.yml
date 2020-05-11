@@ -13,14 +13,9 @@ branches:
     - master
 
 environment:
-  matrix:
-    - flavor: mingw
-      QTDIR: C:\Qt\5.12\mingw73_32
-      MAKE: mingw32-make
-
-    - flavor: msvc
-      QTDIR: C:\Qt\5.12\msvc2017_32
-      MAKE: "nmake /NOLOGO"
+  flavor: msvc
+  QTDIR: C:\Qt\5.12\msvc2017
+  MAKE: "nmake /NOLOGO"
 
 init:
   - if %flavor%==mingw set PATH=C:\Qt\Tools\mingw73_32\bin;%PATH%
