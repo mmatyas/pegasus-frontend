@@ -54,13 +54,13 @@ void store_addiapp(
 
     model::Game& game = *sctx.games.at(gameid);
 
-    auto file_it = std::find_if(game.filesConst().begin(), game.filesConst().end(),
+    auto file_it = std::find_if(game.fileSetConst().begin(), game.fileSetConst().end(),
         [&finfo](const model::GameFile* const gf){ return gf->fileinfo() == finfo; });
 
     // if it refers to an existing path, do not duplicate, just try to give it a name
-    if (file_it == game.filesConst().end()) {
+    if (file_it == game.fileSetConst().end()) {
         game.createFile(std::move(finfo));
-        file_it = std::prev(game.filesConst().end());
+        file_it = std::prev(game.fileSetConst().end());
     }
     if (name_it != fields.cend())
         (*file_it)->setName(name_it->second);
