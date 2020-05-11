@@ -14,10 +14,6 @@ branches:
 
 environment:
   matrix:
-    - flavor: mingw
-      QTDIR: C:\Qt\5.12\mingw73_32
-      MAKE: mingw32-make
-
     - flavor: msvc
       QTDIR: C:\Qt\5.12\msvc2017_64
       MAKE: "nmake /NOLOGO"
