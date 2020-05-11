@@ -609,7 +609,7 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
 
     std::string out;
     out.reserve(out_len);
-    for (const std::string& item : list)
+    for (std::string& item : list)
         out += std::move(item) + ',';
 
     return out;

@@ -137,7 +137,7 @@ void GamepadManager::bkOnNameChanged(int device_id, QString name)
     const auto it = find_by_deviceid(*m_devices, device_id);
     if (it != m_devices->constEnd()) {
         Log::info(tr_log("Gamepad: set name of device %1 to '%2'").arg(pretty_id(device_id), name));
-        (*it)->setName(name);
+        (*it)->setName(std::move(name));
     }
 }
 

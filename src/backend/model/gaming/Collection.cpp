@@ -35,7 +35,7 @@ void CollectionData::set_short_name(const QString& name)
 Collection::Collection(QString name, QObject* parent)
     : QObject(parent)
     , m_games(new QQmlObjectListModel<model::Game>(this))
-    , m_data(name)
+    , m_data(std::move(name))
     , m_assets(new model::Assets(this))
 {}
 

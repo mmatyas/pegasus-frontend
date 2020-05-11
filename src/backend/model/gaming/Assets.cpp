@@ -32,23 +32,23 @@ const QStringList& Assets::get(AssetType key) const {
     const auto it = m_asset_lists.find(key);
     if (it != m_asset_lists.cend())
         return it->second;
-    else
-        return empty;
+
+    return empty;
 }
 
 const QString& Assets::getFirst(AssetType key) const {
     static const QString empty;
 
     const QStringList& list = get(key);
-    if (list.isEmpty())
-        return empty;
-    else
+    if (!list.isEmpty())
         return list.constFirst();
+
+    return empty;
 }
 
 void Assets::add_file(AssetType key, QString path)
 {
-	QString url = QUrl::fromLocalFile(path).toString();
+    QString url = QUrl::fromLocalFile(std::move(path)).toString();
     add_url(key, std::move(url));
 }
 

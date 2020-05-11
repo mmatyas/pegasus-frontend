@@ -40,7 +40,7 @@ Game::Game(QString name, QObject* parent)
     : QObject(parent)
     , m_files(new QQmlObjectListModel<model::GameFile>(this))
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
-    , m_data(name)
+    , m_data(std::move(name))
     , m_assets(new model::Assets(this))
 {}
 
@@ -91,7 +91,7 @@ void Game::onEntryPlayStatsChanged()
             return sum + gamefile->playTime();
         });
     m_data.playstats.last_played = std::accumulate(filesConst().cbegin(), filesConst().cend(), QDateTime(),
-        [](QDateTime current_max, const model::GameFile* const gamefile){
+        [](const QDateTime& current_max, const model::GameFile* const gamefile){
             return std::max(current_max, gamefile->lastPlayed());
         });
 
