@@ -30,14 +30,16 @@ SteamProvider::SteamProvider(QObject* parent)
             this, &SteamProvider::gameCountChanged);
 }
 
-void SteamProvider::findLists(providers::SearchContext& ctx)
+Provider& SteamProvider::findLists(providers::SearchContext& ctx)
 {
     gamelist.find(ctx);
+    return *this;
 }
 
-void SteamProvider::findStaticData(providers::SearchContext& ctx)
+Provider& SteamProvider::findStaticData(providers::SearchContext& ctx)
 {
     metadata.enhance(ctx);
+    return *this;
 }
 
 } // namespace steam

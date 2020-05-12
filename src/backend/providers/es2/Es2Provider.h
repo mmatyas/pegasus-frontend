@@ -32,8 +32,8 @@ class Es2Provider : public Provider {
 public:
     Es2Provider(QObject* parent = nullptr);
 
-    void findLists(SearchContext&) final;
-    void findStaticData(SearchContext&) final;
+    Provider& findLists(SearchContext&) final;
+    Provider& findStaticData(SearchContext&) final;
 
 private:
     SystemsParser systems;

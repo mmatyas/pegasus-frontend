@@ -31,7 +31,7 @@ AndroidAppsProvider::AndroidAppsProvider(QObject* parent)
     : Provider(QLatin1String("androidapps"), QStringLiteral("Android Apps"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
 {}
 
-void AndroidAppsProvider::findLists(SearchContext& sctx)
+Provider& AndroidAppsProvider::findLists(SearchContext& sctx)
 {
     static constexpr auto JNI_CLASS = "org/pegasus_frontend/android/MainActivity";
     static constexpr auto APPLIST_METHOD = "appList";
@@ -81,11 +81,14 @@ void AndroidAppsProvider::findLists(SearchContext& sctx)
         game->assets().add_url(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
         game->assets().add_url(AssetType::UI_TILE, game->assets().boxFront());
     }
+
+    return *this;
 }
 
-void AndroidAppsProvider::findStaticData(SearchContext& sctx)
+Provider& AndroidAppsProvider::findStaticData(SearchContext& sctx)
 {
     m_metadata.findStaticData(sctx);
+    return *this;
 }
 
 } // namespace android

@@ -29,7 +29,7 @@ class LutrisProvider : public Provider {
 public:
     explicit LutrisProvider(QObject* parent = nullptr);
 
-    void findLists(SearchContext&) final;
+    Provider& findLists(SearchContext&) final;
 };
 
 } // namespace lutris

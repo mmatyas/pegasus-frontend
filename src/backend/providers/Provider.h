@@ -64,24 +64,24 @@ public:
     virtual ~Provider();
 
     bool enabled() const { return m_enabled; }
-    void setEnabled(bool);
+    Provider& setEnabled(bool);
 
-    virtual void load() {}
-    virtual void unload() {}
+    virtual Provider& load() { return *this; }
+    virtual Provider& unload() { return *this; }
 
     /// Initialization first stage:
     /// Find all games and collections.
-    virtual void findLists(SearchContext&) {}
+    virtual Provider& findLists(SearchContext&) { return *this; }
 
     /// Initialization second stage:
     /// Enhance the previously found games and collections with metadata and assets.
-    virtual void findStaticData(SearchContext&) {}
+    virtual Provider& findStaticData(SearchContext&) { return *this; }
 
     /// Initialization third stage:
     /// Find data that may change during the runtime for all games
-    virtual void findDynamicData(const QVector<model::Collection*>&,
-                                 const QVector<model::Game*>&,
-                                 const HashMap<QString, model::GameFile*>&) {}
+    virtual Provider& findDynamicData(const QVector<model::Collection*>&,
+                                      const QVector<model::Game*>&,
+                                      const HashMap<QString, model::GameFile*>&) { return *this; }
 
 
     // events
@@ -94,8 +94,8 @@ public:
     const QString& name() const { return m_provider_name; }
     uint8_t flags() const { return m_provider_flags; }
 
-    void setOption(const QString&, QString);
-    void setOption(const QString&, std::vector<QString>);
+    Provider& setOption(const QString&, QString);
+    Provider& setOption(const QString&, std::vector<QString>);
     const HashMap<QString, std::vector<QString>>& options() const { return m_options; }
 
 signals:

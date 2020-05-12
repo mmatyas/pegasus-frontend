@@ -29,7 +29,7 @@ class LaunchboxProvider : public Provider {
 public:
     explicit LaunchboxProvider(QObject* parent = nullptr);
 
-    void findLists(providers::SearchContext&) final;
+    Provider& findLists(providers::SearchContext&) final;
 };
 
 } // namespace launchbox

@@ -46,29 +46,31 @@ Favorites::Favorites(QObject* parent)
     : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), INTERNAL | PROVIDES_DYNDATA, parent)
 {}
 
-void Favorites::load() {
-    load_with_dbpath(default_db_path());
+Provider& Favorites::load() {
+    return load_with_dbpath(default_db_path());
 }
-void Favorites::load_with_dbpath(QString db_path) {
+Provider& Favorites::load_with_dbpath(QString db_path) {
     m_db_path = std::move(db_path);
+    return *this;
 }
-void Favorites::unload() {
+Provider& Favorites::unload() {
     m_db_path.clear();
+    return *this;
 }
 
-void Favorites::findDynamicData(const QVector<model::Collection*>&,
-                                const QVector<model::Game*>&,
-                                const HashMap<QString, model::GameFile*>& path_map)
+Provider& Favorites::findDynamicData(const QVector<model::Collection*>&,
+                                     const QVector<model::Game*>&,
+                                     const HashMap<QString, model::GameFile*>& path_map)
 {
     if (!QFileInfo::exists(m_db_path))
-        return;
+        return *this;
 
     QFile db_file(m_db_path);
     if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("could not open `%1` for reading, favorites are not loaded.")
                       .arg(m_db_path);
-        return;
+        return *this;
     }
 
     QTextStream db_stream(&db_file);
@@ -83,6 +85,8 @@ void Favorites::findDynamicData(const QVector<model::Collection*>&,
             parent->setFavorite(true);
         }
     }
+
+    return *this;
 }
 
 void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)

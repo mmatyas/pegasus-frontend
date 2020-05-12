@@ -32,12 +32,12 @@ class PegasusProvider : public Provider {
 public:
     explicit PegasusProvider(QObject* parent = nullptr);
 
-    void load() final;
-    void unload() final;
-    void load_with_gamedirs(std::vector<QString>);
+    Provider& load() final;
+    Provider& unload() final;
+    Provider& load_with_gamedirs(std::vector<QString>);
 
-    void findLists(SearchContext&) final;
-    void findStaticData(SearchContext&) final;
+    Provider& findLists(SearchContext&) final;
+    Provider& findStaticData(SearchContext&) final;
 
 private:
     std::vector<QString> m_game_dirs;

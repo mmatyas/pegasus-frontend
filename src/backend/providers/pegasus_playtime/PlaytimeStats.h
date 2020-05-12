@@ -32,13 +32,13 @@ class PlaytimeStats : public Provider {
 public:
     explicit PlaytimeStats(QObject* parent = nullptr);
 
-    void load() final;
-    void unload() final;
-    void load_with_dbpath(QString);
+    Provider& load() final;
+    Provider& unload() final;
+    Provider& load_with_dbpath(QString);
 
-    void findDynamicData(const QVector<model::Collection*>&,
-                         const QVector<model::Game*>&,
-                         const HashMap<QString, model::GameFile*>&) final;
+    Provider& findDynamicData(const QVector<model::Collection*>&,
+                              const QVector<model::Game*>&,
+                              const HashMap<QString, model::GameFile*>&) final;
     void onGameLaunched(model::GameFile* const) final;
     void onGameFinished(model::GameFile* const) final;
 

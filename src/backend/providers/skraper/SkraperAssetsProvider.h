@@ -34,7 +34,7 @@ class SkraperAssetsProvider : public Provider {
 public:
     explicit SkraperAssetsProvider(QObject* parent = nullptr);
 
-    void findStaticData(SearchContext&) final;
+    Provider& findStaticData(SearchContext&) final;
 
 private:
     struct SkraperDir {

@@ -113,23 +113,26 @@ Provider::Provider(QLatin1String codename, QString name, uint8_t flags, QObject*
 
 Provider::~Provider() = default;
 
-void Provider::setEnabled(bool val)
+Provider& Provider::setEnabled(bool val)
 {
     m_enabled = val;
+    return *this;
 }
 
-void Provider::setOption(const QString& key, QString val)
+Provider& Provider::setOption(const QString& key, QString val)
 {
     Q_ASSERT(!key.isEmpty());
     Q_ASSERT(!val.isEmpty());
     setOption(key, std::vector<QString>{ std::move(val) });
+    return *this;
 }
 
-void Provider::setOption(const QString& key, std::vector<QString> vals)
+Provider& Provider::setOption(const QString& key, std::vector<QString> vals)
 {
     Q_ASSERT(!key.isEmpty());
     Q_ASSERT(!vals.empty());
     m_options[key] = std::move(vals);
+    return *this;
 }
 
 } // namespace providers

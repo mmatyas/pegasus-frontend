@@ -120,7 +120,7 @@ LaunchboxProvider::LaunchboxProvider(QObject* parent)
     : Provider(QLatin1String("launchbox"), QStringLiteral("LaunchBox"), PROVIDES_GAMES, parent)
 {}
 
-void LaunchboxProvider::findLists(providers::SearchContext& sctx)
+Provider& LaunchboxProvider::findLists(providers::SearchContext& sctx)
 {
     const QString lb_dir = [this]{
         const auto option_it = options().find(QLatin1String("installdir"));
@@ -130,19 +130,19 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
     }();
     if (lb_dir.isEmpty()) {
         qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
-        return;
+        return *this;
     }
 
     const std::vector<QString> platform_names = platforms_xml::read(lb_dir);
     if (platform_names.empty()) {
         qWarning().noquote() << MSG_PREFIX << tr_log("no platforms found");
-        return;
+        return *this;
     }
 
     const HashMap<EmulatorId, Emulator> emulators = emulators_xml::read(lb_dir);
     if (emulators.empty()) {
         qWarning().noquote() << MSG_PREFIX << tr_log("no emulator settings found");
-        return;
+        return *this;
     }
 
     const Literals literals;
@@ -150,6 +150,8 @@ void LaunchboxProvider::findLists(providers::SearchContext& sctx)
         gamelist_xml::read(literals, lb_dir, platform_name, emulators, sctx);
         find_assets(lb_dir, platform_name, literals.assetdir_map, sctx);
     }
+
+    return *this;
 }
 
 } // namespace launchbox

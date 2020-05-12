@@ -32,14 +32,16 @@ GogProvider::GogProvider(QObject* parent)
             this, &GogProvider::gameCountChanged);
 }
 
-void GogProvider::findLists(SearchContext& sctx)
+Provider& GogProvider::findLists(SearchContext& sctx)
 {
     gamelist.find(sctx, m_gogids, options());
+    return *this;
 }
 
-void GogProvider::findStaticData(SearchContext& sctx)
+Provider& GogProvider::findStaticData(SearchContext& sctx)
 {
     metadata.enhance(sctx, m_gogids);
+    return *this;
 }
 
 } // namespace gog

@@ -153,33 +153,35 @@ PlaytimeStats::PlaytimeStats(QObject* parent)
     : Provider(QLatin1String("pegasus_playtime"), QStringLiteral("Playtime"), INTERNAL | PROVIDES_DYNDATA, parent)
 {}
 
-void PlaytimeStats::load() {
-    load_with_dbpath(default_db_path());
+Provider& PlaytimeStats::load() {
+    return load_with_dbpath(default_db_path());
 }
-void PlaytimeStats::load_with_dbpath(QString db_path) {
+Provider& PlaytimeStats::load_with_dbpath(QString db_path) {
     m_db_path = std::move(db_path);
+    return *this;
 }
-void PlaytimeStats::unload() {
+Provider& PlaytimeStats::unload() {
     m_db_path.clear();
+    return *this;
 }
 
-void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
-                                    const QVector<model::Game*>&,
-                                    const HashMap<QString, model::GameFile*>& path_map)
+Provider& PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
+                                         const QVector<model::Game*>&,
+                                         const HashMap<QString, model::GameFile*>& path_map)
 {
     if (!QFileInfo::exists(m_db_path))
-        return;
+        return *this;
 
     SqliteDb channel(m_db_path);
     if (!channel.open()) {
         qWarning().noquote() << MSG_PREFIX
             << tr_log("Could not open `%1`, play times will not be loaded")
                       .arg(m_db_path);
-        return;
+        return *this;
     }
     // No entries yet
     if (!channel.hasTable(QStringLiteral("paths")) || !channel.hasTable(QStringLiteral("plays")))
-        return;
+        return *this;
 
 
     QSqlQuery query;
@@ -190,7 +192,7 @@ void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
     ));
     if (!query.exec()) {
         print_query_error(query);
-        return;
+        return *this;
     }
 
     struct Stats {
@@ -219,6 +221,8 @@ void PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
         const Stats& stats = stat_map.at(pair.first);
         gamefile->update_playstats(stats.playcount, stats.playtime, stats.last_played);
     }
+
+    return *this;
 }
 
 void PlaytimeStats::onGameLaunched(model::GameFile* const gamefile)

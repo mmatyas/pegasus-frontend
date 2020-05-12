@@ -31,14 +31,16 @@ Es2Provider::Es2Provider(QObject* parent)
             this, &Es2Provider::gameCountChanged);
 }
 
-void Es2Provider::findLists(SearchContext& sctx)
+Provider& Es2Provider::findLists(SearchContext& sctx)
 {
     systems.find(sctx, m_collection_dirs);
+    return *this;
 }
 
-void Es2Provider::findStaticData(SearchContext& sctx)
+Provider& Es2Provider::findStaticData(SearchContext& sctx)
 {
     metadata.enhance(sctx, m_collection_dirs);
+    return *this;
 }
 
 } // namespace es2

@@ -78,32 +78,32 @@ LutrisProvider::LutrisProvider(QObject* parent)
     : Provider(QLatin1String("lutris"), QStringLiteral("Lutris"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
 {}
 
-void LutrisProvider::findLists(SearchContext& sctx)
+Provider& LutrisProvider::findLists(SearchContext& sctx)
 {
     const QString datadir = find_datadir();
     if (datadir.isEmpty())
-        return;
+        return *this;
 
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
         qWarning().noquote() << MSG_PREFIX << tr_log("database not found");
-        return;
+        return *this;
     }
 
     SqliteDb channel(db_path);
     if (!channel.open()) {
         qWarning().noquote() << MSG_PREFIX << tr_log("could not open the database");
-        return;
+        return *this;
     }
     // No entries yet
     if (!channel.hasTable(QStringLiteral("games")))
-        return;
+        return *this;
 
     QSqlQuery query;
     query.prepare(QLatin1String("SELECT id, slug, name, playtime FROM games"));
     if (!query.exec()) {
         qWarning().noquote() << MSG_PREFIX << query.lastError().text();
-        return;
+        return *this;
     }
 
 
@@ -132,6 +132,8 @@ void LutrisProvider::findLists(SearchContext& sctx)
     }
     if (game_count_before != sctx.games.size())
         emit gameCountChanged(static_cast<int>(sctx.games.size()));
+
+    return *this;
 }
 
 } // namespace lutris

@@ -81,7 +81,7 @@ SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
     }
 {}
 
-void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
+Provider& SkraperAssetsProvider::findStaticData(SearchContext& sctx)
 {
     unsigned found_assets_cnt = 0;
 
@@ -120,6 +120,7 @@ void SkraperAssetsProvider::findStaticData(SearchContext& sctx)
     }
 
     qInfo().noquote() << tr_log("%1: %2 assets found").arg(name(), QString::number(found_assets_cnt));
+    return *this;
 }
 
 } // namespace skraper

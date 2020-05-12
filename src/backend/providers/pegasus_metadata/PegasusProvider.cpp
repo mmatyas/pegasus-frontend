@@ -62,26 +62,30 @@ PegasusProvider::PegasusProvider(QObject* parent)
     : Provider(QLatin1String("pegasus_metafiles"), QStringLiteral("Metafiles"), INTERNAL | PROVIDES_GAMES | PROVIDES_ASSETS, parent)
 {}
 
-void PegasusProvider::load() {
-    load_with_gamedirs(get_game_dirs());
+Provider& PegasusProvider::load() {
+    return load_with_gamedirs(get_game_dirs());
 }
-void PegasusProvider::load_with_gamedirs(std::vector<QString> game_dirs) {
+Provider& PegasusProvider::load_with_gamedirs(std::vector<QString> game_dirs) {
     m_game_dirs = std::move(game_dirs);
+    return *this;
 }
-void PegasusProvider::unload() {
+Provider& PegasusProvider::unload() {
     m_game_dirs.clear();
+    return *this;
 }
 
-void PegasusProvider::findLists(SearchContext& ctx)
+Provider& PegasusProvider::findLists(SearchContext& ctx)
 {
     // NOTE: after this call, m_game_dirs also contains the collection directories
     find_in_dirs(m_game_dirs, ctx);
     emit gameCountChanged(static_cast<int>(ctx.games.size()));
+    return *this;
 }
 
-void PegasusProvider::findStaticData(SearchContext& ctx)
+Provider& PegasusProvider::findStaticData(SearchContext& ctx)
 {
     find_assets(ctx.game_root_dirs, ctx.games);
+    return *this;
 }
 
 } // namespace pegasus

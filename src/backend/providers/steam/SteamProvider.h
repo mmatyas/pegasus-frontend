@@ -31,8 +31,8 @@ class SteamProvider : public Provider {
 public:
     explicit SteamProvider(QObject* parent = nullptr);
 
-    void findLists(providers::SearchContext&) final;
-    void findStaticData(providers::SearchContext&) final;
+    Provider& findLists(providers::SearchContext&) final;
+    Provider& findStaticData(providers::SearchContext&) final;
 
 private:
     Gamelist gamelist;
