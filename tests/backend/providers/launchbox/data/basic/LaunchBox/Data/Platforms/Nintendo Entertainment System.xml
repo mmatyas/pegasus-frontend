@@ -1,0 +1,120 @@
+<?xml version="1.0" standalone="yes"?>
+<LaunchBox>
+  <Game>
+    <GogAppId />
+    <ApplicationPath>..\game\Test Bros (JU) [!].zip</ApplicationPath>
+    <CommandLine />
+    <Completed>false</Completed>
+    <ConfigurationCommandLine />
+    <ConfigurationPath />
+    <DateAdded>2019-06-08T22:47:28.9517726+02:00</DateAdded>
+    <DateModified>2019-06-08T22:47:28.9517726+02:00</DateModified>
+    <Developer>Nintendo</Developer>
+    <DosBoxConfigurationPath />
+    <Emulator>dc2d31d3-60f0-448c-92a1-42158bae7a94</Emulator>
+    <Favorite>true</Favorite>
+    <ID>23d8c632-a5c9-4202-be45-fe04ad82d25f</ID>
+    <ManualPath />
+    <MusicPath />
+    <Notes>Some description here!</Notes>
+    <Platform>Nintendo Entertainment System</Platform>
+    <Publisher>Nintendo</Publisher>
+    <Rating>Not Rated</Rating>
+    <ReleaseDate>1985-09-13T09:00:00+02:00</ReleaseDate>
+    <RootFolder />
+    <ScummVMAspectCorrection>false</ScummVMAspectCorrection>
+    <ScummVMFullscreen>false</ScummVMFullscreen>
+    <ScummVMGameDataFolderPath />
+    <ScummVMGameType />
+    <SortTitle />
+    <Source />
+    <StarRatingFloat>0</StarRatingFloat>
+    <StarRating>0</StarRating>
+    <CommunityStarRating>4.572131</CommunityStarRating>
+    <CommunityStarRatingTotalVotes>305</CommunityStarRatingTotalVotes>
+    <Status>Imported ROM</Status>
+    <DatabaseID>140</DatabaseID>
+    <WikipediaURL>https://en.wikipedia.org/wiki/Super_Mario_Bros.</WikipediaURL>
+    <Title>Super Mario Bros.</Title>
+    <UseDosBox>false</UseDosBox>
+    <UseScummVM>false</UseScummVM>
+    <Version>(JU) [!]</Version>
+    <Series />
+    <PlayMode>Multiplayer</PlayMode>
+    <Region>United States, Japan</Region>
+    <PlayCount>0</PlayCount>
+    <Portable>false</Portable>
+    <VideoPath />
+    <Hide>false</Hide>
+    <Broken>false</Broken>
+    <Genre>Platform</Genre>
+    <MissingVideo>true</MissingVideo>
+    <MissingBoxFrontImage>false</MissingBoxFrontImage>
+    <MissingScreenshotImage>false</MissingScreenshotImage>
+    <MissingClearLogoImage>true</MissingClearLogoImage>
+    <MissingBackgroundImage>false</MissingBackgroundImage>
+    <MissingBox3dImage>false</MissingBox3dImage>
+    <MissingCartImage>false</MissingCartImage>
+    <MissingCart3dImage>false</MissingCart3dImage>
+    <MissingManual>false</MissingManual>
+    <MissingBannerImage>false</MissingBannerImage>
+    <MissingMusic>false</MissingMusic>
+    <UseStartupScreen>false</UseStartupScreen>
+    <HideAllNonExclusiveFullscreenWindows>false</HideAllNonExclusiveFullscreenWindows>
+    <StartupLoadDelay>0</StartupLoadDelay>
+    <HideMouseCursorInGame>false</HideMouseCursorInGame>
+    <DisableShutdownScreen>false</DisableShutdownScreen>
+    <AggressiveWindowHiding>false</AggressiveWindowHiding>
+    <OverrideDefaultStartupScreenSettings>false</OverrideDefaultStartupScreenSettings>
+    <UsePauseScreen>false</UsePauseScreen>
+    <PauseAutoHotkeyScript />
+    <ResumeAutoHotkeyScript />
+    <OverrideDefaultPauseScreenSettings>false</OverrideDefaultPauseScreenSettings>
+    <SuspendProcessOnPause>false</SuspendProcessOnPause>
+    <ForcefulPauseScreenActivation>false</ForcefulPauseScreenActivation>
+    <LoadStateAutoHotkeyScript />
+    <SaveStateAutoHotkeyScript />
+    <ResetAutoHotkeyScript />
+    <SwapDiscsAutoHotkeyScript />
+    <CustomDosBoxVersionPath />
+    <AndroidBoxFrontThumbPath />
+    <AndroidBoxFrontFullPath />
+    <AndroidBackgroundPath />
+  </Game>
+  <AdditionalApplication>
+    <Id>2caa605e-922e-46cf-b375-2e355f9c5939</Id>
+    <PlayCount>5</PlayCount>
+    <GameID>23d8c632-a5c9-4202-be45-fe04ad82d25f</GameID>
+    <ApplicationPath>..\game\Test Bros (JU) [!].zip</ApplicationPath>
+    <AutoRunAfter>false</AutoRunAfter>
+    <AutoRunBefore>false</AutoRunBefore>
+    <Name>Entry 1...</Name>
+    <UseDosBox>false</UseDosBox>
+    <UseEmulator>true</UseEmulator>
+    <WaitForExit>false</WaitForExit>
+    <Region>North America</Region>
+    <Version>(USA)</Version>
+    <EmulatorId>dc2d31d3-60f0-448c-92a1-42158bae7a94</EmulatorId>
+    <SideA>false</SideA>
+    <SideB>false</SideB>
+    <Priority>1</Priority>
+  </AdditionalApplication>
+  <AdditionalApplication>
+    <Id>b375-2e355f9c5939-2caa605e-922e-46cf</Id>
+    <PlayCount>10</PlayCount>
+    <GameID>23d8c632-a5c9-4202-be45-fe04ad82d25f</GameID>
+    <ApplicationPath>..\game\Test Bros Something.zip</ApplicationPath>
+    <AutoRunAfter>false</AutoRunAfter>
+    <AutoRunBefore>false</AutoRunBefore>
+    <Name>Entry 2...</Name>
+    <UseDosBox>false</UseDosBox>
+    <UseEmulator>true</UseEmulator>
+    <WaitForExit>false</WaitForExit>
+    <Region>North America</Region>
+    <Version>(USA)</Version>
+    <EmulatorId>dc2d31d3-60f0-448c-92a1-42158bae7a94</EmulatorId>
+    <SideA>false</SideA>
+    <SideB>false</SideB>
+    <Priority>2</Priority>
+  </AdditionalApplication>
+</LaunchBox>

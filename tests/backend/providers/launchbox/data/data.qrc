@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>empty/nothing_to_see_here</file>
+        <file>basic/LaunchBox/Data/Emulators.xml</file>
+        <file>basic/LaunchBox/Data/Platforms/Nintendo Entertainment System.xml</file>
+        <file>basic/LaunchBox/Data/Platforms.xml</file>
+        <file>basic/emu/nestopia.exe</file>
+        <file>basic/game/Test Bros (JU) [!].zip</file>
+        <file>basic/game/Test Bros Something.zip</file>
+    </qresource>
+</RCC>

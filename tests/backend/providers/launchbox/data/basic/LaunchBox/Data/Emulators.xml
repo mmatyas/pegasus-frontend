@@ -1,0 +1,40 @@
+<?xml version="1.0" standalone="yes"?>
+<LaunchBox>
+  <EmulatorPlatform>
+    <Emulator>dc2d31d3-60f0-448c-92a1-42158bae7a94</Emulator>
+    <Platform>Nintendo Entertainment System</Platform>
+    <CommandLine />
+    <Default>true</Default>
+    <M3uDiscLoadEnabled>false</M3uDiscLoadEnabled>
+  </EmulatorPlatform>
+  <Emulator>
+    <ApplicationPath>..\emu\nestopia.exe</ApplicationPath>
+    <CommandLine>-some -flag</CommandLine>
+    <DefaultPlatform />
+    <ID>dc2d31d3-60f0-448c-92a1-42158bae7a94</ID>
+    <Title>Nestopia</Title>
+    <NoQuotes>false</NoQuotes>
+    <NoSpace>false</NoSpace>
+    <HideConsole>false</HideConsole>
+    <FileNameWithoutExtensionAndPath>false</FileNameWithoutExtensionAndPath>
+    <AutoHotkeyScript />
+    <AutoExtract>false</AutoExtract>
+    <UseStartupScreen>true</UseStartupScreen>
+    <HideAllNonExclusiveFullscreenWindows>false</HideAllNonExclusiveFullscreenWindows>
+    <StartupLoadDelay>5000</StartupLoadDelay>
+    <HideMouseCursorInGame>true</HideMouseCursorInGame>
+    <DisableShutdownScreen>false</DisableShutdownScreen>
+    <AggressiveWindowHiding>false</AggressiveWindowHiding>
+    <UsePauseScreen>true</UsePauseScreen>
+    <PauseAutoHotkeyScript />
+    <ResumeAutoHotkeyScript />
+    <DefaultPauseSettingsPushed>true</DefaultPauseSettingsPushed>
+    <SuspendProcessOnPause>true</SuspendProcessOnPause>
+    <ForcefulPauseScreenActivation>true</ForcefulPauseScreenActivation>
+    <LoadStateAutoHotkeyScript />
+    <SaveStateAutoHotkeyScript />
+    <ResetAutoHotkeyScript />
+    <SwapDiscsAutoHotkeyScript />
+    <ExitAutoHotkeyScript />
+  </Emulator>
+</LaunchBox>
