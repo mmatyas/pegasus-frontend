@@ -58,11 +58,9 @@ void store_addiapp(
         [&finfo](const model::GameFile* const gf){ return gf->fileinfo() == finfo; });
 
     // if it refers to an existing path, do not duplicate, just try to give it a name
-    if (file_it == game.fileSetConst().end()) {
-        game.createFile(std::move(finfo));
-        file_it = std::prev(game.fileSetConst().end());
-    }
-    if (name_it != fields.cend())
+    if (file_it == game.fileSetConst().end())
+        game.createFile(std::move(finfo), name_it->second);
+    else
         (*file_it)->setName(name_it->second);
 
     sctx.path_to_gameid.emplace(finfo.canonicalFilePath(), gameid);
