@@ -142,6 +142,8 @@ void store_game_fields(
             case GameField::NOTES:
                 if (game.description().isEmpty())
                     game.setDescription(pair.second);
+                if (game.summary().isEmpty())
+                    game.setSummary(pair.second);
                 break;
             case GameField::DEVELOPER:
                 game.developerList().append(pair.second);
