@@ -5,17 +5,17 @@
 
 Pegasus is a graphical frontend for browsing your game library and launching all kinds of emulators from the same place. It's focusing on customizability, cross platform support (including embedded) and high performance.
 
-[![Linux (X11/RPi1/RPi2) build status](https://travis-ci.org/mmatyas/pegasus-frontend.svg?branch=master)](https://travis-ci.org/mmatyas/pegasus-frontend)
-[![Windows build status](https://ci.appveyor.com/api/projects/status/github/mmatyas/pegasus-frontend?svg=true&branch=master)](https://ci.appveyor.com/project/mmatyas/pegasus-frontend)
-[![Windows build status 2](https://circleci.com/gh/mmatyas/pegasus-frontend.svg?style=shield)](https://circleci.com/gh/mmatyas/pegasus-frontend)
+[![Travis CI status](https://travis-ci.org/mmatyas/pegasus-frontend.svg?branch=master)](https://travis-ci.org/mmatyas/pegasus-frontend)
+[![AppVeyor status](https://ci.appveyor.com/api/projects/status/github/mmatyas/pegasus-frontend?svg=true&branch=master)](https://ci.appveyor.com/project/mmatyas/pegasus-frontend)
+[![CircleCI status](https://circleci.com/gh/mmatyas/pegasus-frontend.svg?style=shield)](https://circleci.com/gh/mmatyas/pegasus-frontend)
 [![Coverity Scan status](https://scan.coverity.com/projects/12638/badge.svg)](https://scan.coverity.com/projects/mmatyas-pegasus-frontend)
 [![Codacy status](https://api.codacy.com/project/badge/Grade/716566e918a64b0fb20959c02779bbd2)](https://www.codacy.com/app/mmatyas/pegasus-frontend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mmatyas/pegasus-frontend&amp;utm_campaign=Badge_Grade)
 [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.md)
 
 - [**Main website**](http://pegasus-frontend.org)
+- [Documentation](https://pegasus-frontend.org/docs/)
+- [Latest releases](https://github.com/mmatyas/pegasus-frontend/releases/)
 - [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
-- [Latest automatic builds][gh ci builds]
-  - Debian/Ubuntu repository: [see below](#installation)
 
 
 ## Features
@@ -39,18 +39,18 @@ You can find downloads and platform-specific notes on the [project's website](ht
 **Build dependencies**
 
 - C++11 compatible compiler
-- Qt 5.8 or later (5.9 recommended), with the following modules:
+- Qt 5.12 or later, with the following modules:
     - QML and QtQuick2
     - Multimedia
     - SVG
-    - Gamepad
     - SQL (SQLite v3)
+- Either SDL (2.0.4 or later) or Qt Gamepad
 
 For more information, please see the detailed [build guide](http://pegasus-frontend.org/docs/dev/build).
 
 **Downloading the source**
 
-The project uses Git submodules. If you cloned the repository recursively, they are automatically cloned as well. In case you forget to do that, you can do it manually like this:
+The project uses Git submodules. If you've cloned the repository recursively, they are automatically cloned as well. In case you forgot to do that, you can do it manually, like this:
 
 ```sh
 # call this after every repo update
@@ -85,8 +85,5 @@ Pegasus is a free and open source project, and will remain as one. If you would 
 
 [![PayPal](https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png)](https://paypal.me/MatyasMustoha)
 [![Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/mmatyas/donate)
-[![Patreon](etc/promo/patreon.png)](https://www.patreon.com/user?u=14424256)
-
-
-
-[gh ci builds]: https://github.com/mmatyas/pegasus-frontend/releases/tag/continuous
+[![Patreon](etc/promo/donate-patreon.png)](https://www.patreon.com/user?u=14424256)
+[![Buy Me a Coffee](etc/promo/donate-coffee.png)](https://www.buymeacoffee.com/mmatyas)
