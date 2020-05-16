@@ -24,6 +24,7 @@
 #include "LocaleUtils.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -34,17 +35,19 @@
 namespace {
 
 HashMap<QString, model::Game*>
-build_escaped_title_map(const std::unordered_set<model::Game*>& coll_childs)
+build_escaped_title_map(const providers::SearchContext& sctx, const providers::PendingCollection& collection)
 {
     const QRegularExpression rx_invalid(QStringLiteral(R"([<>:"\/\\|?*'])"));
     const QString underscore(QLatin1Char('_'));
 
     HashMap<QString, model::Game*> out;
-    for (model::Game* const game : coll_childs) {
-        QString title = game->title();
+    for (const size_t game_id : collection.game_ids()) {
+        model::Game* ptr = sctx.games().at(game_id).ptr();
+        QString title = ptr->title();
         title.replace(rx_invalid, underscore);
-        out.emplace(std::move(title), game);
+        out.emplace(std::move(title), ptr);
     }
+
     return out;
 }
 
@@ -78,12 +81,12 @@ void find_assets(const QString& lb_dir, const QString& platform_name,
                  const std::vector<std::pair<QString, AssetType>>& assetdir_map,
                  providers::SearchContext& sctx)
 {
-    const auto coll_it = sctx.collections.find(platform_name);
-    if (coll_it == sctx.collections.cend() || coll_it->second->gameSetConst().empty())
+    const auto coll_it = sctx.collections().find(platform_name);
+    if (coll_it == sctx.collections().cend() || coll_it->second.game_ids().empty())
         return;
 
-    const model::Collection& collection = *coll_it->second;
-    const HashMap<QString, model::Game*> esctitle_to_game_map = build_escaped_title_map(collection.gameSetConst());
+    const providers::PendingCollection& collection = coll_it->second;
+    const HashMap<QString, model::Game*> esctitle_to_game_map = build_escaped_title_map(sctx, collection);
 
     const QString images_root = lb_dir % QLatin1String("Images/") % platform_name % QLatin1Char('/');
     for (const auto& assetdir_pair : assetdir_map) {

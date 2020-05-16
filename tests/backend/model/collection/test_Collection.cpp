@@ -42,12 +42,13 @@ void test_Collection::names()
 
 void test_Collection::games()
 {
+    std::vector<model::Game*> games {
+        new model::Game("a", this),
+        new model::Game("b", this),
+        new model::Game("c", this),
+    };
     const auto collection = new model::Collection("test", this);
-    (*collection)
-        .addGame(new model::Game(QFileInfo("a"), this))
-        .addGame(new model::Game(QFileInfo("b"), this))
-        .addGame(new model::Game(QFileInfo("c"), this))
-        .finalize();
+    collection->setGames(std::move(games));
 
     // matching count and sorted by title
     QCOMPARE(collection->gamesConst().count(), 3);

@@ -149,29 +149,20 @@ public:
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
 
-    Assets& assets() { return *m_assets; }
-    Assets* assetsPtr() { return m_assets; }
+    Assets& assets() const { return *m_assets; }
+    Assets* assetsPtr() const { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
-    Game& addCollection(model::Collection*);
-    Game& addFile(model::GameFile*);
-    Game& createFile(QFileInfo);
-    Game& createFile(QFileInfo, QString);
-    const std::unordered_set<model::GameFile*>& fileSetConst() const { Q_ASSERT(m_files->isEmpty()); return m_file_set; }
-    const std::unordered_set<model::Collection*>& collectionSetConst() const { Q_ASSERT(m_collections->isEmpty()); return m_collection_set; }
-    const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(m_file_set.empty()); return m_files->asList(); }
-    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(m_collection_set.empty()); return m_collections->asList(); }
+    Game& setFiles(std::vector<model::GameFile*>&&);
+    Game& setCollections(std::vector<model::Collection*>&&);
+    const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(!m_files->isEmpty()); return m_files->asList(); }
+    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(!m_collections->isEmpty()); return m_collections->asList(); }
     QML_OBJMODEL_PROPERTY(model::GameFile, files)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
 
 private:
     GameData m_data;
     Assets* const m_assets;
-
-    // TODO: optimize away
-    std::unordered_set<model::Collection*> m_collection_set;
-    std::unordered_set<model::GameFile*> m_file_set;
-
 
 signals:
     void launchFileSelectorRequested();
@@ -184,7 +175,6 @@ private slots:
 
 public:
     explicit Game(QString name, QObject* parent = nullptr);
-    explicit Game(QFileInfo first_file, QObject* parent = nullptr);
 
     Q_INVOKABLE void launch();
 

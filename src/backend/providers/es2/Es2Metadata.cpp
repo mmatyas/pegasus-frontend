@@ -22,6 +22,7 @@
 #include "PegasusAssets.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 #include "utils/PathCheck.h"
 
 #include <QDebug>
@@ -115,7 +116,7 @@ void convertToCanonicalPath(QString& path, const QString& containing_dir)
 }
 
 void findPegasusAssetsInScrapedir(const QDir& scrapedir,
-                                  const HashMap<QString, model::Game* const>& games_by_shortpath)
+                                  const HashMap<QString, model::Game*>& games_by_shortpath)
 {
     // FIXME: except the short path, this function is the same as the Pegasus asset code
     if (!scrapedir.exists())
@@ -130,11 +131,12 @@ void findPegasusAssetsInScrapedir(const QDir& scrapedir,
             continue;
 
         const QString shortpath = scrapedir.dirName() % '/' % detection_result.basename;
-        if (!games_by_shortpath.count(shortpath))
+        const auto slot = games_by_shortpath.find(shortpath);
+        if (slot == games_by_shortpath.cend())
             continue;
 
-        model::Game* const game = games_by_shortpath.at(shortpath);
-        game->assets().add_file(detection_result.asset_type, dir_it.filePath());
+        model::Game& game = *slot->second;
+        game.assets().add_file(detection_result.asset_type, dir_it.filePath());
     }
 }
 
@@ -229,23 +231,24 @@ void MetadataParser::enhance(providers::SearchContext& sctx,
                               % QStringLiteral("/.emulationstation/downloaded_images/");
 
     // shortpath: dir name + extensionless filename
-    HashMap<QString, model::Game* const> games_by_shortpath;
-    games_by_shortpath.reserve(sctx.games.size());
+    HashMap<QString, model::Game*> games_by_shortpath;
+    games_by_shortpath.reserve(sctx.games().size());
 
-    for (const auto& collslot : sctx.collections) {
-        const model::Collection& coll = *collslot.second;
-        const QString coll_shortname = coll.shortName();
+    for (const auto& collslot : sctx.collections()) {
+        const PendingCollection& coll = collslot.second;
+        const QString coll_shortname = coll.inner().shortName();
 
-        for (model::Game* const game_ptr : coll.gamesConst()) {
-            const QString gamefile = game_ptr->filesConst().first()->fileinfo().completeBaseName();
+        for (const size_t game_id : coll.game_ids()) {
+            const PendingGame& game = sctx.games().at(game_id);
+            const QString gamefile = game.files().front()->fileinfo().completeBaseName();
             const QString shortpath = coll_shortname % '/' % gamefile;
-            games_by_shortpath.emplace(shortpath, game_ptr);
+            games_by_shortpath.emplace(shortpath, game.ptr());
         }
     }
 
 
-    for (const auto& collslot : sctx.collections) {
-        const model::Collection& collection = *collslot.second;
+    for (const auto& collslot : sctx.collections()) {
+        const model::Collection& collection = collslot.second.inner();
 
         // ignore Steam
         if (collection.shortName() == QLatin1String("steam"))
@@ -347,13 +350,14 @@ void MetadataParser::parseGameEntry(QXmlStreamReader& xml,
     // apply
 
     convertToCanonicalPath(game_path, collection_dir);
-    if (!sctx.path_to_gameid.count(game_path))
+    const auto slot = sctx.entryid_to_gameid().find(game_path);
+    if (slot == sctx.entryid_to_gameid().cend())
         return;
 
-    const size_t game_id = sctx.path_to_gameid.at(game_path);
-    model::Game& game = *sctx.games.at(game_id);
-    applyMetadata(game, xml_props);
-    findAssets(game, xml_props, collection_dir);
+    const size_t game_id = slot->second;
+    const PendingGame& game = sctx.games().at(game_id);
+    applyMetadata(game.inner(), xml_props);
+    findAssets(game.inner(), xml_props, collection_dir);
 }
 
 void MetadataParser::applyMetadata(model::Game& game,

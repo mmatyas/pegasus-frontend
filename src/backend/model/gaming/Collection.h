@@ -91,10 +91,8 @@ public:
     Assets* assetsPtr() { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
-    Collection& addGame(model::Game*);
-    std::unordered_set<model::Game*>& gameSet() { Q_ASSERT(m_games->isEmpty()); return m_game_set; }
-    const std::unordered_set<model::Game*>& gameSetConst() const { Q_ASSERT(m_games->isEmpty()); return m_game_set; }
-    const QVector<model::Game*>& gamesConst() const { Q_ASSERT(m_game_set.empty()); return m_games->asList(); }
+    Collection& setGames(std::vector<model::Game*>&&);
+    const QVector<model::Game*>& gamesConst() const { Q_ASSERT(!m_games->isEmpty()); return m_games->asList(); }
     QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
@@ -105,9 +103,6 @@ public:
 private:
     CollectionData m_data;
     Assets* const m_assets;
-
-    // TODO: optimize away
-    std::unordered_set<model::Game*> m_game_set;
 };
 
 

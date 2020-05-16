@@ -20,6 +20,7 @@
 #include "LaunchBoxCommon.h"
 #include "LocaleUtils.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 
 #include <QDebug>
 #include <QDir>
@@ -46,24 +47,20 @@ void add_raw_asset_maybe(model::Assets& assets, const AssetType type,
 void store_addiapp(
     const QString& lb_dir,
     const HashMap<AdditionalAppField, QString, EnumHash>& fields,
-    const size_t gameid,
+    PendingGame& game,
     providers::SearchContext& sctx)
 {
     const QFileInfo finfo(lb_dir, fields.at(AdditionalAppField::PATH));
     const auto name_it = fields.find(AdditionalAppField::NAME);
 
-    model::Game& game = *sctx.games.at(gameid);
-
-    auto file_it = std::find_if(game.fileSetConst().begin(), game.fileSetConst().end(),
+    auto file_it = std::find_if(game.files().begin(), game.files().end(),
         [&finfo](const model::GameFile* const gf){ return gf->fileinfo() == finfo; });
 
     // if it refers to an existing path, do not duplicate, just try to give it a name
-    if (file_it == game.fileSetConst().end())
-        game.createFile(std::move(finfo), name_it->second);
+    if (file_it == game.files().end())
+        sctx.create_game_file_with_name_for(std::move(finfo), name_it->second, game);
     else
         (*file_it)->setName(name_it->second);
-
-    sctx.path_to_gameid.emplace(finfo.canonicalFilePath(), gameid);
 }
 
 bool addiapp_fields_valid(
@@ -224,20 +221,20 @@ void store_game_fields(
     game.setLaunchWorkdir(QFileInfo(emu.app_path).absolutePath());
 }
 
-size_t store_game(
+PendingGame& store_game(
     const QString& lb_dir,
     const HashMap<EmulatorId, Emulator>& emulators,
     const HashMap<GameField, QString, EnumHash>& fields,
     providers::SearchContext& sctx,
-    model::Collection& collection)
+    PendingCollection& collection)
 {
     const QFileInfo finfo(lb_dir, fields.at(GameField::PATH));
     const QString can_path = finfo.canonicalFilePath();
 
-    auto entry = sctx.add_or_create_game_for(std::move(finfo), collection);
-    store_game_fields(lb_dir, emulators, fields, *entry.second);
+    PendingGame& entry = sctx.add_or_create_game_from_file(std::move(finfo), collection);
+    store_game_fields(lb_dir, emulators, fields, entry.inner());
 
-    return entry.first;
+    return entry;
 }
 
 bool game_fields_valid(
@@ -334,11 +331,11 @@ void read(
         return;
     }
 
-    model::Collection& collection = *sctx.get_or_create_collection(platform_name);
+    PendingCollection& collection = sctx.get_or_create_collection(platform_name);
 
     // should be handled after all games have been found
     std::vector<HashMap<AdditionalAppField, QString, EnumHash>> addiapps;
-    HashMap<GameId, size_t> gameid_map;
+    HashMap<GameId, PendingGame&> gameid_map;
 
 
     QXmlStreamReader xml(&xml_file);
@@ -348,8 +345,8 @@ void read(
         if (xml.name() == QLatin1String("Game")) {
             const HashMap<GameField, QString, EnumHash> fields = read_game(xml, literals);
             if (game_fields_valid(xml, lb_dir, xml_rel_path, emulators, fields)) {
-                const size_t gameid = store_game(lb_dir, emulators, fields, sctx, collection);
-                gameid_map.emplace(fields.at(GameField::ID), gameid);
+                PendingGame& game = store_game(lb_dir, emulators, fields, sctx, collection);
+                gameid_map.emplace(fields.at(GameField::ID), game);
             }
             continue;
         }

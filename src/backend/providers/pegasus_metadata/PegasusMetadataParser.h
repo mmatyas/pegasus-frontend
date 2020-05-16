@@ -19,6 +19,7 @@
 
 #include "providers/Provider.h"
 #include "utils/MoveOnly.h"
+#include "providers/SearchContext.h"
 
 #include <QString>
 #include <vector>
@@ -50,8 +51,8 @@ private:
 
     // NOTE: while these would be highly unsafe normally, we can use the fact
     // that no games/filters are added during the time their pointer is used
-    model::Collection* m_cur_coll;
-    model::Game* m_cur_game;
+    PendingCollection* m_cur_coll;
+    PendingGame* m_cur_game;
     FileFilter* m_cur_filter;
 
 private:

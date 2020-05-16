@@ -32,6 +32,16 @@ private slots:
     void read();
 
 private:
+    model::Game* create_game(QString path)
+    {
+        QFileInfo fi(std::move(path));
+        QString name = model::pretty_filename(fi);
+        auto game = new model::Game(name, this);
+        auto file = new model::GameFile(std::move(fi), game);
+        game->setFiles({ file });
+        return game;
+    }
+
     void create_dummy_data(QVector<model::Collection*>& out_collections, QVector<model::Game*>& out_games)
     {
         out_collections = {
@@ -39,26 +49,22 @@ private:
             new model::Collection("coll2", this),
         };
         out_games = {
-            new model::Game(QFileInfo(":/a/b/coll1dummy1"), this),
-            new model::Game(QFileInfo(":/coll1dummy2"), this),
-            new model::Game(QFileInfo(":/x/y/z/coll2dummy1"), this),
+            create_game(":/a/b/coll1dummy1"),
+            create_game(":/coll1dummy2"),
+            create_game(":/x/y/z/coll2dummy1"),
         };
-        (*out_collections.at(0))
-            .addGame(out_games.at(0))
-            .addGame(out_games.at(1))
-            .finalize();
-        (*out_collections.at(1))
-            .addGame(out_games.at(2))
-            .finalize();
-        (*out_games.at(0))
-            .addCollection(out_collections.at(0))
-            .finalize();
-        (*out_games.at(1))
-            .addCollection(out_collections.at(0))
-            .finalize();
-        (*out_games.at(2))
-            .addCollection(out_collections.at(1))
-            .finalize();
+
+        out_collections.at(0)->setGames({
+            out_games.at(0),
+            out_games.at(1),
+        });
+        out_collections.at(1)->setGames({
+            out_games.at(2),
+        });
+
+        (*out_games.at(0)).setCollections({ out_collections.at(0) });
+        (*out_games.at(1)).setCollections({ out_collections.at(0) });
+        (*out_games.at(2)).setCollections({ out_collections.at(1) });
     }
 };
 

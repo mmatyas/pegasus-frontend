@@ -17,18 +17,17 @@
 
 #pragma once
 
-#include "utils/HashMap.h"
-
 #include <QString>
-#include <vector>
+#include <set>
 
 namespace model { class Game; }
+namespace providers { class SearchContext; }
 
 
 namespace providers {
 namespace pegasus {
 
-void find_assets(const std::vector<QString>&, HashMap<size_t, model::Game*>&);
+void find_assets(const std::set<QString>&, SearchContext&);
 
 } // namespace pegasus
 } // namespace providers

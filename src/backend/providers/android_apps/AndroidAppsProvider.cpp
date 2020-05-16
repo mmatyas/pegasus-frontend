@@ -18,6 +18,7 @@
 #include "AndroidAppsProvider.h"
 
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 
 #include <QFileInfo>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
@@ -43,8 +44,8 @@ Provider& AndroidAppsProvider::findLists(SearchContext& sctx)
 
 
     const QString COLLECTION_TAG(QStringLiteral("Android"));
-    model::Collection& collection = *sctx.get_or_create_collection(COLLECTION_TAG);
-    collection.setShortName(COLLECTION_TAG);
+    PendingCollection& collection = sctx.get_or_create_collection(COLLECTION_TAG);
+    collection.inner().setShortName(COLLECTION_TAG);
 
 
     QAndroidJniEnvironment jni_env;
@@ -60,26 +61,12 @@ Provider& AndroidAppsProvider::findLists(SearchContext& sctx)
         const QString action = jni_app.callObjectMethod<jstring>(APP_LAUNCH_ACT).toString();
         const QString component = jni_app.callObjectMethod<jstring>(APP_LAUNCH_CPT).toString();
 
-        model::Game* game = nullptr;
-
-        auto found = sctx.path_to_gameid.find(package);
-        if (found != sctx.path_to_gameid.end()) {
-            game = sctx.games[found->second];
-        }
-        else {
-            game = new model::Game(QFileInfo(package));
-            size_t game_id = sctx.games.size();
-            sctx.path_to_gameid.emplace(package, game_id);
-            sctx.games.emplace(game_id, game);
-        }
-
-        collection.addGame(game);
-        (*game)
-            .addCollection(&collection)
+        PendingGame& game = sctx.add_or_create_game_from_entry(package, collection);
+        game.inner()
             .setTitle(appname)
             .setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component));
-        game->assets().add_url(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
-        game->assets().add_url(AssetType::UI_TILE, game->assets().boxFront());
+        game.inner().assets().add_url(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
+        game.inner().assets().add_url(AssetType::UI_TILE, game.inner().assets().boxFront());
     }
 
     return *this;

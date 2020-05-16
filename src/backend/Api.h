@@ -83,7 +83,7 @@ private:
     model::GameFile* m_launch_game_file;
 
     // initialization
-    QVector<model::Collection*> m_providerman_collections;
+    QVector<model::Collection*> m_providerman_collections; // TODO: std::vector
     QVector<model::Game*> m_providerman_games;
     ProviderManager m_providerman;
 

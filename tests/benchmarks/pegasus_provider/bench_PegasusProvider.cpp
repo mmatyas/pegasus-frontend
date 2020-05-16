@@ -17,6 +17,7 @@
 
 #include <QtTest/QtTest>
 
+#include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
 
 #include <QString>
@@ -32,24 +33,26 @@ private slots:
 
 void bench_PegasusProvider::find_in_empty_dir()
 {
-    providers::SearchContext sctx;
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/empty")});
 
     QBENCHMARK {
         QTest::ignoreMessage(QtWarningMsg, "Metafiles: No metadata file found in `:/empty`, directory ignored");
+        providers::SearchContext sctx;
+        Q_ASSERT(sctx.games().empty());
         provider.findLists(sctx);
     }
 }
 
 void bench_PegasusProvider::find_in_filled_dir()
 {
-    providers::SearchContext sctx;
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/filled")});
 
     QBENCHMARK {
         QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/filled/collections.txt`");
+        providers::SearchContext sctx;
+        Q_ASSERT(sctx.games().empty());
         provider.findLists(sctx);
     }
 }

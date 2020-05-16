@@ -20,6 +20,7 @@
 #include "LocaleUtils.h"
 #include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
+#include "providers/SearchContext.h"
 #include "utils/HashMap.h"
 
 #include <QDebug>
@@ -119,15 +120,22 @@ Metadata::Metadata()
 
 void Metadata::findStaticData(SearchContext& sctx)
 {
-    const auto coll_it = sctx.collections.find(QStringLiteral("Android"));
-    if (coll_it == sctx.collections.cend() || coll_it->second->gamesConst().isEmpty())
+    const auto coll_it = sctx.collections().find(QStringLiteral("Android"));
+    if (coll_it == sctx.collections().cend() || coll_it->second.game_ids().empty())
         return;
 
-    const auto uncached_entries = fill_from_cache(coll_it->second->gamesConst());
+    std::vector<model::Game*> games;
+    std::transform(
+        coll_it->second.game_ids().cbegin(),
+        coll_it->second.game_ids().cend(),
+        std::back_inserter(games),
+        [&sctx](const size_t game_id){ return sctx.games().at(game_id).ptr(); });
+
+    const auto uncached_entries = fill_from_cache(games);
     fill_from_network(uncached_entries);
 }
 
-std::vector<model::Game*> Metadata::fill_from_cache(const QVector<model::Game*>& childs)
+std::vector<model::Game*> Metadata::fill_from_cache(const std::vector<model::Game*>& childs)
 {
     std::vector<model::Game*> uncached_entries;
 

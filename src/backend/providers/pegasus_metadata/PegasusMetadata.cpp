@@ -23,7 +23,7 @@
 #include "PegasusMetadataFilter.h"
 #include "PegasusMetadataParser.h"
 #include "parsers/MetaFile.h"
-#include "providers/Provider.h"
+#include "providers/SearchContext.h"
 #include "utils/StdHelpers.h"
 
 #include <QDebug>
@@ -116,21 +116,10 @@ void collect_metadata(const std::vector<QString>& dir_list,
     for (const QString& dir_path : dir_list) {
         const QString metafile = find_metafile_in(dir_path);
         if (!metafile.isEmpty()) {
-            sctx.game_root_dirs.emplace_back(dir_path);
+            sctx.add_game_root_dir(dir_path);
             read_metafile(metafile, sctx, filters, constants);
         }
     }
-}
-
-void move_collection_dirs_to(std::vector<QString>& out, std::vector<FileFilter>& filters)
-{
-    size_t count = out.size();
-    for (const FileFilter& filter : filters)
-        count += filter.directories.size();
-
-    out.reserve(count);
-    for (FileFilter& filter : filters)
-        vec_append_move(out, filter.directories);
 }
 } // namespace
 
@@ -148,7 +137,10 @@ void find_in_dirs(std::vector<QString>& dir_list, providers::SearchContext& sctx
     tidy_filters(filters);
     process_filters(filters, sctx);
 
-    move_collection_dirs_to(sctx.game_root_dirs, filters);
+    for (FileFilter& filter : filters) {
+        for (QString& dir : filter.directories)
+            sctx.add_game_root_dir(std::move(dir));
+    }
 }
 
 } // namespace pegasus

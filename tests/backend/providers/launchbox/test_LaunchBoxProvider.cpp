@@ -19,20 +19,8 @@
 
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxProvider.h"
-
-
-namespace {
-
-void finalize_lists(providers::SearchContext& sctx)
-{
-    for (auto& entry : sctx.games)
-        entry.second->finalize();
-    for (auto& entry : sctx.collections)
-        entry.second->finalize();
-}
-
-} // namespace
 
 
 class test_LaunchBoxProvider : public QObject {
@@ -55,8 +43,8 @@ void test_LaunchBoxProvider::empty()
         .load()
         .findLists(sctx);
 
-    QVERIFY(sctx.games.empty());
-    QVERIFY(sctx.collections.empty());
+    QVERIFY(sctx.games().empty());
+    QVERIFY(sctx.collections().empty());
 }
 
 void test_LaunchBoxProvider::basic()
@@ -67,29 +55,29 @@ void test_LaunchBoxProvider::basic()
         .setOption(QStringLiteral("installdir"), QStringLiteral(":/basic/LaunchBox"))
         .load()
         .findLists(sctx);
-    finalize_lists(sctx);
+    sctx.finalize_lists();
 
 
-    QCOMPARE(static_cast<int>(sctx.collections.size()), 1);
-    const auto coll_it = sctx.collections.find(QStringLiteral("Nintendo Entertainment System"));
-    QVERIFY(coll_it != sctx.collections.cend());
+    QCOMPARE(static_cast<int>(sctx.collections().size()), 1);
+    const auto coll_it = sctx.collections().find(QStringLiteral("Nintendo Entertainment System"));
+    QVERIFY(coll_it != sctx.collections().cend());
 
-    const model::Collection& coll = *coll_it->second;
+    const model::Collection& coll = coll_it->second.inner();
     QCOMPARE(coll.name(), QStringLiteral("Nintendo Entertainment System"));
 
 
-    QCOMPARE(static_cast<int>(sctx.path_to_gameid.size()), 2);
-    const auto file1_it = sctx.path_to_gameid.find(QStringLiteral(":/basic/LaunchBox/../game/Test Bros (JU) [!].zip"));
-    const auto file2_it = sctx.path_to_gameid.find(QStringLiteral(":/basic/LaunchBox/../game/Test Bros Something.zip"));
-    QVERIFY(file1_it != sctx.path_to_gameid.cend());
+    QCOMPARE(static_cast<int>(sctx.entryid_to_gameid().size()), 2);
+    const auto file1_it = sctx.entryid_to_gameid().find(QStringLiteral(":/basic/LaunchBox/../game/Test Bros (JU) [!].zip"));
+    const auto file2_it = sctx.entryid_to_gameid().find(QStringLiteral(":/basic/LaunchBox/../game/Test Bros Something.zip"));
+    QVERIFY(file1_it != sctx.entryid_to_gameid().cend());
     QVERIFY(file1_it->second == file2_it->second);
     const size_t game_id = file1_it->second;
 
-    QCOMPARE(static_cast<int>(sctx.games.size()), 1);
-    const auto game_it = sctx.games.find(game_id);
-    QVERIFY(game_it != sctx.games.cend());
+    QCOMPARE(static_cast<int>(sctx.games().size()), 1);
+    const auto game_it = sctx.games().find(game_id);
+    QVERIFY(game_it != sctx.games().cend());
 
-    const model::Game& game = *game_it->second;
+    const model::Game& game = game_it->second.inner();
     QCOMPARE(game.title(), QStringLiteral("Super Mario Bros."));
     QCOMPARE(game.sortBy(), QStringLiteral("Super Mario Bros."));
     QCOMPARE(game.summary(), QStringLiteral("Some description here!"));
@@ -113,9 +101,9 @@ void test_LaunchBoxProvider::basic()
 
 
     QCOMPARE(coll.gamesConst().size(), 1);
-    QCOMPARE(coll.gamesConst().first(), game_it->second);
+    QCOMPARE(coll.gamesConst().first(), game_it->second.ptr());
     QCOMPARE(game.collectionsConst().size(), 1);
-    QCOMPARE(game.collectionsConst().first(), coll_it->second);
+    QCOMPARE(game.collectionsConst().first(), coll_it->second.ptr());
     QCOMPARE(game.filesConst().size(), 2);
 
 

@@ -22,6 +22,7 @@
 #include "Paths.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/MoveOnly.h"
 
@@ -145,21 +146,21 @@ bool invalid_entry(const GogEntry& entry)
 }
 
 void register_entries(const std::vector<GogEntry>& entries,
-                      model::Collection& collection,
+                      providers::PendingCollection& collection,
                       providers::SearchContext& sctx,
-                      HashMap<model::Game*, QString>& gogids)
+                      HashMap<size_t, QString>& gogids)
 {
     for (const GogEntry& entry : entries) {
         QFileInfo finfo(entry.exe);
 
-        auto slot = sctx.add_or_create_game_for(std::move(finfo), collection);
-        model::Game& game = *slot.second;
+        auto slot = sctx.add_or_create_game_from_file(std::move(finfo), collection);
+        model::Game& game = slot.inner();
         game.setTitle(entry.name);
         game.setLaunchCmd(::utils::escape_command(entry.launch_cmd));
         game.setLaunchWorkdir(entry.workdir);
 
         if (!entry.id.isEmpty())
-            gogids.emplace(slot.second, entry.id);
+            gogids.emplace(slot.id(), entry.id);
     }
 }
 } // namespace
@@ -172,7 +173,8 @@ Gamelist::Gamelist(QObject* parent)
     : QObject(parent)
 {}
 
-void Gamelist::find(providers::SearchContext& sctx, HashMap<model::Game*, QString>& gogids,
+void Gamelist::find(providers::SearchContext& sctx,
+                    HashMap<size_t, QString>& gogids,
                     const HashMap<QString, std::vector<QString>>& options)
 {
     static constexpr auto MSG_PREFIX = "GOG:";
@@ -185,12 +187,12 @@ void Gamelist::find(providers::SearchContext& sctx, HashMap<model::Game*, QStrin
     if (entries.empty())
         return;
 
-    model::Collection& coll = *sctx.get_or_create_collection(gog_tag());
+    PendingCollection& coll = sctx.get_or_create_collection(gog_tag());
 
-    const size_t game_count_before = sctx.games.size();
+    const size_t game_count_before = sctx.games().size();
     register_entries(entries, coll, sctx, gogids);
-    if (game_count_before != sctx.games.size())
-        emit gameCountChanged(static_cast<int>(sctx.games.size()));
+    if (game_count_before != sctx.games().size())
+        emit gameCountChanged(static_cast<int>(sctx.games().size()));
 }
 
 } // namespace steam

@@ -20,6 +20,7 @@
 #include "PegasusAssets.h"
 #include "model/gaming/Game.h"
 #include "types/AssetType.h"
+#include "providers/SearchContext.h"
 
 #include <QDir>
 #include <QDirIterator>
@@ -37,24 +38,23 @@ AssetType detect_asset_type(const QString& basename, const QString& ext)
     return AssetType::UNKNOWN;
 }
 
-HashMap<QString, model::Game* const> create_lookup_map(const HashMap<size_t, model::Game*>& games)
+HashMap<QString, model::Game&> create_lookup_map(const HashMap<size_t, providers::PendingGame>& games)
 {
-    HashMap<QString, model::Game* const> out;
+    HashMap<QString, model::Game&> out;
 
     for (const auto& game_entry : games) {
-        model::Game* const game = game_entry.second;
+        model::Game& game_ref = game_entry.second.inner();
 
-        for (const model::GameFile* const gf_entry : game->filesConst()) {
+        for (const model::GameFile* const gf_entry : game_entry.second.files()) {
             const QFileInfo& fi = gf_entry->fileinfo();
 
             QString extless_path = fi.canonicalPath() % QChar('/') % fi.completeBaseName();
-            out.emplace(std::move(extless_path), game);
+            out.emplace(std::move(extless_path), game_ref);
 
             // NOTE: the files are not necessarily in the same directory
-            //const QString& title = game->title();
-            const QString& title = game->title();
+            const QString& title = game_ref.title();
             QString title_path = fi.canonicalPath() % QChar('/') % title;
-            out.emplace(std::move(title_path), game);
+            out.emplace(std::move(title_path), game_ref);
         }
     }
 
@@ -66,13 +66,13 @@ HashMap<QString, model::Game* const> create_lookup_map(const HashMap<size_t, mod
 namespace providers {
 namespace pegasus {
 
-void find_assets(const std::vector<QString>& all_dirs, HashMap<size_t, model::Game*>& games)
+void find_assets(const std::set<QString>& all_dirs, SearchContext& sctx)
 {
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
     constexpr int media_len = 6; // len of `/media`
 
-    const HashMap<QString, model::Game* const> lookup_map = create_lookup_map(games);
+    const HashMap<QString, model::Game&> lookup_map = create_lookup_map(sctx.games());
 
     for (const QString& dir_base : all_dirs) {
         const QString media_dir = dir_base + QLatin1String("/media");
@@ -91,8 +91,7 @@ void find_assets(const std::vector<QString>& all_dirs, HashMap<size_t, model::Ga
             if (asset_type == AssetType::UNKNOWN)
                 continue;
 
-            model::Game& game = *lookup_it->second;
-            game.assets().add_file(asset_type, dir_it.filePath());
+            lookup_it->second.assets().add_file(asset_type, dir_it.filePath());
         }
     }
 }

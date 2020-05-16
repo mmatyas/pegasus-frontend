@@ -1,10 +1,12 @@
 HEADERS += \
     $$PWD/Provider.h \
     $$PWD/ProviderManager.h \
+    $$PWD/SearchContext.h \
 
 SOURCES += \
     $$PWD/Provider.cpp \
     $$PWD/ProviderManager.cpp \
+    $$PWD/SearchContext.cpp \
 
 include(pegasus_favorites/pegasus_favorites.pri)
 include(pegasus_metadata/pegasus_metadata.pri)

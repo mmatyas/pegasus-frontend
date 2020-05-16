@@ -28,6 +28,16 @@ using PlaytimeStats = providers::playtime::PlaytimeStats;
 
 namespace {
 
+model::Game* create_game(QString path, QObject* parent)
+{
+    QFileInfo fi(std::move(path));
+    QString name = model::pretty_filename(fi);
+    auto game = new model::Game(name, parent);
+    auto file = new model::GameFile(std::move(fi), game);
+    game->setFiles({ file });
+    return game;
+}
+
 void create_dummy_data(QVector<model::Collection*>& collections,
                        QVector<model::Game*>& games,
                        HashMap<QString, model::GameFile*>& path_map,
@@ -38,18 +48,18 @@ void create_dummy_data(QVector<model::Collection*>& collections,
         new model::Collection("coll2", parent),
     };
     games = {
-        new model::Game(QFileInfo("dummy1"), parent),
-        new model::Game(QFileInfo("dummy2"), parent),
+        create_game("dummy1", parent),
+        create_game("dummy2", parent),
     };
     path_map = {
-        { "dummy1", *games.at(0)->fileSetConst().cbegin() },
-        { "dummy2", *games.at(1)->fileSetConst().cbegin() },
+        { "dummy1", *games.at(0)->filesConst().cbegin() },
+        { "dummy2", *games.at(1)->filesConst().cbegin() },
     };
 
-    collections.at(0)->addGame(games.at(0)).finalize();
-    collections.at(1)->addGame(games.at(1)).finalize();
-    games.at(0)->addCollection(collections.at(0)).finalize();
-    games.at(1)->addCollection(collections.at(1)).finalize();
+    collections.at(0)->setGames({ games.at(0) });
+    collections.at(1)->setGames({ games.at(1) });
+    games.at(0)->setCollections({ collections.at(0) });
+    games.at(1)->setCollections({ collections.at(1) });
 }
 
 } // namespace

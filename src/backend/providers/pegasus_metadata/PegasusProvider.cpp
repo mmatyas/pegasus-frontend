@@ -22,6 +22,7 @@
 #include "Paths.h"
 #include "PegasusMetadata.h"
 #include "PegasusMedia.h"
+#include "providers/SearchContext.h"
 
 #include <QDebug>
 #include <QFile>
@@ -74,17 +75,17 @@ Provider& PegasusProvider::unload() {
     return *this;
 }
 
-Provider& PegasusProvider::findLists(SearchContext& ctx)
+Provider& PegasusProvider::findLists(SearchContext& sctx)
 {
     // NOTE: after this call, m_game_dirs also contains the collection directories
-    find_in_dirs(m_game_dirs, ctx);
-    emit gameCountChanged(static_cast<int>(ctx.games.size()));
+    find_in_dirs(m_game_dirs, sctx);
+    emit gameCountChanged(static_cast<int>(sctx.games().size()));
     return *this;
 }
 
-Provider& PegasusProvider::findStaticData(SearchContext& ctx)
+Provider& PegasusProvider::findStaticData(SearchContext& sctx)
 {
-    find_assets(ctx.game_root_dirs, ctx.games);
+    find_assets(sctx.game_root_dirs(), sctx);
     return *this;
 }
 

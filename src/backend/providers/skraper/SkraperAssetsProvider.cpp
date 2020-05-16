@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 
 #include <QDebug>
 #include <QDirIterator>
@@ -26,17 +27,17 @@
 
 
 namespace {
-HashMap<QString, model::Game* const> build_gamepath_db(HashMap<size_t, model::Game*>& games)
+HashMap<QString, model::Game*> build_gamepath_db(const HashMap<size_t, providers::PendingGame>& games)
 {
-    HashMap<QString, model::Game* const> map;
+    HashMap<QString, model::Game*> map;
 
     for (auto& entry : games) {
-        model::Game& game = *entry.second;
-        for (const model::GameFile* const file_ptr : game.filesConst()) {
+        const providers::PendingGame& game = entry.second;
+        for (const model::GameFile* const file_ptr : game.files()) {
             const QFileInfo& finfo = file_ptr->fileinfo();
 
             QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
-            map.emplace(std::move(path), &game);
+            map.emplace(std::move(path), game.ptr());
         }
     }
 
@@ -85,13 +86,13 @@ Provider& SkraperAssetsProvider::findStaticData(SearchContext& sctx)
 {
     unsigned found_assets_cnt = 0;
 
-    const HashMap<QString, model::Game* const> extless_path_to_game = build_gamepath_db(sctx.games);
+    const HashMap<QString, model::Game*> extless_path_to_game = build_gamepath_db(sctx.games());
 
     constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
 
-    for (const QString& game_dir : sctx.game_root_dirs) {
+    for (const QString& game_dir : sctx.game_root_dirs()) {
         for (const QString& media_dir : m_media_dirs) {
             const QString game_media_dir = game_dir % media_dir;
             if (!QFileInfo::exists(game_media_dir))
@@ -111,8 +112,8 @@ Provider& SkraperAssetsProvider::findStaticData(SearchContext& sctx)
                     if (!extless_path_to_game.count(game_path))
                         continue;
 
-                    model::Game* const game = extless_path_to_game.at(game_path);
-                    game->assets().add_file(asset_dir.asset_type, dir_it.filePath());
+                    model::Game& game = *extless_path_to_game.at(game_path);
+                    game.assets().add_file(asset_dir.asset_type, dir_it.filePath());
                     found_assets_cnt++;
                 }
             }

@@ -63,12 +63,15 @@ private:
     }
 
     void create_model() {
+        std::vector<model::Game*> games {
+            new model::Game("ccc", this),
+            new model::Game("aaa", this),
+            new model::Game("bbb", this),
+        };
+
         auto collection = new model::Collection("test", this);
-        (*collection)
-            .addGame(new model::Game(QFileInfo("ccc"), this))
-            .addGame(new model::Game(QFileInfo("aaa"), this))
-            .addGame(new model::Game(QFileInfo("bbb"), this))
-            .finalize();
+        collection->setGames(std::move(games));
+
         m_collection_model.append(collection);
     }
 };

@@ -21,6 +21,7 @@
 #include "Paths.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 
 #include <QDebug>
 #include <QDir>
@@ -120,7 +121,7 @@ bool should_ignore(const QString& filename)
 }
 
 void register_appmanifests(providers::SearchContext& sctx,
-                           model::Collection& collection,
+                           providers::PendingCollection& collection,
                            const std::vector<QString>& installdirs)
 {
     const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
@@ -136,7 +137,7 @@ void register_appmanifests(providers::SearchContext& sctx,
             if (should_ignore(fileinfo.fileName()))
                 continue;
 
-            sctx.add_or_create_game_for(std::move(fileinfo), collection);
+            sctx.add_or_create_game_from_file(std::move(fileinfo), collection);
         }
     }
 }
@@ -163,12 +164,12 @@ void Gamelist::find(providers::SearchContext& sctx)
         return;
     }
 
-    model::Collection& coll = *sctx.get_or_create_collection(QStringLiteral("Steam"));
+    PendingCollection& coll = sctx.get_or_create_collection(QStringLiteral("Steam"));
 
-    const size_t game_count_before = sctx.games.size();
+    const size_t game_count_before = sctx.games().size();
     register_appmanifests(sctx, coll, installdirs);
-    if (game_count_before != sctx.games.size())
-        emit gameCountChanged(static_cast<int>(sctx.games.size()));
+    if (game_count_before != sctx.games().size())
+        emit gameCountChanged(static_cast<int>(sctx.games().size()));
 }
 
 } // namespace steam

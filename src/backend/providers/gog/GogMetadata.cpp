@@ -22,6 +22,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
+#include "providers/SearchContext.h"
 
 #include <QEventLoop>
 #include <QJsonArray>
@@ -39,12 +40,11 @@ struct GogEntry {
     QString gogid;
     model::Game* game;
 
-    GogEntry(QString gogid, model::Game* const game)
-        : gogid(std::move(gogid))
-        , game(game)
+    GogEntry(QString new_gogid, model::Game* game_ptr)
+        : gogid(std::move(new_gogid))
+        , game(game_ptr)
     {
-        Q_ASSERT(!this->gogid.isEmpty());
-        Q_ASSERT(this->game);
+        Q_ASSERT(!gogid.isEmpty());
     }
 
     MOVE_ONLY(GogEntry)
@@ -72,7 +72,7 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
     game.setReleaseDate(QDate::fromString(date_raw, Qt::ISODate));
 
 
-    model::Assets& assets = entry.game->assets();
+    model::Assets& assets = game.assets();
 
     const auto images = json_root[QLatin1String("images")].toObject();
     if (!images.isEmpty()) {
@@ -289,20 +289,20 @@ Metadata::Metadata(QObject* parent)
     : QObject(parent)
 {}
 
-void Metadata::enhance(providers::SearchContext& sctx, HashMap<model::Game*, QString>& gogid_map)
+void Metadata::enhance(providers::SearchContext& sctx, HashMap<size_t, QString>& gogid_map)
 {
     const QString GOG_TAG(QStringLiteral("GOG"));
-    const auto slot = sctx.collections.find(GOG_TAG);
-    if (slot == sctx.collections.end())
+    const auto slot = sctx.collections().find(GOG_TAG);
+    if (slot == sctx.collections().end())
         return;
 
-    const model::Collection& coll = *slot->second;
+    const PendingCollection& coll = slot->second;
 
     std::vector<GogEntry> entries;
 
-    for (model::Game* const game_ptr : coll.gameSetConst()) {
-        if (Q_LIKELY(gogid_map.count(game_ptr)))
-            entries.emplace_back(gogid_map.at(game_ptr), game_ptr);
+    for (size_t const game_id : coll.game_ids()) {
+        if (Q_LIKELY(gogid_map.count(game_id)))
+            entries.emplace_back(gogid_map.at(game_id), sctx.games().at(game_id).ptr());
     }
 
     // try to fill using cached jsons

@@ -21,6 +21,7 @@
 #include "Paths.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/PathCheck.h"
 #include "utils/StdHelpers.h"
@@ -212,9 +213,9 @@ std::vector<QString> read_mame_blacklists()
 
 void find_games(const SystemEntry& sysentry, const std::vector<QString>& blacklist, providers::SearchContext& sctx)
 {
-    model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
-    collection.setShortName(sysentry.shortname);
-    collection.setCommonLaunchCmd(sysentry.launch_cmd);
+    providers::PendingCollection& collection = sctx.get_or_create_collection(sysentry.name);
+    collection.inner().setShortName(sysentry.shortname);
+    collection.inner().setCommonLaunchCmd(sysentry.launch_cmd);
 
 
     // find all (sub-)directories, but ignore 'media'
@@ -253,7 +254,7 @@ void find_games(const SystemEntry& sysentry, const std::vector<QString>& blackli
             if (use_blacklist && VEC_CONTAINS(blacklist, filename))
                 continue;
 
-            sctx.add_or_create_game_for(std::move(fileinfo), collection);
+            sctx.add_or_create_game_from_file(std::move(fileinfo), collection);
         }
     }
 }
@@ -311,7 +312,7 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
     }
 
     // read all <system> nodes
-    size_t game_count = sctx.games.size();
+    size_t game_count = sctx.games().size();
     while (xml.readNextStartElement()) {
         if (xml.name() != QLatin1String("system")) {
             xml.skipCurrentElement();
@@ -323,11 +324,11 @@ void SystemsParser::read_systems_file(QXmlStreamReader& xml,
             continue;
 
         collection_dirs[sysentry.name] = sysentry.path;
-        sctx.game_root_dirs.emplace_back(sysentry.path);
+        sctx.add_game_root_dir(sysentry.path);
 
         find_games(sysentry, mame_blacklist, sctx);
-        if (game_count != sctx.games.size()) {
-            game_count = sctx.games.size();
+        if (game_count != sctx.games().size()) {
+            game_count = sctx.games().size();
             emit gameCountChanged(static_cast<int>(game_count));
         }
     }

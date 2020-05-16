@@ -36,7 +36,7 @@ public:
     Provider& findStaticData(SearchContext&) final;
 
 private:
-    HashMap<model::Game*, QString> m_gogids;
+    HashMap<size_t, QString> m_gogids;
 
     Gamelist gamelist;
     Metadata metadata;

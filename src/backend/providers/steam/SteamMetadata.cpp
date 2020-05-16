@@ -22,6 +22,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
+#include "providers/SearchContext.h"
 #include "utils/CommandTokenizer.h"
 
 #include <QDebug>
@@ -65,42 +66,35 @@ QString find_steam_call()
 struct SteamGameEntry {
     QString title;
     QString appid;
-    model::Game* game_ptr { nullptr };
-
-    bool parsed() const { return !title.isEmpty() && !appid.isEmpty(); }
+    model::Game* game_ptr;
 };
 
-SteamGameEntry read_manifest(const QString& manifest_path)
+SteamGameEntry read_manifest_file(QFile& file, const providers::PendingGame& game)
 {
-    QFile manifest(manifest_path);
-    if (!manifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(manifest_path);
-        return {};
-    }
-
     using regex = QRegularExpression;
     static const regex appid_regex(QStringLiteral(R""("appid"\s+"(\d+)")""), regex::CaseInsensitiveOption);
     static const regex title_regex(QStringLiteral(R""("name"\s+"([^"]+)")""));
 
-    SteamGameEntry entry;
+    QString appid;
+    QString title;
 
-    QTextStream stream(&manifest);
-    while (!stream.atEnd() && !entry.parsed()) {
+    QTextStream stream(&file);
+    while (!stream.atEnd() && (appid.isEmpty() || title.isEmpty())) {
         const QString line = stream.readLine();
 
         const auto appid_match = appid_regex.match(line);
         if (appid_match.hasMatch()) {
-            entry.appid = appid_match.captured(1);
+            appid = appid_match.captured(1);
             continue;
         }
 
         const auto title_match = title_regex.match(line);
         if (title_match.hasMatch()) {
-            entry.title = title_match.captured(1);
+            title = title_match.captured(1);
         }
     }
 
-    return entry;
+    return SteamGameEntry { title, appid, game.ptr() };
 }
 
 bool read_json(model::Game& game, const QJsonDocument& json)
@@ -316,35 +310,41 @@ void Metadata::enhance(providers::SearchContext& sctx)
 {
     const QString STEAM_TAG(QStringLiteral("Steam"));
 
-    const auto slot = sctx.collections.find(STEAM_TAG);
-    if (slot == sctx.collections.end())
+    const auto slot = sctx.collections().find(STEAM_TAG);
+    if (slot == sctx.collections().end())
         return;
 
-    const model::Collection& coll = *slot->second;
+    const PendingCollection& coll = slot->second;
     const QString steam_call = find_steam_call();
 
     // try to fill using manifest files
 
     std::vector<SteamGameEntry> entries;
 
-    for (model::Game* const game_ptr : coll.gamesConst()) {
-        model::Game& game = *game_ptr;
+    for (const size_t game_id : coll.game_ids()) {
+        const PendingGame& game = sctx.games().at(game_id);
 
         // Steam games can have only one manifest file
-        Q_ASSERT(game.filesConst().size() == 1);
-        const QString path = game.filesConst().first()->fileinfo().absoluteFilePath();
+        Q_ASSERT(game.files().size() == 1);
+        const QString manifest_path = game.files().front()->fileinfo().absoluteFilePath();
 
-        SteamGameEntry entry = read_manifest(path);
-        if (!entry.appid.isEmpty()) {
-            if (entry.title.isEmpty())
-                entry.title = QLatin1String("App #") % entry.appid;
-
-            game.setTitle(entry.title);
-            game.setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % entry.appid);
-            entry.game_ptr = &game;
-
-            entries.push_back(std::move(entry));
+        QFile manifest(manifest_path);
+        if (!manifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`").arg(manifest_path);
+            continue;
         }
+
+        SteamGameEntry entry = read_manifest_file(manifest, game);
+        if (entry.appid.isEmpty())
+            continue;
+
+        if (entry.title.isEmpty())
+            entry.title = QLatin1String("App #") % entry.appid;
+
+        game.inner().setTitle(entry.title);
+        game.inner().setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % entry.appid);
+
+        entries.push_back(std::move(entry));
     }
 
     if (entries.empty()) {

@@ -19,6 +19,7 @@
 
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
 #include "utils/HashMap.h"
 #include "utils/StdHelpers.h"
@@ -45,37 +46,27 @@ void verify_collected_files(providers::SearchContext& sctx, const HashMap<QStrin
         const QString& coll_name = entry.first;
         const QStringList& coll_files = entry.second;
 
-        QVector<model::Game*> expected_ptrs;
+        std::set<size_t> expected_game_ids;
 
         for (const QString& abs_path : coll_files) {
             const QString can_path = QFileInfo(abs_path).canonicalFilePath();
             QVERIFY(!can_path.isEmpty());
 
-            QVERIFY(sctx.path_to_gameid.count(can_path));
-            const size_t game_id = sctx.path_to_gameid.at(can_path);
+            QVERIFY(sctx.entryid_to_gameid().count(can_path));
+            const size_t game_id = sctx.entryid_to_gameid().at(can_path);
 
-            QVERIFY(sctx.games.count(game_id));
-            model::Game* game = sctx.games.at(game_id);
+            QVERIFY(sctx.games().count(game_id));
+            const providers::PendingGame& entry = sctx.games().at(game_id);
+            const model::Game& game = entry.inner();
 
-            QVERIFY(contains_path(abs_path, sctx.games.at(game_id)->filesConst()));
-            expected_ptrs.append(game);
+            QVERIFY(contains_path(abs_path, game.filesConst()));
+            QVERIFY(expected_game_ids.count(game_id) == 0);
+            expected_game_ids.insert(game_id);
         }
 
-        model::Collection& collection = *sctx.collections.at(coll_name);
-        QVector<model::Game*> actual_ptrs(collection.gamesConst());
-
-        std::sort(actual_ptrs.begin(), actual_ptrs.end());
-        std::sort(expected_ptrs.begin(), expected_ptrs.end());
-        QCOMPARE(actual_ptrs, actual_ptrs);
+        std::set<size_t> actual_game_ids = sctx.collections().at(coll_name).game_ids();
+        QCOMPARE(actual_game_ids, expected_game_ids);
     }
-}
-
-void finalize_lists(providers::SearchContext& sctx)
-{
-    for (auto& entry : sctx.games)
-        entry.second->finalize();
-    for (auto& entry : sctx.collections)
-        entry.second->finalize();
 }
 
 } // namespace
@@ -110,9 +101,10 @@ void test_PegasusProvider::empty()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/empty")});
     provider.findLists(ctx);
+    ctx.finalize_lists();
 
-    QVERIFY(ctx.games.empty());
-    QVERIFY(ctx.collections.empty());
+    QVERIFY(ctx.games().empty());
+    QVERIFY(ctx.collections().empty());
 }
 
 void test_PegasusProvider::simple()
@@ -123,19 +115,19 @@ void test_PegasusProvider::simple()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/simple")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
     // finds the correct collections
-    QCOMPARE(static_cast<int>(ctx.collections.size()), 3);
-    QVERIFY(ctx.collections.count(QStringLiteral("My Games")));
-    QVERIFY(ctx.collections.count(QStringLiteral("Favorite games")));
-    QVERIFY(ctx.collections.count(QStringLiteral("Multi-game ROMs")));
+    QCOMPARE(static_cast<int>(ctx.collections().size()), 3);
+    QVERIFY(ctx.collections().count(QStringLiteral("My Games")));
+    QVERIFY(ctx.collections().count(QStringLiteral("Favorite games")));
+    QVERIFY(ctx.collections().count(QStringLiteral("Multi-game ROMs")));
 
     // finds the correct amount of games
-    QCOMPARE(static_cast<int>(ctx.games.size()), 8);
-    QVERIFY(ctx.collections.at(QStringLiteral("My Games"))->gamesConst().size() == 8);
-    QVERIFY(ctx.collections.at(QStringLiteral("Favorite games"))->gamesConst().size() == 3);
-    QVERIFY(ctx.collections.at(QStringLiteral("Multi-game ROMs"))->gamesConst().size() == 1);
+    QCOMPARE(static_cast<int>(ctx.games().size()), 8);
+    QVERIFY(ctx.collections().at(QStringLiteral("My Games")).inner().gamesConst().size() == 8);
+    QVERIFY(ctx.collections().at(QStringLiteral("Favorite games")).inner().gamesConst().size() == 3);
+    QVERIFY(ctx.collections().at(QStringLiteral("Multi-game ROMs")).inner().gamesConst().size() == 1);
 
     // finds the correct files for the collections
     const HashMap<QString, QStringList> coll_files_map {
@@ -173,14 +165,15 @@ void test_PegasusProvider::with_meta()
     QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 66: incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD");
     QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 68: duplicate file `horse.ext`");
     QTest::ignoreMessage(QtWarningMsg, "Metafiles: `:/with_meta/metadata.pegasus.txt`, line 69: unrecognized game property `asd`, ignored");
+    QTest::ignoreMessage(QtWarningMsg, "No files defined for game 'Virtual Game', ignored");
 
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/with_meta")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
-    QCOMPARE(static_cast<int>(ctx.collections.size()), 1);
-    QCOMPARE(static_cast<int>(ctx.games.size()), 6);
+    QCOMPARE(static_cast<int>(ctx.collections().size()), 1);
+    QCOMPARE(static_cast<int>(ctx.games().size()), 5);
 
     const auto common_launch = QStringLiteral("launcher.exe '{file.path}'");
     const auto common_workdir = QStringLiteral("some/workdir");
@@ -190,8 +183,8 @@ void test_PegasusProvider::with_meta()
     {
         const QString collection_name(QStringLiteral("My Games"));
 
-        QVERIFY(ctx.collections.count(collection_name));
-        const model::Collection& coll = *ctx.collections.at(collection_name);
+        QVERIFY(ctx.collections().count(collection_name));
+        const model::Collection& coll = ctx.collections().at(collection_name).inner();
 
         QCOMPARE(coll.shortName(), QStringLiteral("mygames"));
         QCOMPARE(coll.summary(), QStringLiteral("this is the summary"));
@@ -205,11 +198,11 @@ void test_PegasusProvider::with_meta()
     {
         const QString file_path = QStringLiteral(":/with_meta/pre.ext");
 
-        QVERIFY(ctx.path_to_gameid.count(file_path));
-        const size_t game_id = ctx.path_to_gameid.at(file_path);
+        QVERIFY(ctx.entryid_to_gameid().count(file_path));
+        const size_t game_id = ctx.entryid_to_gameid().at(file_path);
 
-        QVERIFY(ctx.games.count(game_id));
-        const model::Game& game = *ctx.games.at(game_id);
+        QVERIFY(ctx.games().count(game_id));
+        const model::Game& game = ctx.games().at(game_id).inner();
 
         QCOMPARE(game.launchCmd(), common_launch);
         QCOMPARE(game.launchWorkdir(), common_workdir);
@@ -220,11 +213,11 @@ void test_PegasusProvider::with_meta()
     {
         const QString file_path = QStringLiteral(":/with_meta/basic.ext");
 
-        QVERIFY(ctx.path_to_gameid.count(file_path));
-        const size_t game_id = ctx.path_to_gameid.at(file_path);
+        QVERIFY(ctx.entryid_to_gameid().count(file_path));
+        const size_t game_id = ctx.entryid_to_gameid().at(file_path);
 
-        QVERIFY(ctx.games.count(game_id));
-        const model::Game& game = *ctx.games.at(game_id);
+        QVERIFY(ctx.games().count(game_id));
+        const model::Game& game = ctx.games().at(game_id).inner();
 
         QCOMPARE(game.title(), QStringLiteral("A simple game"));
         QCOMPARE(game.developerListConst(), QStringList({"Dev", "Dev with Spaces"}));
@@ -238,7 +231,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.launchCmd(), common_launch);
         QCOMPARE(game.launchWorkdir(), common_workdir);
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
-        QCOMPARE(static_cast<int>(game.filesConst().size()), 1);
+        QCOMPARE(game.filesConst().size(), 1);
         QCOMPARE(contains_path(file_path, game.filesConst()), 1);
     }
 
@@ -246,11 +239,11 @@ void test_PegasusProvider::with_meta()
     {
         const QString file_path = QStringLiteral(":/with_meta/subdir/game_in_subdir.ext");
 
-        QVERIFY(ctx.path_to_gameid.count(file_path));
-        const size_t game_id = ctx.path_to_gameid.at(file_path);
+        QVERIFY(ctx.entryid_to_gameid().count(file_path));
+        const size_t game_id = ctx.entryid_to_gameid().at(file_path);
 
-        QVERIFY(ctx.games.count(game_id));
-        const model::Game& game = *ctx.games.at(game_id);
+        QVERIFY(ctx.games().count(game_id));
+        const model::Game& game = ctx.games().at(game_id).inner();
 
         QCOMPARE(game.title(), QStringLiteral("Subdir Game"));
         QCOMPARE(game.launchCmd(), common_launch);
@@ -262,17 +255,17 @@ void test_PegasusProvider::with_meta()
     {
         const QString file_path_a = QStringLiteral(":/with_meta/multi.a.ext");
         const QString file_path_b = QStringLiteral(":/with_meta/multi.b.ext");
-        QVERIFY(ctx.path_to_gameid.count(file_path_a));
-        QVERIFY(ctx.path_to_gameid.count(file_path_b));
-        const size_t game_id_a = ctx.path_to_gameid.at(file_path_a);
-        const size_t game_id_b = ctx.path_to_gameid.at(file_path_b);
+        QVERIFY(ctx.entryid_to_gameid().count(file_path_a));
+        QVERIFY(ctx.entryid_to_gameid().count(file_path_b));
+        const size_t game_id_a = ctx.entryid_to_gameid().at(file_path_a);
+        const size_t game_id_b = ctx.entryid_to_gameid().at(file_path_b);
         QCOMPARE(game_id_a, game_id_b);
 
-        QVERIFY(ctx.games.count(game_id_a));
-        const model::Game& game = *ctx.games.at(game_id_a);
+        QVERIFY(ctx.games().count(game_id_a));
+        const model::Game& game = ctx.games().at(game_id_a).inner();
 
         QCOMPARE(game.title(), QStringLiteral("Multifile Game"));
-        QCOMPARE(static_cast<int>(game.filesConst().size()), 2);
+        QCOMPARE(game.filesConst().size(), 2);
         QCOMPARE(contains_path(file_path_a, game.filesConst()), 1);
         QCOMPARE(contains_path(file_path_b, game.filesConst()), 1);
         QCOMPARE(game.launchCmd(), common_launch);
@@ -281,30 +274,32 @@ void test_PegasusProvider::with_meta()
     }
 
     // Launch-only
-    {
-        using entry_t = decltype(ctx.games)::value_type;
+    // TODO: add non-file entry support
+    /*{
+        using entry_t = std::remove_reference<decltype(ctx.games())>::type::value_type;
 
         const QString title = QStringLiteral("Virtual Game");
-        const auto it = std::find_if(ctx.games.cbegin(), ctx.games.cend(),
-            [&title](const entry_t& entry){ return entry.second->title() == title; });
-        QVERIFY(it != ctx.games.cend());
-    }
+        const auto it = std::find_if(ctx.games().cbegin(), ctx.games().cend(),
+            [&title](const entry_t& entry){ return entry.second.inner().title() == title; });
+        QVERIFY(it != ctx.games().cend());
+    }*/
 
     // Other cases
     {
         const QString file_path = QStringLiteral(":/with_meta/horse.ext");
 
-        QVERIFY(ctx.path_to_gameid.count(file_path));
-        const size_t game_id = ctx.path_to_gameid.at(file_path);
+        QVERIFY(ctx.entryid_to_gameid().count(file_path));
+        const size_t game_id = ctx.entryid_to_gameid().at(file_path);
 
-        QVERIFY(ctx.games.count(game_id));
-        const model::Game& game = *ctx.games.at(game_id);
+        QVERIFY(ctx.games().count(game_id));
+        const providers::PendingGame& entry = ctx.games().at(game_id);
+        const model::Game& game = entry.inner();
 
         QCOMPARE(game.rating(), 0.7f);
         QCOMPARE(game.launchCmd(), QStringLiteral("dummy"));
         QCOMPARE(game.launchWorkdir(), QStringLiteral("some\\nice/work/dir"));
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
-        QCOMPARE(static_cast<int>(game.filesConst().size()), 1);
+        QCOMPARE(game.filesConst().size(), 1);
         QCOMPARE(contains_path(file_path, game.filesConst()), 1);
         QCOMPARE(game.summary(), QStringLiteral("manual break\nhere"));
         QCOMPARE(game.description(), QStringLiteral("manual break\nhere\n\nline end\n here\n\nescaped\\nbreak"));
@@ -319,32 +314,32 @@ void test_PegasusProvider::asset_search()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/asset_search")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
     provider.findStaticData(ctx);
 
     const QString collection_name(QStringLiteral("mygames"));
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.collections.count(collection_name) == 1);
-    QVERIFY(ctx.games.size() == 4);
-    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/asset_search")));
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.collections().count(collection_name) == 1);
+    QVERIFY(ctx.games().size() == 4);
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs(), QStringLiteral(":/asset_search")));
 
     auto path = QStringLiteral(":/asset_search/mygame1.ext");
-    QVERIFY(ctx.path_to_gameid.count(path));
-    model::Game* game = ctx.games.at(ctx.path_to_gameid.at(path));
+    QVERIFY(ctx.entryid_to_gameid().count(path));
+    model::Game* game = ctx.games().at(ctx.entryid_to_gameid().at(path)).ptr();
     QCOMPARE(game->assets().boxFront(), QStringLiteral("file::/asset_search/media/mygame1/box_front.png"));
     QCOMPARE(game->assets().videoList(), { QStringLiteral("file::/asset_search/media/mygame1/video.mp4") });
 
     path = QStringLiteral(":/asset_search/mygame3.ext");
-    QVERIFY(ctx.path_to_gameid.count(path));
-    game = ctx.games.at(ctx.path_to_gameid.at(path));
+    QVERIFY(ctx.entryid_to_gameid().count(path));
+    game = ctx.games().at(ctx.entryid_to_gameid().at(path)).ptr();
     QCOMPARE(game->assets().screenshotList(),
         { QStringLiteral("file::/asset_search/media/mygame3/screenshot.jpg") });
     QCOMPARE(game->assets().music(),
         QStringLiteral("file::/asset_search/media/mygame3/music.mp3"));
 
     path = QStringLiteral(":/asset_search/subdir/mygame4.ext");
-    QVERIFY(ctx.path_to_gameid.count(path));
-    game = ctx.games.at(ctx.path_to_gameid.at(path));
+    QVERIFY(ctx.entryid_to_gameid().count(path));
+    game = ctx.games().at(ctx.entryid_to_gameid().at(path)).ptr();
     QCOMPARE(game->assets().background(),
         QStringLiteral("file::/asset_search/media/subdir/mygame4/background.png"));
 }
@@ -357,21 +352,21 @@ void test_PegasusProvider::asset_search_by_title()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/asset_search_by_title")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
     provider.findStaticData(ctx);
 
     const QString collection_name(QStringLiteral("mygames"));
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.collections.count(collection_name) == 1);
-    QVERIFY(ctx.games.size() == 1);
-    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/asset_search_by_title")));
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.collections().count(collection_name) == 1);
+    QVERIFY(ctx.games().size() == 1);
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs(), QStringLiteral(":/asset_search_by_title")));
 
     const QString path = QStringLiteral(":/asset_search_by_title/mygame.ext");
-    QVERIFY(ctx.path_to_gameid.count(path));
-    model::Game* const game = ctx.games.at(ctx.path_to_gameid.at(path));
-    QCOMPARE(game->assets().boxFront(),
+    QVERIFY(ctx.entryid_to_gameid().count(path));
+    const model::Game& game = ctx.games().at(ctx.entryid_to_gameid().at(path)).inner();
+    QCOMPARE(game.assets().boxFront(),
         QStringLiteral("file::/asset_search_by_title/media/My Precious Game/box_front.png"));
-    QCOMPARE(game->assets().videoList(),
+    QCOMPARE(game.assets().videoList(),
         { QStringLiteral("file::/asset_search_by_title/media/My Precious Game/video.mp4") });
 }
 
@@ -383,19 +378,19 @@ void test_PegasusProvider::custom_assets()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/custom_assets")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
     provider.findStaticData(ctx);
 
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.games.size() == 1);
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.games().size() == 1);
 
-    model::Collection& coll = *ctx.collections.begin()->second;
+    model::Collection& coll = ctx.collections().begin()->second.inner();
     QCOMPARE(coll.assets().cartridge(),
         QStringLiteral("file::/custom_assets/my_collection_assets/cartridge.png"));
 
     const auto path = QStringLiteral(":/custom_assets/mygame1.ext");
-    QVERIFY(ctx.path_to_gameid.count(path));
-    model::Game& game = *ctx.games.at(ctx.path_to_gameid.at(path));
+    QVERIFY(ctx.entryid_to_gameid().count(path));
+    model::Game& game = ctx.games().at(ctx.entryid_to_gameid().at(path)).inner();
     QCOMPARE(game.assets().boxFront(),
         QStringLiteral("file::/custom_assets/different_dir/whatever.png"));
 }
@@ -408,22 +403,22 @@ void test_PegasusProvider::custom_assets_multi()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/custom_assets_multi")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
     provider.findStaticData(ctx);
 
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.games.size() == 2);
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.games().size() == 2);
 
     {
         const auto path = QStringLiteral(":/custom_assets_multi/game1.ext");
-        QVERIFY(ctx.path_to_gameid.count(path));
-        model::Game& game = *ctx.games.at(ctx.path_to_gameid.at(path));
+        QVERIFY(ctx.entryid_to_gameid().count(path));
+        model::Game& game = ctx.games().at(ctx.entryid_to_gameid().at(path)).inner();
         QCOMPARE(game.assets().videoList(),
             QStringList(QStringLiteral("file::/custom_assets_multi/videos/a.mp4")));
     }{
         const auto path = QStringLiteral(":/custom_assets_multi/game2.ext");
-        QVERIFY(ctx.path_to_gameid.count(path));
-        model::Game& game = *ctx.games.at(ctx.path_to_gameid.at(path));
+        QVERIFY(ctx.entryid_to_gameid().count(path));
+        model::Game& game = ctx.games().at(ctx.entryid_to_gameid().at(path)).inner();
         QCOMPARE(game.assets().videoList(), QStringList({
             QStringLiteral("file::/custom_assets_multi/videos/a.mp4"),
             QStringLiteral("file::/custom_assets_multi/videos/b.mp4"),
@@ -440,15 +435,15 @@ void test_PegasusProvider::custom_directories()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/custom_dirs/coll")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
     provider.findStaticData(ctx);
 
-    QVERIFY(ctx.collections.size() == 2);
-    QVERIFY(ctx.collections.count(QStringLiteral("x-files")) == 1);
-    QVERIFY(ctx.collections.count(QStringLiteral("y-files")) == 1);
-    QVERIFY(ctx.games.size() == 5);
-    QVERIFY(ctx.collections.at(QStringLiteral("x-files"))->gamesConst().size() == 4);
-    QVERIFY(ctx.collections.at(QStringLiteral("y-files"))->gamesConst().size() == 1);
+    QVERIFY(ctx.collections().size() == 2);
+    QVERIFY(ctx.collections().count(QStringLiteral("x-files")) == 1);
+    QVERIFY(ctx.collections().count(QStringLiteral("y-files")) == 1);
+    QVERIFY(ctx.games().size() == 5);
+    QVERIFY(ctx.collections().at(QStringLiteral("x-files")).inner().gamesConst().size() == 4);
+    QVERIFY(ctx.collections().at(QStringLiteral("y-files")).inner().gamesConst().size() == 1);
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("x-files"), {
@@ -472,17 +467,17 @@ void test_PegasusProvider::multifile()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/multifile")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
-    QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
-    QCOMPARE(static_cast<int>(ctx.games.size()), 2);
-    QCOMPARE(static_cast<int>(ctx.games.at(0)->filesConst().size()), 1);
-    QCOMPARE(static_cast<int>(ctx.games.at(1)->filesConst().size()), 2);
-    QCOMPARE(static_cast<int>(ctx.path_to_gameid.size()), 3);
+    QCOMPARE(static_cast<int>(ctx.collections().size()),  1);
+    QCOMPARE(static_cast<int>(ctx.games().size()), 2);
+    QCOMPARE(ctx.games().at(0).inner().filesConst().size(), 1);
+    QCOMPARE(ctx.games().at(1).inner().filesConst().size(), 2);
+    QCOMPARE(static_cast<int>(ctx.entryid_to_gameid().size()), 3);
 
-    const QVector<model::Game*>& child_vec = ctx.collections.cbegin()->second->gamesConst();
-    QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), ctx.games.at(0)) != child_vec.cend(), true);
-    QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), ctx.games.at(1)) != child_vec.cend(), true);
+    const QVector<model::Game*>& child_vec = ctx.collections().cbegin()->second.inner().gamesConst();
+    QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), ctx.games().at(0).ptr()) != child_vec.cend(), true);
+    QCOMPARE(std::find(child_vec.cbegin(), child_vec.cend(), ctx.games().at(1).ptr()) != child_vec.cend(), true);
 }
 
 void test_PegasusProvider::nonASCII()
@@ -552,20 +547,22 @@ void test_PegasusProvider::nonASCII()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({tempdir.path()});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
     provider.findStaticData(ctx);
 
-    QCOMPARE(static_cast<int>(ctx.collections.size()),  1);
-    QCOMPARE(ctx.games.size(), entries.size());
+    QCOMPARE(static_cast<int>(ctx.collections().size()),  1);
+    QCOMPARE(ctx.games().size(), entries.size());
+
+    using entry_t = std::remove_reference<decltype(ctx.games())>::type::value_type;
 
     for (const TestEntry& expected : entries) {
-        auto it = std::find_if(ctx.games.begin(), ctx.games.end(),
-            [&expected](const decltype(ctx.games)::value_type& pair){ return pair.second->title() == expected.title; });
-        QVERIFY(it != ctx.games.cend());
+        auto it = std::find_if(ctx.games().begin(), ctx.games().end(),
+            [&expected](const entry_t& pair){ return pair.second.inner().title() == expected.title; });
+        QVERIFY(it != ctx.games().cend());
 
-        model::Game& game = *it->second;
+        model::Game& game = it->second.inner();
         QCOMPARE(game.title(), expected.title);
-        QCOMPARE(static_cast<int>(game.filesConst().size()), 1);
+        QCOMPARE(game.filesConst().size(), 1);
         QCOMPARE(game.filesConst().front()->fileinfo().absoluteFilePath(), tempdir.path() + "/" + expected.filename);
         QCOMPARE(game.filesConst().front()->fileinfo().exists(), true);
         QCOMPARE(game.description(), expected.desc);
@@ -591,17 +588,17 @@ void test_PegasusProvider::separate_media_dirs()
     provider.load_with_gamedirs({QStringLiteral(":/separate_media_dirs/metadata")});
 
     provider.findLists(ctx);
-    finalize_lists(ctx);
-    QCOMPARE(static_cast<int>(ctx.collections.size()),  2);
-    QCOMPARE(static_cast<int>(ctx.games.size()), 2);
-    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata")));
-    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata/../games-a")));
-    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs, QStringLiteral(":/separate_media_dirs/metadata/../games-b")));
+    ctx.finalize_lists();
+    QCOMPARE(static_cast<int>(ctx.collections().size()),  2);
+    QCOMPARE(static_cast<int>(ctx.games().size()), 2);
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs(), QStringLiteral(":/separate_media_dirs/metadata")));
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs(), QStringLiteral(":/separate_media_dirs/metadata/../games-a")));
+    QVERIFY(VEC_CONTAINS(ctx.game_root_dirs(), QStringLiteral(":/separate_media_dirs/metadata/../games-b")));
 
     provider.findStaticData(ctx);
     // NOTE: Yes, canonicalPath() returns a path with '..' in it...
-    QCOMPARE(ctx.games.at(0)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/metadata/../games-a/media/Game 1/box_front.png"));
-    QCOMPARE(ctx.games.at(1)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/metadata/../games-b/media/Game 2/box_front.png"));
+    QCOMPARE(ctx.games().at(0).inner().assets().boxFront(), QStringLiteral("file::/separate_media_dirs/metadata/../games-a/media/Game 1/box_front.png"));
+    QCOMPARE(ctx.games().at(1).inner().assets().boxFront(), QStringLiteral("file::/separate_media_dirs/metadata/../games-b/media/Game 2/box_front.png"));
 }
 
 void test_PegasusProvider::relative_files_only()
@@ -611,10 +608,10 @@ void test_PegasusProvider::relative_files_only()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/relative_files/coll")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.collections.count(QStringLiteral("myfiles")) == 1);
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.collections().count(QStringLiteral("myfiles")) == 1);
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("myfiles"), {
@@ -634,10 +631,10 @@ void test_PegasusProvider::relative_files_with_dirs()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/relative_files_with_dirs/coll")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.collections.count(QStringLiteral("myfiles")) == 1);
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.collections().count(QStringLiteral("myfiles")) == 1);
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("myfiles"), {
@@ -656,16 +653,16 @@ void test_PegasusProvider::sort_title()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/sort_title")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
-    QVERIFY(ctx.games.size() == 4);
-    QVERIFY(ctx.collections.size() == 1);
-    QVERIFY(ctx.collections.count(QStringLiteral("test")) == 1);
+    QVERIFY(ctx.games().size() == 4);
+    QVERIFY(ctx.collections().size() == 1);
+    QVERIFY(ctx.collections().count(QStringLiteral("test")) == 1);
 
     std::vector<model::Game*> games;
-    games.reserve(ctx.games.size());
-    for (auto& keyval : ctx.games)
-        games.emplace_back(keyval.second);
+    games.reserve(ctx.games().size());
+    for (auto& keyval : ctx.games())
+        games.emplace_back(keyval.second.ptr());
 
     std::sort(games.begin(), games.end(), model::sort_games);
 
@@ -682,15 +679,15 @@ void test_PegasusProvider::sort_collections()
     providers::pegasus::PegasusProvider provider;
     provider.load_with_gamedirs({QStringLiteral(":/sort_collections")});
     provider.findLists(ctx);
-    finalize_lists(ctx);
+    ctx.finalize_lists();
 
-    QVERIFY(ctx.games.size() == 1);
-    QVERIFY(ctx.collections.size() == 4);
+    QVERIFY(ctx.games().size() == 1);
+    QVERIFY(ctx.collections().size() == 4);
 
     std::vector<model::Collection*> collections;
-    collections.reserve(ctx.collections.size());
-    for (auto& keyval : ctx.collections)
-        collections.emplace_back(keyval.second);
+    collections.reserve(ctx.collections().size());
+    for (auto& keyval : ctx.collections())
+        collections.emplace_back(keyval.second.ptr());
 
     std::sort(collections.begin(), collections.end(), model::sort_collections);
 

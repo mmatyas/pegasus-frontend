@@ -32,7 +32,7 @@ class Metadata : public QObject {
 public:
     explicit Metadata(QObject* parent);
 
-    void enhance(providers::SearchContext&, HashMap<model::Game*, QString>&);
+    void enhance(providers::SearchContext&, HashMap<size_t, QString> &);
 };
 } // namespace gog
 } // namespace providers

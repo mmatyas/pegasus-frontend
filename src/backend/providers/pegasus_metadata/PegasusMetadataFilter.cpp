@@ -20,6 +20,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "utils/StdHelpers.h"
+#include "providers/SearchContext.h"
 
 #include <QDir>
 #include <QDirIterator>
@@ -89,19 +90,20 @@ bool file_passes_filter(const QFileInfo& finfo, const FileFilter& filter,
     return true;
 }
 
-void accept_filtered_file(const QFileInfo& fileinfo, model::Collection& parent,
+void accept_filtered_file(const QFileInfo& fileinfo,
+                          providers::PendingCollection& parent,
                           providers::SearchContext& sctx)
 {
-    const auto entry = sctx.add_or_create_game_for(fileinfo, parent);
+    const providers::PendingGame& entry = sctx.add_or_create_game_from_file(fileinfo, parent);
 
     // When a game was defined earlier than its collection
-    model::Game& game = *entry.second;
+    model::Game& game = entry.inner();
     if (game.launchCmd().isEmpty())
-        game.setLaunchCmd(parent.commonLaunchCmd());
+        game.setLaunchCmd(parent.inner().commonLaunchCmd());
     if (game.launchWorkdir().isEmpty())
-        game.setLaunchWorkdir(parent.commonLaunchWorkdir());
+        game.setLaunchWorkdir(parent.inner().commonLaunchWorkdir());
     if (game.launchCmdBasedir().isEmpty())
-        game.setLaunchCmdBasedir(parent.commonLaunchCmdBasedir());
+        game.setLaunchCmdBasedir(parent.inner().commonLaunchCmdBasedir());
 }
 } // namespace
 
@@ -134,7 +136,7 @@ void tidy_filters(std::vector<FileFilter>& filters)
 
 void process_filter(const FileFilter& filter, providers::SearchContext& sctx)
 {
-    model::Collection& collection = *sctx.collections.at(filter.collection_key);
+    PendingCollection& collection = sctx.get_or_create_collection(filter.collection_key);
 
     const std::vector<QString> include_files = resolve_filelist(filter.include.files, filter.directories);
     const std::vector<QString> exclude_files = resolve_filelist(filter.exclude.files, filter.directories);
@@ -143,12 +145,10 @@ void process_filter(const FileFilter& filter, providers::SearchContext& sctx)
             accept_filtered_file(QFileInfo(can_path), collection, sctx);
     }
 
-
     const bool needs_scan = !filter.include.extensions.empty()
         || (!filter.include.regex.pattern().isEmpty() && filter.include.regex.isValid());
     if (!needs_scan)
         return;
-
 
     constexpr auto entry_filters_files = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_filters_all = QDir::Dirs | entry_filters_files;

@@ -32,9 +32,9 @@ GameFileData::GameFileData(QFileInfo fi)
     , name(pretty_filename(fileinfo))
 {}
 
-GameFileData::GameFileData(QFileInfo fi, QString name)
+GameFileData::GameFileData(QFileInfo fi, QString new_name)
     : fileinfo(std::move(fi))
-    , name(std::move(name))
+    , name(std::move(new_name))
 {}
 
 bool GameFileData::operator==(const GameFileData& other) const {
