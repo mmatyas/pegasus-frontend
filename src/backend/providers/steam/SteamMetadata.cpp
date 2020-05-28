@@ -342,6 +342,7 @@ void Metadata::enhance(providers::SearchContext& sctx)
             entry.title = QLatin1String("App #") % entry.appid;
 
         game.inner().setTitle(entry.title);
+        game.inner().setSortBy(entry.title);
         game.inner().setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % entry.appid);
 
         entries.push_back(std::move(entry));
