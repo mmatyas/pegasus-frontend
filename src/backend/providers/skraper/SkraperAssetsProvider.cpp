@@ -65,6 +65,7 @@ SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
         { AssetType::BOX_BACK, QStringLiteral("box2dback") },
         { AssetType::BOX_FRONT, QStringLiteral("box2dfront") },
         { AssetType::BOX_FRONT, QStringLiteral("supporttexture") },
+        { AssetType::BOX_FRONT, QStringLiteral("box3d") },
         { AssetType::BOX_FULL, QStringLiteral("boxtexture") },
         { AssetType::BOX_SPINE, QStringLiteral("box2dside") },
         { AssetType::CARTRIDGE, QStringLiteral("support") },
