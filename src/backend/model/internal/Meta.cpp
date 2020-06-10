@@ -28,9 +28,12 @@ namespace model {
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 const QString Meta::m_git_date(QStringLiteral(GIT_DATE));
 
-Meta::Meta(QObject* parent)
+Meta::Meta(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
     , m_log_path(paths::writableConfigDir() + QStringLiteral("/lastrun.log"))
+    , m_enable_menu_reboot(args.enable_menu_reboot)
+    , m_enable_menu_shutdown(args.enable_menu_shutdown)
+    , m_enable_menu_appclose(args.enable_menu_appclose)
     , m_loading(true)
     , m_loading_progress(0.f)
     , m_game_count(0)

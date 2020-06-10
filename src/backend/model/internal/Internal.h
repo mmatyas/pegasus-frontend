@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "CliArgs.h"
 #include "GamepadManager.h"
 #include "Meta.h"
 #include "System.h"
@@ -36,6 +37,6 @@ class Internal : public QObject {
     QML_CONST_PROPERTY(model::GamepadManager, gamepad)
 
 public:
-    explicit Internal();
+    explicit Internal(const backend::CliArgs& args, QObject* parent = nullptr);
 };
 } // namespace model

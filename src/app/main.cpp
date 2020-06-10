@@ -69,12 +69,31 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         tr_log("Do not print log messages to the terminal"));
     argparser.addOption(arg_silent);
 
+    const QCommandLineOption arg_menu_reboot(QStringLiteral("disable-menu-reboot"),
+        tr_log("Hides the system reboot entry in the main menu"));
+    argparser.addOption(arg_menu_reboot);
+
+    const QCommandLineOption arg_menu_shutdown(QStringLiteral("disable-menu-shutdown"),
+        tr_log("Hides the system shutdown entry in the main menu"));
+    argparser.addOption(arg_menu_shutdown);
+
+    const QCommandLineOption arg_menu_appclose(QStringLiteral("disable-menu-appclose"),
+        tr_log("Hides the closing Pegasus entry in the main menu"));
+    argparser.addOption(arg_menu_appclose);
+
+    const QCommandLineOption arg_menu_kiosk(QStringLiteral("kiosk"),
+        tr_log("Alias for '--disable-menu-reboot --disable-menu-shutdown --disable-menu-appclose'"));
+    argparser.addOption(arg_menu_kiosk);
+
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app); // may quit!
 
-    auto args = backend::CliArgs {};
+    backend::CliArgs args;
     args.portable = argparser.isSet(arg_portable);
     args.silent = argparser.isSet(arg_silent);
+    args.enable_menu_appclose = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_appclose));
+    args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
+    args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
     return args;
 }

@@ -20,8 +20,9 @@
 #include "LocaleUtils.h"
 
 
-ApiObject::ApiObject(QObject* parent)
+ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
+    , m_internal(args)
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
     , m_allGames(new QQmlObjectListModel<model::Game>(this))
     , m_launch_game_file(nullptr)

@@ -21,5 +21,8 @@ namespace backend {
 struct CliArgs {
     bool portable = false;
     bool silent = false;
+    bool enable_menu_appclose = true;
+    bool enable_menu_shutdown = true;
+    bool enable_menu_reboot = true;
 };
 } // namespace backend

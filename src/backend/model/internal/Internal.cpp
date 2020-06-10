@@ -20,6 +20,9 @@
 
 namespace model {
 
-Internal::Internal() = default;
+Internal::Internal(const backend::CliArgs& args, QObject* parent)
+    : QObject(parent)
+    , m_meta(args)
+{}
 
 } // namespace model

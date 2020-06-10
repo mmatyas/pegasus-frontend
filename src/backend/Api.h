@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "CliArgs.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/internal/Internal.h"
@@ -46,7 +47,7 @@ class ApiObject : public QObject {
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
 
 public:
-    explicit ApiObject(QObject* parent = nullptr);
+    explicit ApiObject(const backend::CliArgs& args, QObject* parent = nullptr);
 
     // scanning
     void startScanning();

@@ -68,6 +68,7 @@ Backend::Backend()
 
 Backend::Backend(const CliArgs& args)
     : init(args)
+    , api(args)
     , frontend(&api)
 {
     // the following communication is required because process handling
