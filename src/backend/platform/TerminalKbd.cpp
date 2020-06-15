@@ -17,6 +17,9 @@
 
 #include "TerminalKbd.h"
 
+#include <QtGlobal>
+
+
 #if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
 #include <unistd.h>
