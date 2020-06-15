@@ -45,8 +45,6 @@ include(model/model.pri)
 include(utils/utils.pri)
 include(types/types.pri)
 
-include($${TOP_SRCDIR}/src/components/components.pri)
-
 DEFINES *= $${COMMON_DEFINES}
 
 include($${TOP_SRCDIR}/thirdparty/thirdparty.pri)

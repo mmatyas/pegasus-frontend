@@ -21,7 +21,7 @@
 #include "ScriptRunner.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
-#include "terminal_kbd/TerminalKbd.h"
+#include "platform/TerminalKbd.h"
 #include "utils/CommandTokenizer.h"
 
 #include <QDebug>

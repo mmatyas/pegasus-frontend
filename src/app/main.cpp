@@ -17,7 +17,7 @@
 
 #include "backend/Backend.h"
 #include "backend/LocaleUtils.h"
-#include "terminal_kbd/TerminalKbd.h"
+#include "backend/platform/TerminalKbd.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
