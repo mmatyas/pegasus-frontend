@@ -110,7 +110,7 @@ GamepadManagerQt::GamepadManagerQt(QObject* parent)
 #endif
 }
 
-void GamepadManagerQt::start()
+void GamepadManagerQt::start(const backend::CliArgs&)
 {
     for (const int device_id : QGamepadManager::instance()->connectedGamepads())
         fwd_connection(device_id);

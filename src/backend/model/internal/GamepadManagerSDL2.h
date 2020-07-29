@@ -32,7 +32,7 @@ public:
     explicit GamepadManagerSDL2(QObject* parent);
     ~GamepadManagerSDL2();
 
-    void start() final;
+    void start(const backend::CliArgs&) final;
 
     void start_recording(int, GamepadButton) final;
     void start_recording(int, GamepadAxis) final;

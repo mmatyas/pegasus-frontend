@@ -100,6 +100,14 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
                "--disable-menu-appclose\n"
                "--disable-menu-settings"));
 
+    const QCommandLineOption arg_gamepad_autoconfig = add_cli_option(argparser,
+        QStringLiteral("disable-gamepad-autoconfig"),
+        tr_log("Disables the automatic layout detection for connected gamepads.\n"
+               "When you connect a gamepad, Pegasus tries to guess its button and axis layout "
+               "automatically based on a list of known devices. Unfortunately this doesn't seem "
+               "to work perfectly with some platforms and devices (eg. arcades), in which case "
+               "you can disable this feature here."));
+
     argparser.addHelpOption();
     argparser.addVersionOption();
     argparser.process(app); // may quit!
@@ -111,5 +119,6 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
     args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
     args.enable_menu_settings = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_settings));
+    args.enable_gamepad_autoconfig = !argparser.isSet(arg_gamepad_autoconfig);
     return args;
 }

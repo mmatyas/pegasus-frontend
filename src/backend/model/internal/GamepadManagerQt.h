@@ -31,7 +31,7 @@ class GamepadManagerQt : public GamepadManagerBackend {
 public:
     explicit GamepadManagerQt(QObject* parent);
 
-    void start() final;
+    void start(const backend::CliArgs&) final;
 
 private slots:
     void fwd_connection(int);

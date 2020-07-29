@@ -52,7 +52,7 @@ inline QString pretty_id(int device_id) {
 
 namespace model {
 
-GamepadManager::GamepadManager(QObject* parent)
+GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
     , m_devices(new QQmlObjectListModel<model::Gamepad>(this))
 #ifdef WITH_SDL_GAMEPAD
@@ -90,7 +90,7 @@ GamepadManager::GamepadManager(QObject* parent)
             &padbuttonnav, &GamepadButtonNavigation::onButtonChanged);
 #endif // Q_OS_ANDROID
 
-    m_backend->start();
+    m_backend->start(args);
 }
 
 void GamepadManager::configureButton(int deviceId, GMButton button)

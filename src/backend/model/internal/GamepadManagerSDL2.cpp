@@ -283,7 +283,7 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
     connect(&m_poll_timer, &QTimer::timeout, this, &GamepadManagerSDL2::poll);
 }
 
-void GamepadManagerSDL2::start()
+void GamepadManagerSDL2::start(const backend::CliArgs& args)
 {
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
         qCritical().noquote() << "Failed to initialize SDL2. Gamepad support may not work.";
@@ -291,8 +291,10 @@ void GamepadManagerSDL2::start()
         return;
     }
 
-    if (Q_UNLIKELY(!load_internal_gamepaddb(m_sdl_version)))
-        print_sdl_error();
+    if (args.enable_gamepad_autoconfig) {
+        if (Q_UNLIKELY(!load_internal_gamepaddb(m_sdl_version)))
+            print_sdl_error();
+    }
 
     for (const QString& dir : paths::configDirs())
         load_user_gamepaddb(dir);

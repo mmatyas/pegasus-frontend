@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "CliArgs.h"
 #include "Gamepad.h"
 #include "GamepadManagerBackend.h"
 #include "utils/HashMap.h"
@@ -41,7 +42,7 @@ class GamepadManager : public QObject {
     QML_OBJMODEL_PROPERTY(Gamepad, devices)
 
 public:
-    explicit GamepadManager(QObject* parent = nullptr);
+    explicit GamepadManager(const backend::CliArgs& args, QObject* parent = nullptr);
 
     enum class GMButton {
         Invalid,

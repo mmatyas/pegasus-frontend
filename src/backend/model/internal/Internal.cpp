@@ -23,6 +23,7 @@ namespace model {
 Internal::Internal(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
     , m_meta(args)
+    , m_gamepad(args)
 {}
 
 } // namespace model

@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "CliArgs.h"
 #include "types/GamepadKeyId.h"
 
 #include <QObject>
@@ -32,7 +33,7 @@ public:
     GamepadManagerBackend(QObject* parent = nullptr);
     virtual ~GamepadManagerBackend() = default;
 
-    virtual void start() {}
+    virtual void start(const backend::CliArgs&) {}
 
     virtual void start_recording(int, GamepadButton) {}
     virtual void start_recording(int, GamepadAxis) {}
