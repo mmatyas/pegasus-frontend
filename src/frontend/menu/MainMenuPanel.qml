@@ -72,6 +72,9 @@ FocusScope {
             }
             selected: focus
 
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
             KeyNavigation.down: mbHelp
         }
         PrimaryMenuItem {
