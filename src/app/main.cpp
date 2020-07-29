@@ -53,6 +53,13 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
+QCommandLineOption add_cli_option(QCommandLineParser& parser, const QString& name, const QString& desc)
+{
+    QCommandLineOption arg(name, desc);
+    parser.addOption(arg);
+    return arg;
+}
+
 backend::CliArgs handle_cli_args(QGuiApplication& app)
 {
     QCommandLineParser argparser;
@@ -61,37 +68,37 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         "retro games) and launching them from one place. It's focusing on customization,\n"
         "cross platform support (including embedded devices) and high performance."));
 
-    const QCommandLineOption arg_portable(QStringLiteral("portable"),
+    const QCommandLineOption arg_portable = add_cli_option(argparser,
+        QStringLiteral("portable"),
         tr_log("Do not read or write config files outside the program's directory"));
-    argparser.addOption(arg_portable);
 
-    const QCommandLineOption arg_silent(QStringLiteral("silent"),
+    const QCommandLineOption arg_silent = add_cli_option(argparser,
+        QStringLiteral("silent"),
         tr_log("Do not print log messages to the terminal"));
-    argparser.addOption(arg_silent);
 
-    const QCommandLineOption arg_menu_reboot(QStringLiteral("disable-menu-reboot"),
+    const QCommandLineOption arg_menu_reboot = add_cli_option(argparser,
+        QStringLiteral("disable-menu-reboot"),
         tr_log("Hides the system reboot entry in the main menu"));
-    argparser.addOption(arg_menu_reboot);
 
-    const QCommandLineOption arg_menu_shutdown(QStringLiteral("disable-menu-shutdown"),
+    const QCommandLineOption arg_menu_shutdown = add_cli_option(argparser,
+        QStringLiteral("disable-menu-shutdown"),
         tr_log("Hides the system shutdown entry in the main menu"));
-    argparser.addOption(arg_menu_shutdown);
 
-    const QCommandLineOption arg_menu_appclose(QStringLiteral("disable-menu-appclose"),
+    const QCommandLineOption arg_menu_appclose = add_cli_option(argparser,
+        QStringLiteral("disable-menu-appclose"),
         tr_log("Hides the closing Pegasus entry in the main menu"));
-    argparser.addOption(arg_menu_appclose);
 
-    const QCommandLineOption arg_menu_settings(QStringLiteral("disable-menu-settings"),
+    const QCommandLineOption arg_menu_settings = add_cli_option(argparser,
+        QStringLiteral("disable-menu-settings"),
         tr_log("Hides the settings menu entry in the main menu"));
-    argparser.addOption(arg_menu_settings);
 
-    const QCommandLineOption arg_menu_kiosk(QStringLiteral("kiosk"),
+    const QCommandLineOption arg_menu_kiosk = add_cli_option(argparser,
+        QStringLiteral("kiosk"),
         tr_log("Alias for:\n"
                "--disable-menu-reboot\n"
                "--disable-menu-shutdown\n"
                "--disable-menu-appclose\n"
                "--disable-menu-settings"));
-    argparser.addOption(arg_menu_kiosk);
 
     argparser.addHelpOption();
     argparser.addVersionOption();
