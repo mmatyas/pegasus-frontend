@@ -50,6 +50,7 @@ void print_metainfo()
         QSysInfo::prettyProductName(),
         QSysInfo::currentCpuArchitecture(),
         QGuiApplication::platformName()));
+    Log::info(tr_log("Qt version %1").arg(qVersion()));
 }
 
 void register_api_classes()
