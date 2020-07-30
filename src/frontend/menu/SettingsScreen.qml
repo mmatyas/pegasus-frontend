@@ -67,7 +67,7 @@ FocusScope {
     }
     Connections {
         target: modal.item
-        onClose: {
+        function onClose() {
             main.focus = true;
             root.state = "";
         }
@@ -88,7 +88,7 @@ FocusScope {
     }
     Connections {
         target: subscreen.item
-        onClose: {
+        function onClose() {
             main.focus = true;
             root.state = "";
         }

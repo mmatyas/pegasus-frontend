@@ -92,9 +92,9 @@ FocusScope {
 
     Connections {
         target: api.internal.gamepad
-        onButtonConfigured: recordConfig(null)
-        onAxisConfigured: recordConfig(null)
-        onConfigurationCanceled: recordConfig(null)
+        function onButtonConfigured() { recordConfig(null); }
+        function onAxisConfigured() { recordConfig(null); }
+        function onConfigurationCanceled() { recordConfig(null); }
     }
 
     Rectangle {
