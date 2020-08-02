@@ -25,7 +25,6 @@
 namespace model {
 struct ProviderEntry {
     ProviderEntry(size_t idx);
-    MOVE_ONLY(ProviderEntry)
 
     bool enabled() const;
     void setEnabled(bool);

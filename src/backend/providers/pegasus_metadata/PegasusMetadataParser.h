@@ -18,8 +18,8 @@
 #pragma once
 
 #include "providers/Provider.h"
-#include "utils/MoveOnly.h"
 #include "providers/SearchContext.h"
+#include "utils/NoCopyNoMove.h"
 
 #include <QString>
 #include <vector>
@@ -38,7 +38,7 @@ struct FileFilter;
 class Parser {
 public:
     explicit Parser(QString metafile_path, const Constants&);
-    MOVE_ONLY(Parser)
+    NO_COPY_NO_MOVE(Parser)
 
     void print_error(const size_t lineno, const QString& msg) const;
     void parse_entry(const metafile::Entry&, providers::SearchContext&, std::vector<FileFilter>&);

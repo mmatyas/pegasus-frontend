@@ -25,8 +25,8 @@
 
 namespace model {
 struct LocaleEntry {
-    const QString bcp47tag;
-    const QString name;
+    QString bcp47tag;
+    QString name;
 
     explicit LocaleEntry(QString tag);
     MOVE_ONLY(LocaleEntry)

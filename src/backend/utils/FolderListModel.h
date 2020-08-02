@@ -17,20 +17,18 @@
 
 #pragma once
 
+#include "utils/MoveOnly.h"
+
 #include <QAbstractListModel>
 #include <QDir>
 
 
 struct FolderListEntry {
-    const QString name;
-    const bool is_dir;
+    QString name;
+    bool is_dir;
 
     FolderListEntry(QString name, bool is_dir);
-
-    FolderListEntry(const FolderListEntry&) = delete;
-    FolderListEntry& operator=(const FolderListEntry&) = delete;
-    FolderListEntry(FolderListEntry&&) = default;
-    FolderListEntry& operator=(FolderListEntry&&) = default;
+    MOVE_ONLY(FolderListEntry)
 };
 
 

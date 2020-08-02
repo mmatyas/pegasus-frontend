@@ -18,7 +18,7 @@
 #pragma once
 
 #include "utils/HashMap.h"
-#include "utils/MoveOnly.h"
+#include "utils/NoCopyNoMove.h"
 
 #include <QString>
 #include <QRegularExpression>
@@ -77,7 +77,7 @@ struct Constants {
     const QRegularExpression rx_linebreak;
 
     explicit Constants();
-    MOVE_ONLY(Constants)
+    NO_COPY_NO_MOVE(Constants)
 };
 
 } // namespace parser

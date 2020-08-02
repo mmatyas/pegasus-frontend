@@ -20,7 +20,7 @@
 #include <QString>
 #include <vector>
 
-namespace providers { struct SearchContext; }
+namespace providers { class SearchContext; }
 
 
 namespace providers {
