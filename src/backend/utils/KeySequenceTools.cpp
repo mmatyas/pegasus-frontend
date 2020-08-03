@@ -64,7 +64,7 @@ QKeySequence qmlevent_to_keyseq(const QVariant& event_variant)
     if (::strcmp(event_qobj_class, QML_KEYEVENT_CLASSNAME) != 0)
         return {};
 
-    const QKeyEvent& event = static_cast<const FakeQKeyEvent* const>(event_qobj)->event;
+    const QKeyEvent& event = static_cast<const FakeQKeyEvent*>(event_qobj)->event;
     if (is_modifier(event.key()))
         return {};
 

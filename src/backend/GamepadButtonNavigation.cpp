@@ -103,7 +103,7 @@ void GamepadButtonNavigation::onButtonChanged(int, GamepadButton button, bool pr
 
 void GamepadButtonNavigation::onTimerTimeout()
 {
-    auto timer = static_cast<QTimer* const>(QObject::sender());
+    QTimer* const timer = static_cast<QTimer*>(QObject::sender());
 
     using HashEntry = const decltype(m_timers)::value_type;
     const auto it = std::find_if(m_timers.cbegin(), m_timers.cend(),

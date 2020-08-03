@@ -81,7 +81,7 @@ Provider& Favorites::findDynamicData(const QVector<model::Collection*>&,
 
         const QString path = QFileInfo(paths::writableConfigDir(), line).canonicalFilePath();
         if (path_map.count(path)) {
-            auto parent = static_cast<model::Game* const>(path_map.at(path)->parent());
+            model::Game* const parent = static_cast<model::Game*>(path_map.at(path)->parent());
             parent->setFavorite(true);
         }
     }
