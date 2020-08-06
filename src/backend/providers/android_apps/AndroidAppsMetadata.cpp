@@ -162,12 +162,6 @@ void Metadata::fill_from_network(const std::vector<model::Game*>& childs)
     }
 
     QNetworkAccessManager netman; // TODO: move NAM to global
-    if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("no internet connection - most game data may be missing");
-        return;
-    }
-
 
     const int TIMEOUT_MS(10000);
     const QString GPLAY_URL(QStringLiteral("https://play.google.com/store/apps/details?id=%1&hl=")

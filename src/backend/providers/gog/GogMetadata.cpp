@@ -317,12 +317,6 @@ void Metadata::enhance(providers::SearchContext& sctx, HashMap<size_t, QString>&
     // try to fill from network
 
     QNetworkAccessManager netman; // TODO: move NAM to global
-    if (netman.networkAccessible() != QNetworkAccessManager::Accessible) {
-        qWarning().noquote()
-            << MSG_PREFIX
-            << tr_log("no internet connection - most game data may be missing");
-        return;
-    }
     download_metadata(entries, netman);
 }
 
