@@ -68,6 +68,9 @@ android {
         platform/android/src/org/pegasus_frontend/android/MainActivity.java \
         platform/android/res/values/libs.xml \
 
+    ANDROID_MIN_SDK_VERSION = 21
+    ANDROID_TARGET_SDK_VERSION = 22
+
     ANDROID_CFGDIR_IN = $$PWD/platform/android
     ANDROID_CFGDIR_OUT = $$OUT_PWD/android
     equals(ANDROID_CFGDIR_IN, $${ANDROID_CFGDIR_OUT}) {
