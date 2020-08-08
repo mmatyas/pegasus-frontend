@@ -7,6 +7,7 @@ jobs:
       - QT_VERSION: qt5150
       - QT_TARGET: android
       - ANDROID_NDK_ROOT: /opt/android-ndk
+      - BUILDOPTS: ANDROID_ABIS=armeabi-v7a
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -14,7 +15,7 @@ jobs:
       - run: curl -LO https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/aks.enc
       - run: openssl aes-256-cbc -k "${AKS_ENC_KEY}" -in aks.enc -out aks -d
       - run: /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
-          --input src/app/android-libpegasus-fe.so-deployment-settings.json
+          --input src/app/android-pegasus-fe-deployment-settings.json
           --output ${PWD}/installdir
           --android-platform android-22
           --gradle
