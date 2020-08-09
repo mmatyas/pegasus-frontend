@@ -20,6 +20,7 @@
         <file>pegasus-theme-grid/assets/icons/heart_empty.svg</file>
         <file>pegasus-theme-grid/assets/icons/heart_filled.svg</file>
         <file>pegasus-theme-grid/assets/logos/3do.svg</file>
+        <file>pegasus-theme-grid/assets/logos/3ds.svg</file>
         <file>pegasus-theme-grid/assets/logos/amiga.svg</file>
         <file>pegasus-theme-grid/assets/logos/amstradcpc.svg</file>
         <file>pegasus-theme-grid/assets/logos/android.svg</file>
@@ -37,6 +38,7 @@
         <file>pegasus-theme-grid/assets/logos/coco.svg</file>
         <file>pegasus-theme-grid/assets/logos/colecovision.svg</file>
         <file>pegasus-theme-grid/assets/logos/daphne.svg</file>
+        <file>pegasus-theme-grid/assets/logos/dos.svg</file>
         <file>pegasus-theme-grid/assets/logos/dragon32.svg</file>
         <file>pegasus-theme-grid/assets/logos/dreamcast.svg</file>
         <file>pegasus-theme-grid/assets/logos/fba.svg</file>
@@ -49,6 +51,7 @@
         <file>pegasus-theme-grid/assets/logos/gog.svg</file>
         <file>pegasus-theme-grid/assets/logos/intellivision.svg</file>
         <file>pegasus-theme-grid/assets/logos/kodi.svg</file>
+        <file>pegasus-theme-grid/assets/logos/linux.svg</file>
         <file>pegasus-theme-grid/assets/logos/love.svg</file>
         <file>pegasus-theme-grid/assets/logos/macintosh.svg</file>
         <file>pegasus-theme-grid/assets/logos/mame.svg</file>
@@ -56,15 +59,19 @@
         <file>pegasus-theme-grid/assets/logos/megadrive.svg</file>
         <file>pegasus-theme-grid/assets/logos/msx.svg</file>
         <file>pegasus-theme-grid/assets/logos/n64.svg</file>
+        <file>pegasus-theme-grid/assets/logos/nds.svg</file>
         <file>pegasus-theme-grid/assets/logos/neogeo.svg</file>
         <file>pegasus-theme-grid/assets/logos/neogeocd.svg</file>
         <file>pegasus-theme-grid/assets/logos/nes.svg</file>
+        <file>pegasus-theme-grid/assets/logos/ngc.svg</file>
         <file>pegasus-theme-grid/assets/logos/ngp.svg</file>
         <file>pegasus-theme-grid/assets/logos/ngpc.svg</file>
         <file>pegasus-theme-grid/assets/logos/odyssey2.svg</file>
         <file>pegasus-theme-grid/assets/logos/pc.svg</file>
         <file>pegasus-theme-grid/assets/logos/pcengine.svg</file>
         <file>pegasus-theme-grid/assets/logos/ports.svg</file>
+        <file>pegasus-theme-grid/assets/logos/ps2.svg</file>
+        <file>pegasus-theme-grid/assets/logos/ps3.svg</file>
         <file>pegasus-theme-grid/assets/logos/psp.svg</file>
         <file>pegasus-theme-grid/assets/logos/psx.svg</file>
         <file>pegasus-theme-grid/assets/logos/residualvm.svg</file>
@@ -75,12 +82,19 @@
         <file>pegasus-theme-grid/assets/logos/sg-1000.svg</file>
         <file>pegasus-theme-grid/assets/logos/snes.svg</file>
         <file>pegasus-theme-grid/assets/logos/steam.svg</file>
+        <file>pegasus-theme-grid/assets/logos/switch.svg</file>
         <file>pegasus-theme-grid/assets/logos/turbografx16.svg</file>
         <file>pegasus-theme-grid/assets/logos/vectrex.svg</file>
         <file>pegasus-theme-grid/assets/logos/videopac.svg</file>
         <file>pegasus-theme-grid/assets/logos/virtualboy.svg</file>
+        <file>pegasus-theme-grid/assets/logos/wii.svg</file>
+        <file>pegasus-theme-grid/assets/logos/wiiu.svg</file>
+        <file>pegasus-theme-grid/assets/logos/win31.svg</file>
+        <file>pegasus-theme-grid/assets/logos/windows.svg</file>
         <file>pegasus-theme-grid/assets/logos/wonderswan.svg</file>
         <file>pegasus-theme-grid/assets/logos/wonderswancolor.svg</file>
+        <file>pegasus-theme-grid/assets/logos/x360.svg</file>
+        <file>pegasus-theme-grid/assets/logos/xbox.svg</file>
         <file>pegasus-theme-grid/assets/logos/zmachine.svg</file>
         <file>pegasus-theme-grid/assets/logos/zxspectrum.svg</file>
     </qresource>
