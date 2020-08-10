@@ -8,14 +8,16 @@ set +o xtrace # !
 pushd dist
 
 if [[ "$CIRCLE_BRANCH" != "master" ]]; then
+  FFSEND_VER="v0.2.65"
+
   echo "Release uploading disabled for pull requests, uploading to Send instead"
   pushd /tmp
-  curl -L -O https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/ffsend-v0.2.58-linux-x64-static
-  chmod +x ffsend-v0.2.58-linux-x64-static
+  curl -L -O https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/ffsend-${FFSEND_VER}-linux-x64-static
+  chmod +x ffsend-${FFSEND_VER}-linux-x64-static
   popd
 
   for FILE in ./*; do
-    timeout 5m /tmp/ffsend-v0.2.58-linux-x64-static upload $FILE || true
+    timeout 5m /tmp/ffsend-${FFSEND_VER}-linux-x64-static upload $FILE || true
   done
 
   popd
