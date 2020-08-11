@@ -10,6 +10,6 @@ if [[ ! -d "$QT_DIR" ]]; then
 fi
 
 ${QT_DIR}/bin/qmake --version
-eval ${QT_DIR}/bin/qmake . ${BUILDOPTS:-} QMAKE_CXXFLAGS+=-fno-rtti
+eval ${QT_DIR}/bin/qmake . ${BUILDOPTS:-} QMAKE_CXXFLAGS+=\'-fno-rtti -Wall -Wextra -pedantic\'
 make
 make install INSTALL_ROOT=${PWD}/installdir
