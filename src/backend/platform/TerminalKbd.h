@@ -22,4 +22,4 @@ namespace TerminalKbd {
 void on_startup();
 void enable();
 void disable();
-}; // namespace TerminalKbd
+} // namespace TerminalKbd

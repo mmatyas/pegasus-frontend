@@ -67,5 +67,5 @@ void GameFile::update_playstats(int playcount, qint64 playtime, QDateTime last_p
 
 bool sort_gamefiles(const model::GameFile* const a, const model::GameFile* const b) {
     return QString::localeAwareCompare(a->name(), b->name()) < 0;
-};
+}
 } // namespace model

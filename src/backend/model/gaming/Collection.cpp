@@ -53,5 +53,5 @@ Collection& Collection::setGames(std::vector<model::Game*>&& games)
 
 bool sort_collections(const model::Collection* const a, const model::Collection* const b) {
     return QString::localeAwareCompare(a->sortBy(), b->sortBy()) < 0;
-};
+}
 } // namespace model
