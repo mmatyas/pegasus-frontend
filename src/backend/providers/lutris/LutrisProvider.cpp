@@ -121,9 +121,9 @@ Provider& LutrisProvider::findLists(SearchContext& sctx)
         const QString id_str = query.value(0).toString();
         const QString slug = query.value(1).toString();
         const QString title = query.value(2).toString();
-        QString protocol_id = QLatin1String("lutris:") + slug;
+        QString lutris_uri = QLatin1String("lutris:") + slug;
 
-        const auto entry = sctx.add_or_create_game_from_file(QFileInfo(protocol_id), collection);
+        const auto entry = sctx.add_or_create_game_from_entry(lutris_uri, collection);
         model::Game& game = entry.inner();
         game.setTitle(title);
         game.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
