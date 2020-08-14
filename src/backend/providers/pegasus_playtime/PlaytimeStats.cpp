@@ -261,6 +261,9 @@ void PlaytimeStats::start_processing()
         emit startedWriting();
 
         while (!m_active_tasks.empty()) {
+            for (const QueueEntry& entry : m_active_tasks)
+                update_modelgame(entry.gamefile, entry.launch_time, entry.duration);
+
             SqliteDb channel(m_db_path);
             if (!channel.open()) {
                 qWarning().noquote() << MSG_PREFIX
@@ -279,11 +282,8 @@ void PlaytimeStats::start_processing()
             for (const QueueEntry& entry : m_active_tasks) {
                 const QString path = entry.gamefile->fileinfo().canonicalFilePath();
                 const int path_id = get_path_id(path);
-                if (path_id == -1)
-                    continue;
-
-                save_play_entry(path_id, entry.launch_time, entry.duration);
-                update_modelgame(entry.gamefile, entry.launch_time, entry.duration);
+                if (path_id >= 0)
+                    save_play_entry(path_id, entry.launch_time, entry.duration);
             }
 
             channel.commit();
