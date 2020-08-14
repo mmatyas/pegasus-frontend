@@ -33,6 +33,7 @@ public:
 
     bool open() { return m_db.open(); }
     bool startTransaction() { return m_db.transaction(); }
+    bool rollback() { return m_db.rollback(); }
     bool commit() { return m_db.commit(); }
 
     bool hasTable(const QString& table_name);

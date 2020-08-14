@@ -271,8 +271,10 @@ void PlaytimeStats::start_processing()
 
             channel.startTransaction();
 
-            if (!create_missing_tables(channel))
+            if (!create_missing_tables(channel)) {
+                channel.rollback();
                 break;
+            }
 
             for (const QueueEntry& entry : m_active_tasks) {
                 const QString path = entry.gamefile->fileinfo().canonicalFilePath();
