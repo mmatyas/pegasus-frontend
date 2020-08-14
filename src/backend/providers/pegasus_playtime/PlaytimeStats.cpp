@@ -287,10 +287,10 @@ void PlaytimeStats::start_processing()
             }
 
             channel.commit();
-            m_active_tasks.clear();
 
             // pick up new tasks
             QMutexLocker lock(&m_queue_guard);
+            m_active_tasks.clear();
             m_active_tasks.swap(m_pending_tasks);
         }
 
