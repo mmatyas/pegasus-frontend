@@ -105,6 +105,7 @@ jobs:
     environment:
       - QT_VERSION: qt5128
       - QT_TARGET: rpi4-static
+      - BUILDOPTS: QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: git apply ./etc/rpi4/kms_launch_fix.diff
