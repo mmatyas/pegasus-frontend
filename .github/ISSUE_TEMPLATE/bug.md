@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: 🐜 Bug report
 about: Something that's supposed to work does not work or the program crashes.
 ---
 
