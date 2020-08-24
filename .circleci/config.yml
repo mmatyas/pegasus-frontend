@@ -103,7 +103,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5128
+      - QT_VERSION: qt5150
       - QT_TARGET: rpi4-static
       - BUILDOPTS: QMAKE_LIBS_LIBDL=-ldl
     steps:
