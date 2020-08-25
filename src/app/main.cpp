@@ -116,9 +116,14 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     args.portable = argparser.isSet(arg_portable);
     args.silent = argparser.isSet(arg_silent);
     args.enable_menu_appclose = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_appclose));
-    args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
-    args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
     args.enable_menu_settings = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_settings));
     args.enable_gamepad_autoconfig = !argparser.isSet(arg_gamepad_autoconfig);
+#ifdef Q_OS_ANDROID
+    args.enable_menu_shutdown = false;
+    args.enable_menu_reboot = false;
+#else
+    args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
+    args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
+#endif
     return args;
 }
