@@ -19,6 +19,7 @@
 
 #include "LocaleUtils.h"
 #include "Paths.h"
+#include "SteamCommon.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
@@ -41,18 +42,26 @@ QString find_steam_datadir()
 {
     QStringList possible_dirs;
 
+
+#ifdef Q_OS_LINUX
+    // Linux: Prefer Flatpak-Steam if available
+    possible_dirs << providers::steam::flatpak_data_dir();
+#endif // linux
+
+
 #ifdef Q_OS_UNIX
     // Linux: ~/.local/share/Steam
     // macOS: ~/Library/Application Support/Steam
-    possible_dirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
-    for (QString& dir : possible_dirs)
-        dir.append(QLatin1String("/Steam/"));
+    const QStringList std_paths = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+    for (const QString& dir : std_paths)
+        possible_dirs << dir % QLatin1String("/Steam/");
 
 #ifdef Q_OS_LINUX
     // in addition on Linux, ~/.steam/steam
     possible_dirs << paths::homePath() % QLatin1String("/.steam/steam/");
 #endif // linux
 #endif // unix
+
 
 #ifdef Q_OS_WIN
     QSettings reg_base(QLatin1String("HKEY_CURRENT_USER\\Software\\Valve\\Steam"),

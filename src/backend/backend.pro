@@ -7,6 +7,8 @@ android: QT += androidextras
 !isEmpty(USE_SDL_GAMEPAD): include($${TOP_SRCDIR}/src/link_to_sdl.pri)
 else: QT += gamepad
 
+!isEmpty(INSIDE_FLATPAK): DEFINES *= PEGASUS_INSIDE_FLATPAK
+
 
 SOURCES += \
     Api.cpp \
