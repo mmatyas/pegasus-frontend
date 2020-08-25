@@ -124,10 +124,16 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     const model::GameFile& gamefile = *q_gamefile;
     const model::Game& game = static_cast<model::Game&>(*gamefile.parent());
 
+    const QString raw_launch_cmd =
+#if defined(Q_OS_LINUX) && defined(PEGASUS_INSIDE_FLATPAK)
+        QLatin1String("flatpak-spawn --host ") % game.launchCmd();
+#endif
+        game.launchCmd();
+
 
     // TODO: in the future, check the gamefile's own launch command first
 
-    QStringList args = ::utils::tokenize_command(game.launchCmd());
+    QStringList args = ::utils::tokenize_command(raw_launch_cmd);
     for (QString& arg : args)
         replace_variables(arg, gamefile.fileinfo());
 

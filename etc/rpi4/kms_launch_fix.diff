@@ -74,8 +74,8 @@ diff --git a/src/backend/backend.pro b/src/backend/backend.pro
 index fe116bd..e5d61a9 100644
 --- a/src/backend/backend.pro
 +++ b/src/backend/backend.pro
-@@ -8,6 +8,9 @@ android: QT += androidextras
- else: QT += gamepad
+@@ -10,6 +10,9 @@ android: QT += androidextras
+ !isEmpty(INSIDE_FLATPAK): DEFINES *= PEGASUS_INSIDE_FLATPAK
  
  
 +QT += gui-private eglfsdeviceintegration-private
