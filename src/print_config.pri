@@ -15,7 +15,7 @@ printSimpleOpt("License and Readme", INSTALL_DOCDIR)
 
 
 unix:!macx {
-    printSimpleOpt("X11: Icon file", INSTALL_ICONDIR)
+    printSimpleOpt("X11: Icon files", INSTALL_ICONDIR)
     printSimpleOpt("X11: Desktop file", INSTALL_DESKTOPDIR)
     printSimpleOpt("X11: AppStream file", INSTALL_APPSTREAMDIR)
 }

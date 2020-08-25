@@ -14,10 +14,20 @@ unix:!macx {
     target.path = $${INSTALL_BINDIR}
 
     !isEmpty(INSTALL_ICONDIR) {
-        icon.files += platform/linux/org.pegasus_frontend.Pegasus.png
-        icon.path = $${INSTALL_ICONDIR}
-        OTHER_FILES += $${icon.files}
-        INSTALLS += icon
+        icon16.files += platform/linux/icons/16/org.pegasus_frontend.Pegasus.png
+        icon32.files += platform/linux/icons/32/org.pegasus_frontend.Pegasus.png
+        icon48.files += platform/linux/icons/48/org.pegasus_frontend.Pegasus.png
+        icon64.files += platform/linux/icons/64/org.pegasus_frontend.Pegasus.png
+        icon128.files += platform/linux/icons/128/org.pegasus_frontend.Pegasus.png
+
+        icon16.path = $${INSTALL_ICONDIR}/16x16/apps/
+        icon32.path = $${INSTALL_ICONDIR}/32x32/apps/
+        icon48.path = $${INSTALL_ICONDIR}/48x48/apps/
+        icon64.path = $${INSTALL_ICONDIR}/64x64/apps/
+        icon128.path = $${INSTALL_ICONDIR}/128x128/apps/
+
+        INSTALLS += icon16 icon32 icon48 icon64 icon128
+        OTHER_FILES += $${icon16.files} $${icon32.files} $${icon48.files} $${icon64.files} $${icon128.files}
     }
     !isEmpty(INSTALL_DESKTOPDIR) {
         desktop_file.input = platform/linux/org.pegasus_frontend.Pegasus.desktop.in
