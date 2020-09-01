@@ -32,6 +32,8 @@
 
 namespace {
 
+const QLatin1String COMMA_NAME_STR("Comma");
+
 std::map<QString, QKeySequence> gen_gamepad_names() {
     std::map<QString, QKeySequence> result;
 
@@ -236,9 +238,12 @@ void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, con
 
     QVector<QKeySequence> keyseqs;
 
-    const auto key_strs = val.splitRef(',');
+    const auto key_strs = val.splitRef(',', QString::SkipEmptyParts);
     for (const QStringRef& strref : key_strs) {
-        const QString str = strref.trimmed().toString();
+        const QString str = strref
+            .trimmed()
+            .toString()
+            .replace(COMMA_NAME_STR, QLatin1String(","));
 
         const auto gamepadbtn_it = reverse_gamepadButtonNames.find(str);
         if (gamepadbtn_it != reverse_gamepadButtonNames.cend()) {
@@ -352,7 +357,9 @@ void SaveContext::print_keys(QTextStream& stream) const
                 continue;
             }
 
-            key_strs << keyseq.toString();
+            key_strs << keyseq
+                .toString()
+                .replace(',', COMMA_NAME_STR);
         }
 
         if (key_strs.isEmpty())
