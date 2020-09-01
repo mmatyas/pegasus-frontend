@@ -28,23 +28,24 @@ namespace {
 bool dbus_call(const char* const service, const char* const path, const char* const message,
                const char* const message_arg = nullptr)
 {
+    const QLatin1String service_str(service);
     const QLatin1String program("dbus-send");
     QStringList args {
         QLatin1String("--system"),
         QLatin1String("--print-reply"),
-        QLatin1String("--dest=") + QLatin1String(service),
+        QLatin1String("--dest=") + service_str,
         QLatin1String(path),
         QLatin1String(message),
     };
     if (message_arg)
         args << QLatin1String(message_arg);
 
-    const bool success = (QProcess::execute(program, args) == 0);
-    if (!success) {
-        Log::warning(
-            tr_log("Requesting shutdown/reboot from D-Bus service `%1` failed.")
-            .arg(QLatin1String(service)));
-    }
+    QProcess process;
+    process.start(program, args, QProcess::ReadOnly);
+
+    const bool success = process.waitForFinished(5000);
+    if (!success)
+        Log::warning(tr_log("Requesting shutdown/reboot from D-Bus service `%1` failed.").arg(service_str));
 
     return success;
 }
