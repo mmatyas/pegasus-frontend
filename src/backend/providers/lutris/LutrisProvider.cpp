@@ -123,7 +123,7 @@ Provider& LutrisProvider::findLists(SearchContext& sctx)
         const QString title = query.value(2).toString();
         QString lutris_uri = QLatin1String("lutris:") + slug;
 
-        const auto entry = sctx.add_or_create_game_from_entry(lutris_uri, collection);
+        const PendingGame& entry = sctx.add_or_create_game_from_entry(lutris_uri, collection);
         model::Game& game = entry.inner();
         game.setTitle(title);
         game.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);

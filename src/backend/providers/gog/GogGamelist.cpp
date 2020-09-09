@@ -153,7 +153,7 @@ void register_entries(const std::vector<GogEntry>& entries,
     for (const GogEntry& entry : entries) {
         QFileInfo finfo(entry.exe);
 
-        auto slot = sctx.add_or_create_game_from_file(std::move(finfo), collection);
+        const providers::PendingGame& slot = sctx.add_or_create_game_from_file(std::move(finfo), collection);
         model::Game& game = slot.inner();
         game.setTitle(entry.name);
         game.setLaunchCmd(::utils::escape_command(entry.launch_cmd));
