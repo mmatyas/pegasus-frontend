@@ -128,17 +128,17 @@ Window {
         Connections {
             target: mainMenu.item
 
-            onClose: theme.focus = true
+            function onClose() { theme.focus = true; }
 
-            onRequestShutdown: {
+            function onRequestShutdown() {
                 powerDialog.source = "dialogs/ShutdownDialog.qml"
                 powerDialog.focus = true;
             }
-            onRequestReboot: {
+            function onRequestReboot() {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
-            onRequestQuit: {
+            function onRequestQuit() {
                 theme.source = "";
                 api.internal.system.quit();
             }
@@ -164,7 +164,7 @@ Window {
     }
     Connections {
         target: powerDialog.item
-        onCancel: content.focus = true
+        function onCancel() { content.focus = true; }
     }
 
 
@@ -174,7 +174,7 @@ Window {
     }
     Connections {
         target: multifileSelector.item
-        onCancel: content.focus = true
+        function onCancel() { content.focus = true; }
     }
 
 
@@ -184,22 +184,22 @@ Window {
     }
     Connections {
         target: genericMessage.item
-        onClose: content.focus = true
+        function onClose() { content.focus = true; }
     }
 
 
     Connections {
         target: api
-        onEventSelectGameFile: {
+        function onEventSelectGameFile(game) {
             multifileSelector.setSource("dialogs/MultifileSelector.qml", {"game": game})
             multifileSelector.focus = true;
         }
-        onEventLaunchError: {
+        function onEventLaunchError(msg) {
             genericMessage.setSource("dialogs/GenericOkDialog.qml",
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
-        onEventLoadingStarted: {
+        function onEventLoadingStarted() {
             splashScreen.focus = true;
         }
     }
