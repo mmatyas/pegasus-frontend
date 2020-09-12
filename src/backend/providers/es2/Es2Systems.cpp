@@ -274,7 +274,7 @@ void SystemsParser::find(providers::SearchContext& sctx,
     // find the systems file
     const QString xml_path = findSystemsFile();
     if (xml_path.isEmpty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("system config file not found");
+        qInfo().noquote() << MSG_PREFIX << tr_log("system config file not found");
         return;
     }
 
