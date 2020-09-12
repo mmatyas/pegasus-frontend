@@ -307,6 +307,9 @@ void SaveContext::print_general(QTextStream& stream) const
     };
 
     for (const auto& entry : option_values) {
+        if (entry.second.isEmpty())
+            continue;
+
         stream << LINE_TEMPLATE.arg(
             category_names.at(ConfigEntryCategory::GENERAL),
             option_names.at(entry.first),

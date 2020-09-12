@@ -134,7 +134,7 @@ General::General()
     , portable(false)
     , fullscreen(true)
     , mouse_support(true)
-    , locale(DEFAULT_LOCALE)
+    , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}
 
@@ -190,15 +190,7 @@ void AppSettings::load_config()
 
 void AppSettings::save_config()
 {
-    // sanity check
-    if (general.locale.isEmpty())
-        general.locale = general.DEFAULT_LOCALE;
-    if (general.theme.isEmpty())
-        general.theme = general.DEFAULT_THEME;
-
-
     appsettings::SaveContext().save();
-
 
     ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::run(ScriptEvent::SETTINGS_CHANGED);
