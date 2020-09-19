@@ -7,6 +7,10 @@ jobs:
     name: Android
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt-android
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: android
@@ -20,15 +24,15 @@ jobs:
       - run: .circleci/prepare.sh
       - run: .circleci/build.sh
       - run: curl -LO https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/aks.enc
-      - run: openssl aes-256-cbc -k "${secrets.AKS_ENC_KEY}" -in aks.enc -out aks -d
+      - run: openssl aes-256-cbc -k "${{secrets.AKS_ENC_KEY}}" -in aks.enc -out aks -d
       - run: /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
           --input src/app/android-pegasus-fe-deployment-settings.json
           --output ${PWD}/installdir
           --android-platform android-22
           --gradle
-          --sign ./aks "${secrets.AKS_ALIAS}"
-          --storepass "${secrets.AKS_STOREPASS}"
-          --keypass "${secrets.AKS_KEYPASS}"
+          --sign ./aks "${{secrets.AKS_ALIAS}}"
+          --storepass "${{secrets.AKS_STOREPASS}}"
+          --keypass "${{secrets.AKS_KEYPASS}}"
       - run: cp
           installdir/build/outputs/apk/release/installdir-release-signed.apk
           dist/pegasus-fe_$(git describe --always)_android.apk
@@ -38,6 +42,8 @@ jobs:
     name: Windows (MinGW)
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt-mingw
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: win32-mingw-static
@@ -64,6 +70,8 @@ jobs:
     name: Raspberry Pi 1/Zero
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt-buster
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi1-static
@@ -84,6 +92,8 @@ jobs:
     name: Raspberry Pi 2
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt-buster
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi2-static
@@ -104,6 +114,8 @@ jobs:
     name: Raspberry Pi 3
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt-buster
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi3-static
@@ -124,6 +136,8 @@ jobs:
     name: Raspberry Pi 4
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt-buster
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi4-static
@@ -145,6 +159,8 @@ jobs:
     name: Odroid C1
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt_odroid-c1
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: odroid-c1-static
@@ -165,6 +181,8 @@ jobs:
     name: Odroid C2
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt_odroid-c2
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: odroid-c2-static
@@ -185,6 +203,8 @@ jobs:
     name: Odroid XU3
     runs-on: ubuntu-latest
     container: mmatyas/pegasus-qt_odroid-xu3
+    volumes:
+      - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: odroid-xu3-static
