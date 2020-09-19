@@ -1,0 +1,202 @@
+name: Pegasus CI
+
+on: push
+
+jobs:
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt-android
+    env:
+      - QT_VERSION: qt5151
+      - QT_TARGET: android
+      - ANDROID_NDK_ROOT: /opt/android-ndk
+      - BUILDOPTS: ANDROID_ABIS=armeabi-v7a
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: curl -LO https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/aks.enc
+      - run: openssl aes-256-cbc -k "${secrets.AKS_ENC_KEY}" -in aks.enc -out aks -d
+      - run: /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
+          --input src/app/android-pegasus-fe-deployment-settings.json
+          --output ${PWD}/installdir
+          --android-platform android-22
+          --gradle
+          --sign ./aks "${secrets.AKS_ALIAS}"
+          --storepass "${secrets.AKS_STOREPASS}"
+          --keypass "${secrets.AKS_KEYPASS}"
+      - run: cp
+          installdir/build/outputs/apk/release/installdir-release-signed.apk
+          dist/pegasus-fe_$(git describe --always)_android.apk
+      # - run: .circleci/release.sh
+
+  mingw:
+    name: Windows (MinGW)
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt-mingw
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: win32-mingw-static
+      - BUILDOPTS:
+          USE_SDL_GAMEPAD=1
+          SDL_LIBS='-L/opt/SDL2-2.0.10/i686-w64-mingw32/lib/ -lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi'
+          SDL_INCLUDES=/opt/SDL2-2.0.10/i686-w64-mingw32/include/SDL2/
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: curl -L "https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz" | tar xzf - -C /opt/
+      - run: .circleci/build.sh
+      - run: i686-w64-mingw32-objdump -p installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe | grep 'DLL Name' | sort
+      - run: zip -j dist/pegasus-fe_$(git describe --always)_win-mingw-static.zip
+          installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe
+          README.md
+          LICENSE.md
+      # - run: .circleci/release.sh
+
+  buster-pi1:
+    name: Raspberry Pi 1/Zero
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: rpi1-static
+      - BUILDOPTS: USE_SDL_GAMEPAD=1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
+
+  buster-pi2:
+    name: Raspberry Pi 2
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: rpi2-static
+      - BUILDOPTS: USE_SDL_GAMEPAD=1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
+
+  buster-pi3:
+    name: Raspberry Pi 3
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: rpi3-static
+      - BUILDOPTS: USE_SDL_GAMEPAD=1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
+
+  buster-pi4:
+    name: Raspberry Pi 4
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt-buster
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: rpi4-static
+      - BUILDOPTS: QMAKE_LIBS_LIBDL=-ldl
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: git apply ./etc/rpi4/kms_launch_fix.diff
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
+
+  odroid-c1:
+    name: Odroid C1
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt_odroid-c1
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: odroid-c1-static
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: patchelf --replace-needed /opt/odroid-c1_bionic/usr/lib/arm-linux-gnueabihf/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
+
+  odroid-c2:
+    name: Odroid C2
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt_odroid-c2
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: odroid-c2-static
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: patchelf --replace-needed /opt/odroid-c2_bionic/usr/lib/aarch64-linux-gnu/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
+      - run: .circleci/objdump_linux.sh aarch64-linux-gnu-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
+
+  odroid-xu3:
+    name: Odroid XU3
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt_odroid-xu3
+    environment:
+      - QT_VERSION: qt5151
+      - QT_TARGET: odroid-xu3-static
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
+          submodules: 'recursive'
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: patchelf --replace-needed /opt/odroid-5422s_bionic/usr/lib/arm-linux-gnueabihf/libEGL.so libEGL.so installdir/opt/pegasus-frontend/pegasus-fe
+      - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      # - run: .circleci/release.sh
