@@ -6,11 +6,10 @@ jobs:
   android:
     name: Android
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt-android
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt-android
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: android
@@ -41,9 +40,10 @@ jobs:
   mingw:
     name: Windows (MinGW)
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt-mingw
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt-mingw
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: win32-mingw-static
@@ -69,9 +69,10 @@ jobs:
   buster-pi1:
     name: Raspberry Pi 1/Zero
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt-buster
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt-buster
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi1-static
@@ -91,9 +92,10 @@ jobs:
   buster-pi2:
     name: Raspberry Pi 2
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt-buster
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt-buster
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi2-static
@@ -113,9 +115,10 @@ jobs:
   buster-pi3:
     name: Raspberry Pi 3
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt-buster
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt-buster
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi3-static
@@ -135,9 +138,10 @@ jobs:
   buster-pi4:
     name: Raspberry Pi 4
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt-buster
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt-buster
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: rpi4-static
@@ -158,9 +162,10 @@ jobs:
   odroid-c1:
     name: Odroid C1
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt_odroid-c1
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt_odroid-c1
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: odroid-c1-static
@@ -180,9 +185,10 @@ jobs:
   odroid-c2:
     name: Odroid C2
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt_odroid-c2
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt_odroid-c2
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: odroid-c2-static
@@ -202,9 +208,10 @@ jobs:
   odroid-xu3:
     name: Odroid XU3
     runs-on: ubuntu-latest
-    container: mmatyas/pegasus-qt_odroid-xu3
-    volumes:
-      - ${{github.workspace}}:/home/build/:rw
+    container:
+      image: mmatyas/pegasus-qt_odroid-xu3
+      volumes:
+        - ${{github.workspace}}:/home/build/:rw
     env:
       QT_VERSION: qt5151
       QT_TARGET: odroid-xu3-static
