@@ -17,7 +17,7 @@ jobs:
       - run: /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
           --input src/app/android-pegasus-fe-deployment-settings.json
           --output ${PWD}/installdir
-          --android-platform android-22
+          --android-platform android-30
           --gradle
           --sign ./aks "${AKS_ALIAS}"
           --storepass "${AKS_STOREPASS}"
