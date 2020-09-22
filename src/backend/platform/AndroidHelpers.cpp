@@ -17,7 +17,11 @@
 
 #include "AndroidHelpers.h"
 
+#include "utils/StdHelpers.h"
+
+#include <QFile>
 #include <QStandardPaths>
+#include <QTextStream>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -55,6 +59,26 @@ std::vector<QString> storage_paths()
     if (out.empty())
         out.emplace_back(primary_storage_path());
 
+
+    QFile file(QStringLiteral("/proc/mounts"));
+    if (!file.open(QFile::ReadOnly | QFile::Text))
+        return out;
+
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    QString line;
+    while (stream.readLineInto(&line)) {
+        const QVector<QStringRef> parts = line.splitRef(QChar(' '));
+        if (parts.count() < 3)
+            continue;
+
+        // 1 => mount point
+        // 2 => file system
+        if (parts[1].startsWith(QLatin1String("/mnt/")) && parts[2] == QLatin1String("vfat"))
+            out.emplace_back(parts[1].toString());
+    }
+
+    VEC_REMOVE_DUPLICATES(out);
     return out;
 }
 
