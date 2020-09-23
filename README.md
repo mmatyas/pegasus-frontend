@@ -5,7 +5,7 @@
 
 Pegasus is a graphical frontend for browsing your game library and launching all kinds of emulators from the same place. It's focusing on customizability, cross platform support (including embedded) and high performance.
 
-[![Travis CI status](https://travis-ci.org/mmatyas/pegasus-frontend.svg?branch=master)](https://travis-ci.org/mmatyas/pegasus-frontend)
+[![Travis CI status](https://travis-ci.com/mmatyas/pegasus-frontend.svg?branch=master)](https://travis-ci.com/mmatyas/pegasus-frontend)
 [![AppVeyor status](https://ci.appveyor.com/api/projects/status/github/mmatyas/pegasus-frontend?svg=true&branch=master)](https://ci.appveyor.com/project/mmatyas/pegasus-frontend)
 [![CircleCI status](https://circleci.com/gh/mmatyas/pegasus-frontend.svg?style=shield)](https://circleci.com/gh/mmatyas/pegasus-frontend)
 [![Coverity Scan status](https://scan.coverity.com/projects/12638/badge.svg)](https://scan.coverity.com/projects/mmatyas-pegasus-frontend)
