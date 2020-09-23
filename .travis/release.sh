@@ -39,12 +39,21 @@ while [[ $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
   NEXT_SLEEP_SEC=20
 
   for target in $TARGETS; do
-    rm -rf dist-${target};
-    git clone ${STAGING_REPO} -b continuous-${target} dist-${target};
-  done;
+    rm -rf dist-${target}
+    git clone ${STAGING_REPO} -b continuous-${target} --depth=1 dist-${target}
+    FILES=$(find "dist-${target}" -maxdepth 2 -name "*${GIT_REV}*.zip" -or -name "*.deb" -or -name "*.apk")
+    if [[ ! -z "$FILES" ]]; then
+      echo "Found files: $FILES"
+      echo ""
+    else
+      echo "no files found"
+      echo ""
+      break
+    fi
+  done
 
   FILES=$(find ./ -maxdepth 2 -name "*${GIT_REV}*.zip" -or -name "*.deb" -or -name "*.apk");
-  FILE_CNT=$(echo $FILES | wc -w);
+  FILE_CNT=$(echo $FILES | wc -w)
   echo "Available files:"
   echo ${FILES}
   echo "(${FILE_CNT} out of ${EXPECTED_FILE_CNT})";
