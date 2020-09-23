@@ -94,7 +94,7 @@ QStringList Settings::gameDirs() const
 {
     QSet<QString> dirset;
     AppSettings::parse_gamedirs([&dirset](const QString& line){
-        dirset.insert(line);
+        dirset.insert(QDir::toNativeSeparators(line));
     });
 
     QStringList dirlist;
@@ -115,12 +115,12 @@ void Settings::addGameDir(const QString& path)
 
     QSet<QString> dirset;
     AppSettings::parse_gamedirs([&dirset](const QString& line){
-        dirset.insert(line);
+        dirset.insert(QDir::toNativeSeparators(line));
     });
 
 
     const auto count_before = dirset.count();
-    dirset << finfo.canonicalFilePath();
+    dirset << QDir::toNativeSeparators(finfo.canonicalFilePath());
     const auto count_after = dirset.count();
 
     if (count_before == count_after) {
