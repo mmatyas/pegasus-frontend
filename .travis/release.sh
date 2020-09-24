@@ -41,7 +41,7 @@ while [[ $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
   for target in $TARGETS; do
     rm -rf dist-${target}
     git clone ${STAGING_REPO} -b continuous-${target} --depth=1 dist-${target}
-    FILES=$(find "dist-${target}" -maxdepth 2 -name "*${GIT_REV}*.zip" -or -name "*.deb" -or -name "*.apk")
+    FILES=$(find "dist-${target}" -maxdepth 2 -name "*${GIT_REV}*.zip" -or -name "*.deb" -or -name "*${GIT_REV}*.apk")
     if [[ ! -z "$FILES" ]]; then
       echo "Found files: $FILES"
       echo ""
