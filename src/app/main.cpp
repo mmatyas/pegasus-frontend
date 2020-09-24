@@ -24,8 +24,13 @@
 #include <QIcon>
 #include <QSettings>
 
+#ifdef Q_OS_ANDROID
+#include <QtAndroid>
+#endif
+
 
 backend::CliArgs handle_cli_args(QGuiApplication&);
+bool request_runtime_permissions();
 
 int main(int argc, char *argv[])
 {
@@ -46,11 +51,36 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QStringLiteral("pegasus-frontend.org"));
     app.setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
+    if (!request_runtime_permissions())
+        return 1;
+
     backend::CliArgs cli_args = handle_cli_args(app);
     backend::Backend backend(cli_args);
     backend.start();
 
     return app.exec();
+}
+
+bool request_runtime_permissions()
+{
+#ifdef Q_OS_ANDROID
+    using namespace QtAndroid;
+
+    QStringList required_permissions {
+        QStringLiteral("android.permission.WRITE_EXTERNAL_STORAGE"),
+    };
+    if (androidSdkVersion() >= 30) // Android 11
+        required_permissions << QStringLiteral("android.permission.MANAGE_EXTERNAL_STORAGE");
+
+    const PermissionResultMap granted_permissions = requestPermissionsSync(required_permissions);
+    for (const QString& p : required_permissions) {
+        const PermissionResult result = granted_permissions.value(p, PermissionResult::Denied);
+        if (result != PermissionResult::Granted)
+            return false;
+    }
+#endif
+
+    return true;
 }
 
 QCommandLineOption add_cli_option(QCommandLineParser& parser, const QString& name, const QString& desc)
