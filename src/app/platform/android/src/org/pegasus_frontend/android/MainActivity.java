@@ -111,19 +111,21 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
     }
 
     public static String[] sdcardPaths() {
-        final String android_subdir = "/Android/data/";
-
         ArrayList<String> paths = new ArrayList<String>();
-        for (File file : m_context.getExternalFilesDirs(null)) {
-            if (file == null)
+        for (File filesdir : m_context.getExternalFilesDirs(null)) {
+            if (filesdir == null)
                 continue;
 
-            final String abs_full_path = file.getAbsolutePath();
-            final int substr_until = abs_full_path.indexOf(android_subdir);
-            if (substr_until < 0)
+            // <storagepath>/Android/data/org.pegasus_frontend.android/files
+            final File storage = filesdir
+                .getParentFile()
+                .getParentFile()
+                .getParentFile()
+                .getParentFile();
+            if (storage == null)
                 continue;
 
-            final String abs_path = abs_full_path.substring(0, substr_until);
+            final String abs_path = storage.getAbsolutePath();
             paths.add(abs_path);
         }
         return paths.toArray(new String[paths.size()]);
