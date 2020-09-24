@@ -10,15 +10,14 @@
         android:name="org.qtproject.qt5.android.bindings.QtApplication"
         android:label="Pegasus"
         android:icon="@drawable/icon"
-        android:banner="@drawable/banner">
-        <!-- NOTE: Add 'android:extractNativeLibs="true"' on target SDK update -->
+        android:banner="@drawable/banner"
+        android:extractNativeLibs="true">
         <activity
-            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc"
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name=".MainActivity"
             android:label="Pegasus"
             android:screenOrientation="userLandscape"
             android:launchMode="singleTop">
-            <!-- NOTE: Add 'density' to 'android:configChanges' on target SDK update -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
