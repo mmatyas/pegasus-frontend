@@ -11,8 +11,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,22 +116,54 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
     }
 
     public static String[] sdcardPaths() {
+        ArrayList<File> mount_points = new ArrayList<File>();
+
+        // Functions with high API level dependencies:
+        // - https://developer.android.com/reference/android/os/storage/StorageManager#getStorageVolumes()
+        // - https://developer.android.com/reference/android/os/storage/StorageVolume#getDirectory()
+        if (Build.VERSION.SDK_INT >= 24) {
+            final StorageManager storage_man = (StorageManager) m_context.getSystemService(Context.STORAGE_SERVICE);
+            final List<StorageVolume> storage_vols = storage_man.getStorageVolumes();
+
+            if (Build.VERSION.SDK_INT >= 30) {
+                for (StorageVolume sv : storage_vols)
+                    mount_points.add(sv.getDirectory());
+            }
+            else {
+                try {
+                    final Method dir_getter = StorageVolume.class.getMethod("getPathFile");
+                    for (StorageVolume sv : storage_vols) {
+                        final File mount_point = (File) dir_getter.invoke(sv);
+                        mount_points.add(mount_point);
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            for (File filesdir : m_context.getExternalFilesDirs(null)) {
+                if (filesdir == null)
+                    continue;
+
+                // <storagepath>/Android/data/org.pegasus_frontend.android/files
+                final File mount_point = filesdir
+                    .getParentFile()
+                    .getParentFile()
+                    .getParentFile()
+                    .getParentFile();
+                mount_points.add(mount_point);
+            }
+        }
+
         ArrayList<String> paths = new ArrayList<String>();
-        for (File filesdir : m_context.getExternalFilesDirs(null)) {
-            if (filesdir == null)
-                continue;
-
-            // <storagepath>/Android/data/org.pegasus_frontend.android/files
-            final File storage = filesdir
-                .getParentFile()
-                .getParentFile()
-                .getParentFile()
-                .getParentFile();
-            if (storage == null)
-                continue;
-
-            final String abs_path = storage.getAbsolutePath();
-            paths.add(abs_path);
+        for (File mp : mount_points) {
+            if (mp != null)
+                paths.add(mp.getAbsolutePath());
         }
         return paths.toArray(new String[paths.size()]);
     }
