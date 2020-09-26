@@ -65,7 +65,7 @@ void ApiObject::startScanning()
 
 void ApiObject::onStaticDataLoaded()
 {
-    for (model::Game* const game : m_providerman_games) {
+    for (model::Game* const game : qAsConst(m_providerman_games)) {
         Q_ASSERT(game->parent() == nullptr);
         game->setParent(this);
 
@@ -79,7 +79,7 @@ void ApiObject::onStaticDataLoaded()
                     this, &ApiObject::onGameFileLaunchRequested);
         }
     }
-    for (model::Collection* const coll : m_providerman_collections) {
+    for (model::Collection* const coll : qAsConst(m_providerman_collections)) {
         Q_ASSERT(coll->parent() == nullptr);
         coll->setParent(this);
     }

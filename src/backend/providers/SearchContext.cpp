@@ -272,7 +272,7 @@ void SearchContext::remove_invalid_items()
 
 
     VEC_REMOVE_DUPLICATES(affected_collections);
-    for (const QString coll_id : affected_collections) {
+    for (const QString& coll_id : affected_collections) {
         PendingCollection& coll = m_collections.at(coll_id);
         for (const size_t game: affected_games)
             coll.m_game_ids.erase(game);

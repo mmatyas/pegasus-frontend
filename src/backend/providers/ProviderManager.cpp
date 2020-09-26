@@ -110,9 +110,9 @@ prepare_output(providers::SearchContext& sctx, QThread* const target_thread)
     QVector<model::Game*> games;
     std::tie(collections, games) = sctx.consume();
 
-    for (model::Collection* const coll : collections)
+    for (model::Collection* const coll : qAsConst(collections))
         coll->moveToThread(target_thread);
-    for (model::Game* const game : games)
+    for (model::Game* const game : qAsConst(games))
         game->moveToThread(target_thread);
 
     return std::make_tuple(std::move(collections), std::move(games));
