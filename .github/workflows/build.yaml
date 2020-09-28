@@ -62,3 +62,4 @@ jobs:
           personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}
           publish_branch: continuous-macos-static
           publish_dir: ./deploy
+          force_orphan: true
