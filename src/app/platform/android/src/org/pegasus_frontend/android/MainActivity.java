@@ -167,6 +167,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
             if (mp != null)
                 paths.add(mp.getAbsolutePath());
         }
+        paths.add("/"); // Always add the root
         return paths.toArray(new String[paths.size()]);
     }
 }
