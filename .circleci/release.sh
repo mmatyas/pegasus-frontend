@@ -17,7 +17,7 @@ if [[ "$CIRCLE_BRANCH" != "master" ]]; then
   popd
 
   for FILE in ./*; do
-    timeout 5m /tmp/ffsend-${FFSEND_VER}-linux-x64-static upload $FILE || true
+    timeout 2m /tmp/ffsend-${FFSEND_VER}-linux-x64-static upload $FILE || true
   done
 
   popd

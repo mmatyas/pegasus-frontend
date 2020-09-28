@@ -79,6 +79,6 @@ mkdir dist && pushd dist
 popd
 
 for FILE in dist/*; do
-    timeout 5m curl --upload-file $FILE https://transfer.sh/$(basename $FILE) || true
+    timeout 2m curl --upload-file $FILE https://transfer.sh/$(basename $FILE) || true
     echo ""
 done
