@@ -71,7 +71,7 @@ MenuScreen {
                         .arg(api.internal.meta.gitDate)
                         + api.tr
 
-                    text: programInfo + "<br>Copyright \u00a9 2017-2018 Mátyás Mustoha"
+                    text: programInfo + "<br>Copyright \u00a9 2017-2020 Mátyás Mustoha"
                     color: "#eee"
                     font.pixelSize: bodyFontSize
                     font.family: globalFonts.sans
