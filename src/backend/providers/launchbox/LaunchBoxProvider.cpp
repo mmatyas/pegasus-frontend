@@ -56,6 +56,8 @@ void find_assets_in(const QString& asset_dir,
                     const bool has_num_suffix,
                     const HashMap<QString, model::Game*>& title_to_game_map)
 {
+    // TODO: Optimize out `has_num_suffix`
+
     constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto recursive = QDirIterator::Subdirectories;
 
@@ -101,6 +103,7 @@ void find_assets(const QString& lb_dir, const QString& platform_name,
 
     const QString video_root = lb_dir % QLatin1String("Videos/") % platform_name % QLatin1Char('/');
     find_assets_in(video_root, AssetType::VIDEO, false, esctitle_to_game_map);
+    find_assets_in(video_root, AssetType::VIDEO, true, esctitle_to_game_map);
 }
 
 QString find_installation()
