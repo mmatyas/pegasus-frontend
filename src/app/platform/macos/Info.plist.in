@@ -23,7 +23,7 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright (c) 2017-2018 Mátyás Mustoha</string>
+    <string>Copyright (c) 2017-2020 Mátyás Mustoha</string>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
     <key>NSHighResolutionCapable</key>
