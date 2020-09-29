@@ -91,6 +91,11 @@ AssetType str_to_type(const QString& str)
     if (it != map.cend())
         return it->second;
 
+    for (const auto& it : map) {
+        if (str.startsWith(it.first))
+            return it.second;
+    }
+
     return AssetType::UNKNOWN;
 }
 

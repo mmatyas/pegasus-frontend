@@ -55,6 +55,10 @@
         <file>asset_search_by_title/mygame.ext</file>
         <file>asset_search_by_title/media/My Precious Game/box_front.png</file>
         <file>asset_search_by_title/media/My Precious Game/video.mp4</file>
+        <file>asset_search_multifile/metadata.txt</file>
+        <file>asset_search_multifile/mygame.ext</file>
+        <file>asset_search_multifile/media/mygame/screenshot01.png</file>
+        <file>asset_search_multifile/media/mygame/screenshot02.png</file>
         <file>multifile/metadata.txt</file>
         <file>multifile/multi.a.ext</file>
         <file>multifile/multi.b.ext</file>
