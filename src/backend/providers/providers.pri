@@ -26,6 +26,7 @@ win32: include(launchbox/launchbox.pri)
 android: include(android_apps/android.pri)
 defined(pclinux,var): include(lutris/lutris.pri)
 # All platforms
+include(logiqx/logiqx.pri)
 include(skraper/skraper.pri)
 
 

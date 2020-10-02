@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>faulty/empty.dat</file>
+        <file>faulty/incorrect_root.dat</file>
+        <file>faulty/no_doctype.dat</file>
+        <file>faulty/not_logiqx.dat</file>
+        <file>malformed/bad_games.dat</file>
+        <file>malformed/bad_header.dat</file>
+        <file>malformed/Game 1.ext</file>
+        <file>malformed/Game 2.ext</file>
+        <file>malformed/Game 3.ext</file>
+        <file>simple/Game 1.ext</file>
+        <file>simple/Game 2x1.ext</file>
+        <file>simple/Game 2x2.ext</file>
+        <file>simple/something.dat</file>
+    </qresource>
+</RCC>

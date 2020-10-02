@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
+<datafile>
+  <header>
+    <name>My Platform</name>
+    <something />
+  </header>
+  <game name="">
+    <rom name="Game 1.ext" size="0" />
+  </game>
+  <game name="No valid fields">
+    <something />
+  </game>
+  <game name="Bad year">
+    <year>asd</year>
+    <rom name="Game 2.ext" size="0" />
+  </game>
+  <game name="Bad file">
+    <rom />
+  </game>
+  <game name="Same file">
+    <rom name="Game 3.ext" size="0" />
+    <rom name="Game 3.ext" size="0" />
+  </game>
+  <game name="No file">
+  </game>
+  <game name="Missing file">
+    <rom name="nothing.ext" size="0" />
+  </game>
+  <something name="Not a game">
+  </something>
+</datafile>

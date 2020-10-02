@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
+<datafile>
+  <header>
+    <name>My Platform</name>
+    <description>The description of My Platform</description>
+  </header>
+  <game name="Game 1">
+    <description>The description of Game 1.</description>
+    <year>1990</year>
+    <manufacturer>Game Corp.</manufacturer>
+    <rom name="Game 1.ext" size="0" />
+  </game>
+  <game name="Game 2">
+    <description>The description of Game 2.</description>
+    <year>2000</year>
+    <manufacturer>Game Corp.</manufacturer>
+    <rom name="Game 2x1.ext" size="0" />
+    <rom name="Game 2x2.ext" size="0" />
+  </game>
+</datafile>

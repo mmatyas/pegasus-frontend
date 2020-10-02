@@ -42,6 +42,9 @@
 #ifdef WITH_COMPAT_LAUNCHBOX
   #include "providers/launchbox/LaunchBoxProvider.h"
 #endif
+#ifdef WITH_COMPAT_LOGIQX
+  #include "providers/logiqx/LogiqxProvider.h"
+#endif
 #ifdef WITH_COMPAT_LUTRIS
   #include "providers/lutris/LutrisProvider.h"
 #endif
@@ -113,6 +116,9 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #endif
 #ifdef WITH_COMPAT_LAUNCHBOX
         MKENTRY(launchbox::LaunchboxProvider)
+#endif
+#ifdef WITH_COMPAT_LOGIQX
+        MKENTRY(logiqx::LogiqxProvider)
 #endif
 #ifdef WITH_COMPAT_LUTRIS
         MKENTRY(lutris::LutrisProvider)
