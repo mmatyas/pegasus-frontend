@@ -67,7 +67,7 @@ Rectangle {
 
             color: "#eee"
             font.pixelSize: vpx(18)
-            font.family: "monospace"
+            font.family: global.fonts.mono
 
             height: font.pixelSize * 5
             verticalAlignment: Text.AlignVCenter

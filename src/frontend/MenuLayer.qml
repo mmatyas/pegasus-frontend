@@ -62,7 +62,7 @@ FocusScope {
             text: api.internal.meta.gitRevision + ", " + api.internal.meta.gitDate
             color: "#eee"
             font.pixelSize: vpx(12)
-            font.family: "monospace"
+            font.family: global.fonts.mono
 
             anchors.left: parent.left
             anchors.bottom: parent.bottom

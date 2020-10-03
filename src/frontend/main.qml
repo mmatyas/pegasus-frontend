@@ -36,8 +36,11 @@ Window {
         api.internal.system.quit();
     }
 
-    FontLoader { id: sansFont; source: "/fonts/Roboto.ttf" }
-    FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed.ttf" }
+    FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
+    FontLoader { id: sansBoldFont; source: "/fonts/Roboto-Bold.ttf" }
+    FontLoader { id: monoFont; source: "/fonts/RobotoMono-Regular.ttf" }
+    FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed-Regular.ttf" }
+    FontLoader { id: condensedBoldFont; source: "/fonts/RobotoCondensed-Bold.ttf" }
 
 
     // a globally avalable utility object
@@ -48,7 +51,10 @@ Window {
 
         readonly property var fonts: QtObject {
             readonly property string sans: sansFont.name
+            readonly property string sansBold: sansBoldFont.name
             readonly property string condensed: condensedFont.name
+            readonly property string condensedBold: condensedBoldFont.name
+            readonly property string mono: monoFont.name
         }
     }
 
