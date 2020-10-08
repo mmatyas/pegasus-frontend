@@ -63,6 +63,21 @@ void find_banner_for(model::Game& game, const QString& slug, const QString& base
     }
 }
 
+void find_coverart_for(model::Game& game, const QString& slug, const QString& base_path)
+{
+    const std::array<QLatin1String, 2> exts {
+        QLatin1String(".png"),
+        QLatin1String(".jpg"),
+    };
+    for (const QLatin1String& ext : exts) {
+        QString path = base_path % slug % ext;
+        if (QFileInfo::exists(path)) {
+            game.assets().add_file(AssetType::BACKGROUND, path);
+            return;
+        }
+    }
+}
+
 void find_icon_for(model::Game& game, const QString& slug, const QString& base_path)
 {
     const QString path = base_path % slug % QLatin1String(".png");
@@ -112,6 +127,7 @@ Provider& LutrisProvider::findLists(SearchContext& sctx)
 
     using QSP = QStandardPaths;
     const QString base_path_banners = datadir + QLatin1String("banners/");
+    const QString base_path_coverart = datadir + QLatin1String("coverart/");
     const QString base_path_icons = QSP::standardLocations(QSP::GenericDataLocation).first()
         + QLatin1String("/icons/hicolor/128x128/apps/lutris_");
 
@@ -129,6 +145,7 @@ Provider& LutrisProvider::findLists(SearchContext& sctx)
         game.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
 
         find_banner_for(game, slug, base_path_banners);
+        find_coverart_for(game, slug, base_path_coverart);
         find_icon_for(game, slug, base_path_icons);
     }
     if (game_count_before != sctx.games().size())
