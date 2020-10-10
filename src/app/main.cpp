@@ -31,6 +31,8 @@
 
 backend::CliArgs handle_cli_args(QGuiApplication&);
 bool request_runtime_permissions();
+bool portable_txt_present();
+
 
 int main(int argc, char *argv[])
 {
@@ -55,6 +57,8 @@ int main(int argc, char *argv[])
         return 1;
 
     backend::CliArgs cli_args = handle_cli_args(app);
+    cli_args.portable |= portable_txt_present();
+
     backend::Backend backend(cli_args);
     backend.start();
 
@@ -89,6 +93,20 @@ bool request_runtime_permissions()
 
     return true;
 }
+
+
+bool portable_txt_present()
+{
+#if defined(Q_OS_ANDROID) || defined(Q_OS_MACOS)
+    // NOTE: On Android, the executable location is not generally accessible,
+    // while on Mac it is inside the bundle
+    return false;
+#else
+    const QString path = QCoreApplication::applicationDirPath() + QStringLiteral("/portable.txt");
+    return QFileInfo::exists(path);
+#endif
+}
+
 
 QCommandLineOption add_cli_option(QCommandLineParser& parser, const QString& name, const QString& desc)
 {
