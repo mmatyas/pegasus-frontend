@@ -1,0 +1,12 @@
+pegasus_add_provider(
+    INTERNAL
+    SOURCES
+        PegasusFilter.cpp
+        PegasusFilter.h
+        PegasusMetadata.cpp
+        PegasusMetadata.h
+        PegasusProvider.cpp
+        PegasusProvider.h
+    PLATFORMS
+        ALL
+)
