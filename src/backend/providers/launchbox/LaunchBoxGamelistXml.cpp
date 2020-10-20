@@ -197,7 +197,7 @@ void store_game_fields(
 
     if (emu_id.isEmpty()) {
         game.setLaunchCmd(QStringLiteral("{file.path}"));
-        game.setLaunchWorkdir(QFileInfo(fields.at(GameField::PATH)).absolutePath());
+        game.setLaunchWorkdir(QFileInfo(lb_dir, fields.at(GameField::PATH)).absolutePath());
         return;
     }
 
@@ -218,7 +218,7 @@ void store_game_fields(
         }
     }
     game.setLaunchCmd(QStringLiteral("\"%1\" %2 {file.path}").arg(emu.app_path, emu_params));
-    game.setLaunchWorkdir(QFileInfo(emu.app_path).absolutePath());
+    game.setLaunchWorkdir(QFileInfo(lb_dir, emu.app_path).absolutePath());
 }
 
 PendingGame& store_game(
