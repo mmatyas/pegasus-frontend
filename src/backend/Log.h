@@ -41,7 +41,8 @@ public:
     Log() = delete;
     NO_COPY_NO_MOVE(Log)
 
-    static void init(bool silent);
+    static void init(bool silent = false);
+    static void init_qttest();
     static void close();
 
     static void info(const QString& message);

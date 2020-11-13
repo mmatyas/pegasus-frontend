@@ -22,6 +22,7 @@
 #include "Paths.h"
 
 #include <QDateTime>
+#include <QDebug>
 #include <QFile>
 #include <QTextStream>
 
@@ -35,6 +36,20 @@ LogSink::~LogSink() = default;
 
 
 namespace logsinks {
+
+class QtLog : public LogSink {
+public:
+    void info(const QString& msg) override {
+        qInfo().noquote().nospace() << msg;
+    }
+    void warning(const QString& msg) override {
+        qWarning().noquote().nospace() << msg;
+    }
+    void error(const QString& msg) override {
+        qWarning().noquote().nospace() << msg;
+    }
+};
+
 
 class Terminal : public LogSink {
 public:
@@ -178,16 +193,23 @@ std::vector<std::unique_ptr<LogSink>> Log::m_sinks {};
 
 void Log::init(bool silent)
 {
-    if (!silent)
+    if (!silent) {
         m_sinks.emplace_back(new logsinks::Terminal());
+        #if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
+        m_sinks.emplace_back(new logsinks::AndroidLogcat);
+        #endif // defined(Q_OS_ANDROID) && defined(QT_DEBUG)
+    }
 
     m_sinks.emplace_back(new logsinks::LogFile());
-#if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
-    m_sinks.emplace_back(new logsinks::AndroidLogcat);
-#endif // defined(Q_OS_ANDROID) && defined(QT_DEBUG)
 
     // redirect Qt messages to the Log too
     qInstallMessageHandler(on_qt_message);
+}
+
+void Log::init_qttest()
+{
+    // QtTests only notice messages made through QDebug
+    m_sinks.emplace_back(new logsinks::QtLog());
 }
 
 void Log::close()
