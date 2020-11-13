@@ -17,7 +17,6 @@ SOURCES += \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
-    PreInit.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
@@ -32,7 +31,6 @@ HEADERS += \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     PegasusAssets.h \
-    PreInit.h \
     ProcessLauncher.h \
     ScriptRunner.h \
     LocaleUtils.h \

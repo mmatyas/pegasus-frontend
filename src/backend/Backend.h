@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,19 +17,22 @@
 
 #pragma once
 
-#include "Api.h"
 #include "CliArgs.h"
-#include "FrontendLayer.h"
-#include "PreInit.h"
-#include "ProcessLauncher.h"
+
+#include <memory>
+
+class ApiObject;
+class FrontendLayer;
+class ProcessLauncher;
 
 
 namespace backend {
 
 class Backend {
 public:
-    Backend();
+    explicit Backend();
     explicit Backend(const CliArgs&);
+    ~Backend();
 
     Backend(const Backend&) = delete;
     Backend& operator=(const Backend&) = delete;
@@ -37,13 +40,11 @@ public:
     void start();
 
 private:
-    // Things to do before creating the rest of the fields
-    PreInit init;
-
     // frontend <-> api <-> launcher
-    ApiObject api;
-    FrontendLayer frontend;
-    ProcessLauncher launcher;
+    // NOTE: unique_ptr had forward declaration issues
+    ApiObject* m_api;
+    FrontendLayer* m_frontend;
+    ProcessLauncher* m_launcher;
 };
 
 } // namespace backend

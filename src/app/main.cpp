@@ -20,6 +20,7 @@
 #include "backend/platform/TerminalKbd.h"
 
 #include <QCommandLineParser>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QSettings>
