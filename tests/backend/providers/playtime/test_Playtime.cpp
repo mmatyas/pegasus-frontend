@@ -19,49 +19,27 @@
 
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "providers/SearchContext.h"
 #include "providers/pegasus_playtime/PlaytimeStats.h"
 
 #include <QSqlDatabase>
 
-using PlaytimeStats = providers::playtime::PlaytimeStats;
-
 
 namespace {
-
-model::Game* create_game(QString path, QObject* parent)
+void create_dummy_data(providers::SearchContext& sctx)
 {
-    QFileInfo fi(std::move(path));
-    QString name = model::pretty_filename(fi);
-    auto game = new model::Game(name, parent);
-    auto file = new model::GameFile(std::move(fi), game);
-    game->setFiles({ file });
-    return game;
+    model::Collection& collection_a = *sctx.get_or_create_collection(QStringLiteral("coll1"));
+    model::Collection& collection_b = *sctx.get_or_create_collection(QStringLiteral("coll2"));
+
+    model::Game& game_a = *sctx.create_game_for(collection_a);
+    sctx.game_add_filepath(game_a, QStringLiteral("dummy1"));
+
+    model::Game& game_b = *sctx.create_game_for(collection_a);
+    sctx.game_add_filepath(game_b, QStringLiteral("dummy2"));
+
+    model::Game& game_c = *sctx.create_game_for(collection_b);
+    sctx.game_add_filepath(game_c, QStringLiteral(":/x/y/z/coll2dummy1"));
 }
-
-void create_dummy_data(QVector<model::Collection*>& collections,
-                       QVector<model::Game*>& games,
-                       HashMap<QString, model::GameFile*>& path_map,
-                       QObject* parent)
-{
-    collections = {
-        new model::Collection("coll1", parent),
-        new model::Collection("coll2", parent),
-    };
-    games = {
-        create_game("dummy1", parent),
-        create_game("dummy2", parent),
-    };
-    path_map = {
-        { "dummy1", *games.at(0)->filesConst().cbegin() },
-        { "dummy2", *games.at(1)->filesConst().cbegin() },
-    };
-
-    collections.at(0)->setGames({ games.at(0) });
-    collections.at(1)->setGames({ games.at(1) });
-    games.at(0)->setCollections({ collections.at(0) });
-    games.at(1)->setCollections({ collections.at(1) });
-}
-
 } // namespace
 
 
@@ -76,38 +54,34 @@ private slots:
 
 void test_Playtime::read()
 {
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    HashMap<QString, model::GameFile*> path_map;
-    create_dummy_data(collections, games, path_map, this);
-
     const QString db_path = QDir::tempPath() + QStringLiteral("/data.db");
     QFile::remove(db_path);
     QFile::copy(QStringLiteral(":/data.db"), db_path);
 
+    providers::SearchContext sctx;
+    create_dummy_data(sctx);
+    providers::playtime::PlaytimeStats(db_path).run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
 
-    PlaytimeStats playtime;
-    playtime.load_with_dbpath(db_path);
-    playtime.findDynamicData(collections, games, path_map);
+    const auto it = std::find_if(games.cbegin(), games.cend(),
+        [](const model::Game* const game){ return game->title() == QLatin1String("dummy1"); });
+    Q_ASSERT(it != games.cend());
+    const model::Game& game = **it;
 
-    QCOMPARE(games.at(0)->playCount(), 4);
-    QCOMPARE(games.at(0)->playTime(), 35 /*sec*/);
-    QCOMPARE(games.at(0)->lastPlayed(), QDateTime::fromSecsSinceEpoch(1531755039));
+    QCOMPARE(game.property("playCount").toInt(), 4);
+    QCOMPARE(game.property("playTime").toInt(), 35 /*sec*/);
+    QCOMPARE(game.property("lastPlayed").toDateTime(), QDateTime::fromSecsSinceEpoch(1531755039));
 }
 
 void test_Playtime::write()
 {
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    HashMap<QString, model::GameFile*> path_map;
-    create_dummy_data(collections, games, path_map, this);
-
     QTemporaryFile db_file;
     QVERIFY(db_file.open());
 
-
-    PlaytimeStats playtime;
-    playtime.load_with_dbpath(db_file.fileName());
+    providers::SearchContext sctx;
+    create_dummy_data(sctx);
+    providers::playtime::PlaytimeStats playtime(db_file.fileName());
+    const auto [collections, games] = sctx.finalize(this);
 
     QSignalSpy spy_start(&playtime, &providers::playtime::PlaytimeStats::startedWriting);
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
@@ -126,17 +100,13 @@ void test_Playtime::write()
 
 void test_Playtime::write_queue()
 {
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    HashMap<QString, model::GameFile*> path_map;
-    create_dummy_data(collections, games, path_map, this);
-
     QTemporaryFile db_file;
     QVERIFY(db_file.open());
 
-
-    PlaytimeStats playtime;
-    playtime.load_with_dbpath(db_file.fileName());
+    providers::SearchContext sctx;
+    create_dummy_data(sctx);
+    providers::playtime::PlaytimeStats playtime(db_file.fileName());
+    const auto [collections, games] = sctx.finalize(this);
 
     QSignalSpy spy_start(&playtime, &providers::playtime::PlaytimeStats::startedWriting);
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);

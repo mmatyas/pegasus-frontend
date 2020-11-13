@@ -18,11 +18,13 @@
 #include "PlaytimeStats.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
+#include "providers/SearchContext.h"
 #include "utils/SqliteDb.h"
 
-#include <QDebug>
 #include <QFileInfo>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -38,20 +40,20 @@ QString default_db_path()
     return paths::writableConfigDir() + QStringLiteral("/stats.db");
 }
 
-void print_query_error(const QSqlQuery& query)
+void print_query_error(const QString& log_tag, const QSqlQuery& query)
 {
     const auto error = query.lastError();
     if (error.isValid())
-        qWarning().noquote() << error.text();
+        Log::warning(tr_log("%1: %2").arg(log_tag, error.text()));
 }
 
-void on_create_table_fail(QSqlQuery& query)
+void on_create_table_fail(const QString& log_tag, QSqlQuery& query)
 {
-    qWarning().noquote() << MSG_PREFIX << tr_log("failed to create database tables");
-    print_query_error(query);
+    Log::warning(tr_log("%1: failed to create database tables").arg(log_tag));
+    print_query_error(log_tag, query);
 }
 
-bool create_missing_tables(SqliteDb& channel)
+bool create_missing_tables(const QString& log_tag, SqliteDb& channel)
 {
     if (!channel.hasTable(QStringLiteral("paths"))) {
         QSqlQuery query;
@@ -62,7 +64,7 @@ bool create_missing_tables(SqliteDb& channel)
             ");"
         ));
         if (!query.exec()) {
-            on_create_table_fail(query);
+            on_create_table_fail(log_tag, query);
             return false;
         }
     }
@@ -77,7 +79,7 @@ bool create_missing_tables(SqliteDb& channel)
             ");"
         ));
         if (!query.exec()) {
-            on_create_table_fail(query);
+            on_create_table_fail(log_tag, query);
             return false;
         }
     }
@@ -85,14 +87,14 @@ bool create_missing_tables(SqliteDb& channel)
     return true;
 }
 
-int get_path_id(const QString& game_key)
+int get_path_id(const QString& log_tag, const QString& game_key)
 {
     {
         QSqlQuery query;
         query.prepare(QStringLiteral("SELECT id FROM paths WHERE path = ?;"));
         query.addBindValue(game_key);
         if (!query.exec()) {
-            print_query_error(query);
+            print_query_error(log_tag, query);
             return -1;
         }
         if (query.next())
@@ -104,7 +106,7 @@ int get_path_id(const QString& game_key)
         query.prepare(QStringLiteral("INSERT INTO paths VALUES(null, ?);"));
         query.addBindValue(game_key);
         if (!query.exec()) {
-            print_query_error(query);
+            print_query_error(log_tag, query);
             return -1;
         }
     }
@@ -112,7 +114,7 @@ int get_path_id(const QString& game_key)
         QSqlQuery query;
         query.prepare(QStringLiteral("SELECT last_insert_rowid() FROM paths;"));
         if (!query.exec()) {
-            print_query_error(query);
+            print_query_error(log_tag, query);
             return -1;
         }
         if (query.next())
@@ -122,7 +124,7 @@ int get_path_id(const QString& game_key)
     return -1;
 }
 
-void save_play_entry(const int path_id, const QDateTime& start_time, const qint64 duration)
+void save_play_entry(const QString& log_tag, const int path_id, const QDateTime& start_time, const qint64 duration)
 {
     Q_ASSERT(path_id != -1);
     Q_ASSERT(start_time.isValid());
@@ -134,7 +136,7 @@ void save_play_entry(const int path_id, const QDateTime& start_time, const qint6
     query.addBindValue(start_time.toSecsSinceEpoch());
     query.addBindValue(duration);
     if (!query.exec())
-        print_query_error(query);
+        print_query_error(log_tag, query);
 }
 
 void update_modelgame(model::GameFile* const gamefile, const QDateTime& start_time, const qint64 duration)
@@ -150,33 +152,23 @@ namespace providers {
 namespace playtime {
 
 PlaytimeStats::PlaytimeStats(QObject* parent)
-    : Provider(QLatin1String("pegasus_playtime"), QStringLiteral("Playtime"), INTERNAL | PROVIDES_DYNDATA, parent)
+    : PlaytimeStats(default_db_path(), parent)
 {}
 
-Provider& PlaytimeStats::load() {
-    return load_with_dbpath(default_db_path());
-}
-Provider& PlaytimeStats::load_with_dbpath(QString db_path) {
-    m_db_path = std::move(db_path);
-    return *this;
-}
-Provider& PlaytimeStats::unload() {
-    m_db_path.clear();
-    return *this;
-}
+PlaytimeStats::PlaytimeStats(QString db_path, QObject* parent)
+    : Provider(QLatin1String("pegasus_playtime"), QStringLiteral("Playtime"), PROVIDER_FLAG_INTERNAL, parent)
+    , m_db_path(std::move(db_path))
+{}
 
-Provider& PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
-                                         const QVector<model::Game*>&,
-                                         const HashMap<QString, model::GameFile*>& path_map)
+Provider& PlaytimeStats::run(SearchContext& sctx)
 {
     if (!QFileInfo::exists(m_db_path))
         return *this;
 
     SqliteDb channel(m_db_path);
     if (!channel.open()) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("Could not open `%1`, play times will not be loaded")
-                      .arg(m_db_path);
+        Log::error(tr_log("%1: Could not open `%2`, play times will not be loaded")
+            .arg(display_name(), m_db_path));
         return *this;
     }
     // No entries yet
@@ -191,34 +183,38 @@ Provider& PlaytimeStats::findDynamicData(const QVector<model::Collection*>&,
         " INNER JOIN paths ON plays.path_id=paths.id;"
     ));
     if (!query.exec()) {
-        print_query_error(query);
+        print_query_error(display_name(), query);
         return *this;
     }
+
 
     struct Stats {
         int playcount { 0 };
         qint64 playtime { 0 };
         QDateTime last_played;
     };
-    HashMap<QString, Stats> stat_map;
+    HashMap<model::GameFile*, Stats> stat_map;
 
     while (query.next()) {
         const QString path = query.value(0).toString();
-        if (!path_map.count(path))
+        model::GameFile* const game_ptr = sctx.gamefile_by_filepath(path); // TODO: URI support
+        if (!game_ptr)
             continue;
 
         const qint64 start_epoch = query.value(1).toLongLong();
         const qint64 duration = query.value(2).toLongLong();
 
-        Stats& stats = stat_map[path];
+        Stats& stats = stat_map[game_ptr];
         stats.last_played = QDateTime::fromSecsSinceEpoch(start_epoch + duration);
         stats.playtime += std::max(static_cast<qint64>(0), duration);
         stats.playcount++;
     }
+
     // trigger update only once
+    // TODO: C++17
     for (const auto& pair : stat_map) {
-        model::GameFile* gamefile = path_map.at(pair.first);
-        const Stats& stats = stat_map.at(pair.first);
+        model::GameFile* const gamefile = pair.first;
+        const Stats& stats = pair.second;
         gamefile->update_playstats(stats.playcount, stats.playtime, stats.last_played);
     }
 
@@ -274,16 +270,16 @@ void PlaytimeStats::start_processing()
 
             channel.startTransaction();
 
-            if (!create_missing_tables(channel)) {
+            if (!create_missing_tables(display_name(), channel)) {
                 channel.rollback();
                 break;
             }
 
             for (const QueueEntry& entry : m_active_tasks) {
                 const QString path = entry.gamefile->fileinfo().canonicalFilePath();
-                const int path_id = get_path_id(path);
+                const int path_id = get_path_id(display_name(), path);
                 if (path_id >= 0)
-                    save_play_entry(path_id, entry.launch_time, entry.duration);
+                    save_play_entry(display_name(), path_id, entry.launch_time, entry.duration);
             }
 
             channel.commit();
