@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,27 +18,27 @@
 #include "SkraperAssetsProvider.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "model/gaming/Assets.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
 
-#include <QDebug>
 #include <QDirIterator>
 #include <QStringBuilder>
+#include <array>
 
 
 namespace {
-HashMap<QString, model::Game*> build_gamepath_db(const HashMap<size_t, providers::PendingGame>& games)
+HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::GameFile*>& filepath_to_entry_map)
 {
     HashMap<QString, model::Game*> map;
 
-    for (auto& entry : games) {
-        const providers::PendingGame& game = entry.second;
-        for (const model::GameFile* const file_ptr : game.files()) {
-            const QFileInfo& finfo = file_ptr->fileinfo();
-
-            QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
-            map.emplace(std::move(path), game.ptr());
-        }
+    // TODO: C++17
+    for (const auto& entry : filepath_to_entry_map) {
+        const QFileInfo finfo(entry.first);
+        QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
+        map.emplace(std::move(path), entry.second->parentGame());
     }
 
     return map;
@@ -49,79 +49,102 @@ HashMap<QString, model::Game*> build_gamepath_db(const HashMap<size_t, providers
 namespace providers {
 namespace skraper {
 
-SkraperAssetsProvider::SkraperDir::SkraperDir(AssetType type, QString dir)
-    : asset_type(type)
-    , dir_name(std::move(dir))
+SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
+    : Provider(QLatin1String("skraper"), QStringLiteral("Skraper Assets"), parent)
 {}
 
+Provider& SkraperAssetsProvider::run(SearchContext& sctx)
+{
+    // NOTE: The entries are ordered by priority
+    const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
+        { AssetType::ARCADE_MARQUEE, {
+            QStringLiteral("screenmarquee"),
+            QStringLiteral("screenmarqueesmall"),
+        }},
+        { AssetType::BACKGROUND, {
+            QStringLiteral("fanart"),
+        }},
+        { AssetType::BOX_BACK, {
+            QStringLiteral("box2dback"),
+        }},
+        { AssetType::BOX_FRONT, {
+            QStringLiteral("box2dfront"),
+            QStringLiteral("supporttexture"),
+            QStringLiteral("box3d"),
+        }},
+        { AssetType::BOX_FULL, {
+            QStringLiteral("boxtexture"),
+        }},
+        { AssetType::BOX_SPINE, {
+            QStringLiteral("box2dside"),
+        }},
+        { AssetType::CARTRIDGE, {
+            QStringLiteral("support"),
+        }},
+        { AssetType::LOGO, {
+            QStringLiteral("wheel"),
+            QStringLiteral("wheelcarbon"),
+            QStringLiteral("wheelsteel"),
+        }},
+        { AssetType::SCREENSHOT, {
+            QStringLiteral("screenshot"),
+            QStringLiteral("screenshottitle"),
+        }},
+        { AssetType::UI_STEAMGRID, {
+            QStringLiteral("steamgrid"),
+        }},
+        { AssetType::VIDEO, {
+            QStringLiteral("videos"),
+        }},
+    };
 
-SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
-    : Provider(QLatin1String("skraper"), QStringLiteral("Skraper Assets"), PROVIDES_ASSETS, parent)
-    , m_asset_dirs {
-        // NOTE: The entries are ordered by priority
-        { AssetType::ARCADE_MARQUEE, QStringLiteral("screenmarquee") },
-        { AssetType::ARCADE_MARQUEE, QStringLiteral("screenmarqueesmall") },
-        { AssetType::BACKGROUND, QStringLiteral("fanart") },
-        { AssetType::BOX_BACK, QStringLiteral("box2dback") },
-        { AssetType::BOX_FRONT, QStringLiteral("box2dfront") },
-        { AssetType::BOX_FRONT, QStringLiteral("supporttexture") },
-        { AssetType::BOX_FRONT, QStringLiteral("box3d") },
-        { AssetType::BOX_FULL, QStringLiteral("boxtexture") },
-        { AssetType::BOX_SPINE, QStringLiteral("box2dside") },
-        { AssetType::CARTRIDGE, QStringLiteral("support") },
-        { AssetType::LOGO, QStringLiteral("wheel") },
-        { AssetType::LOGO, QStringLiteral("wheelcarbon") },
-        { AssetType::LOGO, QStringLiteral("wheelsteel") },
-        { AssetType::SCREENSHOT, QStringLiteral("screenshot") },
-        { AssetType::SCREENSHOT, QStringLiteral("screenshottitle") },
-        { AssetType::UI_STEAMGRID, QStringLiteral("steamgrid") },
-        { AssetType::VIDEO, QStringLiteral("videos") },
-    }
-    , m_media_dirs {
+    const std::array<QString, 2> MEDIA_DIRS {
         QStringLiteral("/skraper/"),
         QStringLiteral("/media/"),
-    }
-{}
+    };
 
-Provider& SkraperAssetsProvider::findStaticData(SearchContext& sctx)
-{
-    unsigned found_assets_cnt = 0;
-
-    const HashMap<QString, model::Game*> extless_path_to_game = build_gamepath_db(sctx.games());
-
-    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    constexpr auto DIR_FILTERS = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto DIR_FLAGS = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
 
-    for (const QString& game_dir : sctx.game_root_dirs()) {
-        for (const QString& media_dir : m_media_dirs) {
-            const QString game_media_dir = game_dir % media_dir;
+    const HashMap<QString, model::Game*> extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
+
+    size_t found_assets_cnt = 0;
+    for (const QString& root_dir : sctx.pegasus_game_dirs()) {
+        for (const QString& media_dir_subpath : MEDIA_DIRS) {
+            const QString game_media_dir = root_dir % media_dir_subpath;
             if (!QFileInfo::exists(game_media_dir))
                 continue;
 
-            for (const SkraperDir& asset_dir : m_asset_dirs) {
-                const QString search_dir = game_media_dir % asset_dir.dir_name;
-                const int subpath_len = media_dir.length() + asset_dir.dir_name.length();
+            // TODO: C++17
+            for (const auto& asset_dir_entry : ASSET_DIRS) {
+                const AssetType asset_type = asset_dir_entry.first;
+                const QStringList& dir_names = asset_dir_entry.second;
+                for (const QString& dir_name : dir_names) {
+                    const QString search_dir = game_media_dir % dir_name;
+                    const int subpath_len = media_dir_subpath.length() + dir_name.length();
 
-                QDirIterator dir_it(search_dir, dir_filters, dir_flags);
-                while (dir_it.hasNext()) {
-                    dir_it.next();
-                    const QFileInfo finfo = dir_it.fileInfo();
+                    QDirIterator dir_it(search_dir, DIR_FILTERS, DIR_FLAGS);
+                    while (dir_it.hasNext()) {
+                        dir_it.next();
+                        const QFileInfo finfo = dir_it.fileInfo();
 
-                    const QString game_path = finfo.canonicalPath().remove(game_dir.length(), subpath_len)
-                                            % '/' % finfo.completeBaseName();
-                    if (!extless_path_to_game.count(game_path))
-                        continue;
+                        const QString game_path = finfo.canonicalPath().remove(root_dir.length(), subpath_len)
+                                                % '/' % finfo.completeBaseName();
+                        const auto it = extless_path_to_game.find(game_path);
+                        if (it == extless_path_to_game.cend())
+                            continue;
 
-                    model::Game& game = *extless_path_to_game.at(game_path);
-                    game.assets().add_file(asset_dir.asset_type, dir_it.filePath());
-                    found_assets_cnt++;
+                        model::Game& game = *(it->second);
+                        game.assetsMut().add_file(asset_type, dir_it.filePath());
+                        found_assets_cnt++;
+                    }
                 }
             }
         }
     }
 
-    qInfo().noquote() << tr_log("%1: %2 assets found").arg(name(), QString::number(found_assets_cnt));
+    Log::info(tr_log("%1: %2 assets found").arg(display_name(), QString::number(found_assets_cnt)));
     return *this;
 }
 

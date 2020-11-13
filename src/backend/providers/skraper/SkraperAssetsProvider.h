@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,10 +18,6 @@
 #pragma once
 
 #include "providers/Provider.h"
-#include "types/AssetType.h"
-
-#include <array>
-#include <vector>
 
 
 namespace providers {
@@ -33,17 +29,7 @@ class SkraperAssetsProvider : public Provider {
 public:
     explicit SkraperAssetsProvider(QObject* parent = nullptr);
 
-    Provider& findStaticData(SearchContext&) final;
-
-private:
-    struct SkraperDir {
-        const AssetType asset_type;
-        const QString dir_name;
-
-        SkraperDir(AssetType, QString);
-    };
-    const std::vector<SkraperDir> m_asset_dirs;
-    const std::array<QString, 2> m_media_dirs;
+    Provider& run(SearchContext&) final;
 };
 
 } // namespace skraper
