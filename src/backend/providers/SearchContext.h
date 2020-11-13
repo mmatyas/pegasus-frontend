@@ -18,93 +18,71 @@
 #pragma once
 
 #include "utils/HashMap.h"
-#include "utils/MoveOnly.h"
+#include "utils/NoCopyNoMove.h"
 
-#include <QFileInfo>
-#include <set>
+#include <QObject>
+#include <QStringList>
 #include <vector>
 
 namespace model { class Game; }
 namespace model { class GameFile; }
 namespace model { class Collection; }
+class QNetworkAccessManager;
+class QNetworkReply;
+class QUrl;
 
 
 namespace providers {
-class PendingCollection {
-    const QString m_id;
-    model::Collection* m_ptr;
-    std::set<size_t> m_game_ids;
+
+class SearchContext : public QObject {
+    Q_OBJECT
 
 public:
-    PendingCollection(QString, model::Collection*);
-    ~PendingCollection();
+    explicit SearchContext(QObject* parent = nullptr);
+    explicit SearchContext(QStringList, QObject* parent = nullptr);
+    NO_COPY_NO_MOVE(SearchContext)
 
-    const QString& id() const { return m_id; }
-    model::Collection& inner() const { return *m_ptr; }
-    model::Collection* ptr() const { return m_ptr; }
-    const std::set<size_t>& game_ids() const { return m_game_ids; }
+    model::Collection* get_or_create_collection(const QString&);
+    model::Game* create_game_for(model::Collection&);
+    model::Game* create_game();
+    SearchContext& game_add_to(model::Game&, model::Collection&);
 
-    model::Collection* take_ptr();
+    model::Game* game_by_filepath(const QString&) const;
+    model::Game* game_by_uri(const QString&) const;
+    model::GameFile* gamefile_by_filepath(const QString&) const;
+    model::GameFile* gamefile_by_uri(const QString&) const;
+    model::GameFile* game_add_filepath(model::Game&, QString);
+    model::GameFile* game_add_uri(model::Game&, QString);
 
-friend class SearchContext;
-};
+    const QStringList& root_game_dirs() const { return m_root_game_dirs; }
+    const QStringList& pegasus_game_dirs() const { return m_pegasus_game_dirs; }
+    SearchContext& pegasus_add_game_dir(QString);
 
+    SearchContext& enable_network();
+    bool has_network() const;
+    SearchContext& schedule_download(const QUrl&, const std::function<void(QNetworkReply* const)>&);
+    bool has_pending_downloads() const;
 
-class PendingGame {
-    const size_t m_id;
-    model::Game* m_ptr;
-    std::set<QString> m_collection_ids;
-    std::vector<model::GameFile*> m_files;
+    const HashMap<QString, model::GameFile*>& current_filepath_to_entry_map() const { return m_filepath_to_gamefile; }
+    std::pair<QVector<model::Collection*>, QVector<model::Game*>> finalize(QObject* const);
 
-public:
-    PendingGame(size_t, model::Game*);
-    ~PendingGame();
-
-    size_t id() const { return m_id; }
-    model::Game& inner() const { return *m_ptr; }
-    model::Game* ptr() const { return m_ptr; }
-    const std::set<QString>& collection_ids() const { return m_collection_ids; }
-    const std::vector<model::GameFile*>& files() const { return m_files; }
-
-    model::Game* take_ptr();
-
-friend class SearchContext;
-};
-
-
-class SearchContext {
-    HashMap<size_t, PendingGame> m_games;
-    HashMap<QString, PendingCollection> m_collections;
-    HashMap<QString, size_t> m_entryid_to_gameid;
-    std::set<QString> m_game_root_dirs;
-
-public:
-    SearchContext() = default;
-    MOVE_ONLY(SearchContext)
-
-    SearchContext& add_game_root_dir(QString);
-
-    PendingCollection& get_or_create_collection(QString);
-
-    PendingGame& create_bare_game_for(QString, PendingCollection* const);
-    PendingGame& add_or_create_game_from_entry(QString, PendingCollection&);
-    PendingGame& add_or_create_game_from_file(QFileInfo, PendingCollection&);
-
-    SearchContext& create_game_file_for(QFileInfo, PendingGame&);
-    SearchContext& create_game_file_with_name_for(QFileInfo, QString, PendingGame&);
-
-    const decltype(m_games)& games() const { return m_games; }
-    const decltype(m_collections)& collections() const { return m_collections; }
-    const decltype(m_entryid_to_gameid)& entryid_to_gameid() const { return m_entryid_to_gameid; }
-    const decltype(m_game_root_dirs)& game_root_dirs() const { return m_game_root_dirs; }
-
-    SearchContext& finalize_lists();
-    std::tuple<QVector<model::Collection*>, QVector<model::Game*>> consume();
+signals:
+    void downloadScheduled();
+    void downloadCompleted();
 
 private:
-    PendingGame& create_game_from_file(QFileInfo, PendingCollection&);
-    PendingGame& register_game(model::Game* const, PendingCollection* const);
+    const QStringList m_root_game_dirs;
+    QStringList m_pegasus_game_dirs;
 
-    void remove_invalid_items();
+    QNetworkAccessManager* m_netman;
+    std::atomic<size_t> m_pending_downloads;
+
+    HashMap<QString, model::Collection*> m_collections;
+    HashMap<model::Collection*, std::vector<model::Game*>> m_collection_games;
+    HashMap<model::Game*, std::vector<model::GameFile*>> m_game_entries;
+    HashMap<QString, model::GameFile*> m_filepath_to_gamefile;
+    HashMap<QString, model::GameFile*> m_uri_to_gamefile;
+
+    std::vector<model::Game*> m_parentless_games;
 };
 } // namespace providers

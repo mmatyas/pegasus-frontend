@@ -17,280 +17,305 @@
 
 #include "SearchContext.h"
 
+#include "AppSettings.h"
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
 #include "utils/StdHelpers.h"
+
+#include <QFileInfo>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QSslSocket>
+
+
+namespace {
+QStringList read_game_dirs()
+{
+    QStringList game_dirs;
+
+    AppSettings::parse_gamedirs([&game_dirs](const QString& line){
+        const QFileInfo finfo(line);
+        if (finfo.isDir())
+            game_dirs.append(finfo.canonicalFilePath());
+    });
+
+    game_dirs.removeDuplicates();
+    return game_dirs;
+}
+} // namespace
 
 
 namespace providers {
-PendingGame::PendingGame(size_t id, model::Game* ptr)
-    : m_id(id)
-    , m_ptr(ptr)
+SearchContext::SearchContext(QObject* parent)
+    : SearchContext(read_game_dirs(), parent)
+{}
+
+SearchContext::SearchContext(QStringList game_dirs, QObject* parent)
+    : QObject(parent)
+    , m_root_game_dirs(std::move(game_dirs))
+    , m_netman(nullptr)
+    , m_pending_downloads(0)
+{}
+
+SearchContext& SearchContext::pegasus_add_game_dir(QString path)
 {
-    Q_ASSERT(m_ptr);
-}
-
-PendingGame::~PendingGame() {
-    if (m_ptr)
-        delete m_ptr;
-}
-
-model::Game* PendingGame::take_ptr() {
-    model::Game* ptr = m_ptr;
-    m_ptr = nullptr;
-    return ptr;
-}
-
-PendingCollection::PendingCollection(QString id, model::Collection* ptr)
-    : m_id(std::move(id))
-    , m_ptr(ptr)
-{
-    Q_ASSERT(m_ptr);
-}
-
-PendingCollection::~PendingCollection() {
-    if (m_ptr)
-        delete m_ptr;
-}
-
-model::Collection* PendingCollection::take_ptr() {
-    model::Collection* ptr = m_ptr;
-    m_ptr = nullptr;
-    return ptr;
-}
-
-
-SearchContext& SearchContext::add_game_root_dir(QString val)
-{
-    m_game_root_dirs.emplace(std::move(val));
+    m_pegasus_game_dirs.append(std::move(path));
+    m_pegasus_game_dirs.removeDuplicates();  // TODO: optimize?
     return *this;
 }
 
-PendingGame&
-SearchContext::register_game(model::Game* const game_ptr, PendingCollection* const collection)
+model::Collection* SearchContext::get_or_create_collection(const QString& name)
 {
-    size_t entry_id = m_games.size();
-    auto result = m_games.emplace(
-        std::piecewise_construct,
-        std::forward_as_tuple(entry_id),
-        std::forward_as_tuple(entry_id, game_ptr));
+    const auto it = m_collections.find(name);
+    if (it != m_collections.cend())
+        return it->second;
 
-    if (collection) {
-        // TODO: make launch parameter setup well defined
-        PendingGame& game = result.first->second;
-        game.inner()
-            .setLaunchCmd(collection->inner().commonLaunchCmd())
-            .setLaunchWorkdir(collection->inner().commonLaunchWorkdir())
-            .setLaunchCmdBasedir(collection->inner().commonLaunchCmdBasedir());
-        collection->m_game_ids.insert(game.id());
-        game.m_collection_ids.insert(collection->id());
+    auto* const new_ptr = new model::Collection(name);
+    m_collections.emplace(name, new_ptr);
+    return new_ptr;
+}
+
+model::Game* SearchContext::create_game_for(model::Collection& collection)
+{
+    auto* const game_ptr = new model::Game();
+    (*game_ptr)
+        .setLaunchCmd(collection.commonLaunchCmd())
+        .setLaunchWorkdir(collection.commonLaunchWorkdir())
+        .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
+
+    m_collection_games[&collection].emplace_back(game_ptr);
+    return game_ptr;
+}
+
+model::Game* SearchContext::create_game()
+{
+    auto* const game_ptr = new model::Game();
+    m_parentless_games.emplace_back(game_ptr);
+    return game_ptr;
+}
+
+model::Game* SearchContext::game_by_filepath(const QString& can_path) const
+{
+    model::GameFile* const entry_ptr = gamefile_by_filepath(can_path);
+    return entry_ptr
+        ? entry_ptr->parentGame()
+        : nullptr;
+}
+
+model::Game* SearchContext::game_by_uri(const QString& uri) const
+{
+    model::GameFile* const entry_ptr = gamefile_by_uri(uri);
+    return entry_ptr
+        ? entry_ptr->parentGame()
+        : nullptr;
+}
+
+model::GameFile* SearchContext::gamefile_by_filepath(const QString& can_path) const
+{
+    const auto it = m_filepath_to_gamefile.find(can_path);
+    return it != m_filepath_to_gamefile.cend()
+        ? it->second
+        : nullptr;
+}
+
+model::GameFile* SearchContext::gamefile_by_uri(const QString& uri) const
+{
+    const auto it = m_uri_to_gamefile.find(uri);
+    return it != m_uri_to_gamefile.cend()
+        ? it->second
+        : nullptr;
+}
+
+model::GameFile* SearchContext::game_add_filepath(model::Game& game, QString can_path)
+{
+    model::GameFile* const registered_ptr = gamefile_by_filepath(can_path);
+    if (registered_ptr)
+        return registered_ptr;
+
+    auto* const entry_ptr = new model::GameFile(can_path, game);
+    m_game_entries[&game].emplace_back(entry_ptr);
+    m_filepath_to_gamefile.emplace(can_path, entry_ptr);
+
+    if (game.title().isEmpty()) {
+        game.setTitle(entry_ptr->name())
+            .setSortBy(entry_ptr->name());
     }
 
-    return result.first->second;
+    return entry_ptr;
 }
 
-PendingGame&
-SearchContext::create_bare_game_for(QString name, PendingCollection* const collection_ptr)
+model::GameFile* SearchContext::game_add_uri(model::Game& game, QString uri)
 {
-    return register_game(new model::Game(name), collection_ptr);
+    model::GameFile* const registered_ptr = gamefile_by_uri(uri);
+    if (registered_ptr)
+        return registered_ptr;
+
+    auto* const entry_ptr = new model::GameFile(uri, game);
+    m_game_entries[&game].emplace_back(entry_ptr);
+    m_uri_to_gamefile.emplace(uri, entry_ptr);
+    return entry_ptr;
 }
 
-PendingGame&
-SearchContext::add_or_create_game_from_entry(QString entryid, PendingCollection& collection)
+SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& collection)
 {
-    auto slot = m_entryid_to_gameid.find(entryid);
-    if (slot != m_entryid_to_gameid.end()) {
-        size_t game_id = slot->second;
-        collection.m_game_ids.insert(game_id);
+    m_collection_games[&collection].emplace_back(&game);
+    VEC_REMOVE_VALUE(m_parentless_games, &game);
 
-        Q_ASSERT(game_id < m_games.size());
-        PendingGame& game = m_games.at(game_id);
-        game.m_collection_ids.insert(collection.id());
-
-        return game;
-    }
-
-    model::Game* game_ptr = new model::Game(model::pretty_filename(entryid));
-    PendingGame& game = register_game(game_ptr, &collection);
-
-    auto file = new model::GameFile(QFileInfo(entryid), game.ptr()); // TODO
-    game.m_files.emplace_back(file);
-
-    m_entryid_to_gameid.emplace(entryid, game.id());
-    return game;
-}
-
-PendingGame&
-SearchContext::add_or_create_game_from_file(QFileInfo fi, PendingCollection& collection)
-{
-    QString file_path = fi.canonicalFilePath();
-    Q_ASSERT(!file_path.isEmpty());
-
-    auto slot = m_entryid_to_gameid.find(file_path);
-    if (slot != m_entryid_to_gameid.end()) {
-        size_t game_id = slot->second;
-        collection.m_game_ids.insert(game_id);
-
-        Q_ASSERT(game_id < m_games.size());
-        PendingGame& game = m_games.at(game_id);
-        game.m_collection_ids.insert(collection.id());
-
-        return game;
-    }
-
-    return create_game_from_file(std::move(fi), collection);
-}
-
-PendingCollection& SearchContext::get_or_create_collection(QString name)
-{
-    auto found = m_collections.find(name);
-    if (found != m_collections.end())
-        return found->second;
-
-    auto ptr = new model::Collection(name);
-    Q_ASSERT(ptr);
-
-    auto result = m_collections.emplace(
-        std::piecewise_construct,
-        std::forward_as_tuple(name),
-        std::forward_as_tuple(name, ptr));
-    return result.first->second;
-}
-
-SearchContext& SearchContext::create_game_file_for(QFileInfo fi, PendingGame& game)
-{
-    QString file_path = fi.canonicalFilePath();
-    Q_ASSERT(!file_path.isEmpty());
-    Q_ASSERT(!m_entryid_to_gameid.count(file_path));
-
-    m_entryid_to_gameid.emplace(std::move(file_path), game.id());
-    auto file = new model::GameFile(std::move(fi), game.ptr());
-    game.m_files.emplace_back(file);
-    return *this;
-}
-
-SearchContext& SearchContext::create_game_file_with_name_for(QFileInfo fi, QString name, PendingGame& game)
-{
-    QString file_path = fi.canonicalFilePath();
-    Q_ASSERT(!file_path.isEmpty());
-    Q_ASSERT(!m_entryid_to_gameid.count(file_path));
-
-    m_entryid_to_gameid.emplace(std::move(file_path), game.id());
-    auto file = new model::GameFile(std::move(fi), std::move(name), game.ptr());
-    game.m_files.emplace_back(file);
-    return *this;
-}
-
-SearchContext& SearchContext::finalize_lists()
-{
-    remove_invalid_items();
-
-    for (auto& entry : m_games) {
-        std::vector<model::Collection*> collections;
-        std::transform(
-            entry.second.collection_ids().cbegin(),
-            entry.second.collection_ids().cend(),
-            std::back_inserter(collections),
-            [this](const QString& id) { return m_collections.at(id).ptr(); });
-        entry.second.inner().setCollections(std::move(collections));
-        entry.second.inner().setFiles(std::move(entry.second.m_files));
-    }
-
-    for (auto& entry : m_collections) {
-        std::vector<model::Game*> games;
-        std::transform(
-            entry.second.game_ids().cbegin(),
-            entry.second.game_ids().cend(),
-            std::back_inserter(games),
-            [this](const size_t id) { return m_games.at(id).ptr(); });
-        entry.second.inner().setGames(std::move(games));
-    }
+    if (game.launchCmd().isEmpty())
+        game.setLaunchCmd(collection.commonLaunchCmd());
+    if (game.launchWorkdir().isEmpty())
+        game.setLaunchWorkdir(collection.commonLaunchWorkdir());
+    if (game.launchCmdBasedir().isEmpty())
+        game.setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
 
     return *this;
 }
 
-std::tuple<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::consume()
+std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::finalize(QObject* const qparent)
 {
-    QVector<model::Collection*> out_collections;
-    out_collections.reserve(collections().size());
-    for (auto& entry : m_collections)
-        out_collections.push_back(entry.second.take_ptr());
+    // TODO: C++17
 
-    QVector<model::Game*> out_games;
-    out_games.reserve(games().size());
-    for (auto& entry : m_games)
-        out_games.push_back(entry.second.take_ptr());
+    for (model::Game* const game_ptr : m_parentless_games) {
+        Log::warning(tr_log("The game '%1' does not belong to any collections, ignored").arg(game_ptr->title()));
+        delete game_ptr;
+    }
 
-    std::sort(out_collections.begin(), out_collections.end(), model::sort_collections);
-    std::sort(out_games.begin(), out_games.end(), model::sort_games);
-
-    return std::make_tuple(std::move(out_collections), std::move(out_games));
-}
-
-PendingGame&
-SearchContext::create_game_from_file(QFileInfo fi, PendingCollection& collection)
-{
-    model::Game* game = new model::Game(model::pretty_filename(fi));
-    PendingGame& entry = register_game(game, &collection);
-    create_game_file_for(std::move(fi), entry);
-    return entry;
-}
-
-void SearchContext::remove_invalid_items()
-{
-    // NOTE: as Collections depend on Games, make sure Games are removed first
-    std::vector<QString> affected_collections;
-    std::vector<size_t> affected_games;
-
-
-    auto game_it = m_games.begin();
-    while (game_it != m_games.end()) {
-        const PendingGame& entry = game_it->second;
-        const bool has_files = !entry.files().empty();
-        const bool has_colls = !entry.collection_ids().empty();
-        if (has_files && has_colls) {
-            ++game_it;
+    std::vector<model::Game*> deleted_games;
+    for (const auto& pair : m_game_entries) {
+        if (!pair.second.empty())
             continue;
-        }
 
-        if (!has_files) {
-            qWarning().noquote()
-                << tr_log("No files defined for game '%1', ignored").arg(entry.inner().title());
-        }
-        else if (!has_colls) {
-            qWarning().noquote()
-                << tr_log("Game '%1' does not belong to any collections, ignored").arg(entry.inner().title());
-        }
-
-        affected_collections.insert(
-            affected_collections.end(),
-            entry.collection_ids().cbegin(),
-            entry.collection_ids().cend());
-        affected_games.emplace_back(entry.id());
-        game_it = m_games.erase(game_it);
+        model::Game* const game_ptr = pair.first;
+        Log::warning(tr_log("The game '%1' has no lauunchable entries, ignored").arg(game_ptr->title()));
+        deleted_games.emplace_back(game_ptr);
+        delete game_ptr;
     }
 
+    for (auto& pair : m_collection_games) {
+        for (model::Game* const game_ptr : deleted_games)
+            VEC_REMOVE_VALUE(pair.second, game_ptr);
 
-    VEC_REMOVE_DUPLICATES(affected_collections);
-    for (const QString& coll_id : affected_collections) {
-        PendingCollection& coll = m_collections.at(coll_id);
-        for (const size_t game: affected_games)
-            coll.m_game_ids.erase(game);
-    }
-
-
-    auto coll_it = m_collections.begin();
-    while (coll_it != m_collections.end()) {
-        PendingCollection& coll = coll_it->second;
-        const bool has_games = !coll.game_ids().empty();
-        if (has_games) {
-            ++coll_it;
+        if (!pair.second.empty())
             continue;
-        }
 
-        qWarning().noquote()
-            << tr_log("No valid games found for collection '%1', ignored").arg(coll.inner().name());
-        coll_it = m_collections.erase(coll_it);
+        model::Collection* const coll_ptr = pair.first;
+        Log::warning(tr_log("The collection '%1' has no valid games, ignored").arg(coll_ptr->name()));
+        m_collections.erase(coll_ptr->name());
+        delete coll_ptr;
     }
+
+
+    for (auto& pair : m_game_entries)
+        pair.first->setFiles(std::move(pair.second));
+
+    HashMap<model::Game*, std::vector<model::Collection*>> game_collections;
+    for (auto& pair : m_collection_games) {
+        for (model::Game* const game_ptr : pair.second)
+            game_collections[game_ptr].emplace_back(pair.first);
+    }
+    for (auto& pair : game_collections) {
+        VEC_REMOVE_DUPLICATES(pair.second);
+        pair.first->setCollections(std::move(pair.second));
+    }
+
+    for (auto& pair : m_collection_games) {
+        VEC_REMOVE_DUPLICATES(pair.second);
+        pair.first->setGames(std::move(pair.second));
+    }
+
+
+    QVector<model::Game*> games;
+    games.reserve(m_filepath_to_gamefile.size() + m_uri_to_gamefile.size());
+    for (const auto& pair : m_filepath_to_gamefile)
+        games.append(pair.second->parentGame());
+    for (const auto& pair : m_uri_to_gamefile)
+        games.append(pair.second->parentGame());
+    VEC_REMOVE_DUPLICATES(games);
+    games.squeeze();
+
+    for (model::Game* const game : games) {
+        game->developerList().removeDuplicates();
+        game->publisherList().removeDuplicates();
+        game->genreList().removeDuplicates();
+        game->tagList().removeDuplicates();
+    }
+
+
+    QVector<model::Collection*> collections;
+    collections.reserve(m_collections.size());
+    for (auto& pair : m_collections)
+        collections.append(pair.second);
+
+
+    std::sort(collections.begin(), collections.end(), model::sort_collections);
+    std::sort(games.begin(), games.end(), model::sort_games);
+    for (model::Collection* const collection : collections) {
+        collection->moveToThread(qparent->thread());
+        collection->setParent(qparent);
+    }
+    for (model::Game* const game : games) {
+        game->moveToThread(qparent->thread());
+        game->setParent(qparent);
+    }
+
+
+    return std::make_pair(std::move(collections), std::move(games));
+}
+
+
+SearchContext& SearchContext::enable_network()
+{
+    Q_ASSERT(!m_netman);
+
+    if (!QSslSocket::supportsSsl()) {
+        Log::warning(tr_log("Secure connection (SSL) support not available, downloading metadata is not possible"));
+        return *this;
+    }
+
+    // TODO: C++14
+    m_netman = new QNetworkAccessManager(this);
+    return *this;
+}
+
+bool SearchContext::has_network() const
+{
+    return !!m_netman;
+}
+
+bool SearchContext::has_pending_downloads() const
+{
+    return m_pending_downloads > 0;
+}
+
+SearchContext& SearchContext::schedule_download(
+    const QUrl& url,
+    const std::function<void(QNetworkReply* const)>& on_finish_callback)
+{
+    Q_ASSERT(m_netman);
+    Q_ASSERT(url.isValid());
+
+    m_pending_downloads++;
+
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    request.setTransferTimeout(10000);
+#endif
+
+    QNetworkReply* const reply = m_netman->get(request);
+    emit downloadScheduled();
+
+    QObject::connect(reply, &QNetworkReply::finished,
+        this, [this, reply, on_finish_callback]{
+            on_finish_callback(reply);
+            m_pending_downloads--;
+            emit downloadCompleted();
+        });
+
+    return *this;
 }
 } // namespace providers
