@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,20 +17,24 @@
 
 #pragma once
 
-#include "Assets.h"
-#include "GameFile.h"
-#include "utils/MoveOnly.h"
-#include "model/gaming/Collection.h"
-
 #include "QtQmlTricks/QQmlObjectListModel.h"
-#include <QObject>
-#include <unordered_set>
+#include <QDateTime>
+#include <QStringList>
 
+#ifdef Q_CC_MSVC
+// MSVC has troubles with forward declared QML model types
+#include "model/gaming/Collection.h"
+#include "model/gaming/GameFile.h"
+#endif
+
+namespace model { class Assets; }
+namespace model { class GameFile; }
 namespace model { class Collection; }
 
 
 namespace model {
 struct GameData {
+    explicit GameData();
     explicit GameData(QString);
 
     QString title;
@@ -101,7 +105,7 @@ public:
 #define SETTER(type, name, field) \
     Game& set##name(type val) { m_data.field = std::move(val); return *this; }
 
-    SETTER(QString, Title, title)
+    Game& setTitle(QString);
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
@@ -149,8 +153,8 @@ public:
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
 
-    Assets& assets() const { return *m_assets; }
-    Assets* assetsPtr() const { return m_assets; }
+    const Assets& assets() const { return *m_assets; }
+    Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Game& setFiles(std::vector<model::GameFile*>&&);
@@ -164,6 +168,8 @@ private:
     GameData m_data;
     Assets* const m_assets;
 
+    Assets* assetsPtr() const { return m_assets; }
+
 signals:
     void launchFileSelectorRequested();
     void favoriteChanged();
@@ -174,6 +180,7 @@ private slots:
 
 
 public:
+    explicit Game(QObject* parent = nullptr);
     explicit Game(QString name, QObject* parent = nullptr);
 
     Q_INVOKABLE void launch();

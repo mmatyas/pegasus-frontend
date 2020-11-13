@@ -72,8 +72,8 @@ public:
 public:
     explicit Assets(QObject* parent);
 
-    void add_file(AssetType, QString);
-    void add_url(AssetType, QString);
+    Assets& add_file(AssetType, QString);
+    Assets& add_uri(AssetType, QString);
 
 private:
     const QStringList& get(AssetType) const;

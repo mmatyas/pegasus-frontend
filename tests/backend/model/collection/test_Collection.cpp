@@ -20,6 +20,8 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 
+#include <array>
+
 
 class test_Collection : public QObject {
     Q_OBJECT
@@ -27,6 +29,7 @@ class test_Collection : public QObject {
 private slots:
     void names();
     void games();
+    void sorting();
 };
 
 void test_Collection::names()
@@ -55,6 +58,31 @@ void test_Collection::games()
     QCOMPARE(collection->gamesConst().at(0)->property("title").toString(), QStringLiteral("a"));
     QCOMPARE(collection->gamesConst().at(1)->property("title").toString(), QStringLiteral("b"));
     QCOMPARE(collection->gamesConst().at(2)->property("title").toString(), QStringLiteral("c"));
+}
+
+void test_Collection::sorting()
+{
+    const std::array<std::pair<QString, QString>, 4> name_pairs {
+        std::make_pair("Collection I", "Collection 1"),
+        std::make_pair("Collection IX", "Collection 9"),
+        std::make_pair("Collection IV", "Collection 4"),
+        std::make_pair("Collection 8", QString()), // intentionally missing custom sort
+    };
+
+    std::vector<model::Collection*> collections;
+    for (const auto& pair : name_pairs) {
+        auto* const coll_ptr = new model::Collection(pair.first);
+        collections.emplace_back(coll_ptr);
+
+        if (!pair.second.isEmpty())
+            coll_ptr->setSortBy(pair.second);
+    }
+
+    std::sort(collections.begin(), collections.end(), model::sort_collections);
+    QCOMPARE(collections.at(0)->name(), QStringLiteral("Collection I"));
+    QCOMPARE(collections.at(1)->name(), QStringLiteral("Collection IV"));
+    QCOMPARE(collections.at(2)->name(), QStringLiteral("Collection 8"));
+    QCOMPARE(collections.at(3)->name(), QStringLiteral("Collection IX"));
 }
 
 

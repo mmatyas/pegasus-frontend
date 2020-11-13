@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 
 
 #include "GameFile.h"
+
+#include "model/gaming/Game.h"
 
 
 namespace model {
@@ -42,15 +44,15 @@ bool GameFileData::operator==(const GameFileData& other) const {
 }
 
 
-GameFile::GameFile(QFileInfo finfo, QObject* parent)
-    : QObject(parent)
+GameFile::GameFile(QFileInfo finfo, model::Game& parent)
+    : QObject(&parent)
     , m_data(std::move(finfo))
 {}
 
-GameFile::GameFile(QFileInfo finfo, QString name, QObject* parent)
-    : QObject(parent)
-    , m_data(std::move(finfo), std::move(name))
-{}
+model::Game* GameFile::parentGame() const
+{
+    return static_cast<model::Game*>(parent());
+}
 
 void GameFile::launch()
 {

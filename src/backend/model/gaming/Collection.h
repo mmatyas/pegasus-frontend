@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,13 +17,15 @@
 
 #pragma once
 
-#include "Assets.h"
-#include "Game.h"
-
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QString>
-#include <unordered_set>
 
+#ifdef Q_CC_MSVC
+// MSVC has troubles with forward declared QML model types
+#include "model/gaming/Game.h"
+#endif
+
+namespace model { class Assets; }
 namespace model { class Game; }
 
 
@@ -87,8 +89,8 @@ public:
     Q_PROPERTY(QString description READ description CONSTANT)
 
 
-    Assets& assets() { return *m_assets; }
-    Assets* assetsPtr() { return m_assets; }
+    const Assets& assets() const { return *m_assets; }
+    Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Collection& setGames(std::vector<model::Game*>&&);
@@ -103,6 +105,8 @@ public:
 private:
     CollectionData m_data;
     Assets* const m_assets;
+
+    Assets* assetsPtr() { return m_assets; }
 };
 
 

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,10 @@
 
 #include "Game.h"
 
+#include "model/gaming/Assets.h"
+#include "model/gaming/Collection.h"
+#include "model/gaming/GameFile.h"
+
 
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
@@ -24,6 +28,8 @@ QString joined_list(const QStringList& list) { return list.join(QLatin1String(",
 
 
 namespace model {
+GameData::GameData() = default;
+
 GameData::GameData(QString new_title)
     : title(std::move(new_title))
     , sort_by(title)
@@ -38,10 +44,22 @@ Game::Game(QString name, QObject* parent)
     , m_assets(new model::Assets(this))
 {}
 
+Game::Game(QObject* parent)
+    : Game(QString(), parent)
+{}
+
 QString Game::developerStr() const { return joined_list(m_data.developers); }
 QString Game::publisherStr() const { return joined_list(m_data.publishers); }
 QString Game::genreStr() const { return joined_list(m_data.genres); }
 QString Game::tagStr() const { return joined_list(m_data.tags); }
+
+Game& Game::setTitle(QString title)
+{
+    m_data.title = std::move(title);
+    if (sortBy().isEmpty())
+        setSortBy(m_data.title);
+    return *this;
+}
 
 Game& Game::setFavorite(bool new_val)
 {
@@ -52,6 +70,10 @@ Game& Game::setFavorite(bool new_val)
 
 void Game::onEntryPlayStatsChanged()
 {
+    const auto prev_play_count = m_data.playstats.play_count;
+    const auto prev_play_time = m_data.playstats.play_time;
+    const auto prev_last_played = m_data.playstats.last_played;
+
     m_data.playstats.play_count = std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
         [](int sum, const model::GameFile* const gamefile){
             return sum + gamefile->playCount();
@@ -65,7 +87,11 @@ void Game::onEntryPlayStatsChanged()
             return std::max(current_max, gamefile->lastPlayed());
         });
 
-    emit playStatsChanged();
+    const bool changed = prev_play_count != m_data.playstats.play_count
+        || prev_play_time != m_data.playstats.play_time
+        || prev_last_played != m_data.playstats.last_played;
+    if (changed)
+        emit playStatsChanged();
 }
 
 void Game::launch()
@@ -92,6 +118,9 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
     std::move(files.begin(), files.end(), std::back_inserter(modelvec));
 
     m_files->append(std::move(modelvec));
+
+    onEntryPlayStatsChanged();
+
     return *this;
 }
 

@@ -46,18 +46,20 @@ const QString& Assets::getFirst(AssetType key) const {
     return empty;
 }
 
-void Assets::add_file(AssetType key, QString path)
+Assets& Assets::add_file(AssetType key, QString path)
 {
-    QString url = QUrl::fromLocalFile(std::move(path)).toString();
-    add_url(key, std::move(url));
+    QString uri = QUrl::fromLocalFile(std::move(path)).toString();
+    return add_uri(key, std::move(uri));
 }
 
-void Assets::add_url(AssetType key, QString url)
+Assets& Assets::add_uri(AssetType key, QString url)
 {
     QStringList& target = m_asset_lists[key];
 
     if (!url.isEmpty() && !target.contains(url))
         target.append(std::move(url));
+
+    return *this;
 }
 
 } // namespace model

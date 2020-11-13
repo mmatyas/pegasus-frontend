@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@
 
 #include <QDateTime>
 #include <QFileInfo>
-#include <QObject>
 #include <QString>
+
+namespace model { class Game; }
 
 
 namespace model {
@@ -72,8 +73,9 @@ public:
     const QFileInfo& fileinfo() const { return m_data.fileinfo; }
 
 public:
-    explicit GameFile(QFileInfo, QObject*);
-    explicit GameFile(QFileInfo, QString, QObject*);
+    explicit GameFile(QFileInfo, model::Game&);
+
+    model::Game* parentGame() const;
 
     Q_INVOKABLE void launch();
 

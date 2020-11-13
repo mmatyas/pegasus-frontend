@@ -32,15 +32,15 @@ private slots:
 void test_GameAssets::setSingle()
 {
     model::Assets assets(this);
-    assets.add_url(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
+    assets.add_uri(AssetType::BOX_FRONT, QUrl::fromLocalFile("/dummy").toString());
     QCOMPARE(assets.property("boxFront").toString(), QLatin1String("file:///dummy"));
 }
 
 void test_GameAssets::appendMulti()
 {
     model::Assets assets(this);
-    assets.add_url(AssetType::VIDEO, QUrl::fromLocalFile("/dummy1").toString());
-    assets.add_url(AssetType::VIDEO, QUrl::fromLocalFile("/dummy2").toString());
+    assets.add_uri(AssetType::VIDEO, QUrl::fromLocalFile("/dummy1").toString());
+    assets.add_uri(AssetType::VIDEO, QUrl::fromLocalFile("/dummy2").toString());
 
     QCOMPARE(assets.property("videoList").toStringList().count(), 2);
     QCOMPARE(assets.property("videoList").toStringList().constFirst(), QLatin1String("file:///dummy1"));

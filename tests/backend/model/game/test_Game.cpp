@@ -18,6 +18,9 @@
 #include <QtTest/QtTest>
 
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
+
+#include <array>
 
 
 class test_Game : public QObject {
@@ -33,6 +36,8 @@ private slots:
 
     void launchSingle();
     void launchMulti();
+
+    void sorting();
 };
 
 void testStrAndList(const std::function<void(model::Game&, const QString&)>& fn_add,
@@ -80,8 +85,8 @@ void test_Game::files()
 {
     model::Game game("test");
     game.setFiles({
-        new model::GameFile(QFileInfo("test1"), this),
-        new model::GameFile(QFileInfo("test2"), this),
+        new model::GameFile(QFileInfo("test1"), game),
+        new model::GameFile(QFileInfo("test2"), game),
     });
 
     QCOMPARE(game.filesConst().count(), 2);
@@ -92,7 +97,7 @@ void test_Game::files()
 void test_Game::launchSingle()
 {
     model::Game game("test");
-    game.setFiles({ new model::GameFile(QFileInfo("test"), this) });
+    game.setFiles({ new model::GameFile(QFileInfo("test"), game) });
 
     QSignalSpy spy_launch(game.filesConst().first(), &model::GameFile::launchRequested);
     QVERIFY(spy_launch.isValid());
@@ -105,8 +110,8 @@ void test_Game::launchMulti()
 {
     model::Game game("test");
     game.setFiles({
-        new model::GameFile(QFileInfo("test1"), this),
-        new model::GameFile(QFileInfo("test2"), this),
+        new model::GameFile(QFileInfo("test1"), game),
+        new model::GameFile(QFileInfo("test2"), game),
     });
 
     QSignalSpy spy_launch(&game, &model::Game::launchFileSelectorRequested);
@@ -114,6 +119,32 @@ void test_Game::launchMulti()
 
     QMetaObject::invokeMethod(&game, "launch");
     QVERIFY(spy_launch.count() == 1 || spy_launch.wait());
+}
+
+void test_Game::sorting()
+{
+    const std::array<std::pair<QString, QString>, 4> name_pairs {
+        std::make_pair("Game I", "Game 1"),
+        std::make_pair("Game IX", "Game 9"),
+        std::make_pair("Game IV", "Game 4"),
+        std::make_pair("Game 8", QString()), // intentionally missing custom sort
+    };
+
+    std::vector<model::Game*> games;
+    for (const auto& pair : name_pairs) {
+        auto* const game_ptr = new model::Game(pair.first);
+        games.emplace_back(game_ptr);
+
+        if (!pair.second.isEmpty())
+            game_ptr->setSortBy(pair.second);
+    }
+
+    std::sort(games.begin(), games.end(), model::sort_games);
+
+    QCOMPARE(games.at(0)->title(), QStringLiteral("Game I"));
+    QCOMPARE(games.at(1)->title(), QStringLiteral("Game IV"));
+    QCOMPARE(games.at(2)->title(), QStringLiteral("Game 8"));
+    QCOMPARE(games.at(3)->title(), QStringLiteral("Game IX"));
 }
 
 
