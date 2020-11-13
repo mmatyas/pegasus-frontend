@@ -122,7 +122,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     Q_ASSERT(q_gamefile);
 
     const model::GameFile& gamefile = *q_gamefile;
-    const model::Game& game = static_cast<model::Game&>(*gamefile.parent());
+    const model::Game& game = *gamefile.parentGame();
 
     const QString raw_launch_cmd =
 #if defined(Q_OS_LINUX) && defined(PEGASUS_INSIDE_FLATPAK)
