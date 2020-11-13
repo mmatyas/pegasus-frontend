@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,11 +18,12 @@
 #include "LutrisProvider.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "model/gaming/Assets.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
 #include "utils/SqliteDb.h"
 
-#include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStandardPaths>
@@ -30,21 +31,16 @@
 
 
 namespace {
-constexpr auto MSG_PREFIX = "Lutris:";
-
 QString find_datadir()
 {
     using QSP = QStandardPaths;
 
     for (const QString& commondir : QSP::standardLocations(QSP::GenericDataLocation)) {
         QString lutrisdir = commondir + QLatin1String("/lutris/");
-        if (QFileInfo::exists(lutrisdir)) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found data directory: `%1`").arg(lutrisdir);
+        if (QFileInfo::exists(lutrisdir))
             return lutrisdir;
-        }
     }
 
-    qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
     return {};
 }
 
@@ -57,7 +53,7 @@ void find_banner_for(model::Game& game, const QString& slug, const QString& base
     for (const QLatin1String& ext : exts) {
         QString path = base_path % slug % ext;
         if (QFileInfo::exists(path)) {
-            game.assets().add_file(AssetType::UI_STEAMGRID, path);
+            game.assetsMut().add_file(AssetType::UI_STEAMGRID, path);
             return;
         }
     }
@@ -72,7 +68,7 @@ void find_coverart_for(model::Game& game, const QString& slug, const QString& ba
     for (const QLatin1String& ext : exts) {
         QString path = base_path % slug % ext;
         if (QFileInfo::exists(path)) {
-            game.assets().add_file(AssetType::BACKGROUND, path);
+            game.assetsMut().add_file(AssetType::BACKGROUND, path);
             return;
         }
     }
@@ -82,7 +78,7 @@ void find_icon_for(model::Game& game, const QString& slug, const QString& base_p
 {
     const QString path = base_path % slug % QLatin1String(".png");
     if (QFileInfo::exists(path))
-        game.assets().add_file(AssetType::UI_TILE, path);
+        game.assetsMut().add_file(AssetType::UI_TILE, path);
 }
 } // namespace
 
@@ -91,24 +87,27 @@ namespace providers {
 namespace lutris {
 
 LutrisProvider::LutrisProvider(QObject* parent)
-    : Provider(QLatin1String("lutris"), QStringLiteral("Lutris"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
+    : Provider(QLatin1String("lutris"), QStringLiteral("Lutris"), parent)
 {}
 
-Provider& LutrisProvider::findLists(SearchContext& sctx)
+Provider& LutrisProvider::run(SearchContext& sctx)
 {
     const QString datadir = find_datadir();
-    if (datadir.isEmpty())
+    if (datadir.isEmpty()) {
+        Log::info(tr_log("%1: No installation found").arg(display_name()));
         return *this;
+    }
+    Log::info(tr_log("%1: Found data directory: `%2`").arg(display_name(), datadir));
 
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("database not found");
+        Log::warning(tr_log("%1: database not found").arg(display_name()));
         return *this;
     }
 
     SqliteDb channel(db_path);
     if (!channel.open()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open the database");
+        Log::warning(tr_log("%1: could not open the database").arg(display_name()));
         return *this;
     }
     // No entries yet
@@ -118,12 +117,12 @@ Provider& LutrisProvider::findLists(SearchContext& sctx)
     QSqlQuery query;
     query.prepare(QLatin1String("SELECT id, slug, name, playtime FROM games"));
     if (!query.exec()) {
-        qWarning().noquote() << MSG_PREFIX << query.lastError().text();
+        Log::warning(tr_log("%1: %2").arg(display_name(), query.lastError().text()));
         return *this;
     }
 
 
-    PendingCollection& collection = sctx.get_or_create_collection(QStringLiteral("Lutris"));
+    model::Collection& collection = *sctx.get_or_create_collection(QStringLiteral("Lutris"));
 
     using QSP = QStandardPaths;
     const QString base_path_banners = datadir + QLatin1String("banners/");
@@ -132,24 +131,26 @@ Provider& LutrisProvider::findLists(SearchContext& sctx)
         + QLatin1String("/icons/hicolor/128x128/apps/lutris_");
 
 
-    const size_t game_count_before = sctx.games().size();
     while (query.next()) {
         const QString id_str = query.value(0).toString();
         const QString slug = query.value(1).toString();
         const QString title = query.value(2).toString();
         QString lutris_uri = QLatin1String("lutris:") + slug;
 
-        const PendingGame& entry = sctx.add_or_create_game_from_entry(lutris_uri, collection);
-        model::Game& game = entry.inner();
-        game.setTitle(title);
-        game.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
+        model::Game* game_ptr = sctx.game_by_uri(lutris_uri);
+        if (!game_ptr) {
+            game_ptr = sctx.create_game_for(collection);
+            sctx.game_add_uri(*game_ptr, lutris_uri);
+        }
+        model::Game& game = *game_ptr;
+
+        game.setTitle(title)
+            .setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
 
         find_banner_for(game, slug, base_path_banners);
         find_coverart_for(game, slug, base_path_coverart);
         find_icon_for(game, slug, base_path_icons);
     }
-    if (game_count_before != sctx.games().size())
-        emit gameCountChanged(static_cast<int>(sctx.games().size()));
 
     return *this;
 }
