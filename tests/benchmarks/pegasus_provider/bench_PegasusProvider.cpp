@@ -17,6 +17,7 @@
 
 #include <QtTest/QtTest>
 
+#include "Log.h"
 #include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
 
@@ -27,33 +28,36 @@ class bench_PegasusProvider : public QObject {
     Q_OBJECT
 
 private slots:
+    void initTestCase() {
+        Log::init_qttest();
+    }
+
     void find_in_empty_dir();
     void find_in_filled_dir();
 };
 
 void bench_PegasusProvider::find_in_empty_dir()
 {
+    providers::SearchContext sctx({QStringLiteral(":/empty")});
     providers::pegasus::PegasusProvider provider;
-    provider.load_with_gamedirs({QStringLiteral(":/empty")});
 
     QBENCHMARK {
-        QTest::ignoreMessage(QtWarningMsg, "Metafiles: No metadata file found in `:/empty`, directory ignored");
-        providers::SearchContext sctx;
-        Q_ASSERT(sctx.games().empty());
-        provider.findLists(sctx);
+        QTest::ignoreMessage(QtInfoMsg, "Metafiles: No metadata files found");
+        provider.run(sctx);
     }
 }
 
 void bench_PegasusProvider::find_in_filled_dir()
 {
+    providers::SearchContext sctx({QStringLiteral(":/filled")});
     providers::pegasus::PegasusProvider provider;
-    provider.load_with_gamedirs({QStringLiteral(":/filled")});
+
+    const QString msg = QStringLiteral("Metafiles: Found `%1`")
+        .arg(QDir::toNativeSeparators(QStringLiteral(":/filled/metadata.pegasus.txt")));
 
     QBENCHMARK {
-        QTest::ignoreMessage(QtInfoMsg, "Metafiles: found `:/filled/collections.txt`");
-        providers::SearchContext sctx;
-        Q_ASSERT(sctx.games().empty());
-        provider.findLists(sctx);
+        QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(msg));
+        provider.run(sctx);
     }
 }
 

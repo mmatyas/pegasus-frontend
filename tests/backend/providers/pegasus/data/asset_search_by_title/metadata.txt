@@ -1,5 +1,0 @@
-collection: mygames
-extensions: ext
-
-game: My Precious Game
-file: mygame.ext

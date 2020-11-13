@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,9 +19,6 @@
 
 #include "providers/Provider.h"
 
-#include <QString>
-#include <vector>
-
 
 namespace providers {
 namespace pegasus {
@@ -32,15 +29,7 @@ class PegasusProvider : public Provider {
 public:
     explicit PegasusProvider(QObject* parent = nullptr);
 
-    Provider& load() final;
-    Provider& unload() final;
-    Provider& load_with_gamedirs(std::vector<QString>);
-
-    Provider& findLists(SearchContext&) final;
-    Provider& findStaticData(SearchContext&) final;
-
-private:
-    std::vector<QString> m_game_dirs;
+    Provider& run(SearchContext&) final;
 };
 
 } // namespace pegasus

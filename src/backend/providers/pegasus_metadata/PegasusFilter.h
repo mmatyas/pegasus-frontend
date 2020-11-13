@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,17 +17,39 @@
 
 #pragma once
 
-#include <QString>
-#include <QStringList>
+#include "utils/MoveOnly.h"
+
+#include <QRegularExpression>
+#include <vector>
+
+namespace model { class Collection; }
+namespace providers { class SearchContext; }
 
 
 namespace providers {
 namespace pegasus {
-namespace utils {
 
-QStringList tokenize_by_comma(const QString&);
-QString assetline_to_url(const QString&, const QString&);
+struct FileFilterGroup {
+    std::vector<QString> extensions;
+    std::vector<QString> files;
+    QRegularExpression regex;
 
-} // namespace utils
+    explicit FileFilterGroup();
+    MOVE_ONLY(FileFilterGroup)
+};
+
+struct FileFilter {
+    //QString collection_key;
+    model::Collection* collection;
+    std::vector<QString> directories;
+    FileFilterGroup include;
+    FileFilterGroup exclude;
+
+    explicit FileFilter(model::Collection* const, QString);
+    MOVE_ONLY(FileFilter)
+};
+
+void apply_filter(FileFilter&, SearchContext&);
+
 } // namespace pegasus
 } // namespace providers

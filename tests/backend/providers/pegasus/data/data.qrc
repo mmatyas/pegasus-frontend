@@ -41,33 +41,10 @@
         <file>custom_dirs/c/mygame.y</file>
         <file>custom_dirs/coll/metadata.txt</file>
         <file>custom_dirs/coll/mygame.x</file>
-        <file>asset_search/metadata.txt</file>
-        <file>asset_search/mygame1.ext</file>
-        <file>asset_search/mygame2.ext</file>
-        <file>asset_search/mygame3.ext</file>
-        <file>asset_search/subdir/mygame4.ext</file>
-        <file>asset_search/media/mygame1/box_front.png</file>
-        <file>asset_search/media/mygame1/video.mp4</file>
-        <file>asset_search/media/mygame3/music.mp3</file>
-        <file>asset_search/media/mygame3/screenshot.jpg</file>
-        <file>asset_search/media/subdir/mygame4/background.png</file>
-        <file>asset_search_by_title/metadata.txt</file>
-        <file>asset_search_by_title/mygame.ext</file>
-        <file>asset_search_by_title/media/My Precious Game/box_front.png</file>
-        <file>asset_search_by_title/media/My Precious Game/video.mp4</file>
-        <file>asset_search_multifile/metadata.txt</file>
-        <file>asset_search_multifile/mygame.ext</file>
-        <file>asset_search_multifile/media/mygame/screenshot01.png</file>
-        <file>asset_search_multifile/media/mygame/screenshot02.png</file>
         <file>multifile/metadata.txt</file>
         <file>multifile/multi.a.ext</file>
         <file>multifile/multi.b.ext</file>
         <file>multifile/single.ext</file>
-        <file>separate_media_dirs/games-a/game1.ext</file>
-        <file>separate_media_dirs/games-a/media/Game 1/box_front.png</file>
-        <file>separate_media_dirs/games-b/game2.ext</file>
-        <file>separate_media_dirs/games-b/media/Game 2/box_front.png</file>
-        <file>separate_media_dirs/metadata/metadata.pegasus.txt</file>
         <file>relative_files/a/game_a.ext</file>
         <file>relative_files/coll/metadata.txt</file>
         <file>relative_files/coll/game_here.ext</file>
@@ -82,12 +59,5 @@
         <file>relative_files_with_dirs/b/ignoredir/game_ign.x</file>
         <file>relative_files_with_dirs/a/ignoreme.x</file>
         <file>relative_files_with_dirs/a/game_a.x</file>
-        <file>sort_title/metadata.txt</file>
-        <file>sort_title/a.ext</file>
-        <file>sort_title/b.ext</file>
-        <file>sort_title/c.ext</file>
-        <file>sort_title/d.ext</file>
-        <file>sort_collections/metadata.pegasus.txt</file>
-        <file>sort_collections/test.ext</file>
     </qresource>
 </RCC>

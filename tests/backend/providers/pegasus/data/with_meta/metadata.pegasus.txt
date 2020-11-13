@@ -5,6 +5,7 @@ file: pre.ext
 
 collection: My Games
 shortname: mygames
+sortby: Collection IV
 extensions: ext
 summary: this is the summary
 description: this is the description
@@ -23,6 +24,7 @@ genres:
   genre1
   genre2
   genre with spaces
+sortby: Game IX
 players: 2-4
 rating: 80%
 # repeating single keys will overwrite
