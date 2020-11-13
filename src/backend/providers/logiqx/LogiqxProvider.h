@@ -19,8 +19,6 @@
 
 #include "providers/Provider.h"
 
-class QXmlStreamReader;
-
 
 namespace providers {
 namespace logiqx {
@@ -31,13 +29,7 @@ class LogiqxProvider : public Provider {
 public:
     explicit LogiqxProvider(QObject* parent = nullptr);
 
-    Provider& load() final;
-    Provider& load_with_config(const QStringList&);
-    Provider& unload() final;
-    Provider& findLists(SearchContext&) final;
-
-private:
-    QStringList m_game_dirs;
+    Provider& run(SearchContext&) final;
 };
 
 } // namespace logiqx

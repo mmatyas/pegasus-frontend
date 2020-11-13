@@ -20,19 +20,32 @@
 #include "Log.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
 #include "providers/logiqx/LogiqxProvider.h"
-#include "utils/HashMap.h"
-#include "utils/StdHelpers.h"
 
 #include <QString>
 #include <QStringList>
+
+
+#define PATHMSG(msg, path) qUtf8Printable( \
+    QStringLiteral(msg) \
+        .arg(QDir::toNativeSeparators(QStringLiteral(path))))
+
+#define PATH2MSG(msg, path1, path2) qUtf8Printable( \
+    QStringLiteral(msg) \
+        .arg(QDir::toNativeSeparators(QStringLiteral(path1))) \
+        .arg(QDir::toNativeSeparators(QStringLiteral(path2))))
 
 
 class test_LogiqxProvider : public QObject {
     Q_OBJECT
 
 private slots:
+    void initTestCase() {
+        Log::init_qttest();
+    }
+
     void faulty();
     void malformed();
     void simple();
@@ -41,26 +54,16 @@ private slots:
 
 void test_LogiqxProvider::faulty()
 {
-    using Rx = QRegularExpression;
-    QTest::ignoreMessage(QtInfoMsg, Rx("Logiqx: `:.faulty.empty\\.dat` doesn't seem to be a valid XML file, ignored"));
-    QTest::ignoreMessage(QtInfoMsg, Rx("Logiqx: `:.faulty.no_doctype\\.dat` seems to be a valid XML file, but doesn't have a DOCTYPE declaration, ignored"));
-    QTest::ignoreMessage(QtInfoMsg, Rx("Logiqx: `:.faulty.not_logiqx\\.dat` is not declared as a Logiqx XML file, ignored"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: `:.faulty.incorrect_root\\.dat` seems to be a Logiqx file, but doesn't start with a `datafile` root element"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: `%1` doesn't seem to be a valid XML file, ignored", ":/faulty/empty.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: `%1` seems to be a valid XML file, but doesn't have a DOCTYPE declaration, ignored", ":/faulty/no_doctype.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: `%1` is not declared as a Logiqx XML file, ignored", ":/faulty/not_logiqx.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: `%1` seems to be a Logiqx file, but doesn't start with a `datafile` root element", ":/faulty/incorrect_root.dat"));
 
     const QStringList game_dirs { QStringLiteral(":/faulty") };
 
-    providers::SearchContext sctx;
-    providers::logiqx::LogiqxProvider provider;
-    provider
-        .load_with_config(game_dirs)
-        .findLists(sctx);
-
-    // TODO: C++17
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    std::tie(collections, games) = sctx
-        .finalize_lists()
-        .consume();
+    providers::SearchContext sctx(game_dirs);
+    providers::logiqx::LogiqxProvider().run(sctx);
+    auto [collections, games] = sctx.finalize(this);
 
     QCOMPARE(collections.size(), 0);
     QCOMPARE(games.size(), 0);
@@ -69,35 +72,25 @@ void test_LogiqxProvider::faulty()
 
 void test_LogiqxProvider::malformed()
 {
-    using Rx = QRegularExpression;
-    QTest::ignoreMessage(QtInfoMsg, Rx("Logiqx: Found `:.malformed.bad_games\\.dat`"));
-    QTest::ignoreMessage(QtInfoMsg, Rx("Logiqx: Found `:.malformed.bad_header\\.dat`"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: `:.malformed.bad_header\\.dat` has no `name` field in its `header` entry"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: The `game` element in `:.malformed.bad_games\\.dat` at line 8 has an empty or missing `name` attribute, entry ignored"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: The `year` element in `:.malformed.bad_games\\.dat` at line 15 has an invalid value, ignored"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: The `rom` element in `:.malformed.bad_games\\.dat` at line 19 has an empty or missing `name` attribute, ignored"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: The `rom` element in `:.malformed.bad_games\\.dat` at line 23 seems to be a duplicate entry, ignored"));
-    QTest::ignoreMessage(QtWarningMsg, Rx("Logiqx: The `rom` element in `:.malformed.bad_games\\.dat` at line 28 refers to file `:.malformed.nothing\\.ext`, which doesn't seem to exist"));
-    QTest::ignoreMessage(QtWarningMsg, "No files defined for game 'No valid fields', ignored");
-    QTest::ignoreMessage(QtWarningMsg, "No files defined for game 'No file', ignored");
-    QTest::ignoreMessage(QtWarningMsg, "No files defined for game 'Bad file', ignored");
-    QTest::ignoreMessage(QtWarningMsg, "No files defined for game 'Missing file', ignored");
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Logiqx: Found `%1`", ":/malformed/bad_header.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: `%1` has no `name` field in its `header` entry", ":/malformed/bad_header.dat"));
+
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Logiqx: Found `%1`", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `game` element in `%1` at line 8 has an empty or missing `name` attribute, entry ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `game` element in `%1` at line 11 has no valid `rom` fields, game ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `year` element in `%1` at line 15 has an invalid value, ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `rom` element in `%1` at line 19 has an empty or missing `name` attribute, ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `game` element in `%1` at line 18 has no valid `rom` fields, game ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `rom` element in `%1` at line 23 seems to be a duplicate entry, ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `game` element in `%1` at line 25 has no valid `rom` fields, game ignored", ":/malformed/bad_games.dat"));
+    QTest::ignoreMessage(QtWarningMsg, PATH2MSG("Logiqx: The `rom` element in `%1` at line 28 refers to file `%2`, which doesn't seem to exist", ":/malformed/bad_games.dat", ":/malformed/nothing.ext"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG("Logiqx: The `game` element in `%1` at line 27 has no valid `rom` fields, game ignored", ":/malformed/bad_games.dat"));
 
     const QStringList game_dirs { QStringLiteral(":/malformed") };
 
-
-    providers::SearchContext sctx;
-    providers::logiqx::LogiqxProvider provider;
-    provider
-        .load_with_config(game_dirs)
-        .findLists(sctx);
-
-    // TODO: C++17
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    std::tie(collections, games) = sctx
-        .finalize_lists()
-        .consume();
+    providers::SearchContext sctx(game_dirs);
+    providers::logiqx::LogiqxProvider().run(sctx);
+    auto [collections, games] = sctx.finalize(this);
 
     QCOMPARE(collections.size(), 1);
     QCOMPARE(collections.front()->name(), QStringLiteral("My Platform"));
@@ -114,23 +107,13 @@ void test_LogiqxProvider::malformed()
 
 void test_LogiqxProvider::simple()
 {
-    using Rx = QRegularExpression;
-    QTest::ignoreMessage(QtInfoMsg, Rx("Logiqx: Found `:.simple.something\\.dat`"));
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Logiqx: Found `%1`", ":/simple/something.dat"));
 
     const QStringList game_dirs { QStringLiteral(":/simple") };
 
-    providers::SearchContext sctx;
-    providers::logiqx::LogiqxProvider provider;
-    provider
-        .load_with_config(game_dirs)
-        .findLists(sctx);
-
-    // TODO: C++17
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    std::tie(collections, games) = sctx
-        .finalize_lists()
-        .consume();
+    providers::SearchContext sctx(game_dirs);
+    providers::logiqx::LogiqxProvider().run(sctx);
+    auto [collections, games] = sctx.finalize(this);
 
     QCOMPARE(collections.size(), 1);
     QCOMPARE(collections.front()->name(), QStringLiteral("My Platform"));
