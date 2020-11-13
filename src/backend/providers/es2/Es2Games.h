@@ -17,20 +17,19 @@
 
 #pragma once
 
-#include "providers/Provider.h"
+#include <QString>
+#include <vector>
+
+namespace model { class Game; }
+namespace providers { class SearchContext; }
+namespace providers { namespace es2 { struct SystemEntry; } }
 
 
 namespace providers {
 namespace es2 {
 
-class Es2Provider : public Provider {
-    Q_OBJECT
-
-public:
-    explicit Es2Provider(QObject* parent = nullptr);
-
-    Provider& run(SearchContext&) final;
-};
+std::vector<QString> read_mame_blacklists(const QString&);
+size_t find_games_for(const SystemEntry&, SearchContext&, const std::vector<QString>&);
 
 } // namespace es2
 } // namespace providers

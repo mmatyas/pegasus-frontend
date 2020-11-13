@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,29 +17,53 @@
 
 #include "Es2Provider.h"
 
+#include "LocaleUtils.h"
+#include "Log.h"
+#include "providers/es2/Es2Games.h"
+#include "providers/es2/Es2Metadata.h"
+#include "providers/es2/Es2Systems.h"
+
 
 namespace providers {
 namespace es2 {
 
-
 Es2Provider::Es2Provider(QObject* parent)
-    : Provider(QLatin1String("es2"), QStringLiteral("EmulationStation"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
-    , systems(this)
-    , metadata(this)
-{
-    connect(&systems, &SystemsParser::gameCountChanged,
-            this, &Es2Provider::gameCountChanged);
-}
+    : Provider(QLatin1String("es2"), QStringLiteral("EmulationStation"), parent)
+{}
 
-Provider& Es2Provider::findLists(SearchContext& sctx)
+Provider& Es2Provider::run(SearchContext& sctx)
 {
-    systems.find(sctx, m_collection_dirs);
-    return *this;
-}
+    // Find systems
+    const std::vector<SystemEntry> systems = find_systems(display_name());
+    if (systems.empty())
+        return *this;
+    Log::info(tr_log("%1: Found %2 systems").arg(display_name(), QString::number(systems.size())));
 
-Provider& Es2Provider::findStaticData(SearchContext& sctx)
-{
-    metadata.enhance(sctx, m_collection_dirs);
+    const float progress_step = 1.f / (systems.size() * 2);
+    float progress = 0.f;
+
+    // Load MAME blacklist, if exists
+    const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name());
+
+    // Find games
+    for (const SystemEntry& sysentry : systems) {
+        const size_t found_games = find_games_for(sysentry, sctx, mame_blacklist);
+        Log::info(tr_log("%1: System `%2` provided %3 games")
+            .arg(display_name(), sysentry.name, QString::number(found_games)));
+
+        progress += progress_step;
+        emit progressChanged(progress);
+    }
+
+    // Find assets
+    const Metadata metahelper(display_name());
+    for (const SystemEntry& sysentry : systems) {
+        metahelper.find_metadata_for(sysentry, sctx);
+
+        progress += progress_step;
+        emit progressChanged(progress);
+    }
+
     return *this;
 }
 

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,33 +17,24 @@
 
 #pragma once
 
-#include "providers/Provider.h"
-#include "utils/HashMap.h"
-
-#include <QObject>
-#include <QXmlStreamReader>
+#include <QString>
+#include <vector>
 
 
 namespace providers {
 namespace es2 {
 
-class SystemsParser : public QObject {
-    Q_OBJECT
-    Q_DISABLE_COPY(SystemsParser)
-
-public:
-    SystemsParser(QObject* parent);
-
-    void find(providers::SearchContext&, HashMap<QString, QString>& collection_dirs);
-
-signals:
-    void gameCountChanged(int count);
-
-private:
-    void read_systems_file(QXmlStreamReader&,
-                           providers::SearchContext&,
-                           HashMap<QString, QString>&);
+struct SystemEntry {
+    QString name;
+    QString shortname;
+    QString path;
+    QString extensions;
+    QString platforms;
+    QString launch_cmd;
 };
+
+
+std::vector<SystemEntry> find_systems(const QString&);
 
 } // namespace es2
 } // namespace providers

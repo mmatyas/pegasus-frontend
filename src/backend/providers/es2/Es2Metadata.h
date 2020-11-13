@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,40 +17,40 @@
 
 #pragma once
 
-#include "providers/Provider.h"
 #include "utils/HashMap.h"
+#include "types/AssetType.h"
 
-#include <QObject>
+#include <QString>
 #include <QRegularExpression>
-#include <QXmlStreamReader>
+
+namespace providers { class SearchContext; }
+namespace model { class GameFile; }
+class QDir;
+class QXmlStreamReader;
 
 
 namespace providers {
 namespace es2 {
 
-enum class MetaTypes : unsigned char;
+struct SystemEntry;
+enum class MetaType : unsigned char;
 
-class MetadataParser : public QObject {
-    Q_OBJECT
+class Metadata {
 
 public:
-    MetadataParser(QObject* parent);
-    void enhance(providers::SearchContext& sctx,
-                 const HashMap<QString, QString>& collection_dirs);
+    explicit Metadata(QString);
+    void find_metadata_for(const SystemEntry&, const SearchContext&) const;
 
 private:
-    const HashMap<QString, MetaTypes> m_key_types;
+    const QString m_log_tag;
+    const HashMap<QString, MetaType> m_key_types;
     const QString m_date_format;
     const QRegularExpression m_players_regex;
+    const std::vector<std::pair<MetaType, AssetType>> m_asset_type_map;
 
-    void parseGamelistFile(QXmlStreamReader&,
-                           providers::SearchContext&,
-                           const QString&) const;
-    void parseGameEntry(QXmlStreamReader&,
-                        providers::SearchContext&,
-                        const QString&) const;
-    void applyMetadata(model::Game&,
-                       HashMap<MetaTypes, QString, EnumHash>&) const;
+    void process_gamelist_xml(const QDir&, QXmlStreamReader&, const SearchContext&) const;
+    HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
+    void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&) const;
 };
 
 } // namespace es2
