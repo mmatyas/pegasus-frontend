@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,12 +22,16 @@
 
 
 namespace providers {
-Provider::Provider(QLatin1String codename, QString name, uint8_t flags, QObject* parent)
+Provider::Provider(QLatin1String codename, QString display_name, uint8_t flags, QObject* parent)
     : QObject(parent)
     , m_codename(std::move(codename))
-    , m_provider_name(std::move(name))
-    , m_provider_flags(flags)
+    , m_display_name(std::move(display_name))
+    , m_flags(flags)
     , m_enabled(true)
+{}
+
+Provider::Provider(QLatin1String codename, QString display_name, QObject* parent)
+    : Provider(std::move(codename), std::move(display_name), PROVIDER_FLAG_NONE, parent)
 {}
 
 Provider::~Provider() = default;

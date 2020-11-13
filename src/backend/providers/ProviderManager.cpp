@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,15 +19,11 @@
 
 #include "AppSettings.h"
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "Provider.h"
 #include "SearchContext.h"
-#include "model/gaming/Collection.h"
-#include "model/gaming/Game.h"
-#include "utils/HashMap.h"
-#include "utils/StdHelpers.h"
 
-#include <QDebug>
 #include <QtConcurrent/QtConcurrent>
-#include <unordered_set>
 
 using ProviderPtr = providers::Provider*;
 
@@ -42,144 +38,100 @@ std::vector<ProviderPtr> enabled_providers()
     }
     return out;
 }
-
-void postprocess_list_results(providers::SearchContext& sctx)
-{
-    QElapsedTimer timer;
-    timer.start();
-
-    sctx.finalize_lists();
-
-    qInfo().noquote() << tr_log("Game list post-processing took %1ms").arg(timer.elapsed());
-}
-
-void run_list_providers(providers::SearchContext& ctx, const std::vector<ProviderPtr>& providers)
-{
-    QElapsedTimer timer;
-    timer.start();
-
-    for (const ProviderPtr& ptr : providers) {
-        if (!(ptr->flags() & providers::PROVIDES_GAMES))
-            continue;
-
-        ptr->findLists(ctx);
-        qInfo().noquote() << tr_log("%1: finished game searching in %2ms")
-            .arg(ptr->name(), QString::number(timer.restart()));
-    }
-}
-
-void run_asset_providers(providers::SearchContext& sctx, const std::vector<ProviderPtr>& providers)
-{
-    QElapsedTimer timer;
-    timer.start();
-    for (const auto& provider : providers) {
-        if (!(provider->flags() & providers::PROVIDES_ASSETS))
-            continue;
-
-        provider->findStaticData(sctx);
-        qInfo().noquote() << tr_log("%1: finished asset searching in %2ms")
-            .arg(provider->name(), QString::number(timer.restart()));
-    }
-}
-
-HashMap<QString, model::GameFile*> build_path_map(const QVector<model::Game*>& games)
-{
-    // prepare
-    size_t gamefile_cnt = 0; // TODO: map-reduce
-    for (const model::Game* const q_game : games)
-        gamefile_cnt += q_game->filesConst().size();
-
-    // build
-    HashMap<QString, model::GameFile*> result;
-    result.reserve(gamefile_cnt);
-    for (const model::Game* const q_game : games) {
-        for (model::GameFile* const q_gamefile : q_game->filesConst()) {
-            // NOTE: canonical file path is empty for Android apps
-            QString path = q_gamefile->fileinfo().canonicalFilePath();
-            if (Q_LIKELY(!path.isEmpty()))
-                result.emplace(std::move(path), q_gamefile);
-        }
-    }
-    return result;
-}
-
-std::tuple<QVector<model::Collection*>, QVector<model::Game*>>
-prepare_output(providers::SearchContext& sctx, QThread* const target_thread)
-{
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    std::tie(collections, games) = sctx.consume();
-
-    for (model::Collection* const coll : qAsConst(collections))
-        coll->moveToThread(target_thread);
-    for (model::Game* const game : qAsConst(games))
-        game->moveToThread(target_thread);
-
-    return std::make_tuple(std::move(collections), std::move(games));
-}
 } // namespace
 
 
 ProviderManager::ProviderManager(QObject* parent)
     : QObject(parent)
+    , m_progress_finished(0.f)
+    , m_progress_provider_weight(1.f)
+    , m_target_collection_list(nullptr)
+    , m_target_game_list(nullptr)
 {
     for (const auto& provider : AppSettings::providers) {
-        connect(provider.get(), &providers::Provider::gameCountChanged,
-                this, &ProviderManager::gameCountChanged);
+        connect(provider.get(), &providers::Provider::progressChanged,
+                this, &ProviderManager::onProviderProgressChanged);
     }
 }
 
-void ProviderManager::startStaticSearch(
+void ProviderManager::run(
     QVector<model::Collection*>& out_collections,
     QVector<model::Game*>& out_games)
 {
     Q_ASSERT(!m_future.isRunning());
 
-    m_future = QtConcurrent::run([this, &out_collections, &out_games]{
-        providers::SearchContext ctx;
+    m_target_collection_list = &out_collections;
+    m_target_game_list = &out_games;
 
-        QElapsedTimer timer;
-        timer.start();
+
+    m_future = QtConcurrent::run([this]{
+        providers::SearchContext sctx;
+        sctx.enable_network();
+
+
+        QElapsedTimer run_timer;
+        run_timer.start();
 
         const std::vector<ProviderPtr> providers = enabled_providers();
-        for (const auto& provider : providers)
-            provider->load();
+        m_progress_finished = 0.f;
+        m_progress_provider_weight = 1.f / providers.size();
 
-        run_list_providers(ctx, providers);
-        postprocess_list_results(ctx); // TODO: C++17
-        emit firstPhaseComplete(timer.restart());
+        for (size_t i = 0; i < providers.size(); i++) {
+            m_progress_finished = i * m_progress_provider_weight;
+            emit progressChanged(m_progress_finished);
 
-        run_asset_providers(ctx, providers);
-        emit secondPhaseComplete(timer.restart());
+            QElapsedTimer provider_timer;
+            provider_timer.start();
 
+            providers::Provider& provider = *providers[i];
+            provider.run(sctx);
+
+            Log::info(tr_log("%1: finished searching in %2ms")
+                .arg(provider.display_name(), QString::number(provider_timer.restart())));
+        }
+        m_progress_finished = 1.f;
+        emit progressChanged(m_progress_finished);
+
+
+        if (sctx.has_pending_downloads()) {
+            QElapsedTimer network_timer;
+            network_timer.start();
+
+            Log::info(tr_log("Waiting for online sources..."));
+
+            QEventLoop loop;
+            connect(&sctx, &providers::SearchContext::downloadCompleted,
+                    &loop, [&loop, &sctx]{ if (!sctx.has_pending_downloads()) loop.quit(); });
+            loop.exec();
+
+            Log::info(tr_log("Waiting for online sources took %1ms").arg(network_timer.elapsed()));
+        }
+
+
+        QElapsedTimer finalize_timer;
+        finalize_timer.start();
+
+        // TODO: C++17
         QVector<model::Collection*> collections;
         QVector<model::Game*> games;
-        std::tie(collections, games) = prepare_output(ctx, this->thread());
+        std::tie(collections, games) = sctx.finalize(parent());
 
-        std::swap(collections, out_collections);
-        std::swap(games, out_games);
-        emit staticDataReady();
+        std::swap(collections, *m_target_collection_list);
+        std::swap(games, *m_target_game_list);
+
+        Log::info(tr_log("Game list post-processing took %1ms").arg(finalize_timer.elapsed()));
+        emit finished();
     });
 }
 
-void ProviderManager::startDynamicSearch(const QVector<model::Game*>& games,
-                                         const QVector<model::Collection*>& collections)
+void ProviderManager::onProviderProgressChanged(float percent)
 {
-    Q_ASSERT(!m_future.isRunning());
-
-    m_future = QtConcurrent::run([this, &games, &collections]{
-        QElapsedTimer timer;
-        timer.start();
-
-        const HashMap<QString, model::GameFile*> path_map = build_path_map(games);
-        for (const auto& provider : AppSettings::providers)
-            provider->findDynamicData(collections, games, path_map);
-
-        emit dynamicDataReady(timer.elapsed());
-    });
+    Q_ASSERT(0.f <= percent && percent <= 1.f);
+    emit progressChanged(m_progress_finished + m_progress_provider_weight * percent);
 }
 
-void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_games)
+
+void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_games) const
 {
     if (m_future.isRunning())
         return;
@@ -188,7 +140,7 @@ void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_gam
         provider->onGameFavoriteChanged(all_games);
 }
 
-void ProviderManager::onGameLaunched(model::GameFile* const game)
+void ProviderManager::onGameLaunched(model::GameFile* const game) const
 {
     if (m_future.isRunning())
         return;
@@ -197,7 +149,7 @@ void ProviderManager::onGameLaunched(model::GameFile* const game)
         provider->onGameLaunched(game);
 }
 
-void ProviderManager::onGameFinished(model::GameFile* const game)
+void ProviderManager::onGameFinished(model::GameFile* const game) const
 {
     if (m_future.isRunning())
         return;

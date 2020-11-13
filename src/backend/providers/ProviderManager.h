@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,15 +17,12 @@
 
 #pragma once
 
-#include "Provider.h"
-
 #include <QObject>
 #include <QFuture>
-#include <memory>
-#include <vector>
 
 namespace model { class Collection; }
 namespace model { class Game; }
+namespace model { class GameFile; }
 
 
 class ProviderManager : public QObject {
@@ -34,22 +31,26 @@ class ProviderManager : public QObject {
 public:
     explicit ProviderManager(QObject* parent);
 
-    void startStaticSearch(QVector<model::Collection*>&, QVector<model::Game*>&);
-    void startDynamicSearch(const QVector<model::Game*>&, const QVector<model::Collection*>&);
+    void run(QVector<model::Collection*>&, QVector<model::Game*>&);
 
-    void onGameLaunched(model::GameFile* const);
-    void onGameFinished(model::GameFile* const);
-    void onGameFavoriteChanged(const QVector<model::Game*>&);
+    void onGameLaunched(model::GameFile* const) const;
+    void onGameFinished(model::GameFile* const) const;
+    void onGameFavoriteChanged(const QVector<model::Game*>&) const;
 
 signals:
-    void gameCountChanged(int);
-    void singleProviderFinished();
+    void progressChanged(float); // TODO: add displayed text
+    void finished();
 
-    void firstPhaseComplete(qint64);
-    void secondPhaseComplete(qint64);
-    void staticDataReady();
-    void dynamicDataReady(qint64);
+private slots:
+    void onProviderProgressChanged(float);
 
 private:
     QFuture<void> m_future;
+    float m_progress_finished;
+    float m_progress_provider_weight;
+
+    QVector<model::Collection*>* m_target_collection_list;
+    QVector<model::Game*>* m_target_game_list;
+
+    void finalize();
 };

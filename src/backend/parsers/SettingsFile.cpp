@@ -198,7 +198,7 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
             return p->codename() == provider_name;
         });
     if (provider_it == AppSettings::providers.cend()
-        || (*provider_it)->flags() & providers::INTERNAL)
+        || (*provider_it)->flags() & providers::PROVIDER_FLAG_INTERNAL)
     {
         log_unknown_key(lineno, key);
         return;
@@ -322,7 +322,7 @@ void SaveContext::print_providers(QTextStream& stream) const
     const QString TEMPLATE_KEY(QStringLiteral("%1.%2.%3:"));
 
     for (const auto& entry : AppSettings::providers) {
-        if (entry->flags() & providers::INTERNAL)
+        if (entry->flags() & providers::PROVIDER_FLAG_INTERNAL)
             continue;
 
         stream << LINE_TEMPLATE.arg(

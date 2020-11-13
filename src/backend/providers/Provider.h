@@ -18,7 +18,6 @@
 #pragma once
 
 #include "utils/HashMap.h"
-#include "utils/MoveOnly.h"
 
 #include <QFileInfo>
 #include <QString>
@@ -33,40 +32,22 @@ namespace providers { class SearchContext; }
 
 namespace providers {
 
-static constexpr uint8_t
-    INTERNAL = (1 << 0),
-    PROVIDES_GAMES = (1 << 1),
-    PROVIDES_ASSETS = (1 << 2),
-    PROVIDES_DYNDATA = (1 << 3);
+constexpr uint8_t PROVIDER_FLAG_NONE = 0;
+constexpr uint8_t PROVIDER_FLAG_INTERNAL = (1 << 0);
 
 
 class Provider : public QObject {
     Q_OBJECT
 
 public:
-    explicit Provider(QLatin1String codename, QString name, uint8_t flags, QObject* parent = nullptr);
+    explicit Provider(QLatin1String codename, QString display_name, uint8_t flags, QObject* parent = nullptr);
+    explicit Provider(QLatin1String codename, QString display_name, QObject* parent = nullptr);
     virtual ~Provider();
 
     bool enabled() const { return m_enabled; }
     Provider& setEnabled(bool);
 
-    virtual Provider& load() { return *this; }
-    virtual Provider& unload() { return *this; }
-
-    /// Initialization first stage:
-    /// Find all games and collections.
-    virtual Provider& findLists(SearchContext&) { return *this; }
-
-    /// Initialization second stage:
-    /// Enhance the previously found games and collections with metadata and assets.
-    virtual Provider& findStaticData(SearchContext&) { return *this; }
-
-    /// Initialization third stage:
-    /// Find data that may change during the runtime for all games
-    virtual Provider& findDynamicData(const QVector<model::Collection*>&,
-                                      const QVector<model::Game*>&,
-                                      const HashMap<QString, model::GameFile*>&) { return *this; }
-
+    virtual Provider& run(SearchContext&) { return *this; }
 
     // events
     virtual void onGameFavoriteChanged(const QVector<model::Game*>&) {}
@@ -75,20 +56,20 @@ public:
 
     // common
     const QLatin1String& codename() const { return m_codename; }
-    const QString& name() const { return m_provider_name; }
-    uint8_t flags() const { return m_provider_flags; }
+    const QString& display_name() const { return m_display_name; }
+    uint8_t flags() const { return m_flags; }
 
     Provider& setOption(const QString&, QString);
     Provider& setOption(const QString&, std::vector<QString>);
     const HashMap<QString, std::vector<QString>>& options() const { return m_options; }
 
 signals:
-    void gameCountChanged(int);
+    void progressChanged(float);
 
 private:
     const QLatin1String m_codename;
-    const QString m_provider_name;
-    const uint8_t m_provider_flags;
+    const QString m_display_name;
+    const uint8_t m_flags;
 
     bool m_enabled;
     HashMap<QString, std::vector<QString>> m_options;

@@ -35,7 +35,7 @@ void ProviderEntry::setEnabled(bool value) {
 }
 
 const QString& ProviderEntry::name() const {
-    return AppSettings::providers.at(m_idx)->name();
+    return AppSettings::providers.at(m_idx)->display_name();
 }
 
 
@@ -48,7 +48,7 @@ Providers::Providers(QObject* parent)
 {
     for (size_t i = 0; i < AppSettings::providers.size(); i++) {
         const auto& ptr = AppSettings::providers.at(i);
-        if ((ptr->flags() & providers::INTERNAL) == 0)
+        if ((ptr->flags() & providers::PROVIDER_FLAG_INTERNAL) == 0)
             m_providers.emplace_back(i);
     }
 }
