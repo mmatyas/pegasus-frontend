@@ -18,6 +18,8 @@
 #include "Api.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "model/gaming/GameFile.h"
 
 
 ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
@@ -40,14 +42,12 @@ ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
     connect(&m_internal.settings(), &model::Settings::providerReloadingRequested,
             this, &ApiObject::startScanning);
 
-    connect(&m_providerman, &ProviderManager::gameCountChanged,
-            &m_internal.meta(), &model::Meta::onGameCountUpdate);
-    connect(&m_providerman, &ProviderManager::firstPhaseComplete,
-            &m_internal.meta(), &model::Meta::onFirstPhaseCompleted);
-    connect(&m_providerman, &ProviderManager::secondPhaseComplete,
-            &m_internal.meta(), &model::Meta::onSecondPhaseCompleted);
-    connect(&m_providerman, &ProviderManager::staticDataReady,
-            this, &ApiObject::onStaticDataLoaded);
+    connect(&m_providerman, &ProviderManager::progressChanged,
+            &m_internal.meta(), &model::Meta::onSearchProgressChanged);
+    connect(&m_providerman, &ProviderManager::finished,
+            &m_internal.meta(), &model::Meta::onSearchFinished);
+    connect(&m_providerman, &ProviderManager::finished,
+            this, &ApiObject::onSearchFinished);
 
     onThemeChanged();
 }
@@ -60,15 +60,12 @@ void ApiObject::startScanning()
     m_collections->clear();
     m_allGames->clear();
 
-    m_providerman.startStaticSearch(m_providerman_collections, m_providerman_games);
+    m_providerman.run(m_providerman_collections, m_providerman_games);
 }
 
-void ApiObject::onStaticDataLoaded()
+void ApiObject::onSearchFinished()
 {
     for (model::Game* const game : qAsConst(m_providerman_games)) {
-        Q_ASSERT(game->parent() == nullptr);
-        game->setParent(this);
-
         connect(game, &model::Game::launchFileSelectorRequested,
                 this, &ApiObject::onGameFileSelectorRequested);
         connect(game, &model::Game::favoriteChanged,
@@ -78,10 +75,6 @@ void ApiObject::onStaticDataLoaded()
             connect(gamefile, &model::GameFile::launchRequested,
                     this, &ApiObject::onGameFileLaunchRequested);
         }
-    }
-    for (model::Collection* const coll : qAsConst(m_providerman_collections)) {
-        Q_ASSERT(coll->parent() == nullptr);
-        coll->setParent(this);
     }
 
     QVector<model::Game*> game_vec;
@@ -93,9 +86,7 @@ void ApiObject::onStaticDataLoaded()
     m_collections->append(std::move(coll_vec));
 
     m_internal.meta().onUiReady();
-    qInfo().noquote() << tr_log("%1 games found").arg(m_allGames->count());
-
-    m_providerman.startDynamicSearch(m_allGames->asList(), m_collections->asList());
+    Log::info(tr_log("%1 games found").arg(m_allGames->count()));
 }
 
 void ApiObject::onGameFileSelectorRequested()

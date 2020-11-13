@@ -58,10 +58,8 @@ public:
     int gameCount() const { return m_game_count; }
 
 public slots:
-    void onFirstPhaseCompleted(qint64 elapsedTime);
-    void onSecondPhaseCompleted(qint64 elapsedTime);
-
-    void onGameCountUpdate(int game_count);
+    void onSearchProgressChanged(float);
+    void onSearchFinished();
 
 signals:
     void loadingChanged();

@@ -73,7 +73,7 @@ public slots:
 
 private slots:
     // internal communication
-    void onStaticDataLoaded();
+    void onSearchFinished();
     void onGameFavoriteChanged();
     void onGameFileSelectorRequested();
     void onGameFileLaunchRequested();

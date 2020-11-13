@@ -18,9 +18,8 @@
 #include "Meta.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
-
-#include <QDebug>
 
 
 namespace model {
@@ -57,11 +56,13 @@ void Meta::startLoading()
 
 void Meta::clearQMLCache()
 {
-    qInfo().noquote() << tr_log("Reloading the frontend...");
+    Log::info(tr_log("Reloading the frontend..."));
     emit qmlClearCacheRequested();
 }
 
-void Meta::onFirstPhaseCompleted(qint64 elapsedTime)
+void Meta::onSearchProgressChanged(float) {}
+void Meta::onSearchFinished() {}
+/*void Meta::onFirstPhaseCompleted(qint64 elapsedTime)
 {
     qInfo().noquote() << tr_log("Games found in %1ms").arg(elapsedTime);
 
@@ -75,7 +76,7 @@ void Meta::onSecondPhaseCompleted(qint64 elapsedTime)
 
     m_loading_progress = 1.0f;
     emit loadingProgressChanged();
-}
+}*/
 
 void Meta::onUiReady()
 {
@@ -83,12 +84,12 @@ void Meta::onUiReady()
     emit loadingChanged();
 }
 
-void Meta::onGameCountUpdate(int game_count)
+/*void Meta::onGameCountUpdate(int game_count)
 {
     if (m_game_count != game_count) {
         m_game_count = game_count;
         emit gameCountChanged();
     }
-}
+}*/
 
 } // namespace model
