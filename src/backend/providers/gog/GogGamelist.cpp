@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 #include "GogGamelist.h"
 
-#include "GogCommon.h"
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
@@ -26,7 +26,6 @@
 #include "utils/CommandTokenizer.h"
 #include "utils/MoveOnly.h"
 
-#include <QDebug>
 #include <QDirIterator>
 #include <QRegularExpression>
 #include <QSettings>
@@ -34,6 +33,7 @@
 
 
 namespace {
+// TODO: C++20
 struct GogEntry {
     QString id;
     QString name;
@@ -51,6 +51,14 @@ struct GogEntry {
 
     MOVE_ONLY(GogEntry)
 };
+
+bool invalid_entry(const GogEntry& entry)
+{
+    return entry.name.isEmpty()
+        || entry.launch_cmd.isEmpty()
+        || entry.exe.isEmpty()
+        || !QFileInfo::exists(entry.exe);
+}
 
 std::vector<GogEntry> find_game_entries(const HashMap<QString, std::vector<QString>>& options)
 {
@@ -90,7 +98,7 @@ std::vector<GogEntry> find_game_entries(const HashMap<QString, std::vector<QStri
         return out;
     }();
 
-    constexpr auto dir_filters = QDir::Dirs | QDir::NoDotDot;
+    constexpr auto dir_filters = QDir::Dirs | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::FollowSymlinks;
     const QRegularExpression re_numeric(QStringLiteral("^\\d+$"));
 
@@ -134,34 +142,38 @@ std::vector<GogEntry> find_game_entries(const HashMap<QString, std::vector<QStri
     }
 #endif
 
+
+    entries.erase(std::remove_if(entries.begin(), entries.end(), invalid_entry), entries.end());
     return entries;
 }
 
-bool invalid_entry(const GogEntry& entry)
+HashMap<QString, model::Game*> register_game_entries(
+    const std::vector<GogEntry>& gogentries,
+    model::Collection& collection,
+    providers::SearchContext& sctx)
 {
-    return entry.name.isEmpty()
-        || entry.launch_cmd.isEmpty()
-        || entry.exe.isEmpty()
-        || !QFileInfo::exists(entry.exe);
-}
+    // NOTE: Games without known GOG ID will be present in SCTX, but not in this output map
+    HashMap<QString, model::Game*> gogid_map;
 
-void register_entries(const std::vector<GogEntry>& entries,
-                      providers::PendingCollection& collection,
-                      providers::SearchContext& sctx,
-                      HashMap<size_t, QString>& gogids)
-{
-    for (const GogEntry& entry : entries) {
-        QFileInfo finfo(entry.exe);
+    for (const GogEntry& gogentry : gogentries) {
+        QFileInfo finfo(gogentry.exe);
 
-        const providers::PendingGame& slot = sctx.add_or_create_game_from_file(std::move(finfo), collection);
-        model::Game& game = slot.inner();
-        game.setTitle(entry.name);
-        game.setLaunchCmd(::utils::escape_command(entry.launch_cmd));
-        game.setLaunchWorkdir(entry.workdir);
+        model::Game* game_ptr = sctx.game_by_filepath(finfo.canonicalFilePath());
+        if (!game_ptr) {
+            game_ptr = sctx.create_game_for(collection);
+            sctx.game_add_filepath(*game_ptr, finfo.canonicalFilePath());
+        }
 
-        if (!entry.id.isEmpty())
-            gogids.emplace(slot.id(), entry.id);
+        (*game_ptr)
+            .setTitle(gogentry.name)
+            .setLaunchCmd(::utils::escape_command(gogentry.launch_cmd))
+            .setLaunchWorkdir(gogentry.workdir);
+
+        if (!gogentry.id.isEmpty())
+            gogid_map.emplace(gogentry.id, game_ptr);
     }
+
+    return gogid_map;
 }
 } // namespace
 
@@ -169,30 +181,19 @@ void register_entries(const std::vector<GogEntry>& entries,
 namespace providers {
 namespace gog {
 
-Gamelist::Gamelist(QObject* parent)
-    : QObject(parent)
+Gamelist::Gamelist(QString log_tag)
+    : m_log_tag(std::move(log_tag))
 {}
 
-void Gamelist::find(providers::SearchContext& sctx,
-                    HashMap<size_t, QString>& gogids,
-                    const HashMap<QString, std::vector<QString>>& options)
+HashMap<QString, model::Game*> Gamelist::find(
+    const HashMap<QString, std::vector<QString>>& options,
+    model::Collection& collection,
+    providers::SearchContext& sctx) const
 {
-    static constexpr auto MSG_PREFIX = "GOG:";
+    const std::vector<GogEntry> gogentries = find_game_entries(options);
+    Log::info(tr_log("%1: %2 games found").arg(m_log_tag, QString::number(gogentries.size())));
 
-
-    std::vector<GogEntry> entries(find_game_entries(options));
-    entries.erase(std::remove_if(entries.begin(), entries.end(), invalid_entry), entries.end());
-
-    qInfo().noquote() << MSG_PREFIX << tr_log("%1 games found").arg(entries.size());
-    if (entries.empty())
-        return;
-
-    PendingCollection& coll = sctx.get_or_create_collection(gog_tag());
-
-    const size_t game_count_before = sctx.games().size();
-    register_entries(entries, coll, sctx, gogids);
-    if (game_count_before != sctx.games().size())
-        emit gameCountChanged(static_cast<int>(sctx.games().size()));
+    return register_game_entries(gogentries, collection, sctx);
 }
 
 } // namespace steam

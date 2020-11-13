@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,40 +17,25 @@
 
 #include "GogMetadata.h"
 
-#include "GogCommon.h"
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
 #include "providers/SearchContext.h"
+#include "utils/MoveOnly.h"
 
-#include <QEventLoop>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QTimer>
+#include <array>
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "GOG:";
-static constexpr auto JSON_CACHE_DIR = "gog";
 
-struct GogEntry {
-    QString gogid;
-    model::Game* game;
-
-    GogEntry(QString new_gogid, model::Game* game_ptr)
-        : gogid(std::move(new_gogid))
-        , game(game_ptr)
-    {
-        Q_ASSERT(!gogid.isEmpty());
-    }
-
-    MOVE_ONLY(GogEntry)
-};
-
-bool read_api_json(GogEntry& entry, const QJsonDocument& json)
+bool apply_api_json(const QString&, model::Game& game, const QJsonDocument& json)
 {
     if (json.isNull())
         return false;
@@ -59,8 +44,6 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
     if (json_root.isEmpty())
         return false;
 
-
-    model::Game& game = *entry.game;
 
     const auto desc = json_root[QLatin1String("description")].toObject();
     if (!desc.isEmpty()) {
@@ -72,7 +55,7 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
     game.setReleaseDate(QDate::fromString(date_raw, Qt::ISODate));
 
 
-    model::Assets& assets = game.assets();
+    model::Assets& assets = game.assetsMut();  // FIXME: update signals?
 
     const auto images = json_root[QLatin1String("images")].toObject();
     if (!images.isEmpty()) {
@@ -83,11 +66,11 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
         const QString logo = images[QLatin1String("icon")].toString();
 
         if (!box_front.isEmpty())
-            assets.add_url(AssetType::BOX_FRONT, prefix + box_front);
+            assets.add_uri(AssetType::BOX_FRONT, prefix + box_front);
         if (!background.isEmpty())
-            assets.add_url(AssetType::BACKGROUND, prefix + background);
+            assets.add_uri(AssetType::BACKGROUND, prefix + background);
         if (!logo.isEmpty())
-            assets.add_url(AssetType::LOGO, prefix + logo);
+            assets.add_uri(AssetType::LOGO, prefix + logo);
     }
 
     const auto screenshots = json_root[QLatin1String("screenshots")].toArray();
@@ -97,13 +80,13 @@ bool read_api_json(GogEntry& entry, const QJsonDocument& json)
             .replace(QStringLiteral("{formatter}"), QStringLiteral("ggvgm_2x"));
 
         if (!url.isEmpty())
-            assets.add_url(AssetType::SCREENSHOT, url);
+            assets.add_uri(AssetType::SCREENSHOT, url);
     }
 
     return true;
 }
 
-bool read_embed_json(GogEntry& entry, const QJsonDocument& json)
+bool apply_embed_json(const QString& gogid, model::Game& game, const QJsonDocument& json)
 {
     if (json.isNull())
         return false;
@@ -118,10 +101,8 @@ bool read_embed_json(GogEntry& entry, const QJsonDocument& json)
         const auto product = products_entry.toObject();
 
         const auto id = product[QLatin1String("id")].toInt();
-        if (id == 0 || QString::number(id) != entry.gogid)
+        if (id == 0 || QString::number(id) != gogid)
             continue;
-
-        model::Game& game = *entry.game;
 
         game.developerList().append(product[QLatin1String("developer")].toString());
         game.publisherList().append(product[QLatin1String("publisher")].toString());
@@ -133,191 +114,86 @@ bool read_embed_json(GogEntry& entry, const QJsonDocument& json)
 
     return true;
 }
-
-bool fill_from_cache(GogEntry& entry)
-{
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
-    const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
-    const QString entry_api = entry.gogid + providers::gog::json_api_suffix();
-    const QString entry_embed = entry.gogid + providers::gog::json_embed_suffix();
-
-    const auto json_api = providers::read_json_from_cache(message_prefix, cache_dir, entry_api);
-    const bool json_api_success = read_api_json(entry, json_api);
-    if (!json_api_success)
-        providers::delete_cached_json(message_prefix, cache_dir, entry_api);
-
-    const auto json_embed = providers::read_json_from_cache(message_prefix, cache_dir, entry_embed);
-    const bool json_embed_success = read_embed_json(entry, json_embed);
-    if (!json_embed_success)
-        providers::delete_cached_json(message_prefix, cache_dir, entry_embed);
-
-    return json_api_success && json_embed_success;
-}
-
-void download_metadata(std::vector<GogEntry>& entries, QNetworkAccessManager& netman)
-{
-    const int TIMEOUT_MS(5000);
-    const auto API_URL(QStringLiteral("https://api.gog.com/products/%1?expand=description,screenshots,videos"));
-    const auto EMBED_URL(QStringLiteral("https://embed.gog.com/games/ajax/filtered?mediaType=game&search=%1"));
-
-    const QString message_prefix = QLatin1String(MSG_PREFIX);
-    const QString cache_dir = QLatin1String(JSON_CACHE_DIR);
-
-
-    QVector<QNetworkReply*> listeners_api;
-    QVector<QNetworkReply*> listeners_embed;
-    int completed_transfers_api = 0;
-    int completed_transfers_embed = 0;
-
-    QTimer loop_timeout;
-    loop_timeout.setSingleShot(true);
-    loop_timeout.start(TIMEOUT_MS);
-
-    QEventLoop loop;
-    QObject::connect(&loop_timeout, &QTimer::timeout,
-                     &loop, &QEventLoop::quit);
-
-    // FIXME: Remove this huge duplication -- or rather, rethink the process
-
-    for (size_t i = 0; i < entries.size(); i++) {
-        const QString gog_id = entries[i].gogid;
-        model::Game* const game = entries[i].game;
-
-        const QUrl url(API_URL.arg(gog_id));
-        QNetworkRequest request(url);
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        QNetworkReply* reply = netman.get(request);
-
-        QObject::connect(reply, &QNetworkReply::finished,
-            [&, game, i, reply](){
-                completed_transfers_api++;
-                if (completed_transfers_api == listeners_api.count() && completed_transfers_embed == listeners_embed.count())
-                    loop.quit();
-
-                if (reply->error()) {
-                    qWarning().noquote() << MSG_PREFIX
-                        << tr_log("downloading metadata for `%1` failed (%2)")
-                           .arg(game->title(), reply->errorString());
-                }
-                else {
-                    const auto raw_data = reply->readAll();
-                    const bool json_success = read_api_json(entries[i], QJsonDocument::fromJson(raw_data));
-                    if (json_success) {
-                        const QString json_name = gog_id + providers::gog::json_api_suffix();
-                        providers::cache_json(message_prefix, cache_dir, json_name, raw_data);
-                    }
-                    else {
-                        qWarning().noquote() << MSG_PREFIX
-                            << tr_log("failed to parse the response of the server "
-                                      "for game `%1` - perhaps the GOG API changed?")
-                                      .arg(game->title());
-                    }
-                }
-
-                loop_timeout.start(TIMEOUT_MS); // restart the timer
-            });
-
-        listeners_api << reply;
-    }
-
-    for (size_t i = 0; i < entries.size(); i++) {
-        const QString gog_id = entries[i].gogid;
-        model::Game* const game = entries[i].game;
-
-        const QUrl url(EMBED_URL.arg(game->title())); // TODO: this seems to work, but shouldn't it be escaped?
-        QNetworkRequest request(url);
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        QNetworkReply* reply = netman.get(request);
-
-        QObject::connect(reply, &QNetworkReply::finished,
-            [&, i, reply](){
-                completed_transfers_embed++;
-                if (completed_transfers_api == listeners_api.count() && completed_transfers_embed == listeners_embed.count())
-                    loop.quit();
-
-                if (reply->error()) {
-                    qWarning().noquote() << MSG_PREFIX
-                        << tr_log("downloading secondary metadata for `%1` failed (%2)")
-                           .arg(game->title(), reply->errorString());
-                }
-                else {
-                    const auto raw_data = reply->readAll();
-                    const bool json_success = read_embed_json(entries[i], QJsonDocument::fromJson(raw_data));
-                    if (json_success) {
-                        const QString json_name = gog_id + providers::gog::json_embed_suffix();
-                        providers::cache_json(message_prefix, cache_dir, json_name, raw_data);
-                    }
-                    else {
-                        qWarning().noquote() << MSG_PREFIX
-                            << tr_log("failed to parse the response of the server "
-                                      "for game `%1` - perhaps the GOG API changed?")
-                                      .arg(game->title());
-                    }
-                }
-
-                loop_timeout.start(TIMEOUT_MS); // restart the timer
-            });
-
-        listeners_embed << reply;
-    }
-
-    loop.exec();
-
-
-    for (auto& listener : listeners_api) {
-        if (!listener->isFinished())
-            listener->abort();
-
-        listener->deleteLater();
-        listener = nullptr;
-    }
-    for (auto& listener : listeners_embed) {
-        if (!listener->isFinished())
-            listener->abort();
-
-        listener->deleteLater();
-        listener = nullptr;
-    }
-}
 } // namespace
 
 
 namespace providers {
 namespace gog {
 
-Metadata::Metadata(QObject* parent)
-    : QObject(parent)
+Metadata::Metadata(QString log_tag)
+    : m_log_tag(std::move(log_tag))
+    , m_json_cache_dir(QStringLiteral("gog"))
+    , m_json_api_suffix(QStringLiteral("_api"))
+    , m_json_embed_suffix(QStringLiteral("_embed"))
 {}
 
-void Metadata::enhance(providers::SearchContext& sctx, HashMap<size_t, QString>& gogid_map)
+bool Metadata::fill_from_cache(const QString& gogid, model::Game& game) const
 {
-    const QString GOG_TAG(QStringLiteral("GOG"));
-    const auto slot = sctx.collections().find(GOG_TAG);
-    if (slot == sctx.collections().end())
+    const QString entry_api = gogid + m_json_api_suffix;
+    const QString entry_embed = gogid + m_json_embed_suffix;
+
+    const auto json_api = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, entry_api);
+    const bool json_api_success = apply_api_json(gogid, game, json_api);
+    if (!json_api_success)
+        providers::delete_cached_json(m_log_tag, m_json_cache_dir, entry_api);
+
+    const auto json_embed = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, entry_embed);
+    const bool json_embed_success = apply_embed_json(gogid, game, json_embed);
+    if (!json_embed_success)
+        providers::delete_cached_json(m_log_tag, m_json_cache_dir, entry_embed);
+
+    return json_api_success && json_embed_success;
+}
+
+void Metadata::fill_from_network(const QString& gogid, model::Game& game, SearchContext& sctx) const
+{
+    const QString api_url_str = QStringLiteral("https://api.gog.com/products/%1?expand=description,screenshots,videos").arg(gogid);
+    const QString embed_url_str = QStringLiteral("https://embed.gog.com/games/ajax/filtered?mediaType=game&search=%1").arg(gogid);
+    const QUrl api_url(api_url_str, QUrl::StrictMode);
+    const QUrl embed_url(embed_url_str, QUrl::StrictMode);
+    Q_ASSERT(api_url.isValid());
+    Q_ASSERT(embed_url.isValid());
+    if (Q_UNLIKELY(!api_url.isValid() || !embed_url.isValid()))
         return;
 
-    const PendingCollection& coll = slot->second;
+    // TODO: C++17
+    using JsonCallback = std::function<bool(const QString&, model::Game&, const QJsonDocument&)>;
+    const std::array<std::tuple<QUrl, QString, JsonCallback>, 2> requests {
+        std::make_tuple(api_url, m_json_api_suffix, apply_api_json),
+        std::make_tuple(embed_url, m_json_embed_suffix, apply_embed_json),
+    };
 
-    std::vector<GogEntry> entries;
+    // TODO: C++17
+    model::Game* const game_ptr = &game;
+    QString log_tag = m_log_tag;
+    QString json_cache_dir = m_json_cache_dir;
+    for (const auto& triplet : requests) {
+        const QString json_suffix = std::get<1>(triplet);
+        const JsonCallback& json_callback = std::get<2>(triplet);
+        sctx.schedule_download(std::get<0>(triplet), [log_tag, json_cache_dir, gogid, game_ptr, json_suffix, json_callback](QNetworkReply* const reply){
+            if (reply->error()) {
+                Log::warning(tr_log("%1: Downloading metadata for `%2` failed: %3")
+                    .arg(log_tag, game_ptr->title(), reply->errorString()));
+                return;
+            }
 
-    for (size_t const game_id : coll.game_ids()) {
-        if (Q_LIKELY(gogid_map.count(game_id)))
-            entries.emplace_back(gogid_map.at(game_id), sctx.games().at(game_id).ptr());
+            const QByteArray raw_data = reply->readAll();
+            const QJsonDocument json = QJsonDocument::fromJson(raw_data);
+            if (json.isNull()) {
+                Log::warning(tr_log(
+                       "%1: Failed to parse the response of the server for game '%2', "
+                       "either it's no longer available from the GOG Store or the GOG API has changed"
+                   ).arg(log_tag, game_ptr->title()));
+                return;
+            }
+
+            const bool success = json_callback(gogid, *game_ptr, json);
+            if (success) {
+                const QString json_name = gogid + json_suffix;
+                providers::cache_json(log_tag, json_cache_dir, json_name, json.toJson(QJsonDocument::Compact));
+            }
+        });
     }
-
-    // try to fill using cached jsons
-
-    const auto del_from = std::remove_if(entries.begin(), entries.end(),
-        [](GogEntry& entry){ return fill_from_cache(entry); });// ie. remove if cached
-    entries.erase(del_from, entries.end());
-
-    if (entries.empty())
-        return;
-
-    // try to fill from network
-
-    QNetworkAccessManager netman; // TODO: move NAM to global
-    download_metadata(entries, netman);
 }
 
 } // namespace gog

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,7 @@
 
 #pragma once
 
-#include "GogGamelist.h"
-#include "GogMetadata.h"
 #include "providers/Provider.h"
-#include "utils/HashMap.h"
 
 
 namespace providers {
@@ -32,14 +29,7 @@ class GogProvider : public Provider {
 public:
     explicit GogProvider(QObject* parent = nullptr);
 
-    Provider& findLists(SearchContext&) final;
-    Provider& findStaticData(SearchContext&) final;
-
-private:
-    HashMap<size_t, QString> m_gogids;
-
-    Gamelist gamelist;
-    Metadata metadata;
+    Provider& run(SearchContext&) final;
 };
 
 } // namespace gog

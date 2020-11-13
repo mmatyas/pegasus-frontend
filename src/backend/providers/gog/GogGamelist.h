@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,26 +17,28 @@
 
 #pragma once
 
-#include "providers/Provider.h"
 #include "utils/HashMap.h"
 
-#include <QObject>
+#include <QString>
+#include <vector>
+
+namespace model { class Collection; }
+namespace model { class Game; }
+namespace providers { class SearchContext; }
 
 
 namespace providers {
 namespace gog {
 
-class Gamelist : public QObject {
-    Q_OBJECT
-
+class Gamelist {
 public:
-    explicit Gamelist(QObject* parent);
+    explicit Gamelist(QString);
 
-    void find(providers::SearchContext&, HashMap<size_t, QString>&,
-              const HashMap<QString, std::vector<QString>>&);
+    using OptionsMap = HashMap<QString, std::vector<QString>>;
+    HashMap<QString, model::Game*> find(const OptionsMap&, model::Collection&, SearchContext&) const;
 
-signals:
-    void gameCountChanged(int count);
+private:
+    const QString m_log_tag;
 };
 
 } // namespace gog

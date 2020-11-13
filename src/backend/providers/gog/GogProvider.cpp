@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,30 +17,77 @@
 
 #include "GogProvider.h"
 
+#include "LocaleUtils.h"
+#include "Log.h"
+#include "GogGamelist.h"
+#include "GogMetadata.h"
+#include "providers/SearchContext.h"
+
+#include <QSslSocket>
+
+
+namespace {
+void fill_metadata_from_cache(HashMap<QString, model::Game*>& gogid_game_map, const providers::gog::Metadata& metahelper)
+{
+    std::vector<QString> found_gogids;
+    found_gogids.reserve(gogid_game_map.size());
+
+    // TODO: C++17
+    for (const auto& entry : gogid_game_map) {
+        const QString& gogid = entry.first;
+        model::Game& game = *entry.second;
+
+        const bool found = metahelper.fill_from_cache(gogid, game);
+        if (found)
+            found_gogids.emplace_back(gogid);
+    }
+
+    for (const QString& gogid : found_gogids)
+        gogid_game_map.erase(gogid);
+}
+
+void fill_metadata_from_network(
+    const HashMap<QString, model::Game*>& gogid_game_map,
+    const providers::gog::Metadata& metahelper,
+    providers::SearchContext& sctx)
+{
+    if (gogid_game_map.empty())
+        return;
+
+    if (!sctx.has_network())
+        return;
+
+    // TODO: C++17
+    for (const auto& entry : gogid_game_map) {
+        const QString& gogid = entry.first;
+        model::Game* const game = entry.second;
+        metahelper.fill_from_network(gogid, *game, sctx);
+    }
+}
+} // namespace
+
 
 namespace providers {
 namespace gog {
 
 GogProvider::GogProvider(QObject* parent)
-    : Provider(QLatin1String("gog"), QStringLiteral("GOG"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
-    , gamelist(this)
-    , metadata(this)
+    : Provider(QLatin1String("gog"), QStringLiteral("GOG"), parent)
 {
     setEnabled(false); // issue #464
-
-    connect(&gamelist, &Gamelist::gameCountChanged,
-            this, &GogProvider::gameCountChanged);
 }
 
-Provider& GogProvider::findLists(SearchContext& sctx)
+Provider& GogProvider::run(SearchContext& sctx)
 {
-    gamelist.find(sctx, m_gogids, options());
-    return *this;
-}
+    model::Collection& collection = *sctx.get_or_create_collection(QStringLiteral("GOG"));
 
-Provider& GogProvider::findStaticData(SearchContext& sctx)
-{
-    metadata.enhance(sctx, m_gogids);
+    HashMap<QString, model::Game*> gogid_game_map = Gamelist(display_name()).find(options(), collection, sctx);
+    if (gogid_game_map.empty())
+        return *this;
+
+    const Metadata metahelper(display_name());
+    fill_metadata_from_cache(gogid_game_map, metahelper);
+    fill_metadata_from_network(gogid_game_map, metahelper, sctx);
+
     return *this;
 }
 
