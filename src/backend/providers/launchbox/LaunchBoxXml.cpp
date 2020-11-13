@@ -15,22 +15,22 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "LaunchBoxXml.h"
 
-#include "providers/Provider.h"
+#include "LocaleUtils.h"
+
+#include <QXmlStreamReader>
 
 
 namespace providers {
 namespace launchbox {
 
-class LaunchboxProvider : public Provider {
-    Q_OBJECT
-
-public:
-    explicit LaunchboxProvider(QObject* parent = nullptr);
-
-    Provider& run(providers::SearchContext&) final;
-};
+void verify_root_node(QXmlStreamReader& xml)
+{
+    const bool valid = xml.readNextStartElement() && xml.name() == QLatin1String("LaunchBox");
+    if (!valid)
+        xml.raiseError(tr_log("The file does not start with a `<LaunchBox>` root node, file ignored"));
+}
 
 } // namespace launchbox
 } // namespace providers

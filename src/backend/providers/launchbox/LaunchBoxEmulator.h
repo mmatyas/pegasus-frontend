@@ -17,19 +17,23 @@
 
 #pragma once
 
-#include "providers/Provider.h"
+#include <QString>
+#include <vector>
 
 
 namespace providers {
 namespace launchbox {
 
-class LaunchboxProvider : public Provider {
-    Q_OBJECT
+struct EmulatorPlatform {
+    QString name;
+    QString cmd_params;
+};
 
-public:
-    explicit LaunchboxProvider(QObject* parent = nullptr);
-
-    Provider& run(providers::SearchContext&) final;
+struct Emulator {
+    QString name;
+    QString app_path;
+    QString default_cmd_params;
+    std::vector<EmulatorPlatform> platforms;
 };
 
 } // namespace launchbox

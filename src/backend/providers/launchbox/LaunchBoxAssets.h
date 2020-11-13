@@ -17,19 +17,34 @@
 
 #pragma once
 
-#include "providers/Provider.h"
+#include "utils/HashMap.h"
+
+#include <QString>
+#include <QRegularExpression>
+#include <vector>
+
+namespace model { class Game; }
+enum class AssetType : unsigned char;
+class QString;
 
 
 namespace providers {
 namespace launchbox {
 
-class LaunchboxProvider : public Provider {
-    Q_OBJECT
-
+class Assets {
 public:
-    explicit LaunchboxProvider(QObject* parent = nullptr);
+    explicit Assets(QString, QString);
 
-    Provider& run(providers::SearchContext&) final;
+    void find_assets_for(const QString&, const std::vector<model::Game*>&) const;
+
+private:
+    const QString m_log_tag;
+    const QString m_lb_root_path;
+
+    const std::vector<std::pair<QString, AssetType>> m_dir_list;
+    const QRegularExpression rx_number_suffix;
+
+    void find_assets_in(const QString&, const AssetType, const HashMap<QString, model::Game*>&) const;
 };
 
 } // namespace launchbox

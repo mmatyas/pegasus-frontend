@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,15 +17,42 @@
 
 #pragma once
 
-#include "LaunchBoxCommon.h"
+#include "utils/HashMap.h"
+
+#include <QString>
+#include <QDir>
+
+class QXmlStreamReader;
 
 
 namespace providers {
 namespace launchbox {
-namespace emulators_xml {
 
-HashMap<EmulatorId, Emulator> read(const QString& lb_dir);
+enum class EmulatorField : unsigned char;
+enum class PlatformField : unsigned char;
+struct Emulator;
 
-} // namespace emulators_xml
+class EmulatorsXml {
+public:
+    explicit EmulatorsXml(QString, QDir);
+
+    HashMap<QString, Emulator> find() const;
+
+private:
+    const QString m_log_tag;
+    const QDir m_lb_root;
+
+    const HashMap<QString, EmulatorField> m_emulator_keys;
+    const HashMap<QString, PlatformField> m_platform_keys;
+
+    void log_xml_warning(const QString&, const size_t, const QString&) const;
+    HashMap<EmulatorField, QString> read_emulator_node(QXmlStreamReader&) const;
+    HashMap<PlatformField, QString> read_platform_node(QXmlStreamReader&) const;
+    bool emulator_fields_valid(const QString&, const size_t, const HashMap<EmulatorField, QString>&) const;
+    bool platform_fields_valid(const QString&, const size_t, const HashMap<PlatformField, QString>&) const;
+};
+
+HashMap<QString, Emulator> find_emulators(const QString&, const QDir&);
+
 } // namespace launchbox
 } // namespace providers

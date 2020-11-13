@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,21 +17,42 @@
 
 #pragma once
 
-#include "LaunchBoxCommon.h"
-#include "providers/Provider.h"
+#include "utils/HashMap.h"
+
+#include <QDir>
+#include <QString>
+
+namespace model { class Collection; }
+namespace model { class Game; }
+namespace providers { class SearchContext; }
+class QXmlStreamReader;
 
 
 namespace providers {
 namespace launchbox {
-namespace gamelist_xml {
 
-void read(
-    const Literals& literals,
-    const QString& lb_dir,
-    const QString& platform_name,
-    const HashMap<EmulatorId, Emulator>& emulators,
-    providers::SearchContext& sctx);
+enum class GameField : unsigned char;
+enum class AppField : unsigned char;
+struct Emulator;
 
-} // namespace gamelist_xml
+class GamelistXml {
+public:
+    explicit GamelistXml(QString, QDir);
+
+    std::vector<model::Game*> find_games_for(const QString&, const HashMap<QString, Emulator>&, SearchContext&) const;
+
+private:
+    const QString m_log_tag;
+    const QDir m_lb_root;
+    const HashMap<QString, GameField> m_game_keys;
+    const HashMap<QString, AppField> m_app_keys;
+
+    void log_xml_warning(const QString&, const size_t, const QString&) const;
+    HashMap<GameField, QString> read_game_node(QXmlStreamReader&) const;
+    HashMap<AppField, QString> read_app_node(QXmlStreamReader&) const;
+    bool game_fields_valid(const QString&, const size_t, const HashMap<GameField, QString>&, const HashMap<QString, Emulator>&) const;
+    bool app_fields_valid(const QString&, const size_t, const HashMap<AppField, QString>&) const;
+};
+
 } // namespace launchbox
 } // namespace providers

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,33 +17,31 @@
 
 #include "LaunchBoxPlatformsXml.h"
 
-#include "LaunchBoxCommon.h"
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "providers/launchbox/LaunchBoxXml.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QXmlStreamReader>
 
 
 namespace providers {
 namespace launchbox {
-namespace platforms_xml {
 
-std::vector<QString> read(const QString& lb_dir)
+std::vector<QString> find_platforms(const QString& log_tag, const QDir& lb_dir)
 {
-    const QLatin1String xml_rel_path("Data/Platforms.xml");
-    const QString xml_path = lb_dir + xml_rel_path;
+    const QString xml_path = lb_dir.filePath(QStringLiteral("Data/Platforms.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`")
-            .arg(QDir::toNativeSeparators(xml_rel_path));
+        Log::error(tr_log("%1: Could not open `%2`").arg(log_tag, QDir::toNativeSeparators(xml_path)));
         return {};
     }
 
     std::vector<QString> out;
 
     QXmlStreamReader xml(&xml_file);
-    check_lb_root_node(xml, xml_rel_path);
+    verify_root_node(xml);
 
     while (xml.readNextStartElement() && !xml.hasError()) {
         if (xml.name() != QLatin1String("Platform")) {
@@ -62,11 +60,10 @@ std::vector<QString> read(const QString& lb_dir)
         }
     }
     if (xml.error())
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        Log::error(tr_log("%1: `%2`: %3").arg(log_tag, xml_path, xml.errorString()));
 
     return out;
 }
 
-} // namespace platforms_xml
 } // namespace launchbox
 } // namespace providers

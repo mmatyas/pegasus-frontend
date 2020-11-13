@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,103 +17,24 @@
 
 #include "LaunchBoxProvider.h"
 
-#include "LaunchBoxCommon.h"
-#include "LaunchBoxEmulatorsXml.h"
-#include "LaunchBoxGamelistXml.h"
-#include "LaunchBoxPlatformsXml.h"
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
-#include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
-
-#include <QDebug>
-#include <QDirIterator>
-#include <QRegularExpression>
-#include <QStringBuilder>
+#include "providers/launchbox/LaunchBoxAssets.h"
+#include "providers/launchbox/LaunchBoxEmulator.h"
+#include "providers/launchbox/LaunchBoxEmulatorsXml.h"
+#include "providers/launchbox/LaunchBoxGamelistXml.h"
+#include "providers/launchbox/LaunchBoxPlatformsXml.h"
 
 
 namespace {
-
-HashMap<QString, model::Game*>
-build_escaped_title_map(const providers::SearchContext& sctx, const providers::PendingCollection& collection)
-{
-    const QRegularExpression rx_invalid(QStringLiteral(R"([<>:"\/\\|?*'])"));
-    const QString underscore(QLatin1Char('_'));
-
-    HashMap<QString, model::Game*> out;
-    for (const size_t game_id : collection.game_ids()) {
-        model::Game* ptr = sctx.games().at(game_id).ptr();
-        QString title = ptr->title();
-        title.replace(rx_invalid, underscore);
-        out.emplace(std::move(title), ptr);
-    }
-
-    return out;
-}
-
-void find_assets_in(const QString& asset_dir,
-                    const AssetType asset_type,
-                    const bool has_num_suffix,
-                    const HashMap<QString, model::Game*>& title_to_game_map)
-{
-    // TODO: Optimize out `has_num_suffix`
-
-    constexpr auto files_only = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    constexpr auto recursive = QDirIterator::Subdirectories;
-
-    QDirIterator file_it(asset_dir, files_only, recursive);
-    while (file_it.hasNext()) {
-        file_it.next();
-
-        const QString basename = file_it.fileInfo().completeBaseName();
-        const QString game_title = has_num_suffix
-            ? basename.left(basename.length() - 3) // gamename "-xx" .ext
-            : basename;
-
-        const auto it = title_to_game_map.find(game_title);
-        if (it == title_to_game_map.cend())
-            continue;
-
-        model::Game& game = *it->second;
-        game.assets().add_file(asset_type, file_it.filePath());
-    }
-}
-
-void find_assets(const QString& lb_dir, const QString& platform_name,
-                 const std::vector<std::pair<QString, AssetType>>& assetdir_map,
-                 providers::SearchContext& sctx)
-{
-    const auto coll_it = sctx.collections().find(platform_name);
-    if (coll_it == sctx.collections().cend() || coll_it->second.game_ids().empty())
-        return;
-
-    const providers::PendingCollection& collection = coll_it->second;
-    const HashMap<QString, model::Game*> esctitle_to_game_map = build_escaped_title_map(sctx, collection);
-
-    const QString images_root = lb_dir % QLatin1String("Images/") % platform_name % QLatin1Char('/');
-    for (const auto& assetdir_pair : assetdir_map) {
-        const QString assetdir_path = images_root + assetdir_pair.first;
-        const AssetType assetdir_type = assetdir_pair.second;
-        find_assets_in(assetdir_path, assetdir_type, false, esctitle_to_game_map);
-        find_assets_in(assetdir_path, assetdir_type, true, esctitle_to_game_map);
-    }
-
-    const QString music_root = lb_dir % QLatin1String("Music/") % platform_name % QLatin1Char('/');
-    find_assets_in(music_root, AssetType::MUSIC, false, esctitle_to_game_map);
-
-    const QString video_root = lb_dir % QLatin1String("Videos/") % platform_name % QLatin1Char('/');
-    find_assets_in(video_root, AssetType::VIDEO, false, esctitle_to_game_map);
-    find_assets_in(video_root, AssetType::VIDEO, true, esctitle_to_game_map);
-}
-
 QString find_installation()
 {
     const QString possible_path = paths::homePath() + QStringLiteral("/LaunchBox/");
-    if (QFileInfo::exists(possible_path)) {
-        qInfo().noquote() << providers::launchbox::MSG_PREFIX
-            << tr_log("found directory: `%1`").arg(QDir::toNativeSeparators(possible_path));
+    if (QFileInfo::exists(possible_path))
         return possible_path;
-    }
+
     return {};
 }
 } // namespace
@@ -123,38 +44,48 @@ namespace providers {
 namespace launchbox {
 
 LaunchboxProvider::LaunchboxProvider(QObject* parent)
-    : Provider(QLatin1String("launchbox"), QStringLiteral("LaunchBox"), PROVIDES_GAMES, parent)
+    : Provider(QLatin1String("launchbox"), QStringLiteral("LaunchBox"), parent)
 {}
 
-Provider& LaunchboxProvider::findLists(providers::SearchContext& sctx)
+Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
 {
-    const QString lb_dir = [this]{
-        const auto option_it = options().find(QLatin1String("installdir"));
+    const QString lb_dir_path = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
             ? QDir::cleanPath(option_it->second.front()) + QLatin1Char('/')
             : find_installation();
     }();
-    if (lb_dir.isEmpty()) {
-        qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
+    if (lb_dir_path.isEmpty()) {
+        Log::info(tr_log("%1: No installation found").arg(display_name()));
         return *this;
     }
 
-    const std::vector<QString> platform_names = platforms_xml::read(lb_dir);
+    Log::info(tr_log("%1: Looking for installation at `%2`").arg(display_name(), QDir::toNativeSeparators(lb_dir_path)));
+    const QDir lb_dir(lb_dir_path);
+
+    const std::vector<QString> platform_names = find_platforms(display_name(), lb_dir);
     if (platform_names.empty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("no platforms found");
+        Log::warning(tr_log("%1: No platforms found").arg(display_name()));
         return *this;
     }
 
-    const HashMap<EmulatorId, Emulator> emulators = emulators_xml::read(lb_dir);
+    const HashMap<QString, Emulator> emulators = EmulatorsXml(display_name(), lb_dir).find();
     if (emulators.empty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("no emulator settings found");
+        Log::warning(tr_log("%1: No emulator settings found").arg(display_name()));
         return *this;
     }
 
-    const Literals literals;
+    const float progress_step = 1.f / platform_names.size();
+    float progress = 0.f;
+
+    const GamelistXml metahelper(display_name(), lb_dir);
+    const Assets assethelper(display_name(), lb_dir_path);
     for (const QString& platform_name : platform_names) {
-        gamelist_xml::read(literals, lb_dir, platform_name, emulators, sctx);
-        find_assets(lb_dir, platform_name, literals.assetdir_map, sctx);
+        const std::vector<model::Game*> games = metahelper.find_games_for(platform_name, emulators, sctx);
+        assethelper.find_assets_for(platform_name, games);
+
+        progress += progress_step;
+        emit progressChanged(progress);
     }
 
     return *this;

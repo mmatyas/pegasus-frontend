@@ -17,67 +17,94 @@
 
 #include <QtTest/QtTest>
 
+#include "Log.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxProvider.h"
+
+
+namespace {
+const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, const QString& path)
+{
+    const auto it = std::find_if(
+        list.cbegin(),
+        list.cend(),
+        [&path](const model::Game* const game){ return std::any_of(
+            game->filesConst().cbegin(),
+            game->filesConst().cend(),
+            [&path](const model::GameFile* gf){ return gf->fileinfo().canonicalFilePath() == path; });
+        });
+    return it != list.cend()
+        ? *it
+        : nullptr;
+}
+} // namespace
 
 
 class test_LaunchBoxProvider : public QObject {
     Q_OBJECT
 
 private slots:
+    void initTestCase() {
+        Log::init_qttest();
+    }
+
     void empty();
     void basic();
 };
 
 void test_LaunchBoxProvider::empty()
 {
-    QTest::ignoreMessage(QtWarningMsg, "LaunchBox: could not open `Data\\Platforms.xml`");
-    QTest::ignoreMessage(QtWarningMsg, "LaunchBox: no platforms found");
+    QTest::ignoreMessage(QtInfoMsg, "LaunchBox: Looking for installation at `:\\empty\\`");
+    QTest::ignoreMessage(QtWarningMsg, "LaunchBox: Could not open `:\\empty\\Data\\Platforms.xml`");
+    QTest::ignoreMessage(QtWarningMsg, "LaunchBox: No platforms found");
 
     providers::SearchContext sctx;
     providers::launchbox::LaunchboxProvider provider;
     provider
         .setOption(QStringLiteral("installdir"), QStringLiteral(":/empty"))
-        .load()
-        .findLists(sctx);
+        .run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
 
-    QVERIFY(sctx.games().empty());
-    QVERIFY(sctx.collections().empty());
+    QVERIFY(games.isEmpty());
+    QVERIFY(collections.isEmpty());
 }
 
 void test_LaunchBoxProvider::basic()
 {
+    QTest::ignoreMessage(QtInfoMsg, "LaunchBox: Looking for installation at `:\\basic\\LaunchBox\\`");
+
     providers::SearchContext sctx;
     providers::launchbox::LaunchboxProvider provider;
     provider
         .setOption(QStringLiteral("installdir"), QStringLiteral(":/basic/LaunchBox"))
-        .load()
-        .findLists(sctx);
-    sctx.finalize_lists();
+        .run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
 
 
-    QCOMPARE(static_cast<int>(sctx.collections().size()), 1);
-    const auto coll_it = sctx.collections().find(QStringLiteral("Nintendo Entertainment System"));
-    QVERIFY(coll_it != sctx.collections().cend());
+    QCOMPARE(collections.size(), 1);
+    const auto coll_it = std::find_if(
+        collections.cbegin(),
+        collections.cend(),
+        [](const model::Collection* const collection){ return collection->name() == QStringLiteral("Nintendo Entertainment System"); });
+    QVERIFY(coll_it != collections.cend());
 
-    const model::Collection& coll = coll_it->second.inner();
-    QCOMPARE(coll.name(), QStringLiteral("Nintendo Entertainment System"));
+    const model::Collection& coll = **coll_it;
 
 
-    QCOMPARE(static_cast<int>(sctx.entryid_to_gameid().size()), 2);
-    const auto file1_it = sctx.entryid_to_gameid().find(QStringLiteral(":/basic/LaunchBox/../game/Test Bros (JU) [!].zip"));
-    const auto file2_it = sctx.entryid_to_gameid().find(QStringLiteral(":/basic/LaunchBox/../game/Test Bros Something.zip"));
-    QVERIFY(file1_it != sctx.entryid_to_gameid().cend());
-    QVERIFY(file1_it->second == file2_it->second);
-    const size_t game_id = file1_it->second;
+    QCOMPARE(games.size(), 1);
+    const auto entry1_filepath = QStringLiteral(":/basic/LaunchBox/../game/Test Bros (JU) [!].zip");
+    const auto entry2_filepath = QStringLiteral(":/basic/LaunchBox/../game/Test Bros Something.zip");
+    const model::Game* const entry1_game_ptr = get_game_ptr_by_file_path(games, entry1_filepath);
+    const model::Game* const entry2_game_ptr = get_game_ptr_by_file_path(games, entry2_filepath);
+    QVERIFY(entry1_game_ptr != nullptr);
+    QVERIFY(entry2_game_ptr == entry1_game_ptr);
 
-    QCOMPARE(static_cast<int>(sctx.games().size()), 1);
-    const auto game_it = sctx.games().find(game_id);
-    QVERIFY(game_it != sctx.games().cend());
+    const model::Game& game = *entry1_game_ptr;
 
-    const model::Game& game = game_it->second.inner();
+
     QCOMPARE(game.title(), QStringLiteral("Super Mario Bros."));
     QCOMPARE(game.sortBy(), QStringLiteral("Super Mario Bros."));
     QCOMPARE(game.summary(), QStringLiteral("Some description here!"));
@@ -101,17 +128,17 @@ void test_LaunchBoxProvider::basic()
 
 
     QCOMPARE(coll.gamesConst().size(), 1);
-    QCOMPARE(coll.gamesConst().first(), game_it->second.ptr());
+    QCOMPARE(coll.gamesConst().first(), &game);
     QCOMPARE(game.collectionsConst().size(), 1);
-    QCOMPARE(game.collectionsConst().first(), coll_it->second.ptr());
+    QCOMPARE(game.collectionsConst().first(), &coll);
     QCOMPARE(game.filesConst().size(), 2);
 
 
     QCOMPARE(game.filesConst().first()->name(), QStringLiteral("Entry 1..."));
-    QCOMPARE(game.filesConst().first()->path(), file1_it->first);
+    QCOMPARE(game.filesConst().first()->path(), entry1_filepath);
     // QCOMPARE(game.filesConst().first()->playCount(), 5);
     QCOMPARE(game.filesConst().last()->name(), QStringLiteral("Entry 2..."));
-    QCOMPARE(game.filesConst().last()->path(), file2_it->first);
+    QCOMPARE(game.filesConst().last()->path(), entry2_filepath);
     // QCOMPARE(game.filesConst().last()->playCount(), 10);
 }
 

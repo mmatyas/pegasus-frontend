@@ -17,20 +17,13 @@
 
 #pragma once
 
-#include "providers/Provider.h"
+class QXmlStreamReader;
 
 
 namespace providers {
 namespace launchbox {
 
-class LaunchboxProvider : public Provider {
-    Q_OBJECT
-
-public:
-    explicit LaunchboxProvider(QObject* parent = nullptr);
-
-    Provider& run(providers::SearchContext&) final;
-};
+void verify_root_node(QXmlStreamReader&);
 
 } // namespace launchbox
 } // namespace providers

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,8 +18,10 @@
 #include "LaunchBoxEmulatorsXml.h"
 
 #include "LocaleUtils.h"
+#include "Log.h"
+#include "providers/launchbox/LaunchBoxEmulator.h"
+#include "providers/launchbox/LaunchBoxXml.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 #include <QXmlStreamReader>
@@ -28,143 +30,253 @@
 namespace providers {
 namespace launchbox {
 
-void read_xml_strings(QXmlStreamReader& xml, const HashMap<QString, QString&>& slot_map)
+enum class EmulatorField : unsigned char {
+    ID,
+    NAME,
+    PATH,
+    PARAMS,
+};
+
+enum class PlatformField : unsigned char {
+    EMULATOR,
+    NAME,
+    PARAMS,
+};
+
+
+void apply_emulator_fields(const HashMap<EmulatorField, QString>& fields, Emulator& emu)
 {
-    while (xml.readNextStartElement()) {
-        const auto it = slot_map.find(xml.name().toString());
-        if (it == slot_map.cend()) {
-            xml.skipCurrentElement();
-            continue;
+    // TODO: C++17
+    for (const auto& pair : fields) {
+        switch (pair.first) {
+            case EmulatorField::NAME:
+                emu.name = pair.second;
+                break;
+            case EmulatorField::PATH:
+                emu.app_path = pair.second;
+                break;
+            case EmulatorField::PARAMS:
+                emu.default_cmd_params = pair.second;
+                break;
+            case EmulatorField::ID:
+                break;
         }
-        it->second = xml.readElementText().trimmed();
     }
 }
 
-bool read_emulator_entry(
-    QXmlStreamReader& xml,
-    const QString& lb_dir,
-    const QLatin1String& rel_path,
-    EmulatorId& out_id,
-    Emulator& out_emu)
+void apply_platform_fields(const HashMap<PlatformField, QString>& fields, EmulatorPlatform& emu)
 {
-    const HashMap<QString, QString&> slot_map {
-        { QLatin1String("ID"), out_id },
-        { QLatin1String("Title"), out_emu.name },
-        { QLatin1String("ApplicationPath"), out_emu.app_path },
-        { QLatin1String("CommandLine"), out_emu.default_cmd_params },
-    };
-    read_xml_strings(xml, slot_map);
-
-    if (out_id.isEmpty()) {
-        log_xml_warning(xml, rel_path, tr_log("empty emulator ID detected, entry ignored"));
-        return false;
+    // TODO: C++17
+    for (const auto& pair : fields) {
+        switch (pair.first) {
+            case PlatformField::NAME:
+                emu.name = pair.second;
+                break;
+            case PlatformField::PARAMS:
+                emu.cmd_params = pair.second;
+                break;
+            case PlatformField::EMULATOR:
+                break;
+        }
     }
-    if (out_emu.name.isEmpty()) {
-        log_xml_warning(xml, rel_path, tr_log("no emulator name found, entry ignored"));
-        return false;
-    }
-
-    const QFileInfo emu_finfo(lb_dir, out_emu.app_path);
-    QString can_path = emu_finfo.canonicalFilePath();
-    if (!can_path.isEmpty()) {
-        out_emu.app_path = std::move(can_path);
-    } else {
-        log_xml_warning(xml, rel_path,
-            tr_log("emulator application `%1` doesn't seem to exist, entry ignored")
-                .arg(QDir::toNativeSeparators(emu_finfo.absoluteFilePath())));
-        return false;
-    }
-
-    return true;
 }
 
-bool read_emu_platform_entry(
-    QXmlStreamReader& xml,
-    const QLatin1String& rel_path,
-    EmulatorId& out_id,
-    EmulatorPlatform& out_platform)
-{
-    const HashMap<QString, QString&> slot_map {
-        { QLatin1String("Emulator"), out_id },
-        { QLatin1String("Platform"), out_platform.name },
-        { QLatin1String("CommandLine"), out_platform.cmd_params },
-    };
-    read_xml_strings(xml, slot_map);
-
-    if (out_id.isEmpty()) {
-        log_xml_warning(xml, rel_path, tr_log("empty emulator ID detected, entry ignored"));
-        return false;
-    }
-    if (out_platform.name.isEmpty()) {
-        log_xml_warning(xml, rel_path, tr_log("no platform name found, entry ignored"));
-        return false;
-    }
-
-    return true;
-}
 } // namespace launchbox
 } // namespace providers
 
 
 namespace providers {
 namespace launchbox {
-namespace emulators_xml {
 
-HashMap<EmulatorId, Emulator> read(const QString& lb_dir)
+EmulatorsXml::EmulatorsXml(QString log_tag, QDir lb_root)
+    : m_log_tag(std::move(log_tag))
+    , m_lb_root(std::move(lb_root))
+    , m_emulator_keys {
+        { QStringLiteral("ID"), EmulatorField::ID },
+        { QStringLiteral("Title"), EmulatorField::NAME },
+        { QStringLiteral("ApplicationPath"), EmulatorField::PATH },
+        { QStringLiteral("CommandLine"), EmulatorField::PARAMS },
+    }
+    , m_platform_keys {
+        { QStringLiteral("Emulator"), PlatformField::EMULATOR },
+        { QStringLiteral("Platform"), PlatformField::NAME },
+        { QStringLiteral("CommandLine"), PlatformField::PARAMS },
+    }
+{}
+
+void EmulatorsXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
-    const QLatin1String xml_rel_path("Data/Emulators.xml");
-    const QString xml_path = lb_dir + xml_rel_path;
+    Log::warning(tr_log("%1: In `%2` at line %3: %4")
+        .arg(m_log_tag, QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
+}
+
+bool EmulatorsXml::platform_fields_valid(
+    const QString& xml_path,
+    const size_t xml_linenum,
+    const HashMap<PlatformField, QString>& fields) const
+{
+    const auto it_id = fields.find(PlatformField::EMULATOR);
+    if (it_id == fields.cend()) {
+        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator platform has no emulator ID field, entry ignored"));
+        return false;
+    }
+
+    const auto it_name = fields.find(PlatformField::NAME);
+    if (it_name == fields.cend()) {
+        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator platform has no name, entry ignored"));
+        return false;
+    }
+
+    return true;
+}
+
+bool EmulatorsXml::emulator_fields_valid(
+    const QString& xml_path,
+    const size_t xml_linenum,
+    const HashMap<EmulatorField, QString>& fields) const
+{
+    const auto it_id = fields.find(EmulatorField::ID);
+    if (it_id == fields.cend()) {
+        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator has no ID field, entry ignored"));
+        return false;
+    }
+
+    const auto it_name = fields.find(EmulatorField::NAME);
+    if (it_name == fields.cend()) {
+        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator has no name, entry ignored"));
+        return false;
+    }
+
+    const auto it_path = fields.find(EmulatorField::PATH);
+    if (it_path == fields.cend()) {
+        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator has no launchable executable, entry ignored"));
+        return false;
+    }
+
+    if (!QFileInfo::exists(it_path->second)) {
+        const QString display_path = QDir::toNativeSeparators(it_path->second);
+        log_xml_warning(xml_path, xml_linenum,
+            tr_log("Emulator executable `%1` doesn't seem to exist, entry ignored").arg(display_path));
+        return false;
+    }
+
+    return true;
+}
+
+HashMap<EmulatorField, QString> EmulatorsXml::read_emulator_node(QXmlStreamReader& xml) const
+{
+    HashMap<EmulatorField, QString> fields;
+
+    while (xml.readNextStartElement()) {
+        const auto it = m_emulator_keys.find(xml.name().toString());
+        if (it == m_emulator_keys.cend()) {
+            xml.skipCurrentElement();
+            continue;
+        }
+
+        QString contents = xml.readElementText().trimmed();
+        if (!contents.isEmpty())
+            fields.emplace(it->second, std::move(contents));
+    }
+
+
+    const auto it = fields.find(EmulatorField::PATH);
+    if (it != fields.cend())
+        it->second = QFileInfo(m_lb_root, it->second).absoluteFilePath();
+
+
+    return fields;
+}
+
+HashMap<PlatformField, QString> EmulatorsXml::read_platform_node(QXmlStreamReader& xml) const
+{
+    HashMap<PlatformField, QString> fields;
+
+    while (xml.readNextStartElement()) {
+        const auto it = m_platform_keys.find(xml.name().toString());
+        if (it == m_platform_keys.cend()) {
+            xml.skipCurrentElement();
+            continue;
+        }
+
+        QString contents = xml.readElementText().trimmed();
+        if (!contents.isEmpty())
+            fields.emplace(it->second, std::move(contents));
+    }
+
+    return fields;
+}
+
+HashMap<QString, Emulator> EmulatorsXml::find() const
+{
+    const QString xml_path = m_lb_root.filePath(QStringLiteral("Data/Emulators.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("could not open `%1`")
-            .arg(QDir::toNativeSeparators(xml_rel_path));
+        Log::error(tr_log("%1: Could not open `%2`").arg(m_log_tag, QDir::toNativeSeparators(xml_path)));
         return {};
     }
 
 
-    HashMap<EmulatorId, Emulator> emus_by_id;
-    HashMap<EmulatorId, std::vector<EmulatorPlatform>> emu_platforms_for_id;
+    HashMap<QString, Emulator> emulators;
+    HashMap<QString, std::vector<EmulatorPlatform>> emulator_platforms;
 
     QXmlStreamReader xml(&xml_file);
-    check_lb_root_node(xml, xml_rel_path);
+    verify_root_node(xml);
 
-    while (xml.readNextStartElement() && !xml.hasError()) {
+    while (xml.readNextStartElement()) {
         if (xml.name() == QLatin1String("Emulator")) {
-            EmulatorId emu_id;
+            const size_t linenum = xml.lineNumber();
+
+            const HashMap<EmulatorField, QString> fields = read_emulator_node(xml);
+            const bool node_valid = emulator_fields_valid(xml_path, linenum, fields);
+            if (!node_valid)
+                continue;
+
+            QString emu_id = fields.at(EmulatorField::ID);
             Emulator emu;
-            if (read_emulator_entry(xml, lb_dir, xml_rel_path, emu_id, emu))
-                emus_by_id.emplace(std::move(emu_id), std::move(emu)); // assume no collision
+            apply_emulator_fields(fields, emu);
+            emulators.emplace(std::move(emu_id), std::move(emu));
             continue;
         }
+
         if (xml.name() == QLatin1String("EmulatorPlatform")) {
-            EmulatorId emu_id;
+            const size_t linenum = xml.lineNumber();
+
+            const HashMap<PlatformField, QString> fields = read_platform_node(xml);
+            const bool node_valid = platform_fields_valid(xml_path, linenum, fields);
+            if (!node_valid)
+                continue;
+
+            QString emu_id = fields.at(PlatformField::EMULATOR);
             EmulatorPlatform platform;
-            if (read_emu_platform_entry(xml, xml_rel_path, emu_id, platform))
-                emu_platforms_for_id[std::move(emu_id)].emplace_back(std::move(platform)); // assume no collision
+            apply_platform_fields(fields, platform);
+            emulator_platforms[std::move(emu_id)].emplace_back(std::move(platform));
             continue;
         }
+
         xml.skipCurrentElement();
     }
     if (xml.error())
-        qWarning().noquote() << MSG_PREFIX << xml.errorString();
+        Log::error(tr_log("%1: `%2`: %3").arg(m_log_tag, xml_path, xml.errorString()));
 
 
-    for (const auto& entry : emu_platforms_for_id) {
-        const auto emu_it = emus_by_id.find(entry.first);
-        if (emu_it == emus_by_id.cend()) {
+    // TODO: C++17
+    for (const auto& entry : emulator_platforms) {
+        const auto it = emulators.find(entry.first);
+        if (it == emulators.cend()) {
             for (const EmulatorPlatform& platform : entry.second) {
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("%1: emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
-                        .arg(QDir::toNativeSeparators(xml_rel_path), platform.name, entry.first);
+                Log::warning(tr_log("%1: In `%2` emulator platform `%3` refers to a missing or invalid emulator entry with id `%4`, entry ignored")
+                    .arg(m_log_tag, QDir::toNativeSeparators(xml_path), platform.name, entry.first));
             }
             continue;
         }
-        emu_it->second.platforms = std::move(entry.second);
+
+        it->second.platforms = std::move(entry.second);
     }
 
-    return emus_by_id;
+
+    return emulators;
 }
 
-} // namespace emulators_xml
 } // namespace launchbox
 } // namespace providers

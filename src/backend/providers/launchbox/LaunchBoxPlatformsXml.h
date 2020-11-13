@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
 
 #pragma once
 
-#include <QString>
 #include <vector>
+
+class QDir;
+class QString;
 
 
 namespace providers {
 namespace launchbox {
-namespace platforms_xml {
 
-std::vector<QString> read(const QString& lb_dir);
+std::vector<QString> find_platforms(const QString&, const QDir&);
 
-} // namespace platforms_xml
 } // namespace launchbox
 } // namespace providers
