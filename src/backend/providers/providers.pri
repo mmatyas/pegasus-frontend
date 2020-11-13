@@ -10,6 +10,7 @@ SOURCES += \
 
 include(pegasus_favorites/pegasus_favorites.pri)
 include(pegasus_metadata/pegasus_metadata.pri)
+include(pegasus_media/pegasus_media.pri)
 include(pegasus_playtime/pegasus_playtime.pri)
 
 contains(QMAKE_CXX, ".*arm.*")|contains(QMAKE_CXX, ".*aarch.*"): target_arm = yes

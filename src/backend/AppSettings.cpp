@@ -22,6 +22,7 @@
 #include "parsers/SettingsFile.h"
 
 #include "providers/pegasus_favorites/Favorites.h"
+#include "providers/pegasus_media/MediaProvider.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
 #include "providers/pegasus_playtime/PlaytimeStats.h"
 #ifdef WITH_COMPAT_ES2
@@ -97,6 +98,7 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 
     std::vector<std::unique_ptr<providers::Provider>> out;
         MKENTRY(pegasus::PegasusProvider)
+        MKENTRY(media::MediaProvider)
         MKENTRY(favorites::Favorites)
         MKENTRY(playtime::PlaytimeStats)
 #ifdef WITH_COMPAT_STEAM

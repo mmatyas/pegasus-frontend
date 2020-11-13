@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     pegasus \
+    pegasus_media \
     favorites \
     logiqx \
     playtime \
