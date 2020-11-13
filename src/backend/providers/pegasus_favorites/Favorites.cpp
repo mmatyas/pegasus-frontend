@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,10 +19,12 @@
 
 #include "AppSettings.h"
 #include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
+#include "providers/SearchContext.h"
 
-#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
@@ -30,8 +32,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Favorites:";
-
 QString default_db_path()
 {
     return paths::writableConfigDir() + QStringLiteral("/favorites.txt");
@@ -43,35 +43,26 @@ namespace providers {
 namespace favorites {
 
 Favorites::Favorites(QObject* parent)
-    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), INTERNAL | PROVIDES_DYNDATA, parent)
+    : Favorites(default_db_path(), parent)
 {}
 
-Provider& Favorites::load() {
-    return load_with_dbpath(default_db_path());
-}
-Provider& Favorites::load_with_dbpath(QString db_path) {
-    m_db_path = std::move(db_path);
-    return *this;
-}
-Provider& Favorites::unload() {
-    m_db_path.clear();
-    return *this;
-}
+Favorites::Favorites(QString db_path, QObject* parent)
+    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), PROVIDER_FLAG_INTERNAL, parent)
+    , m_db_path(std::move(db_path))
+{}
 
-Provider& Favorites::findDynamicData(const QVector<model::Collection*>&,
-                                     const QVector<model::Game*>&,
-                                     const HashMap<QString, model::GameFile*>& path_map)
+Provider& Favorites::run(SearchContext& sctx)
 {
     if (!QFileInfo::exists(m_db_path))
         return *this;
 
     QFile db_file(m_db_path);
     if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("could not open `%1` for reading, favorites are not loaded.")
-                      .arg(m_db_path);
+        Log::error(tr_log("%1: Could not open `%2` for reading, favorites not loaded").arg(display_name(), m_db_path));
         return *this;
     }
+
+    const QDir base_dir = QFileInfo(m_db_path).dir();
 
     QTextStream db_stream(&db_file);
     QString line;
@@ -79,11 +70,10 @@ Provider& Favorites::findDynamicData(const QVector<model::Collection*>&,
         if (line.startsWith('#'))
             continue;
 
-        const QString path = QFileInfo(paths::writableConfigDir(), line).canonicalFilePath();
-        if (path_map.count(path)) {
-            model::Game* const parent = static_cast<model::Game*>(path_map.at(path)->parent());
-            parent->setFavorite(true);
-        }
+        const QString path = QFileInfo(base_dir, line).canonicalFilePath();
+        model::Game* const game_ptr = sctx.game_by_filepath(path);
+        if (game_ptr)
+            game_ptr->setFavorite(true);
     }
 
     return *this;
@@ -124,9 +114,8 @@ void Favorites::start_processing()
         while (true) {
             QFile db_file(m_db_path);
             if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("could not open `%1` for writing, favorites are not saved.")
-                              .arg(m_db_path);
+                Log::error(tr_log("%1: Could not open `%2` for writing, favorites are not saved")
+                    .arg(display_name(), m_db_path));
                 break;
             }
 

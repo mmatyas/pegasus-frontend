@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,25 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/pegasus_favorites/Favorites.h"
-#include "utils/HashMap.h"
+#include "providers/SearchContext.h"
+
+
+namespace {
+void create_dummy_data(providers::SearchContext& sctx)
+{
+    model::Collection& collection_a = *sctx.get_or_create_collection(QStringLiteral("coll1"));
+    model::Collection& collection_b = *sctx.get_or_create_collection(QStringLiteral("coll2"));
+
+    model::Game& game_a = *sctx.create_game_for(collection_a);
+    sctx.game_add_filepath(game_a, QStringLiteral(":/a/b/coll1dummy1"));
+
+    model::Game& game_b = *sctx.create_game_for(collection_a);
+    sctx.game_add_filepath(game_b, QStringLiteral(":/coll1dummy2"));
+
+    model::Game& game_c = *sctx.create_game_for(collection_b);
+    sctx.game_add_filepath(game_c, QStringLiteral(":/x/y/z/coll2dummy1"));
+}
+} // namespace
 
 
 class test_FavoriteDB : public QObject {
@@ -30,53 +48,16 @@ private slots:
     void write();
     void rewrite_empty();
     void read();
-
-private:
-    model::Game* create_game(QString path)
-    {
-        QFileInfo fi(std::move(path));
-        QString name = model::pretty_filename(fi);
-        auto game = new model::Game(name, this);
-        auto file = new model::GameFile(std::move(fi), game);
-        game->setFiles({ file });
-        return game;
-    }
-
-    void create_dummy_data(QVector<model::Collection*>& out_collections, QVector<model::Game*>& out_games)
-    {
-        out_collections = {
-            new model::Collection("coll1", this),
-            new model::Collection("coll2", this),
-        };
-        out_games = {
-            create_game(":/a/b/coll1dummy1"),
-            create_game(":/coll1dummy2"),
-            create_game(":/x/y/z/coll2dummy1"),
-        };
-
-        out_collections.at(0)->setGames({
-            out_games.at(0),
-            out_games.at(1),
-        });
-        out_collections.at(1)->setGames({
-            out_games.at(2),
-        });
-
-        (*out_games.at(0)).setCollections({ out_collections.at(0) });
-        (*out_games.at(1)).setCollections({ out_collections.at(0) });
-        (*out_games.at(2)).setCollections({ out_collections.at(1) });
-    }
 };
 
 
 void test_FavoriteDB::write()
 {
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    create_dummy_data(collections, games);
-
-    games.at(1)->setFavorite(true);
-    games.at(2)->setFavorite(true);
+    providers::SearchContext sctx;
+    create_dummy_data(sctx);
+    sctx.game_by_filepath(QStringLiteral(":/coll1dummy2"))->setFavorite(true);
+    sctx.game_by_filepath(QStringLiteral(":/x/y/z/coll2dummy1"))->setFavorite(true);
+    const auto [collections, games] = sctx.finalize(this->thread());
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -86,8 +67,7 @@ void test_FavoriteDB::write()
     tmp_file.close();
 
 
-    providers::favorites::Favorites favorite_db;
-    favorite_db.load_with_dbpath(db_path);
+    providers::favorites::Favorites favorite_db(db_path);
 
     QSignalSpy spy_start(&favorite_db, &providers::favorites::Favorites::startedWriting);
     QSignalSpy spy_end(&favorite_db, &providers::favorites::Favorites::finishedWriting);
@@ -112,19 +92,19 @@ void test_FavoriteDB::write()
         if (!line.startsWith('#'))
             found_items << line;
     }
+    QFile::remove(db_path);
 
     QCOMPARE(found_items.count(), 2);
     QVERIFY(found_items.contains(":/coll1dummy2"));
     QVERIFY(found_items.contains(":/x/y/z/coll2dummy1"));
 
-    QFile::remove(db_path);
 }
 
 void test_FavoriteDB::rewrite_empty()
 {
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    create_dummy_data(collections, games);
+    providers::SearchContext sctx;
+    create_dummy_data(sctx);
+    const auto [collections, games] = sctx.finalize(this->thread());
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -134,8 +114,7 @@ void test_FavoriteDB::rewrite_empty()
     tmp_file.close();
 
 
-    providers::favorites::Favorites favorite_db;
-    favorite_db.load_with_dbpath(db_path);
+    providers::favorites::Favorites favorite_db(db_path);
     QSignalSpy spy_end(&favorite_db, &providers::favorites::Favorites::finishedWriting);
     QVERIFY(spy_end.isValid());
 
@@ -158,16 +137,15 @@ void test_FavoriteDB::rewrite_empty()
         if (!line.startsWith('#'))
             found_items << line;
     }
+    QFile::remove(db_path);
 
     QCOMPARE(found_items.count(), 0);
-    QFile::remove(db_path);
 }
 
 void test_FavoriteDB::read()
 {
-    QVector<model::Collection*> collections;
-    QVector<model::Game*> games;
-    create_dummy_data(collections, games);
+    providers::SearchContext sctx;
+    create_dummy_data(sctx);
 
     QTemporaryFile tmp_file;
     tmp_file.setAutoRemove(false);
@@ -175,31 +153,20 @@ void test_FavoriteDB::read()
     {
         QTextStream tmp_stream(&tmp_file);
         tmp_stream << QStringLiteral("# Favorite reader test") << endl;
-        tmp_stream << games[2]->filesConst().first()->fileinfo().canonicalFilePath() << endl;
-        tmp_stream << games[1]->filesConst().first()->fileinfo().canonicalFilePath() << endl;
+        tmp_stream << QStringLiteral(":/x/y/z/coll2dummy1") << endl;
+        tmp_stream << QStringLiteral(":/coll1dummy2") << endl;
         tmp_stream << QStringLiteral(":/somethingfake") << endl;
     }
     const QString db_path = tmp_file.fileName();
     tmp_file.close();
 
-    providers::favorites::Favorites favorite_db;
-    favorite_db.load_with_dbpath(db_path);
-
-    HashMap<QString, model::GameFile*> path_map;
-    for (const model::Game* const game : games) {
-        model::GameFile* const gamefile = game->filesConst().first();
-        QString path = gamefile->fileinfo().canonicalFilePath();
-        QVERIFY(!path.isEmpty());
-        path_map.emplace(std::move(path), gamefile);
-    }
-
-    favorite_db.findDynamicData({}, games, path_map);
-
-    QVERIFY(!games[0]->isFavorite());
-    QVERIFY(games[1]->isFavorite());
-    QVERIFY(games[2]->isFavorite());
-
+    providers::favorites::Favorites(db_path).run(sctx);
+    const auto [collections, games] = sctx.finalize(this->thread());
     QFile::remove(db_path);
+
+    QCOMPARE(games[0]->isFavorite(), false);
+    QCOMPARE(games[1]->isFavorite(), true);
+    QCOMPARE(games[2]->isFavorite(), true);
 }
 
 

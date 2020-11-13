@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,15 +29,10 @@ class Favorites : public Provider {
     Q_OBJECT
 
 public:
+    explicit Favorites(QString db_path, QObject* parent = nullptr);
     explicit Favorites(QObject* parent = nullptr);
 
-    Provider& load() final;
-    Provider& unload() final;
-    Provider& load_with_dbpath(QString);
-
-    Provider& findDynamicData(const QVector<model::Collection*>&,
-                              const QVector<model::Game*>&,
-                              const HashMap<QString, model::GameFile*>&) final;
+    Provider& run(SearchContext&) final;
 
     void onGameFavoriteChanged(const QVector<model::Game*>&) final;
 
@@ -46,7 +41,7 @@ signals:
     void finishedWriting();
 
 private:
-    QString m_db_path;
+    const QString m_db_path;
 
     QStringList m_pending_task;
     QStringList m_active_task;
