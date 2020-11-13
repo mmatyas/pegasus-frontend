@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "AndroidAppsMetadata.h"
 #include "providers/Provider.h"
+#include "providers/android_apps/AndroidAppsMetadata.h"
 
 
 namespace providers {
@@ -30,11 +30,10 @@ class AndroidAppsProvider : public Provider {
 public:
     AndroidAppsProvider(QObject* parent = nullptr);
 
-    Provider& findLists(SearchContext&) final;
-    Provider& findStaticData(SearchContext&) final;
+    Provider& run(SearchContext&) final;
 
 private:
-    Metadata m_metadata;
+    const MetadataHelper m_metahelper;
 };
 
 } // namespace android

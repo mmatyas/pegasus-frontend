@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,36 +17,32 @@
 
 #include "AndroidAppsProvider.h"
 
+#include "LocaleUtils.h"
+#include "Log.h"
+#include "model/gaming/Assets.h"
+#include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
+#include "providers/android_apps/AndroidAppsMetadata.h"
 
 #include <QFileInfo>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <QtAndroidExtras/QAndroidJniObject>
 
 
-namespace providers {
-namespace android {
-
-AndroidAppsProvider::AndroidAppsProvider(QObject* parent)
-    : Provider(QLatin1String("androidapps"), QStringLiteral("Android Apps"), PROVIDES_GAMES | PROVIDES_ASSETS, parent)
-{}
-
-Provider& AndroidAppsProvider::findLists(SearchContext& sctx)
+namespace {
+HashMap<QString, model::Game*> find_apps_for(model::Collection& collection, providers::SearchContext& sctx)
 {
-    static constexpr auto JNI_CLASS = "org/pegasus_frontend/android/MainActivity";
-    static constexpr auto APPLIST_METHOD = "appList";
-    static constexpr auto APPLIST_SIGNATURE = "()[Lorg/pegasus_frontend/android/App;";
-    static constexpr auto APP_NAME = "appName";
-    static constexpr auto APP_PACKAGE = "packageName";
-    static constexpr auto APP_LAUNCH_ACT = "launchAction";
-    static constexpr auto APP_LAUNCH_CPT = "launchComponent";
+    constexpr auto JNI_CLASS = "org/pegasus_frontend/android/MainActivity";
+    constexpr auto APPLIST_METHOD = "appList";
+    constexpr auto APPLIST_SIGNATURE = "()[Lorg/pegasus_frontend/android/App;";
+    constexpr auto APP_NAME = "appName";
+    constexpr auto APP_PACKAGE = "packageName";
+    constexpr auto APP_LAUNCH_ACT = "launchAction";
+    constexpr auto APP_LAUNCH_CPT = "launchComponent";
 
 
-    const QString COLLECTION_TAG(QStringLiteral("Android"));
-    PendingCollection& collection = sctx.get_or_create_collection(COLLECTION_TAG);
-    collection.inner().setShortName(COLLECTION_TAG);
-
+    HashMap<QString, model::Game*> app_game_map;
 
     QAndroidJniEnvironment jni_env;
     const auto jni_applist_raw = QAndroidJniObject::callStaticObjectMethod(JNI_CLASS, APPLIST_METHOD, APPLIST_SIGNATURE);
@@ -61,20 +57,90 @@ Provider& AndroidAppsProvider::findLists(SearchContext& sctx)
         const QString action = jni_app.callObjectMethod<jstring>(APP_LAUNCH_ACT).toString();
         const QString component = jni_app.callObjectMethod<jstring>(APP_LAUNCH_CPT).toString();
 
-        PendingGame& game = sctx.add_or_create_game_from_entry(package, collection);
-        game.inner()
+        const QString game_uri = QStringLiteral("android:") + package;
+        model::Game* game_ptr = sctx.game_by_uri(game_uri);
+        if (!game_ptr) {
+            game_ptr = sctx.create_game_for(collection);
+            sctx.game_add_uri(*game_ptr, game_uri);
+        }
+        app_game_map.emplace(package, game_ptr);
+
+        const QString icon_uri = QStringLiteral("image://androidicons/") + package;
+        (*game_ptr)
             .setTitle(appname)
-            .setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component));
-        game.inner().assets().add_url(AssetType::BOX_FRONT, QStringLiteral("image://androidicons/") + package);
-        game.inner().assets().add_url(AssetType::UI_TILE, game.inner().assets().boxFront());
+            .setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component))
+            .assetsMut()
+            .add_uri(AssetType::BOX_FRONT, icon_uri)
+            .add_uri(AssetType::UI_TILE, icon_uri);
     }
 
-    return *this;
+    return app_game_map;
 }
 
-Provider& AndroidAppsProvider::findStaticData(SearchContext& sctx)
+
+void fill_metadata_from_cache(
+    HashMap<QString, model::Game*>& app_game_map,
+    const providers::android::MetadataHelper& metahelper)
 {
-    m_metadata.findStaticData(sctx);
+    std::vector<QString> found_apps;
+    found_apps.reserve(app_game_map.size());
+
+    // TODO: C++17
+    for (const auto& entry : app_game_map) {
+        const QString& app = entry.first;
+        model::Game& game = *entry.second;
+
+        const bool found = metahelper.fill_from_cache(app, game);
+        if (found)
+            found_apps.emplace_back(app);
+    }
+
+    for (const QString& app : found_apps)
+        app_game_map.erase(app);
+}
+
+void fill_metadata_from_network(
+    HashMap<QString, model::Game*>& app_game_map,
+    const providers::android::MetadataHelper& metahelper,
+    providers::SearchContext& sctx)
+{
+    if (app_game_map.empty())
+        return;
+
+    if (!sctx.has_network())
+        return;
+
+    // TODO: C++17
+    for (const auto& entry : app_game_map) {
+        const QString& app = entry.first;
+        model::Game* const game = entry.second;
+        metahelper.fill_from_network(app, *game, sctx);
+    }
+}
+} // namespace
+
+
+namespace providers {
+namespace android {
+
+AndroidAppsProvider::AndroidAppsProvider(QObject* parent)
+    : Provider(QLatin1String("androidapps"), QStringLiteral("Android Apps"), parent)
+    , m_metahelper(display_name())
+{}
+
+Provider& AndroidAppsProvider::run(SearchContext& sctx)
+{
+    const QString COLLECTION_TAG(QStringLiteral("Android"));
+    model::Collection& collection = *sctx.get_or_create_collection(COLLECTION_TAG);
+    collection.setShortName(COLLECTION_TAG);
+
+    HashMap<QString, model::Game*> app_game_map = find_apps_for(collection, sctx);
+    Log::info(tr_log("%1: %2 apps found").arg(display_name(), app_game_map.size()));
+    if (app_game_map.empty())
+        return *this;
+
+    fill_metadata_from_cache(app_game_map, m_metahelper);
+    fill_metadata_from_network(app_game_map, m_metahelper, sctx);
     return *this;
 }
 

@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,31 +17,34 @@
 
 #pragma once
 
-#include "providers/Provider.h"
-#include "utils/HashMap.h"
-
 #include <QRegularExpression>
 
+namespace model { class Game; }
+namespace providers { class SearchContext; }
 
 namespace providers {
 namespace android {
 
-class Metadata {
+class MetadataHelper {
 public:
-    Metadata();
+    MetadataHelper(QString);
 
-    void findStaticData(SearchContext&);
+    bool fill_from_cache(const QString&, model::Game&) const;
+    void fill_from_network(const QString&, model::Game&, SearchContext&) const;
+
+    const QString& log_tag() const { return m_log_tag; }
 
 private:
+    const QString m_log_tag;
+    const QString m_json_cache_dir;
+
     const QRegularExpression rx_meta_itemprops;
     const QRegularExpression rx_background;
     const QRegularExpression rx_developer;
     const QRegularExpression rx_category;
     const QRegularExpression rx_screenshots;
 
-    std::vector<model::Game*> fill_from_cache(const std::vector<model::Game*>&);
-    void fill_from_network(const std::vector<model::Game*>&);
-    bool parse_reply(QByteArray&, QJsonObject&);
+    QJsonDocument parse_reply(const QByteArray&) const;
 };
 
 } // namespace android
