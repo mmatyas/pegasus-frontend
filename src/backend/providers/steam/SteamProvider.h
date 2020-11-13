@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "SteamGamelist.h"
-#include "SteamMetadata.h"
 #include "providers/Provider.h"
 
 
@@ -31,12 +29,7 @@ class SteamProvider : public Provider {
 public:
     explicit SteamProvider(QObject* parent = nullptr);
 
-    Provider& findLists(providers::SearchContext&) final;
-    Provider& findStaticData(providers::SearchContext&) final;
-
-private:
-    Gamelist gamelist;
-    Metadata metadata;
+    Provider& run(SearchContext&) final;
 };
 
 } // namespace steam

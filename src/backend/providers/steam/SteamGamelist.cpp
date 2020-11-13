@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,169 +18,110 @@
 #include "SteamGamelist.h"
 
 #include "LocaleUtils.h"
-#include "Paths.h"
-#include "SteamCommon.h"
-#include "model/gaming/Collection.h"
+#include "Log.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
 
-#include <QDebug>
-#include <QDir>
 #include <QDirIterator>
-#include <QFileInfo>
-#include <QRegularExpression>
-#include <QSettings>
-#include <QStandardPaths>
 #include <QStringBuilder>
-#include <array>
-
-
-namespace {
-static constexpr auto MSG_PREFIX = "Steam:";
-
-QString find_steam_datadir()
-{
-    QStringList possible_dirs;
-
-
-#ifdef Q_OS_LINUX
-    // Linux: Prefer Flatpak-Steam if available
-    possible_dirs << providers::steam::flatpak_data_dir();
-#endif // linux
-
-
-#ifdef Q_OS_UNIX
-    // Linux: ~/.local/share/Steam
-    // macOS: ~/Library/Application Support/Steam
-    const QStringList std_paths = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
-    for (const QString& dir : std_paths)
-        possible_dirs << dir % QLatin1String("/Steam/");
-
-#ifdef Q_OS_LINUX
-    // in addition on Linux, ~/.steam/steam
-    possible_dirs << paths::homePath() % QLatin1String("/.steam/steam/");
-#endif // linux
-#endif // unix
-
-
-#ifdef Q_OS_WIN
-    QSettings reg_base(QLatin1String("HKEY_CURRENT_USER\\Software\\Valve\\Steam"),
-                       QSettings::NativeFormat);
-    const QString reg_value = reg_base.value(QLatin1String("SteamPath")).toString();
-    if (!reg_value.isEmpty())
-        possible_dirs << reg_value % QChar('/');
-#endif
-
-
-    for (const auto& dir : qAsConst(possible_dirs)) {
-        if (QFileInfo::exists(dir)) {
-            qInfo().noquote() << MSG_PREFIX << tr_log("found data directory: `%1`").arg(dir);
-            return dir;
-        }
-    }
-
-    qInfo().noquote() << MSG_PREFIX << tr_log("no installation found");
-    return {};
-}
-
-std::vector<QString> find_steam_installdirs(const QString& steam_datadir)
-{
-    std::vector<QString> installdirs;
-    installdirs.emplace_back(steam_datadir % QLatin1String("steamapps"));
-
-
-    const QString config_path = steam_datadir % QLatin1String("config/config.vdf");
-    QFile configfile(config_path);
-    if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning().noquote() << MSG_PREFIX
-            << tr_log("while Steam seems to be installed, "
-                      "the config file `%1` could not be opened").arg(config_path);
-        return installdirs;
-    }
-
-    const QRegularExpression installdir_regex(QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")""));
-
-    QTextStream stream(&configfile);
-    while (!stream.atEnd()) {
-        const QString line = stream.readLine();
-        const auto match = installdir_regex.match(line);
-        if (match.hasMatch()) {
-            const QString path = match.captured(1) % QLatin1String("/steamapps/");
-            if (QFileInfo::exists(path))
-                installdirs.emplace_back(path);
-        }
-    }
-
-    installdirs.erase(std::unique(installdirs.begin(), installdirs.end()), installdirs.end());
-    return installdirs;
-}
-
-bool should_ignore(const QString& filename)
-{
-    const std::array<QLatin1String, 9> ignored {
-        QLatin1String("appmanifest_228980.acf"), // Steamworks Common Redistributables
-        QLatin1String("appmanifest_996510.acf"), // Proton 3.16 Beta
-        QLatin1String("appmanifest_961940.acf"), // Proton 3.16
-        QLatin1String("appmanifest_930400.acf"), // Proton 3.7 Beta
-        QLatin1String("appmanifest_858280.acf"), // Proton 3.7
-        QLatin1String("appmanifest_1054830.acf"), // Proton 4.2
-        QLatin1String("appmanifest_1070560.acf"), // Steam Linux Runtime
-        QLatin1String("appmanifest_1113280.acf"), // Proton 4.11
-        QLatin1String("appmanifest_1245040.acf"), // Proton 5.0
-    };
-    return std::find(ignored.cbegin(), ignored.cend(), filename) != ignored.cend();
-}
-
-void register_appmanifests(providers::SearchContext& sctx,
-                           providers::PendingCollection& collection,
-                           const std::vector<QString>& installdirs)
-{
-    const auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
-    const auto dir_flags = QDirIterator::FollowSymlinks;
-    const QStringList name_filters { QStringLiteral("appmanifest_*.acf") };
-
-    for (const QString& dir_path : installdirs) {
-        QDirIterator dir_it(dir_path, name_filters, dir_filters, dir_flags);
-        while (dir_it.hasNext()) {
-            dir_it.next();
-
-            QFileInfo fileinfo = dir_it.fileInfo();
-            if (should_ignore(fileinfo.fileName()))
-                continue;
-
-            sctx.add_or_create_game_from_file(std::move(fileinfo), collection);
-        }
-    }
-}
-
-} // namespace
 
 
 namespace providers {
 namespace steam {
 
-Gamelist::Gamelist(QObject* parent)
-    : QObject(parent)
+Gamelist::Gamelist(QString log_tag)
+    : m_log_tag(std::move(log_tag))
+    , m_name_filters { QStringLiteral("appmanifest_*.acf") }
+    , m_ignored_manifests {
+          QLatin1String("appmanifest_228980.acf"), // Steamworks Common Redistributables
+          QLatin1String("appmanifest_996510.acf"), // Proton 3.16 Beta
+          QLatin1String("appmanifest_961940.acf"), // Proton 3.16
+          QLatin1String("appmanifest_930400.acf"), // Proton 3.7 Beta
+          QLatin1String("appmanifest_858280.acf"), // Proton 3.7
+          QLatin1String("appmanifest_1054830.acf"), // Proton 4.2
+          QLatin1String("appmanifest_1070560.acf"), // Steam Linux Runtime
+          QLatin1String("appmanifest_1113280.acf"), // Proton 4.11
+          QLatin1String("appmanifest_1245040.acf"), // Proton 5.0
+    }
+    , m_rx_acf_appid(QStringLiteral(R""("appid"\s+"(\d+)")""), QRegularExpression::CaseInsensitiveOption)
+    , m_rx_acf_title(QStringLiteral(R""("name"\s+"([^"]+)")""))
 {}
 
-void Gamelist::find(providers::SearchContext& sctx)
+std::pair<QString, QString> Gamelist::read_manifest_file(const QString& manifest_path) const
 {
-    const QString steamdir = find_steam_datadir();
-    if (steamdir.isEmpty())
-        return;
-
-    const std::vector<QString> installdirs = find_steam_installdirs(steamdir);
-    if (installdirs.empty()) {
-        qWarning().noquote() << MSG_PREFIX << tr_log("no installation directories found");
-        return;
+    QFile manifest(manifest_path);
+    if (!manifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        Log::error(tr_log("%1: Could not open `%2`").arg(m_log_tag, manifest_path));
+        return {};
     }
 
-    PendingCollection& coll = sctx.get_or_create_collection(QStringLiteral("Steam"));
+    QString appid;
+    QString title;
 
-    const size_t game_count_before = sctx.games().size();
-    register_appmanifests(sctx, coll, installdirs);
-    if (game_count_before != sctx.games().size())
-        emit gameCountChanged(static_cast<int>(sctx.games().size()));
+    QTextStream stream(&manifest);
+    while (!stream.atEnd() && (appid.isEmpty() || title.isEmpty())) {
+        const QString line = stream.readLine();
+
+        const auto appid_match = m_rx_acf_appid.match(line);
+        if (appid_match.hasMatch()) {
+            appid = appid_match.captured(1);
+            continue;
+        }
+
+        const auto title_match = m_rx_acf_title.match(line);
+        if (title_match.hasMatch()) {
+            title = title_match.captured(1);
+        }
+    }
+
+    return { appid, title };
+}
+
+HashMap<QString, model::Game*> Gamelist::find_in(
+    const QString& steam_call,
+    const QString& dir_path,
+    model::Collection& collection,
+    SearchContext& sctx) const
+{
+    HashMap<QString, model::Game*> result;
+
+    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto dir_flags = QDirIterator::FollowSymlinks;
+
+    QDirIterator dir_it(dir_path, m_name_filters, dir_filters, dir_flags);
+    while (dir_it.hasNext()) {
+        const QString manifest_path = dir_it.next();
+        const QFileInfo finfo = dir_it.fileInfo();
+
+        const auto it = std::find(m_ignored_manifests.cbegin(), m_ignored_manifests.cend(), finfo.fileName());
+        if (it != m_ignored_manifests.cend())
+            continue;
+
+        // TODO: C++17
+        QString appid;
+        QString title;
+        std::tie(appid, title) = read_manifest_file(manifest_path);
+        if (appid.isEmpty())
+            continue;
+        if (title.isEmpty())
+            title = QLatin1String("App #") + appid;
+
+        const QString steam_uri = QStringLiteral("steam:") + appid;
+        model::Game* game_ptr = sctx.game_by_uri(steam_uri);
+        if (!game_ptr) {
+            game_ptr = sctx.create_game_for(collection);
+            sctx.game_add_uri(*game_ptr, steam_uri);
+        }
+
+        (*game_ptr)
+            .setTitle(title)
+            .setSortBy(title)
+            .setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % appid);
+
+        result.emplace(appid, game_ptr);
+    }
+
+    return result;
 }
 
 } // namespace steam

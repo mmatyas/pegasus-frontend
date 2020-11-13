@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,25 +17,33 @@
 
 #pragma once
 
-#include "providers/Provider.h"
 #include "utils/HashMap.h"
 
-#include <QObject>
+#include <QRegularExpression>
+#include <QStringList>
+
+namespace model { class Game; }
+namespace model { class Collection; }
+namespace providers { class SearchContext; }
 
 
 namespace providers {
 namespace steam {
 
-class Gamelist : public QObject {
-    Q_OBJECT
-
+class Gamelist {
 public:
-    explicit Gamelist(QObject* parent);
+    explicit Gamelist(QString);
 
-    void find(providers::SearchContext&);
+    HashMap<QString, model::Game*> find_in(const QString&, const QString&, model::Collection&, SearchContext&) const;
 
-signals:
-    void gameCountChanged(int count);
+private:
+    const QString m_log_tag;
+    const QStringList m_name_filters;
+    const std::vector<QLatin1String> m_ignored_manifests;
+    const QRegularExpression m_rx_acf_appid;
+    const QRegularExpression m_rx_acf_title;
+
+    std::pair<QString, QString> read_manifest_file(const QString&) const;
 };
 
 } // namespace steam
