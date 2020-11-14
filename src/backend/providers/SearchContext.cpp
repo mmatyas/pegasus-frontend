@@ -23,6 +23,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
+#include "utils/DiskCachedNAM.h"
 #include "utils/StdHelpers.h"
 
 #include <QFileInfo>
@@ -277,7 +278,7 @@ SearchContext& SearchContext::enable_network()
     }
 
     // TODO: C++14
-    m_netman = new QNetworkAccessManager(this);
+    m_netman = utils::create_disc_cached_nam(this);
     return *this;
 }
 

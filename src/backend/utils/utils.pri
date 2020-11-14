@@ -1,5 +1,6 @@
 HEADERS += \
     $$PWD/CommandTokenizer.h \
+    $$PWD/DiskCachedNAM.h \
     $$PWD/FakeQKeyEvent.h \
     $$PWD/FolderListModel.h \
     $$PWD/HashMap.h \
@@ -15,6 +16,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
+    $$PWD/DiskCachedNAM.cpp \
     $$PWD/FakeQKeyEvent.cpp \
     $$PWD/FolderListModel.cpp \
     $$PWD/KeySequenceTools.cpp \

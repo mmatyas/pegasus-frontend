@@ -19,13 +19,12 @@
 
 #include "Paths.h"
 #include "imggen/BlurhashProvider.h"
+#include "utils/DiskCachedNAM.h"
 
 #ifdef Q_OS_ANDROID
 #include "platform/AndroidAppIconProvider.h"
 #endif
 
-#include <QNetworkAccessManager>
-#include <QNetworkDiskCache>
 #include <QQmlContext>
 #include <QQmlNetworkAccessManagerFactory>
 
@@ -39,15 +38,7 @@ public:
 
 QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
 {
-    auto nam = new QNetworkAccessManager(parent);
-    auto cache = new QNetworkDiskCache(nam);
-
-    QString cache_path = paths::writableCacheDir();
-    cache_path += QLatin1String("/netcache");
-    cache->setCacheDirectory(cache_path);
-
-    nam->setCache(cache);
-    return nam;
+    return utils::create_disc_cached_nam(parent);
 }
 
 } // namespace
