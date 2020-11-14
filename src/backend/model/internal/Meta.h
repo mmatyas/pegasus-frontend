@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,9 +29,8 @@ class Meta : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(bool loading READ isLoading NOTIFY loadingChanged)
+    Q_PROPERTY(QString loadingStage READ loadingStage NOTIFY loadingStageChanged)
     Q_PROPERTY(float loadingProgress READ loadingProgress NOTIFY loadingProgressChanged)
-
-    Q_PROPERTY(int gameCount READ gameCount NOTIFY gameCountChanged)
 
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
     Q_PROPERTY(QString gitDate MEMBER m_git_date CONSTANT)
@@ -53,18 +52,17 @@ public:
     Q_INVOKABLE void clearQMLCache();
 
     bool isLoading() const { return m_loading; }
+    QString loadingStage() const { return m_loading_stage; }
     float loadingProgress() const { return m_loading_progress; }
 
-    int gameCount() const { return m_game_count; }
-
 public slots:
-    void onSearchProgressChanged(float);
+    void onSearchProgressChanged(float, QString);
     void onSearchFinished();
 
 signals:
     void loadingChanged();
+    void loadingStageChanged();
     void loadingProgressChanged();
-    void gameCountChanged();
 
     void qmlClearCacheRequested();
 
@@ -79,9 +77,8 @@ private:
     const bool m_enable_menu_settings;
 
     bool m_loading;
+    QString m_loading_stage;
     float m_loading_progress;
-
-    int m_game_count;
 };
 
 } // namespace model

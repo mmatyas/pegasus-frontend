@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,16 +36,14 @@ Meta::Meta(const backend::CliArgs& args, QObject* parent)
     , m_enable_menu_settings(args.enable_menu_settings)
     , m_loading(true)
     , m_loading_progress(0.f)
-    , m_game_count(0)
 {}
 
 void Meta::resetLoadingState()
 {
     m_loading_progress = 0.f;
-    m_game_count = 0;
-
+    m_loading_stage = QString();
     emit loadingProgressChanged();
-    emit gameCountChanged();
+    emit loadingStageChanged();
 }
 
 void Meta::startLoading()
@@ -60,36 +58,27 @@ void Meta::clearQMLCache()
     emit qmlClearCacheRequested();
 }
 
-void Meta::onSearchProgressChanged(float) {}
-void Meta::onSearchFinished() {}
-/*void Meta::onFirstPhaseCompleted(qint64 elapsedTime)
+void Meta::onSearchProgressChanged(float value, QString stage)
 {
-    qInfo().noquote() << tr_log("Games found in %1ms").arg(elapsedTime);
-
-    m_loading_progress = 0.5f;
+    Q_ASSERT(value <= 1.f);
+    m_loading_progress = value;
+    m_loading_stage = std::move(stage);
     emit loadingProgressChanged();
+    emit loadingStageChanged();
 }
 
-void Meta::onSecondPhaseCompleted(qint64 elapsedTime)
+void Meta::onSearchFinished()
 {
-    qInfo().noquote() << tr_log("Assets and metadata found in %1ms").arg(elapsedTime);
-
     m_loading_progress = 1.0f;
+    m_loading_stage = QString();
     emit loadingProgressChanged();
-}*/
+    emit loadingStageChanged();
+}
 
 void Meta::onUiReady()
 {
     m_loading = false;
     emit loadingChanged();
 }
-
-/*void Meta::onGameCountUpdate(int game_count)
-{
-    if (m_game_count != game_count) {
-        m_game_count = game_count;
-        emit gameCountChanged();
-    }
-}*/
 
 } // namespace model

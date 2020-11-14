@@ -116,12 +116,11 @@ Rectangle {
         id: gameCounter
         visible: showDataProgressText
 
-        text: qsTr("%1 games found").arg(api.internal.meta.gameCount)
+        text: api.internal.meta.loadingStage
         color: "#999"
-        font {
-            pixelSize: vpx(16)
-            family: globalFonts.sans
-        }
+        font.pixelSize: vpx(16)
+        font.family: global.fonts.sans
+        font.italic: true
 
         anchors.top: progressRoot.bottom
         anchors.topMargin: vpx(8)

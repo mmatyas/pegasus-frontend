@@ -48,10 +48,11 @@ ProviderManager::ProviderManager(QObject* parent)
     , m_target_collection_list(nullptr)
     , m_target_game_list(nullptr)
 {
-    for (const auto& provider : AppSettings::providers) {
+    // TODO: Improve detection of receiving signals from already finished providers
+    /*for (const auto& provider : AppSettings::providers) {
         connect(provider.get(), &providers::Provider::progressChanged,
                 this, &ProviderManager::onProviderProgressChanged);
-    }
+    }*/
 }
 
 void ProviderManager::run(
@@ -77,20 +78,21 @@ void ProviderManager::run(
         m_progress_provider_weight = 1.f / providers.size();
 
         for (size_t i = 0; i < providers.size(); i++) {
+            providers::Provider& provider = *providers[i];
+
             m_progress_finished = i * m_progress_provider_weight;
-            emit progressChanged(m_progress_finished);
+            emit progressChanged(m_progress_finished, provider.display_name());
 
             QElapsedTimer provider_timer;
             provider_timer.start();
 
-            providers::Provider& provider = *providers[i];
             provider.run(sctx);
 
-            Log::info(tr_log("%1: finished searching in %2ms")
+            Log::info(tr_log("%1: Finished searching in %2ms")
                 .arg(provider.display_name(), QString::number(provider_timer.restart())));
         }
         m_progress_finished = 1.f;
-        emit progressChanged(m_progress_finished);
+        emit progressChanged(m_progress_finished, QString());
 
 
         if (sctx.has_pending_downloads()) {
@@ -124,10 +126,11 @@ void ProviderManager::run(
     });
 }
 
-void ProviderManager::onProviderProgressChanged(float percent)
+void ProviderManager::onProviderProgressChanged(float /*percent*/)
 {
-    Q_ASSERT(0.f <= percent && percent <= 1.f);
-    emit progressChanged(m_progress_finished + m_progress_provider_weight * percent);
+    // TODO: Improve detection of receiving signals from already finished providers
+    //Q_ASSERT(0.f <= percent && percent <= 1.f);
+    //emit progressChanged(m_progress_finished + m_progress_provider_weight * percent);
 }
 
 

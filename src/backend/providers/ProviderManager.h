@@ -38,7 +38,7 @@ public:
     void onGameFavoriteChanged(const QVector<model::Game*>&) const;
 
 signals:
-    void progressChanged(float); // TODO: add displayed text
+    void progressChanged(float, QString);
     void finished();
 
 private slots:
