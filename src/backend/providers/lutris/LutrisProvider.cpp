@@ -33,10 +33,9 @@
 namespace {
 QString find_datadir()
 {
-    using QSP = QStandardPaths;
-
-    for (const QString& commondir : QSP::standardLocations(QSP::GenericDataLocation)) {
-        QString lutrisdir = commondir + QLatin1String("/lutris/");
+    const QStringList data_roots = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+    for (const QString& root_path : data_roots) {
+        QString lutrisdir = root_path + QLatin1String("/lutris/");
         if (QFileInfo::exists(lutrisdir))
             return lutrisdir;
     }
@@ -127,7 +126,7 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     using QSP = QStandardPaths;
     const QString base_path_banners = datadir + QLatin1String("banners/");
     const QString base_path_coverart = datadir + QLatin1String("coverart/");
-    const QString base_path_icons = QSP::standardLocations(QSP::GenericDataLocation).first()
+    const QString base_path_icons = QSP::standardLocations(QSP::GenericDataLocation).constFirst()
         + QLatin1String("/icons/hicolor/128x128/apps/lutris_");
 
 
