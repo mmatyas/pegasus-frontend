@@ -181,7 +181,7 @@ const QVector<QKeySequence>& Keys::operator[](KeyEvent event) const {
 
 namespace {
 
-
+std::vector<std::unique_ptr<providers::Provider>> s_provider_list;
 
 } // namespace
 
@@ -189,7 +189,6 @@ namespace {
 appsettings::General AppSettings::general;
 appsettings::Keys AppSettings::keys;
 const std::map<QKeySequence, QString> AppSettings::gamepadButtonNames = gamepad_button_names();
-const std::vector<std::unique_ptr<providers::Provider>> AppSettings::providers = create_providers();
 
 void AppSettings::load_config()
 {
@@ -202,6 +201,16 @@ void AppSettings::save_config()
 
     ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::run(ScriptEvent::SETTINGS_CHANGED);
+}
+
+void AppSettings::load_providers()
+{
+    s_provider_list = create_providers();
+}
+
+const std::vector<std::unique_ptr<providers::Provider>>& AppSettings::providers()
+{
+    return s_provider_list;
 }
 
 void AppSettings::parse_gamedirs(const std::function<void(const QString&)>& callback)

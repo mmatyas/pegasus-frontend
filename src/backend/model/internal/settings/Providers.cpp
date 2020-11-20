@@ -27,15 +27,15 @@ ProviderEntry::ProviderEntry(const size_t idx)
 {}
 
 bool ProviderEntry::enabled() const {
-    return AppSettings::providers.at(m_idx)->enabled();
+    return AppSettings::providers().at(m_idx)->enabled();
 }
 
 void ProviderEntry::setEnabled(bool value) {
-    AppSettings::providers.at(m_idx)->setEnabled(value);
+    AppSettings::providers().at(m_idx)->setEnabled(value);
 }
 
 const QString& ProviderEntry::name() const {
-    return AppSettings::providers.at(m_idx)->display_name();
+    return AppSettings::providers().at(m_idx)->display_name();
 }
 
 
@@ -46,8 +46,8 @@ Providers::Providers(QObject* parent)
         { Roles::Enabled, QByteArrayLiteral("enabled") },
     })
 {
-    for (size_t i = 0; i < AppSettings::providers.size(); i++) {
-        const auto& ptr = AppSettings::providers.at(i);
+    for (size_t i = 0; i < AppSettings::providers().size(); i++) {
+        const auto& ptr = AppSettings::providers().at(i);
         if ((ptr->flags() & providers::PROVIDER_FLAG_INTERNAL) == 0)
             m_providers.emplace_back(i);
     }

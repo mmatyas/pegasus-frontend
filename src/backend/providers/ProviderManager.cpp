@@ -32,7 +32,7 @@ namespace {
 std::vector<ProviderPtr> enabled_providers()
 {
     std::vector<ProviderPtr> out;
-    for (const auto& provider : AppSettings::providers) {
+    for (const auto& provider : AppSettings::providers()) {
         if (provider->enabled())
             out.emplace_back(provider.get());
     }
@@ -49,7 +49,7 @@ ProviderManager::ProviderManager(QObject* parent)
     , m_target_game_list(nullptr)
 {
     // TODO: Improve detection of receiving signals from already finished providers
-    /*for (const auto& provider : AppSettings::providers) {
+    /*for (const auto& provider : AppSettings::providers()) {
         connect(provider.get(), &providers::Provider::progressChanged,
                 this, &ProviderManager::onProviderProgressChanged);
     }*/
@@ -139,7 +139,7 @@ void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_gam
     if (m_future.isRunning())
         return;
 
-    for (const auto& provider : AppSettings::providers)
+    for (const auto& provider : AppSettings::providers())
         provider->onGameFavoriteChanged(all_games);
 }
 
@@ -148,7 +148,7 @@ void ProviderManager::onGameLaunched(model::GameFile* const game) const
     if (m_future.isRunning())
         return;
 
-    for (const auto& provider : AppSettings::providers)
+    for (const auto& provider : AppSettings::providers())
         provider->onGameLaunched(game);
 }
 
@@ -157,6 +157,6 @@ void ProviderManager::onGameFinished(model::GameFile* const game) const
     if (m_future.isRunning())
         return;
 
-    for (const auto& provider : AppSettings::providers)
+    for (const auto& provider : AppSettings::providers())
         provider->onGameFinished(game);
 }

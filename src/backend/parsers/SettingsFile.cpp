@@ -192,12 +192,12 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
 
     const QString provider_name = sections.takeFirst();
     const auto provider_it = std::find_if(
-        AppSettings::providers.cbegin(),
-        AppSettings::providers.cend(),
-        [&provider_name](const decltype(AppSettings::providers)::value_type& p){
+        AppSettings::providers().cbegin(),
+        AppSettings::providers().cend(),
+        [&provider_name](const std::unique_ptr<providers::Provider>& p){
             return p->codename() == provider_name;
         });
-    if (provider_it == AppSettings::providers.cend()
+    if (provider_it == AppSettings::providers().cend()
         || (*provider_it)->flags() & providers::PROVIDER_FLAG_INTERNAL)
     {
         log_unknown_key(lineno, key);
@@ -321,7 +321,7 @@ void SaveContext::print_providers(QTextStream& stream) const
 {
     const QString TEMPLATE_KEY(QStringLiteral("%1.%2.%3:"));
 
-    for (const auto& entry : AppSettings::providers) {
+    for (const auto& entry : AppSettings::providers()) {
         if (entry->flags() & providers::PROVIDER_FLAG_INTERNAL)
             continue;
 

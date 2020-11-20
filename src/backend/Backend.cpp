@@ -140,6 +140,7 @@ Backend::Backend(const CliArgs& args)
     print_metainfo();
     register_api_classes();
 
+    AppSettings::load_providers();
     AppSettings::load_config();
 
     m_api = new ApiObject(args);

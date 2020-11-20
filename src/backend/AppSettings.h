@@ -75,8 +75,9 @@ struct AppSettings {
 
     static void load_config();
     static void save_config();
+    static void load_providers();
     static void parse_gamedirs(const std::function<void(const QString&)>&);
 
+    static const std::vector<std::unique_ptr<providers::Provider>>& providers();
     static const std::map<QKeySequence, QString> gamepadButtonNames;
-    static const std::vector<std::unique_ptr<providers::Provider>> providers;
 };
