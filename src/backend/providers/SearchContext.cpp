@@ -178,30 +178,8 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
 
 void SearchContext::finalize_cleanup_games()
 {
-    std::vector<model::Game*> deleted_games;
-
-    // Find parentless games
     for (model::Game* const game_ptr : m_parentless_games) {
         Log::warning(tr_log("The game '%1' does not belong to any collections, ignored").arg(game_ptr->title()));
-        deleted_games.emplace_back(game_ptr);
-    }
-    // Find entryless games
-    for (const auto& pair : m_game_entries) {
-        if (!pair.second.empty())
-            continue;
-
-        model::Game* const game_ptr = pair.first;
-        Log::warning(tr_log("The game '%1' has no launchable entries, ignored").arg(game_ptr->title()));
-
-        deleted_games.emplace_back(game_ptr);
-    }
-
-    // Remove invalid games
-    VEC_REMOVE_DUPLICATES(deleted_games);
-    for (model::Game* const game_ptr : deleted_games) {
-        for (auto& pair : m_collection_games)
-            VEC_REMOVE_VALUE(pair.second, game_ptr);
-
         m_game_entries.erase(game_ptr);
         delete game_ptr;
     }
@@ -216,16 +194,16 @@ void SearchContext::finalize_cleanup_collections()
         model::Collection* const coll_ptr = pair.second;
 
         const auto game_list_it = m_collection_games.find(coll_ptr);
-        if (game_list_it == m_collection_games.cend() || game_list_it->second.empty()) {
-            Log::warning(tr_log("The collection '%1' has no valid games, ignored").arg(pair.first));
-            deleted_collections.emplace_back(coll_ptr);
-        }
+        if (game_list_it != m_collection_games.cend())
+            continue;
+
+        Log::warning(tr_log("The collection '%1' has no valid games, ignored").arg(pair.first));
+        deleted_collections.emplace_back(coll_ptr);
     }
 
     // Remove invalid collections
     for (model::Collection* const coll_ptr : deleted_collections) {
         m_collections.erase(coll_ptr->name());
-        m_collection_games.erase(coll_ptr);
         delete coll_ptr;
     }
 }
@@ -244,10 +222,8 @@ void SearchContext::finalize_apply_lists()
         for (model::Game* const game_ptr : pair.second)
             game_collections[game_ptr].emplace_back(pair.first);
     }
-    for (auto& pair : game_collections) {
-        VEC_REMOVE_DUPLICATES(pair.second);
+    for (auto& pair : game_collections)
         pair.first->setCollections(std::move(pair.second));
-    }
 
     // Apply games to collections
     for (auto& pair : m_collection_games) {
