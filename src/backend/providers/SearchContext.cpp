@@ -191,7 +191,7 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
             continue;
 
         model::Game* const game_ptr = pair.first;
-        Log::warning(tr_log("The game '%1' has no lauunchable entries, ignored").arg(game_ptr->title()));
+        Log::warning(tr_log("The game '%1' has no launchable entries, ignored").arg(game_ptr->title()));
         deleted_games.emplace_back(game_ptr);
         delete game_ptr;
     }
