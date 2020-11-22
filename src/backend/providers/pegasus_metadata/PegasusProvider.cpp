@@ -90,17 +90,22 @@ Provider& PegasusProvider::run(SearchContext& sctx)
     }
 
     const Metadata metahelper(display_name());
+    std::vector<FileFilter> all_filters;
 
     for (const QString& path : metafile_paths) {
         Log::info(tr_log("%1: Found `%2`").arg(display_name(), QDir::toNativeSeparators(path)));
 
         std::vector<FileFilter> filters = metahelper.apply_metafile(path, sctx);
-        for (FileFilter& filter : filters) {
-            apply_filter(filter, sctx);
+        all_filters.insert(all_filters.end(),
+            std::make_move_iterator(filters.begin()),
+            std::make_move_iterator(filters.end()));
+    }
 
-            for (QString& dir_path : filter.directories)
-                sctx.pegasus_add_game_dir(dir_path);
-        }
+    for (FileFilter& filter : all_filters) {
+        apply_filter(filter, sctx);
+
+        for (QString& dir_path : filter.directories)
+            sctx.pegasus_add_game_dir(dir_path);
     }
 
     return *this;

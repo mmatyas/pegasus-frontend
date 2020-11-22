@@ -119,6 +119,7 @@ private slots:
     void custom_assets_multi();
     void custom_directories();
     void multifile();
+    void multicoll();
     void nonASCII();
     void relative_files_only();
     void relative_files_with_dirs();
@@ -405,6 +406,34 @@ void test_PegasusProvider::multifile()
     const QVector<model::Game*>& child_vec = collections.first()->gamesConst();
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(0)) != child_vec.cend());
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(1)) != child_vec.cend());
+}
+
+void test_PegasusProvider::multicoll()
+{
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Metafiles: Found `%1`", ":/multicoll/c1/metadata.txt"));
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Metafiles: Found `%1`", ":/multicoll/c2/metadata.txt"));
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Metafiles: Found `%1`", ":/multicoll/games/metadata.txt"));
+
+    providers::SearchContext sctx({
+        QStringLiteral(":/multicoll/c1"),
+        QStringLiteral(":/multicoll/c2"),
+        QStringLiteral(":/multicoll/games"),
+    });
+    providers::pegasus::PegasusProvider().run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
+
+    QCOMPARE(collections.size(),  2);
+    QCOMPARE(games.size(), 1);
+    QCOMPARE(collections.first()->gamesConst().first(), collections.last()->gamesConst().first());
+
+    const model::Game& game = *games.first();
+    QCOMPARE(game.title(), QStringLiteral("My Game"));
+    QCOMPARE(game.summary(), QStringLiteral("Some Summary"));
+    QCOMPARE(game.description(), QStringLiteral("Some Description"));
+    QCOMPARE(game.developerStr(), QStringLiteral("My Developer"));
+    QCOMPARE(game.publisherStr(), QStringLiteral("My Publisher"));
+    QCOMPARE(game.genreStr(), QStringLiteral("My Genre"));
+    QCOMPARE(game.assets().boxFront(), QStringLiteral("file::/multicoll/games/game.jpg"));
 }
 
 void test_PegasusProvider::nonASCII()

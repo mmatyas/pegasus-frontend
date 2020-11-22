@@ -59,5 +59,10 @@
         <file>relative_files_with_dirs/b/ignoredir/game_ign.x</file>
         <file>relative_files_with_dirs/a/ignoreme.x</file>
         <file>relative_files_with_dirs/a/game_a.x</file>
+        <file>multicoll/c1/metadata.txt</file>
+        <file>multicoll/c2/metadata.txt</file>
+        <file>multicoll/games/game.ext</file>
+        <file>multicoll/games/game.jpg</file>
+        <file>multicoll/games/metadata.txt</file>
     </qresource>
 </RCC>

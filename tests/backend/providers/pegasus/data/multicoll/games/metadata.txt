@@ -1,0 +1,9 @@
+game: My Game
+file: game.ext
+summary: Some Summary
+description: Some Description
+developer: My Developer
+publisher: My Publisher
+genre: My Genre
+assets.boxFront: game.jpg
+
