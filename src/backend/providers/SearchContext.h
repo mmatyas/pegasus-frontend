@@ -84,5 +84,9 @@ private:
     HashMap<QString, model::GameFile*> m_uri_to_gamefile;
 
     std::vector<model::Game*> m_parentless_games;
+
+    void finalize_cleanup_games();
+    void finalize_cleanup_collections();
+    void finalize_apply_lists();
 };
 } // namespace providers

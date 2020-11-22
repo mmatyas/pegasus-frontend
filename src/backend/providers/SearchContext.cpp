@@ -176,45 +176,71 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
     return *this;
 }
 
-std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::finalize(QObject* const qparent)
+void SearchContext::finalize_cleanup_games()
 {
-    // TODO: C++17
+    std::vector<model::Game*> deleted_games;
 
+    // Find parentless games
     for (model::Game* const game_ptr : m_parentless_games) {
         Log::warning(tr_log("The game '%1' does not belong to any collections, ignored").arg(game_ptr->title()));
-        delete game_ptr;
+        deleted_games.emplace_back(game_ptr);
     }
-
-    std::vector<model::Game*> deleted_games;
+    // Find entryless games
     for (const auto& pair : m_game_entries) {
         if (!pair.second.empty())
             continue;
 
         model::Game* const game_ptr = pair.first;
         Log::warning(tr_log("The game '%1' has no launchable entries, ignored").arg(game_ptr->title()));
+
         deleted_games.emplace_back(game_ptr);
-        delete game_ptr;
     }
 
-    for (auto& pair : m_collection_games) {
-        for (model::Game* const game_ptr : deleted_games)
+    // Remove invalid games
+    VEC_REMOVE_DUPLICATES(deleted_games);
+    for (model::Game* const game_ptr : deleted_games) {
+        for (auto& pair : m_collection_games)
             VEC_REMOVE_VALUE(pair.second, game_ptr);
 
-        if (!pair.second.empty())
-            continue;
+        m_game_entries.erase(game_ptr);
+        delete game_ptr;
+    }
+}
 
-        model::Collection* const coll_ptr = pair.first;
-        Log::warning(tr_log("The collection '%1' has no valid games, ignored").arg(coll_ptr->name()));
-        m_collections.erase(coll_ptr->name());
-        delete coll_ptr;
+void SearchContext::finalize_cleanup_collections()
+{
+    std::vector<model::Collection*> deleted_collections;
+
+    // Find gameless collections
+    for (const auto& pair : m_collections) {
+        model::Collection* const coll_ptr = pair.second;
+
+        const auto game_list_it = m_collection_games.find(coll_ptr);
+        if (game_list_it == m_collection_games.cend() || game_list_it->second.empty()) {
+            Log::warning(tr_log("The collection '%1' has no valid games, ignored").arg(pair.first));
+            deleted_collections.emplace_back(coll_ptr);
+        }
     }
 
+    // Remove invalid collections
+    for (model::Collection* const coll_ptr : deleted_collections) {
+        m_collections.erase(coll_ptr->name());
+        m_collection_games.erase(coll_ptr);
+        delete coll_ptr;
+    }
+}
 
-    for (auto& pair : m_game_entries)
+void SearchContext::finalize_apply_lists()
+{
+    // Apply game entries
+    for (auto& pair : m_game_entries) {
+        Q_ASSERT(!pair.second.empty());
         pair.first->setFiles(std::move(pair.second));
+    }
 
+    // Apply collections to games
     HashMap<model::Game*, std::vector<model::Collection*>> game_collections;
-    for (auto& pair : m_collection_games) {
+    for (const auto& pair : m_collection_games) {
         for (model::Game* const game_ptr : pair.second)
             game_collections[game_ptr].emplace_back(pair.first);
     }
@@ -223,46 +249,55 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
         pair.first->setCollections(std::move(pair.second));
     }
 
+    // Apply games to collections
     for (auto& pair : m_collection_games) {
         VEC_REMOVE_DUPLICATES(pair.second);
         pair.first->setGames(std::move(pair.second));
     }
+}
+
+std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::finalize(QObject* const qparent)
+{
+    // TODO: C++17
+
+    finalize_cleanup_games();
+    finalize_cleanup_collections();
+    finalize_apply_lists();
 
 
     QVector<model::Game*> games;
-    games.reserve(m_filepath_to_gamefile.size() + m_uri_to_gamefile.size());
-    for (const auto& pair : m_filepath_to_gamefile)
-        games.append(pair.second->parentGame());
-    for (const auto& pair : m_uri_to_gamefile)
-        games.append(pair.second->parentGame());
-    VEC_REMOVE_DUPLICATES(games);
-    games.squeeze();
+    games.reserve(m_game_entries.size());
 
-    for (model::Game* const game : games) {
-        game->developerList().removeDuplicates();
-        game->publisherList().removeDuplicates();
-        game->genreList().removeDuplicates();
-        game->tagList().removeDuplicates();
+    for (const auto& pair : m_game_entries) {
+        model::Game& game = *pair.first;
+
+        game.developerList().removeDuplicates();
+        game.publisherList().removeDuplicates();
+        game.genreList().removeDuplicates();
+        game.tagList().removeDuplicates();
+
+        game.moveToThread(qparent->thread());
+        game.setParent(qparent);
+
+        games.append(pair.first);
     }
 
 
     QVector<model::Collection*> collections;
     collections.reserve(m_collections.size());
-    for (auto& pair : m_collections)
+
+    for (auto& pair : m_collections) {
+        model::Collection& collection = *pair.second;
+
+        collection.moveToThread(qparent->thread());
+        collection.setParent(qparent);
+
         collections.append(pair.second);
+    }
 
 
     std::sort(collections.begin(), collections.end(), model::sort_collections);
     std::sort(games.begin(), games.end(), model::sort_games);
-    for (model::Collection* const collection : collections) {
-        collection->moveToThread(qparent->thread());
-        collection->setParent(qparent);
-    }
-    for (model::Game* const game : games) {
-        game->moveToThread(qparent->thread());
-        game->setParent(qparent);
-    }
-
 
     return std::make_pair(std::move(collections), std::move(games));
 }
