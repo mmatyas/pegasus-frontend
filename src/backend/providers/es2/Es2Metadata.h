@@ -38,11 +38,12 @@ enum class MetaType : unsigned char;
 class Metadata {
 
 public:
-    explicit Metadata(QString);
+    explicit Metadata(QString, std::vector<QString>);
     void find_metadata_for(const SystemEntry&, const SearchContext&) const;
 
 private:
     const QString m_log_tag;
+    const std::vector<QString> m_config_dirs;
     const HashMap<QString, MetaType> m_key_types;
     const QString m_date_format;
     const QRegularExpression m_players_regex;

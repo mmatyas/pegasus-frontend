@@ -34,7 +34,7 @@ struct SystemEntry {
 };
 
 
-std::vector<SystemEntry> find_systems(const QString&);
+std::vector<SystemEntry> find_systems(const QString&, const std::vector<QString>&);
 
 } // namespace es2
 } // namespace providers

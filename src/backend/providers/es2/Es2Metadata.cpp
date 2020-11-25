@@ -36,20 +36,19 @@
 
 namespace {
 
-QString find_gamelist_xml(const QDir& system_dir, const QString& system_name)
+QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name)
 {
     const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
 
     std::vector<QString> possible_files { system_dir.path() % GAMELISTFILE };
 
     if (!system_name.isEmpty()) {
-        possible_files.emplace_back(paths::homePath()
-            % QStringLiteral("/.emulationstation/gamelists/")
-            % system_name
-            % GAMELISTFILE);
-        possible_files.emplace_back(QStringLiteral("/etc/emulationstation/gamelists/")
-            % system_name
-            % GAMELISTFILE);
+        for (const QString& dir_path : possible_config_dirs) {
+            possible_files.emplace_back(dir_path
+                % QStringLiteral("/gamelists/")
+                % system_name
+                % GAMELISTFILE);
+        }
     }
 
     for (const auto& path : possible_files) {
@@ -95,8 +94,9 @@ enum class MetaType : unsigned char {
     FAVORITE,
 };
 
-Metadata::Metadata(QString log_tag)
+Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
     : m_log_tag(std::move(log_tag))
+    , m_config_dirs(std::move(possible_config_dirs))
     , m_key_types {
         { QStringLiteral("path"), MetaType::PATH },
         { QStringLiteral("name"), MetaType::NAME },
@@ -133,7 +133,7 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
             m_key_types.cbegin(),
             m_key_types.cend(),
             [&xml](const decltype(m_key_types)::value_type& entry){ return entry.first == xml.name(); });
-        if (it == m_key_types.cend()) {
+        if (it != m_key_types.cend()) {
             xml_props[it->second] = xml.readElementText();
             continue;
         }
@@ -204,7 +204,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::S
     }
 
     const QDir xml_dir(sysentry.path);
-    const QString gamelist_path = find_gamelist_xml(xml_dir, sysentry.shortname);
+    const QString gamelist_path = find_gamelist_xml(m_config_dirs, xml_dir, sysentry.shortname);
     if (gamelist_path.isEmpty()) {
         Log::warning(tr_log("%1: No gamelist file found for system `%2`").arg(m_log_tag, sysentry.shortname));
         return;

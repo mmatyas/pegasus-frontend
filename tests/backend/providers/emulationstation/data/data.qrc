@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>empty/es/nothing_to_see_here</file>
+        <file>basic/es/es_systems.cfg</file>
+        <file>basic/mysys1/game.ext</file>
+        <file>gamelist/abs_image1.png</file>
+        <file>gamelist/abs_image2.png</file>
+        <file>gamelist/img/abs_image3.png</file>
+        <file>gamelist/es/es_systems.cfg</file>
+        <file>gamelist/mysys1/game1.ext</file>
+        <file>gamelist/mysys1/game2.ext</file>
+        <file>gamelist/mysys1/gamelist.xml</file>
+        <file>gamelist/mysys1/local_image1.png</file>
+        <file>gamelist/mysys1/local_image2.png</file>
+        <file>gamelist/mysys1/img/local_image3.png</file>
+    </qresource>
+</RCC>

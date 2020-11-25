@@ -19,9 +19,24 @@
 
 #include "LocaleUtils.h"
 #include "Log.h"
+#include "Paths.h"
 #include "providers/es2/Es2Games.h"
 #include "providers/es2/Es2Metadata.h"
 #include "providers/es2/Es2Systems.h"
+
+#include <QDir>
+#include <QStringBuilder>
+
+
+namespace {
+std::vector<QString> default_config_paths()
+{
+    return {
+        paths::homePath() % QStringLiteral("/.emulationstation/"),
+        QStringLiteral("/etc/emulationstation/"),
+    };
+}
+} // namespace
 
 
 namespace providers {
@@ -33,8 +48,15 @@ Es2Provider::Es2Provider(QObject* parent)
 
 Provider& Es2Provider::run(SearchContext& sctx)
 {
+    std::vector<QString> possible_config_dirs = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
+        return (option_it != options().cend())
+            ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
+            : default_config_paths();
+    }();
+
     // Find systems
-    const std::vector<SystemEntry> systems = find_systems(display_name());
+    const std::vector<SystemEntry> systems = find_systems(display_name(), possible_config_dirs);
     if (systems.empty())
         return *this;
     Log::info(tr_log("%1: Found %2 systems").arg(display_name(), QString::number(systems.size())));
@@ -43,7 +65,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     float progress = 0.f;
 
     // Load MAME blacklist, if exists
-    const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name());
+    const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name(), possible_config_dirs);
 
     // Find games
     for (const SystemEntry& sysentry : systems) {
@@ -56,7 +78,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     }
 
     // Find assets
-    const Metadata metahelper(display_name());
+    const Metadata metahelper(display_name(), std::move(possible_config_dirs));
     for (const SystemEntry& sysentry : systems) {
         metahelper.find_metadata_for(sysentry, sctx);
 

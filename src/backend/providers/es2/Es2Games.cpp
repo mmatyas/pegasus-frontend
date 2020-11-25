@@ -58,11 +58,11 @@ QStringList parse_filters(const QString& filters_raw) {
 namespace providers {
 namespace es2 {
 
-std::vector<QString> read_mame_blacklists(const QString& log_tag)
+std::vector<QString> read_mame_blacklists(const QString& log_tag, const std::vector<QString>& possible_config_dirs)
 {
     using L1Str = QLatin1String;
 
-    const QString resources_path = paths::homePath() % L1Str("/.emulationstation/resources/");
+    const QString resources_path = possible_config_dirs.front() % L1Str("/resources/");
     const std::vector<std::pair<L1Str, L1Str>> blacklists {
         { L1Str("mamebioses.xml"), L1Str("bios") },
         { L1Str("mamedevices.xml"), L1Str("device") },

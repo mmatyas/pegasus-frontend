@@ -1,0 +1,27 @@
+<gameList>
+    <game>
+        <path>game1.ext</path>
+        <name>Game 1</name>
+        <desc>Some Description</desc>
+        <developer>Some Developer</developer>
+        <publisher>Some Publisher</publisher>
+        <genre>Some Genre</genre>
+        <players>1-4</players>
+        <rating>0.6</rating>
+        <playcount>10</playcount>
+        <lastplayed>2000102T102030</lastplayed>
+        <releasedate>19990102T102030</releasedate>
+        <image>:/gamelist/abs_image1.png</image>
+        <video>:/gamelist/abs_image2.png</video>
+        <marquee>:/gamelist/img/abs_image3.png</marquee>
+        <favorite>yes</favorite>
+    </game>
+    <game>
+        <path>game2.ext</path>
+        <name>Game 2</name>
+        <players>5</players>
+        <image>./local_image1.png</image>
+        <video>./local_image2.png</video>
+        <marquee>./img/local_image3.png</marquee>
+    </game>
+</gameList>

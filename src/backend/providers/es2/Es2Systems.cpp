@@ -24,10 +24,10 @@
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
 #include "utils/CommandTokenizer.h"
-#include "utils/PathCheck.h"
 #include "utils/StdHelpers.h"
 
 #include <QFile>
+#include <QFileInfo>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 #include <array>
@@ -35,16 +35,12 @@
 
 namespace {
 
-QString find_systems_xml()
+QString find_systems_xml(const std::vector<QString>& possible_config_dirs)
 {
-    const std::array<QString, 2> possible_paths {
-        paths::homePath() % QStringLiteral("/.emulationstation/es_systems.cfg"),
-        QStringLiteral("/etc/emulationstation/es_systems.cfg"),
-    };
-
-    for (const QString& path : possible_paths) {
-        if (::validFile(path))
-            return path;
+    for (const QString& dir_path : possible_config_dirs) {
+        QString xml_path = dir_path + QStringLiteral("es_systems.cfg");
+        if (QFileInfo::exists(xml_path))
+            return xml_path;
     }
 
     return {};
@@ -140,9 +136,9 @@ namespace providers {
 namespace es2 {
 
 
-std::vector<SystemEntry> find_systems(const QString& log_tag)
+std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<QString>& possible_config_dirs)
 {
-    const QString xml_path = find_systems_xml();
+    const QString xml_path = find_systems_xml(possible_config_dirs);
     if (xml_path.isEmpty()) {
         Log::info(tr_log("%1: No installation found").arg(log_tag));
         return {};
