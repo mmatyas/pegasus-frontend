@@ -179,10 +179,14 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         }
 
         // get the Game, if exists, and apply the properties
+
         const QString filepath = shell_to_canonical_path(xml_dir, shell_filepath);
+        if (filepath.isEmpty())  // ie. the file does not exist
+            continue;
+
         model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(filepath);
-        if (!entry_ptr)
-            return;
+        if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
+            continue;
 
         apply_metadata(*entry_ptr, xml_dir, xml_props);
     }
