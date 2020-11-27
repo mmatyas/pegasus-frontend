@@ -17,7 +17,6 @@
 
 #include "PlaytimeStats.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
@@ -33,8 +32,6 @@
 
 
 namespace {
-static constexpr auto MSG_PREFIX = "Playtime:";
-
 QString default_db_path()
 {
     return paths::writableConfigDir() + QStringLiteral("/stats.db");
@@ -262,9 +259,8 @@ void PlaytimeStats::start_processing()
 
             SqliteDb channel(m_db_path);
             if (!channel.open()) {
-                qWarning().noquote() << MSG_PREFIX
-                    << tr_log("Could not open or create `%1`, play time will not be saved")
-                              .arg(m_db_path);
+                Log::warning(display_name(), tr_log("Could not open or create `%1`, play time will not be saved")
+                    .arg(m_db_path));
                 break;
             }
 

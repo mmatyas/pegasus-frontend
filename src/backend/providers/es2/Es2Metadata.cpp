@@ -17,7 +17,6 @@
 
 #include "Es2Metadata.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Assets.h"

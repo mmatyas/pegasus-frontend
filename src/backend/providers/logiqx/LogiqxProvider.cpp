@@ -17,7 +17,6 @@
 
 #include "LogiqxProvider.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "providers/SearchContext.h"
 #include "model/gaming/Collection.h"

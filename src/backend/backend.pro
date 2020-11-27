@@ -33,7 +33,6 @@ HEADERS += \
     PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \
-    LocaleUtils.h \
     Paths.h \
     AppSettings.h \
     Log.h \

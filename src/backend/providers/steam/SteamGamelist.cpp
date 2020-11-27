@@ -17,7 +17,6 @@
 
 #include "SteamGamelist.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"

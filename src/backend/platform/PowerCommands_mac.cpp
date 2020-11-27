@@ -17,7 +17,6 @@
 
 #include "PowerCommands.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 
 #include <Carbon/Carbon.h>
@@ -73,7 +72,7 @@ void reboot()
 void shutdown()
 {
     if (!send_apple_event(kAEShutDown))
-        Log::error(("Requesting shutdown has failed."));
+        Log::error(tr_log("Requesting shutdown has failed."));
 }
 
 } // namespace power

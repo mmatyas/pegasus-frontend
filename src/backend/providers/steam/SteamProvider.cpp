@@ -17,7 +17,6 @@
 
 #include "SteamProvider.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
 #include "providers/SearchContext.h"

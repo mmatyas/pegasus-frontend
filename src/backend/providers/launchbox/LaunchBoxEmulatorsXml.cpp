@@ -17,7 +17,6 @@
 
 #include "LaunchBoxEmulatorsXml.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "providers/launchbox/LaunchBoxEmulator.h"
 #include "providers/launchbox/LaunchBoxXml.h"

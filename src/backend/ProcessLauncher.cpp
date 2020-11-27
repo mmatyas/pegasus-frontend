@@ -17,14 +17,13 @@
 
 #include "ProcessLauncher.h"
 
-#include "LocaleUtils.h"
+#include "Log.h"
 #include "ScriptRunner.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "platform/TerminalKbd.h"
 #include "utils/CommandTokenizer.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QRegularExpression>
 
@@ -142,7 +141,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     if (command.isEmpty()) {
         const QString message = tr_log("Cannot launch the game `%1` because there is no launch command defined for it.")
             .arg(game.title());
-        qWarning().noquote() << message;
+        Log::warning(message);
         emit processLaunchError(message);
         return;
     }
@@ -175,8 +174,8 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
-    qInfo().noquote() << tr_log("Executing command: [`%1`]").arg(serialize_command(command, args));
-    qInfo().noquote() << tr_log("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir));
+    Log::info(tr_log("Executing command: [`%1`]").arg(serialize_command(command, args)));
+    Log::info(tr_log("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
 
     Q_ASSERT(!m_process);
     m_process = new QProcess(this);
@@ -206,8 +205,8 @@ void ProcessLauncher::onTeardownComplete()
 void ProcessLauncher::onProcessStarted()
 {
     Q_ASSERT(m_process);
-    qInfo().noquote() << tr_log("Process %1 started").arg(m_process->processId());
-    qInfo().noquote() << SEPARATOR;
+    Log::info(tr_log("Process %1 started").arg(m_process->processId()));
+    Log::info(SEPARATOR);
     emit processLaunchOk();
 }
 
@@ -221,7 +220,7 @@ void ProcessLauncher::onProcessError(QProcess::ProcessError error)
         case QProcess::Starting:
         case QProcess::NotRunning:
             emit processLaunchError(message);
-            qWarning().noquote() << message;
+            Log::warning(message);
             afterRun(); // finished() won't run
             break;
 
@@ -234,17 +233,17 @@ void ProcessLauncher::onProcessError(QProcess::ProcessError error)
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
 {
     Q_ASSERT(m_process);
-    qInfo().noquote() << SEPARATOR;
+    Log::info(SEPARATOR);
 
     switch (exitstatus) {
         case QProcess::NormalExit:
             if (exitcode == 0)
-                qInfo().noquote() << tr_log("The external program has finished cleanly");
+                Log::info(tr_log("The external program has finished cleanly"));
             else
-                qWarning().noquote() << tr_log("The external program has finished with error code %1").arg(exitcode);
+                Log::warning(tr_log("The external program has finished with error code %1").arg(exitcode));
             break;
         case QProcess::CrashExit:
-            qWarning().noquote() << tr_log("The external program has crashed");
+            Log::warning(tr_log("The external program has crashed"));
             break;
     }
 

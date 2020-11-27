@@ -17,7 +17,7 @@
 
 #include "MetaFile.h"
 
-#include "LocaleUtils.h"
+#include "Log.h"
 
 #include <QFile>
 #include <QRegularExpression>

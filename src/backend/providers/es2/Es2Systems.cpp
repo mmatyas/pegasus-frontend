@@ -17,7 +17,6 @@
 
 #include "Es2Systems.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Collection.h"

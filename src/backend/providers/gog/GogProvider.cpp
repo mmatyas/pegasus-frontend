@@ -17,7 +17,6 @@
 
 #include "GogProvider.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "GogGamelist.h"
 #include "GogMetadata.h"

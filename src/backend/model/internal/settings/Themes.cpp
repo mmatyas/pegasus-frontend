@@ -18,13 +18,12 @@
 #include "Themes.h"
 
 #include "AppSettings.h"
-#include "LocaleUtils.h"
+#include "Log.h"
 #include "Paths.h"
 #include "parsers/MetaFile.h"
 #include "utils/HashMap.h"
 #include "utils/PathCheck.h"
 
-#include <QDebug>
 #include <QDirIterator>
 #include <QStringBuilder>
 #include <QUrl>
@@ -51,8 +50,8 @@ HashMap<QString, QString> read_metafile(const QString& config_file_path)
             result.emplace(entry.key, metafile::merge_lines(entry.values));
         },
         [&](const metafile::Error& error){
-            qWarning().noquote() << tr_log("`%1`, line %2: %3")
-                .arg(config_file_path, QString::number(error.line), error.message);
+            Log::warning(tr_log("`%1`, line %2: %3")
+                .arg(config_file_path, QString::number(error.line), error.message));
         });
     return result;
 }
@@ -90,17 +89,17 @@ std::vector<model::ThemeEntry> find_available_themes()
             QString qml_path = basedir % QML_FILENAME;
 
             if (!::validFile(meta_path)) {
-                qWarning().noquote() << E_FILE_MISSING.arg(META_FILENAME, basedir);
+                Log::warning(E_FILE_MISSING.arg(META_FILENAME, basedir));
                 continue;
             }
             if (!::validFile(qml_path)) {
-                qWarning().noquote() << E_FILE_MISSING.arg(QML_FILENAME, basedir);
+                Log::warning(E_FILE_MISSING.arg(QML_FILENAME, basedir));
                 continue;
             }
 
             HashMap<QString, QString> metadata = read_metafile(meta_path);
             if (!metadata.count(META_KEY_NAME)) {
-                qWarning().noquote() << E_KEY_MISSING.arg(META_KEY_NAME, meta_path);
+                Log::warning(E_KEY_MISSING.arg(META_KEY_NAME, meta_path));
                 continue;
             }
 
@@ -119,8 +118,8 @@ std::vector<model::ThemeEntry> find_available_themes()
                 metadata[META_KEY_SUMMARY],
                 metadata[META_KEY_DESC]);
 
-            qInfo().noquote() << tr_log("Found theme `%1` at `%2`")
-                                 .arg(themes.back().name, themes.back().root_dir);
+            Log::info(tr_log("Found theme `%1` at `%2`")
+                .arg(themes.back().name, themes.back().root_dir));
         }
     }
 
@@ -190,8 +189,8 @@ bool Themes::select_theme(const QString& root_dir)
         }
     }
 
-    qWarning().noquote() << tr_log("Requested theme `%1` not found, falling back to default")
-        .arg(root_finfo.absoluteFilePath());
+    Log::warning(tr_log("Requested theme `%1` not found, falling back to default")
+        .arg(root_finfo.absoluteFilePath()));
     return false;
 }
 
@@ -199,8 +198,8 @@ void Themes::print_change() const
 {
     const auto& current = m_themes.at(m_current_idx);
 
-    qInfo().noquote() << tr_log("Theme set to `%1` (`%2`)")
-                         .arg(current.name, current.root_dir);
+    Log::info(tr_log("Theme set to `%1` (`%2`)")
+        .arg(current.name, current.root_dir));
 }
 
 int Themes::rowCount(const QModelIndex& parent) const
@@ -242,7 +241,7 @@ void Themes::setCurrentIndex(int idx_int)
         return;
 
     if (m_themes.size() <= idx) {
-        qWarning() << tr_log("Invalid theme index #%1").arg(idx);
+        Log::warning(tr_log("Invalid theme index #%1").arg(idx));
         return;
     }
 

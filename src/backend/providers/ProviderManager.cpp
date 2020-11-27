@@ -18,7 +18,6 @@
 #include "ProviderManager.h"
 
 #include "AppSettings.h"
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Provider.h"
 #include "SearchContext.h"

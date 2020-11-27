@@ -17,10 +17,9 @@
 
 #include "JsonCacheUtils.h"
 
+#include "Log.h"
 #include "Paths.h"
-#include "LocaleUtils.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QStringBuilder>
 

@@ -17,7 +17,6 @@
 
 #include "Es2Provider.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
 #include "providers/es2/Es2Games.h"

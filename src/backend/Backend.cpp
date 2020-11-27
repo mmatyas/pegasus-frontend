@@ -19,7 +19,6 @@
 
 #include "Api.h"
 #include "AppSettings.h"
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "FrontendLayer.h"
 #include "ProcessLauncher.h"

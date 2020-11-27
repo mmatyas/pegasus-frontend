@@ -17,7 +17,6 @@
 
 #include "SteamMetadata.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "model/gaming/Assets.h"
 #include "model/gaming/Game.h"

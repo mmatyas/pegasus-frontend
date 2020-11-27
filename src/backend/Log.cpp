@@ -18,7 +18,6 @@
 #include "Log.h"
 
 #include "AppSettings.h"
-#include "LocaleUtils.h"
 #include "Paths.h"
 
 #include <QDateTime>

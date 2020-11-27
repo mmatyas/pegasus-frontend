@@ -18,7 +18,6 @@
 #include "SearchContext.h"
 
 #include "AppSettings.h"
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"

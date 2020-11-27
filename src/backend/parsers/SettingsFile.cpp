@@ -18,12 +18,11 @@
 #include "SettingsFile.h"
 
 #include "AppSettings.h"
-#include "LocaleUtils.h"
+#include "Log.h"
 #include "MetaFile.h"
 #include "Paths.h"
 #include "providers/Provider.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -103,25 +102,22 @@ void LoadContext::load() const
     };
 
     metafile::read_file(config_path, on_attribute, on_error);
-    qInfo().noquote() << tr_log("Program settings loaded (`%1`)").arg(config_path);
+    Log::info(tr_log("Program settings loaded (`%1`)").arg(config_path));
 }
 
 void LoadContext::log_error(const size_t lineno, const QString& msg) const
 {
-    qWarning().noquote()
-        << tr_log("`%1`, line %2: %3").arg(config_path, QString::number(lineno), msg);
+    Log::warning(tr_log("`%1`, line %2: %3").arg(config_path, QString::number(lineno), msg));
 }
 
 void LoadContext::log_unknown_key(const size_t lineno, const QString& key) const
 {
-    log_error(lineno,
-        tr_log("unrecognized option `%1`, ignored").arg(key));
+    log_error(lineno, tr_log("unrecognized option `%1`, ignored").arg(key));
 }
 
 void LoadContext::log_needs_bool(const size_t lineno, const QString& key) const
 {
-    log_error(lineno,
-        tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
+    log_error(lineno, tr_log("this option (`%1`) must be a boolean (true/false) value").arg(key));
 }
 
 void LoadContext::handle_entry(const size_t lineno,
@@ -272,8 +268,7 @@ void SaveContext::save() const
 {
     QFile config_file(config_path);
     if (!config_file.open(QFile::WriteOnly | QFile::Text)) {
-        qWarning().noquote()
-            << tr_log("Failed to save program settings to `%1`").arg(config_path);
+        Log::warning(tr_log("Failed to save program settings to `%1`").arg(config_path));
         return;
     }
 
@@ -282,7 +277,7 @@ void SaveContext::save() const
     print_providers(stream);
     print_keys(stream);
 
-    qInfo().noquote() << tr_log("Program settings saved");
+    Log::info(tr_log("Program settings saved"));
 }
 
 void SaveContext::print_general(QTextStream& stream) const

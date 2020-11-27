@@ -16,7 +16,6 @@
 
 
 #include "backend/Backend.h"
-#include "backend/LocaleUtils.h"
 #include "backend/platform/TerminalKbd.h"
 
 #include <QCommandLineParser>
@@ -118,39 +117,41 @@ QCommandLineOption add_cli_option(QCommandLineParser& parser, const QString& nam
 
 backend::CliArgs handle_cli_args(QGuiApplication& app)
 {
+#define CMDMSG QStringLiteral
+
     QCommandLineParser argparser;
-    argparser.setApplicationDescription(tr_log(
+    argparser.setApplicationDescription(CMDMSG(
         "\nPegasus is a graphical frontend for browsing your game library (especially\n"
         "retro games) and launching them from one place. It's focusing on customization,\n"
         "cross platform support (including embedded devices) and high performance."));
 
     const QCommandLineOption arg_portable = add_cli_option(argparser,
         QStringLiteral("portable"),
-        tr_log("Do not read or write config files outside the program's directory"));
+        CMDMSG("Do not read or write config files outside the program's directory"));
 
     const QCommandLineOption arg_silent = add_cli_option(argparser,
         QStringLiteral("silent"),
-        tr_log("Do not print log messages to the terminal"));
+        CMDMSG("Do not print log messages to the terminal"));
 
     const QCommandLineOption arg_menu_reboot = add_cli_option(argparser,
         QStringLiteral("disable-menu-reboot"),
-        tr_log("Hides the system reboot entry in the main menu"));
+        CMDMSG("Hides the system reboot entry in the main menu"));
 
     const QCommandLineOption arg_menu_shutdown = add_cli_option(argparser,
         QStringLiteral("disable-menu-shutdown"),
-        tr_log("Hides the system shutdown entry in the main menu"));
+        CMDMSG("Hides the system shutdown entry in the main menu"));
 
     const QCommandLineOption arg_menu_appclose = add_cli_option(argparser,
         QStringLiteral("disable-menu-appclose"),
-        tr_log("Hides the closing Pegasus entry in the main menu"));
+        CMDMSG("Hides the closing Pegasus entry in the main menu"));
 
     const QCommandLineOption arg_menu_settings = add_cli_option(argparser,
         QStringLiteral("disable-menu-settings"),
-        tr_log("Hides the settings menu entry in the main menu"));
+        CMDMSG("Hides the settings menu entry in the main menu"));
 
     const QCommandLineOption arg_menu_kiosk = add_cli_option(argparser,
         QStringLiteral("kiosk"),
-        tr_log("Alias for:\n"
+        CMDMSG("Alias for:\n"
                "--disable-menu-reboot\n"
                "--disable-menu-shutdown\n"
                "--disable-menu-appclose\n"
@@ -158,7 +159,7 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
 
     const QCommandLineOption arg_gamepad_autoconfig = add_cli_option(argparser,
         QStringLiteral("disable-gamepad-autoconfig"),
-        tr_log("Disables the automatic layout detection for connected gamepads.\n"
+        CMDMSG("Disables the automatic layout detection for connected gamepads.\n"
                "When you connect a gamepad, Pegasus tries to guess its button and axis layout "
                "automatically based on a list of known devices. Unfortunately this doesn't seem "
                "to work perfectly with some platforms and devices (eg. arcades), in which case "
@@ -182,4 +183,6 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
 #endif
     return args;
+
+#undef CMDMSG
 }

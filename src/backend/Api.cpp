@@ -17,7 +17,6 @@
 
 #include "Api.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "model/gaming/GameFile.h"
 

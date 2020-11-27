@@ -17,7 +17,6 @@
 
 #include "GamepadManager.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "ScriptRunner.h"
 

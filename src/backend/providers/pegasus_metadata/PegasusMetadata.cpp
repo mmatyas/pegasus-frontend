@@ -17,7 +17,6 @@
 
 #include "PegasusMetadata.h"
 
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "PegasusAssets.h"
 #include "model/gaming/Assets.h"

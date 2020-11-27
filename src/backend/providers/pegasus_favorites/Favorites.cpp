@@ -18,7 +18,6 @@
 #include "Favorites.h"
 
 #include "AppSettings.h"
-#include "LocaleUtils.h"
 #include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Game.h"
