@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2020  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,6 +48,10 @@ public:
     static void info(const QString& message);
     static void warning(const QString& message);
     static void error(const QString& message);
+
+    static void info(const QString& tag, const QString& message);
+    static void warning(const QString& tag, const QString& message);
+    static void error(const QString& tag, const QString& message);
 
 private:
     static std::vector<std::unique_ptr<LogSink>> m_sinks;

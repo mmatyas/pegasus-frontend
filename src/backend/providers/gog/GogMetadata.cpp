@@ -172,18 +172,18 @@ void Metadata::fill_from_network(const QString& gogid, model::Game& game, Search
         const JsonCallback& json_callback = std::get<2>(triplet);
         sctx.schedule_download(std::get<0>(triplet), [log_tag, json_cache_dir, gogid, game_ptr, json_suffix, json_callback](QNetworkReply* const reply){
             if (reply->error()) {
-                Log::warning(tr_log("%1: Downloading metadata for `%2` failed: %3")
-                    .arg(log_tag, game_ptr->title(), reply->errorString()));
+                Log::warning(log_tag, tr_log("Downloading metadata for `%1` failed: %2")
+                    .arg(game_ptr->title(), reply->errorString()));
                 return;
             }
 
             const QByteArray raw_data = reply->readAll();
             const QJsonDocument json = QJsonDocument::fromJson(raw_data);
             if (json.isNull()) {
-                Log::warning(tr_log(
-                       "%1: Failed to parse the response of the server for game '%2', "
+                Log::warning(log_tag, tr_log(
+                       "Failed to parse the response of the server for game '%1', "
                        "either it's no longer available from the GOG Store or the GOG API has changed"
-                   ).arg(log_tag, game_ptr->title()));
+                   ).arg(game_ptr->title()));
                 return;
             }
 

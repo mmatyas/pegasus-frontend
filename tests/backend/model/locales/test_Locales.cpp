@@ -17,6 +17,7 @@
 
 #include <QtTest/QtTest>
 
+#include "Log.h"
 #include "model/internal/settings/Locales.h"
 
 
@@ -35,6 +36,8 @@ private slots:
 
 void test_Locales::initTestCase()
 {
+    Log::init_qttest();
+
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found locale .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Locale set to .*"));
 

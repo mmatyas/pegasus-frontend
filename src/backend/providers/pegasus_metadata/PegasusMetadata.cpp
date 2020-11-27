@@ -174,14 +174,14 @@ Metadata::Metadata(QString log_tag)
 
 void Metadata::print_error(const ParserState& ps, const metafile::Error& err) const
 {
-    Log::error(tr_log("%1: `%2`, line %3: %4")
-        .arg(m_log_tag, QDir::toNativeSeparators(ps.path), QString::number(err.line), err.message));
+    Log::error(m_log_tag, tr_log("`%1`, line %2: %3")
+        .arg(QDir::toNativeSeparators(ps.path), QString::number(err.line), err.message));
 }
 
 void Metadata::print_warning(const ParserState& ps, const metafile::Entry& entry, const QString& msg) const
 {
-    Log::warning(tr_log("%1: `%2`, line %3: %4")
-        .arg(m_log_tag, QDir::toNativeSeparators(ps.path), QString::number(entry.line), msg));
+    Log::warning(m_log_tag, tr_log("`%1`, line %2: %3")
+        .arg(QDir::toNativeSeparators(ps.path), QString::number(entry.line), msg));
 }
 
 const QString& Metadata::first_line_of(const ParserState& ps, const metafile::Entry& entry) const
@@ -496,8 +496,8 @@ std::vector<FileFilter> Metadata::apply_metafile(const QString& metafile_path, S
     };
 
     if (!metafile::read_file(metafile_path, on_entry, on_error)) {
-        Log::error(tr_log("%1: Failed to read metadata file `%2`")
-            .arg(m_log_tag, QDir::toNativeSeparators(metafile_path)));
+        Log::error(m_log_tag, tr_log("Failed to read metadata file `%1`")
+            .arg(QDir::toNativeSeparators(metafile_path)));
     }
 
     return std::move(ps.filters);

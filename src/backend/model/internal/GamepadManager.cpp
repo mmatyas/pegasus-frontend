@@ -55,6 +55,7 @@ namespace model {
 GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
     , m_devices(new QQmlObjectListModel<model::Gamepad>(this))
+    , m_log_tag(QStringLiteral("Gamepad"))
 #ifdef WITH_SDL_GAMEPAD
     , m_backend(new GamepadManagerSDL2(this))
 #else
@@ -114,7 +115,7 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
 
     m_devices->append(new Gamepad(device_id, name, m_devices));
 
-    Log::info(tr_log("Gamepad: connected device %1 (%2)").arg(pretty_id(device_id), name));
+    Log::info(m_log_tag, tr_log("Connected device %1 (%2)").arg(pretty_id(device_id), name));
     emit connected(device_id);
 }
 
@@ -128,7 +129,7 @@ void GamepadManager::bkOnDisconnected(int device_id)
         m_devices->remove(*it);
     }
 
-    Log::info(tr_log("Gamepad: disconnected device %1 (%2)").arg(pretty_id(device_id), name));
+    Log::info(m_log_tag, tr_log("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
     emit disconnected(std::move(name));
 }
 
@@ -136,7 +137,7 @@ void GamepadManager::bkOnNameChanged(int device_id, QString name)
 {
     const auto it = find_by_deviceid(*m_devices, device_id);
     if (it != m_devices->constEnd()) {
-        Log::info(tr_log("Gamepad: set name of device %1 to '%2'").arg(pretty_id(device_id), name));
+        Log::info(m_log_tag, tr_log("Set name of device %1 to '%2'").arg(pretty_id(device_id), name));
         (*it)->setName(std::move(name));
     }
 }

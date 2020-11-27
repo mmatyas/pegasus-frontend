@@ -222,6 +222,11 @@ void Log::close()
     { \
         for (const auto& sink : m_sinks) \
             sink->method(message); \
+    } \
+    void Log::method(const QString& tag, const QString& message) \
+    { \
+        const QString combi_msg = QStringLiteral("%1: %2").arg(tag, message); \
+        Log::method(combi_msg); \
     }
 FORALLSINK_CALLER(info)
 FORALLSINK_CALLER(warning)

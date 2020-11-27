@@ -87,6 +87,7 @@ private slots:
     void bkOnAxisChanged(int, GamepadAxis, double);
 
 private:
+    const QString m_log_tag;
     GamepadManagerBackend* const m_backend;
 
 #ifndef Q_OS_ANDROID

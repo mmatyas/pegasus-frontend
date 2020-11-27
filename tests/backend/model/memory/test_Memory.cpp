@@ -17,6 +17,7 @@
 
 #include <QtTest/QtTest>
 
+#include "Log.h"
 #include "Container.h"
 
 
@@ -24,6 +25,10 @@ class test_Memory : public QObject {
     Q_OBJECT
 
 private slots:
+    void initTestCase() {
+        Log::init_qttest();
+    }
+
     void set_new();
     void set_overwrite();
     void unset();

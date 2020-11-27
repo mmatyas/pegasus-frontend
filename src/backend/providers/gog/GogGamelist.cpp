@@ -191,7 +191,7 @@ HashMap<QString, model::Game*> Gamelist::find(
     providers::SearchContext& sctx) const
 {
     const std::vector<GogEntry> gogentries = find_game_entries(options);
-    Log::info(tr_log("%1: %2 games found").arg(m_log_tag, QString::number(gogentries.size())));
+    Log::info(m_log_tag, tr_log("%1 games found").arg(QString::number(gogentries.size())));
 
     return register_game_entries(gogentries, collection, sctx);
 }

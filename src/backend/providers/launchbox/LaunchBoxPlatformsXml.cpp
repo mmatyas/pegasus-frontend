@@ -34,12 +34,11 @@ std::vector<QString> find_platforms(const QString& log_tag, const QDir& lb_dir)
     const QString xml_path = lb_dir.filePath(QStringLiteral("Data/Platforms.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(tr_log("%1: Could not open `%2`").arg(log_tag, QDir::toNativeSeparators(xml_path)));
+        Log::error(log_tag, tr_log("Could not open `%1`").arg(QDir::toNativeSeparators(xml_path)));
         return {};
     }
 
     std::vector<QString> out;
-
     QXmlStreamReader xml(&xml_file);
     verify_root_node(xml);
 
@@ -60,7 +59,7 @@ std::vector<QString> find_platforms(const QString& log_tag, const QDir& lb_dir)
         }
     }
     if (xml.error())
-        Log::error(tr_log("%1: `%2`: %3").arg(log_tag, xml_path, xml.errorString()));
+        Log::error(log_tag, tr_log("In `%1`: %2").arg(xml_path, xml.errorString()));
 
     return out;
 }

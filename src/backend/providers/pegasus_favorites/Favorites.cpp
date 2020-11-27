@@ -58,7 +58,7 @@ Provider& Favorites::run(SearchContext& sctx)
 
     QFile db_file(m_db_path);
     if (!db_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        Log::error(tr_log("%1: Could not open `%2` for reading, favorites not loaded").arg(display_name(), m_db_path));
+        Log::error(display_name(), tr_log("Could not open `%1` for reading, favorites not loaded").arg(m_db_path));
         return *this;
     }
 
@@ -114,8 +114,8 @@ void Favorites::start_processing()
         while (true) {
             QFile db_file(m_db_path);
             if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                Log::error(tr_log("%1: Could not open `%2` for writing, favorites are not saved")
-                    .arg(display_name(), m_db_path));
+                Log::error(display_name(), tr_log("Could not open `%1` for writing, favorites are not saved")
+                    .arg(m_db_path));
                 break;
             }
 

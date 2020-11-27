@@ -106,8 +106,8 @@ EmulatorsXml::EmulatorsXml(QString log_tag, QDir lb_root)
 
 void EmulatorsXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
-    Log::warning(tr_log("%1: In `%2` at line %3: %4")
-        .arg(m_log_tag, QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
+    Log::warning(m_log_tag, tr_log("In `%1` at line %2: %3")
+        .arg(QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
 }
 
 bool EmulatorsXml::platform_fields_valid(
@@ -212,7 +212,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
     const QString xml_path = m_lb_root.filePath(QStringLiteral("Data/Emulators.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(tr_log("%1: Could not open `%2`").arg(m_log_tag, QDir::toNativeSeparators(xml_path)));
+        Log::error(m_log_tag, tr_log("Could not open `%1`").arg(QDir::toNativeSeparators(xml_path)));
         return {};
     }
 
@@ -257,7 +257,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
         xml.skipCurrentElement();
     }
     if (xml.error())
-        Log::error(tr_log("%1: `%2`: %3").arg(m_log_tag, xml_path, xml.errorString()));
+        Log::error(m_log_tag, tr_log("`%1`: %2").arg(xml_path, xml.errorString()));
 
 
     // TODO: C++17
@@ -265,8 +265,8 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
         const auto it = emulators.find(entry.first);
         if (it == emulators.cend()) {
             for (const EmulatorPlatform& platform : entry.second) {
-                Log::warning(tr_log("%1: In `%2` emulator platform `%3` refers to a missing or invalid emulator entry with id `%4`, entry ignored")
-                    .arg(m_log_tag, QDir::toNativeSeparators(xml_path), platform.name, entry.first));
+                Log::warning(m_log_tag, tr_log("In `%1` emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
+                    .arg(QDir::toNativeSeparators(xml_path), platform.name, entry.first));
             }
             continue;
         }

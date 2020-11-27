@@ -95,11 +95,8 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     // check if all required params are present
     for (const QLatin1String& key : required_keys) {
         if (xml_props[key].isEmpty()) {
-            Log::warning(tr_log("%1: The `<system>` node in `%2` that ends at line %3 has no `<%4>` parameter")
-                .arg(log_tag,
-                    static_cast<QFile*>(xml.device())->fileName(),
-                    QString::number(xml.lineNumber()),
-                    key));
+            Log::warning(log_tag, tr_log("The `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
+                .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(xml.lineNumber()), key));
             return {};
         }
     }
@@ -140,24 +137,24 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
 {
     const QString xml_path = find_systems_xml(possible_config_dirs);
     if (xml_path.isEmpty()) {
-        Log::info(tr_log("%1: No installation found").arg(log_tag));
+        Log::info(log_tag, tr_log("No installation found"));
         return {};
     }
-    Log::info(tr_log("%1: Found `%2`").arg(log_tag, xml_path));
+    Log::info(log_tag, tr_log("Found `%1`").arg(xml_path));
 
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(tr_log("%1: Could not open `%2`").arg(log_tag, xml_path));
+        Log::error(log_tag, tr_log("Could not open `%1`").arg(xml_path));
         return {};
     }
 
     QXmlStreamReader xml(&xml_file);
     if (!xml.readNextStartElement()) {
-        Log::error(tr_log("%1: Could not parse `%2`").arg(log_tag, xml_path));
+        Log::error(log_tag, tr_log("Could not parse `%1`").arg(xml_path));
         return {};
     }
     if (xml.name() != QLatin1String("systemList")) {
-        Log::error(tr_log("%1: `%2` does not have a `<systemList>` root node").arg(log_tag, xml_path));
+        Log::error(log_tag, tr_log("`%1` does not have a `<systemList>` root node").arg(xml_path));
         return {};
     }
 
@@ -174,7 +171,7 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
             systems.emplace_back(std::move(sysentry));
     }
     if (xml.error())
-        Log::error(tr_log("%1: %2").arg(log_tag, xml.errorString()));
+        Log::error(log_tag, xml.errorString());
 
     return systems;
 }

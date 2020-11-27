@@ -88,8 +88,8 @@ void ProviderManager::run(
 
             provider.run(sctx);
 
-            Log::info(tr_log("%1: Finished searching in %2ms")
-                .arg(provider.display_name(), QString::number(provider_timer.restart())));
+            Log::info(provider.display_name(), tr_log("Finished searching in %1ms")
+                .arg(QString::number(provider_timer.restart())));
         }
         m_progress_finished = 1.f;
         emit progressChanged(m_progress_finished, QString());

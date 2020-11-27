@@ -93,20 +93,20 @@ Provider& LutrisProvider::run(SearchContext& sctx)
 {
     const QString datadir = find_datadir();
     if (datadir.isEmpty()) {
-        Log::info(tr_log("%1: No installation found").arg(display_name()));
+        Log::info(display_name(), tr_log("No installation found"));
         return *this;
     }
-    Log::info(tr_log("%1: Found data directory: `%2`").arg(display_name(), datadir));
+    Log::info(display_name(), tr_log("Found data directory: `%1`").arg(datadir));
 
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
-        Log::warning(tr_log("%1: database not found").arg(display_name()));
+        Log::warning(display_name(), tr_log("Database not found"));
         return *this;
     }
 
     SqliteDb channel(db_path);
     if (!channel.open()) {
-        Log::warning(tr_log("%1: could not open the database").arg(display_name()));
+        Log::warning(display_name(), tr_log("Could not open the database"));
         return *this;
     }
     // No entries yet
@@ -116,7 +116,7 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     QSqlQuery query;
     query.prepare(QLatin1String("SELECT id, slug, name, playtime FROM games"));
     if (!query.exec()) {
-        Log::warning(tr_log("%1: %2").arg(display_name(), query.lastError().text()));
+        Log::warning(display_name(), query.lastError().text());
         return *this;
     }
 

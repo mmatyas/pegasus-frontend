@@ -203,8 +203,8 @@ GamelistXml::GamelistXml(QString log_tag, QDir lb_root)
 
 void GamelistXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
-    Log::warning(tr_log("%1: In `%2` at line %3: %4")
-        .arg(m_log_tag, QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
+    Log::warning(m_log_tag, tr_log("In `%1` at line %2: %3")
+        .arg(QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
 }
 
 bool GamelistXml::game_fields_valid(
@@ -363,7 +363,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
 
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(tr_log("%1: Could not open `%2`").arg(m_log_tag, QDir::toNativeSeparators(xml_rel_path)));
+        Log::error(m_log_tag, tr_log("Could not open `%1`").arg(QDir::toNativeSeparators(xml_rel_path)));
         return {};
     }
 
@@ -414,7 +414,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
         xml.skipCurrentElement();
     }
     if (xml.error())
-        Log::error(tr_log("%1: `%2`: %3").arg(m_log_tag, xml_path, xml.errorString()));
+        Log::error(m_log_tag, tr_log("`%1`: %2").arg(xml_path, xml.errorString()));
 
 
     for (const HashMap<AppField, QString>& fields : addiapps) {
@@ -426,8 +426,8 @@ std::vector<model::Game*> GamelistXml::find_games_for(
         const auto it = gameid_map.find(game_id);
         if (it == gameid_map.cend()) {
             const QString app_id = fields.at(AppField::ID);
-            Log::warning(tr_log("%1: In `%2` additional application entry `%3` refers to missing or invalid game `%4`, entry ignored")
-                .arg(m_log_tag, QDir::toNativeSeparators(xml_path), app_id, game_id));
+            Log::warning(m_log_tag, tr_log("In `%1` additional application entry `%2` refers to missing or invalid game `%3`, entry ignored")
+                .arg(QDir::toNativeSeparators(xml_path), app_id, game_id));
             continue;
         }
 

@@ -37,9 +37,8 @@ QString cached_json_path(const QString& provider_prefix,
     // NOTE: mkpath() returns true if the dir already exists
     QDir cache_dir(cache_path);
     if (!cache_dir.mkpath(QStringLiteral("."))) {
-        qWarning().noquote()
-            << provider_prefix
-            << tr_log("could not create cache directory `%1`").arg(cache_path);
+        Log::warning(provider_prefix,
+            tr_log("Could not create cache directory `%1`").arg(cache_path));
         return QString();
     }
 
@@ -59,16 +58,14 @@ void cache_json(const QString& provider_prefix,
 
     QFile json_file(json_path);
     if (!json_file.open(QIODevice::WriteOnly)) {
-        qWarning().noquote()
-            << provider_prefix
-            << tr_log("could not create cache file `%1`").arg(json_path);
+        Log::warning(provider_prefix,
+            tr_log("Could not create cache file `%1`").arg(json_path));
         return;
     }
 
     if (json_file.write(bytes) != bytes.length()) {
-        qWarning().noquote()
-            << provider_prefix
-            << tr_log("writing cache file `%1` failed").arg(json_path);
+        Log::warning(provider_prefix,
+            tr_log("Writing cache file `%1` failed").arg(json_path));
         json_file.remove();
     }
 }
@@ -86,10 +83,8 @@ QJsonDocument read_json_from_cache(const QString& provider_prefix,
     QJsonParseError parse_result {};
     auto json = QJsonDocument::fromJson(json_file.readAll(), &parse_result);
     if (parse_result.error != QJsonParseError::NoError) {
-        qWarning().noquote()
-            << provider_prefix
-            << tr_log("could not parse cached file `%1`").arg(json_path)
-            << parse_result.errorString();
+        Log::warning(provider_prefix, tr_log("Could not parse cached file `%1`: %2")
+            .arg(json_path, parse_result.errorString()));
         json_file.remove();
         return {};
     }

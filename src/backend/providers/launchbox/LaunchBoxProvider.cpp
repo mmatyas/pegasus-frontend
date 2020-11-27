@@ -56,22 +56,22 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
             : find_installation();
     }();
     if (lb_dir_path.isEmpty()) {
-        Log::info(tr_log("%1: No installation found").arg(display_name()));
+        Log::info(display_name(), tr_log("No installation found"));
         return *this;
     }
 
-    Log::info(tr_log("%1: Looking for installation at `%2`").arg(display_name(), QDir::toNativeSeparators(lb_dir_path)));
+    Log::info(display_name(), tr_log("Looking for installation at `%1`").arg(QDir::toNativeSeparators(lb_dir_path)));
     const QDir lb_dir(lb_dir_path);
 
     const std::vector<QString> platform_names = find_platforms(display_name(), lb_dir);
     if (platform_names.empty()) {
-        Log::warning(tr_log("%1: No platforms found").arg(display_name()));
+        Log::warning(display_name(), tr_log("No platforms found"));
         return *this;
     }
 
     const HashMap<QString, Emulator> emulators = EmulatorsXml(display_name(), lb_dir).find();
     if (emulators.empty()) {
-        Log::warning(tr_log("%1: No emulator settings found").arg(display_name()));
+        Log::warning(display_name(), tr_log("No emulator settings found"));
         return *this;
     }
 

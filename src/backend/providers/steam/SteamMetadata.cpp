@@ -184,18 +184,18 @@ void Metadata::fill_from_network(const QString& appid, model::Game& game, Search
     QString json_cache_dir = m_json_cache_dir;
     sctx.schedule_download(url, [appid, game_ptr, log_tag, json_cache_dir](QNetworkReply* const reply){
         if (reply->error()) {
-            Log::warning(tr_log("%1: Downloading metadata for `%2` failed: %3")
-                .arg(log_tag, game_ptr->title(), reply->errorString()));
+            Log::warning(log_tag, tr_log("Downloading metadata for `%1` failed: %2")
+                .arg(game_ptr->title(), reply->errorString()));
             return;
         }
 
         const QByteArray raw_data = reply->readAll();
         const QJsonDocument json = QJsonDocument::fromJson(raw_data);
         if (json.isNull()) {
-            Log::warning(tr_log(
-                   "%1: Failed to parse the response of the server for game '%2', "
+            Log::warning(log_tag, tr_log(
+                   "Failed to parse the response of the server for game '%1', "
                    "either it's no longer available from the Steam Store or the Steam API has changed"
-               ).arg(log_tag, game_ptr->title()));
+               ).arg(game_ptr->title()));
             return;
         }
 

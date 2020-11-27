@@ -17,6 +17,7 @@
 
 #include <QtTest/QtTest>
 
+#include "Log.h"
 #include "model/internal/settings/Themes.h"
 
 
@@ -35,6 +36,8 @@ private slots:
 
 void test_Themes::initTestCase()
 {
+    Log::init_qttest();
+
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 

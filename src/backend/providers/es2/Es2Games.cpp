@@ -93,7 +93,7 @@ std::vector<QString> read_mame_blacklists(const QString& log_tag, const std::vec
             hit_count++;
         }
 
-        Log::info(tr_log("%1: Found `%2`, %3 entries loaded").arg(log_tag, file_path, QString::number(hit_count)));
+        Log::info(log_tag, tr_log("Found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count)));
     }
 
     return out;
