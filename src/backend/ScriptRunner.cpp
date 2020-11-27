@@ -63,7 +63,7 @@ void execute_all(const std::vector<QString>& paths, const QStringList& args)
     const int num_field_width = QString::number(paths.size()).length();
 
     for (size_t i = 0; i < paths.size(); i++) {
-        Log::info(tr_log("[%1/%2] Running `%3`")
+        Log::info(LOGMSG("[%1/%2] Running `%3`")
             .arg(i + 1, num_field_width)
             .arg(paths.size())
             .arg(paths[i]));
@@ -99,6 +99,6 @@ void ScriptRunner::run(ScriptEvent event, const QStringList& args)
     if (scripts.empty())
         return;
 
-    Log::info(tr_log("Running `%1` scripts...").arg(dirname));
+    Log::info(LOGMSG("Running `%1` scripts...").arg(dirname));
     execute_all(scripts, args);
 }

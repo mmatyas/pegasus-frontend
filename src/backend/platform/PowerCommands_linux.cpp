@@ -44,7 +44,7 @@ bool dbus_call(const char* const service, const char* const path, const char* co
 
     const bool success = process.waitForFinished(5000);
     if (!success)
-        Log::warning(tr_log("Requesting shutdown/reboot from D-Bus service `%1` failed.").arg(service_str));
+        Log::warning(LOGMSG("Requesting shutdown/reboot from D-Bus service `%1` failed.").arg(service_str));
 
     return success;
 }

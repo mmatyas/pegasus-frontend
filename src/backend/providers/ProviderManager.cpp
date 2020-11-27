@@ -87,7 +87,7 @@ void ProviderManager::run(
 
             provider.run(sctx);
 
-            Log::info(provider.display_name(), tr_log("Finished searching in %1ms")
+            Log::info(provider.display_name(), LOGMSG("Finished searching in %1ms")
                 .arg(QString::number(provider_timer.restart())));
         }
         m_progress_finished = 1.f;
@@ -98,14 +98,14 @@ void ProviderManager::run(
             QElapsedTimer network_timer;
             network_timer.start();
 
-            Log::info(tr_log("Waiting for online sources..."));
+            Log::info(LOGMSG("Waiting for online sources..."));
 
             QEventLoop loop;
             connect(&sctx, &providers::SearchContext::downloadCompleted,
                     &loop, [&loop, &sctx]{ if (!sctx.has_pending_downloads()) loop.quit(); });
             loop.exec();
 
-            Log::info(tr_log("Waiting for online sources took %1ms").arg(network_timer.elapsed()));
+            Log::info(LOGMSG("Waiting for online sources took %1ms").arg(network_timer.elapsed()));
         }
 
 
@@ -120,7 +120,7 @@ void ProviderManager::run(
         std::swap(collections, *m_target_collection_list);
         std::swap(games, *m_target_game_list);
 
-        Log::info(tr_log("Game list post-processing took %1ms").arg(finalize_timer.elapsed()));
+        Log::info(LOGMSG("Game list post-processing took %1ms").arg(finalize_timer.elapsed()));
         emit finished();
     });
 }

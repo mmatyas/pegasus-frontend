@@ -105,7 +105,7 @@ EmulatorsXml::EmulatorsXml(QString log_tag, QDir lb_root)
 
 void EmulatorsXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
-    Log::warning(m_log_tag, tr_log("In `%1` at line %2: %3")
+    Log::warning(m_log_tag, LOGMSG("In `%1` at line %2: %3")
         .arg(QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
 }
 
@@ -116,13 +116,13 @@ bool EmulatorsXml::platform_fields_valid(
 {
     const auto it_id = fields.find(PlatformField::EMULATOR);
     if (it_id == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator platform has no emulator ID field, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Emulator platform has no emulator ID field, entry ignored"));
         return false;
     }
 
     const auto it_name = fields.find(PlatformField::NAME);
     if (it_name == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator platform has no name, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Emulator platform has no name, entry ignored"));
         return false;
     }
 
@@ -136,26 +136,26 @@ bool EmulatorsXml::emulator_fields_valid(
 {
     const auto it_id = fields.find(EmulatorField::ID);
     if (it_id == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator has no ID field, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Emulator has no ID field, entry ignored"));
         return false;
     }
 
     const auto it_name = fields.find(EmulatorField::NAME);
     if (it_name == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator has no name, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Emulator has no name, entry ignored"));
         return false;
     }
 
     const auto it_path = fields.find(EmulatorField::PATH);
     if (it_path == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Emulator has no launchable executable, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Emulator has no launchable executable, entry ignored"));
         return false;
     }
 
     if (!QFileInfo::exists(it_path->second)) {
         const QString display_path = QDir::toNativeSeparators(it_path->second);
         log_xml_warning(xml_path, xml_linenum,
-            tr_log("Emulator executable `%1` doesn't seem to exist, entry ignored").arg(display_path));
+            LOGMSG("Emulator executable `%1` doesn't seem to exist, entry ignored").arg(display_path));
         return false;
     }
 
@@ -211,7 +211,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
     const QString xml_path = m_lb_root.filePath(QStringLiteral("Data/Emulators.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(m_log_tag, tr_log("Could not open `%1`").arg(QDir::toNativeSeparators(xml_path)));
+        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(QDir::toNativeSeparators(xml_path)));
         return {};
     }
 
@@ -256,7 +256,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
         xml.skipCurrentElement();
     }
     if (xml.error())
-        Log::error(m_log_tag, tr_log("`%1`: %2").arg(xml_path, xml.errorString()));
+        Log::error(m_log_tag, LOGMSG("`%1`: %2").arg(xml_path, xml.errorString()));
 
 
     // TODO: C++17
@@ -264,7 +264,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
         const auto it = emulators.find(entry.first);
         if (it == emulators.cend()) {
             for (const EmulatorPlatform& platform : entry.second) {
-                Log::warning(m_log_tag, tr_log("In `%1` emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
+                Log::warning(m_log_tag, LOGMSG("In `%1` emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
                     .arg(QDir::toNativeSeparators(xml_path), platform.name, entry.first));
             }
             continue;

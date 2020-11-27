@@ -50,7 +50,7 @@ HashMap<QString, QString> read_metafile(const QString& config_file_path)
             result.emplace(entry.key, metafile::merge_lines(entry.values));
         },
         [&](const metafile::Error& error){
-            Log::warning(tr_log("`%1`, line %2: %3")
+            Log::warning(LOGMSG("`%1`, line %2: %3")
                 .arg(config_file_path, QString::number(error.line), error.message));
         });
     return result;
@@ -72,8 +72,8 @@ std::vector<model::ThemeEntry> find_available_themes()
     //const QString META_KEY_KEYWORDS(QStringLiteral("keywords"));
     //const QString META_KEY_HOMEPAGE(QStringLiteral("homepage"));
 
-    const auto E_FILE_MISSING = tr_log("No `%1` file found in `%2`, theme skipped");
-    const auto E_KEY_MISSING = tr_log("There is no `%1` entry in `%2`, theme skipped");
+    const auto E_FILE_MISSING = LOGMSG("No `%1` file found in `%2`, theme skipped");
+    const auto E_KEY_MISSING = LOGMSG("There is no `%1` entry in `%2`, theme skipped");
 
 
     const QStringList search_paths = theme_directories();
@@ -118,7 +118,7 @@ std::vector<model::ThemeEntry> find_available_themes()
                 metadata[META_KEY_SUMMARY],
                 metadata[META_KEY_DESC]);
 
-            Log::info(tr_log("Found theme `%1` at `%2`")
+            Log::info(LOGMSG("Found theme `%1` at `%2`")
                 .arg(themes.back().name, themes.back().root_dir));
         }
     }
@@ -189,7 +189,7 @@ bool Themes::select_theme(const QString& root_dir)
         }
     }
 
-    Log::warning(tr_log("Requested theme `%1` not found, falling back to default")
+    Log::warning(LOGMSG("Requested theme `%1` not found, falling back to default")
         .arg(root_finfo.absoluteFilePath()));
     return false;
 }
@@ -198,7 +198,7 @@ void Themes::print_change() const
 {
     const auto& current = m_themes.at(m_current_idx);
 
-    Log::info(tr_log("Theme set to `%1` (`%2`)")
+    Log::info(LOGMSG("Theme set to `%1` (`%2`)")
         .arg(current.name, current.root_dir));
 }
 
@@ -241,7 +241,7 @@ void Themes::setCurrentIndex(int idx_int)
         return;
 
     if (m_themes.size() <= idx) {
-        Log::warning(tr_log("Invalid theme index #%1").arg(idx));
+        Log::warning(LOGMSG("Invalid theme index #%1").arg(idx));
         return;
     }
 

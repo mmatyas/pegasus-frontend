@@ -45,7 +45,7 @@ std::unique_ptr<char, void(*)(void*)> freeable_str(char* const str)
 
 void print_sdl_error()
 {
-    Log::error(tr_log("Error reported by SDL2: %1").arg(SDL_GetError()));
+    Log::error(LOGMSG("Error reported by SDL2: %1").arg(SDL_GetError()));
 }
 
 QString pretty_idx(int device_idx) {
@@ -56,7 +56,7 @@ uint16_t linked_sdl_version()
 {
     SDL_version raw;
     SDL_GetVersion(&raw);
-    Log::info(tr_log("SDL version %1.%2.%3").arg(raw.major, raw.minor, raw.patch));
+    Log::info(LOGMSG("SDL version %1.%2.%3").arg(raw.major, raw.minor, raw.patch));
     return version(raw.major, raw.minor, raw.patch);
 }
 
@@ -115,11 +115,11 @@ void try_register_default_mapping(int device_idx)
     const QString new_mapping = guid_str % QLatin1Char(',') % name % default_mapping;
 
     if (SDL_GameControllerAddMapping(new_mapping.toLocal8Bit().data()) < 0) {
-        Log::error(tr_log("SDL2: failed to set the default layout for gamepad %1").arg(pretty_idx(device_idx)));
+        Log::error(LOGMSG("SDL2: failed to set the default layout for gamepad %1").arg(pretty_idx(device_idx)));
         print_sdl_error();
         return;
     }
-    Log::info(tr_log("SDL2: using default layout for gamepad %1").arg(pretty_idx(device_idx)));
+    Log::info(LOGMSG("SDL2: using default layout for gamepad %1").arg(pretty_idx(device_idx)));
 }
 
 GamepadButton translate_button(Uint8 button)
@@ -247,7 +247,7 @@ void write_mappings(const std::vector<std::string>& mappings)
 
     QFile db_file(db_path);
     if (!db_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        Log::error(tr_log("SDL: could not open `%1` for writing, gamepad config cannot be saved.")
+        Log::error(LOGMSG("SDL: could not open `%1` for writing, gamepad config cannot be saved.")
             .arg(db_path));
         return;
     }
@@ -283,7 +283,7 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
 void GamepadManagerSDL2::start(const backend::CliArgs& args)
 {
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
-        Log::info(tr_log("Failed to initialize SDL2. Gamepad support may not work."));
+        Log::info(LOGMSG("Failed to initialize SDL2. Gamepad support may not work."));
         print_sdl_error();
         return;
     }
@@ -317,10 +317,10 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
 
     QFile db_file(path);
     if (!db_file.open(QFile::ReadOnly | QFile::Text)) {
-        Log::warning(tr_log("SDL: could not open `%1`, ignored").arg(path));
+        Log::warning(LOGMSG("SDL: could not open `%1`, ignored").arg(path));
         return;
     }
-    Log::info(tr_log("SDL: loading controller mappings from `%1`").arg(path));
+    Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
 
     QTextStream db_stream(&db_file);
     QString line;
@@ -335,13 +335,13 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
         const bool has_comma = line.length() > static_cast<int>(GUID_STR_LEN)
             && line.at(GUID_STR_LEN + 1) == QLatin1Char(',');
         if (guid_str.length() != GUID_STR_LEN || has_comma) {
-            Log::warning(tr_log("SDL: in `%1` line #%2, the line format is incorrect, skipped")
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, the line format is incorrect, skipped")
                 .arg(path, QString::number(linenum)));
             continue;
         }
         const auto bytes = QByteArray::fromHex(QByteArray::fromRawData(guid_str.data(), GUID_STR_LEN));
         if (bytes.count() != GUID_HEX_CNT) {
-            Log::warning(tr_log("SDL: in `%1` line #%2, the GUID is incorrect, skipped")
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, the GUID is incorrect, skipped")
                 .arg(path, QString::number(linenum)));
             continue;
         }
@@ -351,7 +351,7 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
 
         std::string new_mapping = line.toStdString();
         if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
-            Log::warning(tr_log("SDL: in `%1` line #%2, could not add controller mapping, skipped")
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, could not add controller mapping, skipped")
                 .arg(path, QString::number(linenum)));
             print_sdl_error();
             continue;
@@ -441,14 +441,14 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 
     SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
     if (!pad) {
-        Log::error(tr_log("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
+        Log::error(LOGMSG("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
         print_sdl_error();
         return;
     }
 
     const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
     if (!mapping)
-        Log::info(tr_log("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
+        Log::info(LOGMSG("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
 
     QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
 

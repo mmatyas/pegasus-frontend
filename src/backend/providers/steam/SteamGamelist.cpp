@@ -50,7 +50,7 @@ std::pair<QString, QString> Gamelist::read_manifest_file(const QString& manifest
 {
     QFile manifest(manifest_path);
     if (!manifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        Log::error(m_log_tag, tr_log("Could not open `%1`").arg(manifest_path));
+        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(manifest_path));
         return {};
     }
 

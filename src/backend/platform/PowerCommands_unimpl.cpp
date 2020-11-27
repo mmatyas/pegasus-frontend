@@ -25,12 +25,12 @@ namespace power {
 
 void reboot()
 {
-    Log::error(tr_log("Reboot not implemented on this platform yet"));
+    Log::error(LOGMSG("Reboot not implemented on this platform yet"));
 }
 
 void shutdown()
 {
-    Log::error(tr_log("Shutdown not implemented on this platform yet"));
+    Log::error(LOGMSG("Shutdown not implemented on this platform yet"));
 }
 
 } // namespace power

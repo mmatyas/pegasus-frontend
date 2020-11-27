@@ -93,7 +93,7 @@ public:
         : m_file(default_log_path())
     {
         if (!m_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            Log::warning(tr_log("Could not open `%1` for writing, file logging disabled.")
+            Log::warning(LOGMSG("Could not open `%1` for writing, file logging disabled.")
                          .arg(m_file.fileName()));
             return;
         }

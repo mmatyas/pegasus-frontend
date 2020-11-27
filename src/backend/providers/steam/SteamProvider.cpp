@@ -120,7 +120,7 @@ std::vector<QString> find_steam_installdirs(const QString& log_tag, const QStrin
     const QString config_path = steam_datadir + QLatin1String("config/config.vdf");
     QFile configfile(config_path);
     if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        Log::warning(log_tag, tr_log("Could not read `%1`, some games may be missing").arg(config_path));
+        Log::warning(log_tag, LOGMSG("Could not read `%1`, some games may be missing").arg(config_path));
         return installdirs;
     }
 
@@ -196,16 +196,16 @@ Provider& SteamProvider::run(SearchContext& sctx)
 
     const QString steamdir_path = find_steam_datadir();
     if (steamdir_path.isEmpty()) {
-        Log::info(display_name(), tr_log("No installation found"));
+        Log::info(display_name(), LOGMSG("No installation found"));
         return *this;
     }
 
-    Log::info(display_name(), tr_log("Found installation at `%1`").arg(steamdir_path));
+    Log::info(display_name(), LOGMSG("Found installation at `%1`").arg(steamdir_path));
     Q_ASSERT(steamdir_path.endsWith(QChar('/')));
 
     std::vector<QString> installdirs = find_steam_installdirs(display_name(), steamdir_path);
     if (installdirs.empty()) {
-        Log::warning(display_name(), tr_log("No game directories found"));
+        Log::warning(display_name(), LOGMSG("No game directories found"));
         return *this;
     }
 
@@ -229,7 +229,7 @@ Provider& SteamProvider::run(SearchContext& sctx)
         emit progressChanged(progress);
     }
 
-    Log::info(display_name(), tr_log("%1 games found").arg(QString::number(appid_game_map.size())));
+    Log::info(display_name(), LOGMSG("%1 games found").arg(QString::number(appid_game_map.size())));
     if (appid_game_map.empty())
         return *this;
 

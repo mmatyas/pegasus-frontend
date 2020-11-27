@@ -23,7 +23,7 @@
 #include <memory>
 #include <vector>
 
-#define tr_log(str) QStringLiteral(str)
+#define LOGMSG(str) QStringLiteral(str)
 
 
 class LogSink {

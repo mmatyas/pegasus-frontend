@@ -85,7 +85,7 @@ void ApiObject::onSearchFinished()
     m_collections->append(std::move(coll_vec));
 
     m_internal.meta().onUiReady();
-    Log::info(tr_log("%1 games found").arg(m_allGames->count()));
+    Log::info(LOGMSG("%1 games found").arg(m_allGames->count()));
 }
 
 void ApiObject::onGameFileSelectorRequested()

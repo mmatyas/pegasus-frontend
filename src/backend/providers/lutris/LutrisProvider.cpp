@@ -92,20 +92,20 @@ Provider& LutrisProvider::run(SearchContext& sctx)
 {
     const QString datadir = find_datadir();
     if (datadir.isEmpty()) {
-        Log::info(display_name(), tr_log("No installation found"));
+        Log::info(display_name(), LOGMSG("No installation found"));
         return *this;
     }
-    Log::info(display_name(), tr_log("Found data directory: `%1`").arg(datadir));
+    Log::info(display_name(), LOGMSG("Found data directory: `%1`").arg(datadir));
 
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
-        Log::warning(display_name(), tr_log("Database not found"));
+        Log::warning(display_name(), LOGMSG("Database not found"));
         return *this;
     }
 
     SqliteDb channel(db_path);
     if (!channel.open()) {
-        Log::warning(display_name(), tr_log("Could not open the database"));
+        Log::warning(display_name(), LOGMSG("Could not open the database"));
         return *this;
     }
     // No entries yet

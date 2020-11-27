@@ -94,7 +94,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     // check if all required params are present
     for (const QLatin1String& key : required_keys) {
         if (xml_props[key].isEmpty()) {
-            Log::warning(log_tag, tr_log("The `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
+            Log::warning(log_tag, LOGMSG("The `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
                 .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(xml.lineNumber()), key));
             return {};
         }
@@ -136,24 +136,24 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
 {
     const QString xml_path = find_systems_xml(possible_config_dirs);
     if (xml_path.isEmpty()) {
-        Log::info(log_tag, tr_log("No installation found"));
+        Log::info(log_tag, LOGMSG("No installation found"));
         return {};
     }
-    Log::info(log_tag, tr_log("Found `%1`").arg(xml_path));
+    Log::info(log_tag, LOGMSG("Found `%1`").arg(xml_path));
 
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(log_tag, tr_log("Could not open `%1`").arg(xml_path));
+        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(xml_path));
         return {};
     }
 
     QXmlStreamReader xml(&xml_file);
     if (!xml.readNextStartElement()) {
-        Log::error(log_tag, tr_log("Could not parse `%1`").arg(xml_path));
+        Log::error(log_tag, LOGMSG("Could not parse `%1`").arg(xml_path));
         return {};
     }
     if (xml.name() != QLatin1String("systemList")) {
-        Log::error(log_tag, tr_log("`%1` does not have a `<systemList>` root node").arg(xml_path));
+        Log::error(log_tag, LOGMSG("`%1` does not have a `<systemList>` root node").arg(xml_path));
         return {};
     }
 

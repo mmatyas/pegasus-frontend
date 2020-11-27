@@ -84,7 +84,7 @@ Provider& PegasusProvider::run(SearchContext& sctx)
 {
     const std::vector<QString> metafile_paths = find_all_metafiles(sctx.root_game_dirs());
     if (metafile_paths.empty()) {
-        Log::info(display_name(), tr_log("No metadata files found"));
+        Log::info(display_name(), LOGMSG("No metadata files found"));
         return *this;
     }
 
@@ -92,7 +92,7 @@ Provider& PegasusProvider::run(SearchContext& sctx)
     std::vector<FileFilter> all_filters;
 
     for (const QString& path : metafile_paths) {
-        Log::info(display_name(), tr_log("Found `%1`").arg(QDir::toNativeSeparators(path)));
+        Log::info(display_name(), LOGMSG("Found `%1`").arg(QDir::toNativeSeparators(path)));
 
         std::vector<FileFilter> filters = metahelper.apply_metafile(path, sctx);
         all_filters.insert(all_filters.end(),

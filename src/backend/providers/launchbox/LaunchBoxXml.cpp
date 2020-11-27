@@ -29,7 +29,7 @@ void verify_root_node(QXmlStreamReader& xml)
 {
     const bool valid = xml.readNextStartElement() && xml.name() == QLatin1String("LaunchBox");
     if (!valid)
-        xml.raiseError(tr_log("The file does not start with a `<LaunchBox>` root node, file ignored"));
+        xml.raiseError(LOGMSG("The file does not start with a `<LaunchBox>` root node, file ignored"));
 }
 
 } // namespace launchbox

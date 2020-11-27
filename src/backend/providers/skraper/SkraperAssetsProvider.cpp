@@ -143,7 +143,7 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         }
     }
 
-    Log::info(display_name(), tr_log("%1 assets found").arg(QString::number(found_assets_cnt)));
+    Log::info(display_name(), LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
     return *this;
 }
 

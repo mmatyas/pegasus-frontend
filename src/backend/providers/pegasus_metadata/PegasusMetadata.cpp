@@ -173,13 +173,13 @@ Metadata::Metadata(QString log_tag)
 
 void Metadata::print_error(const ParserState& ps, const metafile::Error& err) const
 {
-    Log::error(m_log_tag, tr_log("`%1`, line %2: %3")
+    Log::error(m_log_tag, LOGMSG("`%1`, line %2: %3")
         .arg(QDir::toNativeSeparators(ps.path), QString::number(err.line), err.message));
 }
 
 void Metadata::print_warning(const ParserState& ps, const metafile::Entry& entry, const QString& msg) const
 {
-    Log::warning(m_log_tag, tr_log("`%1`, line %2: %3")
+    Log::warning(m_log_tag, LOGMSG("`%1`, line %2: %3")
         .arg(QDir::toNativeSeparators(ps.path), QString::number(entry.line), msg));
 }
 
@@ -190,7 +190,7 @@ const QString& Metadata::first_line_of(const ParserState& ps, const metafile::En
     Q_ASSERT(!entry.values.front().isEmpty());
 
     if (entry.values.size() > 1) {
-        print_warning(ps, entry, tr_log("Expected a single line value for `%1`, but got more; the rest of the lines will be ignored")
+        print_warning(ps, entry, LOGMSG("Expected a single line value for `%1`, but got more; the rest of the lines will be ignored")
             .arg(entry.key));
     }
 
@@ -212,7 +212,7 @@ void Metadata::apply_collection_entry(ParserState& ps, const metafile::Entry& en
 
     const auto attrib_it = m_coll_attribs.find(entry.key);
     if (attrib_it == m_coll_attribs.cend()) {
-        print_warning(ps, entry, tr_log("Unrecognized collection property `%1`, ignored").arg(entry.key));
+        print_warning(ps, entry, LOGMSG("Unrecognized collection property `%1`, ignored").arg(entry.key));
         return;
     }
 
@@ -235,7 +235,7 @@ void Metadata::apply_collection_entry(ParserState& ps, const metafile::Entry& en
                 const QFileInfo finfo(ps.dir, line);
                 QString can_path = finfo.canonicalFilePath();
                 if (can_path.isEmpty()) {
-                    print_warning(ps, entry, tr_log("Directory path `%1` doesn't seem to exist").arg(finfo.absoluteFilePath()));
+                    print_warning(ps, entry, LOGMSG("Directory path `%1` doesn't seem to exist").arg(finfo.absoluteFilePath()));
                     continue;
                 }
 
@@ -259,7 +259,7 @@ void Metadata::apply_collection_entry(ParserState& ps, const metafile::Entry& en
             {
                 QRegularExpression new_rx(first_line_of(ps, entry));
                 if (!new_rx.isValid()) {
-                    print_warning(ps, entry, tr_log("Invalid regular expression"));
+                    print_warning(ps, entry, LOGMSG("Invalid regular expression"));
                     return;
                 }
 
@@ -293,7 +293,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
 
     const auto attrib_it = m_game_attribs.find(entry.key);
     if (attrib_it == m_game_attribs.cend()) {
-        print_warning(ps, entry, tr_log("Unrecognized game property `%1`, ignored").arg(entry.key));
+        print_warning(ps, entry, LOGMSG("Unrecognized game property `%1`, ignored").arg(entry.key));
         return;
     }
 
@@ -303,18 +303,18 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                 QFileInfo finfo(ps.dir, line);
                 QString path = finfo.canonicalFilePath();
                 if (path.isEmpty()) {
-                    print_warning(ps, entry, tr_log("Game file `%1` doesn't seem to exist")
+                    print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist")
                         .arg(QDir::toNativeSeparators(finfo.absoluteFilePath())));
                     continue;
                 }
 
                 model::Game* const game_ptr = sctx.game_by_filepath(path); // TODO: Add URI support
                 if (game_ptr == ps.cur_game) {
-                    print_warning(ps, entry, tr_log("Duplicate file entry detected: `%1`").arg(line));
+                    print_warning(ps, entry, LOGMSG("Duplicate file entry detected: `%1`").arg(line));
                     continue;
                 }
                 if (game_ptr != nullptr && game_ptr != ps.cur_game) {
-                    print_warning(ps, entry, tr_log("This file already belongs to a different game: `%1`").arg(line));
+                    print_warning(ps, entry, LOGMSG("This file already belongs to a different game: `%1`").arg(line));
                     continue;
                 }
 
@@ -367,7 +367,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
             {
                 const auto rx_match = rx_date.match(first_line_of(ps, entry));
                 if (!rx_match.hasMatch()) {
-                    print_warning(ps, entry, tr_log("Incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD"));
+                    print_warning(ps, entry, LOGMSG("Incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD"));
                     return;
                 }
 
@@ -376,7 +376,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                 const int d = qBound(1, rx_match.captured(5).toInt(), 31);
                 QDate date(y, m, d);
                 if (!date.isValid()) {
-                    print_warning(ps, entry, tr_log("Invalid date"));
+                    print_warning(ps, entry, LOGMSG("Invalid date"));
                     return;
                 }
 
@@ -398,7 +398,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                     return;
                 }
 
-                print_warning(ps, entry, tr_log("Failed to parse the rating value"));
+                print_warning(ps, entry, LOGMSG("Failed to parse the rating value"));
             }
             break;
         case GameAttrib::LAUNCH_CMD:
@@ -425,7 +425,7 @@ bool Metadata::apply_asset_entry_maybe(ParserState& ps, const metafile::Entry& e
     const QString asset_key = rx_match.captured(1);
     const AssetType asset_type = pegasus_assets::str_to_type(asset_key);
     if (asset_type == AssetType::UNKNOWN) {
-        print_warning(ps, entry, tr_log("Unknown asset type `%1`, entry ignored").arg(asset_key));
+        print_warning(ps, entry, LOGMSG("Unknown asset type `%1`, entry ignored").arg(asset_key));
         return true;
     }
 
@@ -466,7 +466,7 @@ void Metadata::apply_entry(ParserState& ps, const metafile::Entry& entry, Search
 
 
     if (!ps.cur_coll && !ps.cur_game) {
-        print_warning(ps, entry, tr_log("No `collection` or `game` defined yet, entry ignored"));
+        print_warning(ps, entry, LOGMSG("No `collection` or `game` defined yet, entry ignored"));
         return;
     }
 
@@ -495,7 +495,7 @@ std::vector<FileFilter> Metadata::apply_metafile(const QString& metafile_path, S
     };
 
     if (!metafile::read_file(metafile_path, on_entry, on_error)) {
-        Log::error(m_log_tag, tr_log("Failed to read metadata file `%1`")
+        Log::error(m_log_tag, LOGMSG("Failed to read metadata file `%1`")
             .arg(QDir::toNativeSeparators(metafile_path)));
     }
 

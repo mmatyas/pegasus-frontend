@@ -58,7 +58,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     const std::vector<SystemEntry> systems = find_systems(display_name(), possible_config_dirs);
     if (systems.empty())
         return *this;
-    Log::info(display_name(), tr_log("Found %1 systems").arg(QString::number(systems.size())));
+    Log::info(display_name(), LOGMSG("Found %1 systems").arg(QString::number(systems.size())));
 
     const float progress_step = 1.f / (systems.size() * 2);
     float progress = 0.f;
@@ -69,7 +69,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     // Find games
     for (const SystemEntry& sysentry : systems) {
         const size_t found_games = find_games_for(sysentry, sctx, mame_blacklist);
-        Log::info(display_name(), tr_log("System `%1` provided %2 games")
+        Log::info(display_name(), LOGMSG("System `%1` provided %2 games")
             .arg(sysentry.name, QString::number(found_games)));
 
         progress += progress_step;

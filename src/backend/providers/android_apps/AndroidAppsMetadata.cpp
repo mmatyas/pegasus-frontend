@@ -118,7 +118,7 @@ void MetadataHelper::fill_from_network(
     model::Game* const game_ptr = &game;
     sctx.schedule_download(url, [this, &app_package, game_ptr](QNetworkReply* const reply){
         if (reply->error()) {
-            Log::warning(m_log_tag, tr_log("Downloading metadata for `%1` failed: %2")
+            Log::warning(m_log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
                .arg(app_package, reply->errorString()));
             return;
         }
@@ -126,7 +126,7 @@ void MetadataHelper::fill_from_network(
         const QByteArray html_raw = reply->readAll();
         const QJsonDocument json = parse_reply(html_raw);
         if (json.isNull()) {
-            Log::warning(m_log_tag, tr_log(
+            Log::warning(m_log_tag, LOGMSG(
                    "Failed to parse the response of the server for app `%1`: "
                    "either it's not available from the Play Store, or the site has changed"
                ).arg(app_package));

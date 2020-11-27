@@ -37,13 +37,13 @@ void rewrite_gamedircfg(const std::function<void(QTextStream&)>& callback)
 
     QFile config_file(config_file_path);
     if (!config_file.open(QFile::WriteOnly | QFile::Text)) {
-        Log::warning(tr_log("Failed to save game directory settings to `%1`").arg(config_file_path));
+        Log::warning(LOGMSG("Failed to save game directory settings to `%1`").arg(config_file_path));
         return;
     }
 
     QTextStream stream(&config_file);
     callback(stream);
-    Log::info(tr_log("Game directory list saved"));
+    Log::info(LOGMSG("Game directory list saved"));
 }
 
 void change_mouse_support(bool enabled)
@@ -108,7 +108,7 @@ void Settings::addGameDir(const QString& path)
 {
     const QFileInfo finfo(path);
     if (!finfo.exists() || !finfo.isDir()) {
-        Log::warning(tr_log("Game directory `%1` not found, ignored").arg(path));
+        Log::warning(LOGMSG("Game directory `%1` not found, ignored").arg(path));
         return;
     }
 
@@ -123,7 +123,7 @@ void Settings::addGameDir(const QString& path)
     const auto count_after = dirset.count();
 
     if (count_before == count_after) {
-        Log::warning(tr_log("Game directory `%1` already known, ignored").arg(path));
+        Log::warning(LOGMSG("Game directory `%1` already known, ignored").arg(path));
         return;
     }
 
@@ -176,7 +176,7 @@ void Settings::removeGameDirs(const QVariantList& idx_var_list)
 
 void Settings::reloadProviders()
 {
-    Log::info(tr_log("Reloading..."));
+    Log::info(LOGMSG("Reloading..."));
     emit providerReloadingRequested();
 }
 

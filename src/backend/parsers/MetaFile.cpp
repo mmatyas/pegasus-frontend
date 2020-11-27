@@ -76,7 +76,7 @@ void read_stream(QTextStream& stream,
     const auto close_current_attrib = [&](){
         if (!entry.key.isEmpty()) {
             if (entry.values.empty()) {
-                onError({ entry.line, tr_log("attribute value missing, entry ignored") });
+                onError({ entry.line, LOGMSG("attribute value missing, entry ignored") });
             }
             else
                 onAttributeFound(entry);
@@ -102,7 +102,7 @@ void read_stream(QTextStream& stream,
         // multiline (starts with whitespace but also has content)
         if (line.at(0).isSpace()) {
             if (entry.key.isEmpty()) {
-                onError({ linenum, tr_log("line starts with whitespace, but no attribute has been defined yet") });
+                onError({ linenum, LOGMSG("line starts with whitespace, but no attribute has been defined yet") });
                 continue;
             }
 
@@ -138,7 +138,7 @@ void read_stream(QTextStream& stream,
         }
 
         // invalid line
-        onError({ linenum, tr_log("line invalid, skipped") });
+        onError({ linenum, LOGMSG("line invalid, skipped") });
     }
 
     // the very last line

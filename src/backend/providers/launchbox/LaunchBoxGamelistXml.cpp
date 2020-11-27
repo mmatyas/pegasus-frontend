@@ -202,7 +202,7 @@ GamelistXml::GamelistXml(QString log_tag, QDir lb_root)
 
 void GamelistXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
-    Log::warning(m_log_tag, tr_log("In `%1` at line %2: %3")
+    Log::warning(m_log_tag, LOGMSG("In `%1` at line %2: %3")
         .arg(QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
 }
 
@@ -213,18 +213,18 @@ bool GamelistXml::game_fields_valid(
     const HashMap<QString, Emulator>& emulators) const
 {
     if (fields.find(GameField::ID) == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Game has no ID, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Game has no ID, entry ignored"));
         return false;
     }
 
     const auto path_it = fields.find(GameField::PATH);
     if (path_it == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Game has no path, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Game has no path, entry ignored"));
         return false;
     }
     if (!QFileInfo::exists(path_it->second)) {
         log_xml_warning(xml_path, xml_linenum,
-            tr_log("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(path_it->second)));
+            LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(path_it->second)));
         return false;
     }
 
@@ -233,7 +233,7 @@ bool GamelistXml::game_fields_valid(
         const auto emu_it = emulators.find(emu_id_it->second);
         if (emu_it == emulators.cend()) {
             log_xml_warning(xml_path, xml_linenum,
-                tr_log("Game refers to a missing or invalid emulator with id `%1`, entry ignored").arg(emu_id_it->second));
+                LOGMSG("Game refers to a missing or invalid emulator with id `%1`, entry ignored").arg(emu_id_it->second));
             return false;
         }
 
@@ -248,7 +248,7 @@ bool GamelistXml::game_fields_valid(
                 });
             if (emu_platform_it == emu.platforms.cend()) {
                 log_xml_warning(xml_path, xml_linenum,
-                    tr_log("Game refers to a missing or invalid emulator platform `%1` within emulator `%2`, falling back to emulator defaults")
+                    LOGMSG("Game refers to a missing or invalid emulator platform `%1` within emulator `%2`, falling back to emulator defaults")
                         .arg(emu_platform_name, emu.name));
                 // not critical, will fall back to default
             }
@@ -265,24 +265,24 @@ bool GamelistXml::app_fields_valid(
 {
     const auto id_it = fields.find(AppField::ID);
     if (id_it == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Additional application has no ID, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Additional application has no ID, entry ignored"));
         return false;
     }
 
     const auto gameid_it = fields.find(AppField::GAME_ID);
     if (gameid_it == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Additional application has no GameID field, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Additional application has no GameID field, entry ignored"));
         return false;
     }
 
     const auto path_it = fields.find(AppField::PATH);
     if (path_it == fields.cend()) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Additional application has no path, entry ignored"));
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Additional application has no path, entry ignored"));
         return false;
     }
 
     if (!QFileInfo::exists(path_it->second)) {
-        log_xml_warning(xml_path, xml_linenum, tr_log("Additional application file `%1` doesn't seem to exist, entry ignored")
+        log_xml_warning(xml_path, xml_linenum, LOGMSG("Additional application file `%1` doesn't seem to exist, entry ignored")
             .arg(QDir::toNativeSeparators(path_it->second)));
         return false;
     }
@@ -362,7 +362,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
 
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(m_log_tag, tr_log("Could not open `%1`").arg(QDir::toNativeSeparators(xml_rel_path)));
+        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(QDir::toNativeSeparators(xml_rel_path)));
         return {};
     }
 
@@ -413,7 +413,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
         xml.skipCurrentElement();
     }
     if (xml.error())
-        Log::error(m_log_tag, tr_log("`%1`: %2").arg(xml_path, xml.errorString()));
+        Log::error(m_log_tag, LOGMSG("`%1`: %2").arg(xml_path, xml.errorString()));
 
 
     for (const HashMap<AppField, QString>& fields : addiapps) {
@@ -425,7 +425,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
         const auto it = gameid_map.find(game_id);
         if (it == gameid_map.cend()) {
             const QString app_id = fields.at(AppField::ID);
-            Log::warning(m_log_tag, tr_log("In `%1` additional application entry `%2` refers to missing or invalid game `%3`, entry ignored")
+            Log::warning(m_log_tag, LOGMSG("In `%1` additional application entry `%2` refers to missing or invalid game `%3`, entry ignored")
                 .arg(QDir::toNativeSeparators(xml_path), app_id, game_id));
             continue;
         }

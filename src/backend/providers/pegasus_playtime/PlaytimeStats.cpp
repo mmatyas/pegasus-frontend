@@ -46,7 +46,7 @@ void print_query_error(const QString& log_tag, const QSqlQuery& query)
 
 void on_create_table_fail(const QString& log_tag, QSqlQuery& query)
 {
-    Log::warning(log_tag, tr_log("Failed to create database tables"));
+    Log::warning(log_tag, LOGMSG("Failed to create database tables"));
     print_query_error(log_tag, query);
 }
 
@@ -164,7 +164,7 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
 
     SqliteDb channel(m_db_path);
     if (!channel.open()) {
-        Log::error(display_name(), tr_log("Could not open `%1`, play times will not be loaded")
+        Log::error(display_name(), LOGMSG("Could not open `%1`, play times will not be loaded")
             .arg(m_db_path));
         return *this;
     }
@@ -259,7 +259,7 @@ void PlaytimeStats::start_processing()
 
             SqliteDb channel(m_db_path);
             if (!channel.open()) {
-                Log::warning(display_name(), tr_log("Could not open or create `%1`, play time will not be saved")
+                Log::warning(display_name(), LOGMSG("Could not open or create `%1`, play time will not be saved")
                     .arg(m_db_path));
                 break;
             }

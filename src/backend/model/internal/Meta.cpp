@@ -53,7 +53,7 @@ void Meta::startLoading()
 
 void Meta::clearQMLCache()
 {
-    Log::info(tr_log("Reloading the frontend..."));
+    Log::info(LOGMSG("Reloading the frontend..."));
     emit qmlClearCacheRequested();
 }
 

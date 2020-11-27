@@ -31,7 +31,7 @@ namespace {
 void log_xml_error(const QString& log_tag, const QString& pretty_path, const QXmlStreamReader& xml)
 {
     Q_ASSERT(xml.hasError());
-    Log::warning(log_tag, tr_log("XML error in `%1` at line %2: %3")
+    Log::warning(log_tag, LOGMSG("XML error in `%1` at line %2: %3")
         .arg(pretty_path, QString::number(xml.lineNumber()), xml.errorString()));
 }
 
@@ -41,19 +41,19 @@ bool read_datfile_intro(const QString& log_tag, const QString& pretty_path, QXml
     using XmlToken = QXmlStreamReader::TokenType;
 
     if (xml.readNext() != XmlToken::StartDocument) {
-        Log::warning(log_tag, tr_log("`%1` doesn't seem to be a valid XML file, ignored").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("`%1` doesn't seem to be a valid XML file, ignored").arg(pretty_path));
         return false;
     }
     if (xml.readNext() != XmlToken::DTD) {
-        Log::warning(log_tag, tr_log("`%1` seems to be a valid XML file, but doesn't have a DOCTYPE declaration, ignored").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("`%1` seems to be a valid XML file, but doesn't have a DOCTYPE declaration, ignored").arg(pretty_path));
         return false;
     }
     if (xml.dtdSystemId() != QLatin1String("http://www.logiqx.com/Dats/datafile.dtd")) {
-        Log::warning(log_tag, tr_log("`%1` is not declared as a Logiqx XML file, ignored").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("`%1` is not declared as a Logiqx XML file, ignored").arg(pretty_path));
         return false;
     }
     if (xml.readNext() != XmlToken::StartElement || xml.name() != QLatin1String("datafile")) {
-        Log::warning(log_tag, tr_log("`%1` seems to be a Logiqx file, but doesn't start with a `datafile` root element").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("`%1` seems to be a Logiqx file, but doesn't start with a `datafile` root element").arg(pretty_path));
         return false;
     }
     if (xml.hasError()) {
@@ -61,7 +61,7 @@ bool read_datfile_intro(const QString& log_tag, const QString& pretty_path, QXml
         return false;
     }
 
-    Log::info(log_tag, tr_log("Found `%1`").arg(pretty_path));
+    Log::info(log_tag, LOGMSG("Found `%1`").arg(pretty_path));
     return true;
 }
 
@@ -71,7 +71,7 @@ QString read_datfile_header_entry(
     QXmlStreamReader& xml, providers::SearchContext& sctx)
 {
     if (!xml.readNextStartElement() || xml.name() != QLatin1String("header")) {
-        Log::warning(log_tag, tr_log("`%1` does not start with a `header` entry").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("`%1` does not start with a `header` entry").arg(pretty_path));
         return {};
     }
 
@@ -95,7 +95,7 @@ QString read_datfile_header_entry(
     }
 
     if (name.isEmpty()) {
-        Log::warning(log_tag, tr_log("`%1` has no `name` field in its `header` entry").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("`%1` has no `name` field in its `header` entry").arg(pretty_path));
         return {};
     }
 
@@ -118,7 +118,7 @@ void read_datfile_game_entry(
     const size_t game_start_linenum = xml.lineNumber();
     const QString name = xml.attributes().value(QLatin1String("name")).trimmed().toString();
     if (name.isEmpty()) {
-        Log::warning(log_tag, tr_log("The `game` element in `%1` at line %2 has an empty or missing `name` attribute, entry ignored")
+        Log::warning(log_tag, LOGMSG("The `game` element in `%1` at line %2 has an empty or missing `name` attribute, entry ignored")
             .arg(pretty_path, QString::number(game_start_linenum)));
         xml.skipCurrentElement();
         return;
@@ -136,7 +136,7 @@ void read_datfile_game_entry(
             if (success) {
                 release = QDate(year, 1, 1);
             } else {
-                Log::warning(log_tag, tr_log("The `year` element in `%1` at line %2 has an invalid value, ignored")
+                Log::warning(log_tag, LOGMSG("The `year` element in `%1` at line %2 has an invalid value, ignored")
                     .arg(pretty_path, QString::number(xml.lineNumber())));
             }
             continue;
@@ -157,7 +157,7 @@ void read_datfile_game_entry(
             xml.skipCurrentElement();
 
             if (relpath.isEmpty()) {
-                Log::warning(log_tag, tr_log("The `rom` element in `%1` at line %2 has an empty or missing `name` attribute, ignored")
+                Log::warning(log_tag, LOGMSG("The `rom` element in `%1` at line %2 has an empty or missing `name` attribute, ignored")
                     .arg(pretty_path, QString::number(xml.lineNumber())));
                 continue;
             }
@@ -165,14 +165,14 @@ void read_datfile_game_entry(
             const QFileInfo finfo(root_dir, relpath);
             const QString can_path = finfo.canonicalFilePath();
             if (can_path.isEmpty() || !finfo.exists()) {
-                Log::warning(log_tag, tr_log("The `rom` element in `%1` at line %2 refers to file `%3`, which doesn't seem to exist")
+                Log::warning(log_tag, LOGMSG("The `rom` element in `%1` at line %2 refers to file `%3`, which doesn't seem to exist")
                     .arg(pretty_path, QString::number(xml.lineNumber()), QDir::toNativeSeparators(finfo.absoluteFilePath())));
                 continue;
             }
 
             const auto it = std::find(rom_paths.cbegin(), rom_paths.cend(), can_path);
             if (it != rom_paths.cend()) {
-                Log::warning(log_tag, tr_log("The `rom` element in `%1` at line %2 seems to be a duplicate entry, ignored")
+                Log::warning(log_tag, LOGMSG("The `rom` element in `%1` at line %2 seems to be a duplicate entry, ignored")
                     .arg(pretty_path, QString::number(xml.lineNumber())));
                 continue;
             }
@@ -185,7 +185,7 @@ void read_datfile_game_entry(
     }
 
     if (rom_paths.isEmpty()) {
-        Log::warning(log_tag, tr_log("The `game` element in `%1` at line %2 has no valid `rom` fields, game ignored")
+        Log::warning(log_tag, LOGMSG("The `game` element in `%1` at line %2 has no valid `rom` fields, game ignored")
             .arg(pretty_path, QString::number(game_start_linenum)));
         return;
     }
@@ -196,7 +196,7 @@ void read_datfile_game_entry(
     game_ptrs.erase(nullptr);
 
     if (game_ptrs.size() > 1) {
-        Log::warning(log_tag, tr_log(
+        Log::warning(log_tag, LOGMSG(
                 "The `game` element in `%1` at line %2 has multiple `rom` fields "
                 "that belong to different games; the `game` entry is ignored")
             .arg(pretty_path, QString::number(game_start_linenum)));
@@ -224,7 +224,7 @@ void read_datfile(const QString& log_tag, const QDir& root_dir, const QString& p
 
     QFile dat_file(path);
     if (!dat_file.open(QIODevice::ReadOnly)) {
-        Log::warning(log_tag, tr_log("Could not open `%1`").arg(pretty_path));
+        Log::warning(log_tag, LOGMSG("Could not open `%1`").arg(pretty_path));
         return;
     }
 

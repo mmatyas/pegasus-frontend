@@ -48,12 +48,12 @@ class FolderListModel;
 namespace {
 void print_metainfo()
 {
-    Log::info(tr_log("Pegasus " GIT_REVISION " (" GIT_DATE ")"));
-    Log::info(tr_log("Running on %1 (%2, %3)").arg(
+    Log::info(LOGMSG("Pegasus " GIT_REVISION " (" GIT_DATE ")"));
+    Log::info(LOGMSG("Running on %1 (%2, %3)").arg(
         QSysInfo::prettyProductName(),
         QSysInfo::currentCpuArchitecture(),
         QGuiApplication::platformName()));
-    Log::info(tr_log("Qt version %1").arg(qVersion()));
+    Log::info(LOGMSG("Qt version %1").arg(qVersion()));
 }
 
 void register_api_classes()
@@ -63,7 +63,7 @@ void register_api_classes()
     //   as that may produce language change signals
 
     constexpr auto API_URI = "Pegasus.Model";
-    const QString error_msg = tr_log("Sorry, you cannot create this type in QML.");
+    const QString error_msg = LOGMSG("Sorry, you cannot create this type in QML.");
 
     qmlRegisterUncreatableType<model::Collection>(API_URI, 0, 7, "Collection", error_msg);
     qmlRegisterUncreatableType<model::Game>(API_URI, 0, 2, "Game", error_msg);
@@ -100,7 +100,7 @@ void on_app_close(AppCloseType type)
         default: break;
     }
 
-    Log::info(tr_log("Closing Pegasus, goodbye!"));
+    Log::info(LOGMSG("Closing Pegasus, goodbye!"));
     Log::close();
 
     QCoreApplication::quit();

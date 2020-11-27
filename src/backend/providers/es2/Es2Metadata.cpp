@@ -146,12 +146,12 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
-        xml.raiseError(tr_log("could not parse `%1`")
+        xml.raiseError(LOGMSG("could not parse `%1`")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
     if (xml.name() != QLatin1String("gameList")) {
-        xml.raiseError(tr_log("`%1` does not have a `<gameList>` root node!")
+        xml.raiseError(LOGMSG("`%1` does not have a `<gameList>` root node!")
                        .arg(static_cast<QFile*>(xml.device())->fileName()));
         return;
     }
@@ -172,7 +172,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
         const QString shell_filepath = xml_props[MetaType::PATH];
         if (shell_filepath.isEmpty()) {
-            Log::warning(m_log_tag, tr_log("The `<game>` node in `%1` at line %2 has no valid `<path>` entry")
+            Log::warning(m_log_tag, LOGMSG("The `<game>` node in `%1` at line %2 has no valid `<path>` entry")
                 .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(linenum)));
             continue;
         }
@@ -202,21 +202,21 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::S
 
 
     if (sysentry.shortname == QLatin1String("steam")) {
-        Log::info(m_log_tag, tr_log("Ignoring the `steam` system in favor of the built-in Steam support"));
+        Log::info(m_log_tag, LOGMSG("Ignoring the `steam` system in favor of the built-in Steam support"));
         return;
     }
 
     const QDir xml_dir(sysentry.path);
     const QString gamelist_path = find_gamelist_xml(m_config_dirs, xml_dir, sysentry.shortname);
     if (gamelist_path.isEmpty()) {
-        Log::warning(m_log_tag, tr_log("No gamelist file found for system `%1`").arg(sysentry.shortname));
+        Log::warning(m_log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
         return;
     }
-    Log::info(m_log_tag, tr_log("Found `%1`").arg(gamelist_path));
+    Log::info(m_log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
 
     QFile xml_file(gamelist_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(m_log_tag, tr_log("Could not open `%1`").arg(gamelist_path));
+        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(gamelist_path));
         return;
     }
 

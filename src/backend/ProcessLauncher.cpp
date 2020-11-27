@@ -72,19 +72,19 @@ QString processerror_to_string(QProcess::ProcessError error)
 {
     switch (error) {
         case QProcess::FailedToStart:
-            return tr_log("Could not launch `%1`. Either the program is missing, "
+            return LOGMSG("Could not launch `%1`. Either the program is missing, "
                           "or you don't have the permission to run it.");
         case QProcess::Crashed:
-            return tr_log("The external program `%1` has crashed");
+            return LOGMSG("The external program `%1` has crashed");
         case QProcess::Timedout:
-            return tr_log("The command `%1` did not start in a reasonable amount of time");
+            return LOGMSG("The command `%1` did not start in a reasonable amount of time");
         case QProcess::ReadError:
         case QProcess::WriteError:
             // We don't communicate with the launched process at the moment
             Q_UNREACHABLE();
             break;
         default:
-            return tr_log("Running the command `%1` failed due to an unknown error");
+            return LOGMSG("Running the command `%1` failed due to an unknown error");
     }
 }
 } // namespace
@@ -139,7 +139,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()) {
-        const QString message = tr_log("Cannot launch the game `%1` because there is no launch command defined for it.")
+        const QString message = LOGMSG("Cannot launch the game `%1` because there is no launch command defined for it.")
             .arg(game.title());
         Log::warning(message);
         emit processLaunchError(message);
@@ -174,8 +174,8 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
-    Log::info(tr_log("Executing command: [`%1`]").arg(serialize_command(command, args)));
-    Log::info(tr_log("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
+    Log::info(LOGMSG("Executing command: [`%1`]").arg(serialize_command(command, args)));
+    Log::info(LOGMSG("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
 
     Q_ASSERT(!m_process);
     m_process = new QProcess(this);
@@ -205,7 +205,7 @@ void ProcessLauncher::onTeardownComplete()
 void ProcessLauncher::onProcessStarted()
 {
     Q_ASSERT(m_process);
-    Log::info(tr_log("Process %1 started").arg(m_process->processId()));
+    Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
     Log::info(SEPARATOR);
     emit processLaunchOk();
 }
@@ -238,12 +238,12 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
     switch (exitstatus) {
         case QProcess::NormalExit:
             if (exitcode == 0)
-                Log::info(tr_log("The external program has finished cleanly"));
+                Log::info(LOGMSG("The external program has finished cleanly"));
             else
-                Log::warning(tr_log("The external program has finished with error code %1").arg(exitcode));
+                Log::warning(LOGMSG("The external program has finished with error code %1").arg(exitcode));
             break;
         case QProcess::CrashExit:
-            Log::warning(tr_log("The external program has crashed"));
+            Log::warning(LOGMSG("The external program has crashed"));
             break;
     }
 

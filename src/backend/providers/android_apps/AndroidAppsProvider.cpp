@@ -134,7 +134,7 @@ Provider& AndroidAppsProvider::run(SearchContext& sctx)
     collection.setShortName(COLLECTION_TAG);
 
     HashMap<QString, model::Game*> app_game_map = find_apps_for(collection, sctx);
-    Log::info(display_name(), tr_log("%1 apps found").arg(app_game_map.size()));
+    Log::info(display_name(), LOGMSG("%1 apps found").arg(app_game_map.size()));
     if (app_game_map.empty())
         return *this;
 

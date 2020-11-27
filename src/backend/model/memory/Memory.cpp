@@ -44,7 +44,7 @@ void save_map_maybe(const QVariantMap& map, const QString& settings_dir, const Q
         return;
 
     if (!QDir(settings_dir).mkpath(QStringLiteral("."))) {
-        Log::warning(tr_log("could not create directory `%1`. Theme settings will not be saved.")
+        Log::warning(LOGMSG("could not create directory `%1`. Theme settings will not be saved.")
             .arg(settings_dir));
         return;
     }
@@ -52,14 +52,14 @@ void save_map_maybe(const QVariantMap& map, const QString& settings_dir, const Q
     const QString json_path = json_path_for(settings_dir, theme_id);
     QFile json_file(json_path);
     if (!json_file.open(QIODevice::WriteOnly)) {
-        Log::warning(tr_log("could not save theme settings file `%1`: %2")
+        Log::warning(LOGMSG("could not save theme settings file `%1`: %2")
             .arg(json_path, json_file.errorString()));
         return;
     }
 
     const auto json_doc = QJsonDocument::fromVariant(map);
     if (json_file.write(json_doc.toJson(QJsonDocument::Compact)) < 0) {
-        Log::warning(tr_log("failed to write theme settings file `%1`: %2")
+        Log::warning(LOGMSG("failed to write theme settings file `%1`: %2")
             .arg(json_path, json_file.errorString()));
     }
 }
@@ -75,7 +75,7 @@ QVariantMap load_map_maybe(const QString& settings_dir, const QString& theme_id)
 
     QFile json_file(json_path);
     if (!json_file.open(QIODevice::ReadOnly)) {
-        Log::warning(tr_log("could not load theme settings file `%1`: %2")
+        Log::warning(LOGMSG("could not load theme settings file `%1`: %2")
             .arg(json_path, json_file.errorString()));
         return {};
     }
@@ -83,7 +83,7 @@ QVariantMap load_map_maybe(const QString& settings_dir, const QString& theme_id)
     QJsonParseError parse_error {};
     const auto json_doc = QJsonDocument::fromJson(json_file.readAll(), &parse_error);
     if (json_doc.isNull()) {
-        Log::warning(tr_log("failed to parse theme settings file `%1`: %2")
+        Log::warning(LOGMSG("failed to parse theme settings file `%1`: %2")
             .arg(json_path, parse_error.errorString()));
         return {};
     }
@@ -121,11 +121,11 @@ bool Memory::has(const QString& key) const
 void Memory::set(const QString& key, QVariant value)
 {
     if (key.isEmpty()) {
-        Log::warning(tr_log("`set(key,val)` called with empty `key`, ignored"));
+        Log::warning(LOGMSG("`set(key,val)` called with empty `key`, ignored"));
         return;
     }
     if (!value.isValid()) {
-        Log::warning(tr_log("`set(key,val)` called with invalid `val` type, ignored"));
+        Log::warning(LOGMSG("`set(key,val)` called with invalid `val` type, ignored"));
         return;
     }
 

@@ -178,7 +178,7 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
 void SearchContext::finalize_cleanup_games()
 {
     for (model::Game* const game_ptr : m_parentless_games) {
-        Log::warning(tr_log("The game '%1' does not belong to any collections, ignored").arg(game_ptr->title()));
+        Log::warning(LOGMSG("The game '%1' does not belong to any collections, ignored").arg(game_ptr->title()));
         m_game_entries.erase(game_ptr);
         delete game_ptr;
     }
@@ -196,7 +196,7 @@ void SearchContext::finalize_cleanup_collections()
         if (game_list_it != m_collection_games.cend())
             continue;
 
-        Log::warning(tr_log("The collection '%1' has no valid games, ignored").arg(pair.first));
+        Log::warning(LOGMSG("The collection '%1' has no valid games, ignored").arg(pair.first));
         deleted_collections.emplace_back(coll_ptr);
     }
 
@@ -283,7 +283,7 @@ SearchContext& SearchContext::enable_network()
     Q_ASSERT(!m_netman);
 
     if (!QSslSocket::supportsSsl()) {
-        Log::warning(tr_log("Secure connection (SSL) support not available, downloading metadata is not possible"));
+        Log::warning(LOGMSG("Secure connection (SSL) support not available, downloading metadata is not possible"));
         return *this;
     }
 

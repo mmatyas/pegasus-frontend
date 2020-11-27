@@ -45,7 +45,7 @@ std::vector<model::LocaleEntry> find_available_locales()
         QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
         locales.emplace_back(std::move(locale_tag));
 
-        Log::info(tr_log("Found locale `%2`").arg(locales.back().bcp47tag));
+        Log::info(LOGMSG("Found locale `%2`").arg(locales.back().bcp47tag));
     }
 
     return locales;
@@ -113,7 +113,7 @@ void Locales::load_selected_locale()
     m_translator.load(QStringLiteral("pegasus_") + locale.bcp47tag,
                       QStringLiteral(":/i18n"),
                       QStringLiteral("-"));
-    Log::info(tr_log("Locale set to `%2`").arg(locale.bcp47tag));
+    Log::info(LOGMSG("Locale set to `%2`").arg(locale.bcp47tag));
 }
 
 int Locales::rowCount(const QModelIndex& parent) const
@@ -149,7 +149,7 @@ void Locales::setCurrentIndex(int idx_int)
         return;
 
     if (m_locales.size() <= idx) {
-        Log::warning(tr_log("Invalid locale index #%1").arg(idx));
+        Log::warning(LOGMSG("Invalid locale index #%1").arg(idx));
         return;
     }
 

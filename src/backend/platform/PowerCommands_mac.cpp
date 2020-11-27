@@ -66,13 +66,13 @@ namespace power {
 void reboot()
 {
     if (!send_apple_event(kAERestart))
-        Log::error(tr_log("Requesting reboot has failed."));
+        Log::error(LOGMSG("Requesting reboot has failed."));
 }
 
 void shutdown()
 {
     if (!send_apple_event(kAEShutDown))
-        Log::error(tr_log("Requesting shutdown has failed."));
+        Log::error(LOGMSG("Requesting shutdown has failed."));
 }
 
 } // namespace power
