@@ -144,6 +144,10 @@ General::General()
     , mouse_support(true)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
+    , window_pos_x(0)
+    , window_pos_y(0)
+    , window_width(1280)
+    , window_height(720)
 {}
 
 

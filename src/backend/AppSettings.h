@@ -44,6 +44,11 @@ struct General {
     QString locale;
     QString theme;
 
+    int16_t window_pos_x;
+    int16_t window_pos_y;
+    uint16_t window_width;
+    uint16_t window_height;
+
     General();
     NO_COPY_NO_MOVE(General)
 };

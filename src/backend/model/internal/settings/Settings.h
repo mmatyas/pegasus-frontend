@@ -39,6 +39,10 @@ class Settings : public QObject {
     Q_PROPERTY(bool mouseSupport
                READ mouseSupport WRITE setMouseSupport
                NOTIFY mouseSupportChanged)
+    Q_PROPERTY(int windowX READ windowX NOTIFY windowXChanged)
+    Q_PROPERTY(int windowY READ windowY NOTIFY windowYChanged)
+    Q_PROPERTY(int windowWidth READ windowWidth NOTIFY windowWidthChanged)
+    Q_PROPERTY(int windowHeight READ windowHeight NOTIFY windowHeightChanged)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
 
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
@@ -55,6 +59,12 @@ public:
     bool mouseSupport() const { return AppSettings::general.mouse_support; }
     void setMouseSupport(bool);
 
+    int windowX() const { return AppSettings::general.window_pos_x; }
+    int windowY() const { return AppSettings::general.window_pos_y; }
+    int windowWidth() const { return AppSettings::general.window_width; }
+    int windowHeight() const { return AppSettings::general.window_height; }
+    Q_INVOKABLE void updateWindowRect(int x, int y, int w, int h);
+
     QStringList gameDirs() const;
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
@@ -66,6 +76,11 @@ signals:
     void mouseSupportChanged();
     void gameDirsChanged();
     void providerReloadingRequested();
+
+    void windowXChanged();
+    void windowYChanged();
+    void windowWidthChanged();
+    void windowHeightChanged();
 };
 
 } // namespace model

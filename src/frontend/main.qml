@@ -23,13 +23,37 @@ import QtQuick.Window 2.2
 Window {
     id: appWindow
     visible: true
-    width: 1280
-    height: 720
     title: "Pegasus"
     color: "#000"
 
+
+    width: Math.min(api.internal.settings.windowWidth, Screen.desktopAvailableWidth)
+    height: Math.min(api.internal.settings.windowHeight, Screen.desktopAvailableHeight)
+
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
+
+    Component.onCompleted: {
+        if (appWindow.visibility != Window.FullScreen) {
+            x = Math.max(-width, Math.min(api.internal.settings.windowX, Screen.desktopAvailableWidth));
+            y = Math.max(-height, Math.min(api.internal.settings.windowY, Screen.desktopAvailableHeight));
+        }
+    }
+
+    Timer {
+        id: windowRectDelay
+        interval: 1000
+        onTriggered: {
+            if (appWindow.visibility != Window.FullScreen)
+                api.internal.settings.updateWindowRect(appWindow.x, appWindow.y, appWindow.width, appWindow.height);
+        }
+    }
+
+    onXChanged: windowRectDelay.restart();
+    onYChanged: windowRectDelay.restart();
+    onWidthChanged: windowRectDelay.restart();
+    onHeightChanged: windowRectDelay.restart();
+
 
     onClosing: {
         theme.source = "";

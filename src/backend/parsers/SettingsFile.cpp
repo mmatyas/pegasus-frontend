@@ -52,6 +52,26 @@ bool store_bool_maybe(const StrBoolConverter& converter, const QString& str, boo
     return success;
 }
 
+bool store_i16_maybe(const QString& str, int16_t& target)
+{
+    bool success = false;
+    int value = str.toInt(&success);
+    if (success)
+        target = qBound(static_cast<int>(std::numeric_limits<int16_t>::min()), value, static_cast<int>(std::numeric_limits<int16_t>::max()));
+
+    return success;
+}
+
+bool store_u16_maybe(const QString& str, uint16_t& target)
+{
+    bool success = false;
+    int value = str.toInt(&success);
+    if (success)
+        target = qBound(static_cast<int>(std::numeric_limits<uint16_t>::min()), value, static_cast<int>(std::numeric_limits<uint16_t>::max()));
+
+    return success;
+}
+
 } // namespace
 
 
@@ -65,6 +85,10 @@ ConfigEntryMaps::ConfigEntryMaps()
     }
     , str_to_general_opt {
         { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
+        { QStringLiteral("window_x"), GeneralOption::WINDOW_X },
+        { QStringLiteral("window_y"), GeneralOption::WINDOW_Y },
+        { QStringLiteral("window_w"), GeneralOption::WINDOW_W },
+        { QStringLiteral("window_h"), GeneralOption::WINDOW_H },
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
         { QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
@@ -120,6 +144,11 @@ void LoadContext::log_needs_bool(const size_t lineno, const QString& key) const
     log_error(lineno, LOGMSG("this option (`%1`) must be a boolean (true/false) value").arg(key));
 }
 
+void LoadContext::log_needs_int(const size_t lineno, const QString& key) const
+{
+    log_error(lineno, LOGMSG("this option (`%1`) must be an integer number").arg(key));
+}
+
 void LoadContext::handle_entry(const size_t lineno,
                                const QString& key,
                                const std::vector<QString>& vals) const
@@ -163,6 +192,22 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
         case ConfigEntryGeneralOption::FULLSCREEN:
             if (!store_bool_maybe(strconv, val, AppSettings::general.fullscreen))
                 log_needs_bool(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::WINDOW_X:
+            if (!store_i16_maybe(val, AppSettings::general.window_pos_x))
+                log_needs_int(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::WINDOW_Y:
+            if (!store_i16_maybe(val, AppSettings::general.window_pos_y))
+                log_needs_int(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::WINDOW_W:
+            if (!store_u16_maybe(val, AppSettings::general.window_width))
+                log_needs_int(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::WINDOW_H:
+            if (!store_u16_maybe(val, AppSettings::general.window_height))
+                log_needs_int(lineno, key);
             break;
         case ConfigEntryGeneralOption::MOUSE_SUPPORT:
             if (!store_bool_maybe(strconv, val, AppSettings::general.mouse_support))
@@ -296,6 +341,10 @@ void SaveContext::print_general(QTextStream& stream) const
 
     GeneralStrMap option_values {
         { GeneralOption::FULLSCREEN, AppSettings::general.fullscreen ? STR_TRUE : STR_FALSE },
+        { GeneralOption::WINDOW_X, QString::number(AppSettings::general.window_pos_x) },
+        { GeneralOption::WINDOW_Y, QString::number(AppSettings::general.window_pos_y) },
+        { GeneralOption::WINDOW_W, QString::number(AppSettings::general.window_width) },
+        { GeneralOption::WINDOW_H, QString::number(AppSettings::general.window_height) },
         { GeneralOption::MOUSE_SUPPORT, AppSettings::general.mouse_support ? STR_TRUE : STR_FALSE },
         { GeneralOption::LOCALE, AppSettings::general.locale },
         { GeneralOption::THEME, theme_path },

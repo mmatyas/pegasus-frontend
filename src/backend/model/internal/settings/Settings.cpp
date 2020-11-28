@@ -89,6 +89,39 @@ void Settings::setMouseSupport(bool new_val)
     emit mouseSupportChanged();
 }
 
+void Settings::updateWindowRect(int x, int y, int w, int h)
+{
+#define BOUND_TO(type, val) qBound(static_cast<int>(std::numeric_limits<type>::min()), val, static_cast<int>(std::numeric_limits<type>::max()))
+    x = BOUND_TO(int16_t, x);
+    y = BOUND_TO(int16_t, y);
+    w = BOUND_TO(uint16_t, w);
+    h = BOUND_TO(uint16_t, h);
+#undef BOUND_TO
+
+    const bool changed_x = AppSettings::general.window_pos_x != x;
+    const bool changed_y = AppSettings::general.window_pos_y != y;
+    const bool changed_w = AppSettings::general.window_width != w;
+    const bool changed_h = AppSettings::general.window_height != h;
+    const bool changed = changed_x || changed_y || changed_w || changed_h;
+    if (!changed)
+        return;
+
+    AppSettings::general.window_pos_x = x;
+    AppSettings::general.window_pos_y = y;
+    AppSettings::general.window_width = w;
+    AppSettings::general.window_height = h;
+    AppSettings::save_config();
+
+    if (changed_x)
+        emit windowXChanged();
+    if (changed_y)
+        emit windowYChanged();
+    if (changed_w)
+        emit windowWidthChanged();
+    if (changed_h)
+        emit windowHeightChanged();
+}
+
 QStringList Settings::gameDirs() const
 {
     QSet<QString> dirset;
