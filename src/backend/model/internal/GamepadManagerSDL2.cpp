@@ -56,7 +56,8 @@ uint16_t linked_sdl_version()
 {
     SDL_version raw;
     SDL_GetVersion(&raw);
-    Log::info(LOGMSG("SDL version %1.%2.%3").arg(raw.major, raw.minor, raw.patch));
+    Log::info(LOGMSG("SDL version %1.%2.%3")
+        .arg(QString::number(raw.major), QString::number(raw.minor), QString::number(raw.patch)));
     return version(raw.major, raw.minor, raw.patch);
 }
 
