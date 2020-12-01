@@ -116,7 +116,7 @@ void MetadataHelper::fill_from_network(
 
 
     model::Game* const game_ptr = &game;
-    sctx.schedule_download(url, [this, &app_package, game_ptr](QNetworkReply* const reply){
+    sctx.schedule_download(url, [this, app_package, game_ptr](QNetworkReply* const reply){
         if (reply->error()) {
             Log::warning(m_log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
                .arg(app_package, reply->errorString()));
