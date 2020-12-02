@@ -102,13 +102,22 @@ public:
     }
 
     void info(const QString& msg) override {
+        if (Q_UNLIKELY(!m_file.isOpen()))
+            return;
+
         datelog(m_marker_info, msg);
     }
     void warning(const QString& msg) override {
+        if (Q_UNLIKELY(!m_file.isOpen()))
+            return;
+
         datelog(m_marker_warning, msg);
         m_stream.flush();
     }
     void error(const QString& msg) override {
+        if (Q_UNLIKELY(!m_file.isOpen()))
+            return;
+
         datelog(m_marker_error, msg);
         m_stream.flush();
     }
