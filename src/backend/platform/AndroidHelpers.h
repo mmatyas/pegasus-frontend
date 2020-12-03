@@ -26,5 +26,6 @@ namespace android {
 constexpr const char* jni_classname();
 QString primary_storage_path();
 std::vector<QString> storage_paths();
+bool has_external_storage_access();
 
 } // namespace android

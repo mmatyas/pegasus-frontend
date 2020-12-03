@@ -25,7 +25,7 @@
 #include <QSettings>
 
 #ifdef Q_OS_ANDROID
-#include <QtAndroid>
+#include "backend/platform/AndroidHelpers.h"
 #endif
 
 
@@ -68,27 +68,7 @@ int main(int argc, char *argv[])
 bool request_runtime_permissions()
 {
 #ifdef Q_OS_ANDROID
-    using namespace QtAndroid;
-
-    QStringList required_permissions {
-        QStringLiteral("android.permission.WRITE_EXTERNAL_STORAGE"),
-    };
-    if (androidSdkVersion() >= 30) // Android 11
-        required_permissions << QStringLiteral("android.permission.MANAGE_EXTERNAL_STORAGE");
-
-    const bool has_all_permissions = std::all_of(
-        required_permissions.cbegin(),
-        required_permissions.cend(),
-        [](const QString& p){ return checkPermission(p) == PermissionResult::Granted; });
-    if (has_all_permissions)
-        return true;
-
-    const PermissionResultMap granted_permissions = requestPermissionsSync(required_permissions);
-    for (const QString& p : required_permissions) {
-        const PermissionResult result = granted_permissions.value(p, PermissionResult::Denied);
-        if (result != PermissionResult::Granted)
-            return false;
-    }
+    return android::has_external_storage_access();
 #endif
 
     return true;

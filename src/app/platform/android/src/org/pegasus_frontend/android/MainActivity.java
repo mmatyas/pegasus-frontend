@@ -11,9 +11,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
+import android.provider.Settings;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -56,6 +59,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
     private static PackageManager m_pm;
     private static int m_icon_density;
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -65,6 +69,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         m_icon_density = am.getLauncherLargeIconDensity();
     }
+
 
     public static App[] appList() {
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -77,6 +82,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
 
         return entries;
     }
+
 
     public static byte[] appIcon(String packageName) {
         Drawable drawable = null;
@@ -100,6 +106,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         return stream.toByteArray();
     }
 
+
     private static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             // TODO: handle null
@@ -115,6 +122,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         drawable.draw(canvas);
         return bitmap;
     }
+
 
     public static String[] sdcardPaths() {
         // Functions with high API level dependencies:
@@ -169,5 +177,20 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         }
         paths.add("/"); // Always add the root
         return paths.toArray(new String[paths.size()]);
+    }
+
+
+    public static boolean getAllStorageAccess() {
+        if (Build.VERSION.SDK_INT < 30)
+            return true;
+
+        if (Environment.isExternalStorageManager())
+            return true;
+
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        intent.setData(Uri.parse("package:" + m_context.getPackageName()));
+        m_context.startActivity(intent);
+        return false;
     }
 }

@@ -17,7 +17,9 @@
 
 #include "AndroidHelpers.h"
 
+#include <QHash>
 #include <QStandardPaths>
+#include <QtAndroid>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -56,6 +58,41 @@ std::vector<QString> storage_paths()
         out.emplace_back(primary_storage_path());
 
     return out;
+}
+
+bool has_external_storage_access()
+{
+    using namespace QtAndroid;
+
+
+    // Android 11
+    if (androidSdkVersion() >= 30) {
+        static constexpr auto JNI_METHOD = "getAllStorageAccess";
+        const auto has_permission = QAndroidJniObject::callStaticMethod<jboolean>(jni_classname(), JNI_METHOD);
+        if (!has_permission)
+            return false;
+    }
+
+
+    const QStringList required_permissions {
+        QStringLiteral("android.permission.WRITE_EXTERNAL_STORAGE"),
+    };
+
+    const bool has_all_permissions = std::all_of(
+        required_permissions.cbegin(),
+        required_permissions.cend(),
+        [](const QString& p){ return checkPermission(p) == PermissionResult::Granted; });
+    if (has_all_permissions)
+        return true;
+
+    const PermissionResultMap granted_permissions = requestPermissionsSync(required_permissions);
+    for (const QString& p : required_permissions) {
+        const PermissionResult result = granted_permissions.value(p, PermissionResult::Denied);
+        if (result != PermissionResult::Granted)
+            return false;
+    }
+
+    return true;
 }
 
 } // namespace android
