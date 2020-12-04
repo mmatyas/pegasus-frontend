@@ -49,7 +49,7 @@ Window {
 
         readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
 
-        readonly property var fonts: QtObject {
+        property QtObject fonts: QtObject {
             readonly property string sans: sansFont.name
             readonly property string sansBold: sansBoldFont.name
             readonly property string condensed: condensedFont.name
