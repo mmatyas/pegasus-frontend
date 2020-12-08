@@ -6,7 +6,7 @@ include($${TOP_SRCDIR}/src/deployment_vars.pri)
         $${TOP_SRCDIR}/LICENSE.md \
         $${TOP_SRCDIR}/README.md
     md.path = $${INSTALL_DOCDIR}
-    OTHER_FILES += $${icon.files}
+    OTHER_FILES += $${md.files}
     INSTALLS += md
 }
 
