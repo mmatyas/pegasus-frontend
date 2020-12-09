@@ -45,7 +45,7 @@ std::vector<model::LocaleEntry> find_available_locales()
         QString locale_tag = filename.mid(QM_PREFIX_LEN, locale_tag_len);
         locales.emplace_back(std::move(locale_tag));
 
-        Log::info(LOGMSG("Found locale `%2`").arg(locales.back().bcp47tag));
+        Log::info(LOGMSG("Found locale `%1`").arg(locales.back().bcp47tag));
     }
 
     return locales;
