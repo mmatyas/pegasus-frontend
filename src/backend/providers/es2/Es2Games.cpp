@@ -36,7 +36,7 @@ QVector<QStringRef> split_list(const QString& str)
 {
     // FIXME: don't leave statics around
     static const QRegularExpression separator(QStringLiteral("[,\\s]"));
-    return str.splitRef(separator, QString::SkipEmptyParts);
+    return str.splitRef(separator, Qt::SkipEmptyParts);
 }
 
 /// returns a list of unique, '*.'-prefixed lowercase file extensions

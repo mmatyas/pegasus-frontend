@@ -120,7 +120,7 @@ void Favorites::start_processing()
 
             QTextStream db_stream(&db_file);
             for (const QString& fav : qAsConst(m_active_task))
-                db_stream << fav << endl;
+                db_stream << fav << Qt::endl;
 
             QMutexLocker lock(&m_task_guard);
             m_active_task.clear();

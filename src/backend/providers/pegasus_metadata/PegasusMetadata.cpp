@@ -34,7 +34,7 @@
 namespace {
 QStringList tokenize_by_comma(const QString& str)
 {
-    QStringList list = str.split(QLatin1Char(','), QString::SkipEmptyParts);
+    QStringList list = str.split(QLatin1Char(','), Qt::SkipEmptyParts);
     for (QString& item : list)
         item = item.trimmed();
 

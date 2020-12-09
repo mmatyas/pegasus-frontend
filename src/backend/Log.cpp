@@ -82,7 +82,7 @@ private:
 #endif
 
     void colorlog(const char* const prefix, const QString& msg) {
-        m_stream << prefix << QChar(' ') << msg << m_fmt_reset << endl;
+        m_stream << prefix << QChar(' ') << msg << m_fmt_reset << Qt::endl;
     }
 };
 
