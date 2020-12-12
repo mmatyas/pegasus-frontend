@@ -18,4 +18,4 @@ target_link_libraries(pegasus-qml PUBLIC
 
 
 include(PegasusCommonProps)
-pegasus_add_common_props(pegasus-qml)
+pegasus_add_common_props_optimized(pegasus-qml)

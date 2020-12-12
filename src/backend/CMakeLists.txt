@@ -137,7 +137,7 @@ target_link_libraries(pegasus-backend PUBLIC
 )
 
 include(PegasusCommonProps)
-pegasus_add_common_props(pegasus-backend)
+pegasus_add_common_props_optimized(pegasus-backend)
 
 
 # Select providers

@@ -58,3 +58,7 @@ add_subdirectory(thirdparty/QtQmlTricks)
 add_subdirectory(thirdparty/SortFilterProxyModel)
 add_subdirectory(assets)
 add_subdirectory(src)
+
+
+enable_testing(true)
+add_subdirectory(tests)

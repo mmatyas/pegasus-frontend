@@ -152,10 +152,10 @@ void test_FavoriteDB::read()
     QVERIFY(tmp_file.open());
     {
         QTextStream tmp_stream(&tmp_file);
-        tmp_stream << QStringLiteral("# Favorite reader test") << endl;
-        tmp_stream << QStringLiteral(":/x/y/z/coll2dummy1") << endl;
-        tmp_stream << QStringLiteral(":/coll1dummy2") << endl;
-        tmp_stream << QStringLiteral(":/somethingfake") << endl;
+        tmp_stream << QStringLiteral("# Favorite reader test") << Qt::endl;
+        tmp_stream << QStringLiteral(":/x/y/z/coll2dummy1") << Qt::endl;
+        tmp_stream << QStringLiteral(":/coll1dummy2") << Qt::endl;
+        tmp_stream << QStringLiteral(":/somethingfake") << Qt::endl;
     }
     const QString db_path = tmp_file.fileName();
     tmp_file.close();

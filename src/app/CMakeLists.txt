@@ -41,7 +41,7 @@ target_link_libraries(pegasus-fe PUBLIC
 qt5_import_qml_plugins(pegasus-fe)
 
 include(PegasusCommonProps)
-pegasus_add_common_props(pegasus-fe)
+pegasus_add_common_props_optimized(pegasus-fe)
 
 
 # Install
