@@ -17,7 +17,7 @@
 
 #include <QtQuickTest>
 
-#include "backend/imggen/BlurhashProvider.h"
+#include "imggen/BlurhashProvider.h"
 
 #include <QQmlEngine>
 #include <QQmlContext>
