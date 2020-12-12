@@ -17,5 +17,5 @@
 
 #include <QtQuickTest>
 
-Q_IMPORT_PLUGIN(ApngImagePlugin);
+Q_IMPORT_PLUGIN(ApngImagePlugin)
 QUICK_TEST_MAIN(apng)

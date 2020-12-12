@@ -36,6 +36,7 @@ private slots:
 
 void test_Themes::initTestCase()
 {
+    Q_INIT_RESOURCE(themes);
     Log::init_qttest();
 
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Found theme .*"));

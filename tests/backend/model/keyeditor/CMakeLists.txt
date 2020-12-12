@@ -1,0 +1,1 @@
+pegasus_qml_test(test_KeyEditor)

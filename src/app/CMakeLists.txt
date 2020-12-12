@@ -46,7 +46,7 @@ target_link_libraries(pegasus-fe PUBLIC
 qt_import_qml_plugins(pegasus-fe)
 
 include(PegasusCommonProps)
-pegasus_add_common_props(pegasus-fe)
+pegasus_add_common_props_optimized(pegasus-fe)
 
 if(PEGASUS_ENABLE_APNG)
     target_compile_definitions(pegasus-fe PUBLIC WITH_APNG_SUPPORT)

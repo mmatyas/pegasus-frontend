@@ -25,6 +25,11 @@ function(pegasus_add_common_props target)
     else()
         target_compile_options(${target} PRIVATE -Wall -Wextra -pedantic)
     endif()
+endfunction()
+
+
+function(pegasus_add_common_props_optimized target)
+    pegasus_add_common_props(${target})
 
     check_ipo_supported(RESULT ipo_supported)
     if(ipo_supported)
