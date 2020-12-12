@@ -26,7 +26,7 @@
 
 
 namespace {
-void remove_if(QFileInfoList& list, const std::function<bool(const QFileInfo&)>& predicate)
+void erase_if(QFileInfoList& list, const std::function<bool(const QFileInfo&)>& predicate)
 {
     const auto start_it = std::remove_if(list.begin(), list.end(), predicate);
     list.erase(start_it, list.end());
@@ -86,7 +86,7 @@ FolderListModel::FolderListModel(QObject* parent)
 {
     m_dir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase);
     m_dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Readable);
-    setNameFilters(m_name_filters);
+    cd(QStringLiteral("."));
 }
 
 int FolderListModel::rowCount(const QModelIndex&) const
@@ -135,8 +135,21 @@ void FolderListModel::cd(const QString& dirName)
         m_dir_path = QDir::toNativeSeparators(m_dir.absolutePath());
 
         auto filist = m_dir.entryInfoList();
-        remove_if(filist, [this](const QFileInfo& fi){
-            return !fi.isDir() && !m_name_filters.contains(fi.fileName());
+        erase_if(filist, [this](const QFileInfo& fi){
+            if (fi.isDir())
+                return false;
+
+            if (m_filenames.contains(fi.fileName()))
+                return false;
+
+            const bool has_matching_ext = std::any_of(
+                m_extensions.cbegin(),
+                m_extensions.cend(),
+                [&fi](const QString& suffix){ return fi.fileName().endsWith(suffix); });
+            if (has_matching_ext)
+                return false;
+
+            return true;
         });
 
         // adding dotdot manually to avoid getting stuck in the file system
@@ -150,9 +163,16 @@ void FolderListModel::cd(const QString& dirName)
     emit folderChanged();
 }
 
-void FolderListModel::setNameFilters(QStringList nameFilters)
+void FolderListModel::setFilenames(QStringList list)
 {
-    m_name_filters = std::move(nameFilters);
-    emit nameFiltersChanged();
+    m_filenames = std::move(list);
+    emit filenamesChanged();
+    cd(QStringLiteral("."));
+}
+
+void FolderListModel::setExtensions(QStringList list)
+{
+    m_extensions = std::move(list);
+    emit extensionsChanged();
     cd(QStringLiteral("."));
 }

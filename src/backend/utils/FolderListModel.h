@@ -35,9 +35,12 @@ struct FolderListEntry {
 class FolderListModel : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(QString folder READ folder NOTIFY folderChanged)
-    Q_PROPERTY(QStringList nameFilters
-               READ nameFilters WRITE setNameFilters
-               NOTIFY nameFiltersChanged)
+    Q_PROPERTY(QStringList files
+               READ filenames WRITE setFilenames
+               NOTIFY filenamesChanged)
+    Q_PROPERTY(QStringList extensions
+               READ extensions WRITE setExtensions
+               NOTIFY extensionsChanged)
 
 public:
     explicit FolderListModel(QObject* parent = nullptr);
@@ -54,18 +57,22 @@ public:
     Q_INVOKABLE void cd(const QString&);
 
     QString folder() const { return m_dir_path; }
-    const QStringList& nameFilters() const { return m_name_filters; }
-    void setNameFilters(QStringList);
+    const QStringList& filenames() const { return m_filenames; }
+    const QStringList& extensions() const { return m_extensions; }
+    void setFilenames(QStringList);
+    void setExtensions(QStringList);
 
 signals:
     void folderChanged();
-    void nameFiltersChanged();
+    void filenamesChanged();
+    void extensionsChanged();
 
 private:
     QDir m_dir;
     QString m_dir_path;
     std::vector<FolderListEntry> m_files;
-    QStringList m_name_filters;
+    QStringList m_filenames;
+    QStringList m_extensions;
 
     const std::vector<QString> m_drives_cache;
     const QHash<int, QByteArray> m_role_names;

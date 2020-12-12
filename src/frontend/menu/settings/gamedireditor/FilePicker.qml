@@ -37,11 +37,13 @@ FocusScope {
 
     FolderListModel {
         id: folderModel
-        nameFilters: [
-            "collections.pegasus.txt",
-            "collections.txt",
+        files: [
             "metadata.pegasus.txt",
             "metadata.txt",
+        ]
+        extensions: [
+            ".metadata.pegasus.txt",
+            ".metadata.txt",
         ]
     }
 
@@ -150,7 +152,7 @@ FocusScope {
             readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
 
             color: highlighted ? "#566" : "transparent"
-            width: parent.width
+            width: ListView.view.width
             height: label.height
 
             function pickItem() {
