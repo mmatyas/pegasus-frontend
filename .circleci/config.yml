@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-android
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: android
       - ANDROID_NDK_ROOT: /opt/android-ndk
       - BUILDOPTS: ANDROID_ABIS=armeabi-v7a
@@ -32,7 +32,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-mingw
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: win32-mingw-static
       - BUILDOPTS:
           USE_SDL_GAMEPAD=1
@@ -55,7 +55,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: rpi1-static
       - BUILDOPTS: USE_SDL_GAMEPAD=1
     steps:
@@ -71,7 +71,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: rpi2-static
       - BUILDOPTS: USE_SDL_GAMEPAD=1
     steps:
@@ -87,7 +87,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: rpi3-static
       - BUILDOPTS: USE_SDL_GAMEPAD=1
     steps:
@@ -103,7 +103,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: rpi4-static
       - BUILDOPTS: QMAKE_LIBS_LIBDL=-ldl
     steps:
@@ -120,7 +120,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_odroid-c1
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: odroid-c1-static
     steps:
       - checkout
@@ -136,7 +136,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_odroid-c2
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: odroid-c2-static
     steps:
       - checkout
@@ -152,7 +152,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_odroid-xu3
     environment:
-      - QT_VERSION: qt5151
+      - QT_VERSION: qt5152
       - QT_TARGET: odroid-xu3-static
     steps:
       - checkout

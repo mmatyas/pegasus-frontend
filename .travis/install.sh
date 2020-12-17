@@ -29,6 +29,7 @@ if [[ $TARGET = x11* ]]; then
     libxcb-image0-dev \
     libxcb-keysyms1-dev \
     libxcb-render-util0-dev \
+    libxcb-util-dev \
     libxcb-xinerama0-dev \
     libsdl2-dev \
     libzstd-dev \
