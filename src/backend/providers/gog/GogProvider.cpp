@@ -71,9 +71,7 @@ namespace gog {
 
 GogProvider::GogProvider(QObject* parent)
     : Provider(QLatin1String("gog"), QStringLiteral("GOG"), parent)
-{
-    setEnabled(false); // issue #464
-}
+{}
 
 Provider& GogProvider::run(SearchContext& sctx)
 {
