@@ -8,8 +8,10 @@ lessThan(QT_MAJOR_VERSION, $${REQ_QT_MAJOR}) | lessThan(QT_MINOR_VERSION, $${REQ
 
 
 TEMPLATE = subdirs
-SUBDIRS += src
+SUBDIRS += src thirdparty
 OTHER_FILES += .qmake.conf
+
+src.depends = thirdparty
 
 # FIXME: MAke sure the QT options of Backend inherit to the dependers
 qtHaveModule(testlib):!android {
