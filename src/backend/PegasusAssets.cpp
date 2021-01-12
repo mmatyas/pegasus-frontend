@@ -105,6 +105,7 @@ AssetType ext_to_type(const QString& ext)
         { QStringLiteral("png"), AssetType::BOX_FRONT },
         { QStringLiteral("jpg"), AssetType::BOX_FRONT },
         { QStringLiteral("webp"), AssetType::BOX_FRONT },
+        { QStringLiteral("apng"), AssetType::BOX_FRONT },
         { QStringLiteral("webm"), AssetType::VIDEO },
         { QStringLiteral("mp4"), AssetType::VIDEO },
         { QStringLiteral("avi"), AssetType::VIDEO },
@@ -123,7 +124,7 @@ AssetType ext_to_type(const QString& ext)
 const QStringList& allowed_asset_exts(AssetType type)
 {
     static const QStringList empty_list({});
-    static const QStringList image_exts { "png", "jpg", "webp" };
+    static const QStringList image_exts { "png", "jpg", "webp", "apng" };
     static const QStringList video_exts { "webm", "mp4", "avi" };
     static const QStringList audio_exts { "mp3", "ogg", "wav" };
 

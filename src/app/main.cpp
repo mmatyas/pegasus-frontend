@@ -23,16 +23,19 @@
 #include <QGuiApplication>
 #include <QIcon>
 #include <QSettings>
+#include <QtPlugin>
 
 #ifdef Q_OS_ANDROID
 #include "backend/platform/AndroidHelpers.h"
 #endif
 
 
+Q_IMPORT_PLUGIN(ApngImagePlugin);
+
+
 backend::CliArgs handle_cli_args(QGuiApplication&);
 bool request_runtime_permissions();
 bool portable_txt_present();
-
 
 int main(int argc, char *argv[])
 {
