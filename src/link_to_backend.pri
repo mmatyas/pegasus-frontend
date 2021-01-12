@@ -8,7 +8,7 @@ macx: LIBS += -framework Cocoa
 
 # based on the auto-generated code by Qt Creator
 
-win32:CONFIG(release, debug|release): LIBS += "-L$${TOP_BUILDDIR}/src/backend/release/" "-L$${TOP_BUILDDIR}/src/backend/release/"
+win32:CONFIG(release, debug|release): LIBS += "-L$${TOP_BUILDDIR}/src/backend/release/"
 else:win32:CONFIG(debug, debug|release): LIBS += "-L$${TOP_BUILDDIR}/src/backend/debug/"
 else:unix: LIBS += "-L$${TOP_BUILDDIR}/src/backend/"
 
@@ -31,3 +31,16 @@ else:unix: PRE_TARGETDEPS += "$${TOP_BUILDDIR}/src/backend/libbackend.a"
 # Gamepad backend
 !isEmpty(USE_SDL_GAMEPAD): include($${TOP_SRCDIR}/src/link_to_sdl.pri)
 else: QT *= gamepad
+
+
+# Plugins
+
+win32:CONFIG(release, debug|release): LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/release/"
+else:win32:CONFIG(debug, debug|release): LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/debug/"
+else:unix: LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/"
+LIBS += -lqapng
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/release/libqapng.a"
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/libqapng.a"
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/release/qapng.lib"
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/qapng.lib"

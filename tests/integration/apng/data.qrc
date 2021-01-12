@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>actual.apng</file>
+        <file>expected.png</file>
+    </qresource>
+</RCC>
