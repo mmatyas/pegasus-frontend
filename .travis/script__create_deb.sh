@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o xtrace
 
-SUFFIX=$(git describe --always)_${TARGET}
+SUFFIX=$(git describe --always)_${QT_TARGET}
 DEB_REGEX_LATEST='^alpha([0-9]+)-([0-9]+)-g[0-9a-f]+_.*'
 DEB_REGEX_STABLE='^alpha([0-9]+)_.*'
 
@@ -33,4 +33,4 @@ fpm -s dir -t deb \
   -d 'libsdl2-2.0-0 >= 2.0.4' \
   -d 'libc6 >= 2.25' \
   -d 'libstdc++6 >= 4.8' \
-  $PWD/../installoc/=/
+  $PWD/../installdir/=/

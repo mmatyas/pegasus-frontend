@@ -1,5 +1,31 @@
 version: 2
 jobs:
+  x11:
+    docker:
+      - image: mmatyas/pegasus-qt_x11-bionic
+    environment:
+      - QT_VERSION: qt5152
+      - QT_TARGET: x11-static
+      - BUILDOPTS:
+          USE_SDL_GAMEPAD=1
+          INSTALL_BINDIR=/usr/bin
+          INSTALL_ICONDIR=/usr/share/icons/hicolor
+          INSTALL_DESKTOPDIR=/usr/share/applications
+          INSTALL_APPSTREAMDIR=/usr/share/metainfo
+          INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
+      - INSTALL_BINDIR: /usr/bin/
+      - GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
+    steps:
+      - run: gem install --user-install -N fpm -v 1.10.2
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: .circleci/objdump_linux.sh ''
+      # Deploy
+      - run: .circleci/zip_linux.sh
+      - run: cd dist && PATH="$PATH:${GEMDIR}" ../.travis/script__create_deb.sh
+      - run: .circleci/release.sh
+
   android:
     docker:
       - image: mmatyas/pegasus-qt-android
@@ -164,10 +190,12 @@ jobs:
       - run: .circleci/zip_linux.sh
       - run: .circleci/release.sh
 
+
 workflows:
   version: 2
   all:
     jobs:
+      - x11
       - android
       - mingw
       - buster-pi1
