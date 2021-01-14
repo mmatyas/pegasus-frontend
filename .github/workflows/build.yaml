@@ -1,11 +1,64 @@
-on: [push, pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 env:
   TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
   QT_VERSION: qt5152
   QT_VERSION_PRETTY: "5.15.2"
 
+
 jobs:
+  x11-tests:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: APT deps
+        run: sudo apt-get install -y
+          libasound-dev
+          libgl1-mesa-dev
+          libgstreamer-plugins-base1.0-dev
+          libpulse-dev
+          libudev-dev
+          libxi-dev
+          libxkbcommon-dev
+          libxkbcommon-x11-dev
+          libxcb-icccm4-dev
+          libxcb-image0-dev
+          libxcb-keysyms1-dev
+          libxcb-render-util0-dev
+          libxcb-util-dev
+          libxcb-xinerama0-dev
+          libsdl2-dev
+          libzstd-dev
+          lcov
+          ruby
+          xvfb
+      - name: Get Qt
+        run: |
+          curl -L "${TOOLS_URL}/${QT_VERSION}_x11-static.tar.xz" | sudo tar xJf - -C /opt/
+          /opt/${QT_VERSION}_x11-static/bin/qmake --version
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - name: Lint QML
+        run: |
+          find -name *.qml -exec /opt/${QT_VERSION}_x11-static/bin/qmllint {} \;
+
+      - run: mkdir build
+      - name: Build and measure
+        working-directory: build
+        run: |
+          export QT_HOSTDIR=/opt/${QT_VERSION}_x11-static
+          xvfb-run -a ../.travis/script__build_with_lcov.sh
+      - name: Send to Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: build/coverage.clean
+
+
   macos-static:
     runs-on: macos-10.15
     steps:
