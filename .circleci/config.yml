@@ -190,6 +190,13 @@ jobs:
       - run: .circleci/zip_linux.sh
       - run: .circleci/release.sh
 
+  release:
+    docker:
+      - image: mmatyas/pegasus-qt_x11-bionic
+    steps:
+      - checkout
+      - run: .circleci/release_all.sh
+
 
 workflows:
   version: 2
@@ -205,3 +212,15 @@ workflows:
       - odroid-c1
       - odroid-c2
       - odroid-xu3
+      - release:
+          requires:
+            - x11
+            - android
+            - mingw
+            - buster-pi1
+            - buster-pi2
+            - buster-pi3
+            - buster-pi4
+            - odroid-c1
+            - odroid-c2
+            - odroid-xu3
