@@ -59,5 +59,5 @@ while [[ $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
   echo "(${FILE_CNT} out of ${EXPECTED_FILE_CNT})";
 done
 
-curl -LO https://github.com/mmatyas/uploadtool/raw/master/upload.sh
+curl -LO https://github.com/mmatyas/uploadtool/raw/circleci/upload.sh
 bash ./upload.sh $FILES
