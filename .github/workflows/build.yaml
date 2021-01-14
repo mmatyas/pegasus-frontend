@@ -9,6 +9,8 @@ env:
 jobs:
   x11-tests:
     runs-on: ubuntu-18.04
+    env:
+      QT_TARGET: x11-static
     steps:
       - name: APT deps
         run: sudo apt-get install -y
@@ -33,8 +35,9 @@ jobs:
           xvfb
       - name: Get Qt
         run: |
-          curl -L "${TOOLS_URL}/${QT_VERSION}_x11-static.tar.xz" | sudo tar xJf - -C /opt/
-          /opt/${QT_VERSION}_x11-static/bin/qmake --version
+          curl -L "${TOOLS_URL}/${QT_VERSION}_${QT_TARGET}.tar.xz" | sudo tar xJf - -C /opt/
+          curl -L "${TOOLS_URL}/apng_patched_headers.tar.xz" | sudo tar xJf - -C "/opt/${QT_VERSION}_${QT_TARGET}/include/"
+          /opt/${QT_VERSION}_${QT_TARGET}/bin/qmake --version
 
       - uses: actions/checkout@v2
         with:
@@ -44,13 +47,13 @@ jobs:
 
       - name: Lint QML
         run: |
-          find -name *.qml -exec /opt/${QT_VERSION}_x11-static/bin/qmllint {} \;
+          find -name *.qml -exec /opt/${QT_VERSION}_${QT_TARGET}/bin/qmllint {} \;
 
       - run: mkdir build
       - name: Build and measure
         working-directory: build
         run: |
-          export QT_HOSTDIR=/opt/${QT_VERSION}_x11-static
+          export QT_HOSTDIR=/opt/${QT_VERSION}_${QT_TARGET}
           xvfb-run -a ../.travis/script__build_with_lcov.sh
       - name: Send to Coveralls
         uses: coverallsapp/github-action@master
@@ -61,6 +64,8 @@ jobs:
 
   macos-static:
     runs-on: macos-10.15
+    env:
+      QT_TARGET: macos-static
     steps:
       - uses: actions/checkout@v2
         with:
@@ -70,7 +75,8 @@ jobs:
 
       - name: Get Qt
         run: |
-          curl -L "${TOOLS_URL}/${QT_VERSION}_macos-static.tar.xz" | sudo tar xJ - -C /usr/local/
+          curl -L "${TOOLS_URL}/${QT_VERSION}_${QT_TARGET}.tar.xz" | sudo tar xJ - -C /usr/local/
+          curl -L "${TOOLS_URL}/apng_patched_headers.tar.xz" | sudo tar xJf - -C "/usr/local/Qt-${QT_VERSION_PRETTY}/include/"
           /usr/local/Qt-${QT_VERSION_PRETTY}/bin/qmake --version
       - name: Get SDL2
         run: curl -L "${TOOLS_URL}/sdl-2010_macos.txz" | sudo tar xJ - -C /usr/local/
@@ -99,7 +105,7 @@ jobs:
           cp README.md staging/
           cp LICENSE.md staging/
           mkdir deploy
-          export ZIPNAME="pegasus-fe_$(git describe --always)_macos-static.zip"
+          export ZIPNAME="pegasus-fe_$(git describe --always)_${QT_TARGET}.zip"
           cd staging
           zip -r "../deploy/${ZIPNAME}" ./*
       - name: Upload artifacts
