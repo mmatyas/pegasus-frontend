@@ -14,12 +14,12 @@ else:unix: LIBS += "-L$${TOP_BUILDDIR}/src/backend/"
 
 LIBS += -lbackend
 INCLUDEPATH += \
-	"$${TOP_SRCDIR}/src" \
-	"$${TOP_SRCDIR}/src/backend" \
-	"$${TOP_SRCDIR}/thirdparty"
+    "$${TOP_SRCDIR}/src" \
+    "$${TOP_SRCDIR}/src/backend" \
+    "$${TOP_SRCDIR}/thirdparty"
 DEPENDPATH += \
-	"$${TOP_SRCDIR}/src/backend" \
-	"$${TOP_SRCDIR}/thirdparty"
+    "$${TOP_SRCDIR}/src/backend" \
+    "$${TOP_SRCDIR}/thirdparty"
 
 win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/src/backend/release/libbackend.a"
 else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/src/backend/debug/libbackend.a"
@@ -35,12 +35,16 @@ else: QT *= gamepad
 
 # Plugins
 
-win32:CONFIG(release, debug|release): LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/release/"
-else:win32:CONFIG(debug, debug|release): LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/debug/"
-else:unix: LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/"
-LIBS += -lqapng
+!isEmpty(ENABLE_APNG) {
+    DEFINES *= WITH_APNG_SUPPORT
 
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/release/libqapng.a"
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/libqapng.a"
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/release/qapng.lib"
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/qapng.lib"
+    win32:CONFIG(release, debug|release): LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/release/"
+    else:win32:CONFIG(debug, debug|release): LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/debug/"
+    else:unix: LIBS += "-L$${TOP_BUILDDIR}/thirdparty/apng/"
+    LIBS += -lqapng
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/release/libqapng.a"
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/libqapng.a"
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/release/qapng.lib"
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/qapng.lib"
+}

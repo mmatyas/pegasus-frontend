@@ -33,7 +33,7 @@ jobs:
       - QT_VERSION: qt5152
       - QT_TARGET: android
       - ANDROID_NDK_ROOT: /opt/android-ndk
-      - BUILDOPTS: ANDROID_ABIS=armeabi-v7a
+      - BUILDOPTS: ANDROID_ABIS=armeabi-v7a FORCE_QT_PNG=1
     steps:
       - checkout
       - run: .circleci/prepare.sh

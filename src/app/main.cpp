@@ -30,7 +30,9 @@
 #endif
 
 
-Q_IMPORT_PLUGIN(ApngImagePlugin);
+#ifdef WITH_APNG_SUPPORT
+Q_IMPORT_PLUGIN(ApngImagePlugin)
+#endif
 
 
 backend::CliArgs handle_cli_args(QGuiApplication&);

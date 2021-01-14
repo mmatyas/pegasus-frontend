@@ -1,2 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS += apng
+
+!isEmpty(ENABLE_APNG): {
+    SUBDIRS += apng
+}

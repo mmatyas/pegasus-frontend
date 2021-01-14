@@ -10,6 +10,9 @@ if [[ ! -d "$QT_DIR" ]]; then
 fi
 
 ${QT_DIR}/bin/qmake --version
-eval ${QT_DIR}/bin/qmake . ${BUILDOPTS:-} QMAKE_CXXFLAGS+=\'-Wall -Wextra -pedantic\'
+eval ${QT_DIR}/bin/qmake . \
+    ENABLE_APNG=1 \
+    ${BUILDOPTS:-} \
+    QMAKE_CXXFLAGS+=\'-Wall -Wextra -pedantic\'
 make
 make install INSTALL_ROOT=${PWD}/installdir

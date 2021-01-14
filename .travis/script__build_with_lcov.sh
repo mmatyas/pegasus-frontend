@@ -10,6 +10,8 @@ fi
 
 
 ${QT_HOSTDIR}/bin/qmake .. \
+  ENABLE_APNG=1 \
+  USE_SDL_GAMEPAD=1 \
   QMAKE_CXXFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
   QMAKE_LDFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
   LIBS+="-lgcov" \

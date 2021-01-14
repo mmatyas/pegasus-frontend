@@ -86,6 +86,7 @@ jobs:
         working-directory: build
         run: /usr/local/Qt-${QT_VERSION_PRETTY}/bin/qmake ..
           USE_SDL_GAMEPAD=1
+          ENABLE_APNG=1
           SDL_LIBS='-L/usr/local/SDL2-2.0.10/lib -lSDL2 -lm -liconv -Wl,-framework,ForceFeedback -lobjc -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,IOKit'
           SDL_INCLUDES=/usr/local/SDL2-2.0.10/include/SDL2
           QMAKE_CFLAGS=-D_THREAD_SAFE

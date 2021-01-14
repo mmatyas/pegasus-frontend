@@ -38,5 +38,10 @@ unix:!macx {
 else: message("Using Qt gamepad backend")
 
 
+# APNG support
+!isEmpty(ENABLE_APNG): message("APNG support enabled")
+else: message("APNG support disabled")
+
+
 # Print Git revision
 message("Git revision: '$${GIT_REVISION}'")
