@@ -17,3 +17,5 @@ SOURCES += \
 
 OTHER_FILES += \
     qapng.json
+
+include($${TOP_SRCDIR}/thirdparty/link_to_png.pri)
