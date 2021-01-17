@@ -195,7 +195,8 @@ jobs:
       - image: mmatyas/pegasus-qt_x11-bionic
     steps:
       - checkout
-      - run: .circleci/release_all.sh
+      - run: .circleci/release_github.sh
+      - run: .circleci/release_bintray.sh
 
 
 workflows:
