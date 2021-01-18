@@ -6,24 +6,16 @@ jobs:
     environment:
       - QT_VERSION: qt5152
       - QT_TARGET: x11-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          INSTALL_BINDIR=/usr/bin
-          INSTALL_ICONDIR=/usr/share/icons/hicolor
-          INSTALL_DESKTOPDIR=/usr/share/applications
-          INSTALL_APPSTREAMDIR=/usr/share/metainfo
-          INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
-          SDL_LIBS="-L/opt/SDL2-2.0.14/lib -lSDL2"
-          SDL_INCLUDES=/opt/SDL2-2.0.14/include/SDL2
+      - SDL_VERSION: "2.0.14"
+      - SDL_TARGET: x11-bionic
+      - BUILDOPTS: -DCMAKE_INSTALL_PREFIX=/usr/
       - INSTALL_BINDIR: /usr/bin/
       - GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
     steps:
       - run: gem install --user-install -N fpm -v 1.10.2
       - checkout
       - run: .circleci/prepare.sh
-      - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.14_x11-bionic.tar.xz" | tar xJf - -C /opt/
-      - run: .circleci/build.sh
+      - run: .circleci/build_cmake.sh
       - run: .circleci/objdump_linux.sh ''
       # Deploy
       - run: .circleci/zip_linux.sh
@@ -234,24 +226,24 @@ workflows:
   all:
     jobs:
       - x11
-      - android
-      - mingw
-      - buster-pi1
-      - buster-pi2
-      - buster-pi3
-      - buster-pi4
-      - odroid-c1
-      - odroid-c2
-      - odroid-xu3
-      - release:
-          requires:
-            - x11
-            - android
-            - mingw
-            - buster-pi1
-            - buster-pi2
-            - buster-pi3
-            - buster-pi4
-            - odroid-c1
-            - odroid-c2
-            - odroid-xu3
+#      - android
+#      - mingw
+#      - buster-pi1
+#      - buster-pi2
+#      - buster-pi3
+#      - buster-pi4
+#      - odroid-c1
+#      - odroid-c2
+#      - odroid-xu3
+#      - release:
+#          requires:
+#            - x11
+#            - android
+#            - mingw
+#            - buster-pi1
+#            - buster-pi2
+#            - buster-pi3
+#            - buster-pi4
+#            - odroid-c1
+#            - odroid-c2
+#            - odroid-xu3
