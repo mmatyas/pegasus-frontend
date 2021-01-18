@@ -60,5 +60,9 @@ if(PEGASUS_USE_SDL2_GAMEPAD)
     add_subdirectory(integration/sdl)
 endif()
 
+if(PEGASUS_ENABLE_APNG)
+    add_subdirectory(integration/apng)
+endif()
+
 add_subdirectory(benchmarks/configfile)
 add_subdirectory(benchmarks/pegasus_provider)

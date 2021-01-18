@@ -21,6 +21,8 @@ endif()
 
 
 option(PEGASUS_USE_SDL2_GAMEPAD "Use SDL2 for gamepad support" ON)
+option(PEGASUS_ENABLE_APNG "Enable animated PNG support" OFF)
+option(PEGASUS_STATIC "Link stdc++ and Qt plugins static" OFF)
 
 
 execute_process(COMMAND
@@ -54,6 +56,9 @@ execute_process(COMMAND
 )
 
 
+if(PEGASUS_ENABLE_APNG)
+    add_subdirectory(thirdparty/apng)
+endif()
 add_subdirectory(thirdparty/QtQmlTricks)
 add_subdirectory(thirdparty/SortFilterProxyModel)
 add_subdirectory(assets)

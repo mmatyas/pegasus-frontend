@@ -300,3 +300,14 @@ else()
     target_link_libraries(pegasus-backend PUBLIC Qt5::Gamepad)
     message("  - Qt")
 endif()
+
+
+# Animated PNG
+
+message("Animated PNG support:")
+if(PEGASUS_ENABLE_APNG)
+    target_link_libraries(pegasus-backend PUBLIC apng)
+    message("  - enabled")
+else()
+    message("  - disabled")
+endif()
