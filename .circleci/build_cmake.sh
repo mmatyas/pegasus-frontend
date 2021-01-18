@@ -12,9 +12,7 @@ fi
 eval cmake \
   -DCMAKE_PREFIX_PATH="$QT_DIR" \
   ${BUILDOPTS:-} \
-  -G Ninja \
-  -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
   -DPEGASUS_ENABLE_APNG=1
   -DPEGASUS_STATIC=1
-ninja
-DESTDIR="${PWD}/installdir" ninja install/strip
+make
+make install INSTALL_ROOT=${PWD}/installdir
