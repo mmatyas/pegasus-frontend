@@ -7,19 +7,19 @@ jobs:
       - QT_VERSION: qt5152
       - QT_TARGET: x11-static
       - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          INSTALL_BINDIR=/usr/bin
-          INSTALL_ICONDIR=/usr/share/icons/hicolor
-          INSTALL_DESKTOPDIR=/usr/share/applications
-          INSTALL_APPSTREAMDIR=/usr/share/metainfo
-          INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
+          -DPEGASUS_USE_SDL2_GAMEPAD=1
+          -DINSTALL_BINDIR=/usr/bin
+          -DINSTALL_ICONDIR=/usr/share/icons/hicolor
+          -DINSTALL_DESKTOPDIR=/usr/share/applications
+          -DINSTALL_APPSTREAMDIR=/usr/share/metainfo
+          -DINSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
       - INSTALL_BINDIR: /usr/bin/
       - GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
     steps:
       - run: gem install --user-install -N fpm -v 1.10.2
       - checkout
       - run: .circleci/prepare.sh
-      - run: .circleci/build.sh
+      - run: .circleci/build_cmake.sh
       - run: .circleci/objdump_linux.sh ''
       # Deploy
       - run: .circleci/zip_linux.sh
