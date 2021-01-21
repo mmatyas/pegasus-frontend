@@ -13,7 +13,7 @@ jobs:
       QT_TARGET: x11-static
     steps:
       - name: APT deps
-        run: sudo apt-get install -y
+        run: sudo apt-get update && sudo apt-get install -y
           libasound-dev
           libgl1-mesa-dev
           libgstreamer-plugins-base1.0-dev
