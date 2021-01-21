@@ -452,15 +452,20 @@ void Metadata::apply_entry(ParserState& ps, const metafile::Entry& entry, Search
         ps.cur_coll->setCommonLaunchCmdBasedir(ps.dir.path());
         ps.cur_game = nullptr;
 
+        ps.all_colls.emplace_back(ps.cur_coll);
         ps.filters.emplace_back(ps.cur_coll, ps.dir.path());
         return;
     }
 
     if (entry.key == m_primary_key_game) {
-        // TODO: check cur_coll here?
         ps.cur_game = sctx.create_game();
         ps.cur_game->setTitle(first_line_of(ps, entry));
         ps.cur_game->setLaunchCmdBasedir(ps.dir.path());
+
+        // Add to the ones found so far
+        for (model::Collection* const coll : ps.all_colls)
+            sctx.game_add_to(*ps.cur_game, *coll);
+
         return;
     }
 

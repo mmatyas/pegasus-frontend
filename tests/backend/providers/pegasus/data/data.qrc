@@ -64,5 +64,9 @@
         <file>multicoll/games/game.ext</file>
         <file>multicoll/games/game.jpg</file>
         <file>multicoll/games/metadata.txt</file>
+        <file>autoparenting/metadata.txt</file>
+        <file>autoparenting/game1.ext</file>
+        <file>autoparenting/game2.ext</file>
+        <file>autoparenting/game3.ext</file>
     </qresource>
 </RCC>

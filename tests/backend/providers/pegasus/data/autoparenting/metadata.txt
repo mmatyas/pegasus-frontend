@@ -1,0 +1,15 @@
+collection: coll1
+
+game: game1
+file: game1.ext
+
+collection: coll2
+
+game: game2
+file: game2.ext
+
+collection: coll3
+
+game: game3
+file: game3.ext
+

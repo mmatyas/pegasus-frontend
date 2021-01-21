@@ -45,6 +45,7 @@ struct ParserState {
     model::Game* cur_game = nullptr;
     model::Collection* cur_coll = nullptr;
     std::vector<FileFilter> filters;
+    std::vector<model::Collection*> all_colls;
 
     explicit ParserState(const QString&);
     NO_COPY_NO_MOVE(ParserState)

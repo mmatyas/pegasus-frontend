@@ -101,6 +101,17 @@ void verify_collected_files(
     }
 }
 
+const model::Game* get_game_ptr_by_title(const QVector<model::Game*>& list, const QString& title)
+{
+    const auto it = std::find_if(
+        list.cbegin(),
+        list.cend(),
+        [&title](const model::Game* const game){ return game->title() == title; });
+    return it != list.cend()
+        ? *it
+        : nullptr;
+}
+
 } // namespace
 
 
@@ -123,6 +134,7 @@ private slots:
     void nonASCII();
     void relative_files_only();
     void relative_files_with_dirs();
+    void autoparenting();
 };
 
 void test_PegasusProvider::empty()
@@ -191,7 +203,6 @@ void test_PegasusProvider::with_meta()
     QTest::ignoreMessage(QtWarningMsg, PATHMSG("Metafiles: `%1`, line 68: Incorrect date format, should be YYYY, YYYY-MM or YYYY-MM-DD", ":/with_meta/metadata.pegasus.txt"));
     QTest::ignoreMessage(QtWarningMsg, PATHMSG("Metafiles: `%1`, line 70: Duplicate file entry detected: `horse.ext`", ":/with_meta/metadata.pegasus.txt"));
     QTest::ignoreMessage(QtWarningMsg, PATHMSG("Metafiles: `%1`, line 71: Unrecognized game property `asd`, ignored", ":/with_meta/metadata.pegasus.txt"));
-    QTest::ignoreMessage(QtWarningMsg, "The game 'Virtual Game' does not belong to any collections, ignored");
 
     providers::SearchContext sctx({QStringLiteral(":/with_meta")});
     providers::pegasus::PegasusProvider().run(sctx);
@@ -577,6 +588,52 @@ void test_PegasusProvider::relative_files_with_dirs()
         }},
     };
     verify_collected_files(collections, coll_files_map);
+}
+
+void test_PegasusProvider::autoparenting()
+{
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Metafiles: Found `%1`", ":/autoparenting/metadata.txt"));
+
+    providers::SearchContext sctx({QStringLiteral(":/autoparenting")});
+    providers::pegasus::PegasusProvider().run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
+
+    const model::Collection* const coll1 = get_collection_ptr(collections, QStringLiteral("coll1"));
+    const model::Collection* const coll2 = get_collection_ptr(collections, QStringLiteral("coll2"));
+    const model::Collection* const coll3 = get_collection_ptr(collections, QStringLiteral("coll3"));
+    QVERIFY(coll1);
+    QVERIFY(coll2);
+    QVERIFY(coll3);
+
+    const model::Game* const game1 = get_game_ptr_by_title(games, QStringLiteral("game1"));
+    const model::Game* const game2 = get_game_ptr_by_title(games, QStringLiteral("game2"));
+    const model::Game* const game3 = get_game_ptr_by_title(games, QStringLiteral("game3"));
+    QVERIFY(game1);
+    QVERIFY(game2);
+    QVERIFY(game3);
+
+    const QVector<model::Collection*>* parents = nullptr;
+
+    parents = &game1->collectionsConst();
+    QCOMPARE(parents->size(), 1);
+    QVERIFY(std::find(parents->cbegin(), parents->cend(), coll1) != parents->cend());
+
+    parents = &game2->collectionsConst();
+    QCOMPARE(parents->size(), 2);
+    QVERIFY(std::find(parents->cbegin(), parents->cend(), coll1) != parents->cend());
+    QVERIFY(std::find(parents->cbegin(), parents->cend(), coll2) != parents->cend());
+
+    parents = &game3->collectionsConst();
+    QCOMPARE(parents->size(), 3);
+    QVERIFY(std::find(parents->cbegin(), parents->cend(), coll1) != parents->cend());
+    QVERIFY(std::find(parents->cbegin(), parents->cend(), coll2) != parents->cend());
+    QVERIFY(std::find(parents->cbegin(), parents->cend(), coll3) != parents->cend());
+
+    QCOMPARE(collections.size(), 3);
+    QCOMPARE(coll1->gamesConst().size(), 3);
+    QCOMPARE(coll2->gamesConst().size(), 2);
+    QCOMPARE(coll3->gamesConst().size(), 1);
+    QCOMPARE(games.size(), 3);
 }
 
 
