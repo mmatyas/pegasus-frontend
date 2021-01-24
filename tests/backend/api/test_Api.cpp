@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 
-#include "Api.h"
+#include "model/Api.h"
 
 
 class test_Api : public QObject {

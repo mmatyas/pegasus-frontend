@@ -17,7 +17,6 @@
 
 #include "Backend.h"
 
-#include "Api.h"
 #include "AppSettings.h"
 #include "Log.h"
 #include "FrontendLayer.h"
@@ -27,6 +26,7 @@
 #include "types/AppCloseType.h"
 
 // For type registration
+#include "model/Api.h"
 #include "model/keys/Key.h"
 #include "model/gaming/Assets.h"
 #include "model/gaming/GameFile.h"

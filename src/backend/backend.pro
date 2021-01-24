@@ -12,7 +12,6 @@ msvc: DEFINES *= _USE_MATH_DEFINES
 
 
 SOURCES += \
-    Api.cpp \
     Backend.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
@@ -25,7 +24,6 @@ SOURCES += \
     GamepadButtonNavigation.cpp
 
 HEADERS += \
-    Api.h \
     Backend.h \
     CliArgs.h \
     FrontendLayer.h \
