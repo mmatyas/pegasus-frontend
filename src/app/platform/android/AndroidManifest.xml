@@ -11,7 +11,8 @@
         android:label="Pegasus"
         android:icon="@drawable/icon"
         android:banner="@drawable/banner"
-        android:extractNativeLibs="true">
+        android:extractNativeLibs="true"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name=".MainActivity"
