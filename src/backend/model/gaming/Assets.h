@@ -61,6 +61,7 @@ public:
     GEN(music, MUSIC)
 
     GEN(screenshot, SCREENSHOT)
+    GEN(titlescreen, TITLESCREEN)
     GEN(video, VIDEO)
 #undef GEN
 

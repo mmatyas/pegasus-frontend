@@ -87,6 +87,8 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         }},
         { AssetType::SCREENSHOT, {
             QStringLiteral("screenshot"),
+        }},
+        { AssetType::TITLESCREEN, {
             QStringLiteral("screenshottitle"),
         }},
         { AssetType::UI_STEAMGRID, {

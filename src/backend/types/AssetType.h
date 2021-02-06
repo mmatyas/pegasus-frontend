@@ -41,5 +41,6 @@ enum class AssetType : unsigned char {
     MUSIC,
 
     SCREENSHOT,
+    TITLESCREEN,
     VIDEO,
 };
