@@ -177,11 +177,28 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
 
 void SearchContext::finalize_cleanup_games()
 {
+    // remove parentless games
     for (model::Game* const game_ptr : m_parentless_games) {
         Log::warning(LOGMSG("The game '%1' does not belong to any collections, ignored").arg(game_ptr->title()));
         m_game_entries.erase(game_ptr);
         delete game_ptr;
     }
+
+    // Remove entryless games
+    for (auto& pair : m_collection_games) {
+        std::vector<model::Game*>& game_list = pair.second;
+        VEC_REMOVE_IF(game_list, [this](model::Game* const ptr){ return m_game_entries.count(ptr) == 0; });
+    }
+
+    // Remove empty game lists
+    std::vector<model::Collection*> empty_list_keys;
+    empty_list_keys.reserve(m_collection_games.size());
+    for (auto& pair : m_collection_games) {
+        if (pair.second.empty())
+            empty_list_keys.push_back(pair.first);
+    }
+    for (model::Collection* const key : empty_list_keys)
+        m_collection_games.erase(key);
 }
 
 void SearchContext::finalize_cleanup_collections()

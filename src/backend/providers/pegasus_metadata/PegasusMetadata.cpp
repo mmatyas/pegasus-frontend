@@ -302,7 +302,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
             for (const QString& line : entry.values) {
                 QFileInfo finfo(ps.dir, line);
                 QString path = finfo.canonicalFilePath();
-                if (path.isEmpty()) {
+                if (!finfo.exists() || path.isEmpty()) {
                     print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist")
                         .arg(QDir::toNativeSeparators(finfo.absoluteFilePath())));
                     continue;

@@ -34,6 +34,7 @@
 namespace {
 
 #define PATHMSG(msg, path) qUtf8Printable(QStringLiteral(msg).arg(QDir::toNativeSeparators(QStringLiteral(path))))
+#define PATHMSG2(msg, path1, path2) qUtf8Printable(QStringLiteral(msg).arg(QDir::toNativeSeparators(QStringLiteral(path1)), QDir::toNativeSeparators(QStringLiteral(path2))))
 
 const model::Collection* get_collection_ptr(const QVector<model::Collection*>& list, const QString& name)
 {
@@ -135,6 +136,7 @@ private slots:
     void relative_files_only();
     void relative_files_with_dirs();
     void autoparenting();
+    void entryless_games();
 };
 
 void test_PegasusProvider::empty()
@@ -634,6 +636,20 @@ void test_PegasusProvider::autoparenting()
     QCOMPARE(coll2->gamesConst().size(), 2);
     QCOMPARE(coll3->gamesConst().size(), 1);
     QCOMPARE(games.size(), 3);
+}
+
+void test_PegasusProvider::entryless_games()
+{
+    QTest::ignoreMessage(QtInfoMsg, PATHMSG("Metafiles: Found `%1`", ":/entryless/metadata.txt"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG2("Metafiles: `%1`, line 4: Game file `%2` doesn't seem to exist", ":/entryless/metadata.txt", ":/entryless/test.ext"));
+    QTest::ignoreMessage(QtWarningMsg, "The collection 'My Games' has no valid games, ignored");
+
+    providers::SearchContext sctx({QStringLiteral(":/entryless")});
+    providers::pegasus::PegasusProvider().run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
+
+    QCOMPARE(collections.size(), 0);
+    QCOMPARE(games.size(), 0);
 }
 
 

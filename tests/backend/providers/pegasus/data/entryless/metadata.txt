@@ -1,0 +1,4 @@
+collection: My Games
+
+game: test
+file: test.ext

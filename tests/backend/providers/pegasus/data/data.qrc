@@ -68,5 +68,6 @@
         <file>autoparenting/game1.ext</file>
         <file>autoparenting/game2.ext</file>
         <file>autoparenting/game3.ext</file>
+        <file>entryless/metadata.txt</file>
     </qresource>
 </RCC>
