@@ -66,7 +66,7 @@ Assets::Assets(QString log_tag, QString lb_root_path)
 
         { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOT },
         { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOT },
-        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOT },
+        { QStringLiteral("Screenshot - Game Title"), AssetType::TITLESCREEN },
         { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOT },
         { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOT },
 
