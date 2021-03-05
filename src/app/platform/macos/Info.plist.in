@@ -19,7 +19,7 @@
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.games</string>
     <key>LSUIPresentationMode</key>
-    <integer>4</integer>
+    <integer>0</integer>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHumanReadableCopyright</key>
