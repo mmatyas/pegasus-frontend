@@ -20,6 +20,7 @@
 #include "utils/HashMap.h"
 
 #include <QDir>
+#include <QRegularExpression>
 #include <QString>
 
 namespace model { class Collection; }
@@ -47,6 +48,7 @@ private:
     const QDir m_lb_root;
     const HashMap<QString, GameField> m_game_keys;
     const HashMap<QString, AppField> m_app_keys;
+    const QRegularExpression m_rx_steam_uri;
 
     void log_xml_warning(const QString&, const size_t, const QString&) const;
     HashMap<GameField, QString> read_game_node(QXmlStreamReader&) const;

@@ -50,6 +50,7 @@ enum class GameField : unsigned char {
     EMULATOR_PLATFORM,
     ASSETPATH_VIDEO,
     ASSETPATH_MUSIC,
+    SOURCE,
 };
 enum class AppField : unsigned char {
     ID,
@@ -123,11 +124,9 @@ void apply_game_fields(
                 break;
             case GameField::ID:
             case GameField::PATH:
-                // handled earlier
-                Q_ASSERT(fields.count(pair.first));
+            case GameField::SOURCE:
+                // handled earlier or handled dfferently
                 break;
-            default:
-                Q_UNREACHABLE();
         }
     }
 
@@ -190,6 +189,7 @@ GamelistXml::GamelistXml(QString log_tag, QDir lb_root)
         { QStringLiteral("Platform"), GameField::EMULATOR_PLATFORM },
         { QStringLiteral("VideoPath"), GameField::ASSETPATH_VIDEO },
         { QStringLiteral("MusicPath"), GameField::ASSETPATH_MUSIC },
+        { QStringLiteral("Source"), GameField::SOURCE },
     }
     , m_app_keys {
         { QStringLiteral("Id"), AppField::ID },
@@ -197,6 +197,7 @@ GamelistXml::GamelistXml(QString log_tag, QDir lb_root)
         { QStringLiteral("GameID"), AppField::GAME_ID },
         { QStringLiteral("Name"), AppField::NAME },
     }
+    , m_rx_steam_uri(QStringLiteral("^steam://rungameid/(\\d+)$"))
 {}
 
 void GamelistXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
@@ -219,11 +220,6 @@ bool GamelistXml::game_fields_valid(
     const auto path_it = fields.find(GameField::PATH);
     if (path_it == fields.cend()) {
         log_xml_warning(xml_path, xml_linenum, LOGMSG("Game has no path, entry ignored"));
-        return false;
-    }
-    if (!QFileInfo::exists(path_it->second)) {
-        log_xml_warning(xml_path, xml_linenum,
-            LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(path_it->second)));
         return false;
     }
 
@@ -305,18 +301,16 @@ HashMap<GameField, QString> GamelistXml::read_game_node(QXmlStreamReader& xml) c
             fields.emplace(field_it->second, std::move(contents));
     }
 
-
-    constexpr std::array<GameField, 3> PATH_KEYS {
-        GameField::PATH,
+    // TODO: C++17 Class template argument deduction
+    constexpr std::array<GameField, 2> ABSPATH_KEYS {
         GameField::ASSETPATH_VIDEO,
         GameField::ASSETPATH_MUSIC,
     };
-    for (const GameField key : PATH_KEYS) {
+    for (const GameField key : ABSPATH_KEYS) {
         const auto it = fields.find(key);
         if (it != fields.cend())
             it->second = QFileInfo(m_lb_root, it->second).absoluteFilePath();
     }
-
 
     return fields;
 }
@@ -387,17 +381,48 @@ std::vector<model::Game*> GamelistXml::find_games_for(
 
             Q_ASSERT(fields.count(GameField::PATH));
             Q_ASSERT(fields.count(GameField::ID));
-            const QString can_path = QFileInfo(m_lb_root, fields.at(GameField::PATH)).canonicalFilePath();
-            Q_ASSERT(!can_path.isEmpty());
 
-            model::Game* game_ptr = sctx.game_by_filepath(can_path);
-            if (!game_ptr) {
-                game_ptr = sctx.create_game_for(collection);
-                sctx.game_add_filepath(*game_ptr, can_path);
+            const QString& game_path = fields.at(GameField::PATH);
+            model::Game* game_ptr = nullptr;
+
+            const auto source_it = fields.find(GameField::SOURCE);
+            const QString source = (source_it != fields.cend())
+                ? source_it->second
+                : QString();
+            if (source == QLatin1String("Steam")) {
+                const auto match = m_rx_steam_uri.match(game_path);
+                if (!match.hasMatch()) {
+                    log_xml_warning(xml_path, linenum, LOGMSG("Game was expected to be a Steam game, but its path field seems to be incorrect"));
+                    continue;
+                }
+
+                const QString steam_id = match.captured(1);
+                const QString steam_uri = QStringLiteral("steam:") + steam_id;
+
+                game_ptr = sctx.game_by_uri(steam_uri);
+                if (!game_ptr) {
+                    game_ptr = sctx.create_game_for(collection);
+                    sctx.game_add_uri(*game_ptr, steam_uri);
+                }
+            }
+            else {
+                const QString can_path = QFileInfo(m_lb_root, game_path).canonicalFilePath();
+                if (can_path.isEmpty()) {
+                    log_xml_warning(xml_path, linenum, LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(game_path)));
+                    continue;
+                }
+
+                game_ptr = sctx.game_by_filepath(can_path);
+                if (!game_ptr) {
+                    game_ptr = sctx.create_game_for(collection);
+                    sctx.game_add_filepath(*game_ptr, can_path);
+                }
             }
 
+            Q_ASSERT(game_ptr);
             apply_game_fields(fields, *game_ptr, emulators);
             gameid_map.emplace(fields.at(GameField::ID), game_ptr);
+            sctx.game_add_to(*game_ptr, collection);
             continue;
         }
 

@@ -101,6 +101,7 @@ void test_LaunchBoxProvider::basic()
     const model::Game* const entry1_game_ptr = get_game_ptr_by_file_path(games, entry1_filepath);
     const model::Game* const entry2_game_ptr = get_game_ptr_by_file_path(games, entry2_filepath);
     QVERIFY(entry1_game_ptr != nullptr);
+    QVERIFY(entry2_game_ptr != nullptr);
     QVERIFY(entry2_game_ptr == entry1_game_ptr);
 
     const model::Game& game = *entry1_game_ptr;

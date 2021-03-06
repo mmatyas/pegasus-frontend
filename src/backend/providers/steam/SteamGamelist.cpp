@@ -111,6 +111,7 @@ HashMap<QString, model::Game*> Gamelist::find_in(
             game_ptr = sctx.create_game_for(collection);
             sctx.game_add_uri(*game_ptr, steam_uri);
         }
+        sctx.game_add_to(*game_ptr, collection);
 
         (*game_ptr)
             .setTitle(title)

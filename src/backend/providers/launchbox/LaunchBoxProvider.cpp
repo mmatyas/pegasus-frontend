@@ -64,10 +64,7 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
     }
 
     const HashMap<QString, Emulator> emulators = EmulatorsXml(display_name(), lb_dir).find();
-    if (emulators.empty()) {
-        Log::warning(display_name(), LOGMSG("No emulator settings found"));
-        return *this;
-    }
+    // NOTE: It's okay to not have any emulators
 
     const float progress_step = 1.f / platforms.size();
     float progress = 0.f;
