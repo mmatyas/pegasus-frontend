@@ -93,12 +93,8 @@ void verify_collected_files(
         QVERIFY(has_collection(collections, collname));
         const model::Collection& coll = get_collection(collections, collname);
 
-        for (const QString& abs_path : expected_files) {
-            const QString can_path = QFileInfo(abs_path).canonicalFilePath();
-            Q_ASSERT(!can_path.isEmpty());
-
-            QVERIFY(has_game_file(coll.gamesConst(), can_path));
-        }
+        for (const QString& abs_path : expected_files)
+            QVERIFY(has_game_file(coll.gamesConst(), abs_path));
     }
 }
 
@@ -391,13 +387,13 @@ void test_PegasusProvider::custom_directories()
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("x-files"), {
-            { ":/custom_dirs/coll/../a/mygame.x" },
-            { ":/custom_dirs/coll/../b/mygame.x" },
+            { ":/custom_dirs/a/mygame.x" },
+            { ":/custom_dirs/b/mygame.x" },
             { ":/custom_dirs/c/mygame.x" },
             { ":/custom_dirs/coll/mygame.x" },
         }},
         { QStringLiteral("y-files"), {
-            { ":/custom_dirs/coll/../b/mygame.y" },
+            { ":/custom_dirs/b/mygame.y" },
         }},
     };
     verify_collected_files(collections, coll_files_map);
@@ -562,10 +558,10 @@ void test_PegasusProvider::relative_files_only()
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("myfiles"), {
-            { ":/relative_files/coll/../a/game_a.ext" },
+            { ":/relative_files/a/game_a.ext" },
             { ":/relative_files/coll/game_here.ext" },
             { ":/relative_files/coll/b/game_b.ext" },
-            { ":/relative_files/coll/./c/game_c.ext" },
+            { ":/relative_files/coll/c/game_c.ext" },
         }},
     };
     verify_collected_files(collections, coll_files_map);
@@ -584,8 +580,8 @@ void test_PegasusProvider::relative_files_with_dirs()
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("myfiles"), {
-            { ":/relative_files_with_dirs/coll/../a/game_a.x" },
-            { ":/relative_files_with_dirs/coll/../b/game_b.x" },
+            { ":/relative_files_with_dirs/a/game_a.x" },
+            { ":/relative_files_with_dirs/b/game_b.x" },
             { ":/relative_files_with_dirs/coll/game_here.x" },
         }},
     };

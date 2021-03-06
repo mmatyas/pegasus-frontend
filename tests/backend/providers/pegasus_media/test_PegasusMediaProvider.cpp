@@ -196,9 +196,8 @@ void test_PegasusMediaProvider::separate_media_dirs()
     QCOMPARE(collections.size(), 2);
     QCOMPARE(games.size(), 2);
 
-    // NOTE: Yes, canonicalPath() returns a path with '..' in it...
-    QCOMPARE(games.at(0)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/metadata/../games-a/media/Game 1/box_front.png"));
-    QCOMPARE(games.at(1)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/metadata/../games-b/media/Game 2/box_front.png"));
+    QCOMPARE(games.at(0)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/games-a/media/Game 1/box_front.png"));
+    QCOMPARE(games.at(1)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/games-b/media/Game 2/box_front.png"));
 }
 
 

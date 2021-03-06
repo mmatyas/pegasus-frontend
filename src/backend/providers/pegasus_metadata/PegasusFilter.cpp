@@ -20,6 +20,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
+#include "utils/PathCheck.h"
 #include "utils/StdHelpers.h"
 
 #include <QDirIterator>
@@ -46,23 +47,23 @@ std::vector<QString> all_valid_direct_subdirs(const QString& filter_dir)
     return result;
 }
 
-std::vector<QString> resolve_filelist(const std::vector<QString>& paths, const std::vector<QString>& dirs)
+std::vector<QString> resolve_filelist(const std::vector<QString>& relpaths, const std::vector<QString>& dirs)
 {
-    std::vector<QString> can_paths;
-    can_paths.reserve(paths.size() * dirs.size());
+    std::vector<QString> found_paths;
+    found_paths.reserve(relpaths.size() * dirs.size());
 
     for (const QString& dir_str : dirs) {
         const QDir dir(dir_str);
-        for (const QString& path : paths) {
-            QString canpath = QFileInfo(dir, path).canonicalFilePath();
-            if (!canpath.isEmpty())
-                can_paths.emplace_back(std::move(canpath));
+        for (const QString& relpath : relpaths) {
+            QString path = ::clean_abs_path(QFileInfo(dir, relpath));
+            if (!path.isEmpty())
+                found_paths.emplace_back(std::move(path));
         }
     }
 
-    VEC_REMOVE_DUPLICATES(can_paths);
-    can_paths.shrink_to_fit();
-    return can_paths;
+    VEC_REMOVE_DUPLICATES(found_paths);
+    found_paths.shrink_to_fit();
+    return found_paths;
 }
 
 bool rx_match(const QRegularExpression& rx, const QString& str) {
@@ -77,7 +78,7 @@ bool file_passes_filter(
     const QString file_ext = finfo.suffix().toLower();
 
     const bool exclude = VEC_CONTAINS(filter.exclude.extensions, file_ext)
-        || VEC_CONTAINS(exclude_files, finfo.canonicalFilePath())
+        || VEC_CONTAINS(exclude_files, ::clean_abs_path(finfo))
         || rx_match(filter.exclude.regex, finfo.filePath());
     if (exclude)
         return false;
@@ -153,7 +154,7 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
         QDirIterator file_it(filter_dir, entry_filters_files);
         while (file_it.hasNext()) {
             file_it.next();
-            const QString path = file_it.fileInfo().canonicalFilePath();
+            const QString path = ::clean_abs_path(file_it.fileInfo());
             if (file_passes_filter(file_it.fileInfo(), filter, exclude_files))
                 accept_filtered_file(path, collection, sctx);
         }
@@ -164,7 +165,7 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
             QDirIterator subdir_it(subdir, entry_filters_all, entry_flags);
             while (subdir_it.hasNext()) {
                 subdir_it.next();
-                const QString path = subdir_it.fileInfo().canonicalFilePath();
+                const QString path = ::clean_abs_path(subdir_it.fileInfo());
                 if (file_passes_filter(subdir_it.fileInfo(), filter, exclude_files))
                     accept_filtered_file(path, collection, sctx);
             }

@@ -17,11 +17,25 @@
 
 #include "PathCheck.h"
 
+#include <QDir>
 #include <QFileInfo>
 
 #ifdef Q_OS_UNIX
 #include <sys/stat.h>
 #endif
+
+
+QString clean_abs_path(const QFileInfo& finfo) {
+    return QDir::cleanPath(finfo.absoluteFilePath());
+}
+
+QString clean_abs_dir(const QFileInfo& finfo) {
+    return QDir::cleanPath(finfo.absolutePath());
+}
+
+QString pretty_path(const QFileInfo& finfo) {
+    return QDir::toNativeSeparators(clean_abs_path(finfo));
+}
 
 
 bool validExtPath(const QString& path) {

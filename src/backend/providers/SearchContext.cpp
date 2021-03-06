@@ -23,6 +23,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "utils/DiskCachedNAM.h"
+#include "utils/PathCheck.h"
 #include "utils/StdHelpers.h"
 
 #include <QFileInfo>
@@ -40,7 +41,7 @@ QStringList read_game_dirs()
     AppSettings::parse_gamedirs([&game_dirs](const QString& line){
         const QFileInfo finfo(line);
         if (finfo.isDir())
-            game_dirs.append(finfo.canonicalFilePath());
+            game_dirs.append(::clean_abs_path(finfo));
     });
 
     game_dirs.removeDuplicates();

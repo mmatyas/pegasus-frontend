@@ -18,7 +18,14 @@
 #pragma once
 
 class QString;
+class QFileInfo;
 
+/// Returns a cleaned absoluteFilePath
+QString clean_abs_path(const QFileInfo&);
+/// Returns a cleaned absolutePath
+QString clean_abs_dir(const QFileInfo&);
+/// Returns a displayable absoluteFilePath
+QString pretty_path(const QFileInfo&);
 
 /// Returns true if the path is an existing regular path (but not embedded)
 bool validExtPath(const QString& path);

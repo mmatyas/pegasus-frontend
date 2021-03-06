@@ -26,6 +26,7 @@
 #include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusFilter.h"
 #include "types/AssetType.h"
+#include "utils/PathCheck.h"
 
 #include <QDirIterator>
 #include <QUrl>
@@ -233,13 +234,13 @@ void Metadata::apply_collection_entry(ParserState& ps, const metafile::Entry& en
         case CollAttrib::DIRECTORIES:
             for (const QString& line : entry.values) {
                 const QFileInfo finfo(ps.dir, line);
-                QString can_path = finfo.canonicalFilePath();
-                if (can_path.isEmpty()) {
-                    print_warning(ps, entry, LOGMSG("Directory path `%1` doesn't seem to exist").arg(finfo.absoluteFilePath()));
+                if (!finfo.isDir()) {
+                    print_warning(ps, entry, LOGMSG("Directory path `%1` doesn't seem to exist").arg(::pretty_path(finfo)));
                     continue;
                 }
 
-                ps.filters.back().directories.emplace_back(std::move(can_path));
+                QString path = ::clean_abs_path(finfo);
+                ps.filters.back().directories.emplace_back(std::move(path));
             }
             break;
         case CollAttrib::EXTENSIONS:
@@ -301,13 +302,12 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
         case GameAttrib::FILES:
             for (const QString& line : entry.values) {
                 QFileInfo finfo(ps.dir, line);
-                QString path = finfo.canonicalFilePath();
-                if (!finfo.exists() || path.isEmpty()) {
-                    print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist")
-                        .arg(QDir::toNativeSeparators(finfo.absoluteFilePath())));
+                if (!finfo.exists()) {
+                    print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist").arg(::pretty_path(finfo)));
                     continue;
                 }
 
+                QString path = ::clean_abs_path(finfo);
                 model::Game* const game_ptr = sctx.game_by_filepath(path); // TODO: Add URI support
                 if (game_ptr == ps.cur_game) {
                     print_warning(ps, entry, LOGMSG("Duplicate file entry detected: `%1`").arg(line));

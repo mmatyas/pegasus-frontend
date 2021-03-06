@@ -23,6 +23,7 @@
 #include "model/gaming/GameFile.h"
 #include "types/AssetType.h"
 #include "providers/SearchContext.h"
+#include "utils/PathCheck.h"
 
 #include <QDir>
 #include <QDirIterator>
@@ -49,11 +50,11 @@ HashMap<QString, model::Game*> create_lookup_map(const HashMap<QString, model::G
         const QFileInfo fi(pair.first);
         model::Game* const game_ptr = pair.second->parentGame();
 
-        QString extless_path = fi.canonicalPath() % QChar('/') % fi.completeBaseName();
+        QString extless_path = ::clean_abs_dir(fi) % QChar('/') % fi.completeBaseName();
         out.emplace(std::move(extless_path), game_ptr);
 
         // NOTE: the files are not necessarily in the same directory
-        QString title_path = fi.canonicalPath() % QChar('/') % game_ptr->title();
+        QString title_path = ::clean_abs_dir(fi) % QChar('/') % game_ptr->title();
         out.emplace(std::move(title_path), game_ptr);
     }
 
@@ -85,7 +86,7 @@ Provider& MediaProvider::run(SearchContext& sctx)
             dir_it.next();
             const QFileInfo fileinfo = dir_it.fileInfo();
 
-            const QString lookup_key = fileinfo.canonicalPath().remove(dir_base.length(), media_len);
+            const QString lookup_key = ::clean_abs_dir(fileinfo).remove(dir_base.length(), media_len);
             const auto lookup_it = lookup_map.find(lookup_key);
             if (lookup_it == lookup_map.cend())
                 continue;

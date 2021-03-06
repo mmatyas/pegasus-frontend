@@ -149,7 +149,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
 #if defined(Q_OS_WINDOWS)
     const QFileInfo command_finfo(command);
-    if (command_finfo.isSymLink() && command_finfo.suffix() == QLatin1String("lnk")) {
+    if (command_finfo.isShortcut()) {
         args = QStringList {
             QStringLiteral("/q"),
             QStringLiteral("/c"),
