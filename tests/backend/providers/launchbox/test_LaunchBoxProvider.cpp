@@ -92,6 +92,7 @@ void test_LaunchBoxProvider::basic()
     QVERIFY(coll_it != collections.cend());
 
     const model::Collection& coll = **coll_it;
+    QCOMPARE(coll.sortBy(), QLatin1String("Nintendo 1985"));
 
 
     QCOMPARE(games.size(), 1);

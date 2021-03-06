@@ -26,7 +26,8 @@ class QString;
 namespace providers {
 namespace launchbox {
 
-std::vector<QString> find_platforms(const QString&, const QDir&);
+struct Platform;
+std::vector<Platform> find_platforms(const QString&, const QDir&);
 
 } // namespace launchbox
 } // namespace providers

@@ -17,11 +17,32 @@
 
 #pragma once
 
+#include <QString>
+#include <vector>
+
 class QXmlStreamReader;
 
 
 namespace providers {
 namespace launchbox {
+
+struct Platform {
+    QString name;
+    QString sort_by;
+};
+
+struct EmulatorPlatform {
+    QString name;
+    QString cmd_params;
+};
+
+struct Emulator {
+    QString name;
+    QString app_path;
+    QString default_cmd_params;
+    std::vector<EmulatorPlatform> platforms;
+};
+
 
 void verify_root_node(QXmlStreamReader&);
 

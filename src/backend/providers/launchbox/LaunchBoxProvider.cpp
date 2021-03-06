@@ -20,10 +20,10 @@
 #include "Log.h"
 #include "Paths.h"
 #include "providers/launchbox/LaunchBoxAssets.h"
-#include "providers/launchbox/LaunchBoxEmulator.h"
 #include "providers/launchbox/LaunchBoxEmulatorsXml.h"
 #include "providers/launchbox/LaunchBoxGamelistXml.h"
 #include "providers/launchbox/LaunchBoxPlatformsXml.h"
+#include "providers/launchbox/LaunchBoxXml.h"
 
 
 namespace {
@@ -57,8 +57,8 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
     Log::info(display_name(), LOGMSG("Looking for installation at `%1`").arg(QDir::toNativeSeparators(lb_dir_path)));
     const QDir lb_dir(lb_dir_path);
 
-    const std::vector<QString> platform_names = find_platforms(display_name(), lb_dir);
-    if (platform_names.empty()) {
+    const std::vector<Platform> platforms = find_platforms(display_name(), lb_dir);
+    if (platforms.empty()) {
         Log::warning(display_name(), LOGMSG("No platforms found"));
         return *this;
     }
@@ -69,14 +69,14 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
         return *this;
     }
 
-    const float progress_step = 1.f / platform_names.size();
+    const float progress_step = 1.f / platforms.size();
     float progress = 0.f;
 
     const GamelistXml metahelper(display_name(), lb_dir);
     const Assets assethelper(display_name(), lb_dir_path);
-    for (const QString& platform_name : platform_names) {
-        const std::vector<model::Game*> games = metahelper.find_games_for(platform_name, emulators, sctx);
-        assethelper.find_assets_for(platform_name, games);
+    for (const Platform& platform : platforms) {
+        const std::vector<model::Game*> games = metahelper.find_games_for(platform, emulators, sctx);
+        assethelper.find_assets_for(platform.name, games);
 
         progress += progress_step;
         emit progressChanged(progress);

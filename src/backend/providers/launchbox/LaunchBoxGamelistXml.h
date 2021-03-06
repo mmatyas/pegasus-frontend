@@ -34,12 +34,13 @@ namespace launchbox {
 enum class GameField : unsigned char;
 enum class AppField : unsigned char;
 struct Emulator;
+struct Platform;
 
 class GamelistXml {
 public:
     explicit GamelistXml(QString, QDir);
 
-    std::vector<model::Game*> find_games_for(const QString&, const HashMap<QString, Emulator>&, SearchContext&) const;
+    std::vector<model::Game*> find_games_for(const Platform&, const HashMap<QString, Emulator>&, SearchContext&) const;
 
 private:
     const QString m_log_tag;

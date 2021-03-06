@@ -18,7 +18,6 @@
 #include "LaunchBoxEmulatorsXml.h"
 
 #include "Log.h"
-#include "providers/launchbox/LaunchBoxEmulator.h"
 #include "providers/launchbox/LaunchBoxXml.h"
 
 #include <QDir>

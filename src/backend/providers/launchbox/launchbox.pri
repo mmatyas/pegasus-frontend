@@ -4,7 +4,6 @@ DEFINES *= WITH_COMPAT_LAUNCHBOX
 
 HEADERS += \
     $$PWD/LaunchBoxAssets.h \
-    $$PWD/LaunchBoxEmulator.h \
     $$PWD/LaunchBoxEmulatorsXml.h \
     $$PWD/LaunchBoxGamelistXml.h \
     $$PWD/LaunchBoxPlatformsXml.h \

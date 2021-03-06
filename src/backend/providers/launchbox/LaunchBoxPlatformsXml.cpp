@@ -28,7 +28,7 @@
 namespace providers {
 namespace launchbox {
 
-std::vector<QString> find_platforms(const QString& log_tag, const QDir& lb_dir)
+std::vector<Platform> find_platforms(const QString& log_tag, const QDir& lb_dir)
 {
     const QString xml_path = lb_dir.filePath(QStringLiteral("Data/Platforms.xml"));
     QFile xml_file(xml_path);
@@ -37,7 +37,7 @@ std::vector<QString> find_platforms(const QString& log_tag, const QDir& lb_dir)
         return {};
     }
 
-    std::vector<QString> out;
+    std::vector<Platform> out;
     QXmlStreamReader xml(&xml_file);
     verify_root_node(xml);
 
@@ -46,16 +46,26 @@ std::vector<QString> find_platforms(const QString& log_tag, const QDir& lb_dir)
             xml.skipCurrentElement();
             continue;
         }
+
+        Platform platform;
         while (xml.readNextStartElement()) {
-            if (xml.name() != QLatin1String("Name")) {
-                xml.skipCurrentElement();
+            if (xml.name() == QLatin1String("Name")) {
+                platform.name = xml.readElementText().trimmed();
                 continue;
             }
-
-            QString text = xml.readElementText().trimmed();
-            if (!text.isEmpty())
-                out.emplace_back(std::move(text));
+            if (xml.name() == QLatin1String("SortTitle")) {
+                platform.sort_by = xml.readElementText().trimmed();
+                continue;
+            }
+            xml.skipCurrentElement();
         }
+        if (platform.name.isEmpty())
+            continue;
+
+        if (platform.sort_by.isEmpty())
+            platform.sort_by = platform.name;
+
+        out.emplace_back(std::move(platform));
     }
     if (xml.error())
         Log::error(log_tag, LOGMSG("In `%1`: %2").arg(xml_path, xml.errorString()));

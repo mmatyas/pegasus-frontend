@@ -23,7 +23,6 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
-#include "providers/launchbox/LaunchBoxEmulator.h"
 #include "providers/launchbox/LaunchBoxXml.h"
 
 #include <QDir>
@@ -353,11 +352,11 @@ HashMap<AppField, QString> GamelistXml::read_app_node(QXmlStreamReader& xml) con
 }
 
 std::vector<model::Game*> GamelistXml::find_games_for(
-    const QString& platform_name,
+    const Platform& platform,
     const HashMap<QString, Emulator>& emulators,
     SearchContext& sctx) const
 {
-    const QString xml_rel_path = QStringLiteral("Data/Platforms/%1.xml").arg(platform_name); // TODO: Qt 5.14+ QLatin1String
+    const QString xml_rel_path = QStringLiteral("Data/Platforms/%1.xml").arg(platform.name); // TODO: Qt 5.14+ QLatin1String
     const QString xml_path = m_lb_root.filePath(xml_rel_path);
 
     QFile xml_file(xml_path);
@@ -370,7 +369,9 @@ std::vector<model::Game*> GamelistXml::find_games_for(
     QXmlStreamReader xml(&xml_file);
     verify_root_node(xml);
 
-    model::Collection& collection = *sctx.get_or_create_collection(platform_name);
+    model::Collection& collection = *sctx.get_or_create_collection(platform.name);
+    collection.setSortBy(platform.sort_by);
+
     // should be handled after all games have been found
     std::vector<HashMap<AppField, QString>> addiapps;
     HashMap<QString, model::Game*> gameid_map;
