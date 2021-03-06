@@ -19,7 +19,6 @@
 
 #include "Log.h"
 #include "Paths.h"
-#include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxAssets.h"
 #include "providers/launchbox/LaunchBoxEmulator.h"
 #include "providers/launchbox/LaunchBoxEmulatorsXml.h"
@@ -28,13 +27,9 @@
 
 
 namespace {
-QString find_installation()
+QString default_installation()
 {
-    const QString possible_path = paths::homePath() + QStringLiteral("/LaunchBox/");
-    if (QFileInfo::exists(possible_path))
-        return possible_path;
-
-    return {};
+    return paths::homePath() + QStringLiteral("/LaunchBox/");
 }
 } // namespace
 
@@ -52,9 +47,9 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
             ? QDir::cleanPath(option_it->second.front()) + QLatin1Char('/')
-            : find_installation();
+            : default_installation();
     }();
-    if (lb_dir_path.isEmpty()) {
+    if (lb_dir_path.isEmpty() || !QFileInfo::exists(lb_dir_path)) {
         Log::info(display_name(), LOGMSG("No installation found"));
         return *this;
     }
