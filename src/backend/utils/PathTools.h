@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2021  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,10 +26,3 @@ QString clean_abs_path(const QFileInfo&);
 QString clean_abs_dir(const QFileInfo&);
 /// Returns a displayable absoluteFilePath
 QString pretty_path(const QFileInfo&);
-
-/// Returns true if the path is an existing regular path (but not embedded)
-bool validExtPath(const QString& path);
-
-/// Returns true if the path is an existing regular or embedded file
-bool validFile(const QString& path);
-

@@ -27,9 +27,6 @@ class test_Utils : public QObject
     Q_OBJECT
 
 private slots:
-    void validExtPath_data();
-    void validExtPath();
-
     void tokenize_command();
     void tokenize_command_data();
 
@@ -39,26 +36,6 @@ private slots:
     void trimmed_str();
     void trimmed_str_data();
 };
-
-void test_Utils::validExtPath_data()
-{
-    QTest::addColumn<QString>("path");
-    QTest::addColumn<bool>("result");
-
-    QTest::newRow("null path") << QString() << false;
-    QTest::newRow("empty path") << "" << false;
-    QTest::newRow("app path") << QCoreApplication::applicationFilePath() << true;
-    QTest::newRow("app dir path") << QCoreApplication::applicationDirPath() << true;
-    QTest::newRow("not existing path") << "nonexistent" << false;
-}
-
-void test_Utils::validExtPath()
-{
-    QFETCH(QString, path);
-    QFETCH(bool, result);
-
-    QCOMPARE(::validExtPath(path), result);
-}
 
 void test_Utils::tokenize_command()
 {

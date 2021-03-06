@@ -88,11 +88,11 @@ std::vector<model::ThemeEntry> find_available_themes()
             const QString meta_path = basedir % META_FILENAME;
             QString qml_path = basedir % QML_FILENAME;
 
-            if (!::validFile(meta_path)) {
+            if (!QFileInfo::exists(meta_path)) {
                 Log::warning(E_FILE_MISSING.arg(META_FILENAME, basedir));
                 continue;
             }
-            if (!::validFile(qml_path)) {
+            if (!QFileInfo::exists(qml_path)) {
                 Log::warning(E_FILE_MISSING.arg(QML_FILENAME, basedir));
                 continue;
             }

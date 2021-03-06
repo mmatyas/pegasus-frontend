@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2021  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,10 +20,6 @@
 #include <QDir>
 #include <QFileInfo>
 
-#ifdef Q_OS_UNIX
-#include <sys/stat.h>
-#endif
-
 
 QString clean_abs_path(const QFileInfo& finfo) {
     return QDir::cleanPath(finfo.absoluteFilePath());
@@ -36,23 +32,3 @@ QString clean_abs_dir(const QFileInfo& finfo) {
 QString pretty_path(const QFileInfo& finfo) {
     return QDir::toNativeSeparators(clean_abs_path(finfo));
 }
-
-
-bool validExtPath(const QString& path) {
-#ifdef Q_OS_UNIX
-    // fast posix check for unix systems
-    static struct ::stat buffer;
-    return (::stat(path.toUtf8().constData(), &buffer) == 0);
-#else
-    // default Qt fallback
-    return QFileInfo::exists(path);
-#endif
-}
-
-bool validFile(const QString& path)
-{
-    const QFileInfo file(path);
-    return file.exists() && file.isFile();
-}
-
-
