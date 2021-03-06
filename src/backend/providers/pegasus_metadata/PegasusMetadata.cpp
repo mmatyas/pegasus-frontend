@@ -26,7 +26,7 @@
 #include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusFilter.h"
 #include "types/AssetType.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QUrl>

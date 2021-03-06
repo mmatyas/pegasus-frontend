@@ -23,7 +23,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "utils/DiskCachedNAM.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QFileInfo>

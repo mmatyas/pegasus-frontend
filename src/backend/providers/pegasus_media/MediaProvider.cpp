@@ -23,7 +23,7 @@
 #include "model/gaming/GameFile.h"
 #include "types/AssetType.h"
 #include "providers/SearchContext.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QDirIterator>

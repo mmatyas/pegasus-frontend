@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "PathCheck.h"
+#include "PathTools.h"
 
 #include <QDir>
 #include <QFileInfo>

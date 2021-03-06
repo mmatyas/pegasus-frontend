@@ -22,7 +22,7 @@
 #include "Paths.h"
 #include "parsers/MetaFile.h"
 #include "utils/HashMap.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QStringBuilder>

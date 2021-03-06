@@ -20,7 +20,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QDirIterator>
