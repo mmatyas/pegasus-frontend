@@ -116,10 +116,9 @@ void Assets::find_assets_in(
             it->second->assetsMut().add_file(asset_type, path);
 
         const bool has_number_suffix = rx_number_suffix.match(basename).hasMatch();
-        if (!has_number_suffix)
-            continue;
-
-        const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
+        const QString game_title = has_number_suffix
+            ? basename.left(basename.length() - 3) // gamename "-xx" .ext
+            : basename;
         it = title_to_game_map.find(game_title);
         if (it != title_to_game_map.cend())
             it->second->assetsMut().add_file(asset_type, std::move(path));
