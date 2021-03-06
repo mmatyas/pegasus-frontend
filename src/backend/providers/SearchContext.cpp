@@ -239,8 +239,10 @@ void SearchContext::finalize_apply_lists()
         for (model::Game* const game_ptr : pair.second)
             game_collections[game_ptr].emplace_back(pair.first);
     }
-    for (auto& pair : game_collections)
+    for (auto& pair : game_collections) {
+        VEC_REMOVE_DUPLICATES(pair.second);
         pair.first->setCollections(std::move(pair.second));
+    }
 
     // Apply games to collections
     for (auto& pair : m_collection_games) {
