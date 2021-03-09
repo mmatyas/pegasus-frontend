@@ -302,9 +302,9 @@ void GamepadManagerSDL2::start(const backend::CliArgs& args)
 
 GamepadManagerSDL2::~GamepadManagerSDL2()
 {
+    // Make sure the polling stops before the devices disappear
     m_poll_timer.stop();
     m_idx_to_device.clear();
-    SDL_Quit();
 }
 
 void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)

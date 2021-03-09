@@ -20,19 +20,19 @@
 #include <SDL.h>
 
 
-class test_SDL : public QObject {
+class test_SdlGamepad : public QObject {
     Q_OBJECT
 
 private slots:
     void inits();
 };
 
-void test_SDL::inits()
+void test_SdlGamepad::inits()
 {
     QCOMPARE(SDL_Init(SDL_INIT_GAMECONTROLLER), 0);
     SDL_Quit();
 }
 
 
-QTEST_MAIN(test_SDL)
-#include "test_SDL.moc"
+QTEST_MAIN(test_SdlGamepad)
+#include "test_SdlGamepad.moc"

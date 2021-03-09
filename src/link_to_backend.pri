@@ -28,9 +28,11 @@ else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BU
 else:unix: PRE_TARGETDEPS += "$${TOP_BUILDDIR}/src/backend/libbackend.a"
 
 
+# SDL2
+!isEmpty(USE_SDL_GAMEPAD)|!isEmpty(USE_SDL_POWER): include($${TOP_SRCDIR}/thirdparty/link_to_sdl.pri)
+
 # Gamepad backend
-!isEmpty(USE_SDL_GAMEPAD): include($${TOP_SRCDIR}/thirdparty/link_to_sdl.pri)
-else: QT *= gamepad
+isEmpty(USE_SDL_GAMEPAD): QT *= gamepad
 
 
 # Plugins

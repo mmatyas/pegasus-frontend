@@ -40,6 +40,10 @@
 #include <QGuiApplication>
 #include <QQmlEngine>
 
+#if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
+#include <SDL.h>
+#endif
+
 namespace model { class Key; }
 namespace model { class Keys; }
 class FolderListModel;
@@ -74,6 +78,7 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
     qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
     qmlRegisterUncreatableType<model::GamepadManager>(API_URI, 0, 12, "GamepadManager", error_msg);
+    qmlRegisterUncreatableType<model::DeviceInfo>(API_URI, 0, 13, "Device", error_msg);
 
     // QML utilities
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
@@ -128,6 +133,10 @@ Backend::~Backend()
     delete m_launcher;
     delete m_frontend;
     delete m_api;
+
+#if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
+    SDL_Quit();
+#endif
 }
 
 Backend::Backend(const CliArgs& args)
