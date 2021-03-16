@@ -84,6 +84,7 @@ private:
 
     void apply_collection_entry(ParserState&, const metafile::Entry&) const;
     void apply_game_entry(ParserState&, const metafile::Entry&, SearchContext&) const;
+    bool apply_extra_entry_maybe(ParserState&, const metafile::Entry&) const;
     bool apply_asset_entry_maybe(ParserState&, const metafile::Entry&) const;
     void apply_entry(ParserState&, const metafile::Entry&, SearchContext&) const;
 };

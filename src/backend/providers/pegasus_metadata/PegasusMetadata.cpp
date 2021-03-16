@@ -413,6 +413,33 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
     }
 }
 
+// Returns true if the entry is an extra entry
+bool Metadata::apply_extra_entry_maybe(ParserState& ps, const metafile::Entry& entry) const
+{
+    Q_ASSERT(ps.cur_coll || ps.cur_game);
+
+    if (!entry.key.startsWith(QLatin1String("x-")))
+        return false;
+
+    const QString key = entry.key.mid(2); /* len of 'x-' */
+    if (key.isEmpty()) {
+        print_warning(ps, entry, LOGMSG("Invalid extra field, entry ignored"));
+        return true;
+    }
+
+    QVariantMap& extra_map = ps.cur_game
+        ? ps.cur_game->extraMapMut()
+        : ps.cur_coll->extraMapMut();
+
+    QStringList values;
+    values.reserve(entry.values.size());
+    for (const QString& value : entry.values)
+        values.append(value);
+
+    extra_map.insert(std::move(key), std::move(values));
+    return true;
+}
+
 // Returns true if the entry is an asset entry
 bool Metadata::apply_asset_entry_maybe(ParserState& ps, const metafile::Entry& entry) const
 {
@@ -475,12 +502,10 @@ void Metadata::apply_entry(ParserState& ps, const metafile::Entry& entry, Search
         return;
     }
 
-    if (entry.key.startsWith(QLatin1String("x-")))
+    if (apply_extra_entry_maybe(ps, entry))
         return;
-
     if (apply_asset_entry_maybe(ps, entry))
         return;
-
 
     if (ps.cur_game)
         apply_game_entry(ps, entry, sctx);

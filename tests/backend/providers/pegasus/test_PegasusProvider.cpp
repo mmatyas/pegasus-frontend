@@ -262,6 +262,11 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.launchWorkdir(), common_workdir);
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
         QCOMPARE(game.filesConst().size(), 1);
+
+        QCOMPARE(game.extraMap().size(), 1);
+        const auto it = game.extraMap().find(QStringLiteral("something"));
+        QVERIFY(it != game.extraMap().cend());
+        QCOMPARE(it->value<QStringList>(), QStringList() << QStringLiteral("ignored"));
     }
 
     // Subdir

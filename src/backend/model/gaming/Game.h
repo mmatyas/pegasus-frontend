@@ -152,6 +152,10 @@ public:
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
+    Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
+    const QVariantMap& extraMap() const { return m_extra; }
+    QVariantMap& extraMapMut() { return m_extra; }
+
 
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -167,6 +171,7 @@ public:
 private:
     GameData m_data;
     Assets* const m_assets;
+    QVariantMap m_extra;
 
     Assets* assetsPtr() const { return m_assets; }
 

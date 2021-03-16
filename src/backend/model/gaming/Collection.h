@@ -88,6 +88,10 @@ public:
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
 
+    Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
+    const QVariantMap& extraMap() const { return m_extra; }
+    QVariantMap& extraMapMut() { return m_extra; }
+
 
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -104,6 +108,7 @@ public:
 
 private:
     CollectionData m_data;
+    QVariantMap m_extra;
     Assets* const m_assets;
 
     Assets* assetsPtr() { return m_assets; }
