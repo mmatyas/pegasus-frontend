@@ -26,7 +26,7 @@
 
 namespace android {
 
-constexpr const char* jni_classname() {
+const char* jni_classname() {
     return "org/pegasus_frontend/android/MainActivity";
 }
 

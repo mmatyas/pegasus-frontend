@@ -19,6 +19,10 @@
 
 #ifdef WITH_SDL_POWER
 #include <SDL.h>
+#elif defined(Q_OS_ANDROID)
+#include "platform/AndroidHelpers.h"
+#include <QtAndroidExtras/QAndroidJniEnvironment>
+#include <QtAndroidExtras/QAndroidJniObject>
 #endif
 
 #include <cmath>
@@ -49,6 +53,32 @@ model::DeviceInfo::BatteryInfo query_battery()
         sdl_pct < 0 ? NAN : (sdl_pct / 100.f),
         sdl_secs,
     };
+}
+#elif defined(Q_OS_ANDROID)
+model::DeviceInfo::BatteryInfo query_battery()
+{
+    static constexpr auto JNI_METHOD = "queryBattery";
+    static constexpr auto JNI_SIGNATURE = "()Lorg/pegasus_frontend/android/BatteryInfo;";
+
+    QAndroidJniEnvironment jni_env;
+
+    const QAndroidJniObject jni_obj = QAndroidJniObject::callStaticObjectMethod(android::jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+    if (!jni_obj.isValid())
+        return {model::DeviceInfo::BatteryStatus::Unknown, NAN, -1};
+
+    const bool present = jni_obj.callMethod<jboolean>("present");
+    const bool plugged = jni_obj.callMethod<jboolean>("plugged");
+    const bool charged = jni_obj.callMethod<jboolean>("charged");
+    const float percent = qBound(0.f, jni_obj.callMethod<jfloat>("percent"), 1.f);
+
+    if (!present)
+        return {model::DeviceInfo::BatteryStatus::NoBattery, NAN, -1};
+    if (charged)
+        return {model::DeviceInfo::BatteryStatus::Charged, 1.f, -1};
+    if (plugged)
+        return {model::DeviceInfo::BatteryStatus::Charging, percent, -1};
+
+    return {model::DeviceInfo::BatteryStatus::Discharging, percent, -1};
 }
 #else
 model::DeviceInfo::BatteryInfo query_battery()

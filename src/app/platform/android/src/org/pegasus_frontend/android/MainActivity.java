@@ -3,6 +3,7 @@ package org.pegasus_frontend.android;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -12,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -51,6 +53,26 @@ final class App {
     public String appName() { return m_app_name; }
     public String launchAction() { return m_launch_action; }
     public String launchComponent() { return m_launch_component; }
+}
+
+
+final class BatteryInfo {
+    private final boolean m_present;
+    private final boolean m_plugged;
+    private final boolean m_charged;
+    private final float m_percent;
+
+    public BatteryInfo(boolean present, boolean plugged, boolean charged, float percent) {
+        m_present = present;
+        m_plugged = plugged;
+        m_charged = charged;
+        m_percent = percent;
+    }
+
+    public boolean present() { return m_present; }
+    public boolean plugged() { return m_plugged; }
+    public boolean charged() { return m_charged; }
+    public float percent() { return m_percent; }
 }
 
 
@@ -192,5 +214,26 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         intent.setData(Uri.parse("package:" + m_context.getPackageName()));
         m_context.startActivity(intent);
         return false;
+    }
+
+    public static BatteryInfo queryBattery() {
+        final IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        final Intent batIntent = m_context.registerReceiver(null, ifilter);
+
+        final int batStatus = batIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        if (batStatus == BatteryManager.BATTERY_STATUS_UNKNOWN)
+            return null;
+
+        final boolean hasBattery = batIntent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, true);
+        final boolean batPlugged = batIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) > 0;
+        final boolean batCharged = batStatus == BatteryManager.BATTERY_STATUS_FULL;
+
+        final int batLevel = batIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        final int batScale = batIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        final float batPercent = (batLevel >= 0 && batScale > 0)
+            ? batLevel / (float) batScale
+            : Float.NaN;
+
+        return new BatteryInfo(hasBattery, batPlugged, batCharged, batPercent);
     }
 }
