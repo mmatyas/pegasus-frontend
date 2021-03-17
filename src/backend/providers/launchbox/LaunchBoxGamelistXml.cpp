@@ -24,6 +24,7 @@
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxXml.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -132,7 +133,7 @@ void apply_game_fields(
 
     if (emu_id.isEmpty()) {
         game.setLaunchCmd(QStringLiteral("{file.path}"));
-        game.setLaunchWorkdir(QFileInfo(fields.at(GameField::PATH)).absolutePath());
+        game.setLaunchWorkdir(::clean_abs_dir(QFileInfo(fields.at(GameField::PATH))));
         return;
     }
 
@@ -153,7 +154,7 @@ void apply_game_fields(
         }
     }
     game.setLaunchCmd(QStringLiteral("\"%1\" %2 {file.path}").arg(emu.app_path, emu_params));
-    game.setLaunchWorkdir(QFileInfo(emu.app_path).absolutePath());
+    game.setLaunchWorkdir(::clean_abs_dir(QFileInfo(emu.app_path)));
 }
 
 void apply_app_fields(const HashMap<AppField, QString>& fields, model::GameFile& entry)
@@ -309,7 +310,7 @@ HashMap<GameField, QString> GamelistXml::read_game_node(QXmlStreamReader& xml) c
     for (const GameField key : ABSPATH_KEYS) {
         const auto it = fields.find(key);
         if (it != fields.cend())
-            it->second = QFileInfo(m_lb_root, it->second).absoluteFilePath();
+            it->second = ::clean_abs_path(QFileInfo(m_lb_root, it->second));
     }
 
     return fields;
@@ -338,7 +339,7 @@ HashMap<AppField, QString> GamelistXml::read_app_node(QXmlStreamReader& xml) con
     for (const AppField key : PATH_KEYS) {
         const auto it = fields.find(key);
         if (it != fields.cend())
-            it->second = QFileInfo(m_lb_root, it->second).absoluteFilePath();
+            it->second = ::clean_abs_path(QFileInfo(m_lb_root, it->second));
     }
 
 
@@ -406,16 +407,17 @@ std::vector<model::Game*> GamelistXml::find_games_for(
                 }
             }
             else {
-                const QString can_path = QFileInfo(m_lb_root, game_path).canonicalFilePath();
-                if (can_path.isEmpty()) {
+                const QFileInfo finfo(m_lb_root, game_path);
+                if (!finfo.exists()) {
                     log_xml_warning(xml_path, linenum, LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(game_path)));
                     continue;
                 }
 
-                game_ptr = sctx.game_by_filepath(can_path);
+                QString abs_path = ::clean_abs_path(finfo);
+                game_ptr = sctx.game_by_filepath(abs_path);
                 if (!game_ptr) {
                     game_ptr = sctx.create_game_for(collection);
-                    sctx.game_add_filepath(*game_ptr, can_path);
+                    sctx.game_add_filepath(*game_ptr, std::move(abs_path));
                 }
             }
 
@@ -456,13 +458,13 @@ std::vector<model::Game*> GamelistXml::find_games_for(
             continue;
         }
 
-        const QString can_path = QFileInfo(fields.at(AppField::PATH)).canonicalFilePath();
-        Q_ASSERT(!can_path.isEmpty());
+        const QString abs_path = ::clean_abs_path(QFileInfo(fields.at(AppField::PATH)));
+        Q_ASSERT(!abs_path.isEmpty());
 
         model::Game& game = *(it->second);
-        model::GameFile* entry_ptr = sctx.gamefile_by_filepath(can_path);
+        model::GameFile* entry_ptr = sctx.gamefile_by_filepath(abs_path);
         if (!entry_ptr)
-            entry_ptr = sctx.game_add_filepath(game, can_path);
+            entry_ptr = sctx.game_add_filepath(game, abs_path);
 
         apply_app_fields(fields, *entry_ptr);
     }

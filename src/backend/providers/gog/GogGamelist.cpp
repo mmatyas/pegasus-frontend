@@ -24,6 +24,7 @@
 #include "providers/SearchContext.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/MoveOnly.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QRegularExpression>
@@ -157,10 +158,11 @@ HashMap<QString, model::Game*> register_game_entries(
     for (const GogEntry& gogentry : gogentries) {
         QFileInfo finfo(gogentry.exe);
 
-        model::Game* game_ptr = sctx.game_by_filepath(finfo.canonicalFilePath());
+        QString path = ::clean_abs_path(finfo);
+        model::Game* game_ptr = sctx.game_by_filepath(path);
         if (!game_ptr) {
             game_ptr = sctx.create_game_for(collection);
-            sctx.game_add_filepath(*game_ptr, finfo.canonicalFilePath());
+            sctx.game_add_filepath(*game_ptr, std::move(path));
         }
 
         (*game_ptr)

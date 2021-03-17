@@ -22,6 +22,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QStringBuilder>
@@ -36,7 +37,7 @@ HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::G
     // TODO: C++17
     for (const auto& entry : filepath_to_entry_map) {
         const QFileInfo finfo(entry.first);
-        QString path = finfo.canonicalPath() % '/' % finfo.completeBaseName();
+        QString path = ::clean_abs_dir(finfo) % '/' % finfo.completeBaseName();
         map.emplace(std::move(path), entry.second->parentGame());
     }
 
@@ -130,7 +131,7 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
                         dir_it.next();
                         const QFileInfo finfo = dir_it.fileInfo();
 
-                        const QString game_path = finfo.canonicalPath().remove(root_dir.length(), subpath_len)
+                        const QString game_path = ::clean_abs_dir(finfo).remove(root_dir.length(), subpath_len)
                                                 % '/' % finfo.completeBaseName();
                         const auto it = extless_path_to_game.find(game_path);
                         if (it == extless_path_to_game.cend())

@@ -19,6 +19,7 @@
 
 #include "Log.h"
 #include "providers/launchbox/LaunchBoxXml.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -180,7 +181,7 @@ HashMap<EmulatorField, QString> EmulatorsXml::read_emulator_node(QXmlStreamReade
 
     const auto it = fields.find(EmulatorField::PATH);
     if (it != fields.cend())
-        it->second = QFileInfo(m_lb_root, it->second).absoluteFilePath();
+        it->second = ::clean_abs_path(QFileInfo(m_lb_root, it->second));
 
 
     return fields;

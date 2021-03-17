@@ -22,6 +22,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
+#include "utils/PathTools.h"
 #include "utils/SqliteDb.h"
 
 #include <QFileInfo>
@@ -272,7 +273,7 @@ void PlaytimeStats::start_processing()
             }
 
             for (const QueueEntry& entry : m_active_tasks) {
-                const QString path = entry.gamefile->fileinfo().canonicalFilePath();
+                const QString path = ::clean_abs_path(entry.gamefile->fileinfo());
                 const int path_id = get_path_id(display_name(), path);
                 if (path_id >= 0)
                     save_play_entry(display_name(), path_id, entry.launch_time, entry.duration);

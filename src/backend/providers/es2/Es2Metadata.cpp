@@ -24,6 +24,7 @@
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
 #include "providers/es2/Es2Systems.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QDirIterator>
@@ -58,7 +59,7 @@ QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, cons
     return {};
 }
 
-QString shell_to_canonical_path(const QDir& base_dir, const QString& shell_filepath)
+QFileInfo shell_to_finfo(const QDir& base_dir, const QString& shell_filepath)
 {
     if (shell_filepath.isEmpty())
         return {};
@@ -66,7 +67,7 @@ QString shell_to_canonical_path(const QDir& base_dir, const QString& shell_filep
     const QString real_path = shell_filepath.startsWith(QLatin1String("~/"))
         ? paths::homePath() + shell_filepath.midRef(1)
         : shell_filepath;
-    return QFileInfo(base_dir, real_path).canonicalFilePath();
+    return QFileInfo(base_dir, real_path);
 }
 
 } // namespace
@@ -179,10 +180,11 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
         // get the Game, if exists, and apply the properties
 
-        const QString filepath = shell_to_canonical_path(xml_dir, shell_filepath);
-        if (filepath.isEmpty())  // ie. the file does not exist
+        const QFileInfo finfo = shell_to_finfo(xml_dir, shell_filepath);
+        if (!finfo.exists())
             continue;
 
+        const QString filepath = ::clean_abs_path(finfo);
         model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(filepath);
         if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
             continue;
@@ -268,7 +270,8 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
     // then assets
     // TODO: C++17
     for (const auto& pair : m_asset_type_map) {
-        QString path = shell_to_canonical_path(xml_dir, xml_props[pair.first]);
+        const QFileInfo finfo = shell_to_finfo(xml_dir, xml_props[pair.first]);
+        QString path = ::clean_abs_path(finfo);
         game.assetsMut().add_file(pair.second, std::move(path));
     }
 }

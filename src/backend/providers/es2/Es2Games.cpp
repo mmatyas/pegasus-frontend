@@ -22,6 +22,7 @@
 #include "model/gaming/Collection.h"
 #include "providers/SearchContext.h"
 #include "providers/es2/Es2Systems.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QDirIterator>
@@ -146,10 +147,11 @@ size_t find_games_for(
             if (use_blacklist && VEC_CONTAINS(filename_blacklist, filename))
                 continue;
 
-            model::Game* game_ptr = sctx.game_by_filepath(fileinfo.canonicalFilePath());
+            QString path = ::clean_abs_path(fileinfo);
+            model::Game* game_ptr = sctx.game_by_filepath(path);
             if (!game_ptr) {
                 game_ptr = sctx.create_game_for(collection);
-                sctx.game_add_filepath(*game_ptr, fileinfo.canonicalFilePath());
+                sctx.game_add_filepath(*game_ptr, std::move(path));
             }
             sctx.game_add_to(*game_ptr, collection);
             found_games++;

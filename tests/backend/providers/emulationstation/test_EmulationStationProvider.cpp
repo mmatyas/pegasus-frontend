@@ -114,9 +114,9 @@ void test_EmulationStationProvider::gamelist()
     QCOMPARE(game->title(), QStringLiteral("Game 2"));
     QCOMPARE(game->playerCount(), 5);
 
-    QCOMPARE(game->assets().boxFront(), QStringLiteral("file::/gamelist/mysys1/./local_image1.png"));
-    QCOMPARE(game->assets().video(), QStringLiteral("file::/gamelist/mysys1/./local_image2.png"));
-    QCOMPARE(game->assets().marquee(), QStringLiteral("file::/gamelist/mysys1/./img/local_image3.png"));
+    QCOMPARE(game->assets().boxFront(), QStringLiteral("file::/gamelist/mysys1/local_image1.png"));
+    QCOMPARE(game->assets().video(), QStringLiteral("file::/gamelist/mysys1/local_image2.png"));
+    QCOMPARE(game->assets().marquee(), QStringLiteral("file::/gamelist/mysys1/img/local_image3.png"));
 }
 
 

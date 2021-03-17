@@ -21,6 +21,7 @@
 #include "providers/SearchContext.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QXmlStreamReader>
@@ -163,21 +164,21 @@ void read_datfile_game_entry(
             }
 
             const QFileInfo finfo(root_dir, relpath);
-            const QString can_path = finfo.canonicalFilePath();
-            if (can_path.isEmpty() || !finfo.exists()) {
+            if (!finfo.exists()) {
                 Log::warning(log_tag, LOGMSG("The `rom` element in `%1` at line %2 refers to file `%3`, which doesn't seem to exist")
-                    .arg(pretty_path, QString::number(xml.lineNumber()), QDir::toNativeSeparators(finfo.absoluteFilePath())));
+                    .arg(pretty_path, QString::number(xml.lineNumber()), ::pretty_path(finfo)));
                 continue;
             }
 
-            const auto it = std::find(rom_paths.cbegin(), rom_paths.cend(), can_path);
+            const QString abs_path = ::clean_abs_path(finfo);
+            const auto it = std::find(rom_paths.cbegin(), rom_paths.cend(), abs_path);
             if (it != rom_paths.cend()) {
                 Log::warning(log_tag, LOGMSG("The `rom` element in `%1` at line %2 seems to be a duplicate entry, ignored")
                     .arg(pretty_path, QString::number(xml.lineNumber())));
                 continue;
             }
 
-            rom_paths.append(can_path);
+            rom_paths.append(abs_path);
             continue;
         }
 

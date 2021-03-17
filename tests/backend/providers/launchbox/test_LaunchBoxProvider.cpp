@@ -96,8 +96,8 @@ void test_LaunchBoxProvider::basic()
 
 
     QCOMPARE(games.size(), 1);
-    const auto entry1_filepath = QStringLiteral(":/basic/LaunchBox/../game/Test Bros (JU) [!].zip");
-    const auto entry2_filepath = QStringLiteral(":/basic/LaunchBox/../game/Test Bros Something.zip");
+    const auto entry1_filepath = QStringLiteral(":/basic/game/Test Bros (JU) [!].zip");
+    const auto entry2_filepath = QStringLiteral(":/basic/game/Test Bros Something.zip");
     const model::Game* const entry1_game_ptr = get_game_ptr_by_file_path(games, entry1_filepath);
     const model::Game* const entry2_game_ptr = get_game_ptr_by_file_path(games, entry2_filepath);
     QVERIFY(entry1_game_ptr != nullptr);
@@ -125,8 +125,8 @@ void test_LaunchBoxProvider::basic()
     // QCOMPARE(game.playCount(), 15);
     // QCOMPARE(game.isFavorite(), true);
 
-    QCOMPARE(game.launchCmd(), QStringLiteral("\":/basic/LaunchBox/../emu/nestopia.exe\" -some -flag {file.path}"));
-    QCOMPARE(game.launchWorkdir(), QStringLiteral(":/basic/LaunchBox/../emu"));
+    QCOMPARE(game.launchCmd(), QStringLiteral("\":/basic/emu/nestopia.exe\" -some -flag {file.path}"));
+    QCOMPARE(game.launchWorkdir(), QStringLiteral(":/basic/emu"));
 
 
     QCOMPARE(coll.gamesConst().size(), 1);

@@ -20,6 +20,7 @@
 #include "AppSettings.h"
 #include "Log.h"
 #include "Paths.h"
+#include "utils/PathTools.h"
 
 #include <QCursor>
 #include <QDir>
@@ -119,7 +120,7 @@ void Settings::addGameDir(const QString& path)
 
 
     const auto count_before = dirset.count();
-    dirset << QDir::toNativeSeparators(finfo.canonicalFilePath());
+    dirset << ::pretty_path(finfo);
     const auto count_after = dirset.count();
 
     if (count_before == count_after) {

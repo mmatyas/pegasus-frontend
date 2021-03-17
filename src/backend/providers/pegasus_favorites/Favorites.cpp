@@ -23,6 +23,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
+#include "utils/PathTools.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -69,10 +70,11 @@ Provider& Favorites::run(SearchContext& sctx)
         if (line.startsWith('#'))
             continue;
 
-        const QString path = QFileInfo(base_dir, line).canonicalFilePath();
+        const QString path = ::clean_abs_path(QFileInfo(base_dir, line));
         model::Game* const game_ptr = sctx.game_by_filepath(path);
         if (game_ptr)
             game_ptr->setFavorite(true);
+
     }
 
     return *this;
@@ -88,7 +90,7 @@ void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
     for (const model::Game* const game : game_list) {
         if (game->isFavorite()) {
             for (const model::GameFile* const file : game->filesConst()) {
-                const QString full_path = file->fileinfo().canonicalFilePath();
+                const QString full_path = ::clean_abs_path(file->fileinfo());
                 const QString written_path = AppSettings::general.portable
                     ? config_dir.relativeFilePath(full_path)
                     : full_path;
