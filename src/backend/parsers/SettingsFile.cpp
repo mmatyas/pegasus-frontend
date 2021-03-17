@@ -22,6 +22,7 @@
 #include "MetaFile.h"
 #include "Paths.h"
 #include "providers/Provider.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QFile>
@@ -172,7 +173,7 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
             AppSettings::general.locale = val;
             break;
         case ConfigEntryGeneralOption::THEME:
-            AppSettings::general.theme = QFileInfo(paths::writableConfigDir(), val).absoluteFilePath();
+            AppSettings::general.theme = ::clean_abs_path(QFileInfo(paths::writableConfigDir(), val));
             break;
     }
 }

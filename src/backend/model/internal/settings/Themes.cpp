@@ -189,8 +189,7 @@ bool Themes::select_theme(const QString& root_dir)
         }
     }
 
-    Log::warning(LOGMSG("Requested theme `%1` not found, falling back to default")
-        .arg(root_finfo.absoluteFilePath()));
+    Log::warning(LOGMSG("Requested theme `%1` not found, falling back to default").arg(::pretty_path(root_finfo)));
     return false;
 }
 

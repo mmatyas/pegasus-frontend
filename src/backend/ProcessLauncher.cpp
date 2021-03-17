@@ -23,6 +23,7 @@
 #include "model/gaming/GameFile.h"
 #include "platform/TerminalKbd.h"
 #include "utils/CommandTokenizer.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QRegularExpression>
@@ -50,10 +51,10 @@ void replace_env_vars(QString& param)
 void replace_variables(QString& param, const QFileInfo& finfo)
 {
     param
-        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
+        .replace(QLatin1String("{file.path}"), ::pretty_path(finfo))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
-        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
+        .replace(QLatin1String("{file.dir}"), ::pretty_dir(finfo));
 
     replace_env_vars(param);
 }
@@ -98,7 +99,7 @@ QString abs_launchcmd(const QString& cmd, const QString& base_dir)
     if (!contains_slash(cmd))
         return cmd;
 
-    return QFileInfo(base_dir, cmd).absoluteFilePath();
+    return ::clean_abs_path(QFileInfo(base_dir, cmd));
 }
 
 QString abs_workdir(const QString& workdir, const QString& base_dir, const QString& fallback_workdir)
@@ -106,7 +107,7 @@ QString abs_workdir(const QString& workdir, const QString& base_dir, const QStri
     if (workdir.isEmpty())
         return fallback_workdir;
 
-    return QFileInfo(base_dir, workdir).absoluteFilePath();
+    return ::clean_abs_path(QFileInfo(base_dir, workdir));
 }
 } // namespace helpers
 

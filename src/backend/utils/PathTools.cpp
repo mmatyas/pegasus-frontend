@@ -32,3 +32,7 @@ QString clean_abs_dir(const QFileInfo& finfo) {
 QString pretty_path(const QFileInfo& finfo) {
     return QDir::toNativeSeparators(clean_abs_path(finfo));
 }
+
+QString pretty_dir(const QFileInfo& finfo) {
+    return QDir::toNativeSeparators(clean_abs_dir(finfo));
+}

@@ -26,3 +26,5 @@ QString clean_abs_path(const QFileInfo&);
 QString clean_abs_dir(const QFileInfo&);
 /// Returns a displayable absoluteFilePath
 QString pretty_path(const QFileInfo&);
+/// Returns a displayable absolutePath
+QString pretty_dir(const QFileInfo&);

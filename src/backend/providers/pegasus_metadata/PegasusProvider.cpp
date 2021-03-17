@@ -22,6 +22,7 @@
 #include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusMetadata.h"
 #include "providers/pegasus_metadata/PegasusFilter.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QDirIterator>
@@ -46,7 +47,7 @@ std::vector<QString> find_metafiles_in(const QString& dir_path)
     QDirIterator dir_it(dir_path, dir_filters, dir_flags);
     while (dir_it.hasNext()) {
         dir_it.next();
-        QString path = dir_it.fileInfo().canonicalFilePath();
+        QString path = ::clean_abs_path(dir_it.fileInfo());
         if (is_metadata_file(dir_it.fileName()))
             result.emplace_back(std::move(path));
     }

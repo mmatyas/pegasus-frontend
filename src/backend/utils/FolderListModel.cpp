@@ -17,6 +17,7 @@
 
 #include "FolderListModel.h"
 
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #ifdef Q_OS_ANDROID
@@ -44,9 +45,9 @@ std::vector<QString> drives()
 #else
     std::vector<QString> out;
 
-    const auto drive_files = QDir::drives();
-    for (const auto& file : drive_files)
-        out.emplace_back(QDir::toNativeSeparators(file.absolutePath()));
+    const QFileInfoList drive_files = QDir::drives();
+    for (const QFileInfo& file : drive_files)
+        out.emplace_back(::pretty_dir(file));
 
     return out;
 #endif
