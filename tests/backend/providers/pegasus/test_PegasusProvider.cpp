@@ -642,7 +642,7 @@ void test_PegasusProvider::autoparenting()
 void test_PegasusProvider::entryless_games()
 {
     QTest::ignoreMessage(QtInfoMsg, PATHMSG("Metafiles: Found `%1`", ":/entryless/metadata.txt"));
-    QTest::ignoreMessage(QtWarningMsg, PATHMSG2("Metafiles: `%1`, line 4: Game file `%2` doesn't seem to exist", ":/entryless/metadata.txt", ":/entryless/test.ext"));
+    QTest::ignoreMessage(QtWarningMsg, PATHMSG2("Metafiles: `%1`, line 5: Game file `%2` doesn't seem to exist", ":/entryless/metadata.txt", ":/entryless/test.ext"));
     QTest::ignoreMessage(QtWarningMsg, "The collection 'My Games' has no valid games, ignored");
 
     providers::SearchContext sctx({QStringLiteral(":/entryless")});

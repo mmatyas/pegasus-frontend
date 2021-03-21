@@ -135,7 +135,9 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
     const std::vector<QString> include_files = resolve_filelist(filter.include.files, filter.directories);
     const std::vector<QString> exclude_files = resolve_filelist(filter.exclude.files, filter.directories);
     for (const QString& filepath: include_files) {
-        if (!VEC_CONTAINS(exclude_files, filepath))
+        if (VEC_CONTAINS(exclude_files, filepath))
+            continue;
+        if (QFileInfo::exists(filepath))
             accept_filtered_file(filepath, collection, sctx);
     }
 
