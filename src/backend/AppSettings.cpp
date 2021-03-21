@@ -99,8 +99,6 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
     std::vector<std::unique_ptr<providers::Provider>> out;
         MKENTRY(pegasus::PegasusProvider)
         MKENTRY(media::MediaProvider)
-        MKENTRY(favorites::Favorites)
-        MKENTRY(playtime::PlaytimeStats)
 #ifdef WITH_COMPAT_STEAM
         MKENTRY(steam::SteamProvider)
 #endif
@@ -113,9 +111,6 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #ifdef WITH_COMPAT_ANDROIDAPPS
         MKENTRY(android::AndroidAppsProvider)
 #endif
-#ifdef WITH_COMPAT_SKRAPER
-        MKENTRY(skraper::SkraperAssetsProvider)
-#endif
 #ifdef WITH_COMPAT_LAUNCHBOX
         MKENTRY(launchbox::LaunchboxProvider)
 #endif
@@ -125,6 +120,13 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #ifdef WITH_COMPAT_LUTRIS
         MKENTRY(lutris::LutrisProvider)
 #endif
+
+        // Make sure these come last as they never add new games
+#ifdef WITH_COMPAT_SKRAPER
+        MKENTRY(skraper::SkraperAssetsProvider)
+#endif
+        MKENTRY(favorites::Favorites)
+        MKENTRY(playtime::PlaytimeStats)
     out.shrink_to_fit();
     return out;
 
