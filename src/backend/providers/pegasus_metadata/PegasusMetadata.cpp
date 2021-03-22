@@ -41,17 +41,6 @@ QStringList tokenize_by_comma(const QString& str)
 
     return list;
 }
-
-QString assetline_to_url(const QDir& base_dir, const QString& value)
-{
-    Q_ASSERT(!value.isEmpty());
-
-    if (value.startsWith(QLatin1String("http://")) || value.startsWith(QLatin1String("https://")))
-        return value;
-
-    const QFileInfo finfo(base_dir, value);
-    return QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
-}
 } // namespace
 
 
@@ -440,6 +429,23 @@ bool Metadata::apply_extra_entry_maybe(ParserState& ps, const metafile::Entry& e
     return true;
 }
 
+
+QString Metadata::assetline_to_url(ParserState& ps, const metafile::Entry& entry, const QString& value) const
+{
+    Q_ASSERT(!value.isEmpty());
+
+    if (value.startsWith(QLatin1String("http://")) || value.startsWith(QLatin1String("https://")))
+        return value;
+
+    const QFileInfo finfo(ps.dir, value);
+    if (!finfo.exists()) {
+        print_warning(ps, entry, LOGMSG("Asset file `%1` doesn't seem to exist").arg(finfo.absoluteFilePath()));
+        return QString();
+    }
+
+    return QUrl::fromLocalFile(finfo.absoluteFilePath()).toString();
+}
+
 // Returns true if the entry is an asset entry
 bool Metadata::apply_asset_entry_maybe(ParserState& ps, const metafile::Entry& entry) const
 {
@@ -460,7 +466,7 @@ bool Metadata::apply_asset_entry_maybe(ParserState& ps, const metafile::Entry& e
         ? ps.cur_game->assetsMut()
         : ps.cur_coll->assetsMut();
     for (const QString& line : entry.values)
-        assets.add_uri(asset_type, ::assetline_to_url(ps.dir, line));
+        assets.add_uri(asset_type, assetline_to_url(ps, entry, line));
 
     return true;
 }
