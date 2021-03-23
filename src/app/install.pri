@@ -68,14 +68,22 @@ android {
     QT += androidextras
     OTHER_FILES += \
         platform/android/AndroidManifest.xml \
-        platform/android/res/drawable/banner.png \
-        platform/android/res/drawable-ldpi/icon.png \
-        platform/android/res/drawable-mdpi/icon.png \
-        platform/android/res/drawable-hdpi/icon.png \
-        platform/android/res/drawable-xhdpi/icon.png \
-        platform/android/res/drawable-xxhdpi/icon.png \
-        platform/android/res/drawable-xxxhdpi/icon.png \
+        platform/android/res/mipmap/banner.png \
+        platform/android/res/mipmap-ldpi/icon.png \
+        platform/android/res/mipmap-mdpi/icon.png \
+        platform/android/res/mipmap-hdpi/icon.png \
+        platform/android/res/mipmap-xhdpi/icon.png \
+        platform/android/res/mipmap-xxhdpi/icon.png \
+        platform/android/res/mipmap-xxxhdpi/icon.png \
+        platform/android/res/mipmap-ldpi/icon_fg.png \
+        platform/android/res/mipmap-mdpi/icon_fg.png \
+        platform/android/res/mipmap-hdpi/icon_fg.png \
+        platform/android/res/mipmap-xhdpi/icon_fg.png \
+        platform/android/res/mipmap-xxhdpi/icon_fg.png \
+        platform/android/res/mipmap-xxxhdpi/icon_fg.png \
+        platform/android/res/mipmap-anydpi-v26/icon.xml \
         platform/android/src/org/pegasus_frontend/android/MainActivity.java \
+        platform/android/res/values/icon_bg.xml \
         platform/android/res/values/libs.xml \
 
     ANDROID_MIN_SDK_VERSION = 21

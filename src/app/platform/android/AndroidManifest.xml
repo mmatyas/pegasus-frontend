@@ -9,8 +9,8 @@
         android:hardwareAccelerated="true"
         android:name="org.qtproject.qt5.android.bindings.QtApplication"
         android:label="Pegasus"
-        android:icon="@drawable/icon"
-        android:banner="@drawable/banner"
+        android:icon="@mipmap/icon"
+        android:banner="@mipmap/banner"
         android:extractNativeLibs="true"
         android:requestLegacyExternalStorage="true">
         <activity
