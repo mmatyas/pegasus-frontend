@@ -39,6 +39,7 @@ enum class GameField : unsigned char {
     ID,
     PATH,
     TITLE,
+    SORT_TITLE,
     RELEASE,
     DEVELOPER,
     PUBLISHER,
@@ -75,6 +76,8 @@ void apply_game_fields(
         switch (pair.first) {
             case GameField::TITLE:
                 game.setTitle(pair.second);
+                break;
+            case GameField::SORT_TITLE:
                 game.setSortBy(pair.second);
                 break;
             case GameField::NOTES:
@@ -178,6 +181,7 @@ GamelistXml::GamelistXml(QString log_tag, QDir lb_root)
         { QStringLiteral("ID"), GameField::ID },
         { QStringLiteral("ApplicationPath"), GameField::PATH },
         { QStringLiteral("Title"), GameField::TITLE },
+        { QStringLiteral("SortTitle"), GameField::SORT_TITLE },
         { QStringLiteral("Developer"), GameField::DEVELOPER },
         { QStringLiteral("Publisher"), GameField::PUBLISHER },
         { QStringLiteral("ReleaseDate"), GameField::RELEASE },

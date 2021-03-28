@@ -108,7 +108,7 @@ void test_LaunchBoxProvider::basic()
 
 
     QCOMPARE(game.title(), QStringLiteral("Super Mario Bros."));
-    QCOMPARE(game.sortBy(), QStringLiteral("Super Mario Bros."));
+    QCOMPARE(game.sortBy(), QStringLiteral("Super Mario 1"));
     QCOMPARE(game.summary(), QStringLiteral("Some description here!"));
     QCOMPARE(game.description(), QStringLiteral("Some description here!"));
     QCOMPARE(game.releaseDate(), QDate(1985, 9, 13));
