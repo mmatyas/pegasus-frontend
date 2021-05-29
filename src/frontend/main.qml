@@ -140,6 +140,9 @@ Window {
                 powerDialog.source = "dialogs/ShutdownDialog.qml"
                 powerDialog.focus = true;
             }
+            function onRequestSuspend() {
+                api.internal.system.suspend()
+            }                        
             function onRequestReboot() {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;

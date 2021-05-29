@@ -126,6 +126,10 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         QStringLiteral("disable-menu-shutdown"),
         CMDMSG("Hides the system shutdown entry in the main menu"));
 
+    const QCommandLineOption arg_menu_suspend = add_cli_option(argparser,
+        QStringLiteral("disable-menu-suspend"),
+        CMDMSG("Hides the system suspend entry in the main menu"));
+
     const QCommandLineOption arg_menu_appclose = add_cli_option(argparser,
         QStringLiteral("disable-menu-appclose"),
         CMDMSG("Hides the closing Pegasus entry in the main menu"));
@@ -162,9 +166,11 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     args.enable_gamepad_autoconfig = !argparser.isSet(arg_gamepad_autoconfig);
 #ifdef Q_OS_ANDROID
     args.enable_menu_shutdown = false;
+    args.enable_menu_suspend = false;
     args.enable_menu_reboot = false;
 #else
     args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
+    args.enable_menu_suspend = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_suspend));
     args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
 #endif
     return args;

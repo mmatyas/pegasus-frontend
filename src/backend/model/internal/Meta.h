@@ -38,6 +38,7 @@ class Meta : public QObject {
 
     Q_PROPERTY(bool allowReboot MEMBER m_enable_menu_reboot CONSTANT)
     Q_PROPERTY(bool allowShutdown MEMBER m_enable_menu_shutdown CONSTANT)
+    Q_PROPERTY(bool allowSuspend MEMBER m_enable_menu_suspend CONSTANT)
     Q_PROPERTY(bool allowAppClose MEMBER m_enable_menu_appclose CONSTANT)
     Q_PROPERTY(bool allowSettings MEMBER m_enable_menu_settings CONSTANT)
 
@@ -73,6 +74,7 @@ private:
 
     const bool m_enable_menu_reboot;
     const bool m_enable_menu_shutdown;
+    const bool m_enable_menu_suspend;
     const bool m_enable_menu_appclose;
     const bool m_enable_menu_settings;
 

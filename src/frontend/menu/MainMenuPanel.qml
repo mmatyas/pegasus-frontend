@@ -33,6 +33,7 @@ FocusScope {
     signal showHelpScreen
 
     signal requestShutdown
+    signal requestSuspend
     signal requestReboot
     signal requestQuit
 
@@ -99,7 +100,7 @@ FocusScope {
                 || mbQuitExit.callable
 
             Component.onCompleted: {
-                const first_callable = [mbQuitShutdown, mbQuitReboot, mbQuitExit].find(e => e.callable);
+                const first_callable = [mbQuitShutdown, mbQuitSuspend, mbQuitReboot, mbQuitExit].find(e => e.callable);
                 if (first_callable) {
                     first_callable.focus = true;
                     scopeQuit.focus = true;
@@ -115,6 +116,17 @@ FocusScope {
                     onActivated: requestShutdown()
 
                     readonly property bool callable: api.internal.meta.allowShutdown
+                    enabled: callable
+                    visible: callable
+
+                    KeyNavigation.down: mbQuitSuspend
+                },
+                SecondaryMenuItem {
+                    id: mbQuitSuspend
+                    text: qsTr("Suspend") + api.tr
+                    onActivated: { close(); requestSuspend() }
+
+                    readonly property bool callable: api.internal.meta.allowSuspend
                     enabled: callable
                     visible: callable
 

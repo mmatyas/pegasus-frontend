@@ -58,6 +58,11 @@ bool shutdown_by_logind()
     constexpr auto MESSAGE = "org.freedesktop.login1.Manager.PowerOff";
     return dbus_call(LOGIND_SERVICE, LOGIND_PATH, MESSAGE, LOGIND_FALSE);
 }
+bool suspend_by_logind()
+{
+    constexpr auto MESSAGE = "org.freedesktop.login1.Manager.Suspend";
+    return dbus_call(LOGIND_SERVICE, LOGIND_PATH, MESSAGE, LOGIND_FALSE);
+}
 bool reboot_by_logind()
 {
     constexpr auto MESSAGE = "org.freedesktop.login1.Manager.Reboot";
@@ -70,6 +75,11 @@ constexpr auto CONSOLEKIT_PATH = "/org/freedesktop/ConsoleKit/Manager";
 bool shutdown_by_consolekit()
 {
     constexpr auto MESSAGE = "org.freedesktop.ConsoleKit.Manager.Stop";
+    return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, MESSAGE);
+}
+bool suspend_by_consolekit()
+{
+    constexpr auto MESSAGE = "org.freedesktop.ConsoleKit.Manager.Suspend";
     return dbus_call(CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, MESSAGE);
 }
 bool reboot_by_consolekit()
@@ -102,5 +112,13 @@ void shutdown()
     QProcess::startDetached(QLatin1String("poweroff"), QStringList());
 }
 
+void suspend()
+{
+    if (suspend_by_logind())
+        return;
+    if (suspend_by_consolekit())
+        return;
+    QProcess::startDetached(QLatin1String("suspend"), QStringList());
+}
 } // namespace power
 } // namespace platform
