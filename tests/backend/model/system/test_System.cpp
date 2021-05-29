@@ -41,6 +41,7 @@ void test_System::appClose()
         case AppCloseType::QUIT: system.quit(); break;
         case AppCloseType::REBOOT: system.reboot(); break;
         case AppCloseType::SHUTDOWN: system.shutdown(); break;
+        case AppCloseType::SUSPEND: system.suspend(); break;
     }
 
     QCOMPARE(spy.count(), 1);
@@ -54,6 +55,7 @@ void test_System::appClose_data()
 
     QTest::newRow("quit") << AppCloseType::QUIT;
     QTest::newRow("shutdown") << AppCloseType::SHUTDOWN;
+    QTest::newRow("suspend") << AppCloseType::SUSPEND;
     QTest::newRow("reboot") << AppCloseType::REBOOT;
 }
 

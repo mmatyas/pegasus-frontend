@@ -17,9 +17,10 @@
 
 #include "PowerCommands.h"
 
+#include "Log.h"
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
 
 // MinGW/MSServer workarounds
 #ifndef EWX_RESTARTAPPS
@@ -68,6 +69,11 @@ void reboot()
 void shutdown()
 {
     exit_windows(EWX_SHUTDOWN | EWX_POWEROFF | EWX_HYBRID_SHUTDOWN);
+}
+
+void suspend()
+{
+    Log::error(LOGMSG("Suspend not implemented on this platform yet"));
 }
 
 } // namespace power

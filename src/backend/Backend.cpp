@@ -94,6 +94,9 @@ void register_api_classes()
 
 void on_app_close(AppCloseType type)
 {
+    if (type == AppCloseType::SUSPEND) {
+        return platform::power::suspend();
+    }
     ScriptRunner::run(ScriptEvent::QUIT);
     switch (type) {
         case AppCloseType::REBOOT:

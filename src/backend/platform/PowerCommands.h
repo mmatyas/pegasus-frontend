@@ -25,6 +25,7 @@ namespace power {
 
 void reboot();
 void shutdown();
+void suspend();
 
 } // namespace power
 } // namespace platform

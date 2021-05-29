@@ -75,5 +75,10 @@ void shutdown()
         Log::error(LOGMSG("Requesting shutdown has failed."));
 }
 
+void suspend()
+{
+    Log::error(LOGMSG("Suspend not implemented on this platform yet"));
+}
+
 } // namespace power
 } // namespace platform

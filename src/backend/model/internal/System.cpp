@@ -40,4 +40,9 @@ void System::shutdown()
     emit appCloseRequested(AppCloseType::SHUTDOWN);
 }
 
+void System::suspend()
+{
+    emit appCloseRequested(AppCloseType::SUSPEND);
+}
+
 } // namespace model
