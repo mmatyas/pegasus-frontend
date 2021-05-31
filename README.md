@@ -64,6 +64,7 @@ You can use any Qt-compatible IDEs, eg. Qt Creator to build the project, or you 
 mkdir build && cd build
 qmake ..  # qmake [params] [project path], see below
 make
+make check    # optional, to run tests
 make install  # optional
 ```
 
