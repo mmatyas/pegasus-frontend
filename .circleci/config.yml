@@ -14,12 +14,15 @@ jobs:
           INSTALL_DESKTOPDIR=/usr/share/applications
           INSTALL_APPSTREAMDIR=/usr/share/metainfo
           INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
+          SDL_LIBS="-L/opt/SDL2-2.0.14/lib -lSDL2"
+          SDL_INCLUDES=/opt/SDL2-2.0.14/include/SDL2
       - INSTALL_BINDIR: /usr/bin/
       - GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
     steps:
       - run: gem install --user-install -N fpm -v 1.10.2
       - checkout
       - run: .circleci/prepare.sh
+      - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.14_x11-bionic.tar.xz" | tar xJf - -C /opt/
       - run: .circleci/build.sh
       - run: .circleci/objdump_linux.sh ''
       # Deploy
