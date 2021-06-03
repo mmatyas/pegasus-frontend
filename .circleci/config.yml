@@ -86,10 +86,16 @@ jobs:
     environment:
       - QT_VERSION: qt5152
       - QT_TARGET: rpi1-static
-      - BUILDOPTS: USE_SDL_GAMEPAD=1 USE_SDL_POWER=1
+      - BUILDOPTS:
+          USE_SDL_GAMEPAD=1
+          USE_SDL_POWER=1
+          SDL_LIBS="-L/opt/SDL2-2.0.14/lib -lSDL2"
+          SDL_INCLUDES=/opt/SDL2-2.0.14/include/SDL2
+          QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: .circleci/prepare.sh
+      - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.14_rpi-brcm.tar.xz" | tar xJf - -C /opt/
       - run: .circleci/build.sh
       - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
       # Deploy
@@ -102,10 +108,16 @@ jobs:
     environment:
       - QT_VERSION: qt5152
       - QT_TARGET: rpi2-static
-      - BUILDOPTS: USE_SDL_GAMEPAD=1 USE_SDL_POWER=1
+      - BUILDOPTS:
+          USE_SDL_GAMEPAD=1
+          USE_SDL_POWER=1
+          SDL_LIBS="-L/opt/SDL2-2.0.14/lib -lSDL2"
+          SDL_INCLUDES=/opt/SDL2-2.0.14/include/SDL2
+          QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: .circleci/prepare.sh
+      - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.14_rpi-brcm.tar.xz" | tar xJf - -C /opt/
       - run: .circleci/build.sh
       - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
       # Deploy
@@ -118,10 +130,16 @@ jobs:
     environment:
       - QT_VERSION: qt5152
       - QT_TARGET: rpi3-static
-      - BUILDOPTS: USE_SDL_GAMEPAD=1 USE_SDL_POWER=1
+      - BUILDOPTS:
+          USE_SDL_GAMEPAD=1
+          USE_SDL_POWER=1
+          SDL_LIBS="-L/opt/SDL2-2.0.14/lib -lSDL2"
+          SDL_INCLUDES=/opt/SDL2-2.0.14/include/SDL2
+          QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: .circleci/prepare.sh
+      - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.14_rpi-brcm.tar.xz" | tar xJf - -C /opt/
       - run: .circleci/build.sh
       - run: .circleci/objdump_linux.sh arm-linux-gnueabihf-
       # Deploy
