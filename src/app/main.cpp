@@ -166,12 +166,15 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     args.enable_gamepad_autoconfig = !argparser.isSet(arg_gamepad_autoconfig);
 #ifdef Q_OS_ANDROID
     args.enable_menu_shutdown = false;
-    args.enable_menu_suspend = false;
     args.enable_menu_reboot = false;
 #else
     args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
-    args.enable_menu_suspend = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_suspend));
     args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
+#endif
+#if defined(Q_OS_ANDROID) || defined(Q_OS_WINDOWS) || defined(Q_OS_MAC)
+    args.enable_menu_suspend = false;
+#else
+    args.enable_menu_suspend = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_suspend));
 #endif
     return args;
 
