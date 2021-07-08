@@ -38,7 +38,7 @@ You can find downloads and platform-specific notes on the [project's website](ht
 **Build dependencies**
 
 - C++11 compatible compiler
-- Qt 5.12 or later, with the following modules:
+- Qt 5.15.0 or later, with the following modules:
     - QML and QtQuick2
     - Multimedia
     - SVG
