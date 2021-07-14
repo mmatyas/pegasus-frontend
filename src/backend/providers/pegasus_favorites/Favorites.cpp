@@ -70,11 +70,14 @@ Provider& Favorites::run(SearchContext& sctx)
         if (line.startsWith('#'))
             continue;
 
-        const QString path = ::clean_abs_path(QFileInfo(base_dir, line));
-        model::Game* const game_ptr = sctx.game_by_filepath(path);
+        model::Game* game_ptr = sctx.game_by_uri(line);
+        if (!game_ptr) {
+            const QString path = ::clean_abs_path(QFileInfo(base_dir, line));
+            game_ptr = sctx.game_by_filepath(path);
+        }
+
         if (game_ptr)
             game_ptr->setFavorite(true);
-
     }
 
     return *this;
@@ -90,12 +93,18 @@ void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
     for (const model::Game* const game : game_list) {
         if (game->isFavorite()) {
             for (const model::GameFile* const file : game->filesConst()) {
-                const QString full_path = ::clean_abs_path(file->fileinfo());
-                const QString written_path = AppSettings::general.portable
-                    ? config_dir.relativeFilePath(full_path)
-                    : full_path;
+                QString written_path;
+                if (!file->fileinfo().exists()) {
+                    written_path = file->path();
+                } else {
+                    const QString full_path = ::clean_abs_path(file->fileinfo());
+                    written_path = AppSettings::general.portable
+                         ? config_dir.relativeFilePath(full_path)
+                         : full_path;
+                }
                 if (Q_LIKELY(!written_path.isEmpty()))
                     m_pending_task << written_path;
+
             }
         }
     }

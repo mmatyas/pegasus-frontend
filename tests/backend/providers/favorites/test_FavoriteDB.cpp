@@ -37,6 +37,9 @@ void create_dummy_data(providers::SearchContext& sctx)
 
     model::Game& game_c = *sctx.create_game_for(collection_b);
     sctx.game_add_filepath(game_c, QStringLiteral(":/x/y/z/coll2dummy1"));
+
+    model::Game& game_d = *sctx.create_game_for(collection_b);
+    sctx.game_add_uri(game_d, QStringLiteral("steam:1337"));
 }
 } // namespace
 
@@ -57,6 +60,7 @@ void test_FavoriteDB::write()
     create_dummy_data(sctx);
     sctx.game_by_filepath(QStringLiteral(":/coll1dummy2"))->setFavorite(true);
     sctx.game_by_filepath(QStringLiteral(":/x/y/z/coll2dummy1"))->setFavorite(true);
+    sctx.game_by_uri(QStringLiteral("steam:1337"))->setFavorite(true);
     const auto [collections, games] = sctx.finalize(this->thread());
 
     QTemporaryFile tmp_file;
@@ -94,10 +98,10 @@ void test_FavoriteDB::write()
     }
     QFile::remove(db_path);
 
-    QCOMPARE(found_items.count(), 2);
+    QCOMPARE(found_items.count(), 3);
     QVERIFY(found_items.contains(":/coll1dummy2"));
     QVERIFY(found_items.contains(":/x/y/z/coll2dummy1"));
-
+    QVERIFY(found_items.contains("steam:1337"));
 }
 
 void test_FavoriteDB::rewrite_empty()
@@ -156,6 +160,7 @@ void test_FavoriteDB::read()
         tmp_stream << QStringLiteral(":/x/y/z/coll2dummy1") << endl;
         tmp_stream << QStringLiteral(":/coll1dummy2") << endl;
         tmp_stream << QStringLiteral(":/somethingfake") << endl;
+        tmp_stream << QStringLiteral("steam:1337") << endl;
     }
     const QString db_path = tmp_file.fileName();
     tmp_file.close();
@@ -164,9 +169,10 @@ void test_FavoriteDB::read()
     const auto [collections, games] = sctx.finalize(this->thread());
     QFile::remove(db_path);
 
-    QCOMPARE(games[0]->isFavorite(), false);
-    QCOMPARE(games[1]->isFavorite(), true);
+    QCOMPARE(games[0]->isFavorite(), true);
+    QCOMPARE(games[1]->isFavorite(), false);
     QCOMPARE(games[2]->isFavorite(), true);
+    QCOMPARE(games[3]->isFavorite(), true);
 }
 
 
