@@ -31,9 +31,9 @@ QString pretty_filename(const QFileInfo& fi);
 
 
 struct GameFileData {
-    explicit GameFileData(QFileInfo);
-    explicit GameFileData(QFileInfo, QString);
+    explicit GameFileData(QString);
 
+    const QString path;
     const QFileInfo fileinfo;
     QString name;
 
@@ -73,7 +73,7 @@ public:
     const QFileInfo& fileinfo() const { return m_data.fileinfo; }
 
 public:
-    explicit GameFile(QFileInfo, model::Game&);
+    explicit GameFile(QString, model::Game&);
 
     model::Game* parentGame() const;
 

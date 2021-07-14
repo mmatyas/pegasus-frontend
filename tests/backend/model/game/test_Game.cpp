@@ -85,8 +85,8 @@ void test_Game::files()
 {
     model::Game game("test");
     game.setFiles({
-        new model::GameFile(QFileInfo("test1"), game),
-        new model::GameFile(QFileInfo("test2"), game),
+        new model::GameFile("test1", game),
+        new model::GameFile("test2", game),
     });
 
     QCOMPARE(game.filesConst().count(), 2);
@@ -97,7 +97,7 @@ void test_Game::files()
 void test_Game::launchSingle()
 {
     model::Game game("test");
-    game.setFiles({ new model::GameFile(QFileInfo("test"), game) });
+    game.setFiles({ new model::GameFile("test", game) });
 
     QSignalSpy spy_launch(game.filesConst().first(), &model::GameFile::launchRequested);
     QVERIFY(spy_launch.isValid());
@@ -110,8 +110,8 @@ void test_Game::launchMulti()
 {
     model::Game game("test");
     game.setFiles({
-        new model::GameFile(QFileInfo("test1"), game),
-        new model::GameFile(QFileInfo("test2"), game),
+        new model::GameFile("test1", game),
+        new model::GameFile("test2", game),
     });
 
     QSignalSpy spy_launch(&game, &model::Game::launchFileSelectorRequested);

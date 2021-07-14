@@ -29,24 +29,19 @@ QString pretty_filename(const QFileInfo& fi)
 }
 
 
-GameFileData::GameFileData(QFileInfo fi)
-    : fileinfo(std::move(fi))
+GameFileData::GameFileData(QString path)
+    : path(path)
+    , fileinfo(path)
     , name(pretty_filename(fileinfo))
-{}
-
-GameFileData::GameFileData(QFileInfo fi, QString new_name)
-    : fileinfo(std::move(fi))
-    , name(std::move(new_name))
 {}
 
 bool GameFileData::operator==(const GameFileData& other) const {
     return fileinfo == other.fileinfo;
 }
 
-
-GameFile::GameFile(QFileInfo finfo, model::Game& parent)
+GameFile::GameFile(QString path, model::Game &parent)
     : QObject(&parent)
-    , m_data(std::move(finfo))
+    , m_data(path)
 {}
 
 model::Game* GameFile::parentGame() const
