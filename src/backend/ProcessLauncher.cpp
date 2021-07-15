@@ -28,6 +28,10 @@
 #include <QDir>
 #include <QRegularExpression>
 
+#ifdef Q_OS_ANDROID
+#include <QtAndroid>
+#endif
+
 
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
@@ -175,8 +179,21 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
+#ifdef Q_OS_ANDROID
+    auto activity = QtAndroid::androidActivity();
+    auto packageManager = activity.callObjectMethod("getPackageManager",
+                                                    "()Landroid/content/pm/PackageManager;");
+    auto activityIntent = packageManager.callObjectMethod(
+                "getLaunchIntentForPackage",
+                "(Ljava/lang/String;)Landroid/content/Intent;",
+                QAndroidJniObject::fromString(command).object());
+
+    Log::info(LOGMSG("Launching app id: [`%1`]").arg(command));
+    QtAndroid::startActivity(activityIntent, 1);
+#else
     Log::info(LOGMSG("Executing command: [`%1`]").arg(serialize_command(command, args)));
     Log::info(LOGMSG("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
+#endif
 
     Q_ASSERT(!m_process);
     m_process = new QProcess(this);
@@ -191,7 +208,13 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     m_process->setProcessChannelMode(QProcess::ForwardedChannels);
     m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_process->setWorkingDirectory(workdir);
+
+#ifdef Q_OS_ANDROID
+    // Hack: Start a bogus process which returns immediately
+    m_process->start(QLatin1String("pwd"), QStringList(), QProcess::ReadOnly);
+#else
     m_process->start(command, args, QProcess::ReadOnly);
+#endif
     m_process->waitForStarted(-1);
 }
 

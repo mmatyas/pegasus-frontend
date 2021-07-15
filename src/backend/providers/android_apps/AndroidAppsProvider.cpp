@@ -37,9 +37,6 @@ HashMap<QString, model::Game*> find_apps_for(model::Collection& collection, prov
     constexpr auto APPLIST_SIGNATURE = "()[Lorg/pegasus_frontend/android/App;";
     constexpr auto APP_NAME = "appName";
     constexpr auto APP_PACKAGE = "packageName";
-    constexpr auto APP_LAUNCH_ACT = "launchAction";
-    constexpr auto APP_LAUNCH_CPT = "launchComponent";
-
 
     HashMap<QString, model::Game*> app_game_map;
 
@@ -53,8 +50,6 @@ HashMap<QString, model::Game*> find_apps_for(model::Collection& collection, prov
 
         const QString appname = jni_app.callObjectMethod<jstring>(APP_NAME).toString();
         const QString package = jni_app.callObjectMethod<jstring>(APP_PACKAGE).toString();
-        const QString action = jni_app.callObjectMethod<jstring>(APP_LAUNCH_ACT).toString();
-        const QString component = jni_app.callObjectMethod<jstring>(APP_LAUNCH_CPT).toString();
 
         const QString game_uri = QStringLiteral("android:") + package;
         model::Game* game_ptr = sctx.game_by_uri(game_uri);
@@ -67,7 +62,7 @@ HashMap<QString, model::Game*> find_apps_for(model::Collection& collection, prov
         const QString icon_uri = QStringLiteral("image://androidicons/") + package;
         (*game_ptr)
             .setTitle(appname)
-            .setLaunchCmd(QStringLiteral("am start --user 0 -a %1 -n %2").arg(action, component))
+            .setLaunchCmd(package)
             .assetsMut()
             .add_uri(AssetType::BOX_FRONT, icon_uri)
             .add_uri(AssetType::UI_TILE, icon_uri);
