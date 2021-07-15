@@ -24,6 +24,7 @@
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxXml.h"
+#include "providers/steam/SteamProvider.h"
 #include "utils/PathTools.h"
 
 #include <QDir>
@@ -61,15 +62,18 @@ enum class AppField : unsigned char {
     NAME,
 };
 
-
 void apply_game_fields(
     const HashMap<GameField, QString>& fields,
     model::Game& game,
     const HashMap<QString, Emulator>& emulators)
 {
+    const QString steam_call(::providers::steam::find_steam_call());
+
     QString emu_id;
     QString emu_params;
     QString emu_platform_name;
+    QString source;
+    QString path;
 
     // TODO: C++17
     for (const auto& pair : fields) {
@@ -126,17 +130,25 @@ void apply_game_fields(
             case GameField::ASSETPATH_MUSIC:
                 game.assetsMut().add_file(AssetType::MUSIC, pair.second);
                 break;
-            case GameField::ID:
-            case GameField::PATH:
             case GameField::SOURCE:
+                source = pair.second;
+                break;
+            case GameField::PATH:
+                path = pair.second;
+                break;
+            case GameField::ID:
                 // handled earlier or handled dfferently
                 break;
         }
     }
 
     if (emu_id.isEmpty()) {
-        game.setLaunchCmd(QStringLiteral("{file.path}"));
-        game.setLaunchWorkdir(::clean_abs_dir(QFileInfo(fields.at(GameField::PATH))));
+        if (source == QLatin1String("Steam")) {
+            game.setLaunchCmd(steam_call % path);
+        } else {
+            game.setLaunchCmd(QStringLiteral("{file.path}"));
+            game.setLaunchWorkdir(::clean_abs_dir(QFileInfo(path)));
+        }
         return;
     }
 
