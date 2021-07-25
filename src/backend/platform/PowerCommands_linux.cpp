@@ -43,8 +43,9 @@ bool dbus_call(const char* const service, const char* const path, const char* co
     process.start(program, args, QProcess::ReadOnly);
 
     const bool success = process.waitForFinished(5000);
-    if (!success)
-        Log::warning(LOGMSG("Requesting shutdown/reboot from D-Bus service `%1` failed.").arg(service_str));
+    if (!success) {
+        Log::warning(LOGMSG("Requesting `%1` from D-Bus service failed.").arg(message));
+    }
 
     return success;
 }
