@@ -8,4 +8,6 @@ SUBDIRS += \
     logiqx \
     playtime \
 
-win32: SUBDIRS += launchbox
+win32: SUBDIRS += \
+    launchbox \
+    playnite \

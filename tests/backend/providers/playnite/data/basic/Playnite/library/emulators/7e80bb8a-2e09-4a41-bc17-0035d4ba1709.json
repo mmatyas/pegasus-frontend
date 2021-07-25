@@ -1,0 +1,32 @@
+{
+    "Profiles": [
+        {
+            "Platforms": [
+                "22fc036d-c73c-4ce1-ba49-105ecacaf9cf"
+            ],
+            "ImageExtensions": [
+                "zip"
+            ],
+            "Executable": ":\\basic\\emu\\nestopia.exe",
+            "Arguments": "--exec=\"{ImagePath}\" --batch",
+            "WorkingDirectory": ":\\basic\\emu\\",
+            "Id": "4bb9e953-cf79-434d-bc15-7b9346e83dde",
+            "Name": "Nintendo Entertainment System"
+        },
+        {
+            "Platforms": [
+                "3771f5e2-1790-4933-953a-61a56332aeea"
+            ],
+            "ImageExtensions": [
+                "zip"
+            ],
+            "Executable": ":\\basic\\emu\\Dolphin.exe",
+            "Arguments": "--exec=\"{ImagePath}\" --batch",
+            "WorkingDirectory": ":\\basic\\emu\\",
+            "Id": "5202729a-04f3-4651-b05a-10de10260b24",
+            "Name": "Nintendo Wii"
+        }
+    ],
+    "Id": "7e80bb8a-2e09-4a41-bc17-0035d4ba1709",
+    "Name": "Nestopia"
+}

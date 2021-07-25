@@ -49,6 +49,9 @@
 #ifdef WITH_COMPAT_LUTRIS
   #include "providers/lutris/LutrisProvider.h"
 #endif
+#ifdef WITH_COMPAT_PLAYNITE
+  #include "providers/playnite/PlayniteProvider.h"
+#endif
 
 #include <QFile>
 
@@ -119,6 +122,9 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #endif
 #ifdef WITH_COMPAT_LUTRIS
         MKENTRY(lutris::LutrisProvider)
+#endif
+#ifdef WITH_COMPAT_PLAYNITE
+        MKENTRY(playnite::PlayniteProvider)
 #endif
 
         // Make sure these come last as they never add new games
