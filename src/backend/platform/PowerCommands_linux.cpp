@@ -28,8 +28,15 @@ bool dbus_call(const char* const service, const char* const path, const char* co
                const char* const message_arg = nullptr)
 {
     const QLatin1String service_str(service);
+#if defined(PEGASUS_INSIDE_FLATPAK)
+    const QLatin1String program("flatpak-spawn");
+    QStringList args {
+        QLatin1String("--host"),
+        QLatin1String("dbus-send"),
+#else
     const QLatin1String program("dbus-send");
     QStringList args {
+#endif
         QLatin1String("--system"),
         QLatin1String("--print-reply"),
         QLatin1String("--dest=") + service_str,
