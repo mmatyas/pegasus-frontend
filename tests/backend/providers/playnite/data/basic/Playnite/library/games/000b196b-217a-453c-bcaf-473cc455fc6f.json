@@ -1,0 +1,44 @@
+{
+    "BackgroundImage": "000b196b-217a-453c-bcaf-473cc455fc6f\\635da706-84cb-4b31-bc39-b582026eb887.jpg",
+    "Description": "<p>Some game</p>",
+    "GenreIds": [
+        "ebeb4bd1-9e2b-4af7-89ef-c2805110ea9f",
+        "b232562e-5ec8-4809-9511-89a2aaa05b32"
+    ],
+    "Icon": "000b196b-217a-453c-bcaf-473cc455fc6f\\eebdc4f1-21ba-45c7-bff4-96e5b4dd5099.ico",
+    "CoverImage": "000b196b-217a-453c-bcaf-473cc455fc6f\\6923d6a2-fd91-4efd-9195-9151d9eaa6a5.jpg",
+    "InstallDirectory": ":\\basic\\steam\\steamapps\\common\\Super Mario Bros",
+    "LastActivity": "2020-02-02T15:39:48-06:00",
+    "GameId": "1337",
+    "PluginId": "cb91dfc9-b977-43bf-8e70-55f46e410fab",
+    "PlayAction": {
+        "Type": 1,
+        "Path": "steam://rungameid/1337",
+        "Name": "Play",
+        "IsHandledByPlugin": true
+    },
+    "PlatformId": "adb97362-7144-4191-8bcb-a80f5b049265",
+    "PublisherIds": [
+        "26e38b33-91f8-4d21-a69e-4c32a29d13de"
+    ],
+    "DeveloperIds": [
+        "6f1fe3aa-c0eb-4d41-9e14-cce859a7af4e"
+    ],
+    "ReleaseDate": "2013-06-18T00:00:00",
+    "FeatureIds": [
+        "99111c61-90d9-4a28-ac4b-252d5a4a5993",
+        "9bad0f61-8aa7-469d-b98a-25fe98cda6a6",
+        "05c0c622-f336-4b29-9d70-f5bcedd2736a"
+    ],
+    "Links": [],
+    "IsInstalled": true,
+    "Playtime": 60,
+    "Added": "2021-02-21T15:24:53.1545578-06:00",
+    "SeriesId": "62b06bfb-f913-4a29-bf10-8257e2b985e1",
+    "SourceId": "f356164c-0239-4ae4-95e3-4a0b42c3bb1e",
+    "CompletionStatus": 1,
+    "CriticScore": 85,
+    "CommunityScore": 81,
+    "Id": "000b196b-217a-453c-bcaf-473cc455fc6f",
+    "Name": "Super Mario Bros. Steam Edition"
+}
