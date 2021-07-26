@@ -19,10 +19,10 @@
 
 #include "Log.h"
 #include "Paths.h"
+#include "providers/ProviderUtils.h"
 #include "providers/SearchContext.h"
 #include "providers/steam/SteamGamelist.h"
 #include "providers/steam/SteamMetadata.h"
-#include "utils/CommandTokenizer.h"
 #include "utils/StdHelpers.h"
 
 #include <QDir>
@@ -33,22 +33,6 @@
 
 
 namespace {
-
-#ifdef Q_OS_LINUX
-const QLatin1String FLATPAK_PKG_NAME("com.valvesoftware.Steam");
-
-QString flatpak_launch_cmd() {
-    return QLatin1String("flatpak run ") % FLATPAK_PKG_NAME;
-}
-
-QString flatpak_data_dir() {
-    return paths::homePath()
-        % QLatin1String("/.var/app/")
-        % FLATPAK_PKG_NAME
-        % QLatin1String("/data/Steam/");
-}
-#endif // Q_OS_LINUX
-
 QString find_steam_datadir()
 {
     std::vector<QString> possible_dirs;
@@ -62,7 +46,7 @@ QString find_steam_datadir()
 
 #ifdef Q_OS_LINUX
     // Linux: Prefer Flatpak-Steam if available
-    possible_dirs.emplace_back(::flatpak_data_dir());
+    possible_dirs.emplace_back(providers::steam_flatpak_data_dir());
 #endif // linux
 
 #ifdef Q_OS_UNIX
@@ -159,38 +143,13 @@ void fill_metadata_from_network(
 namespace providers {
 namespace steam {
 
-QString find_steam_call()
-{
-#ifdef Q_OS_WIN
-    QSettings reg_base(QStringLiteral("HKEY_CURRENT_USER\\Software\\Valve\\Steam"), QSettings::NativeFormat);
-    QString reg_value = reg_base.value(QLatin1String("SteamExe")).toString();
-    if (!reg_value.isEmpty())
-        return ::utils::escape_command(reg_value);
-#endif
-
-#ifdef Q_OS_LINUX
-    // Assume the Flatpak version exists if its data directory is present
-    const QString flatpak_data_dir = ::flatpak_data_dir();
-    if (QFileInfo::exists(flatpak_data_dir))
-        return ::flatpak_launch_cmd();
-#endif
-
-#ifdef Q_OS_MACOS
-    // it should be installed
-    return QStringLiteral("open -a Steam --args");
-#else
-    // it should be in the PATH
-    return QStringLiteral("steam");
-#endif
-}
-
 SteamProvider::SteamProvider(QObject* parent)
     : Provider(QLatin1String("steam"), QStringLiteral("Steam"), parent)
 {}
 
 Provider& SteamProvider::run(SearchContext& sctx)
 {
-    const QString steam_call = find_steam_call();
+    const QString steam_call = providers::find_steam_call();
     Q_ASSERT(!steam_call.isEmpty());
 
 

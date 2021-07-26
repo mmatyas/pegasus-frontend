@@ -21,7 +21,7 @@
 #include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
-#include "providers/JsonCacheUtils.h"
+#include "providers/ProviderUtils.h"
 #include "providers/SearchContext.h"
 #include "utils/MoveOnly.h"
 

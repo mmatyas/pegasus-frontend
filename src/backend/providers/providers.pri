@@ -1,11 +1,13 @@
 HEADERS += \
     $$PWD/Provider.h \
     $$PWD/ProviderManager.h \
+    $$PWD/ProviderUtils.h \
     $$PWD/SearchContext.h \
 
 SOURCES += \
     $$PWD/Provider.cpp \
     $$PWD/ProviderManager.cpp \
+    $$PWD/ProviderUtils.cpp \
     $$PWD/SearchContext.cpp \
 
 include(pegasus_favorites/pegasus_favorites.pri)
@@ -32,8 +34,7 @@ include(skraper/skraper.pri)
 
 
 defined(USES_JSON_CACHE, var) {
-    HEADERS += $$PWD/JsonCacheUtils.h
-    SOURCES += $$PWD/JsonCacheUtils.cpp
+    DEFINES *= WITH_JSON_CACHE
 }
 
 

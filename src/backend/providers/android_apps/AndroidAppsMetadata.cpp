@@ -20,7 +20,7 @@
 #include "Log.h"
 #include "model/gaming/Assets.h"
 #include "model/gaming/Game.h"
-#include "providers/JsonCacheUtils.h"
+#include "providers/ProviderUtils.h"
 #include "providers/SearchContext.h"
 
 #include <QJsonArray>

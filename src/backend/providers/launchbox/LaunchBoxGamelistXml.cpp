@@ -22,9 +22,9 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
+#include "providers/ProviderUtils.h"
 #include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxXml.h"
-#include "providers/steam/SteamProvider.h"
 #include "utils/PathTools.h"
 
 #include <QDir>
@@ -67,7 +67,7 @@ void apply_game_fields(
     model::Game& game,
     const HashMap<QString, Emulator>& emulators)
 {
-    const QString steam_call(::providers::steam::find_steam_call());
+    const QString steam_call(providers::find_steam_call());
 
     QString emu_id;
     QString emu_params;

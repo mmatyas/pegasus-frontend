@@ -15,16 +15,23 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "JsonCacheUtils.h"
+#include "ProviderUtils.h"
 
 #include "Log.h"
 #include "Paths.h"
+#include "utils/CommandTokenizer.h"
 
 #include <QDir>
+#include <QSettings>
 #include <QStringBuilder>
 
 
 namespace {
+#ifdef Q_OS_LINUX
+const QLatin1String STEAM_FLATPAK_PKG("com.valvesoftware.Steam");
+#endif // Q_OS_LINUX
+
+#ifdef WITH_JSON_CACHE
 QString cached_json_path(const QString& provider_prefix,
                          const QString& provider_dir,
                          const QString& entryname)
@@ -43,11 +50,13 @@ QString cached_json_path(const QString& provider_prefix,
 
     return cache_path % QLatin1Char('/') % entryname % QLatin1String(".json");
 }
+#endif // WITH_JSON_CACHE
 } // namespace
 
 
 namespace providers {
 
+#ifdef WITH_JSON_CACHE
 void cache_json(const QString& provider_prefix,
                 const QString& provider_dir,
                 const QString& entryname,
@@ -98,6 +107,42 @@ void delete_cached_json(const QString& provider_prefix,
     const QString json_path = cached_json_path(provider_prefix, provider_dir, entryname);
 
     QFile::remove(json_path);
+}
+#endif // WITH_JSON_CACHE
+
+
+#ifdef Q_OS_LINUX
+QString steam_flatpak_data_dir() {
+    return paths::homePath()
+        % QLatin1String("/.var/app/")
+        % STEAM_FLATPAK_PKG
+        % QLatin1String("/data/Steam/");
+}
+#endif // Q_OS_LINUX
+
+QString find_steam_call()
+{
+#ifdef Q_OS_WIN
+    QSettings reg_base(QStringLiteral("HKEY_CURRENT_USER\\Software\\Valve\\Steam"), QSettings::NativeFormat);
+    QString reg_value = reg_base.value(QLatin1String("SteamExe")).toString();
+    if (!reg_value.isEmpty())
+        return ::utils::escape_command(reg_value);
+#endif
+
+#ifdef Q_OS_LINUX
+    // Assume the Flatpak version exists if its data directory is present
+    const QString flatpak_data_dir = steam_flatpak_data_dir();
+    if (QFileInfo::exists(flatpak_data_dir))
+        return QLatin1String("flatpak run ") % STEAM_FLATPAK_PKG;
+#endif
+
+#ifdef Q_OS_MACOS
+    // it should be installed
+    return QStringLiteral("open -a Steam --args");
+#else
+    // it should be in the PATH
+    return QStringLiteral("steam");
+#endif
 }
 
 } // namespace providers
