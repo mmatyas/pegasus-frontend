@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <QHash>
+#include <QHash>  // Required for the std::hash<QString> specialization
 #include <QString>
 #include <unordered_map>
 

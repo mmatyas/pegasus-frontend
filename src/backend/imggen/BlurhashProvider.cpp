@@ -17,14 +17,14 @@
 
 #include "BlurhashProvider.h"
 
-#include <QHash>
+#include "utils/HashMap.h"
 
 #include <array>
 #include <cmath>
 
 
 namespace {
-constexpr std::array<QChar, 83> BASE83 {
+constexpr std::array<char, 83> BASE83 {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
     'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
     'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
@@ -43,20 +43,20 @@ struct FpColor {
 
 unsigned decode_base83(QStringView str)
 {
-    static const QHash<QChar, unsigned int> BASE83_MAP = [](){
-        QHash<QChar, unsigned int> out;
+    static const HashMap<char, unsigned int> BASE83_MAP = [](){
+        HashMap<char, unsigned int> out;
         out.reserve(BASE83.size());
         for (size_t i = 0; i < BASE83.size(); i++)
-            out.insert(BASE83[i], i);
+            out.emplace(BASE83[i], i);
         return out;
     }();
 
     unsigned int result = 0;
     for (const QChar ch : str) {
-        const auto it = BASE83_MAP.find(ch);
+        const auto it = BASE83_MAP.find(ch.toLatin1());
         if (it != BASE83_MAP.cend()) {
             result *= BASE83.size();
-            result += *it;
+            result += it->second;
         }
     }
     return result;

@@ -17,7 +17,7 @@
 
 #include "AndroidHelpers.h"
 
-#include <QHash>
+#include <QHash>  // Required for PermissionResultMap
 #include <QStandardPaths>
 #include <QtAndroid>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
