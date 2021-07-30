@@ -52,7 +52,7 @@ QString get_appconfig_dir()
                            + QStringLiteral("/pegasus-frontend");
 #else
     QString dir_path = AppSettings::general.portable
-        ? QCoreApplication::applicationDirPath() + QStringLiteral("/config")
+        ? paths::app_dir_path() + QStringLiteral("/config")
         : QSP::writableLocation(QSP::AppConfigLocation);
     remove_orgname(dir_path);
 #endif
@@ -91,17 +91,30 @@ QString homePath()
     return home_path;
 }
 
+QString app_dir_path()
+{
+#if defined(Q_OS_ANDROID)
+    // On Android it is on a system partition
+    return QString();
+
+#elif defined(Q_OS_MACOS)
+    // On Mac the executable is in an app bundle, under `Pegasus.app/Contents/MacOS/`
+    return QCoreApplication::applicationDirPath() + QStringLiteral("/../../../");
+
+#else
+    return QCoreApplication::applicationDirPath();
+#endif
+}
+
 QStringList configDirs()
 {
     static const QStringList config_dir_paths = [](){
         QStringList paths(QLatin1String(":"));
-        paths << QCoreApplication::applicationDirPath();
+        paths << app_dir_path();
 
-        const QString local_config_dir = QCoreApplication::applicationDirPath()
-                                       + QStringLiteral("/config");
+        const QString local_config_dir = app_dir_path() + QStringLiteral("/config");
         if (QFileInfo::exists(local_config_dir))
             paths << local_config_dir;
-
 
         if (!AppSettings::general.portable) {
             paths << writableConfigDir();

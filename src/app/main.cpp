@@ -16,6 +16,7 @@
 
 
 #include "backend/Backend.h"
+#include "backend/Paths.h"
 #include "backend/platform/TerminalKbd.h"
 
 #include <QCommandLineParser>
@@ -89,12 +90,11 @@ bool request_runtime_permissions()
 
 bool portable_txt_present()
 {
-#if defined(Q_OS_ANDROID) || defined(Q_OS_MACOS)
-    // NOTE: On Android, the executable location is not generally accessible,
-    // while on Mac it is inside the bundle
+#ifdef Q_OS_ANDROID
+    // NOTE: On Android, the executable location is not generally accessible
     return false;
 #else
-    const QString path = QCoreApplication::applicationDirPath() + QStringLiteral("/portable.txt");
+    const QString path = paths::app_dir_path() + QStringLiteral("/portable.txt");
     return QFileInfo::exists(path);
 #endif
 }

@@ -27,6 +27,9 @@ namespace paths {
 /// otherwise QDir::homePath().
 QString homePath();
 
+/// Returns the directory that contains the Pegasus executable/app bundle.
+QString app_dir_path();
+
 /// Returns the directory paths where config files may be located
 QStringList configDirs();
 
