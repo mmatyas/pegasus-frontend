@@ -333,8 +333,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                 if (rx_match.hasMatch()) {
                     const short a = rx_match.capturedRef(1).toShort();
                     const short b = rx_match.capturedRef(3).toShort();
-                    const short count = std::max({ static_cast<short>(1), a, b });
-                    ps.cur_game->setPlayerCount(count);
+                    ps.cur_game->setPlayerCount(std::max(a, b));
                 }
             }
             break;

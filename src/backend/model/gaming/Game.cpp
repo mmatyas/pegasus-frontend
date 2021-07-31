@@ -74,6 +74,12 @@ Game& Game::setRating(float rating)
     return *this;
 }
 
+Game& Game::setPlayerCount(int player_count)
+{
+    m_data.player_count = std::max(1, player_count);
+    return *this;
+}
+
 void Game::onEntryPlayStatsChanged()
 {
     const auto prev_play_count = m_data.playstats.play_count;

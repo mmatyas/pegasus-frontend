@@ -245,9 +245,8 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
     const QString players_field = xml_props[MetaType::PLAYERS];
     const auto players_match = m_players_regex.match(players_field);
     if (players_match.hasMatch()) {
-        short a = 0, b = 0;
-        a = players_match.captured(1).toShort();
-        b = players_match.captured(3).toShort();
+        const short a = players_match.captured(1).toShort();
+        const short b = players_match.captured(3).toShort();
         game.setPlayerCount(std::max(a, b));
     }
 

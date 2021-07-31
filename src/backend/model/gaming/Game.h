@@ -110,7 +110,6 @@ public:
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
     SETTER(QDate, ReleaseDate, release_date)
-    SETTER(int, PlayerCount, player_count)
 
     SETTER(QString, LaunchCmd, launch_params.launch_cmd)
     SETTER(QString, LaunchWorkdir, launch_params.launch_workdir)
@@ -118,6 +117,7 @@ public:
 
     Game& setFavorite(bool val);
     Game& setRating(float rating);
+    Game& setPlayerCount(int player_count);
 #undef SETTER
 
 
