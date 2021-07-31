@@ -378,12 +378,12 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
 
                 const auto rx_match_a = rx_percent.match(line);
                 if (rx_match_a.hasMatch()) {
-                    ps.cur_game->setRating(qBound(0.f, line.leftRef(line.length() - 1).toFloat() / 100.f, 1.f));
+                    ps.cur_game->setRating(line.leftRef(line.length() - 1).toFloat() / 100.f);
                     return;
                 }
                 const auto rx_match_b = rx_float.match(line);
                 if (rx_match_b.hasMatch()) {
-                    ps.cur_game->setRating(qBound(0.f, line.toFloat(), 1.f));
+                    ps.cur_game->setRating(line.toFloat());
                     return;
                 }
 

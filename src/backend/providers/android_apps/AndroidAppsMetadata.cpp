@@ -59,8 +59,8 @@ bool apply_json(model::Game& game, const QJsonDocument& json)
     game.setSummary(game.description().section(QChar('\n'), 0, 0));
 
     const double rating = root[Lat("rating")].toDouble(-1);
-    if (0.0 <= rating && rating <= 5.0)
-        game.setRating(static_cast<float>(rating / 5.0));
+    if (rating > 0.0)
+        game.setRating(rating / 5.0);
 
     const QString background = root[Lat("background")].toString();
     if (!background.isEmpty())

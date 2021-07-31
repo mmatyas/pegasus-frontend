@@ -68,6 +68,12 @@ Game& Game::setFavorite(bool new_val)
     return *this;
 }
 
+Game& Game::setRating(float rating)
+{
+    m_data.rating = qBound(0.f, rating, 1.f);
+    return *this;
+}
+
 void Game::onEntryPlayStatsChanged()
 {
     const auto prev_play_count = m_data.playstats.play_count;

@@ -239,7 +239,7 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
 
     // then the numbers
     const int play_count = xml_props[MetaType::PLAYCOUNT].toInt();
-    game.setRating(qBound(0.f, xml_props[MetaType::RATING].toFloat(), 1.f));
+    game.setRating(xml_props[MetaType::RATING].toFloat());
 
     // the player count can be a range
     const QString players_field = xml_props[MetaType::PLAYERS];

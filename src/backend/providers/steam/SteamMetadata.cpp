@@ -91,8 +91,7 @@ bool apply_json(model::Game& game, const QJsonDocument& json)
     const auto metacritic_obj = app_data[QL1("metacritic")].toObject();
     if (!metacritic_obj.isEmpty()) {
         const double score = metacritic_obj[QL1("score")].toDouble(-1);
-        if (0.0 <= score && score <= 100.0)
-            game.setRating(static_cast<float>(score / 100.0));
+        game.setRating(score / 100.0);
     }
 
     const auto genre_arr = app_data[QL1("genres")].toArray();
