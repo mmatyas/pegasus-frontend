@@ -113,7 +113,7 @@ void test_LaunchBoxProvider::basic()
     QCOMPARE(game.description(), QStringLiteral("Some description here!"));
     QCOMPARE(game.releaseDate(), QDate(1985, 9, 13));
     // QCOMPARE(game.playerCount(), 2);
-    QCOMPARE(game.rating(), 4.572131f);
+    QCOMPARE(game.rating(), 4.572131f / 5.f);
 
     QCOMPARE(game.developerListConst(), { QStringLiteral("Nintendo") });
     QCOMPARE(game.publisherListConst(), { QStringLiteral("Nintendo") });

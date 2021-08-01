@@ -108,7 +108,7 @@ void apply_game_fields(
                     bool ok = false;
                     const float fval = pair.second.toFloat(&ok);
                     if (ok && fval > game.rating())
-                        game.setRating(fval);
+                        game.setRating(fval / 5.f);
                 }
                 break;
             case GameField::PLAYMODE:
