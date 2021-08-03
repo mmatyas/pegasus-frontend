@@ -27,5 +27,6 @@ const char* jni_classname();
 QString primary_storage_path();
 std::vector<QString> storage_paths();
 bool has_external_storage_access();
+QString run_am_call(const QStringList&);
 
 } // namespace android

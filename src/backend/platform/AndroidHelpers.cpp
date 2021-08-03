@@ -95,4 +95,23 @@ bool has_external_storage_access()
     return true;
 }
 
+QString run_am_call(const QStringList& args)
+{
+    QAndroidJniEnvironment jni_env;
+
+    std::vector<QAndroidJniObject> str_objs;
+    str_objs.reserve(args.length());
+    for (const QString& arg : args)
+        str_objs.emplace_back(QAndroidJniObject::fromString(arg));
+
+    jobjectArray jni_arr = jni_env->NewObjectArray(args.size(), jni_env->FindClass("java/lang/String"), nullptr);
+    for (size_t i = 0; i < str_objs.size(); i++)
+        jni_env->SetObjectArrayElement(jni_arr, i, str_objs.at(i).object<jstring>());
+
+    static constexpr auto JNI_METHOD = "launchAmCommand";
+    static constexpr auto JNI_SIGNATURE = "([Ljava/lang/String;)Ljava/lang/String;";
+    const auto result_obj = QAndroidJniObject::callStaticObjectMethod(jni_classname(), JNI_METHOD, JNI_SIGNATURE, jni_arr);
+    return result_obj.toString();
+}
+
 } // namespace android

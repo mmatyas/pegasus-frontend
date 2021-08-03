@@ -25,6 +25,10 @@
 #include "utils/CommandTokenizer.h"
 #include "utils/PathTools.h"
 
+#ifdef Q_OS_ANDROID
+#include "platform/AndroidHelpers.h"
+#endif
+
 #include <QDir>
 #include <QRegularExpression>
 
@@ -148,7 +152,18 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     }
     command = helpers::abs_launchcmd(command, game.launchCmdBasedir());
 
-#if defined(Q_OS_WINDOWS)
+#ifdef Q_OS_ANDROID
+    const bool android_command_valid = command.toLower() == QLatin1String("am");
+    const bool android_args_valid = !args.isEmpty() && args.first().toLower() == QLatin1String("start");
+    if (!android_command_valid || !android_args_valid) {
+        const QString message = LOGMSG("Only 'am start' commands are supported at the moment");
+        Log::warning(message);
+        emit processLaunchError(message);
+        return;
+    }
+#endif
+
+#ifdef Q_OS_WINDOWS
     const QFileInfo command_finfo(command);
     if (command_finfo.isShortcut()) {
         args = QStringList {
@@ -178,6 +193,7 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     Log::info(LOGMSG("Executing command: [`%1`]").arg(serialize_command(command, args)));
     Log::info(LOGMSG("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
 
+#ifndef Q_OS_ANDROID
     Q_ASSERT(!m_process);
     m_process = new QProcess(this);
 
@@ -193,13 +209,29 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     m_process->setWorkingDirectory(workdir);
     m_process->start(command, args, QProcess::ReadOnly);
     m_process->waitForStarted(-1);
+
+#else // Q_OS_ANDROID
+    const QString result = android::run_am_call(args);
+    if (result.isEmpty()) {
+        emit processLaunchOk();
+        Log::info(LOGMSG("Activity finished"));
+    }
+    else {
+        const QString message = LOGMSG("Failed to run the launch command: %1").arg(result);
+        emit processLaunchError(message);
+        Log::warning(message);
+        afterRun();
+    }
+
+#endif // Q_OS_ANDROID
 }
 
 void ProcessLauncher::onTeardownComplete()
 {
+#ifndef Q_OS_ANDROID
     Q_ASSERT(m_process);
-
     m_process->waitForFinished(-1);
+#endif
     emit processFinished();
 }
 
@@ -259,9 +291,11 @@ void ProcessLauncher::beforeRun(const QString& game_path)
 
 void ProcessLauncher::afterRun()
 {
+#ifndef Q_OS_ANDROID
     Q_ASSERT(m_process);
     m_process->deleteLater();
     m_process = nullptr;
+#endif
 
     ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
     TerminalKbd::disable();
