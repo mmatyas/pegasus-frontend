@@ -7,6 +7,65 @@ env:
 
 
 jobs:
+  x11-cmake:
+    runs-on: ubuntu-18.04
+    env:
+      QT_TARGET: x11-static
+    steps:
+      - name: APT deps
+        run: sudo apt-get update && sudo apt-get install -y
+          libasound-dev
+          libgl1-mesa-dev
+          libgstreamer-plugins-base1.0-dev
+          libpulse-dev
+          libudev-dev
+          libxi-dev
+          libxkbcommon-dev
+          libxkbcommon-x11-dev
+          libxcb-icccm4-dev
+          libxcb-image0-dev
+          libxcb-keysyms1-dev
+          libxcb-render-util0-dev
+          libxcb-util-dev
+          libxcb-xinerama0-dev
+          libsdl2-dev
+          libzstd-dev
+          ninja-build
+          xvfb
+      - name: Get Qt
+        run: |
+          curl -L "${TOOLS_URL}/${QT_VERSION}_${QT_TARGET}.tar.xz" | sudo tar xJf - -C /opt/
+          curl -L "${TOOLS_URL}/apng_patched_headers.tar.xz" | sudo tar xJf - -C "/opt/${QT_VERSION}_${QT_TARGET}/include/"
+          /opt/${QT_VERSION}_${QT_TARGET}/bin/qmake --version
+      - name: Get CMake
+        run: |
+          curl -L "${TOOLS_URL}/cmake-linux-x64.tar.xz" | sudo tar xJf - -C /opt/
+          /opt/cmake/bin/cmake --version
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+      - run: mkdir build
+
+      - name: Configure
+        working-directory: build
+        run: /opt/cmake/bin/cmake ..
+          -DCMAKE_PREFIX_PATH=/opt/${QT_VERSION}_x11-static
+          -G Ninja
+          -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
+          -DCMAKE_INSTALL_PREFIX=/usr/
+          -DPEGASUS_ENABLE_APNG=ON
+          -DPEGASUS_STATIC_CXX=ON
+      - name: Build
+        working-directory: build
+        run: ninja
+      - name: Test
+        working-directory: build
+        run: xvfb-run -a ctest --rerun-failed --output-on-failure
+
+
   x11-tests:
     runs-on: ubuntu-18.04
     env:
