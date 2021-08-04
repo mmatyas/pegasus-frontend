@@ -210,25 +210,23 @@ set(USE_SDL2 OFF)
 
 # Select power manager implementation
 
-message("Power management:")
 if(PEGASUS_ON_X11 OR PEGASUS_ON_EGLFS)
     target_sources(pegasus-backend PRIVATE platform/PowerCommands_linux.cpp)
-    message("  - Linux")
+    set(POWER_IMPL_NAME "Linux")
 elseif(PEGASUS_ON_WINDOWS)
     target_sources(pegasus-backend PRIVATE platform/PowerCommands_win.cpp)
-    message("  - Windows")
+    set(POWER_IMPL_NAME "Windows")
 elseif(PEGASUS_ON_MACOS)
     target_sources(pegasus-backend PRIVATE platform/PowerCommands_mac.cpp)
-    message("  - macOS")
+    set(POWER_IMPL_NAME "macOS")
 else()
     target_sources(pegasus-backend PRIVATE platform/PowerCommands_unimpl.cpp)
-    message("  - unavailable")
+    set(POWER_IMPL_NAME "Disabled")
 endif()
 
 
 # Select gamepad implementation
 
-message("Gamepad implementation:")
 if(PEGASUS_USE_SDL2_GAMEPAD)
     target_sources(pegasus-backend PRIVATE
         model/internal/GamepadManagerSDL2.cpp
@@ -236,7 +234,7 @@ if(PEGASUS_USE_SDL2_GAMEPAD)
     )
     target_compile_definitions(pegasus-backend PRIVATE WITH_SDL_GAMEPAD)
     set(USE_SDL2 ON)
-    message("  - SDL2")
+    set(GAMEPAD_IMPL_NAME "SDL2")
 else()
     target_sources(pegasus-backend PRIVATE
         model/internal/GamepadManagerQt.cpp
@@ -244,7 +242,7 @@ else()
     )
     pegasus_require_qt(COMPONENTS Gamepad)
     target_link_libraries(pegasus-backend PUBLIC Qt::Gamepad)
-    message("  - Qt")
+    set(GAMEPAD_IMPL_NAME "Qt")
 endif()
 
 
@@ -262,12 +260,8 @@ endif()
 
 # Animated PNG
 
-message("Animated PNG support:")
 if(PEGASUS_ENABLE_APNG)
     target_link_libraries(pegasus-backend PUBLIC apng)
-    message("  - enabled")
-else()
-    message("  - disabled")
 endif()
 
 
@@ -283,12 +277,21 @@ endif()
 
 # Print config
 
-message("Battery info: ${POWER_IMPL_NAME}")
-message("Gamepad implementation: ${GAMEPAD_IMPL_NAME}")
-message("Animated PNG support: ${PEGASUS_ENABLE_APNG}")
+include(PegasusPrettyPrint)
 
-message("Third-party data sources:")
+set(BOX_LINES
+    "Power management: ${POWER_IMPL_NAME}"
+    "Battery info: ${BATTERY_IMPL_NAME}"
+    "Gamepad implementation: ${GAMEPAD_IMPL_NAME}"
+    "Animated PNG support: ${PEGASUS_ENABLE_APNG}"
+    "Third-party data sources:"
+)
 list(SORT OPTIONAL_PROVIDERS)
 foreach(PROVIDER IN LISTS OPTIONAL_PROVIDERS)
-    message("  - ${PROVIDER}")
+    list(APPEND BOX_LINES "  - ${PROVIDER}")
 endforeach()
+
+pegasus_print_box(
+    TITLE "Backend Settings"
+    CONTENT "${BOX_LINES}"
+)
