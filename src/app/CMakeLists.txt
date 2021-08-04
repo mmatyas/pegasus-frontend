@@ -95,3 +95,20 @@ if(PEGASUS_ON_X11)
         install(FILES platform/linux/org.pegasus_frontend.Pegasus.metainfo.xml DESTINATION "${INSTALL_APPSTREAMDIR}")
     endif()
 endif()
+
+
+# Print config
+
+include(PegasusPrettyPrint)
+pegasus_print_box(
+    TITLE "App Settings"
+    CONTENT
+        "Git revision: ${PEGASUS_GIT_REVISION}"
+        "Git date: ${PEGASUS_GIT_DATE}"
+        "Deployment paths:"
+        "  Binaries:          ${INSTALL_BINDIR}"
+        "  License/Readme:    ${INSTALL_DOCDIR}"
+        "  X11 icons:         ${INSTALL_ICONDIR}"
+        "  X11 desktop file:  ${INSTALL_DESKTOPDIR}"
+        "  X11 AppStream:     ${INSTALL_APPSTREAMDIR}"
+)
