@@ -105,6 +105,7 @@ pegasus_print_box(
     CONTENT
         "Git revision: ${PEGASUS_GIT_REVISION}"
         "Git date: ${PEGASUS_GIT_DATE}"
+        "Link to static stdc++: ${PEGASUS_STATIC_CXX}"
         "Deployment paths:"
         "  Binaries:          ${INSTALL_BINDIR}"
         "  License/Readme:    ${INSTALL_DOCDIR}"
