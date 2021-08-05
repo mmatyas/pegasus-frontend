@@ -25,7 +25,7 @@ cmake_policy(SET CMP0071 NEW)  # Enable processing Qt generated files
 option(PEGASUS_USE_SDL2_GAMEPAD "Use SDL2 for gamepad support" ON)
 option(PEGASUS_USE_SDL2_POWER "Use SDL2 for battery info support" ON)
 option(PEGASUS_ENABLE_APNG "Enable animated PNG support" OFF)
-option(PEGASUS_STATIC "Link stdc++ and Qt plugins statically" OFF)
+option(PEGASUS_STATIC_CXX "Link stdc++ statically" OFF)
 
 
 include(PegasusGitInfo)

@@ -36,7 +36,7 @@ function(pegasus_add_common_props_optimized target)
         set_target_properties(${target} PROPERTIES INTERPROCEDURAL_OPTIMIZATION ON)
     endif()
 
-    if(PEGASUS_STATIC)
+    if(PEGASUS_STATIC_CXX)
         if(NOT MSVC)
             target_link_options(${target} PRIVATE -static-libstdc++)
         endif()

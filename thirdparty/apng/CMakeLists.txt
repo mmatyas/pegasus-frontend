@@ -12,8 +12,6 @@ add_library(apng
     apngreader.cpp
     apngreader_p.h
 )
-target_link_libraries(apng PUBLIC Qt::Gui)
 
-if(PEGASUS_STATIC)
-    target_compile_definitions(apng PRIVATE QT_STATICPLUGIN)
-endif()
+target_link_libraries(apng PUBLIC Qt::Gui)
+target_compile_definitions(apng PRIVATE QT_STATICPLUGIN)
