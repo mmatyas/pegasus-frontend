@@ -272,6 +272,7 @@ if(USE_SDL2)
     target_include_directories(pegasus-backend PRIVATE ${SDL2_INCLUDE_DIRS})
     target_link_libraries(pegasus-backend PUBLIC ${SDL2_LIBRARIES})
     target_compile_definitions(pegasus-backend PRIVATE SDL_MAIN_HANDLED)
+    message("-- Found SDL2: ${SDL2_INCLUDE_DIRS}")
 endif()
 
 
