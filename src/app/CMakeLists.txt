@@ -63,6 +63,23 @@ endif()
 # Install
 
 include(PegasusTargetPlatform)
+include(GNUInstallDirs)
+
+macro(pegasus_set_installdir var gnu_default)
+    set(${var} "${PEGASUS_${var}}")
+    if(NOT ${var})
+        set(${var} "${PEGASUS_INSTALLDIR}")
+    endif()
+    if(NOT ${var})
+        set(${var} "${gnu_default}")
+    endif()
+endmacro()
+
+pegasus_set_installdir(INSTALL_BINDIR "${CMAKE_INSTALL_FULL_BINDIR}")
+pegasus_set_installdir(INSTALL_DOCDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
+pegasus_set_installdir(INSTALL_ICONDIR "${CMAKE_INSTALL_FULL_DATAROOTDIR}/icons/hicolor")
+pegasus_set_installdir(INSTALL_DESKTOPDIR "${CMAKE_INSTALL_FULL_DATAROOTDIR}/applications")
+pegasus_set_installdir(INSTALL_APPSTREAMDIR "${CMAKE_INSTALL_FULL_DATAROOTDIR}/metainfo")
 
 if(INSTALL_BINDIR)
     install(TARGETS pegasus-fe RUNTIME DESTINATION "${INSTALL_BINDIR}")
