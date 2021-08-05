@@ -29,8 +29,28 @@ fpm -s dir -t deb \
   --description "$(printf 'Cross platform graphical frontend for launching emulators\nPegasus is an experimental emulator frontend, focusing on customizability,\ncross platform support (including embedded) and high performance.')" \
   -d 'fontconfig' \
   -d 'gstreamer1.0-plugins-good' \
-  -d 'policykit-1' \
-  -d 'libsdl2-2.0-0 >= 2.0.4' \
+  -d 'libasound2' \
   -d 'libc6 >= 2.25' \
-  -d 'libstdc++6 >= 4.8' \
+  -d 'libgl1' \
+  -d 'libssl1.1' \
+  -d 'libx11-6' \
+  -d 'libx11-xcb1' \
+  -d 'libxcb-glx0' \
+  -d 'libxcb-icccm4' \
+  -d 'libxcb-image0' \
+  -d 'libxcb-keysyms1' \
+  -d 'libxcb-randr0' \
+  -d 'libxcb-render-util0' \
+  -d 'libxcb-render0' \
+  -d 'libxcb-shape0' \
+  -d 'libxcb-shm0' \
+  -d 'libxcb-sync1' \
+  -d 'libxcb-xfixes0' \
+  -d 'libxcb-xinerama0' \
+  -d 'libxcb-xkb1' \
+  -d 'libxcb1' \
+  -d 'libxkbcommon-x11-0' \
+  -d 'libxkbcommon0' \
+  -d 'libzstd1' \
+  -d 'policykit-1' \
   $PWD/../installdir/=/
