@@ -103,6 +103,7 @@ include(PegasusPrettyPrint)
 pegasus_print_box(
     TITLE "App Settings"
     CONTENT
+        "Build type: ${CMAKE_BUILD_TYPE}"
         "Git revision: ${PEGASUS_GIT_REVISION}"
         "Git date: ${PEGASUS_GIT_DATE}"
         "Link to static stdc++: ${PEGASUS_STATIC_CXX}"
