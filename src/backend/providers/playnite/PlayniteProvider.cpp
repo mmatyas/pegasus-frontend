@@ -114,6 +114,17 @@ void apply_game_fields(
             QStringLiteral("%1/library/files/%2").arg(playnite_dir_path, game_info.background_image);
         game.assetsMut().add_file(AssetType::BACKGROUND, bg_path);
     }
+
+    const QString extra_metadata_path = QStringLiteral("%1/ExtraMetadata/games/%2").arg(playnite_dir_path, game_info.id);
+    const QFileInfo logo_file(extra_metadata_path + QStringLiteral("/Logo.png"));
+    if (logo_file.exists() && logo_file.isFile()) {
+        game.assetsMut().add_file(AssetType::LOGO, logo_file.absoluteFilePath());
+    }
+
+    const QFileInfo video_trailer(extra_metadata_path + QStringLiteral("/VideoTrailer.mp4"));
+    if (video_trailer.exists() && video_trailer.isFile()) {
+        game.assetsMut().add_file(AssetType::VIDEO, video_trailer.absoluteFilePath());
+    }
 }
 } // namespace
 
@@ -212,13 +223,18 @@ bool PlayniteProvider::validate_game(const PlayniteGame& game, const PlayniteCom
         return false;
     }
 
+    if (game.id.isEmpty()) {
+        Log::info(display_name(), LOGMSG("No id found for game %1, skipping...").arg(game.name));
+        return false;
+    }
+
     if (!game.installed) {
-        Log::info(display_name(), LOGMSG("Skipping not installed game %1").arg(game.name));
+        Log::info(display_name(), LOGMSG("Game %1 is not installed, skipping...").arg(game.name));
         return false;
     }
 
     if (game.hidden) {
-        Log::info(display_name(), LOGMSG("Skipping hidden game %1").arg(game.name));
+        Log::info(display_name(), LOGMSG("Game %1 is hidden, skipping...").arg(game.name));
         return false;
     }
 
