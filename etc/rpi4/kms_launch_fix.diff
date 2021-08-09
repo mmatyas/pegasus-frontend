@@ -1,8 +1,8 @@
 diff --git a/src/backend/ProcessLauncher.cpp b/src/backend/ProcessLauncher.cpp
-index d39cce9..b994aeb 100644
+index 8ba5f3f9..15cd63af 100644
 --- a/src/backend/ProcessLauncher.cpp
 +++ b/src/backend/ProcessLauncher.cpp
-@@ -28,6 +28,14 @@
+@@ -32,6 +32,14 @@
  #include <QDir>
  #include <QRegularExpression>
  
@@ -17,7 +17,7 @@ index d39cce9..b994aeb 100644
  
  namespace {
  static constexpr auto SEPARATOR = "----------------------------------------";
-@@ -165,7 +173,6 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -198,7 +206,6 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
      m_process = new QProcess(this);
  
      // set up signals and slots
@@ -25,7 +25,7 @@ index d39cce9..b994aeb 100644
      connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
      connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
              this, &ProcessLauncher::onProcessFinished);
-@@ -174,15 +181,28 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -207,8 +214,9 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
      m_process->setProcessChannelMode(QProcess::ForwardedChannels);
      m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
      m_process->setWorkingDirectory(workdir);
@@ -34,12 +34,15 @@ index d39cce9..b994aeb 100644
 +    m_process->setProgram(command);
 +    m_process->setArguments(args);
 +    onProcessStarted();
- }
+ 
+ #else // Q_OS_ANDROID
+     const QString result = android::run_am_call(args);
+@@ -228,10 +236,20 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
  
  void ProcessLauncher::onTeardownComplete()
  {
+-#ifndef Q_OS_ANDROID
      Q_ASSERT(m_process);
- 
 +    auto platint = static_cast<QEglFSIntegration* const>(QGuiApplicationPrivate::platformIntegration());
 +
 +    platint->destroy();
@@ -47,6 +50,7 @@ index d39cce9..b994aeb 100644
 +
 +    m_process->start(QProcess::ReadOnly);
      m_process->waitForFinished(-1);
+-#endif
 +
 +    const bool backup = platint->m_disableInputHandlers;
 +    platint->m_disableInputHandlers = true;
@@ -56,7 +60,7 @@ index d39cce9..b994aeb 100644
      emit processFinished();
  }
  
-@@ -236,7 +256,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
+@@ -285,7 +303,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
  
  void ProcessLauncher::beforeRun(const QString& game_path)
  {
@@ -64,17 +68,17 @@ index d39cce9..b994aeb 100644
      ScriptRunner::run(ScriptEvent::PROCESS_STARTED, { game_path });
  }
  
-@@ -247,5 +266,4 @@ void ProcessLauncher::afterRun()
-     m_process = nullptr;
+@@ -298,5 +315,4 @@ void ProcessLauncher::afterRun()
+ #endif
  
      ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
 -    TerminalKbd::disable();
  }
 diff --git a/src/backend/backend.pro b/src/backend/backend.pro
-index fe116bd..e5d61a9 100644
+index c5e62d23..60e2a9c7 100644
 --- a/src/backend/backend.pro
 +++ b/src/backend/backend.pro
-@@ -11,6 +11,9 @@ else: QT += gamepad
+@@ -12,6 +12,9 @@ isEmpty(USE_SDL_GAMEPAD): QT += gamepad
  msvc: DEFINES *= _USE_MATH_DEFINES
  
  
