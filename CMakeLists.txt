@@ -26,6 +26,7 @@ option(PEGASUS_USE_SDL2_GAMEPAD "Use SDL2 for gamepad support" ON)
 option(PEGASUS_USE_SDL2_POWER "Use SDL2 for battery info support" ON)
 option(PEGASUS_ENABLE_APNG "Enable animated PNG support" OFF)
 option(PEGASUS_STATIC_CXX "Link stdc++ statically" OFF)
+option(PEGASUS_ENABLE_LTO "Allow link-time optimizations (slow to build)" ON)
 
 
 include(PegasusGitInfo)
