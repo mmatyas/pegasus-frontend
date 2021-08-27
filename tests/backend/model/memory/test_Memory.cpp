@@ -20,6 +20,9 @@
 #include "Log.h"
 #include "Container.h"
 
+#include <QJSEngine>
+#include <QJSValue>
+
 
 class test_Memory : public QObject {
     Q_OBJECT
@@ -37,6 +40,7 @@ private slots:
 
     void json();
     void json_data();
+    void jsvalue();
 
     void settings_file();
 };
@@ -133,6 +137,34 @@ void test_Memory::json_data()
     QTest::newRow("undefined") << QJsonValue(QJsonValue::Undefined);
     QTest::newRow("array") << QJsonValue(QJsonArray({1,2,3}));
     QTest::newRow("object") << QJsonValue(QJsonObject({{"x", 1}, {"y", 2}}));
+}
+
+void test_Memory::jsvalue()
+{
+    QString temp_path = QDir::tempPath();
+    if (!temp_path.endsWith('/'))
+        temp_path += '/';
+    Container c(temp_path);
+
+    const QString json_path = temp_path + "QtAutoTest.json";
+    QFile(json_path).remove();
+    c.memory()->changeTheme("/path/to/QtAutoTest/");
+
+    QJSEngine engine;
+    QJSValue jsval_outer = engine.newObject();
+    QJSValue jsval_inner = engine.newObject();
+    jsval_inner.setProperty("key", "val");
+    jsval_outer.setProperty("inner", jsval_inner);
+
+    c.memory()->set("test", QVariant::fromValue(jsval_outer));
+    QCOMPARE(c.memory()->has("test"), true);
+    QCOMPARE(c.memory()->get("test").userType(), qMetaTypeId<QVariantMap>());
+    QCOMPARE(c.memory()->get("test").value<QVariantMap>(), jsval_outer.toVariant());
+
+    QCOMPARE(QFileInfo::exists(json_path), true);
+    QFile json_file(json_path);
+    json_file.open(QFile::ReadOnly);
+    QCOMPARE(json_file.readAll(), QByteArrayLiteral(R"({"test":{"inner":{"key":"val"}}})"));
 }
 
 void test_Memory::settings_file()

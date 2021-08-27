@@ -24,6 +24,7 @@
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJSValue>
 #include <QStringBuilder>
 
 
@@ -128,6 +129,10 @@ void Memory::set(const QString& key, QVariant value)
         Log::warning(LOGMSG("`set(key,val)` called with invalid `val` type, ignored"));
         return;
     }
+
+    // NOTE: QJSValue is a custom type for QVariant
+    if (value.userType() == qMetaTypeId<QJSValue>())
+        value = value.value<QJSValue>().toVariant();
 
     m_data[key] = std::move(value);
     emit dataChanged();
