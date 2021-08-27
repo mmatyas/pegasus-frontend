@@ -70,33 +70,47 @@ QString find_steam_datadir()
     return {};
 }
 
+void find_installdirs_in_vdf(
+    const QString& log_tag,
+    const QString& vdf_path,
+    const QString& entry_pattern,
+    std::vector<QString>& installdirs)
+{
+    QFile vdf(vdf_path);
+    if (!vdf.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    Log::info(log_tag, LOGMSG("Found `%1`").arg(vdf_path));
+
+    const QRegularExpression entry_regex(entry_pattern);
+
+    QTextStream stream(&vdf);
+    while (!stream.atEnd()) {
+        const QString line = stream.readLine();
+        const auto match = entry_regex.match(line);
+        if (match.hasMatch()) {
+            QString path = match.captured(1) % QLatin1String("/steamapps/");
+            installdirs.emplace_back(std::move(path));
+        }
+    }
+}
+
 std::vector<QString> find_steam_installdirs(const QString& log_tag, const QString& steam_datadir)
 {
     std::vector<QString> installdirs;
-    installdirs.emplace_back(steam_datadir + QLatin1String("steamapps"));
-
+    Q_ASSERT(steam_datadir.endsWith(QChar('/')));
+    installdirs.emplace_back(steam_datadir + QLatin1String("steamapps/"));
 
     const QString config_path = steam_datadir + QLatin1String("config/config.vdf");
-    QFile configfile(config_path);
-    if (!configfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        Log::warning(log_tag, LOGMSG("Could not read `%1`, some games may be missing").arg(config_path));
-        return installdirs;
-    }
+    const QString config_pattern = QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")"");
+    find_installdirs_in_vdf(log_tag, config_path, config_pattern, installdirs);
 
-    const QRegularExpression installdir_regex(QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")""));
-
-    QTextStream stream(&configfile);
-    while (!stream.atEnd()) {
-        const QString line = stream.readLine();
-        const auto match = installdir_regex.match(line);
-        if (match.hasMatch()) {
-            const QString path = match.captured(1) % QLatin1String("/steamapps/");
-            if (QFileInfo::exists(path))
-                installdirs.emplace_back(path);
-        }
-    }
+    const QString folderlist_path = installdirs.front() + QLatin1String("libraryfolders.vdf");
+    const QString folderlist_pattern = QStringLiteral(R""("[1-7]"\s+"([^"]+)")"");
+    find_installdirs_in_vdf(log_tag, folderlist_path, folderlist_pattern, installdirs);
 
     VEC_REMOVE_DUPLICATES(installdirs);
+    VEC_REMOVE_IF(installdirs, [](const QString& path) { return !QFileInfo::exists(path); });
     return installdirs;
 }
 
@@ -160,7 +174,6 @@ Provider& SteamProvider::run(SearchContext& sctx)
     }
 
     Log::info(display_name(), LOGMSG("Found installation at `%1`").arg(steamdir_path));
-    Q_ASSERT(steamdir_path.endsWith(QChar('/')));
 
     std::vector<QString> installdirs = find_steam_installdirs(display_name(), steamdir_path);
     if (installdirs.empty()) {
