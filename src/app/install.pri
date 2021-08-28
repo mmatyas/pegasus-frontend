@@ -30,7 +30,7 @@ unix:!macx {
         OTHER_FILES += $${icon16.files} $${icon32.files} $${icon48.files} $${icon64.files} $${icon128.files}
     }
     !isEmpty(INSTALL_DESKTOPDIR) {
-        desktop_file.input = platform/linux/org.pegasus_frontend.Pegasus.desktop.in
+        desktop_file.input = platform/linux/org.pegasus_frontend.Pegasus.desktop.qmake.in
         desktop_file.output = $${OUT_PWD}/org.pegasus_frontend.Pegasus.desktop
         OTHER_FILES += $${desktop_file.input}
 
