@@ -4,6 +4,7 @@ env:
   TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
   QT_VERSION: qt5152
   QT_VERSION_PRETTY: "5.15.2"
+  SDL_VERSION: "2.0.14"
 
 
 jobs:
@@ -11,6 +12,7 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       QT_TARGET: x11-static
+      SDL_TARGET: x11-bionic
     steps:
       - name: APT deps
         run: sudo apt-get update && sudo apt-get install -y
@@ -28,13 +30,13 @@ jobs:
           libxcb-render-util0-dev
           libxcb-util-dev
           libxcb-xinerama0-dev
-          libsdl2-dev
           libzstd-dev
           ninja-build
           xvfb
       - name: Get Qt
         run: |
           curl -L "${TOOLS_URL}/${QT_VERSION}_${QT_TARGET}.tar.xz" | sudo tar xJf - -C /opt/
+          curl -L "${TOOLS_URL}/SDL2-${SDL_VERSION}_${SDL_TARGET}.tar.xz" | tar xJf - -C /opt/
           curl -L "${TOOLS_URL}/apng_patched_headers.tar.xz" | sudo tar xJf - -C "/opt/${QT_VERSION}_${QT_TARGET}/include/"
           /opt/${QT_VERSION}_${QT_TARGET}/bin/qmake --version
       - name: Get CMake
@@ -52,7 +54,7 @@ jobs:
       - name: Configure
         working-directory: build
         run: /opt/cmake/bin/cmake ..
-          -DCMAKE_PREFIX_PATH=/opt/${QT_VERSION}_x11-static
+          -DCMAKE_PREFIX_PATH="/opt/${QT_VERSION}_${QT_TARGET};/opt/SDL2-${SDL_VERSION}"
           -G Ninja
           -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
           -DCMAKE_INSTALL_PREFIX=/usr/
