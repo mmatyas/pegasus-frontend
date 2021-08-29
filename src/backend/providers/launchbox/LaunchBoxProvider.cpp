@@ -66,15 +66,17 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
     const HashMap<QString, Emulator> emulators = EmulatorsXml(display_name(), lb_dir).find();
     // NOTE: It's okay to not have any emulators
 
-    const float progress_step = 1.f / platforms.size();
+    const float progress_step = 1.f / platforms.size() / 2.f;
     float progress = 0.f;
 
     const GamelistXml metahelper(display_name(), lb_dir);
     const Assets assethelper(display_name(), lb_dir_path);
     for (const Platform& platform : platforms) {
         const std::vector<model::Game*> games = metahelper.find_games_for(platform, emulators, sctx);
-        assethelper.find_assets_for(platform.name, games);
+        progress += progress_step;
+        emit progressChanged(progress);
 
+        assethelper.find_assets_for(platform.name, games);
         progress += progress_step;
         emit progressChanged(progress);
     }
