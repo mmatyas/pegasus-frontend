@@ -66,7 +66,7 @@ const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, 
         [&path](const model::Game* const game){ return std::any_of(
             game->filesConst().cbegin(),
             game->filesConst().cend(),
-            [&path](const model::GameFile* gf){ return gf->fileinfo().canonicalFilePath() == path; });
+            [&path](const model::GameFile* gf){ return gf->path() == path; });
         });
     return it != list.cend()
         ? *it
@@ -207,7 +207,7 @@ void test_PegasusProvider::with_meta()
     const auto [collections, games] = sctx.finalize(this);
 
     QCOMPARE(collections.size(), 1);
-    QCOMPARE(games.size(), 5);
+    QCOMPARE(games.size(), 6);
 
     const auto common_launch = QStringLiteral("launcher.exe '{file.path}'");
     const auto common_workdir = QStringLiteral("some/workdir");
@@ -300,16 +300,17 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
     }
 
-    // Launch-only
-    // TODO: add non-file entry support
-    /*{
-        using entry_t = std::remove_reference<decltype(ctx.games())>::type::value_type;
+    // URI
+    {
+        const QString uri = QStringLiteral("virtual:some-identifier");
 
-        const QString title = QStringLiteral("Virtual Game");
-        const auto it = std::find_if(ctx.games().cbegin(), ctx.games().cend(),
-            [&title](const entry_t& entry){ return entry.second.inner().title() == title; });
-        QVERIFY(it != ctx.games().cend());
-    }*/
+        QVERIFY(has_game_file(games, uri));
+        const model::Game& game = get_game_by_file_path(games, uri);
+
+        QCOMPARE(game.title(), QStringLiteral("Virtual Game"));
+        QCOMPARE(game.filesConst().size(), 1);
+        QCOMPARE(game.description(), QStringLiteral("Some virtual description"));
+    }
 
     // Other cases
     {

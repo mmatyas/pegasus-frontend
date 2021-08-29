@@ -50,10 +50,10 @@ files:
   multi.b.ext
 
 
-# Launch-only entry
+# URI entry
 game: Virtual Game
-launch: runme.exe param1 param2
-workdir: some/dir/here
+file: virtual:some-identifier
+description: Some virtual description
 
 
 # Check some more interesting cases

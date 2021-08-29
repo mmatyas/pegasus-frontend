@@ -159,6 +159,7 @@ Metadata::Metadata(QString log_tag)
     , rx_float(QStringLiteral("^\\d(\\.\\d+)?$"))
     , rx_date(QStringLiteral("^(\\d{4})(-(\\d{1,2}))?(-(\\d{1,2}))?$"))
     , rx_unescaped_newline(QStringLiteral(R"((?<!\\)\\n)"))
+    , rx_uri(QStringLiteral("^[a-zA-Z][a-zA-Z0-9+\\-.]*:.+"))
 {}
 
 void Metadata::print_error(const ParserState& ps, const metafile::Error& err) const
@@ -290,25 +291,42 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
     switch (attrib_it->second) {
         case GameAttrib::FILES:
             for (const QString& line : entry.values) {
-                QFileInfo finfo(ps.dir, line);
-                if (!finfo.exists()) {
-                    print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist").arg(::pretty_path(finfo)));
-                    continue;
-                }
+                const bool is_uri = rx_uri.match(line).hasMatch();
+                if (is_uri) {
+                    model::Game* const game_ptr = sctx.game_by_uri(line);
+                    if (game_ptr == ps.cur_game) {
+                        print_warning(ps, entry, LOGMSG("Duplicate URI entry detected: `%1`").arg(line));
+                        continue;
+                    }
+                    if (game_ptr != nullptr && game_ptr != ps.cur_game) {
+                        print_warning(ps, entry, LOGMSG("This URI already belongs to a different game: `%1`").arg(line));
+                        continue;
+                    }
 
-                QString path = ::clean_abs_path(finfo);
-                model::Game* const game_ptr = sctx.game_by_filepath(path); // TODO: Add URI support
-                if (game_ptr == ps.cur_game) {
-                    print_warning(ps, entry, LOGMSG("Duplicate file entry detected: `%1`").arg(line));
-                    continue;
+                    Q_ASSERT(game_ptr == nullptr);
+                    sctx.game_add_uri(*ps.cur_game, line);
                 }
-                if (game_ptr != nullptr && game_ptr != ps.cur_game) {
-                    print_warning(ps, entry, LOGMSG("This file already belongs to a different game: `%1`").arg(line));
-                    continue;
-                }
+                else {
+                    QFileInfo finfo(ps.dir, line);
+                    if (!finfo.exists()) {
+                        print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist").arg(::pretty_path(finfo)));
+                        continue;
+                    }
 
-                Q_ASSERT(game_ptr == nullptr);
-                sctx.game_add_filepath(*ps.cur_game, std::move(path));
+                    QString path = ::clean_abs_path(finfo);
+                    model::Game* const game_ptr = sctx.game_by_filepath(path);
+                    if (game_ptr == ps.cur_game) {
+                        print_warning(ps, entry, LOGMSG("Duplicate file entry detected: `%1`").arg(line));
+                        continue;
+                    }
+                    if (game_ptr != nullptr && game_ptr != ps.cur_game) {
+                        print_warning(ps, entry, LOGMSG("This file already belongs to a different game: `%1`").arg(line));
+                        continue;
+                    }
+
+                    Q_ASSERT(game_ptr == nullptr);
+                    sctx.game_add_filepath(*ps.cur_game, std::move(path));
+                }
             }
             break;
         case GameAttrib::DEVELOPERS:

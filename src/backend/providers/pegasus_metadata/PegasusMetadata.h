@@ -74,6 +74,7 @@ private:
     const QRegularExpression rx_float;
     const QRegularExpression rx_date;
     const QRegularExpression rx_unescaped_newline;
+    const QRegularExpression rx_uri;
 
 
     void print_error(const ParserState& ps, const metafile::Error&) const;
