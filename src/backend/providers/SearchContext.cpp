@@ -332,7 +332,7 @@ SearchContext& SearchContext::schedule_download(
     m_pending_downloads++;
 
     QNetworkRequest request(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     request.setTransferTimeout(10000);
 #endif
