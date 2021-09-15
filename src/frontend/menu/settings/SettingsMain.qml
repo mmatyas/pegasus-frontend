@@ -17,8 +17,9 @@
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Window 2.2
+import Qt.labs.qmlmodels 1.0
 
 
 FocusScope {
@@ -61,179 +62,128 @@ FocusScope {
         z: 2
     }
 
-    Flickable {
-        id: container
 
-        width: content.width
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+    readonly property list<SettingsEntry> optionList: [
+        SettingsEntry {
+            label: QT_TR_NOOP("General")
+            type: SettingsEntry.Type.Header
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Language")
+            type: SettingsEntry.Type.Select
+            selectBox: localeBox
+            selectValue: api.internal.settings.locales.currentName
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Theme")
+            type: SettingsEntry.Type.Select
+            selectBox: themeBox
+            selectValue: api.internal.settings.themes.currentName
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Fullscreen mode")
+            desc: QT_TR_NOOP("On some platforms this setting may have no effect.")
+            type: SettingsEntry.Type.Bool
+            boolValue: api.internal.settings.fullscreen
+            boolSetter: (val) => api.internal.settings.fullscreen = val
+        },
 
-        contentWidth: content.width
-        contentHeight: content.height
+        SettingsEntry {
+            label: QT_TR_NOOP("Controls")
+            type: SettingsEntry.Type.Header
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Change controls...")
+            type: SettingsEntry.Type.Button
+            buttonAction: root.openKeySettings
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Change gamepad layout...")
+            type: SettingsEntry.Type.Button
+            buttonAction: root.openGamepadSettings
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Enable mouse support")
+            desc: QT_TR_NOOP("By default the cursor is visible if there are any pointer devices connected.")
+            type: SettingsEntry.Type.Bool
+            boolValue: api.internal.settings.mouseSupport
+            boolSetter: (val) => api.internal.settings.mouseSupport = val
+        },
 
-        Behavior on contentY { PropertyAnimation { duration: 100 } }
-
-        readonly property int yBreakpoint: height * 0.5
-        readonly property int maxContentY: contentHeight - height
-
-        function onFocus(item) {
-            if (item.focus)
-                contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
+        SettingsEntry {
+            label: QT_TR_NOOP("Gaming") + api.tr
+            type: SettingsEntry.Type.Header
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Set game directories...")
+            type: SettingsEntry.Type.Button
+            buttonAction: root.openGameDirSettings
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Enable/disable data sources...")
+            type: SettingsEntry.Type.Button
+            buttonAction: root.openProviderSettings
         }
+    ]
 
-        FocusScope {
-            id: content
+    DelegateChooser {
+        id: optionDelegates
+        role: "type"
 
-            focus: true
-            enabled: focus
-
-            width: contentColumn.width
-            height: contentColumn.height
-
-            Column {
-                id: contentColumn
-                spacing: vpx(5)
-
-                width: root.width * 0.7
-                height: implicitHeight
-
-                Item {
-                    width: parent.width
-                    height: header.height + vpx(25)
-                }
-
-                SectionTitle {
-                    text: qsTr("General") + api.tr
-                    first: true
-                }
-
-                MultivalueOption {
-                    id: optLanguage
-
-                    focus: true
-
-                    label: qsTr("Language") + api.tr
-                    value: api.internal.settings.locales.currentName
-
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optTheme
-                }
-
-                MultivalueOption {
-                    id: optTheme
-
-                    label: qsTr("Theme") + api.tr
-                    value: api.internal.settings.themes.currentName
-
-                    onActivate: {
-                        focus = true;
-                        themeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optFullscreen
-                }
-
-                ToggleOption {
-                    id: optFullscreen
-
-                    label: qsTr("Fullscreen mode") + api.tr
-                    note: qsTr("On some platforms this setting may have no effect.") + api.tr
-
-                    checked: api.internal.settings.fullscreen
-                    onCheckedChanged: {
-                        focus = true;
-                        api.internal.settings.fullscreen = checked;
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optKeyboardConfig
-                }
-
-                SectionTitle {
-                    text: qsTr("Controls") + api.tr
-                }
-
-                SimpleButton {
-                    id: optKeyboardConfig
-
-                    label: qsTr("Change controls...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openKeySettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optGamepadConfig
-                }
-
-                SimpleButton {
-                    id: optGamepadConfig
-
-                    label: qsTr("Change gamepad layout...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openGamepadSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optHideMouse
-                }
-
-                ToggleOption {
-                    id: optHideMouse
-
-                    label: qsTr("Enable mouse support") + api.tr
-                    note: qsTr("By default the cursor is visible if there are any pointer devices connected.") + api.tr
-
-                    checked: api.internal.settings.mouseSupport
-                    onCheckedChanged: {
-                        focus = true;
-                        api.internal.settings.mouseSupport = checked;
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optEditGameDirs
-                }
-
-                SectionTitle {
-                    text: qsTr("Gaming") + api.tr
-                }
-                SimpleButton {
-                    id: optEditGameDirs
-
-                    label: qsTr("Set game directories...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openGameDirSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optEditProviders
-                }
-                SimpleButton {
-                    id: optEditProviders
-
-                    label: qsTr("Enable/disable data sources...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openProviderSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
+        DelegateChoice {
+            roleValue: SettingsEntry.Type.Header
+            SectionTitle {
+                text: qsTr(model.label) + api.tr
+                enabled: false
             }
         }
+
+        DelegateChoice {
+            roleValue: SettingsEntry.Type.Bool
+            ToggleOption {
+                label: qsTr(model.label) + api.tr
+                note: qsTr(model.desc) + api.tr
+                checked: model.boolValue
+                onCheckedChanged: model.boolSetter(checked)
+            }
+        }
+
+        DelegateChoice {
+            roleValue: SettingsEntry.Type.Button
+            SimpleButton {
+                label: qsTr(model.label) + api.tr
+                onActivate: model.buttonAction()
+            }
+        }
+
+        DelegateChoice {
+            roleValue: SettingsEntry.Type.Select
+            MultivalueOption {
+                label: qsTr(model.label) + api.tr
+                value: model.selectValue
+                onActivate: model.selectBox.focus = true
+            }
+        }
+    }
+
+    ListView {
+        id: options
+        model: optionList
+        delegate: optionDelegates
+
+        width: root.width * 0.7
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: header.height
+
+        displayMarginBeginning: header.height
+        displayMarginEnd: header.height
+
+        focus: true
+        highlightRangeMode: ListView.ApplyRange
+        preferredHighlightBegin: height * 0.3
+        preferredHighlightEnd: height * 0.7
     }
 
 
@@ -244,7 +194,7 @@ FocusScope {
         model: api.internal.settings.locales
         index: api.internal.settings.locales.currentIndex
 
-        onClose: content.focus = true
+        onClose: options.focus = true
         onSelect: api.internal.settings.locales.currentIndex = index
     }
     MultivalueBox {
@@ -254,7 +204,7 @@ FocusScope {
         model: api.internal.settings.themes
         index: api.internal.settings.themes.currentIndex
 
-        onClose: content.focus = true
+        onClose: options.focus = true
         onSelect: api.internal.settings.themes.currentIndex = index
     }
 }

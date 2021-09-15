@@ -73,5 +73,6 @@
         <file>dialogs/MultifileSelector.qml</file>
         <file>dialogs/Shade.qml</file>
         <file>dialogs/GenericOkDialog.qml</file>
+        <file>menu/settings/SettingsEntry.qml</file>
     </qresource>
 </RCC>
