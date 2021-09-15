@@ -28,7 +28,8 @@ import QtQuick.Window 2.0
 import QtGraphicalEffects 1.0
 import QtMultimedia 5.8
 
-import QtQml.Models 2.8
+import QtQml.Models 2.15
+import Qt.labs.qmlmodels 1.0
 
 
 Item {}
