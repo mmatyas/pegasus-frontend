@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "menu"
+import "menu/mainmenu"
 import QtQuick 2.0
 
 
@@ -83,8 +83,8 @@ FocusScope {
 
         focus: true
 
-        onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
-        onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
+        onShowSettingsScreen: root.openScreen("menu/settings/SettingsScreen.qml")
+        onShowHelpScreen: root.openScreen("menu/help/HelpScreen.qml")
 
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()

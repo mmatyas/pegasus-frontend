@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "settings"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.8
 import QtQuick.Window 2.2
@@ -48,10 +47,10 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
-        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
-        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
-        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
+        onOpenKeySettings: root.openScreen("KeyEditor.qml")
+        onOpenGamepadSettings: root.openScreen("GamepadEditor.qml")
+        onOpenGameDirSettings: root.openModal("GameDirEditor.qml")
+        onOpenProviderSettings: root.openModal("ProviderEditor.qml")
     }
 
 
