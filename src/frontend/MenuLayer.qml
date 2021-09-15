@@ -68,6 +68,9 @@ FocusScope {
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             anchors.margins: vpx(10)
+            
+            enabled: api.internal.meta.allowHelp
+            visible: enabled
         }
 
         MouseArea {

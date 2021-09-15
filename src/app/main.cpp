@@ -145,6 +145,10 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         QStringLiteral("disable-menu-settings"),
         CMDMSG("Hides the settings menu entry in the main menu"));
 
+    const QCommandLineOption arg_menu_help = add_cli_option(argparser,
+        QStringLiteral("disable-menu-help"),
+        CMDMSG("Hides the help menu entry and version number in the main menu"));
+
     const QCommandLineOption arg_menu_kiosk = add_cli_option(argparser,
         QStringLiteral("kiosk"),
         CMDMSG("Alias for:\n"
@@ -152,6 +156,14 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
                "--disable-menu-shutdown\n"
                "--disable-menu-appclose\n"
                "--disable-menu-settings"));
+
+    const QCommandLineOption arg_menu_bartop = add_cli_option(argparser,
+        QStringLiteral("bartop"),
+        CMDMSG("Alias for:\n"
+               "--disable-menu-settings\n"
+               "--disable-menu-help\n"
+               "--disable-menu-suspend\n"
+               "--disable-menu-appclose"));
 
     const QCommandLineOption arg_gamepad_autoconfig = add_cli_option(argparser,
         QStringLiteral("disable-gamepad-autoconfig"),
@@ -168,8 +180,9 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     backend::CliArgs args;
     args.portable = argparser.isSet(arg_portable);
     args.silent = argparser.isSet(arg_silent);
-    args.enable_menu_appclose = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_appclose));
-    args.enable_menu_settings = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_settings));
+    args.enable_menu_appclose = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_bartop) || argparser.isSet(arg_menu_appclose));
+    args.enable_menu_settings = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_bartop) || argparser.isSet(arg_menu_settings));
+    args.enable_menu_help = !(argparser.isSet(arg_menu_bartop) || argparser.isSet(arg_menu_help));
     args.enable_gamepad_autoconfig = !argparser.isSet(arg_gamepad_autoconfig);
 #ifdef Q_OS_ANDROID
     args.enable_menu_shutdown = false;
@@ -181,7 +194,7 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
 #if defined(Q_OS_ANDROID) || defined(Q_OS_WINDOWS) || defined(Q_OS_MAC)
     args.enable_menu_suspend = false;
 #else
-    args.enable_menu_suspend = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_suspend));
+    args.enable_menu_suspend = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_bartop) || argparser.isSet(arg_menu_suspend));
 #endif
     return args;
 

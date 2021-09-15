@@ -34,6 +34,7 @@ Meta::Meta(const backend::CliArgs& args, QObject* parent)
     , m_enable_menu_suspend(args.enable_menu_suspend)
     , m_enable_menu_appclose(args.enable_menu_appclose)
     , m_enable_menu_settings(args.enable_menu_settings)
+    , m_enable_menu_help(args.enable_menu_help)
     , m_loading(true)
     , m_loading_progress(0.f)
 {}

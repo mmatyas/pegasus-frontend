@@ -41,6 +41,7 @@ class Meta : public QObject {
     Q_PROPERTY(bool allowSuspend MEMBER m_enable_menu_suspend CONSTANT)
     Q_PROPERTY(bool allowAppClose MEMBER m_enable_menu_appclose CONSTANT)
     Q_PROPERTY(bool allowSettings MEMBER m_enable_menu_settings CONSTANT)
+    Q_PROPERTY(bool allowHelp MEMBER m_enable_menu_help CONSTANT)
 
 public:
     explicit Meta(const backend::CliArgs& args, QObject* parent = nullptr);
@@ -77,6 +78,7 @@ private:
     const bool m_enable_menu_suspend;
     const bool m_enable_menu_appclose;
     const bool m_enable_menu_settings;
+    const bool m_enable_menu_help;
 
     bool m_loading;
     QString m_loading_stage;
