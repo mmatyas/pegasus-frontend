@@ -65,20 +65,18 @@ FocusScope {
 
     readonly property list<SettingsEntry> optionList: [
         SettingsEntry {
-            label: QT_TR_NOOP("General")
-            type: SettingsEntry.Type.Header
-        },
-        SettingsEntry {
             label: QT_TR_NOOP("Language")
             type: SettingsEntry.Type.Select
             selectBox: localeBox
             selectValue: api.internal.settings.locales.currentName
+            section: "general"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Theme")
             type: SettingsEntry.Type.Select
             selectBox: themeBox
             selectValue: api.internal.settings.themes.currentName
+            section: "general"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Fullscreen mode")
@@ -86,21 +84,20 @@ FocusScope {
             type: SettingsEntry.Type.Bool
             boolValue: api.internal.settings.fullscreen
             boolSetter: (val) => api.internal.settings.fullscreen = val
+            section: "general"
         },
 
-        SettingsEntry {
-            label: QT_TR_NOOP("Controls")
-            type: SettingsEntry.Type.Header
-        },
         SettingsEntry {
             label: QT_TR_NOOP("Change controls...")
             type: SettingsEntry.Type.Button
             buttonAction: root.openKeySettings
+            section: "controls"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Change gamepad layout...")
             type: SettingsEntry.Type.Button
             buttonAction: root.openGamepadSettings
+            section: "controls"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Enable mouse support")
@@ -108,35 +105,26 @@ FocusScope {
             type: SettingsEntry.Type.Bool
             boolValue: api.internal.settings.mouseSupport
             boolSetter: (val) => api.internal.settings.mouseSupport = val
+            section: "controls"
         },
 
-        SettingsEntry {
-            label: QT_TR_NOOP("Gaming") + api.tr
-            type: SettingsEntry.Type.Header
-        },
         SettingsEntry {
             label: QT_TR_NOOP("Set game directories...")
             type: SettingsEntry.Type.Button
             buttonAction: root.openGameDirSettings
+            section: "gaming"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Enable/disable data sources...")
             type: SettingsEntry.Type.Button
             buttonAction: root.openProviderSettings
+            section: "gaming"
         }
     ]
 
     DelegateChooser {
         id: optionDelegates
         role: "type"
-
-        DelegateChoice {
-            roleValue: SettingsEntry.Type.Header
-            SectionTitle {
-                text: qsTr(model.label) + api.tr
-                enabled: false
-            }
-        }
 
         DelegateChoice {
             roleValue: SettingsEntry.Type.Bool
@@ -166,6 +154,21 @@ FocusScope {
         }
     }
 
+    Component {
+        id: sectionTitle
+        SectionTitle {
+            required property string section
+
+            readonly property string trText: switch (section) {
+                case "general": return QT_TR_NOOP("General");
+                case "controls": return QT_TR_NOOP("Controls");
+                case "gaming": return QT_TR_NOOP("Gaming");
+            }
+
+            text: qsTr(trText) + api.tr
+        }
+    }
+
     ListView {
         id: options
         model: optionList
@@ -184,6 +187,9 @@ FocusScope {
         highlightRangeMode: ListView.ApplyRange
         preferredHighlightBegin: height * 0.3
         preferredHighlightEnd: height * 0.7
+
+        section.property: "section"
+        section.delegate: sectionTitle
     }
 
 

@@ -19,15 +19,15 @@ import QtQuick 2.0
 
 QtObject {
     enum Type {
-        Header,
         Bool,
         Button,
         Select
     }
 
-    property string label
-    property string desc
-    property int type
+    required property string label
+    property string desc: ""
+    required property string section
+    required property int type
 
     property bool boolValue
     property var boolSetter: (val) => {}
