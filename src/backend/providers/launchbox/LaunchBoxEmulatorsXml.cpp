@@ -106,7 +106,7 @@ EmulatorsXml::EmulatorsXml(QString log_tag, QDir lb_root)
 void EmulatorsXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
     Log::warning(m_log_tag, LOGMSG("In `%1` at line %2: %3")
-        .arg(QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
+        .arg(::pretty_path(xml_path), QString::number(linenum), msg));
 }
 
 bool EmulatorsXml::platform_fields_valid(
@@ -153,9 +153,8 @@ bool EmulatorsXml::emulator_fields_valid(
     }
 
     if (!QFileInfo::exists(it_path->second)) {
-        const QString display_path = QDir::toNativeSeparators(it_path->second);
         log_xml_warning(xml_path, xml_linenum,
-            LOGMSG("Emulator executable `%1` doesn't seem to exist, entry ignored").arg(display_path));
+            LOGMSG("Emulator executable `%1` doesn't seem to exist, entry ignored").arg(::pretty_path(it_path->second)));
         return false;
     }
 
@@ -211,7 +210,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
     const QString xml_path = m_lb_root.filePath(QStringLiteral("Data/Emulators.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(QDir::toNativeSeparators(xml_path)));
+        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(::pretty_path(xml_path)));
         return {};
     }
 
@@ -265,7 +264,7 @@ HashMap<QString, Emulator> EmulatorsXml::find() const
         if (it == emulators.cend()) {
             for (const EmulatorPlatform& platform : entry.second) {
                 Log::warning(m_log_tag, LOGMSG("In `%1` emulator platform `%2` refers to a missing or invalid emulator entry with id `%3`, entry ignored")
-                    .arg(QDir::toNativeSeparators(xml_path), platform.name, entry.first));
+                    .arg(::pretty_path(xml_path), platform.name, entry.first));
             }
             continue;
         }

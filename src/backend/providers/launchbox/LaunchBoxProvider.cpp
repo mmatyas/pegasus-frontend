@@ -24,6 +24,7 @@
 #include "providers/launchbox/LaunchBoxGamelistXml.h"
 #include "providers/launchbox/LaunchBoxPlatformsXml.h"
 #include "providers/launchbox/LaunchBoxXml.h"
+#include "utils/PathTools.h"
 
 
 namespace {
@@ -54,7 +55,7 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
         return *this;
     }
 
-    Log::info(display_name(), LOGMSG("Looking for installation at `%1`").arg(QDir::toNativeSeparators(lb_dir_path)));
+    Log::info(display_name(), LOGMSG("Looking for installation at `%1`").arg(::pretty_path(lb_dir_path)));
     const QDir lb_dir(lb_dir_path);
 
     const std::vector<Platform> platforms = find_platforms(display_name(), lb_dir);

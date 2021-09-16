@@ -222,7 +222,7 @@ void read_datfile_game_entry(
 
 void read_datfile(const QString& log_tag, const QDir& root_dir, const QString& path, providers::SearchContext& sctx)
 {
-    const QString pretty_path = QDir::toNativeSeparators(path);
+    const QString pretty_path = ::pretty_path(path);
 
     QFile dat_file(path);
     if (!dat_file.open(QIODevice::ReadOnly)) {

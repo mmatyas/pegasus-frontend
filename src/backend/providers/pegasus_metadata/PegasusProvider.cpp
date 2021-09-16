@@ -93,7 +93,7 @@ Provider& PegasusProvider::run(SearchContext& sctx)
     std::vector<FileFilter> all_filters;
 
     for (const QString& path : metafile_paths) {
-        Log::info(display_name(), LOGMSG("Found `%1`").arg(QDir::toNativeSeparators(path)));
+        Log::info(display_name(), LOGMSG("Found `%1`").arg(::pretty_path(path)));
 
         std::vector<FileFilter> filters = metahelper.apply_metafile(path, sctx);
         all_filters.insert(all_filters.end(),

@@ -221,7 +221,7 @@ GamelistXml::GamelistXml(QString log_tag, QDir lb_root)
 void GamelistXml::log_xml_warning(const QString& xml_path, const size_t linenum, const QString& msg) const
 {
     Log::warning(m_log_tag, LOGMSG("In `%1` at line %2: %3")
-        .arg(QDir::toNativeSeparators(xml_path), QString::number(linenum), msg));
+        .arg(::pretty_path(xml_path), QString::number(linenum), msg));
 }
 
 bool GamelistXml::game_fields_valid(
@@ -298,7 +298,7 @@ bool GamelistXml::app_fields_valid(
 
     if (AppSettings::general.verify_files && !QFileInfo::exists(path_it->second)) {
         log_xml_warning(xml_path, xml_linenum, LOGMSG("Additional application file `%1` doesn't seem to exist, entry ignored")
-            .arg(QDir::toNativeSeparators(path_it->second)));
+            .arg(::pretty_path(path_it->second)));
         return false;
     }
 
@@ -375,7 +375,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
 
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(QDir::toNativeSeparators(xml_rel_path)));
+        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(::pretty_path(xml_rel_path)));
         return {};
     }
 
@@ -428,7 +428,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
             else {
                 const QFileInfo finfo(m_lb_root, game_path);
                 if (AppSettings::general.verify_files && !finfo.exists()) {
-                    log_xml_warning(xml_path, linenum, LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(game_path)));
+                    log_xml_warning(xml_path, linenum, LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(::pretty_path(game_path)));
                     continue;
                 }
 
@@ -473,7 +473,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
         if (it == gameid_map.cend()) {
             const QString app_id = fields.at(AppField::ID);
             Log::warning(m_log_tag, LOGMSG("In `%1` additional application entry `%2` refers to missing or invalid game `%3`, entry ignored")
-                .arg(QDir::toNativeSeparators(xml_path), app_id, game_id));
+                .arg(::pretty_path(xml_path), app_id, game_id));
             continue;
         }
 

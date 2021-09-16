@@ -19,6 +19,7 @@
 
 #include "Log.h"
 #include "providers/launchbox/LaunchBoxXml.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QFile>
@@ -33,7 +34,7 @@ std::vector<Platform> find_platforms(const QString& log_tag, const QDir& lb_dir)
     const QString xml_path = lb_dir.filePath(QStringLiteral("Data/Platforms.xml"));
     QFile xml_file(xml_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(QDir::toNativeSeparators(xml_path)));
+        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(::pretty_path(xml_path)));
         return {};
     }
 

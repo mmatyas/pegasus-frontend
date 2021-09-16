@@ -58,7 +58,7 @@ private slots:
 void test_PlayniteProvider::empty()
 {
     QTest::ignoreMessage(QtWarningMsg, "Playnite: No games found");
-    QTest::ignoreMessage(QtInfoMsg, "Playnite: Looking for installation at `:\\empty\\`");
+    QTest::ignoreMessage(QtInfoMsg, "Playnite: Looking for installation at `:\\empty`");
 
     providers::SearchContext sctx;
     providers::playnite::PlayniteProvider provider;
@@ -73,7 +73,7 @@ void test_PlayniteProvider::empty()
 
 void test_PlayniteProvider::basic()
 {
-    QTest::ignoreMessage(QtInfoMsg, R"(Playnite: Looking for installation at `:\basic\Playnite\`)");
+    QTest::ignoreMessage(QtInfoMsg, R"(Playnite: Looking for installation at `:\basic\Playnite`)");
 
     providers::SearchContext sctx;
     providers::playnite::PlayniteProvider provider;

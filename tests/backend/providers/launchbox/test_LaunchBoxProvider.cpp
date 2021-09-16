@@ -57,7 +57,7 @@ private slots:
 
 void test_LaunchBoxProvider::empty()
 {
-    QTest::ignoreMessage(QtInfoMsg, "LaunchBox: Looking for installation at `:\\empty\\`");
+    QTest::ignoreMessage(QtInfoMsg, "LaunchBox: Looking for installation at `:\\empty`");
     QTest::ignoreMessage(QtWarningMsg, "LaunchBox: Could not open `:\\empty\\Data\\Platforms.xml`");
     QTest::ignoreMessage(QtWarningMsg, "LaunchBox: No platforms found");
 
@@ -74,7 +74,7 @@ void test_LaunchBoxProvider::empty()
 
 void test_LaunchBoxProvider::basic()
 {
-    QTest::ignoreMessage(QtInfoMsg, "LaunchBox: Looking for installation at `:\\basic\\LaunchBox\\`");
+    QTest::ignoreMessage(QtInfoMsg, "LaunchBox: Looking for installation at `:\\basic\\LaunchBox`");
 
     providers::SearchContext sctx;
     providers::launchbox::LaunchboxProvider provider;

@@ -28,3 +28,8 @@ QString clean_abs_dir(const QFileInfo&);
 QString pretty_path(const QFileInfo&);
 /// Returns a displayable absolutePath
 QString pretty_dir(const QFileInfo&);
+/// Returns a displayable path
+QString pretty_path(const QString&);
+
+template <typename T>
+void pretty_dir(T) = delete;

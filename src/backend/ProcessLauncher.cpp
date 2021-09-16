@@ -191,7 +191,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
     Log::info(LOGMSG("Executing command: [`%1`]").arg(serialize_command(command, args)));
-    Log::info(LOGMSG("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
+    Log::info(LOGMSG("Working directory: `%3`").arg(::pretty_path(workdir)));
 
 #ifndef Q_OS_ANDROID
     Q_ASSERT(!m_process);

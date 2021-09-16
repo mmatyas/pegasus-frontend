@@ -146,7 +146,7 @@ Provider& PlayniteProvider::run(SearchContext& sctx)
         return *this;
     }
 
-    Log::info(display_name(), LOGMSG("Looking for installation at `%1`").arg(QDir::toNativeSeparators(playnite_dir_path)));
+    Log::info(display_name(), LOGMSG("Looking for installation at `%1`").arg(::pretty_path(playnite_dir_path)));
 
     const std::vector<model::Game*> games = create_games(playnite_dir_path, sctx);
 

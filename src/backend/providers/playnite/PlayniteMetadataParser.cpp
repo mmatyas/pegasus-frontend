@@ -19,6 +19,7 @@
 #include "Log.h"
 #include "PlayniteComponents.h"
 #include "PlayniteJsonHelper.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QJsonDocument>
@@ -169,7 +170,7 @@ QJsonObject PlayniteMetadataParser::get_json_object_from_file(const QString& fil
 {
     QFile file(file_path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        Log::info(m_log_tag, LOGMSG("Could not open %1").arg(QDir::toNativeSeparators(file_path)));
+        Log::info(m_log_tag, LOGMSG("Could not open %1").arg(::pretty_path(file_path)));
         return {};
     }
 

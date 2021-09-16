@@ -29,7 +29,6 @@
 #include "types/AssetType.h"
 #include "utils/PathTools.h"
 
-#include <QDirIterator>
 #include <QUrl>
 
 
@@ -166,13 +165,13 @@ Metadata::Metadata(QString log_tag)
 void Metadata::print_error(const ParserState& ps, const metafile::Error& err) const
 {
     Log::error(m_log_tag, LOGMSG("`%1`, line %2: %3")
-        .arg(QDir::toNativeSeparators(ps.path), QString::number(err.line), err.message));
+        .arg(::pretty_path(ps.path), QString::number(err.line), err.message));
 }
 
 void Metadata::print_warning(const ParserState& ps, const metafile::Entry& entry, const QString& msg) const
 {
     Log::warning(m_log_tag, LOGMSG("`%1`, line %2: %3")
-        .arg(QDir::toNativeSeparators(ps.path), QString::number(entry.line), msg));
+        .arg(::pretty_path(ps.path), QString::number(entry.line), msg));
 }
 
 const QString& Metadata::first_line_of(const ParserState& ps, const metafile::Entry& entry) const
@@ -550,7 +549,7 @@ std::vector<FileFilter> Metadata::apply_metafile(const QString& metafile_path, S
 
     if (!metafile::read_file(metafile_path, on_entry, on_error)) {
         Log::error(m_log_tag, LOGMSG("Failed to read metadata file `%1`")
-            .arg(QDir::toNativeSeparators(metafile_path)));
+            .arg(::pretty_path(metafile_path)));
     }
 
     return std::move(ps.filters);

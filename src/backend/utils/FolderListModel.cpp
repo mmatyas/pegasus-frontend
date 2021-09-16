@@ -128,12 +128,12 @@ void FolderListModel::cd(const QString& dirName)
     }
 
     if (goto_root) {
-        m_dir_path = QDir::toNativeSeparators(QStringLiteral("/"));
+        m_dir_path = ::pretty_path(QStringLiteral("/"));
         for (const QString& drive : m_drives_cache)
             m_files.emplace_back(drive, true);
     }
     else {
-        m_dir_path = QDir::toNativeSeparators(m_dir.absolutePath());
+        m_dir_path = ::pretty_path(m_dir.absolutePath());
 
         auto filist = m_dir.entryInfoList();
         erase_if(filist, [this](const QFileInfo& fi){

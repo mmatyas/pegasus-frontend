@@ -23,7 +23,6 @@
 #include "utils/PathTools.h"
 
 #include <QCursor>
-#include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QSet>
@@ -105,7 +104,7 @@ QStringList Settings::gameDirs() const
 {
     QSet<QString> dirset;
     AppSettings::parse_gamedirs([&dirset](const QString& line){
-        dirset.insert(QDir::toNativeSeparators(line));
+        dirset.insert(::pretty_path(line));
     });
 
     QStringList dirlist;
@@ -126,7 +125,7 @@ void Settings::addGameDir(const QString& path)
 
     QSet<QString> dirset;
     AppSettings::parse_gamedirs([&dirset](const QString& line){
-        dirset.insert(QDir::toNativeSeparators(line));
+        dirset.insert(::pretty_path(line));
     });
 
 
