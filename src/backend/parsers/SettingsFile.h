@@ -38,6 +38,7 @@ enum class ConfigEntryCategory : unsigned char {
 enum class ConfigEntryGeneralOption : unsigned char {
     FULLSCREEN,
     MOUSE_SUPPORT,
+    VERIFY_FILES,
     LOCALE,
     THEME,
 };

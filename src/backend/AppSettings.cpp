@@ -150,6 +150,7 @@ General::General()
     , portable(false)
     , fullscreen(true)
     , mouse_support(true)
+    , verify_files(true)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}

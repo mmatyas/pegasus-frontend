@@ -17,6 +17,7 @@
 
 #include "PegasusFilter.h"
 
+#include "AppSettings.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
@@ -137,8 +138,9 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
     for (const QString& filepath: include_files) {
         if (VEC_CONTAINS(exclude_files, filepath))
             continue;
-        if (QFileInfo::exists(filepath))
-            accept_filtered_file(filepath, collection, sctx);
+        if (AppSettings::general.verify_files && !QFileInfo::exists(filepath))
+            continue;
+        accept_filtered_file(filepath, collection, sctx);
     }
 
     const bool has_valid_regex = !filter.include.regex.pattern().isEmpty() && filter.include.regex.isValid();

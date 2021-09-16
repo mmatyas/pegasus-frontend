@@ -17,6 +17,7 @@
 
 #include "PegasusMetadata.h"
 
+#include "AppSettings.h"
 #include "Log.h"
 #include "PegasusAssets.h"
 #include "model/gaming/Assets.h"
@@ -308,7 +309,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                 }
                 else {
                     QFileInfo finfo(ps.dir, line);
-                    if (!finfo.exists()) {
+                    if (AppSettings::general.verify_files && !finfo.exists()) {
                         print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist").arg(::pretty_path(finfo)));
                         continue;
                     }
@@ -455,7 +456,7 @@ QString Metadata::assetline_to_url(ParserState& ps, const metafile::Entry& entry
         return value;
 
     const QFileInfo finfo(ps.dir, value);
-    if (!finfo.exists()) {
+    if (AppSettings::general.verify_files && !finfo.exists()) {
         print_warning(ps, entry, LOGMSG("Asset file `%1` doesn't seem to exist").arg(finfo.absoluteFilePath()));
         return QString();
     }

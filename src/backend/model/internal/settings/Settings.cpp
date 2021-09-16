@@ -90,6 +90,17 @@ void Settings::setMouseSupport(bool new_val)
     emit mouseSupportChanged();
 }
 
+void Settings::setVerifyFiles(bool new_val)
+{
+    if (new_val == AppSettings::general.verify_files)
+        return;
+
+    AppSettings::general.verify_files = new_val;
+    AppSettings::save_config();
+
+    emit verifyFilesChanged();
+}
+
 QStringList Settings::gameDirs() const
 {
     QSet<QString> dirset;

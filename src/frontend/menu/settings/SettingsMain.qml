@@ -115,6 +115,14 @@ FocusScope {
             section: "gaming"
         },
         SettingsEntry {
+            label: QT_TR_NOOP("Only show existing games")
+            desc: QT_TR_NOOP("Check the game files and only show games that actually exist. You can disable this to improve loading times.")
+            type: SettingsEntry.Type.Bool
+            boolValue: api.internal.settings.verifyFiles
+            boolSetter: (val) => api.internal.settings.verifyFiles = val
+            section: "gaming"
+        },
+        SettingsEntry {
             label: QT_TR_NOOP("Enable/disable data sources...")
             type: SettingsEntry.Type.Button
             buttonAction: root.openProviderSettings
