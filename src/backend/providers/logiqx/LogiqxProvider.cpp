@@ -17,6 +17,7 @@
 
 #include "LogiqxProvider.h"
 
+#include "AppSettings.h"
 #include "Log.h"
 #include "providers/SearchContext.h"
 #include "model/gaming/Collection.h"
@@ -164,7 +165,7 @@ void read_datfile_game_entry(
             }
 
             const QFileInfo finfo(root_dir, relpath);
-            if (!finfo.exists()) {
+            if (AppSettings::general.verify_files && !finfo.exists()) {
                 Log::warning(log_tag, LOGMSG("The `rom` element in `%1` at line %2 refers to file `%3`, which doesn't seem to exist")
                     .arg(pretty_path, QString::number(xml.lineNumber()), ::pretty_path(finfo)));
                 continue;

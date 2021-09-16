@@ -17,6 +17,7 @@
 
 #include "Es2Metadata.h"
 
+#include "AppSettings.h"
 #include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Assets.h"
@@ -181,7 +182,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         // get the Game, if exists, and apply the properties
 
         const QFileInfo finfo = shell_to_finfo(xml_dir, shell_filepath);
-        if (!finfo.exists())
+        if (AppSettings::general.verify_files && !finfo.exists())
             continue;
 
         const QString filepath = ::clean_abs_path(finfo);

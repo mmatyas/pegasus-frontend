@@ -17,6 +17,7 @@
 
 #include "LaunchBoxGamelistXml.h"
 
+#include "AppSettings.h"
 #include "Log.h"
 #include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
@@ -240,6 +241,8 @@ bool GamelistXml::game_fields_valid(
         return false;
     }
 
+    // NOTE: Do not check path existence here - the entry might be eg. a Steam game
+
     const auto emu_id_it = fields.find(GameField::EMULATOR_ID);
     if (emu_id_it != fields.cend()) {
         const auto emu_it = emulators.find(emu_id_it->second);
@@ -293,7 +296,7 @@ bool GamelistXml::app_fields_valid(
         return false;
     }
 
-    if (!QFileInfo::exists(path_it->second)) {
+    if (AppSettings::general.verify_files && !QFileInfo::exists(path_it->second)) {
         log_xml_warning(xml_path, xml_linenum, LOGMSG("Additional application file `%1` doesn't seem to exist, entry ignored")
             .arg(QDir::toNativeSeparators(path_it->second)));
         return false;
@@ -424,7 +427,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
             }
             else {
                 const QFileInfo finfo(m_lb_root, game_path);
-                if (!finfo.exists()) {
+                if (AppSettings::general.verify_files && !finfo.exists()) {
                     log_xml_warning(xml_path, linenum, LOGMSG("Game file `%1` doesn't seem to exist, entry ignored").arg(QDir::toNativeSeparators(game_path)));
                     continue;
                 }
