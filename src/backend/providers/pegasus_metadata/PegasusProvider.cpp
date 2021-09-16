@@ -92,6 +92,9 @@ Provider& PegasusProvider::run(SearchContext& sctx)
     const Metadata metahelper(display_name());
     std::vector<FileFilter> all_filters;
 
+    const float progress_step = 1.f / metafile_paths.size();
+    float progress = 0.f;
+
     for (const QString& path : metafile_paths) {
         Log::info(display_name(), LOGMSG("Found `%1`").arg(::pretty_path(path)));
 
@@ -99,6 +102,9 @@ Provider& PegasusProvider::run(SearchContext& sctx)
         all_filters.insert(all_filters.end(),
             std::make_move_iterator(filters.begin()),
             std::make_move_iterator(filters.end()));
+
+        progress += progress_step;
+        emit progressChanged(progress);
     }
 
     for (FileFilter& filter : all_filters) {
