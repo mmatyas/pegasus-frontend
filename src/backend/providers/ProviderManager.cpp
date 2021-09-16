@@ -43,15 +43,14 @@ std::vector<ProviderPtr> enabled_providers()
 ProviderManager::ProviderManager(QObject* parent)
     : QObject(parent)
     , m_progress_finished(0.f)
-    , m_progress_provider_weight(1.f)
+    , m_progress_step(1.f)
     , m_target_collection_list(nullptr)
     , m_target_game_list(nullptr)
 {
-    // TODO: Improve detection of receiving signals from already finished providers
-    /*for (const auto& provider : AppSettings::providers()) {
+    for (const auto& provider : AppSettings::providers()) {
         connect(provider.get(), &providers::Provider::progressChanged,
                 this, &ProviderManager::onProviderProgressChanged);
-    }*/
+    }
 }
 
 void ProviderManager::run(
@@ -73,14 +72,20 @@ void ProviderManager::run(
         run_timer.start();
 
         const std::vector<ProviderPtr> providers = enabled_providers();
+
+        size_t progress_sections = providers.size();
+        for (const ProviderPtr provider : providers) {
+            if (provider->flags() & providers::PROVIDER_FLAG_HIDE_PROGRESS)
+                progress_sections--;
+        }
         m_progress_finished = 0.f;
-        m_progress_provider_weight = 1.f / providers.size();
+        m_progress_step = 1.f / std::max<size_t>(progress_sections, 1);
+        m_progress_stage = QString();
+        emit progressChanged(m_progress_finished, m_progress_stage);
 
         for (size_t i = 0; i < providers.size(); i++) {
             providers::Provider& provider = *providers[i];
-
-            m_progress_finished = i * m_progress_provider_weight;
-            emit progressChanged(m_progress_finished, provider.display_name());
+            m_progress_stage = provider.display_name();
 
             QElapsedTimer provider_timer;
             provider_timer.start();
@@ -89,9 +94,16 @@ void ProviderManager::run(
 
             Log::info(provider.display_name(), LOGMSG("Finished searching in %1ms")
                 .arg(QString::number(provider_timer.restart())));
+
+            const bool has_progress = !(provider.flags() & providers::PROVIDER_FLAG_HIDE_PROGRESS);
+            if (has_progress)
+                m_progress_finished += m_progress_step;
+
+            emit progressChanged(m_progress_finished, m_progress_stage);
         }
         m_progress_finished = 1.f;
-        emit progressChanged(m_progress_finished, QString());
+        m_progress_stage = QString();
+        emit progressChanged(m_progress_finished, m_progress_stage);
 
 
         if (sctx.has_pending_downloads()) {
@@ -125,11 +137,10 @@ void ProviderManager::run(
     });
 }
 
-void ProviderManager::onProviderProgressChanged(float /*percent*/)
+void ProviderManager::onProviderProgressChanged(float percent)
 {
-    // TODO: Improve detection of receiving signals from already finished providers
-    //Q_ASSERT(0.f <= percent && percent <= 1.f);
-    //emit progressChanged(m_progress_finished + m_progress_provider_weight * percent);
+    const float safe_percent = qBound(0.f, percent, 1.f);
+    emit progressChanged(m_progress_finished + m_progress_step * safe_percent, m_progress_stage);
 }
 
 

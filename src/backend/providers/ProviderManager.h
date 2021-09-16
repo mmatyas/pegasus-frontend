@@ -47,7 +47,8 @@ private slots:
 private:
     QFuture<void> m_future;
     float m_progress_finished;
-    float m_progress_provider_weight;
+    float m_progress_step;
+    QString m_progress_stage;
 
     QVector<model::Collection*>* m_target_collection_list;
     QVector<model::Game*>* m_target_game_list;

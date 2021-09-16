@@ -154,7 +154,7 @@ PlaytimeStats::PlaytimeStats(QObject* parent)
 {}
 
 PlaytimeStats::PlaytimeStats(QString db_path, QObject* parent)
-    : Provider(QLatin1String("pegasus_playtime"), QStringLiteral("Playtime"), PROVIDER_FLAG_INTERNAL, parent)
+    : Provider(QLatin1String("pegasus_playtime"), QStringLiteral("Playtime"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
     , m_db_path(std::move(db_path))
 {}
 

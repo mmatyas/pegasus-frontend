@@ -34,6 +34,7 @@ namespace providers {
 
 constexpr uint8_t PROVIDER_FLAG_NONE = 0;
 constexpr uint8_t PROVIDER_FLAG_INTERNAL = (1 << 0);
+constexpr uint8_t PROVIDER_FLAG_HIDE_PROGRESS = (1 << 1);
 
 
 class Provider : public QObject {
