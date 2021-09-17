@@ -58,7 +58,7 @@ public:
     bool mouseSupport() const { return AppSettings::general.mouse_support; }
     void setMouseSupport(bool);
 
-    bool verifyFiles() const { return AppSettings::general.mouse_support; }
+    bool verifyFiles() const { return AppSettings::general.verify_files; }
     void setVerifyFiles(bool);
 
     QStringList gameDirs() const;
