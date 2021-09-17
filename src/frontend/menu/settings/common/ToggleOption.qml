@@ -22,7 +22,7 @@ FocusScope {
     id: root
 
     property alias label: label.text
-    property alias note: sublabel.text
+    property alias desc: description.text
     property alias checked: toggle.checked
 
     property int fontSize: vpx(22)
@@ -47,12 +47,12 @@ FocusScope {
         id: labelContainer
         anchors {
             left: parent.left; leftMargin: horizontalPadding
-            right: parent.horizontalCenter
             verticalCenter: parent.verticalCenter
         }
+        width: parent.width * 0.75 - horizontalPadding
 
         spacing: fontSize * 0.25
-        height: label.height + (sublabel.text ? spacing + sublabel.height : 0)
+        height: label.height + (description.text ? spacing + description.height : 0)
 
 
         Text {
@@ -64,11 +64,15 @@ FocusScope {
         }
 
         Text {
-            id: sublabel
+            id: description
 
             color: "#999"
             font.pixelSize: fontSize * 0.8
             font.family: globalFonts.sans
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            wrapMode: Text.WordWrap
         }
     }
 

@@ -138,7 +138,7 @@ FocusScope {
             roleValue: SettingsEntry.Type.Bool
             ToggleOption {
                 label: qsTr(model.label) + api.tr
-                note: qsTr(model.desc) + api.tr
+                desc: qsTr(model.desc) + api.tr
                 checked: model.boolValue
                 onCheckedChanged: model.boolSetter(checked)
             }
