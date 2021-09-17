@@ -138,6 +138,9 @@ void ProviderManager::run(
 
 void ProviderManager::onProviderProgressChanged(float percent)
 {
+    if (m_progress_stage.isEmpty())
+        return;
+
     const float safe_percent = qBound(0.f, percent, 1.f);
     emit progressChanged(m_progress_finished + m_progress_step * safe_percent, m_progress_stage);
 }
