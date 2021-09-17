@@ -81,11 +81,12 @@ void ProviderManager::run(
         m_progress_finished = 0.f;
         m_progress_step = 1.f / std::max<size_t>(progress_sections, 1);
         m_progress_stage = QString();
-        emit progressChanged(m_progress_finished, m_progress_stage);
 
         for (size_t i = 0; i < providers.size(); i++) {
             providers::Provider& provider = *providers[i];
             m_progress_stage = provider.display_name();
+
+            emit progressChanged(m_progress_finished, m_progress_stage);
 
             QElapsedTimer provider_timer;
             provider_timer.start();
@@ -98,8 +99,6 @@ void ProviderManager::run(
             const bool has_progress = !(provider.flags() & providers::PROVIDER_FLAG_HIDE_PROGRESS);
             if (has_progress)
                 m_progress_finished += m_progress_step;
-
-            emit progressChanged(m_progress_finished, m_progress_stage);
         }
         m_progress_finished = 1.f;
         m_progress_stage = QString();
