@@ -277,13 +277,14 @@ FocusScope {
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height * 0.75
 
-            Image {
-                source: "qrc:/frontend/assets/gamepad/preview.png"
-                fillMode: Image.PreserveAspectFit
-
+            GamepadPreview {
                 width: parent.width * 0.6
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
+
+                currentField: (fieldView.activeFocus && fieldView.currentIndex >= 0)
+                    ? fieldView.model.get(fieldView.currentIndex).icon
+                    : ""
             }
         }
 
