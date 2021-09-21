@@ -38,6 +38,9 @@ public:
     void start_recording(int, GamepadAxis) final;
     void cancel_recording() final;
 
+    QString mapping_for_button(int, GamepadButton) const final;
+    QString mapping_for_axis(int, GamepadAxis) const final;
+
 private slots:
     void poll();
 

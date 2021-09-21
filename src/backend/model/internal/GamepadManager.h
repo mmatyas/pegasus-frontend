@@ -67,6 +67,9 @@ public:
     Q_INVOKABLE void configureAxis(int deviceId, model::GamepadManager::GMAxis axis);
     Q_INVOKABLE void cancelConfiguration();
 
+    Q_INVOKABLE QString mappingForAxis(int deviceId, model::GamepadManager::GMAxis axis) const;
+    Q_INVOKABLE QString mappingForButton(int deviceId, model::GamepadManager::GMButton button) const;
+
 signals:
     void connected(int deviceId);
     void disconnected(QString deviceId);

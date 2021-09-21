@@ -39,6 +39,9 @@ public:
     virtual void start_recording(int, GamepadAxis) {}
     virtual void cancel_recording() {}
 
+    virtual QString mapping_for_button(int, GamepadButton) const { return QString(); }
+    virtual QString mapping_for_axis(int, GamepadAxis) const { return QString(); }
+
 signals:
     void connected(int, QString);
     void disconnected(int);

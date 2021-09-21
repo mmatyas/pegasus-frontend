@@ -107,6 +107,18 @@ void GamepadManager::cancelConfiguration() {
     m_backend->cancel_recording();
 }
 
+QString GamepadManager::mappingForAxis(int deviceId, model::GamepadManager::GMAxis axis) const
+{
+    Q_ASSERT(axis != GMAxis::Invalid);
+    return m_backend->mapping_for_axis(deviceId, static_cast<GamepadAxis>(axis));
+}
+
+QString GamepadManager::mappingForButton(int deviceId, model::GamepadManager::GMButton button) const
+{
+    Q_ASSERT(button != GMButton::Invalid);
+    return m_backend->mapping_for_button(deviceId, static_cast<GamepadButton>(button));
+}
+
 void GamepadManager::bkOnConnected(int device_id, QString name)
 {
     if (name.isEmpty())

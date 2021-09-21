@@ -207,6 +207,55 @@ const char* to_fieldname(GamepadAxis axis)
 #undef GEN
 }
 
+SDL_GameControllerButtonBind current_binding(SDL_GameController* pad_ptr, GamepadButton button)
+{
+    Q_ASSERT(pad_ptr);
+
+#define GEN(from, to) case GamepadButton::from: return SDL_GameControllerGetBindForButton(pad_ptr, SDL_CONTROLLER_BUTTON_##to)
+    switch (button) {
+        GEN(UP, DPAD_UP);
+        GEN(DOWN, DPAD_DOWN);
+        GEN(LEFT, DPAD_LEFT);
+        GEN(RIGHT, DPAD_RIGHT);
+        GEN(SOUTH, A);
+        GEN(EAST, B);
+        GEN(WEST, X);
+        GEN(NORTH, Y);
+        GEN(L1, LEFTSHOULDER);
+        GEN(L3, LEFTSTICK);
+        GEN(R1, RIGHTSHOULDER);
+        GEN(R3, RIGHTSTICK);
+        GEN(SELECT, BACK);
+        GEN(START, START);
+        GEN(GUIDE, GUIDE);
+        case GamepadButton::L2:
+            return SDL_GameControllerGetBindForAxis(pad_ptr, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+        case GamepadButton::R2:
+            return SDL_GameControllerGetBindForAxis(pad_ptr, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+        default:
+            Q_UNREACHABLE();
+            return {};
+    }
+#undef GEN
+}
+
+SDL_GameControllerButtonBind current_binding(SDL_GameController* pad_ptr, GamepadAxis axis)
+{
+    Q_ASSERT(pad_ptr);
+
+#define GEN(from, to) case GamepadAxis::from: return SDL_GameControllerGetBindForAxis(pad_ptr, SDL_CONTROLLER_AXIS_##to)
+    switch (axis) {
+        GEN(LEFTX, LEFTX);
+        GEN(LEFTY, LEFTY);
+        GEN(RIGHTX, RIGHTX);
+        GEN(RIGHTY, RIGHTY);
+        default:
+            Q_UNREACHABLE();
+            return {};
+    }
+#undef GEN
+}
+
 GamepadButton detect_trigger_axis(Uint8 axis)
 {
     switch (axis) {
@@ -644,6 +693,30 @@ void GamepadManagerSDL2::finish_recording()
         emit axisConfigured(m_recording.device, m_recording.target_axis);
 
     m_recording.reset();
+}
+
+QString GamepadManagerSDL2::mapping_for_button(int devide_idx, GamepadButton button) const
+{
+    const auto device_entry = m_idx_to_device.find(devide_idx);
+    if (device_entry == m_idx_to_device.cend())
+        return {};
+
+    const device_ptr& pad_ptr = device_entry->second;
+    const SDL_GameControllerButtonBind bind = current_binding(pad_ptr.get(), button);
+    const std::string bind_str = generate_binding_str(bind);
+    return QString::fromStdString(bind_str);
+}
+
+QString GamepadManagerSDL2::mapping_for_axis(int devide_idx, GamepadAxis axis) const
+{
+    const auto device_entry = m_idx_to_device.find(devide_idx);
+    if (device_entry == m_idx_to_device.cend())
+        return {};
+
+    const device_ptr& pad_ptr = device_entry->second;
+    const SDL_GameControllerButtonBind bind = current_binding(pad_ptr.get(), axis);
+    const std::string bind_str = generate_binding_str(bind);
+    return QString::fromStdString(bind_str);
 }
 
 } // namespace model
