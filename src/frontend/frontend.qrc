@@ -24,6 +24,27 @@
         <file>assets/gamepad/stick.svg</file>
         <file>assets/gamepad/x.svg</file>
         <file>assets/gamepad/y.svg</file>
+        <file>assets/gamepad/x360/a.png</file>
+        <file>assets/gamepad/x360/b.png</file>
+        <file>assets/gamepad/x360/dpdown.png</file>
+        <file>assets/gamepad/x360/dpleft.png</file>
+        <file>assets/gamepad/x360/dpright.png</file>
+        <file>assets/gamepad/x360/dpup.png</file>
+        <file>assets/gamepad/x360/guide.png</file>
+        <file>assets/gamepad/x360/lb.png</file>
+        <file>assets/gamepad/x360/lsb.png</file>
+        <file>assets/gamepad/x360/lsx.png</file>
+        <file>assets/gamepad/x360/lsy.png</file>
+        <file>assets/gamepad/x360/lt.png</file>
+        <file>assets/gamepad/x360/rb.png</file>
+        <file>assets/gamepad/x360/rsb.png</file>
+        <file>assets/gamepad/x360/rsx.png</file>
+        <file>assets/gamepad/x360/rsy.png</file>
+        <file>assets/gamepad/x360/rt.png</file>
+        <file>assets/gamepad/x360/select.png</file>
+        <file>assets/gamepad/x360/start.png</file>
+        <file>assets/gamepad/x360/x.png</file>
+        <file>assets/gamepad/x360/y.png</file>
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
