@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2021  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,16 +15,19 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "gamepad/preview" as GamepadPreview
+import "common"
 import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
 import QtQuick 2.8
 import QtQuick.Window 2.2
+import Qt.labs.qmlmodels 1.0
 
 
 FocusScope {
     id: root
+
+    readonly property var currentPad: gamepadView.model.get(gamepadView.currentIndex)
 
     signal close
 
@@ -32,710 +35,319 @@ FocusScope {
     enabled: focus
     visible: 0 < (x + width) && x < Window.window.width
 
-    function triggerClose() {
-        root.stopEscapeTimer();
-        root.close();
-    }
 
-    readonly property var gamepad: gamepadList.model.get(gamepadList.currentIndex)
-    readonly property bool hasGamepads: gamepad !== null
+    ListModel {
+        id: fieldList
 
-
-    property ConfigField recordingField: null
-    function recordConfig(configField) {
-        // turn off the previously recording field
-        if (recordingField !== null && configField !== recordingField)
-            recordingField.recording = false;
-
-        // turn on the currently recording one
-        recordingField = configField
-        if (recordingField !== null)
-            recordingField.recording = true;
-    }
-
-    property real escapeDelay: 1500
-    property real escapeStartTime: 0
-    property real escapeProgress: 0
-
-    Timer {
-        id: escapeTimer
-        interval: 50
-        repeat: true
-        onTriggered: {
-            var currentTime = new Date().getTime();
-            escapeProgress = (currentTime - escapeStartTime) / escapeDelay;
-
-            if (escapeProgress > 1.0)
-                root.triggerClose();
+        ListElement {
+            name: QT_TR_NOOP("Up")
+            icon: "dpup"
+            field: GamepadManager.GMButton.Up
         }
-    }
-
-    function stopEscapeTimer() {
-        escapeTimer.stop();
-        escapeStartTime = 0;
-        escapeProgress = 0;
-    }
-
-    Keys.onPressed: {
-        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
-            event.accepted = true;
-            escapeStartTime = new Date().getTime();
-            escapeTimer.start();
+        ListElement {
+            name: QT_TR_NOOP("Down")
+            icon: "dpdown"
+            field: GamepadManager.GMButton.Down
         }
-    }
-    Keys.onReleased: {
-        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
-            event.accepted = true;
-            stopEscapeTimer();
+        ListElement {
+            name: QT_TR_NOOP("Left")
+            icon: "dpleft"
+            field: GamepadManager.GMButton.Left
         }
-    }
-
-    Connections {
-        target: api.internal.gamepad
-        function onButtonConfigured() { recordConfig(null); }
-        function onAxisConfigured() { recordConfig(null); }
-        function onConfigurationCanceled() { recordConfig(null); }
-    }
-
-    Rectangle {
-        id: deviceSelect
-        width: parent.width
-        height: vpx(70)
-        color: "#333"
-        anchors.top: parent.top
-
-        focus: true
-        Keys.forwardTo: [gamepadList]
-        KeyNavigation.down: configL1
-
-        GamepadName {
-            visible: !hasGamepads
-            highlighted: deviceSelect.focus
-            text: qsTr("No gamepads connected") + api.tr
+        ListElement {
+            name: QT_TR_NOOP("Right")
+            icon: "dpright"
+            field: GamepadManager.GMButton.Right
         }
 
-        ListView {
-            id: gamepadList
-            anchors.fill: parent
-
-            clip: true
-            highlightRangeMode: ListView.StrictlyEnforceRange
-            highlightMoveDuration: 300
-            orientation: ListView.Horizontal
-
-            model: api.internal.gamepad.devices
-
-            delegate: Item {
-                width: ListView.view.width
-                height: ListView.view.height
-
-                GamepadName {
-                    text: "#" + (index + 1) + ": " + modelData.name
-                    highlighted: deviceSelect.focus
-                }
-            }
+        ListElement {
+            name: QT_TR_NOOP("A")
+            icon: "a"
+            field: GamepadManager.GMButton.South
         }
-    }
-
-    Rectangle {
-        width: parent.width
-        color: "#222"
-        anchors {
-            top: deviceSelect.bottom
-            bottom: parent.bottom
+        ListElement {
+            name: QT_TR_NOOP("B")
+            icon: "b"
+            field: GamepadManager.GMButton.East
         }
-    }
-
-    FocusScope {
-        id: layoutArea
-        width: parent.width
-        anchors {
-            top: deviceSelect.bottom
-            bottom: footer.top
+        ListElement {
+            name: QT_TR_NOOP("X")
+            icon: "x"
+            field: GamepadManager.GMButton.West
+        }
+        ListElement {
+            name: QT_TR_NOOP("Y")
+            icon: "y"
+            field: GamepadManager.GMButton.North
         }
 
-        property int horizontalOffset: vpx(-560)
-        property int verticalSpacing: vpx(170)
-
-        onActiveFocusChanged:
-            if (!activeFocus) padPreview.currentButton = ""
-
-        ConfigGroup {
-            label: qsTr("left back") + api.tr
-            anchors {
-                left: parent.horizontalCenter
-                leftMargin: parent.horizontalOffset
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: -parent.verticalSpacing
-            }
-
-            ConfigField {
-                focus: true
-                id: configL1
-                text: qsTr("shoulder") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "l1"
-
-                pressed: gamepad && gamepad.buttonL1
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L1);
-                }
-
-                KeyNavigation.right: configSelect
-                KeyNavigation.down: configL2
-            }
-            ConfigField {
-                id: configL2
-                text: qsTr("trigger") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "l2"
-
-                pressed: gamepad && gamepad.buttonL2
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L2);
-                }
-
-                KeyNavigation.right: configR2
-                KeyNavigation.down: configDpadUp
-            }
+        ListElement {
+            name: QT_TR_NOOP("Start")
+            icon: "start"
+            field: GamepadManager.GMButton.Start
+        }
+        ListElement {
+            name: QT_TR_NOOP("Guide")
+            icon: "guide"
+            field: GamepadManager.GMButton.Guide
+        }
+        ListElement {
+            name: QT_TR_NOOP("Select")
+            icon: "select"
+            field: GamepadManager.GMButton.Select
         }
 
-        ConfigGroup {
-            label: qsTr("dpad") + api.tr
-            anchors {
-                left: parent.horizontalCenter
-                leftMargin: parent.horizontalOffset
-                verticalCenter: parent.verticalCenter
-            }
-
-            ConfigField {
-                id: configDpadUp
-                text: qsTr("up") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "dpup"
-
-                pressed: gamepad && gamepad.buttonUp
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Up);
-                }
-
-                KeyNavigation.right: configA
-                KeyNavigation.down: configDpadDown
-            }
-            ConfigField {
-                id: configDpadDown
-                text: qsTr("down") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "dpdown"
-
-                pressed: gamepad && gamepad.buttonDown
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Down);
-                }
-
-                KeyNavigation.right: configB
-                KeyNavigation.down: configDpadLeft
-            }
-            ConfigField {
-                id: configDpadLeft
-                text: qsTr("left") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "dpleft"
-
-                pressed: gamepad && gamepad.buttonLeft
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Left);
-                }
-
-                KeyNavigation.right: configX
-                KeyNavigation.down: configDpadRight
-            }
-            ConfigField {
-                id: configDpadRight
-                text: qsTr("right") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "dpright"
-
-                pressed: gamepad && gamepad.buttonRight
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Right);
-                }
-
-                KeyNavigation.right: configY
-                KeyNavigation.down: configLeftStickX
-            }
+        ListElement {
+            name: QT_TR_NOOP("Left Shoulder")
+            icon: "lb"
+            field: GamepadManager.GMButton.L1
+        }
+        ListElement {
+            name: QT_TR_NOOP("Left Trigger")
+            icon: "lt"
+            field: GamepadManager.GMButton.L2
+        }
+        ListElement {
+            name: QT_TR_NOOP("Right Shoulder")
+            icon: "rb"
+            field: GamepadManager.GMButton.R1
+        }
+        ListElement {
+            name: QT_TR_NOOP("Right Trigger")
+            icon: "rt"
+            field: GamepadManager.GMButton.R2
         }
 
-        ConfigGroup {
-            label: qsTr("left stick") + api.tr
-            anchors {
-                left: parent.horizontalCenter
-                leftMargin: parent.horizontalOffset
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: parent.verticalSpacing
-            }
-
-            ConfigField {
-                id: configLeftStickX
-                text: qsTr("x axis") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "lx"
-
-                pressed: gamepad && Math.abs(gamepad.axisLeftX) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftX);
-                }
-
-                KeyNavigation.right: configRightStickX
-                KeyNavigation.down: configLeftStickY
-            }
-            ConfigField {
-                id: configLeftStickY
-                text: qsTr("y axis") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "ly"
-
-                pressed: gamepad && Math.abs(gamepad.axisLeftY) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftY);
-                }
-
-                KeyNavigation.right: configRightStickY
-                KeyNavigation.down: configL3
-            }
-            ConfigField {
-                id: configL3
-                text: qsTr("press") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "l3"
-
-                pressed: gamepad && gamepad.buttonL3
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L3);
-                }
-
-                KeyNavigation.right: configR3
-            }
+        ListElement {
+            name: QT_TR_NOOP("Left X")
+            icon: "lsx"
+            isAxis: true
+            field: GamepadManager.GMAxis.LeftX
+        }
+        ListElement {
+            name: QT_TR_NOOP("Left Y")
+            icon: "lsy"
+            isAxis: true
+            field: GamepadManager.GMAxis.LeftY
+        }
+        ListElement {
+            name: QT_TR_NOOP("Left Press")
+            icon: "lsb"
+            field: GamepadManager.GMButton.L3
         }
 
-        ConfigGroup {
-            label: qsTr("right back") + api.tr
-            alignment: Text.AlignRight
-            anchors {
-                right: parent.horizontalCenter
-                rightMargin: parent.horizontalOffset
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: -parent.verticalSpacing
-            }
-
-            ConfigField {
-                id: configR1
-                text: qsTr("shoulder") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "r1"
-
-                pressed: gamepad && gamepad.buttonR1
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R1);
-                }
-
-                KeyNavigation.down: configR2
-            }
-            ConfigField {
-                id: configR2
-                text: qsTr("trigger") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "r2"
-
-                pressed: gamepad && gamepad.buttonR2
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R2);
-                }
-
-                KeyNavigation.down: configA
-            }
+        ListElement {
+            name: QT_TR_NOOP("Right X")
+            icon: "rsx"
+            isAxis: true
+            field: GamepadManager.GMAxis.RightX
         }
-
-        ConfigGroup {
-            label: qsTr("abxy") + api.tr
-            alignment: Text.AlignRight
-            anchors {
-                right: parent.horizontalCenter
-                rightMargin: parent.horizontalOffset
-                verticalCenter: parent.verticalCenter
-            }
-
-            ConfigField {
-                id: configA
-                text: "a"
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "a"
-
-                pressed: gamepad && gamepad.buttonSouth
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.South);
-                }
-
-                KeyNavigation.down: configB
-            }
-            ConfigField {
-                id: configB
-                text: "b"
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "b"
-
-                pressed: gamepad && gamepad.buttonEast
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.East);
-                }
-
-                KeyNavigation.down: configX
-            }
-            ConfigField {
-                id: configX
-                text: "x"
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "x"
-
-                pressed: gamepad && gamepad.buttonWest
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.West);
-                }
-
-                KeyNavigation.down: configY
-            }
-            ConfigField {
-                id: configY
-                text: "y"
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "y"
-
-                pressed: gamepad && gamepad.buttonNorth
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.North);
-                }
-
-                KeyNavigation.down: configRightStickX
-            }
+        ListElement {
+            name: QT_TR_NOOP("Right Y")
+            icon: "rsy"
+            isAxis: true
+            field: GamepadManager.GMAxis.RightY
         }
-
-        ConfigGroup {
-            label: qsTr("right stick") + api.tr
-            alignment: Text.AlignRight
-            anchors {
-                right: parent.horizontalCenter
-                rightMargin: parent.horizontalOffset
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: parent.verticalSpacing
-            }
-
-            ConfigField {
-                id: configRightStickX
-                text: qsTr("x axis") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "rx"
-
-                pressed: gamepad && Math.abs(gamepad.axisRightX) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightX);
-                }
-
-                KeyNavigation.down: configRightStickY
-            }
-            ConfigField {
-                id: configRightStickY
-                text: qsTr("y axis") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "ry"
-
-                pressed: gamepad && Math.abs(gamepad.axisRightY) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightY);
-                }
-
-                KeyNavigation.down: configR3
-            }
-            ConfigField {
-                id: configR3
-                text: qsTr("press") + api.tr
-                onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "r3"
-
-                pressed: gamepad && gamepad.buttonR3
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R3);
-                }
-            }
-        }
-
-        Column {
-            spacing: vpx(1)
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(-220)
-            }
-
-            ConfigGroupLabel {
-                text: qsTr("center") + api.tr
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            Row {
-                spacing: vpx(1)
-                property int alignment: Text.AlignHCenter
-
-                ConfigField {
-                    id: configSelect
-                    text: qsTr("select") + api.tr
-                    onActiveFocusChanged:
-                        if (activeFocus) padPreview.currentButton = "select"
-
-                    pressed: gamepad && gamepad.buttonSelect
-                    Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        recordConfig(this);
-                    }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Select);
-                    }
-
-                    KeyNavigation.up: deviceSelect
-                    KeyNavigation.down: configL1
-                    KeyNavigation.right: configGuide
-                }
-                ConfigField {
-                    id: configGuide
-                    text: qsTr("guide") + api.tr
-                    onActiveFocusChanged:
-                        if (activeFocus) padPreview.currentButton = "guide"
-
-                    pressed: gamepad && gamepad.buttonGuide
-                    Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        recordConfig(this);
-                    }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Guide);
-                    }
-
-                    KeyNavigation.up: deviceSelect
-                    KeyNavigation.right: configStart
-                }
-                ConfigField {
-                    id: configStart
-                    text: qsTr("start") + api.tr
-                    onActiveFocusChanged:
-                        if (activeFocus) padPreview.currentButton = "start"
-
-                    pressed: gamepad && gamepad.buttonStart
-                    Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        recordConfig(this);
-                    }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Start);
-                    }
-
-                    KeyNavigation.up: deviceSelect
-                    KeyNavigation.down: configR1
-                    KeyNavigation.right: configR1
-                }
-            }
-
-
-        }
-
-        GamepadPreview.Container {
-            id: padPreview
-            gamepad: root.gamepad
+        ListElement {
+            name: QT_TR_NOOP("Right Press")
+            icon: "rsb"
+            field: GamepadManager.GMButton.R3
         }
     }
 
     Item {
-        id: footer
-        width: parent.width
-        height: vpx(50)
+        id: contentContainer
+
+        anchors.top: parent.top
         anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: Math.min(parent.width, height * 16/9)
 
-        Rectangle {
-            width: parent.width * 0.97
-            height: vpx(1)
-            color: "#777"
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
+        z: 100
+
+        ScreenHeader {
+            id: screenTitle
+            text: qsTr("Settings / Gamepad Layout") + api.tr
+            z: 2
         }
 
-        Canvas {
-            width: backButtonIcon.width + vpx(4)
-            height: width
-            anchors.centerIn: backButtonIcon
+        Item {
+            id: leftContainer
 
-            property real progress: escapeProgress
-            onProgressChanged: requestPaint()
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.08
+            anchors.right: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            height: childrenRect.height
 
-            onPaint: {
-                var ctx = getContext('2d');
-                ctx.clearRect(0, 0, width, height);
+            ListView {
+                id: gamepadView
 
-                var center = width / 2;
-                var startAngle = -Math.PI / 2
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: vpx(80)
+                clip: true
 
-                ctx.beginPath();
-                ctx.fillStyle = "#eee";
-                ctx.moveTo(center, center);
-                ctx.arc(center, center, center,
-                        startAngle, startAngle + Math.PI * 2 * progress, false);
-                ctx.fill();
-            }
-        }
+                highlightRangeMode: ListView.ApplyRange
+                highlightMoveDuration: 300
+                orientation: ListView.Horizontal
 
-        // TODO: replace this with an SVG icon
-        Rectangle {
-            id: backButtonIcon
-            height: label.height
-            width: height
-            radius: width * 0.5
-            border { color: "#777"; width: vpx(1) }
-            color: "transparent"
+                focus: true
+                KeyNavigation.down: fieldView
 
-            anchors {
-                right: label.left
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(1)
-                margins: vpx(10)
-            }
+                model: api.internal.gamepad.devices
+                delegate: Text {
+                    text: modelData.name
+                    color: "#eee"
 
-            Text {
-                text: "B"
-                color: escapeStartTime ? "#eee" : "#777"
-                font {
-                    family: global.fonts.sans
-                    pixelSize: parent.height * 0.7
+                    width: ListView.view.width
+                    height: ListView.view.height
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+
+                    leftPadding: vpx(26)
+                    rightPadding: leftPadding
+
+                    font.family: global.fonts.condensed
+                    font.pixelSize: vpx(32)
                 }
-                anchors.centerIn: parent
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#404040"
+                    z: -1
+                    visible: parent.activeFocus
+                }
+            }
+
+            ListView {
+                id: fieldView
+
+                readonly property int itemHeight: vpx(48)
+                readonly property int visibleItems: 8
+
+                function queryMapping(pad, field, isAxis) {
+                    if (!pad)
+                        return [null, null];
+
+                    const map_str = isAxis
+                        ? api.internal.gamepad.mappingForAxis(pad.deviceId, field)
+                        : api.internal.gamepad.mappingForButton(pad.deviceId, field);
+
+                    const map_kind = map_str.charAt(0);
+                    const map_val = map_str.substring(1);
+                    switch (map_kind) {
+                        case 'h': return [QT_TR_NOOP("Hat %1"), map_val];
+                        case 'b': return [QT_TR_NOOP("Button %1"), map_val];
+                        case 'a': return [QT_TR_NOOP("Axis %1"), map_val];
+                        default: return [null, null];
+                    }
+                }
+
+                model: fieldList
+                delegate: GamepadField {
+                    label: qsTr(model.name) + api.tr
+                    icon: model.icon
+                    mapping: {
+                        const [label, value] = fieldView.queryMapping(currentPad, model.field, model.isAxis);
+                        return label
+                            ? qsTr(label).arg(value) + api.tr
+                            : "";
+                    }
+                }
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: gamepadView.bottom
+                height: itemHeight * visibleItems
+                clip: true
+
+                highlightRangeMode: ListView.ApplyRange
+                highlightMoveDuration: 0
+                preferredHighlightBegin: 2 * itemHeight
+                preferredHighlightEnd: height - preferredHighlightBegin
             }
         }
 
-        Text {
-            id: label
-            text: qsTr("hold down to quit") + api.tr
-            verticalAlignment: Text.AlignTop
+        Item {
+            id: rightContainer
 
-            color: escapeStartTime ? "#eee" : "#777"
-            font {
-                family: global.fonts.sans
-                pixelSize: vpx(22)
-                capitalization: Font.SmallCaps
+            anchors.left: parent.horizontalCenter
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            height: parent.height * 0.75
+
+            Image {
+                source: "qrc:/frontend/assets/gamepad/preview.png"
+                fillMode: Image.PreserveAspectFit
+
+                width: parent.width * 0.6
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
             }
-            anchors {
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(-1)
-                right: parent.right; rightMargin: parent.width * 0.015
+        }
+
+        Item {
+            id: footer
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: vpx(50)
+
+            Rectangle {
+                id: separator
+                width: parent.width * 0.97
+                height: vpx(1)
+                color: "#777"
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            Row {
+                anchors.right: separator.right
+                anchors.verticalCenter: parent.verticalCenter
+
+                Item {
+                    height: label.height
+                    width: height
+
+                    Image {
+                        source: "qrc:/frontend/assets/gamepad/x360/b.png"
+
+                        anchors.fill: parent
+                        anchors.margins: parent.height * 0.1
+                        anchors.verticalCenter: parent.verticalCenter
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+
+                Text {
+                    id: label
+
+                    text: qsTr("Back") + api.tr
+                    color: "#777"
+
+                    font.family: global.fonts.condensed
+                    font.pixelSize: vpx(22)
+                    font.capitalization: Font.AllUppercase
+
+                    lineHeight: 1.5
+                    verticalAlignment: Text.AlignVCenter
+                }
             }
         }
     }
+
 
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: root.triggerClose()
+        onClicked: root.close()
     }
 
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
-        onSwipeRight: root.triggerClose()
+        onSwipeRight: root.close()
     }
 }

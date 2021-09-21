@@ -95,5 +95,7 @@
         <file>dialogs/Shade.qml</file>
         <file>dialogs/GenericOkDialog.qml</file>
         <file>menu/settings/SettingsEntry.qml</file>
+        <file>menu/settings/gamepad/GamepadField.qml</file>
+        <file>assets/gamepad/preview.png</file>
     </qresource>
 </RCC>
