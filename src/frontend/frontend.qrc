@@ -73,10 +73,6 @@
         <file>menu/settings/common/ReloadQuestion.qml</file>
         <file>menu/settings/gamedireditor/FilePicker.qml</file>
         <file>menu/settings/gamedireditor/GameDirEditorButton.qml</file>
-        <file>menu/settings/gamepad/ConfigField.qml</file>
-        <file>menu/settings/gamepad/ConfigGroup.qml</file>
-        <file>menu/settings/gamepad/ConfigGroupLabel.qml</file>
-        <file>menu/settings/gamepad/GamepadName.qml</file>
         <file>menu/settings/keyeditor/KeyEditorEntry.qml</file>
         <file>menu/settings/keyeditor/KeyEditorEntryButton.qml</file>
         <file>menu/settings/keyeditor/KeyEditorRecorder.qml</file>
