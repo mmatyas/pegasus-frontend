@@ -173,10 +173,8 @@ FocusScope {
         }
 
 
-        ScreenHeader {
-            id: screenTitle
+        GamepadHeader {
             text: qsTr("Settings / Gamepad Layout") + api.tr
-            z: 2
         }
 
         Item {
@@ -217,7 +215,7 @@ FocusScope {
                     rightPadding: leftPadding
 
                     font.family: global.fonts.condensed
-                    font.pixelSize: vpx(32)
+                    font.pixelSize: vpx(30)
                 }
 
                 Rectangle {
@@ -307,57 +305,7 @@ FocusScope {
             }
         }
 
-        Item {
-            id: footer
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: vpx(50)
-
-            Rectangle {
-                id: separator
-                width: parent.width * 0.97
-                height: vpx(1)
-                color: "#777"
-                anchors.top: parent.top
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-
-            Row {
-                anchors.right: parent.right
-                anchors.rightMargin: parent.width * 0.08
-                anchors.verticalCenter: parent.verticalCenter
-
-                Item {
-                    height: label.height
-                    width: height
-
-                    Image {
-                        source: "qrc:/frontend/assets/gamepad/x360/b.png"
-
-                        anchors.fill: parent
-                        anchors.margins: parent.height * 0.1
-                        anchors.verticalCenter: parent.verticalCenter
-                        fillMode: Image.PreserveAspectFit
-                    }
-                }
-
-                Text {
-                    id: label
-
-                    text: qsTr("Back") + api.tr
-                    color: "#777"
-
-                    font.family: global.fonts.condensed
-                    font.pixelSize: vpx(22)
-                    font.capitalization: Font.AllUppercase
-
-                    lineHeight: 1.5
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-        }
+        GamepadFooter {}
     }
 
 
