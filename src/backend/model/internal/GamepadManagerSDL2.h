@@ -63,6 +63,7 @@ private:
         GamepadButton target_button = GamepadButton::INVALID;
         GamepadAxis target_axis = GamepadAxis::INVALID;
         std::string value;
+        bool first_frame;
 
         bool is_active() const;
         void reset();

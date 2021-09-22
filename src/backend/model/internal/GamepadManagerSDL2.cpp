@@ -313,7 +313,7 @@ namespace model {
 
 bool GamepadManagerSDL2::RecordingState::is_active() const
 {
-    return device >= 0;
+    return device >= 0 && !first_frame;
 }
 void GamepadManagerSDL2::RecordingState::reset()
 {
@@ -321,6 +321,7 @@ void GamepadManagerSDL2::RecordingState::reset()
     target_button = GamepadButton::INVALID;
     target_axis = GamepadAxis::INVALID;
     value.clear();
+    first_frame = true;
 }
 
 GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
@@ -480,6 +481,8 @@ void GamepadManagerSDL2::poll()
                 break;
         }
     }
+
+    m_recording.first_frame = false;
 }
 
 void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
