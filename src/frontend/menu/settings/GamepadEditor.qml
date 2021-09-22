@@ -226,34 +226,38 @@ FocusScope {
                 readonly property int itemHeight: vpx(48)
                 readonly property int visibleItems: 8
 
+                readonly property var localizedMappings: {
+                    'h': QT_TR_NOOP("Hat %1"),
+                    'b': QT_TR_NOOP("Button %1"),
+                    'a': QT_TR_NOOP("Axis %1"),
+                }
+
                 function queryMapping(pad, field, isAxis) {
+                    console.log("queryMapping", pad, field, isAxis);
+
                     if (!pad)
-                        return [null, null];
+                        return "";
 
                     const map_str = isAxis
                         ? api.internal.gamepad.mappingForAxis(pad.deviceId, field)
-                        : api.internal.gamepad.mappingForButton(pad.deviceId, field);
+                        : api.internal.gamepad.mappingForButton(pad.deviceId, field)
+                    if (!map_str)
+                        return "";
 
                     const map_kind = map_str.charAt(0);
                     const map_val = map_str.substring(1);
-                    switch (map_kind) {
-                        case 'h': return [QT_TR_NOOP("Hat %1"), map_val];
-                        case 'b': return [QT_TR_NOOP("Button %1"), map_val];
-                        case 'a': return [QT_TR_NOOP("Axis %1"), map_val];
-                        default: return [null, null];
-                    }
+                    const localized_str = localizedMappings[map_kind];
+                    if (!localized_str)
+                        return "";
+
+                    return qsTr(localized_str).arg(map_val) + api.tr;
                 }
 
                 model: fieldList
                 delegate: GamepadField {
                     label: qsTr(model.name) + api.tr
                     icon: model.icon
-                    mapping: {
-                        const [label, value] = fieldView.queryMapping(currentPad, model.field, model.isAxis);
-                        return label
-                            ? qsTr(label).arg(value) + api.tr
-                            : "";
-                    }
+                    mapping: fieldView.queryMapping(currentPad, model.field, model.isAxis);
                 }
 
                 anchors.left: parent.left
