@@ -90,5 +90,6 @@
         <file>menu/settings/gamepad/GamepadRecorder.qml</file>
         <file>menu/settings/gamepad/GamepadFooter.qml</file>
         <file>menu/settings/gamepad/GamepadHeader.qml</file>
+        <file>assets/gamepad/list-arrow.png</file>
     </qresource>
 </RCC>

@@ -28,6 +28,7 @@ FocusScope {
     id: root
 
     readonly property var currentPad: gamepadView.model.get(gamepadView.currentIndex)
+    readonly property url listArrow: "qrc:/frontend/assets/gamepad/list-arrow.png"
 
     signal close
 
@@ -224,6 +225,27 @@ FocusScope {
                     z: -1
                     visible: parent.focus
                 }
+            }
+            Image {
+                source: listArrow
+                anchors.right: gamepadView.left
+                anchors.rightMargin: width * 0.5
+                anchors.verticalCenter: gamepadView.verticalCenter
+                height: gamepadView.height * 0.25
+                fillMode: Image.PreserveAspectFit
+
+                scale: -1
+                visible: gamepadView.focus && 0 < gamepadView.currentIndex
+            }
+            Image {
+                source: listArrow
+                anchors.left: gamepadView.right
+                anchors.leftMargin: width * 0.5
+                anchors.verticalCenter: gamepadView.verticalCenter
+                height: gamepadView.height * 0.25
+                fillMode: Image.PreserveAspectFit
+
+                visible: gamepadView.focus && gamepadView.currentIndex < (gamepadView.count - 1)
             }
 
             ListView {
