@@ -23,14 +23,25 @@ Item {
     property string icon
     property string label
     property string mapping
+    property bool highlighted
 
     readonly property int textSizePx: vpx(24)
     readonly property int imagePadding: height * 0.1
     readonly property int horizontalPadding: vpx(20)
     readonly property color textColor: "#eee"
 
+    signal selected
+
     width: ListView.view.width
     height: vpx(48)
+
+
+    Keys.onPressed: {
+        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.selected();
+        }
+    }
 
 
     Row {
@@ -80,7 +91,7 @@ Item {
         anchors.fill: parent
         color: "#404040"
         z: -1
-        visible: parent.activeFocus || mouseArea.containsMouse
+        visible: parent.highlighted || mouseArea.containsMouse
     }
 
     MouseArea {

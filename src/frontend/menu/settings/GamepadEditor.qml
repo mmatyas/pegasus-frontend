@@ -155,7 +155,7 @@ FocusScope {
         }
     }
 
-    Item {
+    FocusScope {
         id: contentContainer
 
         anchors.top: parent.top
@@ -163,7 +163,7 @@ FocusScope {
         anchors.horizontalCenter: parent.horizontalCenter
         width: Math.min(parent.width, height * 16/9)
 
-        z: 100
+        focus: true
 
         ScreenHeader {
             id: screenTitle
@@ -216,7 +216,7 @@ FocusScope {
                     anchors.fill: parent
                     color: "#404040"
                     z: -1
-                    visible: parent.activeFocus
+                    visible: parent.focus
                 }
             }
 
@@ -233,8 +233,6 @@ FocusScope {
                 }
 
                 function queryMapping(pad, field, isAxis) {
-                    console.log("queryMapping", pad, field, isAxis);
-
                     if (!pad)
                         return "";
 
@@ -257,7 +255,16 @@ FocusScope {
                 delegate: GamepadField {
                     label: qsTr(model.name) + api.tr
                     icon: model.icon
-                    mapping: fieldView.queryMapping(currentPad, model.field, model.isAxis);
+
+                    mapping: { recorder.reeval; fieldView.queryMapping(currentPad, model.field, model.isAxis); }
+                    highlighted: ListView.view.focus && ListView.isCurrentItem
+
+                    onSelected: {
+                        recorder.deviceId = currentPad.deviceId;
+                        recorder.deviceField = model.field
+                        recorder.fieldIsAxis = model.isAxis
+                        recorder.focus = true;
+                    }
                 }
 
                 anchors.left: parent.left
@@ -286,7 +293,7 @@ FocusScope {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
 
-                currentField: (fieldView.activeFocus && fieldView.currentIndex >= 0)
+                currentField: (fieldView.focus && fieldView.currentIndex >= 0)
                     ? fieldView.model.get(fieldView.currentIndex).icon
                     : ""
             }
@@ -341,6 +348,18 @@ FocusScope {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+        }
+    }
+
+
+    GamepadRecorder {
+        id: recorder
+
+        property int reeval: 1
+
+        onClose: {
+            reeval++;
+            contentContainer.focus = true;
         }
     }
 

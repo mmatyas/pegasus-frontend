@@ -91,5 +91,6 @@
         <file>menu/settings/gamepad/GamepadField.qml</file>
         <file>assets/gamepad/preview.png</file>
         <file>menu/settings/gamepad/GamepadPreview.qml</file>
+        <file>menu/settings/gamepad/GamepadRecorder.qml</file>
     </qresource>
 </RCC>
