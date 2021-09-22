@@ -193,6 +193,7 @@ FocusScope {
 
         focus: true
         highlightRangeMode: ListView.ApplyRange
+        highlightMoveDuration: 150
         preferredHighlightBegin: height * 0.3
         preferredHighlightEnd: height * 0.7
 
