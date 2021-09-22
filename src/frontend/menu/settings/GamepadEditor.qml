@@ -178,6 +178,18 @@ FocusScope {
             text: qsTr("Settings / Gamepad Layout") + api.tr
         }
 
+        Text {
+            text: qsTr("No gamepads connected") + api.tr
+            color: "#eee"
+            font.family: global.fonts.condensed
+            font.pixelSize: vpx(30)
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            visible: !root.currentPad
+        }
+
         Item {
             id: leftContainer
 
@@ -186,6 +198,8 @@ FocusScope {
             anchors.right: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             height: childrenRect.height
+
+            visible: root.currentPad
 
             ListView {
                 id: gamepadView
@@ -315,6 +329,8 @@ FocusScope {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height * 0.75
+
+            visible: root.currentPad
 
             GamepadPreview {
                 width: parent.width * 0.6
