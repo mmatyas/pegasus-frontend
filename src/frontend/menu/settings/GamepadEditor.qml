@@ -165,6 +165,14 @@ FocusScope {
 
         focus: true
 
+        Keys.onPressed: {
+            if (api.keys.isCancel(event) && !event.isAutoRepeat) {
+                event.accepted = true;
+                root.close();
+            }
+        }
+
+
         ScreenHeader {
             id: screenTitle
             text: qsTr("Settings / Gamepad Layout") + api.tr
@@ -317,7 +325,8 @@ FocusScope {
             }
 
             Row {
-                anchors.right: separator.right
+                anchors.right: parent.right
+                anchors.rightMargin: parent.width * 0.08
                 anchors.verticalCenter: parent.verticalCenter
 
                 Item {
