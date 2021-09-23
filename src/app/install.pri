@@ -105,7 +105,9 @@ android {
     ANDROID_PACKAGE_SOURCE_DIR = $${ANDROID_CFGDIR_OUT}
     ANDROID_EXTRA_LIBS += \
         /opt/openssl-111d_android/lib/libcrypto.so \
-        /opt/openssl-111d_android/lib/libssl.so
+        /opt/openssl-111d_android/lib/libssl.so \
+        /opt/SDL2/lib/armeabi-v7a/libhidapi.so \
+        /opt/SDL2/lib/armeabi-v7a/libSDL.so
 }
 
 
