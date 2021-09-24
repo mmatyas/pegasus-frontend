@@ -73,7 +73,7 @@ QString find_steam_datadir()
 void find_installdirs_in_vdf(
     const QString& log_tag,
     const QString& vdf_path,
-    const QString& entry_pattern,
+    const std::vector<QString>& entry_patterns,
     std::vector<QString>& installdirs)
 {
     QFile vdf(vdf_path);
@@ -82,15 +82,21 @@ void find_installdirs_in_vdf(
 
     Log::info(log_tag, LOGMSG("Found `%1`").arg(vdf_path));
 
-    const QRegularExpression entry_regex(entry_pattern);
+    std::vector<QRegularExpression> entry_regexes;
+    entry_regexes.reserve(entry_patterns.size());
+    for (const QString& pattern : entry_patterns)
+        entry_regexes.emplace_back(pattern);
 
     QTextStream stream(&vdf);
     while (!stream.atEnd()) {
         const QString line = stream.readLine();
-        const auto match = entry_regex.match(line);
-        if (match.hasMatch()) {
-            QString path = match.captured(1) % QLatin1String("/steamapps/");
-            installdirs.emplace_back(std::move(path));
+        for (const QRegularExpression& entry_regex : entry_regexes) {
+            const auto match = entry_regex.match(line);
+            if (match.hasMatch()) {
+                QString path = match.captured(1) % QLatin1String("/steamapps/");
+                installdirs.emplace_back(std::move(path));
+                break;
+            }
         }
     }
 }
@@ -102,12 +108,17 @@ std::vector<QString> find_steam_installdirs(const QString& log_tag, const QStrin
     installdirs.emplace_back(steam_datadir + QLatin1String("steamapps/"));
 
     const QString config_path = steam_datadir + QLatin1String("config/config.vdf");
-    const QString config_pattern = QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")"");
+    const std::vector<QString> config_pattern {
+        QStringLiteral(R""("BaseInstallFolder_\d+"\s+"([^"]+)")""),
+    };
     find_installdirs_in_vdf(log_tag, config_path, config_pattern, installdirs);
 
     const QString folderlist_path = installdirs.front() + QLatin1String("libraryfolders.vdf");
-    const QString folderlist_pattern = QStringLiteral(R""("[1-7]"\s+"([^"]+)")"");
-    find_installdirs_in_vdf(log_tag, folderlist_path, folderlist_pattern, installdirs);
+    const std::vector<QString> folderlist_patterns {
+        QStringLiteral(R""("[1-7]"\s+"([^"]+)")""),
+        QStringLiteral(R""("path"\s+"([^"]+)")""),
+    };
+    find_installdirs_in_vdf(log_tag, folderlist_path, folderlist_patterns, installdirs);
 
     VEC_REMOVE_DUPLICATES(installdirs);
     VEC_REMOVE_IF(installdirs, [](const QString& path) { return !QFileInfo::exists(path); });
