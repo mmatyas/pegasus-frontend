@@ -1,5 +1,5 @@
 ccache
-libasound2-dev
+libasound-dev
 libgl1-mesa-dev
 libgstreamer-plugins-base1.0-dev
 libpulse-dev

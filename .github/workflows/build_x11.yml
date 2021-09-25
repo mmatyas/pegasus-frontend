@@ -24,31 +24,8 @@ jobs:
         submodules: 'recursive'
         fetch-depth: 200
 
-    - run: apt list --manual-installed
-
-    - id: cache-dpkg
-      name: Cache APT deps
-      uses: actions/cache@v2
-      with:
-        path: ~/cache-dpkg
-        key: ${{ runner.os }}-dpkg-${{ hashFiles('.github/workflows/x11-deps.txtx') }}
-
     - name: Install APT deps
-      env:
-        CACHE_HIT: ${{ steps.cache-dpkg.outputs.cache-hit }}
-      run: |
-        if [[ "$CACHE_HIT" == "true" ]]; then
-          sudo cp --force --recursive --verbose ~/cache-dpkg/* /
-        else
-          export APT_DEPS=$(cat .github/workflows/x11-deps.txt | tr '\n' ' ')
-          sudo apt-get update && sudo apt-get install -y ${APT_DEPS}
-          mkdir ~/cache-dpkg
-          for dep in ${APT_DEPS}; do
-            dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --verbose --parents --target-directory ~/cache-dpkg/
-          done
-        fi
-
-    - run: apt list --manual-installed
+      run: sudo apt-get update && sudo apt-get install -y $(cat .github/workflows/x11-deps.txt | tr '\n' ' ')
 
     - id: cache-qt
       name: Cache Qt
