@@ -20,6 +20,10 @@ jobs:
       - GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
     steps:
       - run: gem install --user-install -N fpm -v 1.10.2
+      - restore_cache:
+          keys:
+            - ccache-{{ arch }}
+      - run: ccache -s
       - checkout
       - run: .circleci/prepare.sh
       - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.16_x11-bionic.tar.xz" | tar xJf - -C /opt/
@@ -29,6 +33,11 @@ jobs:
       - run: .circleci/zip_linux.sh
       - run: cd dist && PATH="$PATH:${GEMDIR}" ../.travis/script__create_deb.sh
       - run: .circleci/stage.sh
+      - run: ccache -s
+      - save_cache:
+          key: ccache-{{ arch }}
+          paths:
+            - ~/.ccache
 
   android:
     docker:
