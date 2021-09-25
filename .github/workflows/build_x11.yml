@@ -1,0 +1,136 @@
+name: Build - X11
+
+on:
+  push:
+  pull_request:
+    branches: ['master']
+  workflow_dispatch:
+
+env:
+  QT_VERSION: qt5152
+  QT_VERSION_PRETTY: "5.15.2"
+  QT_TARGET: x11-static
+  SDL_VERSION_PRETTY: "2.0.16"
+  SDL_TARGET: x11-bionic
+
+
+jobs:
+  Build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        fetch-depth: 200
+
+    - id: cache-dpkg
+      name: Cache APT deps
+      uses: actions/cache@v2
+      with:
+        path: ~/cache-dpkg
+        key: ${{ runner.os }}-dpkg-${{ hashFiles('.github/workflows/x11-deps.txt') }}
+
+    - name: Install APT deps
+      env:
+        CACHE_HIT: ${{ steps.cache-dpkg.outputs.cache-hit }}
+      run: |
+        if [[ "$CACHE_HIT" == "true" ]]; then
+          sudo cp --force --recursive ~/cache-dpkg/* /
+        else
+          export APT_DEPS=$(cat .github/workflows/x11-deps.txt | tr '\n' ' ')
+          sudo apt-get update && sudo apt-get install -y ${APT_DEPS}
+          mkdir ~/cache-dpkg
+          for dep in ${APT_DEPS}; do
+            dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/cache-dpkg/
+          done
+        fi
+
+    - id: cache-qt
+      name: Cache Qt
+      uses: actions/cache@v2
+      with:
+        path: /opt/${QT_VERSION}_${QT_TARGET}
+        key: ${{ runner.os }}-qt-${QT_VERSION_PRETTY}
+
+    - name: Get Qt
+      if: steps.cache-qt.outputs.cache-hit != 'true'
+      run: |
+        curl -L "${TOOLS_URL}/${QT_VERSION}_${QT_TARGET}.tar.xz" | sudo tar xJf - -C /opt/
+        curl -L "${TOOLS_URL}/apng_patched_headers.tar.xz" | sudo tar xJf - -C "/opt/${QT_VERSION}_${QT_TARGET}/include/"
+        /opt/${QT_VERSION}_${QT_TARGET}/bin/qmake --version
+
+    - id: cache-sdl
+      name: Cache SDL
+      uses: actions/cache@v2
+      with:
+        path: /opt/SDL2-${SDL_VERSION_PRETTY}
+        key: ${{ runner.os }}-sdl-${SDL_VERSION_PRETTY}
+
+    - name: Get SDL
+      if: steps.cache-sdl.outputs.cache-hit != 'true'
+      run: curl -L "${TOOLS_URL}/SDL2-${SDL_VERSION_PRETTY}_${SDL_TARGET}.tar.xz" | tar xJf - -C /opt/
+
+    - id: cache-cmake
+      name: Cache CMake
+      uses: actions/cache@v2
+      with:
+        path: /opt/cmake
+        key: ${{ runner.os }}-cmake-3.21
+
+    - name: Get CMake
+      if: steps.cache-cmake.outputs.cache-hit != 'true'
+      run:
+        curl -L "${TOOLS_URL}/cmake-linux-x64.tar.xz" | sudo tar xJf - -C /opt/
+        /opt/cmake/bin/cmake --version
+
+    - id: cache-ccache
+      name: Cache Ccache
+      uses: actions/cache@v2
+      with:
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-
+
+    - name: Lint QML
+      run: find -name *.qml -exec /opt/${QT_VERSION}_${QT_TARGET}/bin/qmllint {} \;
+
+    - run: mkdir build
+
+    - name: Configure
+      run: /opt/cmake/bin/cmake ..
+        -DCMAKE_PREFIX_PATH="/opt/${QT_VERSION}_${QT_TARGET};/opt/SDL2-${SDL_VERSION}"
+        -G Ninja
+        -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        -DCMAKE_INSTALL_PREFIX=/usr/
+        -DPEGASUS_ENABLE_APNG=ON
+        -DPEGASUS_STATIC_CXX=ON
+      working-directory: build
+
+    - name: Build
+      run: ninja
+      working-directory: build
+
+    - name: Test
+      run: xvfb-run -a ctest --rerun-failed --output-on-failure
+      working-directory: build
+
+    - name: Stage
+      run: DESTDIR=$PWD/../stage ninja install/strip
+      working-directory: build
+
+    - run: mkdir deploy
+
+    - name: Prepare artifacts
+      run: zip -j "deploy/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip" \
+        stage/pegasus-fe
+        README.md
+        LICENSE.md
+
+    - name: Create artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: x11-static
+        path: deploy
