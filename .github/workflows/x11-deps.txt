@@ -1,0 +1,17 @@
+libasound-dev
+libgl1-mesa-dev
+libgstreamer-plugins-base1.0-dev
+libpulse-dev
+libudev-dev
+libxi-dev
+libxkbcommon-dev
+libxkbcommon-x11-dev
+libxcb-icccm4-dev
+libxcb-image0-dev
+libxcb-keysyms1-dev
+libxcb-render-util0-dev
+libxcb-util-dev
+libxcb-xinerama0-dev
+libzstd-dev
+ninja-build
+xvfb

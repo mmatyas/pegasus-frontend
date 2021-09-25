@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 env:
+  TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
   QT_VERSION: qt5152
   QT_VERSION_PRETTY: "5.15.2"
   QT_TARGET: x11-static
@@ -49,8 +50,8 @@ jobs:
       name: Cache Qt
       uses: actions/cache@v2
       with:
-        path: /opt/${QT_VERSION}_${QT_TARGET}
-        key: ${{ runner.os }}-qt-${QT_VERSION_PRETTY}
+        path: /opt/${{ env.QT_VERSION }}_${{ env.QT_TARGET }}
+        key: ${{ runner.os }}-qt-${{ env.QT_VERSION_PRETTY }}
 
     - name: Get Qt
       if: steps.cache-qt.outputs.cache-hit != 'true'
@@ -63,8 +64,8 @@ jobs:
       name: Cache SDL
       uses: actions/cache@v2
       with:
-        path: /opt/SDL2-${SDL_VERSION_PRETTY}
-        key: ${{ runner.os }}-sdl-${SDL_VERSION_PRETTY}
+        path: /opt/SDL2-${{ env.SDL_VERSION_PRETTY }}
+        key: ${{ runner.os }}-sdl-${{ env.SDL_VERSION_PRETTY }}
 
     - name: Get SDL
       if: steps.cache-sdl.outputs.cache-hit != 'true'
@@ -79,7 +80,7 @@ jobs:
 
     - name: Get CMake
       if: steps.cache-cmake.outputs.cache-hit != 'true'
-      run:
+      run: |
         curl -L "${TOOLS_URL}/cmake-linux-x64.tar.xz" | sudo tar xJf - -C /opt/
         /opt/cmake/bin/cmake --version
 
