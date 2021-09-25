@@ -24,8 +24,30 @@ jobs:
         submodules: 'recursive'
         fetch-depth: 200
 
+    - id: cache-dpkg
+      name: Cache APT deps
+      uses: actions/cache@v2
+      with:
+        path: /tmp/cache-dpkg
+        key: ${{ runner.os }}-dpkg-${{ hashFiles('.github/workflows/x11-deps.txt') }}
+
     - name: Install APT deps
-      run: sudo apt-get update && sudo apt-get install -y $(cat .github/workflows/x11-deps.txt | tr '\n' ' ')
+      env:
+        CACHE_HIT: ${{ steps.cache-dpkg.outputs.cache-hit }}
+      run: |
+        if [[ "$CACHE_HIT" == "true" ]]; then
+          sudo cp -fr /tmp/cache-dpkg/* /
+        else
+          dpkg --get-selections | cut -f1 | sort > /tmp/dpkg-before.txt
+          sudo apt-get update && sudo apt-get install -y $(cat .github/workflows/x11-deps.txt | tr '\n' ' ')
+          dpkg --get-selections | cut -f1 | sort > /tmp/dpkg-after.txt
+          comm -13 /tmp/dpkg-before.txt /tmp/dpkg-after.txt
+          mkdir /tmp/cache-dpkg
+          export DEPS=$(comm -13 /tmp/dpkg-before.txt /tmp/dpkg-after.txt | tr '\n' ' ')
+          for dep in ${DEPS}; do
+            dpkg -L $dep | while IFS= read -r path; do if test -f $path; then echo $path; fi; done | xargs cp --parents -t /tmp/cache-dpkg/
+          done
+        fi
 
     - id: cache-qt
       name: Cache Qt
@@ -109,7 +131,7 @@ jobs:
     - run: mkdir deploy
 
     - name: Prepare artifacts
-      run: zip -j "deploy/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip" \
+      run: ls stage && zip -j "deploy/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip"
         stage/usr/bin/pegasus-fe
         README.md
         LICENSE.md
