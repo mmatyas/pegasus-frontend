@@ -24,27 +24,31 @@ jobs:
         submodules: 'recursive'
         fetch-depth: 200
 
+    - run: apt list --manual-installed
+
     - id: cache-dpkg
       name: Cache APT deps
       uses: actions/cache@v2
       with:
         path: ~/cache-dpkg
-        key: ${{ runner.os }}-dpkg-${{ hashFiles('.github/workflows/x11-deps.txt') }}
+        key: ${{ runner.os }}-dpkg-${{ hashFiles('.github/workflows/x11-deps.txtx') }}
 
     - name: Install APT deps
       env:
         CACHE_HIT: ${{ steps.cache-dpkg.outputs.cache-hit }}
       run: |
         if [[ "$CACHE_HIT" == "true" ]]; then
-          sudo cp --force --recursive ~/cache-dpkg/* /
+          sudo cp --force --recursive --verbose ~/cache-dpkg/* /
         else
           export APT_DEPS=$(cat .github/workflows/x11-deps.txt | tr '\n' ' ')
           sudo apt-get update && sudo apt-get install -y ${APT_DEPS}
           mkdir ~/cache-dpkg
           for dep in ${APT_DEPS}; do
-            dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/cache-dpkg/
+            dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --verbose --parents --target-directory ~/cache-dpkg/
           done
         fi
+
+    - run: apt list --manual-installed
 
     - id: cache-qt
       name: Cache Qt
@@ -93,6 +97,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-
 
+    - run: ccache -s
+
     - name: Lint QML
       run: find -name *.qml -exec /opt/${QT_VERSION}_${QT_TARGET}/bin/qmllint {} \;
 
@@ -122,11 +128,12 @@ jobs:
       run: DESTDIR=$PWD/../stage ninja install/strip
       working-directory: build
 
+    - run: ccache -s
     - run: mkdir deploy
 
     - name: Prepare artifacts
       run: zip -j "deploy/pegasus-fe_$(git describe --always)_${QT_TARGET}.zip" \
-        stage/pegasus-fe
+        stage/usr/bin/pegasus-fe
         README.md
         LICENSE.md
 
