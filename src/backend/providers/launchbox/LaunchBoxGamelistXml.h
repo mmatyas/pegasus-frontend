@@ -41,7 +41,7 @@ class GamelistXml {
 public:
     explicit GamelistXml(QString, QDir);
 
-    std::vector<model::Game*> find_games_for(const Platform&, const HashMap<QString, Emulator>&, SearchContext&) const;
+    std::vector<model::Game*> find_games_for(const Platform&, const HashMap<QString, Emulator>&, const QString&, SearchContext&) const;
 
 private:
     const QString m_log_tag;

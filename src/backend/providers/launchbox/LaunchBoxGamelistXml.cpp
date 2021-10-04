@@ -23,7 +23,6 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
-#include "providers/ProviderUtils.h"
 #include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxXml.h"
 #include "utils/PathTools.h"
@@ -66,10 +65,9 @@ enum class AppField : unsigned char {
 void apply_game_fields(
     const HashMap<GameField, QString>& fields,
     model::Game& game,
-    const HashMap<QString, Emulator>& emulators)
+    const HashMap<QString, Emulator>& emulators,
+    const QString& steam_call)
 {
-    const QString steam_call(providers::find_steam_call());
-
     QString emu_id;
     QString emu_params;
     QString emu_platform_name;
@@ -145,7 +143,7 @@ void apply_game_fields(
 
     if (emu_id.isEmpty()) {
         if (source == QLatin1String("Steam")) {
-            game.setLaunchCmd(steam_call % path);
+            game.setLaunchCmd(steam_call % QChar(' ') % path);
         } else {
             game.setLaunchCmd(QStringLiteral("{file.path}"));
             game.setLaunchWorkdir(::clean_abs_dir(QFileInfo(path)));
@@ -368,6 +366,7 @@ HashMap<AppField, QString> GamelistXml::read_app_node(QXmlStreamReader& xml) con
 std::vector<model::Game*> GamelistXml::find_games_for(
     const Platform& platform,
     const HashMap<QString, Emulator>& emulators,
+    const QString& steam_call,
     SearchContext& sctx) const
 {
     const QString xml_rel_path = QStringLiteral("Data/Platforms/%1.xml").arg(platform.name); // TODO: Qt 5.14+ QLatin1String
@@ -441,7 +440,7 @@ std::vector<model::Game*> GamelistXml::find_games_for(
             }
 
             Q_ASSERT(game_ptr);
-            apply_game_fields(fields, *game_ptr, emulators);
+            apply_game_fields(fields, *game_ptr, emulators, steam_call);
             gameid_map.emplace(fields.at(GameField::ID), game_ptr);
             sctx.game_add_to(*game_ptr, collection);
             continue;

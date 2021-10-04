@@ -19,6 +19,7 @@
 
 #include "Log.h"
 #include "Paths.h"
+#include "providers/ProviderUtils.h"
 #include "providers/launchbox/LaunchBoxAssets.h"
 #include "providers/launchbox/LaunchBoxEmulatorsXml.h"
 #include "providers/launchbox/LaunchBoxGamelistXml.h"
@@ -64,6 +65,8 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
         return *this;
     }
 
+    const QString steam_call = providers::find_steam_call();
+
     const HashMap<QString, Emulator> emulators = EmulatorsXml(display_name(), lb_dir).find();
     // NOTE: It's okay to not have any emulators
 
@@ -73,7 +76,7 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
     const GamelistXml metahelper(display_name(), lb_dir);
     const Assets assethelper(display_name(), lb_dir_path);
     for (const Platform& platform : platforms) {
-        const std::vector<model::Game*> games = metahelper.find_games_for(platform, emulators, sctx);
+        const std::vector<model::Game*> games = metahelper.find_games_for(platform, emulators, steam_call, sctx);
         progress += progress_step;
         emit progressChanged(progress);
 
