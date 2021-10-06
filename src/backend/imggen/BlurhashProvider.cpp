@@ -32,6 +32,7 @@ constexpr std::array<char, 83> BASE83 {
     '-', '.', ':', ';', '=', '?', '@', '[', ']', '^', '_', '{', '|', '}', '~',
 };
 constexpr int BLURHASH_MIN_LEN = 6;
+constexpr double PI = 3.14159265358979323846;
 
 
 struct FpColor {
@@ -119,7 +120,7 @@ std::vector<float> create_cos_table(unsigned components, unsigned image_dim)
 {
     std::vector<float> out(components * image_dim);
     for (size_t i = 0; i < out.size(); i++)
-        out[i] = std::cos(M_PI * i / image_dim);
+        out[i] = std::cos(PI * i / image_dim);
     return out;
 }
 } // namespace
