@@ -27,6 +27,7 @@ win32|defined(pclinux,var): include(gog/gog.pri)
 win32|macx|defined(pclinux,var)|defined(armlinux,var): include(es2/es2.pri)
 win32: include(launchbox/launchbox.pri)
 win32: include(playnite/playnite.pri)
+win32: include(epicgames/epicgames.pri)
 android: include(android_apps/android.pri)
 defined(pclinux,var): include(lutris/lutris.pri)
 # All platforms

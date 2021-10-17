@@ -52,6 +52,9 @@
 #ifdef WITH_COMPAT_PLAYNITE
   #include "providers/playnite/PlayniteProvider.h"
 #endif
+#ifdef WITH_COMPAT_EPICGAMES
+  #include "providers/epicgames/EpicGamesProvider.h"
+#endif
 
 #include <QFile>
 
@@ -125,6 +128,9 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #endif
 #ifdef WITH_COMPAT_PLAYNITE
         MKENTRY(playnite::PlayniteProvider)
+#endif
+#ifdef WITH_COMPAT_EPICGAMES
+        MKENTRY(epicgames::EpicGamesProvider)
 #endif
 
         // Make sure these come last as they never add new games
