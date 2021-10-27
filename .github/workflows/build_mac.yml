@@ -1,0 +1,65 @@
+name: Build - Mac
+
+on: [push, pull_request, workflow_dispatch]
+
+
+jobs:
+  macos-static:
+    runs-on: macos-10.15
+    env:
+      QTNAME: qt5152_macos-static
+      QTNAME_PRETTY: "Qt-5.15.2"
+      SDL_VERSION: "2.0.16"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - name: Prepare
+        run: git fetch --tags && mkdir build
+
+      - name: Brew deps
+        run: |
+          brew install cmake ninja
+          cmake --version
+      - name: Binary deps
+        run: |
+          .github/tools/get_tool.sh "${QTNAME}" /usr/local/
+          .github/tools/get_tool.sh "SDL2-${SDL_VERSION}_macos" /opt/
+          .github/tools/get_tool.sh apng_patched_headers "/usr/local/${QTNAME_PRETTY}/include/"
+          /usr/local/${QTNAME_PRETTY}/bin/qmake --version
+
+      - name: Configure
+        working-directory: build
+        run: cmake ..
+          -DCMAKE_PREFIX_PATH="/usr/local/${QTNAME_PRETTY};/opt/SDL2-${SDL_VERSION}"
+          -G Ninja
+          -DPEGASUS_ENABLE_APNG=ON
+          -DPEGASUS_INSTALLDIR=/
+      - name: Build
+        working-directory: build
+        run: ninja
+      - name: Test
+        working-directory: build
+        run: ctest --rerun-failed --output-on-failure
+
+      - name: Prepare artifacts
+        run: |
+          (cd build && DESTDIR="${PWD}/../installdir" ninja install/strip)
+          export ZIPNAME="pegasus-fe_$(git describe --always)_macos-static.zip"
+          cd installdir
+          zip -r "../${ZIPNAME}" ./*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos-static
+          path: pegasus-fe_*_macos-static.zip
+      - name: Deploy
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          external_repository: mmatyas/pegasus-deploy-staging
+          personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}
+          publish_branch: continuous-macos-static
+          publish_dir: ./deploy
+          force_orphan: true
