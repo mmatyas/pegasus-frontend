@@ -1,0 +1,53 @@
+name: Build - Windows
+
+on: [push, pull_request, workflow_dispatch]
+
+
+jobs:
+  mingw:
+    runs-on: ubuntu-20.04
+    env:
+      QTNAME: qt5152_win32-mingw-static
+      SDL_VERSION: "2.0.16"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - name: Prepare
+        run: git fetch --tags && mkdir build
+
+      - name: APT deps
+        run: |
+          sudo apt-get update && sudo apt-get install -y g++-mingw-w64-i686 ninja-build
+          echo 1 | sudo update-alternatives --config i686-w64-mingw32-gcc
+          echo 1 | sudo update-alternatives --config i686-w64-mingw32-g++
+      - name: Binary deps
+        run: |
+          .github/tools/get_tool.sh "${QTNAME}" /opt/
+          .github/tools/get_tool.sh "SDL2-${SDL_VERSION}_mingw" /opt/
+          .github/tools/get_tool.sh apng_patched_headers "/opt/${QTNAME}/include/"
+          .github/tools/get_tool.sh "openssl-111d_mingw" /opt/
+
+      - name: Configure
+        working-directory: build
+        run: cmake ..
+          -DCMAKE_TOOLCHAIN_FILE=../.github/tools/mingw_toolchain.cmake
+          -DCMAKE_PREFIX_PATH="/opt/${QTNAME};/opt/SDL2-${SDL_VERSION};/opt/openssl-111d_mingw"
+          -G Ninja
+          -DCMAKE_INSTALL_PREFIX=/
+          -DPEGASUS_ENABLE_APNG=ON
+      - name: Build
+        working-directory: build
+        run: ninja
+
+      - name: Stage
+        run: |
+          (cd build && DESTDIR="${PWD}/../installdir" ninja install/strip)
+          .github/tools/linux_print_deps.sh i686-w64-mingw32- installdir/pegasus-fe.exe 'DLL Name'
+          .github/tools/linux_make_zip.sh mingw-static installdir/pegasus-fe.exe
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: mingw-static
+          path: deploy/*
