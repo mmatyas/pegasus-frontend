@@ -1,0 +1,110 @@
+name: Build - X11
+
+on: [push, pull_request, workflow_dispatch]
+
+
+jobs:
+  x11:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        buildtype: [release, measure]
+    env:
+      QTNAME: qt5152_x11-static
+      SDL_VERSION: "2.0.16"
+      SDL_TARGET: x11-bionic
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - name: Prepare
+        run: git fetch --tags && mkdir build
+
+      - name: APT deps
+        run: sudo apt-get update && sudo apt-get install -y
+          lcov
+          libasound-dev
+          libgl1-mesa-dev
+          libgstreamer-plugins-base1.0-dev
+          libpulse-dev
+          libudev-dev
+          libxcb-icccm4-dev
+          libxcb-image0-dev
+          libxcb-keysyms1-dev
+          libxcb-render-util0-dev
+          libxcb-util-dev
+          libxcb-xinerama0-dev
+          libxi-dev
+          libxkbcommon-dev
+          libxkbcommon-x11-dev
+          libzstd-dev
+          ninja-build
+          ruby
+          xvfb
+      - name: Binary deps
+        run: |
+          .github/tools/get_tool.sh "${QTNAME}" /opt/
+          .github/tools/get_tool.sh "SDL2-${SDL_VERSION}_${SDL_TARGET}" /opt/
+          .github/tools/get_tool.sh apng_patched_headers "/opt/${QTNAME}/include/"
+          .github/tools/get_tool.sh cmake-linux-x64 /opt/
+          /opt/${QTNAME}/bin/qmake --version
+          /opt/cmake/bin/cmake --version
+
+      - name: Lint QML
+        run: find -name *.qml -exec /opt/${QTNAME}/bin/qmllint {} \;
+
+      - name: Configure for release
+        if: matrix.buildtype == 'release'
+        working-directory: build
+        run: /opt/cmake/bin/cmake ..
+          -DCMAKE_PREFIX_PATH="/opt/${QTNAME};/opt/SDL2-${SDL_VERSION}"
+          -G Ninja
+          -DCMAKE_INSTALL_PREFIX=/usr/
+          -DPEGASUS_ENABLE_APNG=ON
+      - name: Configure for measurement
+        if: matrix.buildtype == 'measure'
+        working-directory: build
+        run: /opt/cmake/bin/cmake ..
+          -DCMAKE_PREFIX_PATH="/opt/${QTNAME};/opt/SDL2-${SDL_VERSION}"
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage"
+          -DCMAKE_EXE_LINKER_FLAGS=-lgcov
+          -DCMAKE_INSTALL_PREFIX=/usr/
+          -DPEGASUS_ENABLE_APNG=ON
+      - name: Build
+        working-directory: build
+        run: ninja
+
+      - name: Prepare for measurement
+        if: matrix.buildtype == 'measure'
+        run: .github/tools/lcov_pre_test.sh build
+
+      - name: Test
+        working-directory: build
+        run: xvfb-run -a ctest --rerun-failed --output-on-failure
+
+      - name: Collect measurement data
+        if: matrix.buildtype == 'measure'
+        run: .github/tools/lcov_post_test.sh build
+      - name: Send to Coveralls
+        if: matrix.buildtype == 'measure'
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: build/coverage.clean
+
+      - name: Stage
+        if: matrix.buildtype == 'release'
+        run: |
+          (cd build && DESTDIR="${PWD}/../installdir" ninja install/strip)
+          .github/tools/linux_print_deps.sh '' installdir/usr/bin/pegasus-fe
+          .github/tools/linux_make_zip.sh x11-static installdir/usr/bin/pegasus-fe
+          .github/tools/linux_make_deb.sh installdir
+      - name: Upload artifacts
+        if: matrix.buildtype == 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: x11-static
+          path: deploy/*
