@@ -29,13 +29,12 @@ add_library(pegasus-locales "${PEGASUS_LOCALE_SRC}")
 # Main runtime
 
 if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
-    qt_add_executable(pegasus-fe MANUAL_FINALIZATION WIN32 main.cpp)
+    qt_add_executable(pegasus-fe MANUAL_FINALIZATION WIN32 MACOSX_BUNDLE main.cpp)
 else()
-    add_executable(pegasus-fe WIN32 main.cpp)
+    add_executable(pegasus-fe WIN32 MACOSX_BUNDLE main.cpp)
 endif()
-target_include_directories(pegasus-fe PRIVATE
-    "${PROJECT_SOURCE_DIR}/src"
-)
+
+target_include_directories(pegasus-fe PRIVATE "${PROJECT_SOURCE_DIR}/src")
 target_link_libraries(pegasus-fe PUBLIC
     Qt::Core
     pegasus-assets
@@ -53,6 +52,16 @@ target_compile_definitions(pegasus-fe PRIVATE PEGASUS_USING_CMAKE)
 
 if(PEGASUS_ENABLE_APNG)
     target_compile_definitions(pegasus-fe PUBLIC WITH_APNG_SUPPORT)
+endif()
+
+if(APPLE)
+    set(macos_icon_path "${CMAKE_CURRENT_LIST_DIR}/platform/macos/pegasus-fe.icns")
+    target_sources(pegasus-fe PRIVATE "${macos_icon_path}")
+    set_source_files_properties("${macos_icon_path}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set_target_properties(pegasus-fe PROPERTIES
+        MACOSX_BUNDLE_ICON_FILE "pegasus-fe.icns"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_LIST_DIR}/platform/macos/cmake/Info.plist.in"
+    )
 endif()
 
 if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
@@ -82,7 +91,10 @@ pegasus_set_installdir(INSTALL_DESKTOPDIR "${CMAKE_INSTALL_FULL_DATAROOTDIR}/app
 pegasus_set_installdir(INSTALL_APPSTREAMDIR "${CMAKE_INSTALL_FULL_DATAROOTDIR}/metainfo")
 
 if(INSTALL_BINDIR)
-    install(TARGETS pegasus-fe RUNTIME DESTINATION "${INSTALL_BINDIR}")
+    install(TARGETS pegasus-fe
+        RUNTIME DESTINATION "${INSTALL_BINDIR}"
+        BUNDLE DESTINATION "${INSTALL_BINDIR}"
+    )
 endif()
 
 if(INSTALL_DOCDIR)
