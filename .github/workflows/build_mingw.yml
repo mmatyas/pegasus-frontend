@@ -37,9 +37,10 @@ jobs:
           -G Ninja
           -DCMAKE_INSTALL_PREFIX=/
           -DPEGASUS_ENABLE_APNG=ON
+          -DPEGASUS_ENABLE_LTO=OFF
       - name: Build
         working-directory: build
-        run: ninja
+        run: ninja -j 1
 
       - name: Stage
         run: |
