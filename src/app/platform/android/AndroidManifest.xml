@@ -66,6 +66,14 @@
             <!-- meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/logo"/ -->
             <!-- meta-data android:name="android.app.splash_screen_sticky" android:value="true"/ -->
         </activity>
+
+        <provider
+            android:name="org.pegasus_frontend.android.LaunchFileProvider"
+            android:authorities="org.pegasus_frontend.android.files"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/fileprovider_paths" />
+        </provider>
     </application>
 
     <supports-screens

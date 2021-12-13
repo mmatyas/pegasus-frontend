@@ -36,6 +36,7 @@ import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.provider.Settings;
+import androidx.core.content.FileProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -219,6 +220,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         try {
             Intent intent = IntentHelper.parseIntentCommand(args);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             m_context.startActivity(intent);
         }
         catch (Exception e) {
@@ -226,5 +228,13 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         }
 
         return null;
+    }
+
+    public static String toContentUri(String path) {
+        final Uri uri = FileProvider.getUriForFile(
+            m_context,
+            "org.pegasus_frontend.android.files",
+            new File(path));
+        return uri.toString();
     }
 }

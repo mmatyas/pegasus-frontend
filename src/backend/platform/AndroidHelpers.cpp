@@ -114,4 +114,20 @@ QString run_am_call(const QStringList& args)
     return result_obj.toString();
 }
 
+QString to_content_uri(const QString& path)
+{
+    static constexpr auto JNI_METHOD = "toContentUri";
+    static constexpr auto JNI_SIGNATURE = "(Ljava/lang/String;)Ljava/lang/String;";
+
+    QAndroidJniObject jni_path_str = QAndroidJniObject::fromString(path);
+
+    QAndroidJniEnvironment jni_env;
+    const auto result_obj = QAndroidJniObject::callStaticObjectMethod(
+        jni_classname(),
+        JNI_METHOD,
+        JNI_SIGNATURE,
+        jni_path_str.object<jobject>());
+    return result_obj.toString();
+}
+
 } // namespace android

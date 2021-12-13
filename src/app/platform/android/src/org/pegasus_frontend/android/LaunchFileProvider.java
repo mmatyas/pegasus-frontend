@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2021  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,19 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+package org.pegasus_frontend.android;
 
-#include <QString>
-#include <vector>
+import androidx.core.content.FileProvider;
 
 
-namespace android {
-
-const char* jni_classname();
-QString primary_storage_path();
-std::vector<QString> storage_paths();
-bool has_external_storage_access();
-QString run_am_call(const QStringList&);
-QString to_content_uri(const QString&);
-
-} // namespace android
+public class LaunchFileProvider extends FileProvider {}

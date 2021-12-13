@@ -30,6 +30,7 @@
 #endif
 
 #include <QDir>
+#include <QUrl>
 #include <QRegularExpression>
 
 
@@ -54,8 +55,17 @@ void replace_env_vars(QString& param)
 
 void replace_variables(QString& param, const QFileInfo& finfo)
 {
+    const QString abs_path = finfo.absoluteFilePath();
+
+#ifdef Q_OS_ANDROID
+    const QString uri_str = android::to_content_uri(abs_path);
+#else
+    const QString uri_str = QUrl::fromLocalFile(abs_path).toString(QUrl::FullyEncoded);
+#endif
+
     param
         .replace(QLatin1String("{file.path}"), ::pretty_path(finfo))
+        .replace(QLatin1String("{file.uri}"), uri_str)
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), ::pretty_dir(finfo));
