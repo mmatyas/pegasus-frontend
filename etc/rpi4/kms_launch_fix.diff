@@ -1,9 +1,9 @@
 diff --git a/src/backend/ProcessLauncher.cpp b/src/backend/ProcessLauncher.cpp
-index 8ba5f3f9..15cd63af 100644
+index a2d44a79..1e76b401 100644
 --- a/src/backend/ProcessLauncher.cpp
 +++ b/src/backend/ProcessLauncher.cpp
-@@ -32,6 +32,14 @@
- #include <QDir>
+@@ -33,6 +33,14 @@
+ #include <QUrl>
  #include <QRegularExpression>
  
 +#define private public
@@ -17,7 +17,7 @@ index 8ba5f3f9..15cd63af 100644
  
  namespace {
  static constexpr auto SEPARATOR = "----------------------------------------";
-@@ -198,7 +206,6 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -208,7 +216,6 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
      m_process = new QProcess(this);
  
      // set up signals and slots
@@ -25,7 +25,7 @@ index 8ba5f3f9..15cd63af 100644
      connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
      connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
              this, &ProcessLauncher::onProcessFinished);
-@@ -207,8 +214,9 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -217,8 +224,9 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
      m_process->setProcessChannelMode(QProcess::ForwardedChannels);
      m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
      m_process->setWorkingDirectory(workdir);
@@ -37,7 +37,7 @@ index 8ba5f3f9..15cd63af 100644
  
  #else // Q_OS_ANDROID
      const QString result = android::run_am_call(args);
-@@ -228,10 +236,20 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -238,10 +246,20 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
  
  void ProcessLauncher::onTeardownComplete()
  {
@@ -60,7 +60,7 @@ index 8ba5f3f9..15cd63af 100644
      emit processFinished();
  }
  
-@@ -285,7 +303,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
+@@ -295,7 +313,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
  
  void ProcessLauncher::beforeRun(const QString& game_path)
  {
@@ -68,7 +68,7 @@ index 8ba5f3f9..15cd63af 100644
      ScriptRunner::run(ScriptEvent::PROCESS_STARTED, { game_path });
  }
  
-@@ -298,5 +315,4 @@ void ProcessLauncher::afterRun()
+@@ -308,5 +325,4 @@ void ProcessLauncher::afterRun()
  #endif
  
      ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
