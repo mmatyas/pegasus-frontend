@@ -17,5 +17,6 @@
         <file>sdl2/gamecontrollerdb_204.txt</file>
         <file>sdl2/gamecontrollerdb_205.txt</file>
         <file>sdl2/gamecontrollerdb_209.txt</file>
+        <file>sdl2/gamecontrollerdb_2016.txt</file>
     </qresource>
 </RCC>
