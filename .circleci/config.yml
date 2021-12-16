@@ -80,12 +80,12 @@ jobs:
       - BUILDOPTS:
           USE_SDL_GAMEPAD=1
           USE_SDL_POWER=1
-          SDL_LIBS='-L/opt/SDL2-2.0.18/i686-w64-mingw32/lib/ -lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi'
-          SDL_INCLUDES=/opt/SDL2-2.0.18/i686-w64-mingw32/include/SDL2/
+          SDL_LIBS='-L/opt/SDL2-2.0.18/lib/ -lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi'
+          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2/
     steps:
       - checkout
       - run: .circleci/prepare.sh
-      - run: curl -L "https://www.libsdl.org/release/SDL2-devel-2.0.16-mingw.tar.gz" | tar xzf - -C /opt/
+      - run: curl -L "https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/SDL2-2.0.18_mingw.tar.xz" | tar xJf - -C /opt/
       - run: .circleci/build.sh
       - run: i686-w64-mingw32-objdump -p installdir/home/build/project/src/app/C:/pegasus-frontend/pegasus-fe.exe | grep 'DLL Name' | sort
       # Deploy
