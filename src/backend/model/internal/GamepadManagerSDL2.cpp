@@ -63,6 +63,9 @@ uint16_t linked_sdl_version()
 
 QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
 {
+    if (version(2, 0, 16) <= linked_ver)
+        return QLatin1String("2016");
+
     if (version(2, 0, 9) <= linked_ver)
         return QLatin1String("209");
 
