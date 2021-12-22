@@ -35,15 +35,13 @@
 
 <!----------------------------------------------------------------------------->
 
-
-![screenshot](etc/promo/screenshot_alpha10.jpg)
-
-
 # Pegasus Frontend
 
 **Pegasus** is a `highly customizable`, `cross-platform`, <br>
 game launcher that allows you to *browse your titles* and <br>
 *start your emulators* in one place.
+
+![screenshot](etc/promo/screenshot_alpha10.jpg)
 
 ---
 
