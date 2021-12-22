@@ -79,7 +79,7 @@ game launcher that allows you to *browse your titles* and <br>
 
 - **Themes** cover everything
 - **+ / -** `UI Elements`, `Menus`, `Animations`, ..
-- Custom **[Shaders]** can be integrated
+- Custom **[Shaders]** integration
 
 #### Quality Of Life
 
