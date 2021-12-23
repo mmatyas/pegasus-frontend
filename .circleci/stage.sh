@@ -8,7 +8,7 @@ set +o xtrace # !
 pushd dist
 
 if [[ "$CIRCLE_BRANCH" != "master" ]]; then
-  FFSEND_VER="v0.2.65"
+  FFSEND_VER="v0.2.74"
 
   echo "Release uploading disabled for pull requests, uploading to Send instead"
   pushd /tmp
