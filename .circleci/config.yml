@@ -245,25 +245,4 @@ workflows:
   version: 2
   all:
     jobs:
-      - x11
-      - android
       - mingw
-      - buster-pi1
-      - buster-pi2
-      - buster-pi3
-      - buster-pi4
-      - odroid-c1
-      - odroid-c2
-      - odroid-xu3
-      - release:
-          requires:
-            - x11
-            - android
-            - mingw
-            - buster-pi1
-            - buster-pi2
-            - buster-pi3
-            - buster-pi4
-            - odroid-c1
-            - odroid-c2
-            - odroid-xu3
