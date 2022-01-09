@@ -82,6 +82,10 @@ android {
         platform/android/res/mipmap-xxhdpi/icon_fg.png \
         platform/android/res/mipmap-xxxhdpi/icon_fg.png \
         platform/android/res/mipmap-anydpi-v26/icon.xml \
+        platform/android/src/org/pegasus_frontend/android/App.java \
+        platform/android/src/org/pegasus_frontend/android/BatteryInfo.java \
+        platform/android/src/org/pegasus_frontend/android/IntentHelper.java \
+        platform/android/src/org/pegasus_frontend/android/LaunchFileProvider.java \
         platform/android/src/org/pegasus_frontend/android/MainActivity.java \
         platform/android/res/values/icon_bg.xml \
         platform/android/res/values/libs.xml \
