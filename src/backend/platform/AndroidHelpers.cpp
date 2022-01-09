@@ -17,11 +17,13 @@
 
 #include "AndroidHelpers.h"
 
+#include <QDir>
 #include <QHash>  // Required for PermissionResultMap
 #include <QStandardPaths>
 #include <QtAndroid>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <QtAndroidExtras/QAndroidJniObject>
+#include <QUrl>
 
 
 namespace android {
@@ -128,6 +130,21 @@ QString to_content_uri(const QString& path)
         JNI_SIGNATURE,
         jni_path_str.object<jobject>());
     return result_obj.toString();
+}
+
+QString to_document_uri(const QString& path)
+{
+    const QFileInfo finfo(path);
+    const QDir storage_root(primary_storage_path());
+
+    const QString primary_prefix = QStringLiteral("primary:");
+    const QString rel_dir = primary_prefix + storage_root.relativeFilePath(finfo.absolutePath());
+    const QString rel_path = primary_prefix + storage_root.relativeFilePath(finfo.absoluteFilePath());
+
+    const QString uri_str = QStringLiteral("content://com.android.externalstorage.documents/tree/%1/document/%2")
+        .arg(QUrl::toPercentEncoding(rel_dir), QUrl::toPercentEncoding(rel_path));
+
+    return uri_str;
 }
 
 } // namespace android

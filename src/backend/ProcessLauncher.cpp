@@ -70,6 +70,11 @@ void replace_variables(QString& param, const QFileInfo& finfo)
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), ::pretty_dir(finfo));
 
+#ifdef Q_OS_ANDROID
+    const QString document_uri_str = android::to_document_uri(abs_path);
+    param.replace(QLatin1String("{file.documenturi}"), document_uri_str);
+#endif
+
     replace_env_vars(param);
 }
 

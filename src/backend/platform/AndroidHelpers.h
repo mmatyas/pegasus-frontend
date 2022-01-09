@@ -29,5 +29,6 @@ std::vector<QString> storage_paths();
 bool has_external_storage_access();
 QString run_am_call(const QStringList&);
 QString to_content_uri(const QString&);
+QString to_document_uri(const QString&);
 
 } // namespace android
