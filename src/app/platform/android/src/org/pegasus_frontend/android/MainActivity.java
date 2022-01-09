@@ -19,6 +19,7 @@ package org.pegasus_frontend.android;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
@@ -48,7 +49,7 @@ import java.util.List;
 
 
 public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity {
-    private static Context m_context;
+    private static Activity m_self;
     private static PackageManager m_pm;
     private static int m_icon_density;
 
@@ -56,7 +57,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
     @Override
     protected void onStart() {
         super.onStart();
-        m_context = this;
+        m_self = this;
         m_pm = getPackageManager();
 
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -122,7 +123,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         // - https://developer.android.com/reference/android/os/storage/StorageManager#getStorageVolumes()
         // - https://developer.android.com/reference/android/os/storage/StorageVolume#getDirectory()
 
-        final StorageManager storage_man = (StorageManager) m_context.getSystemService(Context.STORAGE_SERVICE);
+        final StorageManager storage_man = (StorageManager) m_self.getSystemService(Context.STORAGE_SERVICE);
 
         List<StorageVolume> storage_vols = null;
         if (Build.VERSION.SDK_INT >= 24) {
@@ -182,14 +183,14 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
 
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        intent.setData(Uri.parse("package:" + m_context.getPackageName()));
-        m_context.startActivity(intent);
+        intent.setData(Uri.parse("package:" + m_self.getPackageName()));
+        m_self.startActivity(intent);
         return false;
     }
 
     public static BatteryInfo queryBattery() {
         final IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        final Intent batIntent = m_context.registerReceiver(null, ifilter);
+        final Intent batIntent = m_self.registerReceiver(null, ifilter);
 
         final int batStatus = batIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
         if (batStatus == BatteryManager.BATTERY_STATUS_UNKNOWN)
@@ -221,7 +222,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
             Intent intent = IntentHelper.parseIntentCommand(args);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            m_context.startActivity(intent);
+            m_self.startActivity(intent);
         }
         catch (Exception e) {
             return e.toString() + ": " + e.getMessage();
@@ -232,7 +233,7 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
 
     public static String toContentUri(String path) {
         final Uri uri = FileProvider.getUriForFile(
-            m_context,
+            m_self,
             "org.pegasus_frontend.android.files",
             new File(path));
         return uri.toString();
