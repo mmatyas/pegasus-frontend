@@ -54,7 +54,20 @@ bool apply_json(model::Game& game, const QJsonDocument& json)
     const QString developer = root[Lat("developer")].toString();
     if (!developer.isEmpty())
         game.developerList().append(root[Lat("developer")].toString());
-
+    
+    const QString category = root[Lat("category")].toString();
+    if (!category.isEmpty()){
+        game.genreList().append(root[Lat("category")].toString());
+    }
+    
+    QDate release = QDate::fromString(root[Lat("release")].toString(),"MMM d, yyyy");
+    if(release.isValid()){
+        game.setReleaseDate(release);
+    } else {
+        release = QDate::fromString(root[Lat("release")].toString(),"d MMM yyyy");
+        game.setReleaseDate(release);
+    }
+    
     game.setDescription(root[Lat("description")].toString());
     game.setSummary(game.description().section(QChar('\n'), 0, 0));
 
@@ -87,9 +100,11 @@ MetadataHelper::MetadataHelper(QString log_tag)
     , m_json_cache_dir(QStringLiteral("androidapps"))
     , rx_meta_itemprops(QStringLiteral(R""(<meta itemprop="(.+?)" content="(.+?)")""), QRegularExpression::DotMatchesEverythingOption)
     , rx_background(QStringLiteral(R""(<meta property="og:image" content="(.+?)")""))
-    , rx_developer(QStringLiteral(R""(<a +href="https:\/\/play\.google\.com\/store\/apps\/dev(eloper)?\?id=.+?".*?>([^<]+)<\/a>)""))
+    , rx_developer(QStringLiteral(R""(<a href="/store\/apps\/dev(eloper)?\?id=.+?" class=".*?">([^<]+)<\/a><\/span>)""))
     , rx_category(QStringLiteral(R""(<a itemprop="genre".*?>([^<]+)<\/a>)""))
     , rx_screenshots(QStringLiteral(R""(<img src="([^"]+=w720-h310)")""))
+    , rx_rating(QStringLiteral(R""("AggregateRating","ratingValue":"(.+?)")""))
+    , rx_release(QStringLiteral(R""("Google Commerce Ltd"],"(.+?)")""))
 {}
 
 bool MetadataHelper::fill_from_cache(const QString& app_package, model::Game& game) const
@@ -183,10 +198,22 @@ QJsonDocument MetadataHelper::parse_reply(const QByteArray& html_raw) const
     if (rx_developer_match.hasMatch())
         json_root.insert(QStringLiteral("developer"), rx_developer_match.captured(2));
 
-    const auto rx_category_match = rx_developer.match(content);
+    const auto rx_category_match = rx_category.match(content);
     if (rx_category_match.hasMatch())
         json_root.insert(QStringLiteral("category"), rx_category_match.captured(1));
+    
+    const auto rx_release_match = rx_release.match(content);
+    if (rx_release_match.hasMatch()){
+        json_root.insert(QStringLiteral("release"), rx_release_match.captured(1));
+    }
 
+    const auto rx_rating_match = rx_rating.match(content);
+    if (rx_category_match.hasMatch()){
+        bool is_double = false;
+        const double val = rx_rating_match.captured(1).toDouble(&is_double);
+        if (is_double)
+            json_root.insert(QStringLiteral("rating"), val);
+    }
 
     QJsonArray sshot_arr;
     auto rx_screenshots_it = rx_screenshots.globalMatch(content);
