@@ -43,6 +43,8 @@ private:
     const QRegularExpression rx_developer;
     const QRegularExpression rx_category;
     const QRegularExpression rx_screenshots;
+    const QRegularExpression rx_release;
+    const QRegularExpression rx_rating;
 
     QJsonDocument parse_reply(const QByteArray&) const;
 };
