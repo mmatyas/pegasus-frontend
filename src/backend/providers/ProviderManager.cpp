@@ -101,7 +101,7 @@ void ProviderManager::run(
                 m_progress_finished += m_progress_step;
         }
         m_progress_finished = 1.f;
-        m_progress_stage = QString();
+        m_progress_stage.clear();
         emit progressChanged(m_progress_finished, m_progress_stage);
 
 
@@ -142,7 +142,8 @@ void ProviderManager::onProviderProgressChanged(float percent)
         return;
 
     const float safe_percent = qBound(0.f, percent, 1.f);
-    emit progressChanged(m_progress_finished + m_progress_step * safe_percent, m_progress_stage);
+    const float progress_now = m_progress_finished + m_progress_step * safe_percent;
+    emit progressChanged(progress_now, m_progress_stage);
 }
 
 
