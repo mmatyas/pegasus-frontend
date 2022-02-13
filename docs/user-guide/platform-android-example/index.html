@@ -45,14 +45,10 @@
   -e ROM <span class=o>{</span>file.path<span class=o>}</span>
   -e LIBRETRO /data/data/com.retroarch/cores/fceumm_libretro_android.so
   -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg
-  -e IME com.android.inputmethod.latin/.LatinIME
-  -e DATADIR /data/data/com.retroarch
-  -e APK /data/app/com.retroarch-1/base.apk
-  -e SDCARD /storage/emulated/0
-  -e DOWNLOADS /storage/emulated/0/Download
-  -e SCREENSHOTS /storage/emulated/0/Pictures
-  -e EXTERNAL /storage/emulated/0/Android/data/com.retroarch/files
+  -e QUITFOCUS
   --activity-clear-top
+  --activity-clear-task
+  --activity-no-history
 </pre></div></details><div class="admonition warning"><p class=admonition-title>SD card path</p><p>In the above configurations I use <code>/storage/emulated/0/</code> which is the path of the SD card on my device. This might be different for you! You can check the path in most file manager apps, look for something like "file details" or similar.</p></div><p>While it's optional, I'd also like some descriptions and such for my games, so I add the following as well as well:</p><details class=note><summary>[SD card]/Roms/PSP/metadata.pegasus.txt</summary><div class=codehilite><pre><span></span><span class=err>...</span>
 
 <span class=nf>game</span><span class=o>:</span> <span class=n>Patapon</span>
