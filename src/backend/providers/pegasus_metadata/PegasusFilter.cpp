@@ -33,7 +33,7 @@ std::vector<QString> all_valid_direct_subdirs(const QString& filter_dir)
 {
     Q_ASSERT(!filter_dir.isEmpty());
 
-    constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto subdir_filters = QDir::Dirs | QDir::NoDotAndDotDot;
     constexpr auto subdir_flags = QDirIterator::FollowSymlinks;
 
     std::vector<QString> result;
@@ -148,7 +148,7 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
     if (!needs_scan)
         return;
 
-    constexpr auto entry_filters_files = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto entry_filters_files = QDir::Files | QDir::NoDotAndDotDot;
     constexpr auto entry_filters_all = QDir::Dirs | entry_filters_files;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
     for (const QString& filter_dir : filter.directories) {

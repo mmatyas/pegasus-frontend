@@ -72,7 +72,7 @@ MediaProvider::MediaProvider(QObject* parent)
 
 Provider& MediaProvider::run(SearchContext& sctx)
 {
-    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto dir_filters = QDir::Files | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
     constexpr int media_len = 6; // length of `/media`
 

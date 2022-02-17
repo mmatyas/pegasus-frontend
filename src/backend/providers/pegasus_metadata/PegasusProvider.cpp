@@ -39,7 +39,7 @@ bool is_metadata_file(const QString& filename)
 
 std::vector<QString> find_metafiles_in(const QString& dir_path)
 {
-    constexpr auto dir_filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto dir_filters = QDir::Files | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::FollowSymlinks;
 
     std::vector<QString> result;
@@ -47,9 +47,10 @@ std::vector<QString> find_metafiles_in(const QString& dir_path)
     QDirIterator dir_it(dir_path, dir_filters, dir_flags);
     while (dir_it.hasNext()) {
         dir_it.next();
-        QString path = ::clean_abs_path(dir_it.fileInfo());
-        if (is_metadata_file(dir_it.fileName()))
+        if (is_metadata_file(dir_it.fileName())) {
+            QString path = ::clean_abs_path(dir_it.fileInfo());
             result.emplace_back(std::move(path));
+        }
     }
 
     return result;
