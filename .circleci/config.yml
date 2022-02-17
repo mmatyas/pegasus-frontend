@@ -4,20 +4,20 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_x11-bionic
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: x11-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          INSTALL_BINDIR=/usr/bin
-          INSTALL_ICONDIR=/usr/share/icons/hicolor
-          INSTALL_DESKTOPDIR=/usr/share/applications
-          INSTALL_APPSTREAMDIR=/usr/share/metainfo
-          INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
-          SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
-          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
-      - INSTALL_BINDIR: /usr/bin/
-      - GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
+      QT_VERSION: qt5152
+      QT_TARGET: x11-static
+      BUILDOPTS:
+        USE_SDL_GAMEPAD=1
+        USE_SDL_POWER=1
+        INSTALL_BINDIR=/usr/bin
+        INSTALL_ICONDIR=/usr/share/icons/hicolor
+        INSTALL_DESKTOPDIR=/usr/share/applications
+        INSTALL_APPSTREAMDIR=/usr/share/metainfo
+        INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
+        SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
+        SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
+      INSTALL_BINDIR: /usr/bin/
+      GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
     steps:
       - run: gem install --user-install -N fpm -v 1.10.2
       - checkout
@@ -34,10 +34,10 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-android
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: android
-      - ANDROID_NDK_ROOT: /opt/android-ndk
-      - BUILDOPTS: ANDROID_ABIS=armeabi-v7a FORCE_QT_PNG=1
+      QT_VERSION: qt5152
+      QT_TARGET: android
+      ANDROID_NDK_ROOT: /opt/android-ndk
+      BUILDOPTS: ANDROID_ABIS=armeabi-v7a FORCE_QT_PNG=1
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -75,13 +75,13 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-mingw
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: win32-mingw-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          SDL_LIBS='-L/opt/SDL2-2.0.18/lib/ -lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi'
-          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2/
+      QT_VERSION: qt5152
+      QT_TARGET: win32-mingw-static
+      BUILDOPTS:
+        USE_SDL_GAMEPAD=1
+        USE_SDL_POWER=1
+        SDL_LIBS='-L/opt/SDL2-2.0.18/lib/ -lSDL2 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -lsetupapi'
+        SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2/
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -99,14 +99,14 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: rpi1-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
-          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
-          QMAKE_LIBS_LIBDL=-ldl
+      QT_VERSION: qt5152
+      QT_TARGET: rpi1-static
+      BUILDOPTS:
+        USE_SDL_GAMEPAD=1
+        USE_SDL_POWER=1
+        SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
+        SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
+        QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -121,14 +121,14 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: rpi2-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
-          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
-          QMAKE_LIBS_LIBDL=-ldl
+      QT_VERSION: qt5152
+      QT_TARGET: rpi2-static
+      BUILDOPTS:
+        USE_SDL_GAMEPAD=1
+        USE_SDL_POWER=1
+        SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
+        SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
+        QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -143,14 +143,14 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: rpi3-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
-          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
-          QMAKE_LIBS_LIBDL=-ldl
+      QT_VERSION: qt5152
+      QT_TARGET: rpi3-static
+      BUILDOPTS:
+        USE_SDL_GAMEPAD=1
+        USE_SDL_POWER=1
+        SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
+        SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
+        QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -165,14 +165,14 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: rpi4-static
-      - BUILDOPTS:
-          USE_SDL_GAMEPAD=1
-          USE_SDL_POWER=1
-          SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
-          SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
-          QMAKE_LIBS_LIBDL=-ldl
+      QT_VERSION: qt5152
+      QT_TARGET: rpi4-static
+      BUILDOPTS:
+        USE_SDL_GAMEPAD=1
+        USE_SDL_POWER=1
+        SDL_LIBS="-L/opt/SDL2-2.0.18/lib -lSDL2"
+        SDL_INCLUDES=/opt/SDL2-2.0.18/include/SDL2
+        QMAKE_LIBS_LIBDL=-ldl
     steps:
       - checkout
       - run: git apply ./etc/rpi4/kms_launch_fix.diff
@@ -188,8 +188,8 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_odroid-c1
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: odroid-c1-static
+      QT_VERSION: qt5152
+      QT_TARGET: odroid-c1-static
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -204,8 +204,8 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_odroid-c2
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: odroid-c2-static
+      QT_VERSION: qt5152
+      QT_TARGET: odroid-c2-static
     steps:
       - checkout
       - run: .circleci/prepare.sh
@@ -220,8 +220,8 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_odroid-xu3
     environment:
-      - QT_VERSION: qt5152
-      - QT_TARGET: odroid-xu3-static
+      QT_VERSION: qt5152
+      QT_TARGET: odroid-xu3-static
     steps:
       - checkout
       - run: .circleci/prepare.sh
