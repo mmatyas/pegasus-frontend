@@ -32,3 +32,13 @@ jobs:
         with:
           name: macos-static
           path: deploy/*.zip
+
+      - name: Deploy
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          external_repository: mmatyas/pegasus-deploy-staging
+          personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}
+          publish_branch: continuous-macos-static
+          publish_dir: ./deploy
+          force_orphan: true
