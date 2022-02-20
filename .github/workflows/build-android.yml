@@ -20,16 +20,9 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 200
-      - run: git fetch --tags
-
-      - uses: actions/cache@v2
+      - uses: ./.github/actions/pegasus-prepare
         with:
-          path: |
-            !/var/cache/apt/archives/lock
-            !/var/cache/apt/archives/partial
-            /var/cache/apt
-          key: android-apt-${{ hashFiles('**/*.sh') }}
-          restore-keys: android-apt-
+          apt-cache-key: android
 
       - run: sudo -E ./.ci/install_deps.sh
       - run: sudo cp ./etc/android/build.gradle /opt/qt${QT_VERSION//.}_${QT_TARGET}/src/android/templates/

@@ -34,16 +34,9 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 200
-      - run: git fetch --tags
-
-      - uses: actions/cache@v2
+      - uses: ./.github/actions/pegasus-prepare
         with:
-          path: |
-            !/var/cache/apt/archives/lock
-            !/var/cache/apt/archives/partial
-            /var/cache/apt
-          key: ${{ matrix.pi }}-apt-${{ hashFiles('**/*.sh') }}
-          restore-keys: ${{ matrix.pi }}-apt-
+          apt-cache-key: ${{ matrix.pi }}
 
       - run: ./.ci/install_deps.sh
       - run: ./.ci/build.sh

@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 200
-      - run: git fetch --tags
+      - uses: ./.github/actions/pegasus-prepare
 
       - run: sudo -E ./.ci/install_deps.sh
       - run: ./.ci/build.sh --with-tests

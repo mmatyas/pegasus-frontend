@@ -22,16 +22,9 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 200
-      - run: git fetch --tags
-
-      - uses: actions/cache@v2
+      - uses: ./.github/actions/pegasus-prepare
         with:
-          path: |
-            !/var/cache/apt/archives/lock
-            !/var/cache/apt/archives/partial
-            /var/cache/apt
-          key: mingw-apt-${{ hashFiles('**/*.sh') }}
-          restore-keys: mingw-apt-
+          apt-cache-key: mingw
 
       - run: sudo -E ./.ci/install_deps.sh
       - run: ./.ci/build.sh
