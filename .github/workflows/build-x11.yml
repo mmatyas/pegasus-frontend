@@ -35,12 +35,20 @@ jobs:
 
       - run: sudo -E ./.ci/install_deps.sh
       - run: ./.ci/build.sh --with-tests
+
+      - name: Create DEB
+        run: |
+          export PATH="$PATH:/home/runner/.gem/ruby/2.5.0/bin"
+          gem install --user-install -N fpm -v 1.10.2
+          ./.ci/x11_create_deb.sh
       - run: ./.ci/create_release.sh
 
       - uses: actions/upload-artifact@v2
         with:
           name: x11-static
-          path: deploy/*.zip
+          path: |
+            deploy/*.zip
+            deploy/*.deb
 
   x11-cmake:
     runs-on: ubuntu-18.04

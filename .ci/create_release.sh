@@ -20,7 +20,7 @@ RELEASE_NAME="pegasus-fe_$(git describe --always)"
 ZIP_NAME="${RELEASE_NAME}_${QT_TARGET}.zip"
 echo "Creating release '$PWD/deploy/${ZIP_NAME}'"
 
-mkdir staging deploy
+mkdir -p staging deploy
 mv README.md LICENSE.md "$EXEPATH" staging/
 pushd staging
 zip -r "../deploy/${ZIP_NAME}" ./*
