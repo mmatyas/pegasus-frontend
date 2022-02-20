@@ -1,0 +1,75 @@
+name: Build - Android
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ci-${{ github.ref }}-android
+  cancel-in-progress: true
+
+env:
+  QT_VERSION: "5.15.2"
+
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    env:
+      QT_TARGET: android
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
+            /var/cache/apt
+          key: android-apt-${{ hashFiles('**/*.sh') }}
+          restore-keys: android-apt-
+
+      - run: sudo -E ./.ci/install_deps.sh
+      - run: sudo cp ./etc/android/build.gradle /opt/qt${QT_VERSION//.}_${QT_TARGET}/src/android/templates/
+      - run: ./.ci/build.sh
+
+      - name: Package (debug)
+        run: /opt/qt${QT_VERSION//.}_${QT_TARGET}/bin/androiddeployqt
+          --input build/src/app/android-pegasus-fe-deployment-settings.json
+          --output ${PWD}/installdir
+          --android-platform android-30
+          --gradle
+        if: ${{ github.ref != 'refs/heads/master' }}
+      - name: Package (debug), stage
+        run: mkdir deploy && cp
+          installdir/build/outputs/apk/debug/installdir-debug.apk
+          deploy/pegasus-fe_$(git describe --always)_android.apk
+        if: ${{ github.ref != 'refs/heads/master' }}
+
+      - name: Package (release), prep
+        run: |
+          curl -LO https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/aks.enc
+          openssl aes-256-cbc -k "${{ secrets.AKS_ENC_KEY }}" -in aks.enc -out aks -d
+        if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Package (release)
+        run: /opt/qt${QT_VERSION//.}_${QT_TARGET}/bin/androiddeployqt
+          --input build/src/app/android-pegasus-fe-deployment-settings.json
+          --output ${PWD}/installdir
+          --android-platform android-30
+          --gradle
+          --sign ./aks "${{ secrets.AKS_ALIAS }}"
+          --storepass "${{ secrets.AKS_STOREPASS }}"
+          --keypass "${{ secrets.AKS_KEYPASS }}"
+        if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Package (release), stage
+        run: mkdir deploy && cp
+          installdir/build/outputs/apk/release/installdir-release-signed.apk
+          deploy/pegasus-fe_$(git describe --always)_android.apk
+        if: ${{ github.ref == 'refs/heads/master' }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: android
+          path: deploy/*.apk

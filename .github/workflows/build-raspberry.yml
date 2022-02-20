@@ -1,0 +1,55 @@
+name: Build - Raspberry Pi
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ci-${{ github.ref }}-rpi
+  cancel-in-progress: true
+
+env:
+  QT_VERSION: "5.15.2"
+  SDL_VERSION: "2.0.18"
+
+
+jobs:
+  raspberry:
+    runs-on: ubuntu-latest
+    container: mmatyas/pegasus-qt_raspberry-gha
+    strategy:
+      matrix:
+        include:
+          - pi: rpi1
+            sdl: brcm
+          - pi: rpi2
+            sdl: brcm
+          - pi: rpi3
+            sdl: brcm
+          - pi: rpi4
+            sdl: mesa
+    env:
+      QT_TARGET: ${{ matrix.pi }}-static
+      SDL_TARGET: rpi-${{ matrix.sdl }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
+            /var/cache/apt
+          key: ${{ matrix.pi }}-apt-${{ hashFiles('**/*.sh') }}
+          restore-keys: ${{ matrix.pi }}-apt-
+
+      - run: ./.ci/install_deps.sh
+      - run: ./.ci/build.sh
+      - run: ./.ci/create_release.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.pi }}-static
+          path: deploy/*.zip

@@ -1,0 +1,44 @@
+name: Build - Odroid
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ci-${{ github.ref }}-odroid
+  cancel-in-progress: true
+
+env:
+  QT_VERSION: "5.15.2"
+
+
+jobs:
+  odroid:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        model: [c1, c2, xu3]
+    env:
+      QT_TARGET: odroid-${{ matrix.model }}-static
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
+            /var/cache/apt
+          key: ${{ matrix.model }}-apt-${{ hashFiles('**/*.sh') }}
+          restore-keys: ${{ matrix.model }}-apt-
+
+      - run: sudo -E ./.ci/install_deps.sh
+      - run: ./.ci/build.sh
+      - run: ./.ci/create_release.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: odroid-${{ matrix.model }}-static
+          path: deploy/*.zip

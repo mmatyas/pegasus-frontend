@@ -1,0 +1,73 @@
+name: Build - X11
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ci-${{ github.ref }}-x11
+  cancel-in-progress: true
+
+env:
+  QT_VERSION: "5.15.2"
+  SDL_VERSION: "2.0.18"
+
+
+jobs:
+  x11-qmake:
+    runs-on: ubuntu-18.04
+    env:
+      QT_TARGET: x11-static
+      SDL_TARGET: x11-bionic
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
+            /var/cache/apt
+          key: x11-qmake-apt-${{ hashFiles('**/*.sh') }}
+          restore-keys: x11-qmake-apt-
+
+      - run: sudo -E ./.ci/install_deps.sh
+      - run: ./.ci/build.sh --with-tests
+      - run: ./.ci/create_release.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: x11-static
+          path: deploy/*.zip
+
+  x11-cmake:
+    runs-on: ubuntu-18.04
+    env:
+      QT_TARGET: x11-static
+      SDL_TARGET: x11-bionic
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
+            /var/cache/apt
+          key: x11-cmake-apt-${{ hashFiles('**/*.sh') }}
+          restore-keys: x11-cmake-apt-
+
+      - run: sudo -E ./.ci/install_deps.sh --cmake
+      - run: ./.ci/build.sh --cmake --with-tests
+      - run: ./.ci/create_release.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: x11-static_cmake
+          path: deploy/*.zip

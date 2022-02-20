@@ -1,0 +1,43 @@
+name: Build - Windows
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ci-${{ github.ref }}-win
+  cancel-in-progress: true
+
+env:
+  QT_VERSION: "5.15.2"
+  SDL_VERSION: "2.0.18"
+
+
+jobs:
+  mingw:
+    runs-on: ubuntu-latest
+    env:
+      QT_TARGET: win32-mingw-static
+      SDL_TARGET: mingw
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 200
+      - run: git fetch --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
+            /var/cache/apt
+          key: mingw-apt-${{ hashFiles('**/*.sh') }}
+          restore-keys: mingw-apt-
+
+      - run: sudo -E ./.ci/install_deps.sh
+      - run: ./.ci/build.sh
+      - run: ./.ci/create_release.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: mingw-static
+          path: deploy/*.zip
