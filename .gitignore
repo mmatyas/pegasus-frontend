@@ -11,6 +11,7 @@ build*/
 !.circleci/
 !.travis/
 !.github/
+!.ci/
 
 # ignore IDE project files
 *.pro.user
