@@ -90,7 +90,7 @@ android {
         platform/android/res/values/icon_bg.xml \
         platform/android/res/values/libs.xml \
 
-    ANDROID_MIN_SDK_VERSION = 21
+    ANDROID_MIN_SDK_VERSION = 19
     ANDROID_TARGET_SDK_VERSION = 30
 
     ANDROID_CFGDIR_IN = $$PWD/platform/android
