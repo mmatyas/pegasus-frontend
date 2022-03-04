@@ -103,8 +103,8 @@ MetadataHelper::MetadataHelper(QString log_tag)
     , rx_developer(QStringLiteral(R""(<a href="/store\/apps\/dev(eloper)?\?id=.+?" class=".*?">([^<]+)<\/a><\/span>)""))
     , rx_category(QStringLiteral(R""(<a itemprop="genre".*?>([^<]+)<\/a>)""))
     , rx_screenshots(QStringLiteral(R""(<img src="([^"]+=w720-h310)")""))
-    , rx_rating(QStringLiteral(R""("AggregateRating","ratingValue":"(.+?)")""))
     , rx_release(QStringLiteral(R""("Google Commerce Ltd"],"(.+?)")""))
+    , rx_rating(QStringLiteral(R""("AggregateRating","ratingValue":"(.+?)")""))
 {}
 
 bool MetadataHelper::fill_from_cache(const QString& app_package, model::Game& game) const
