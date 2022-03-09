@@ -7,17 +7,21 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: git fetch --depth=200 --tags
-      shell: bash
-
-    - run: git submodule update --init
+    - run: |
+        git fetch --depth=200 --tags
+        git submodule update --init
       shell: bash
 
     - uses: actions/cache@v2
       with:
-        path: |
-          /var/cache/apt/*.bin
-          /var/cache/apt/archives/*.deb
+        path: ~/.ci-cache-apt
         key: ${{ inputs.apt-cache-key }}-apt-${{ hashFiles('**/*.sh') }}
         restore-keys: ${{ inputs.apt-cache-key }}-apt-
       if: ${{ inputs.apt-cache-key }}
+      id: cache-apt
+
+    - run: |
+        sudo mv ~/.ci-cache-apt/*.bin /var/cache/apt/
+        sudo mv ~/.ci-cache-apt/*.deb /var/cache/apt/archives/
+      shell: bash
+      if: steps.cache-apt.outputs.cache-hit == 'true'

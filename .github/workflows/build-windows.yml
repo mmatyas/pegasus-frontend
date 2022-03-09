@@ -41,3 +41,5 @@ jobs:
           publish_branch: continuous-win32-mingw-static
           publish_dir: ./deploy
           force_orphan: true
+
+      - uses: ./.github/actions/pegasus-postrun

@@ -1,0 +1,10 @@
+name: Post run
+
+runs:
+  using: composite
+  steps:
+    - run: |
+        mkdir -p ~/.ci-cache-apt
+        cp /var/cache/apt/*.bin /var/cache/apt/archives/*.deb ~/.ci-cache-apt/
+      shell: bash
+      if: runner.os == 'Linux'

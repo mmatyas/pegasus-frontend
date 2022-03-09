@@ -42,3 +42,5 @@ jobs:
           publish_branch: continuous-odroid-${{ matrix.model }}-static
           publish_dir: ./deploy
           force_orphan: true
+
+      - uses: ./.github/actions/pegasus-postrun

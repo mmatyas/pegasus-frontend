@@ -50,6 +50,8 @@ jobs:
           publish_dir: ./deploy
           force_orphan: true
 
+      - uses: ./.github/actions/pegasus-postrun
+
   x11-cmake:
     runs-on: ubuntu-18.04
     env:
@@ -69,3 +71,5 @@ jobs:
         with:
           name: x11-static_cmake
           path: deploy/*.zip
+
+      - uses: ./.github/actions/pegasus-postrun
