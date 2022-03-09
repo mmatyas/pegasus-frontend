@@ -31,9 +31,6 @@ jobs:
       SDL_TARGET: rpi-${{ matrix.sdl }}
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-          fetch-depth: 200
       - uses: ./.github/actions/pegasus-prepare
         with:
           apt-cache-key: ${{ matrix.pi }}

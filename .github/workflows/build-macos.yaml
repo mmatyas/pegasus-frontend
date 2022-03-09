@@ -19,9 +19,6 @@ jobs:
       SDL_TARGET: macos
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-          fetch-depth: 200
       - uses: ./.github/actions/pegasus-prepare
 
       - run: sudo -E ./.ci/install_deps.sh

@@ -7,7 +7,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: git fetch --tags
+    - run: git fetch --depth=200 --tags
+      shell: bash
+
+    - run: git submodule update --init
       shell: bash
 
     - uses: actions/cache@v2

@@ -17,9 +17,6 @@ jobs:
       QT_TARGET: android
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-          fetch-depth: 200
       - uses: ./.github/actions/pegasus-prepare
         with:
           apt-cache-key: android
