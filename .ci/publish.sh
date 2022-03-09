@@ -31,9 +31,10 @@ FILE_CNT=0
 NEXT_SLEEP_SEC=0
 
 while [[ $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
-    if [[ $NEXT_SLEEP_SEC -gt 0 ]]; then echo "Retrying in $NEXT_SLEEP_SEC seconds..."; fi
-    sleep $NEXT_SLEEP_SEC
-    NEXT_SLEEP_SEC=20
+    if [[ $NEXT_SLEEP_SEC -gt 0 ]]; then
+        echo "Retrying in $NEXT_SLEEP_SEC seconds..."
+        sleep $NEXT_SLEEP_SEC
+    fi
 
     for target in $TARGETS; do
         rm -rf "dist-${target}"
@@ -54,6 +55,8 @@ while [[ $FILE_CNT -ne $EXPECTED_FILE_CNT ]]; do
     echo "Available files:"
     echo ${FILES}
     echo "(${FILE_CNT} out of ${EXPECTED_FILE_CNT})";
+
+    NEXT_SLEEP_SEC=20
 done
 
 
