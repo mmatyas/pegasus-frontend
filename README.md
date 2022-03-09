@@ -13,6 +13,7 @@ Pegasus is a graphical frontend for browsing your game library and launching all
 - [Documentation](https://pegasus-frontend.org/docs/)
 - [Latest releases](https://github.com/mmatyas/pegasus-frontend/releases/)
 - [Development thread](https://retropie.org.uk/forum/topic/9598/announcing-pegasus-frontend)
+- [Discord](https://discord.gg/KTtzP6y)
 
 
 ## Features
