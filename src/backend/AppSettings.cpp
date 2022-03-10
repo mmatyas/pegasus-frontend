@@ -226,7 +226,7 @@ void AppSettings::parse_gamedirs(const std::function<void(const QString&)>& call
 {
     constexpr int LINE_MAX_LEN = 4096;
 
-    for (QString& path : paths::configDirs()) {
+    for (QString path : paths::configDirs()) {
         path += QStringLiteral("/game_dirs.txt");
 
         QFile config_file(path);

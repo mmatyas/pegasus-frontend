@@ -106,7 +106,7 @@ QString app_dir_path()
 #endif
 }
 
-QStringList configDirs()
+const QStringList& configDirs()
 {
     static const QStringList config_dir_paths = [](){
         QStringList paths(QLatin1String(":"));

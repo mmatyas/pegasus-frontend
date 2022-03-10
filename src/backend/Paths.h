@@ -31,7 +31,7 @@ QString homePath();
 QString app_dir_path();
 
 /// Returns the directory paths where config files may be located
-QStringList configDirs();
+const QStringList& configDirs();
 
 /// Returns a directory path where persistent data could be stored
 QString writableConfigDir();

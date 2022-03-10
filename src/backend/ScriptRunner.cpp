@@ -38,8 +38,7 @@ std::vector<QString> find_scripts_in(const QString& dirname)
 
     std::vector<QString> all_scripts;
 
-    const QStringList configdirs = paths::configDirs();
-    for (const QString& configdir : configdirs) {
+    for (const QString& configdir : paths::configDirs()) {
         const QString scriptdir = configdir % QStringLiteral("/scripts/") % dirname;
 
         std::vector<QString> local_scripts;
