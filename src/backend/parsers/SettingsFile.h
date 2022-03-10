@@ -19,7 +19,6 @@
 
 #include "types/KeyEventType.h"
 #include "utils/HashMap.h"
-#include "utils/StrBoolConverter.h"
 
 #include <QString>
 #include <QStringList>
@@ -86,7 +85,6 @@ private:
                            QStringList& sections) const;
 
 private:
-    const StrBoolConverter strconv;
     const std::map<QString, QKeySequence> reverse_gamepadButtonNames;
 };
 

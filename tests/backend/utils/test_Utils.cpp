@@ -19,7 +19,7 @@
 
 #include "utils/CommandTokenizer.h"
 #include "utils/PathTools.h"
-#include "utils/StdStringHelpers.h"
+#include "utils/StringHelpers.h"
 
 
 class test_Utils : public QObject

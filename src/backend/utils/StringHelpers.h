@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2022  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,21 +15,13 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "StdStringHelpers.h"
+#pragma once
 
-#include <cctype>
-#include <cstring>
-
+#include <QString>
+#include <string>
 
 namespace utils {
-std::string trimmed(const char* const str)
-{
-    size_t from = 0;
-    size_t to = ::strlen(str);
-    while (from < to && std::isspace(str[from]))
-        from++;
-    while (from < to && std::isspace(str[to - 1]))
-        to--;
-    return std::string(str + from, to - from);
-}
+std::string trimmed(const char* const str);
+
+bool as_bool(const QString& str, bool& success);
 } // namespace utils

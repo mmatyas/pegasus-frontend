@@ -18,8 +18,6 @@ target_sources(pegasus-backend PRIVATE
     SqliteDb.cpp
     SqliteDb.h
     StdHelpers.h
-    StdStringHelpers.cpp
-    StdStringHelpers.h
-    StrBoolConverter.cpp
-    StrBoolConverter.h
+    StringHelpers.cpp
+    StringHelpers.h
 )

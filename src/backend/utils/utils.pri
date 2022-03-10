@@ -11,8 +11,7 @@ HEADERS += \
     $$PWD/QmlHelpers.h \
     $$PWD/SqliteDb.h \
     $$PWD/StdHelpers.h \
-    $$PWD/StdStringHelpers.h \
-    $$PWD/StrBoolConverter.h \
+    $$PWD/StringHelpers.h
 
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
@@ -22,5 +21,4 @@ SOURCES += \
     $$PWD/KeySequenceTools.cpp \
     $$PWD/PathTools.cpp \
     $$PWD/SqliteDb.cpp \
-    $$PWD/StdStringHelpers.cpp \
-    $$PWD/StrBoolConverter.cpp \
+    $$PWD/StringHelpers.cpp

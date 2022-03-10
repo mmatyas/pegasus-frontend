@@ -19,7 +19,7 @@
 
 #include "Log.h"
 #include "Paths.h"
-#include "utils/StdStringHelpers.h"
+#include "utils/StringHelpers.h"
 
 #include <QDataStream>
 #include <QFile>

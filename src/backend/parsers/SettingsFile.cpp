@@ -23,6 +23,7 @@
 #include "Paths.h"
 #include "providers/Provider.h"
 #include "utils/PathTools.h"
+#include "utils/StringHelpers.h"
 
 #include <QDir>
 #include <QFile>
@@ -43,10 +44,10 @@ std::map<QString, QKeySequence> gen_gamepad_names() {
     return result;
 }
 
-bool store_bool_maybe(const StrBoolConverter& converter, const QString& str, bool& target)
+bool store_bool_maybe(const QString& str, bool& target)
 {
     bool success = false;
-    bool value = converter.to_bool(str, success);
+    bool value = utils::as_bool(str, success);
     if (success)
         target = value;
 
@@ -163,15 +164,15 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
 
     switch (option_it->second) {
         case ConfigEntryGeneralOption::FULLSCREEN:
-            if (!store_bool_maybe(strconv, val, AppSettings::general.fullscreen))
+            if (!store_bool_maybe(val, AppSettings::general.fullscreen))
                 log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::MOUSE_SUPPORT:
-            if (!store_bool_maybe(strconv, val, AppSettings::general.mouse_support))
+            if (!store_bool_maybe(val, AppSettings::general.mouse_support))
                 log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::VERIFY_FILES:
-            if (!store_bool_maybe(strconv, val, AppSettings::general.verify_files))
+            if (!store_bool_maybe(val, AppSettings::general.verify_files))
                 log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::LOCALE:
@@ -211,7 +212,7 @@ void LoadContext::handle_provider_attrib(const size_t lineno, const QString& key
         const QString val = metafile::merge_lines(vals);
 
         bool success = false;
-        bool enabled = strconv.to_bool(val, success);
+        bool enabled = utils::as_bool(val, success);
         if (success)
             (*provider_it)->setEnabled(enabled);
         else

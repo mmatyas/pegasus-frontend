@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2018  Mátyás Mustoha
+// Copyright (C) 2017-2019  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,25 +15,40 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "StrBoolConverter.h"
+#include "StringHelpers.h"
+
+#include "utils/HashMap.h"
+#include <cctype>
+#include <cstring>
 
 
-StrBoolConverter::StrBoolConverter()
-    : m_strmap {
+namespace utils {
+std::string trimmed(const char* const str)
+{
+    size_t from = 0;
+    size_t to = ::strlen(str);
+    while (from < to && std::isspace(str[from]))
+        from++;
+    while (from < to && std::isspace(str[to - 1]))
+        to--;
+    return std::string(str + from, to - from);
+}
+
+bool as_bool(const QString& str, bool& success)
+{
+    static const HashMap<QString, bool> STR_BOOL_VALS {
         { QStringLiteral("yes"), true },
         { QStringLiteral("on"), true },
         { QStringLiteral("true"), true },
         { QStringLiteral("no"), false },
         { QStringLiteral("off"), false },
         { QStringLiteral("false"), false },
-    }
-{}
+    };
 
-bool StrBoolConverter::to_bool(const QString& str, bool& success) const
-{
-    const auto it = m_strmap.find(str.toLower());
-    success = (it != m_strmap.cend());
+    const auto it = STR_BOOL_VALS.find(str.toLower());
+    success = it != STR_BOOL_VALS.cend();
     return success
         ? it->second
         : false;
 }
+} // namespace utils
