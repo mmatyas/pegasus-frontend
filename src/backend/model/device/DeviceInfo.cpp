@@ -92,6 +92,7 @@ model::DeviceInfo::BatteryInfo query_battery()
 namespace model {
 DeviceInfo::DeviceInfo(QObject* parent)
     : QObject(parent)
+    , m_battery { BatteryStatus::Unknown, NAN, 0 }
 {
     poll_battery();
     connect(&m_battery_poll, &QTimer::timeout, this, &DeviceInfo::poll_battery);

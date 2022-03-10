@@ -67,6 +67,7 @@ Locales::Locales(QObject* parent)
         { Roles::Name, QByteArrayLiteral("name") },
     })
     , m_locales(find_available_locales())
+    , m_current_idx(0)
 {
     select_preferred_locale();
     load_selected_locale();

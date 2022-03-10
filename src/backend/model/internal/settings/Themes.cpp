@@ -157,6 +157,7 @@ Themes::Themes(QObject* parent)
         { Roles::Description, QByteArrayLiteral("description") },
     })
     , m_themes(find_available_themes())
+    , m_current_idx(0)
 {
     select_preferred_theme();
     print_change();
