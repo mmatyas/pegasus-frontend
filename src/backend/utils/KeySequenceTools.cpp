@@ -52,6 +52,7 @@ int keymods_to_int(const Qt::KeyboardModifiers keymods)
 } // namespace
 
 
+namespace utils {
 QKeySequence qmlevent_to_keyseq(const QVariant& event_variant)
 {
     static constexpr auto QML_KEYEVENT_CLASSNAME = "QQuickKeyEvent";
@@ -71,3 +72,4 @@ QKeySequence qmlevent_to_keyseq(const QVariant& event_variant)
     const int keyseq_key = event.key() | keymods_to_int(event.modifiers());
     return QKeySequence(keyseq_key);
 }
+} // namespace utils

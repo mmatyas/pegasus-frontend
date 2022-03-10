@@ -76,7 +76,7 @@ void Keys::refresh_keys()
 
 bool Keys::qmlkey_in_keylist(KeyEvent keytype, const QVariant& qmlevent) const
 {
-    const QKeySequence keyseq = ::qmlevent_to_keyseq(qmlevent);
+    const QKeySequence keyseq = utils::qmlevent_to_keyseq(qmlevent);
     return AppSettings::keys.at(keytype).count(keyseq);
 }
 

@@ -40,7 +40,7 @@ void KeyEditor::addKey(int event_id, const QVariant& event)
     if (!valid_event_id(event_id))
         return;
 
-    QKeySequence keyseq = ::qmlevent_to_keyseq(event);
+    QKeySequence keyseq = utils::qmlevent_to_keyseq(event);
     if (keyseq.isEmpty())
         return;
 
@@ -64,7 +64,7 @@ void KeyEditor::replaceKeyCode(int event_id, const int old_keycode, const QVaria
     if (!valid_event_id(event_id) || old_keycode == 0)
         return;
 
-    QKeySequence keyseq_new = ::qmlevent_to_keyseq(new_keyevent);
+    QKeySequence keyseq_new = utils::qmlevent_to_keyseq(new_keyevent);
     if (keyseq_new.isEmpty())
         return;
 
