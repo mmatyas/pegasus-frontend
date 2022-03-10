@@ -69,6 +69,7 @@ void FrontendLayer::rebuild()
 #endif
 
     m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api_public);
+    m_engine->rootContext()->setContextProperty(QStringLiteral("Api"), m_api_public);
     m_engine->rootContext()->setContextProperty(QStringLiteral("Internal"), m_api_private);
     m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 
