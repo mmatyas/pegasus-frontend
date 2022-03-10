@@ -22,9 +22,8 @@
 
 
 namespace model {
-ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
+ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
     : QObject(parent)
-    , m_internal(args)
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
     , m_allGames(new QQmlObjectListModel<model::Game>(this))
     , m_launch_game_file(nullptr)
@@ -33,28 +32,14 @@ ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
     connect(&m_memory, &model::Memory::dataChanged,
             this, &ApiObject::memoryChanged);
 
-    connect(&m_internal.settings().locales(), &model::Locales::localeChanged,
-            this, &ApiObject::localeChanged);
-    connect(&m_internal.settings().keyEditor(), &model::KeyEditor::keysChanged,
-            &m_keys, &model::Keys::refresh_keys);
-    connect(&m_internal.settings().themes(), &model::Themes::themeChanged,
-            this, &ApiObject::onThemeChanged);
-    connect(&m_internal.settings(), &model::Settings::providerReloadingRequested,
-            this, &ApiObject::startScanning);
-
     connect(&m_providerman, &ProviderManager::progressChanged,
-            &m_internal.meta(), &model::Meta::onSearchProgressChanged);
-    connect(&m_providerman, &ProviderManager::finished,
-            &m_internal.meta(), &model::Meta::onSearchFinished);
+            this, &ApiObject::eventLoadingProgressChanged);
     connect(&m_providerman, &ProviderManager::finished,
             this, &ApiObject::onSearchFinished);
-
-    onThemeChanged();
 }
 
 void ApiObject::startScanning()
 {
-    m_internal.meta().startLoading();
     emit eventLoadingStarted();
 
     m_collections->clear();
@@ -65,6 +50,8 @@ void ApiObject::startScanning()
 
 void ApiObject::onSearchFinished()
 {
+    emit eventLoadingPostProcessing();
+
     for (model::Game* const game : qAsConst(m_providerman_games)) {
         connect(game, &model::Game::launchFileSelectorRequested,
                 this, &ApiObject::onGameFileSelectorRequested);
@@ -85,8 +72,8 @@ void ApiObject::onSearchFinished()
     std::swap(m_providerman_collections, coll_vec);
     m_collections->append(std::move(coll_vec));
 
-    m_internal.meta().onUiReady();
     Log::info(LOGMSG("%1 games found").arg(m_allGames->count()));
+    emit eventLoadingFinished();
 }
 
 void ApiObject::onGameFileSelectorRequested()
@@ -131,8 +118,13 @@ void ApiObject::onGameFavoriteChanged()
     m_providerman.onGameFavoriteChanged(m_allGames->asList());
 }
 
-void ApiObject::onThemeChanged()
+void ApiObject::onLocaleChanged()
 {
-    m_memory.changeTheme(m_internal.settings().themes().currentQmlDir());
+    emit retranslationRequested();
+}
+
+void ApiObject::onThemeChanged(QString theme_dir)
+{
+    m_memory.changeTheme(theme_dir);
 }
 } // namespace model

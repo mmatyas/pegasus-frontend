@@ -67,7 +67,7 @@ public:
     QString currentQmlPath() const { return m_themes.at(m_current_idx).root_qml; }
 
 signals:
-    void themeChanged();
+    void themeChanged(QString);
 
 private:
     const QHash<int, QByteArray> m_role_names;

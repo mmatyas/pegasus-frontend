@@ -20,7 +20,6 @@
 #include "CliArgs.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
-#include "model/internal/Internal.h"
 #include "model/device/DeviceInfo.h"
 #include "model/keys/Keys.h"
 #include "model/memory/Memory.h"
@@ -39,7 +38,6 @@ namespace model {
 class ApiObject : public QObject {
     Q_OBJECT
 
-    QML_CONST_PROPERTY(model::Internal, internal)
     QML_CONST_PROPERTY(model::DeviceInfo, device)
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
@@ -47,7 +45,7 @@ class ApiObject : public QObject {
     QML_OBJMODEL_PROPERTY(model::Game, allGames)
 
     // retranslate on locale change
-    Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
+    Q_PROPERTY(QString tr READ emptyString NOTIFY retranslationRequested)
 
 public:
     explicit ApiObject(const backend::CliArgs& args, QObject* parent = nullptr);
@@ -61,10 +59,15 @@ signals:
     void memoryChanged();
 
     // triggers translation update
-    void localeChanged();
+    void retranslationRequested();
+
+    // loading progress
+    void eventLoadingStarted();
+    void eventLoadingProgressChanged(float, QString);
+    void eventLoadingPostProcessing();
+    void eventLoadingFinished();
 
     // Api events for QML -- no const here
-    void eventLoadingStarted();
     void eventSelectGameFile(model::Game* game);
     void eventLaunchError(QString msg);
 
@@ -74,13 +77,16 @@ public slots:
     void onGameLaunchOk();
     void onGameLaunchError(QString);
 
+    // setting changes
+    void onLocaleChanged();
+    void onThemeChanged(QString);
+
 private slots:
     // internal communication
     void onSearchFinished();
     void onGameFavoriteChanged();
     void onGameFileSelectorRequested();
     void onGameFileLaunchRequested();
-    void onThemeChanged();
 
 private:
     // game launching

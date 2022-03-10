@@ -20,6 +20,7 @@
 #include "CliArgs.h"
 
 namespace model { class ApiObject; }
+namespace model { class Internal; }
 class FrontendLayer;
 class ProcessLauncher;
 
@@ -41,6 +42,7 @@ private:
     // frontend <-> api <-> launcher
     // NOTE: unique_ptr had forward declaration issues
     model::ApiObject* m_api;
+    model::Internal* m_api_private;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;
 };

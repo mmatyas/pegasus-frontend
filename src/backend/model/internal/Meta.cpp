@@ -46,7 +46,7 @@ void Meta::resetLoadingState()
     emit loadingStageChanged();
 }
 
-void Meta::startLoading()
+void Meta::onSearchStarted()
 {
     m_loading = true;
     emit loadingChanged();
@@ -67,7 +67,7 @@ void Meta::onSearchProgressChanged(float value, QString stage)
     emit loadingStageChanged();
 }
 
-void Meta::onSearchFinished()
+void Meta::onSearchPostProcessing()
 {
     m_loading_progress = 1.0f;
     m_loading_stage = QString();
@@ -75,7 +75,7 @@ void Meta::onSearchFinished()
     emit loadingStageChanged();
 }
 
-void Meta::onUiReady()
+void Meta::onSearchFinished()
 {
     m_loading = false;
     emit loadingChanged();

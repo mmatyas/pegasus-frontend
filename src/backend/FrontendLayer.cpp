@@ -45,9 +45,10 @@ QNetworkAccessManager* DiskCachedNAMFactory::create(QObject* parent)
 } // namespace
 
 
-FrontendLayer::FrontendLayer(QObject* const api, QObject* parent)
+FrontendLayer::FrontendLayer(QObject* const api_public, QObject* const api_private, QObject* parent)
     : QObject(parent)
-    , m_api(api)
+    , m_api_public(api_public)
+    , m_api_private(api_private)
     , m_engine(nullptr)
 {
     // Note: the pointer to the Api is non-owning and constant during the runtime
@@ -67,8 +68,8 @@ void FrontendLayer::rebuild()
     m_engine->addImageProvider(QStringLiteral("androidicons"), new AndroidAppIconProvider);
 #endif
 
-    m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
-    m_engine->rootContext()->setContextProperty(QStringLiteral("Api"), m_api);
+    m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api_public);
+    m_engine->rootContext()->setContextProperty(QStringLiteral("Internal"), m_api_private);
     m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 
     emit rebuildComplete();

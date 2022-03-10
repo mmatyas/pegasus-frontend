@@ -161,6 +161,7 @@ Themes::Themes(QObject* parent)
 {
     select_preferred_theme();
     print_change();
+    emit themeChanged(currentQmlDir());
 }
 
 void Themes::select_preferred_theme()
@@ -248,10 +249,10 @@ void Themes::setCurrentIndex(int idx_int)
     // set
     m_current_idx = idx;
     print_change();
-    emit themeChanged();
+    emit themeChanged(currentQmlDir());
 
     // remember
-    AppSettings::general.theme = m_themes.at(m_current_idx).root_dir;
+    AppSettings::general.theme = currentQmlDir();
     AppSettings::save_config();
 }
 } // namespace model

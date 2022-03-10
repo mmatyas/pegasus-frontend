@@ -30,6 +30,7 @@
 #include "model/keys/Key.h"
 #include "model/gaming/Assets.h"
 #include "model/gaming/GameFile.h"
+#include "model/internal/Internal.h"
 #include "utils/FolderListModel.h"
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include "SortFilterProxyModel/qqmlsortfilterproxymodel.h"
@@ -135,6 +136,7 @@ Backend::~Backend()
 {
     delete m_launcher;
     delete m_frontend;
+    delete m_api_private;
     delete m_api;
 
 #if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
@@ -155,7 +157,8 @@ Backend::Backend(const CliArgs& args)
     AppSettings::load_config();
 
     m_api = new model::ApiObject(args);
-    m_frontend = new FrontendLayer(m_api);
+    m_api_private = new model::Internal(args);
+    m_frontend = new FrontendLayer(m_api, m_api_private);
     m_launcher = new ProcessLauncher();
 
     // the following communication is required because process handling
@@ -187,13 +190,32 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
                      m_frontend, &FrontendLayer::rebuild);
 
+    // Setting changes
+    QObject::connect(m_api_private->settings().localesPtr(), &model::Locales::localeChanged,
+                     m_api, &model::ApiObject::onLocaleChanged);
+    QObject::connect(m_api_private->settings().themesPtr(), &model::Themes::themeChanged,
+                     m_api, &model::ApiObject::onThemeChanged);
+    QObject::connect(m_api_private->settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
+                     m_api->keysPtr(), &model::Keys::refresh_keys);
+    QObject::connect(m_api_private->settingsPtr(), &model::Settings::providerReloadingRequested,
+                     m_api, &model::ApiObject::startScanning);
+
+    // Loading progress
+    QObject::connect(m_api, &model::ApiObject::eventLoadingStarted,
+                     m_api_private->metaPtr(), &model::Meta::onSearchStarted);
+    QObject::connect(m_api, &model::ApiObject::eventLoadingProgressChanged,
+                     m_api_private->metaPtr(), &model::Meta::onSearchProgressChanged);
+    QObject::connect(m_api, &model::ApiObject::eventLoadingPostProcessing,
+                     m_api_private->metaPtr(), &model::Meta::onSearchPostProcessing);
+    QObject::connect(m_api, &model::ApiObject::eventLoadingFinished,
+                     m_api_private->metaPtr(), &model::Meta::onSearchFinished);
 
     // partial QML reload
-    QObject::connect(&m_api->internal().meta(), &model::Meta::qmlClearCacheRequested,
+    QObject::connect(&m_api_private->meta(), &model::Meta::qmlClearCacheRequested,
                      m_frontend, &FrontendLayer::clearCache);
 
     // quit/reboot/shutdown request
-    QObject::connect(&m_api->internal().system(), &model::System::appCloseRequested, on_app_close);
+    QObject::connect(&m_api_private->system(), &model::System::appCloseRequested, on_app_close);
 }
 
 void Backend::start()

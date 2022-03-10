@@ -45,7 +45,6 @@ class Meta : public QObject {
 public:
     explicit Meta(const backend::CliArgs& args, QObject* parent = nullptr);
 
-    void startLoading();
     void onUiReady();
 
 public:
@@ -57,7 +56,9 @@ public:
     float loadingProgress() const { return m_loading_progress; }
 
 public slots:
+    void onSearchStarted();
     void onSearchProgressChanged(float, QString);
+    void onSearchPostProcessing();
     void onSearchFinished();
 
 signals:
