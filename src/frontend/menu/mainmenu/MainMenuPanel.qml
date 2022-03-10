@@ -72,7 +72,7 @@ FocusScope {
             }
             selected: focus
 
-            enabled: api.internal.meta.allowSettings
+            enabled: Internal.meta.allowSettings
             visible: enabled
 
             KeyNavigation.down: mbHelp
@@ -114,7 +114,7 @@ FocusScope {
                     text: qsTr("Shutdown") + api.tr
                     onActivated: requestShutdown()
 
-                    readonly property bool callable: api.internal.meta.allowShutdown
+                    readonly property bool callable: Internal.meta.allowShutdown
                     enabled: callable
                     visible: callable
 
@@ -125,7 +125,7 @@ FocusScope {
                     text: qsTr("Suspend") + api.tr
                     onActivated: { close(); requestSuspend() }
 
-                    readonly property bool callable: api.internal.meta.allowSuspend
+                    readonly property bool callable: Internal.meta.allowSuspend
                     enabled: callable
                     visible: callable
 
@@ -136,7 +136,7 @@ FocusScope {
                     text: qsTr("Reboot") + api.tr
                     onActivated: requestReboot()
 
-                    readonly property bool callable: api.internal.meta.allowReboot
+                    readonly property bool callable: Internal.meta.allowReboot
                     enabled: callable
                     visible: callable
 
@@ -147,7 +147,7 @@ FocusScope {
                     text: qsTr("Exit Pegasus") + api.tr
                     onActivated: requestQuit()
 
-                    readonly property bool callable: api.internal.meta.allowAppClose
+                    readonly property bool callable: Internal.meta.allowAppClose
                     enabled: callable
                     visible: callable
 

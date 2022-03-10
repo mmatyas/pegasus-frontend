@@ -64,7 +64,7 @@ FocusScope {
         z: 2
 
         KeyNavigation.down: content
-        onActivated: api.internal.settings.keyEditor.resetKeys()
+        onActivated: Internal.settings.keyEditor.resetKeys()
     }
 
     ListView {
@@ -78,7 +78,7 @@ FocusScope {
 
         focus: true
 
-        model: api.internal.settings.keyEditor.eventCount
+        model: Internal.settings.keyEditor.eventCount
         delegate: KeyEditorEntry {
             eventId: modelData
             onEditKey: {
@@ -91,7 +91,7 @@ FocusScope {
                 recoder.keyToChange = 0;
                 recoder.focus = true;
             }
-            onDelKey: api.internal.settings.keyEditor.deleteKeyCode(eventId, keyCode)
+            onDelKey: Internal.settings.keyEditor.deleteKeyCode(eventId, keyCode)
         }
 
         spacing: vpx(15)

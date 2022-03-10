@@ -114,7 +114,7 @@ FocusScope {
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
 
-                visible: api.internal.settings.providers.count === 0
+                visible: Internal.settings.providers.count === 0
             }
 
             ListView {
@@ -122,7 +122,7 @@ FocusScope {
                 anchors.fill: parent
                 clip: true
 
-                model: api.internal.settings.providers
+                model: Internal.settings.providers
                 delegate: listEntry
 
                 focus: true
@@ -213,7 +213,7 @@ FocusScope {
         onAccept: {
             list.focus = true;
             root.mSettingsChanged = false;
-            api.internal.settings.reloadProviders();
+            Internal.settings.reloadProviders();
         }
         onCancel: {
             list.focus = true;

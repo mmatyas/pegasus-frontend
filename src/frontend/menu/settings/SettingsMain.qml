@@ -68,22 +68,22 @@ FocusScope {
             label: QT_TR_NOOP("Language")
             type: SettingsEntry.Type.Select
             selectBox: localeBox
-            selectValue: api.internal.settings.locales.currentName
+            selectValue: Internal.settings.locales.currentName
             section: "general"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Theme")
             type: SettingsEntry.Type.Select
             selectBox: themeBox
-            selectValue: api.internal.settings.themes.currentName
+            selectValue: Internal.settings.themes.currentName
             section: "general"
         },
         SettingsEntry {
             label: QT_TR_NOOP("Fullscreen mode")
             desc: QT_TR_NOOP("On some platforms this setting may have no effect.")
             type: SettingsEntry.Type.Bool
-            boolValue: api.internal.settings.fullscreen
-            boolSetter: (val) => api.internal.settings.fullscreen = val
+            boolValue: Internal.settings.fullscreen
+            boolSetter: (val) => Internal.settings.fullscreen = val
             section: "general"
         },
 
@@ -103,8 +103,8 @@ FocusScope {
             label: QT_TR_NOOP("Enable mouse support")
             desc: QT_TR_NOOP("By default the cursor is visible if there are any pointer devices connected.")
             type: SettingsEntry.Type.Bool
-            boolValue: api.internal.settings.mouseSupport
-            boolSetter: (val) => api.internal.settings.mouseSupport = val
+            boolValue: Internal.settings.mouseSupport
+            boolSetter: (val) => Internal.settings.mouseSupport = val
             section: "controls"
         },
 
@@ -118,8 +118,8 @@ FocusScope {
             label: QT_TR_NOOP("Only show existing games")
             desc: QT_TR_NOOP("Check the game files and only show games that actually exist. You can disable this to improve loading times.")
             type: SettingsEntry.Type.Bool
-            boolValue: api.internal.settings.verifyFiles
-            boolSetter: (val) => api.internal.settings.verifyFiles = val
+            boolValue: Internal.settings.verifyFiles
+            boolSetter: (val) => Internal.settings.verifyFiles = val
             section: "gaming"
         },
         SettingsEntry {
@@ -206,20 +206,20 @@ FocusScope {
         id: localeBox
         z: 3
 
-        model: api.internal.settings.locales
-        index: api.internal.settings.locales.currentIndex
+        model: Internal.settings.locales
+        index: Internal.settings.locales.currentIndex
 
         onClose: options.focus = true
-        onSelect: api.internal.settings.locales.currentIndex = index
+        onSelect: Internal.settings.locales.currentIndex = index
     }
     MultivalueBox {
         id: themeBox
         z: 3
 
-        model: api.internal.settings.themes
-        index: api.internal.settings.themes.currentIndex
+        model: Internal.settings.themes
+        index: Internal.settings.themes.currentIndex
 
         onClose: options.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
+        onSelect: Internal.settings.themes.currentIndex = index
     }
 }

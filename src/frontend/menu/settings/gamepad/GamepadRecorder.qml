@@ -40,9 +40,9 @@ Item {
         timeout.restart();
 
         if (fieldIsAxis)
-            api.internal.gamepad.configureAxis(deviceId, deviceField);
+            Internal.gamepad.configureAxis(deviceId, deviceField);
         else
-            api.internal.gamepad.configureButton(deviceId, deviceField);
+            Internal.gamepad.configureButton(deviceId, deviceField);
     }
 
     Keys.onPressed: event.accept = true
@@ -58,7 +58,7 @@ Item {
 
 
     Connections {
-        target: api.internal.gamepad
+        target: Internal.gamepad
         function onButtonConfigured() { root.triggerClose(); }
         function onAxisConfigured() { root.triggerClose(); }
         function onConfigurationCanceled() { root.triggerClose(); }
@@ -72,7 +72,7 @@ Item {
         onTriggered: {
             remainingSeconds--;
             if (remainingSeconds <= 0) {
-                api.internal.gamepad.cancelConfiguration();
+                Internal.gamepad.cancelConfiguration();
                 root.triggerClose();
                 stop();
             }

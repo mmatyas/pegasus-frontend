@@ -216,7 +216,7 @@ FocusScope {
                 focus: true
                 KeyNavigation.down: fieldView
 
-                model: api.internal.gamepad.devices
+                model: Internal.gamepad.devices
                 delegate: Text {
                     text: modelData.name
                     color: "#eee"
@@ -279,8 +279,8 @@ FocusScope {
                         return "";
 
                     const map_str = isAxis
-                        ? api.internal.gamepad.mappingForAxis(pad.deviceId, field)
-                        : api.internal.gamepad.mappingForButton(pad.deviceId, field)
+                        ? Internal.gamepad.mappingForAxis(pad.deviceId, field)
+                        : Internal.gamepad.mappingForButton(pad.deviceId, field)
                     if (!map_str)
                         return "";
 

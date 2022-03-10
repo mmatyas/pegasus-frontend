@@ -28,12 +28,12 @@ Window {
     title: "Pegasus"
     color: "#000"
 
-    visibility: api.internal.settings.fullscreen
+    visibility: Internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
 
     onClosing: {
         theme.source = "";
-        api.internal.system.quit();
+        Internal.system.quit();
     }
 
     FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
@@ -83,10 +83,10 @@ Window {
             focus: true
             enabled: focus
 
-            readonly property url apiThemePath: api.internal.settings.themes.currentQmlPath
+            readonly property url apiThemePath: Internal.settings.themes.currentQmlPath
 
             function getThemeFile() {
-                if (api.internal.meta.isLoading)
+                if (Internal.meta.isLoading)
                     return "";
                 if (api.collections.count === 0)
                     return "messages/NoGamesError.qml";
@@ -105,7 +105,7 @@ Window {
                     event.accepted = true;
 
                     theme.source = "";
-                    api.internal.meta.clearQMLCache();
+                    Internal.meta.clearQMLCache();
                     theme.source = Qt.binding(getThemeFile);
                 }
             }
@@ -141,7 +141,7 @@ Window {
                 powerDialog.focus = true;
             }
             function onRequestSuspend() {
-                api.internal.system.suspend()
+                Internal.system.suspend()
             }                        
             function onRequestReboot() {
                 powerDialog.source = "dialogs/RebootDialog.qml"
@@ -149,7 +149,7 @@ Window {
             }
             function onRequestQuit() {
                 theme.source = "";
-                api.internal.system.quit();
+                Internal.system.quit();
             }
         }
         PegasusUtils.HorizontalSwipeArea {
@@ -220,14 +220,14 @@ Window {
         enabled: false
         visible: focus
 
-        property bool dataLoading: api.internal.meta.loading
+        property bool dataLoading: Internal.meta.loading
         property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
         showDataProgressText: dataLoading
 
         function hideMaybe() {
             if (focus && !dataLoading && !skinLoading) {
                 content.focus = true;
-                api.internal.meta.resetLoadingState();
+                Internal.meta.resetLoadingState();
             }
         }
 

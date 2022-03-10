@@ -67,8 +67,8 @@ MenuScreen {
                 }
                 Text {
                     property string programInfo: qsTr("Pegasus Frontend, version <tt>%1</tt> (%2)")
-                        .arg(api.internal.meta.gitRevision)
-                        .arg(api.internal.meta.gitDate)
+                        .arg(Internal.meta.gitRevision)
+                        .arg(Internal.meta.gitDate)
                         + api.tr
 
                     text: programInfo + "<br>Copyright \u00a9 2017-2020 Mátyás Mustoha"

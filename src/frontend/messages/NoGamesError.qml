@@ -29,6 +29,6 @@ Error {
             + api.tr
     instruction: qsTr("Please see the log file for more details.") + api.tr
     logInfo: qsTr("You can find it here:<pre>%1</pre>")
-        .arg(api.internal.meta.logFilePath)
+        .arg(Internal.meta.logFilePath)
         + api.tr
 }

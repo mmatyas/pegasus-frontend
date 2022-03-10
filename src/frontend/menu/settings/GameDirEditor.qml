@@ -87,7 +87,7 @@ FocusScope {
             return;
 
         stopDeletion();
-        api.internal.settings.removeGameDirs(selectedIndices);
+        Internal.settings.removeGameDirs(selectedIndices);
         selectedIndices = [];
     }
 
@@ -183,7 +183,7 @@ FocusScope {
                 anchors.fill: parent
                 clip: true
 
-                model: api.internal.settings.gameDirs
+                model: Internal.settings.gameDirs
                 delegate: listEntry
 
                 focus: true
@@ -320,7 +320,7 @@ FocusScope {
         onAccept: {
             list.focus = true;
             root.mSettingsChanged = false;
-            api.internal.settings.reloadProviders();
+            Internal.settings.reloadProviders();
         }
         onCancel: {
             list.focus = true;
@@ -341,7 +341,7 @@ FocusScope {
 
         onCancel: list.focus = true
         onPick: {
-            api.internal.settings.addGameDir(dir_path);
+            Internal.settings.addGameDir(dir_path);
             list.focus = true;
         }
     }
