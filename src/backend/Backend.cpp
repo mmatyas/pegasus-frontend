@@ -154,7 +154,7 @@ Backend::Backend(const CliArgs& args)
     AppSettings::load_providers();
     AppSettings::load_config();
 
-    m_api = new ApiObject(args);
+    m_api = new model::ApiObject(args);
     m_frontend = new FrontendLayer(m_api);
     m_launcher = new ProcessLauncher();
 
@@ -163,16 +163,16 @@ Backend::Backend(const CliArgs& args)
     // see the relevant classes
 
     // the Api asks the Launcher to start the game
-    QObject::connect(m_api, &ApiObject::launchGameFile,
+    QObject::connect(m_api, &model::ApiObject::launchGameFile,
                      m_launcher, &ProcessLauncher::onLaunchRequested);
 
     // the Launcher tries to start the game, ask the Frontend
     // to tear down the UI, then report back to the Api
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
-                     m_api, &ApiObject::onGameLaunchOk);
+                     m_api, &model::ApiObject::onGameLaunchOk);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
-                     m_api, &ApiObject::onGameLaunchError);
+                     m_api, &model::ApiObject::onGameLaunchError);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_frontend, &FrontendLayer::teardown);
@@ -182,7 +182,7 @@ Backend::Backend(const CliArgs& args)
 
     // when the game ends, the Launcher wakes up the Api and the Frontend
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
-                     m_api, &ApiObject::onGameFinished);
+                     m_api, &model::ApiObject::onGameFinished);
 
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
                      m_frontend, &FrontendLayer::rebuild);

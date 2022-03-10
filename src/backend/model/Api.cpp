@@ -21,6 +21,7 @@
 #include "model/gaming/GameFile.h"
 
 
+namespace model {
 ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
     , m_internal(args)
@@ -134,3 +135,4 @@ void ApiObject::onThemeChanged()
 {
     m_memory.changeTheme(m_internal.settings().themes().currentQmlDir());
 }
+} // namespace model

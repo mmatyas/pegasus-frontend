@@ -35,6 +35,7 @@
 ///
 /// Provides an API for the frontend layer, to allow accessing every public
 /// property of the backend from QML.
+namespace model {
 class ApiObject : public QObject {
     Q_OBJECT
 
@@ -93,3 +94,4 @@ private:
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
 };
+} // namespace model
