@@ -254,7 +254,7 @@ void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, con
             continue;
         }
 
-        QKeySequence keyseq(str);
+        QKeySequence keyseq(str, QKeySequence::PortableText);
         if (!keyseq.isEmpty())
             keyseqs.append(std::move(keyseq));
     }
