@@ -25,7 +25,6 @@
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 #include <QString>
-#include <QVector>
 
 #ifndef Q_OS_ANDROID
 #  include "GamepadAxisNavigation.h"

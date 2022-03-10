@@ -18,6 +18,7 @@
 #include "StringHelpers.h"
 
 #include "utils/HashMap.h"
+#include <QString>
 #include <cctype>
 #include <cstring>
 

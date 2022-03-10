@@ -17,8 +17,10 @@
 
 #pragma once
 
-#include <QString>
 #include <string>
+
+class QString;
+
 
 namespace utils {
 std::string trimmed(const char* const str);

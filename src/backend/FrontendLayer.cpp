@@ -25,6 +25,7 @@
 #include "platform/AndroidAppIconProvider.h"
 #endif
 
+#include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQmlNetworkAccessManagerFactory>
 

@@ -18,7 +18,8 @@
 #pragma once
 
 #include <QObject>
-#include <QQmlApplicationEngine>
+
+class QQmlApplicationEngine;
 
 
 /// Manages the dynamic reload of the frontend layer

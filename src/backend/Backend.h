@@ -19,8 +19,6 @@
 
 #include "CliArgs.h"
 
-#include <memory>
-
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;

@@ -20,8 +20,6 @@
 #include "types/KeyEventType.h"
 
 #include <QObject>
-#include <QString>
-#include <QVariantList>
 
 
 namespace model {

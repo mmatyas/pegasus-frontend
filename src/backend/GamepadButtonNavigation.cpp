@@ -19,6 +19,7 @@
 
 #include <QGuiApplication>
 #include <QKeyEvent>
+#include <QTimer>
 #include <QWindow>
 
 

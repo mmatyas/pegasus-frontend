@@ -19,8 +19,9 @@
 
 #include "MoveOnly.h"
 
-#include <QString>
 #include <QSqlDatabase>
+
+class QString;
 
 
 // Wrapper above Qt for auto-closing and freeing the connection

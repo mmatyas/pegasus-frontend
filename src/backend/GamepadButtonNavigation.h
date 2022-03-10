@@ -21,7 +21,8 @@
 #include "utils/HashMap.h"
 
 #include <QObject>
-#include <QTimer>
+
+class QTimer;
 
 
 class GamepadButtonNavigation : public QObject {
