@@ -41,7 +41,7 @@ public:
 private:
     // frontend <-> api <-> launcher
     // NOTE: unique_ptr had forward declaration issues
-    model::ApiObject* m_api;
+    model::ApiObject* m_api_public;
     model::Internal* m_api_private;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;

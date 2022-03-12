@@ -137,7 +137,7 @@ Backend::~Backend()
     delete m_launcher;
     delete m_frontend;
     delete m_api_private;
-    delete m_api;
+    delete m_api_public;
 
 #if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
     SDL_Quit();
@@ -156,9 +156,9 @@ Backend::Backend(const CliArgs& args)
     AppSettings::load_providers();
     AppSettings::load_config();
 
-    m_api = new model::ApiObject(args);
+    m_api_public = new model::ApiObject(args);
     m_api_private = new model::Internal(args);
-    m_frontend = new FrontendLayer(m_api, m_api_private);
+    m_frontend = new FrontendLayer(m_api_public, m_api_private);
     m_launcher = new ProcessLauncher();
 
     // the following communication is required because process handling
@@ -166,16 +166,16 @@ Backend::Backend(const CliArgs& args)
     // see the relevant classes
 
     // the Api asks the Launcher to start the game
-    QObject::connect(m_api, &model::ApiObject::launchGameFile,
+    QObject::connect(m_api_public, &model::ApiObject::launchGameFile,
                      m_launcher, &ProcessLauncher::onLaunchRequested);
 
     // the Launcher tries to start the game, ask the Frontend
     // to tear down the UI, then report back to the Api
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
-                     m_api, &model::ApiObject::onGameLaunchOk);
+                     m_api_public, &model::ApiObject::onGameLaunchOk);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
-                     m_api, &model::ApiObject::onGameLaunchError);
+                     m_api_public, &model::ApiObject::onGameLaunchError);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_frontend, &FrontendLayer::teardown);
@@ -185,29 +185,29 @@ Backend::Backend(const CliArgs& args)
 
     // when the game ends, the Launcher wakes up the Api and the Frontend
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
-                     m_api, &model::ApiObject::onGameFinished);
+                     m_api_public, &model::ApiObject::onGameFinished);
 
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
                      m_frontend, &FrontendLayer::rebuild);
 
     // Setting changes
     QObject::connect(m_api_private->settings().localesPtr(), &model::Locales::localeChanged,
-                     m_api, &model::ApiObject::onLocaleChanged);
+                     m_api_public, &model::ApiObject::onLocaleChanged);
     QObject::connect(m_api_private->settings().themesPtr(), &model::Themes::themeChanged,
-                     m_api, &model::ApiObject::onThemeChanged);
+                     m_api_public, &model::ApiObject::onThemeChanged);
     QObject::connect(m_api_private->settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
-                     m_api->keysPtr(), &model::Keys::refresh_keys);
+                     m_api_public->keysPtr(), &model::Keys::refresh_keys);
     QObject::connect(m_api_private->settingsPtr(), &model::Settings::providerReloadingRequested,
-                     m_api, &model::ApiObject::startScanning);
+                     m_api_public, &model::ApiObject::startScanning);
 
     // Loading progress
-    QObject::connect(m_api, &model::ApiObject::eventLoadingStarted,
+    QObject::connect(m_api_public, &model::ApiObject::eventLoadingStarted,
                      m_api_private->metaPtr(), &model::Meta::onSearchStarted);
-    QObject::connect(m_api, &model::ApiObject::eventLoadingProgressChanged,
+    QObject::connect(m_api_public, &model::ApiObject::eventLoadingProgressChanged,
                      m_api_private->metaPtr(), &model::Meta::onSearchProgressChanged);
-    QObject::connect(m_api, &model::ApiObject::eventLoadingPostProcessing,
+    QObject::connect(m_api_public, &model::ApiObject::eventLoadingPostProcessing,
                      m_api_private->metaPtr(), &model::Meta::onSearchPostProcessing);
-    QObject::connect(m_api, &model::ApiObject::eventLoadingFinished,
+    QObject::connect(m_api_public, &model::ApiObject::eventLoadingFinished,
                      m_api_private->metaPtr(), &model::Meta::onSearchFinished);
 
     // partial QML reload
@@ -221,7 +221,7 @@ Backend::Backend(const CliArgs& args)
 void Backend::start()
 {
     m_frontend->rebuild();
-    m_api->startScanning(); // TODO: Separate scanner
+    m_api_public->startScanning(); // TODO: Separate scanner
 }
 
 } // namespace backend
