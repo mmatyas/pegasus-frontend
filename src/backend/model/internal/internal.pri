@@ -4,6 +4,7 @@ HEADERS += \
     $$PWD/GamepadManagerBackend.h \
     $$PWD/Internal.h \
     $$PWD/Meta.h \
+    $$PWD/ScannerState.h \
     $$PWD/System.h \
 
 SOURCES += \
@@ -12,6 +13,7 @@ SOURCES += \
     $$PWD/GamepadManagerBackend.cpp \
     $$PWD/Internal.cpp \
     $$PWD/Meta.cpp \
+    $$PWD/ScannerState.cpp \
     $$PWD/System.cpp \
 
 !isEmpty(USE_SDL_GAMEPAD) {

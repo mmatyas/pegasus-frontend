@@ -20,6 +20,7 @@
 #include "CliArgs.h"
 #include "GamepadManager.h"
 #include "Meta.h"
+#include "ScannerState.h"
 #include "System.h"
 #include "settings/Settings.h"
 #include "utils/QmlHelpers.h"
@@ -35,6 +36,7 @@ class Internal : public QObject {
     QML_CONST_PROPERTY(model::Settings, settings)
     QML_CONST_PROPERTY(model::System, system)
     QML_CONST_PROPERTY(model::GamepadManager, gamepad)
+    QML_CONST_PROPERTY(model::ScannerState, scanner)
 
 public:
     explicit Internal(const backend::CliArgs& args, QObject* parent = nullptr);

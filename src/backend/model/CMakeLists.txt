@@ -21,6 +21,8 @@ target_sources(pegasus-backend PRIVATE
     internal/Internal.h
     internal/Meta.cpp
     internal/Meta.h
+    internal/ScannerState.cpp
+    internal/ScannerState.h
     internal/System.cpp
     internal/System.h
     internal/settings/KeyEditor.cpp
