@@ -51,29 +51,33 @@ public:
     explicit ApiObject(const backend::CliArgs& args, QObject* parent = nullptr);
 
     // scanning
-    void startScanning();
+    void setGameData(QVector<model::Collection*>&&, QVector<model::Game*>&&);
 
 signals:
+    // loading
+    void gamedataReady();
+
+    // user actions
     void launchGameFile(const model::GameFile*);
     void launchFailed(QString);
+    void gameFileFinished(model::GameFile* const);
+    void gameFileLaunched(model::GameFile* const);
+    void favoritesChanged();
     void memoryChanged();
 
     // triggers translation update
     void retranslationRequested();
-
-    // loading progress
-    void eventLoadingStarted();
-    void eventLoadingProgressChanged(float, QString);
-    void eventLoadingPostProcessing();
-    void eventLoadingFinished();
 
     // Api events for QML -- no const here
     void eventSelectGameFile(model::Game* game);
     void eventLaunchError(QString msg);
 
 public slots:
+    // loading
+    void onScanStarted();
+
     // game launch communication
-    void onGameFinished();
+    void onGameProcessFinished();
     void onGameLaunchOk();
     void onGameLaunchError(QString);
 
@@ -83,7 +87,6 @@ public slots:
 
 private slots:
     // internal communication
-    void onSearchFinished();
     void onGameFavoriteChanged();
     void onGameFileSelectorRequested();
     void onGameFileLaunchRequested();
@@ -91,11 +94,6 @@ private slots:
 private:
     // game launching
     model::GameFile* m_launch_game_file;
-
-    // initialization
-    QVector<model::Collection*> m_providerman_collections; // TODO: std::vector
-    QVector<model::Game*> m_providerman_games;
-    ProviderManager m_providerman;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

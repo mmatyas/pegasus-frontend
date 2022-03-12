@@ -86,7 +86,7 @@ Window {
             readonly property url apiThemePath: Internal.settings.themes.currentQmlPath
 
             function getThemeFile() {
-                if (Internal.meta.isLoading)
+                if (Internal.scanner.running)
                     return "";
                 if (api.collections.count === 0)
                     return "messages/NoGamesError.qml";
@@ -208,8 +208,12 @@ Window {
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
-        function onEventLoadingStarted() {
-            splashScreen.focus = true;
+    }
+    Connections {
+        target: Internal.scanner
+        function onRunningChanged(running) {
+            if (running)
+                splashScreen.focus = true;
         }
     }
 
@@ -220,14 +224,14 @@ Window {
         enabled: false
         visible: focus
 
-        property bool dataLoading: Internal.meta.loading
+        property bool dataLoading: Internal.scanner.running
         property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
         showDataProgressText: dataLoading
 
         function hideMaybe() {
             if (focus && !dataLoading && !skinLoading) {
                 content.focus = true;
-                Internal.meta.resetLoadingState();
+                Internal.scanner.reset();
             }
         }
 

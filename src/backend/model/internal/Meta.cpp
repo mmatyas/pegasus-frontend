@@ -34,51 +34,12 @@ Meta::Meta(const backend::CliArgs& args, QObject* parent)
     , m_enable_menu_suspend(args.enable_menu_suspend)
     , m_enable_menu_appclose(args.enable_menu_appclose)
     , m_enable_menu_settings(args.enable_menu_settings)
-    , m_loading(true)
-    , m_loading_progress(0.f)
 {}
-
-void Meta::resetLoadingState()
-{
-    m_loading_progress = 0.f;
-    m_loading_stage = QString();
-    emit loadingProgressChanged();
-    emit loadingStageChanged();
-}
-
-void Meta::onSearchStarted()
-{
-    m_loading = true;
-    emit loadingChanged();
-}
 
 void Meta::clearQMLCache()
 {
     Log::info(LOGMSG("Reloading the frontend..."));
     emit qmlClearCacheRequested();
-}
-
-void Meta::onSearchProgressChanged(float value, QString stage)
-{
-    Q_ASSERT(value <= 1.f);
-    m_loading_progress = value;
-    m_loading_stage = std::move(stage);
-    emit loadingProgressChanged();
-    emit loadingStageChanged();
-}
-
-void Meta::onSearchPostProcessing()
-{
-    m_loading_progress = 1.0f;
-    m_loading_stage = QString();
-    emit loadingProgressChanged();
-    emit loadingStageChanged();
-}
-
-void Meta::onSearchFinished()
-{
-    m_loading = false;
-    emit loadingChanged();
 }
 
 } // namespace model

@@ -136,6 +136,7 @@ Backend::~Backend()
 {
     delete m_launcher;
     delete m_frontend;
+    delete m_providerman;
     delete m_api_private;
     delete m_api_public;
 
@@ -160,6 +161,7 @@ Backend::Backend(const CliArgs& args)
     m_api_private = new model::Internal(args);
     m_frontend = new FrontendLayer(m_api_public, m_api_private);
     m_launcher = new ProcessLauncher();
+    m_providerman = new ProviderManager();
 
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
@@ -174,6 +176,9 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_api_public, &model::ApiObject::onGameLaunchOk);
 
+    QObject::connect(m_api_public, &model::ApiObject::gameFileLaunched,
+                     m_providerman, &ProviderManager::onGameLaunched);
+
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
                      m_api_public, &model::ApiObject::onGameLaunchError);
 
@@ -185,7 +190,9 @@ Backend::Backend(const CliArgs& args)
 
     // when the game ends, the Launcher wakes up the Api and the Frontend
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
-                     m_api_public, &model::ApiObject::onGameFinished);
+                     m_api_public, &model::ApiObject::onGameProcessFinished);
+    QObject::connect(m_api_public, &model::ApiObject::gameFileFinished,
+                     m_providerman, &ProviderManager::onGameFinished);
 
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
                      m_frontend, &FrontendLayer::rebuild);
@@ -198,17 +205,24 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_api_private->settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
                      m_api_public->keysPtr(), &model::Keys::refresh_keys);
     QObject::connect(m_api_private->settingsPtr(), &model::Settings::providerReloadingRequested,
-                     m_api_public, &model::ApiObject::startScanning);
+                     [this](){ onScanRequested(); });
+
+    QObject::connect(m_api_public, &model::ApiObject::favoritesChanged,
+                     [this](){ onFavoritesChanged(); });
 
     // Loading progress
-    QObject::connect(m_api_public, &model::ApiObject::eventLoadingStarted,
-                     m_api_private->metaPtr(), &model::Meta::onSearchStarted);
-    QObject::connect(m_api_public, &model::ApiObject::eventLoadingProgressChanged,
-                     m_api_private->metaPtr(), &model::Meta::onSearchProgressChanged);
-    QObject::connect(m_api_public, &model::ApiObject::eventLoadingPostProcessing,
-                     m_api_private->metaPtr(), &model::Meta::onSearchPostProcessing);
-    QObject::connect(m_api_public, &model::ApiObject::eventLoadingFinished,
-                     m_api_private->metaPtr(), &model::Meta::onSearchFinished);
+    QObject::connect(m_providerman, &ProviderManager::scanStarted,
+                     m_api_private->scannerPtr(), &model::ScannerState::onScanStarted);
+    QObject::connect(m_providerman, &ProviderManager::scanFinished,
+                     m_api_private->scannerPtr(), &model::ScannerState::onScanFinished);
+    QObject::connect(m_providerman, &ProviderManager::scanProgressChanged,
+                     m_api_private->scannerPtr(), &model::ScannerState::onScanProgressChanged);
+    QObject::connect(m_providerman, &ProviderManager::scanStarted,
+                     m_api_public, &model::ApiObject::onScanStarted);
+    QObject::connect(m_providerman, &ProviderManager::scanFinished,
+                     [this](){ onScanFinished(); });
+    QObject::connect(m_api_public, &model::ApiObject::gamedataReady,
+                     m_api_private->scannerPtr(), &model::ScannerState::onUiReady);
 
     // partial QML reload
     QObject::connect(&m_api_private->meta(), &model::Meta::qmlClearCacheRequested,
@@ -221,7 +235,28 @@ Backend::Backend(const CliArgs& args)
 void Backend::start()
 {
     m_frontend->rebuild();
-    m_api_public->startScanning(); // TODO: Separate scanner
+    onScanRequested();
+}
+
+void Backend::onScanRequested()
+{
+    m_providerman->run();
+}
+
+void Backend::onScanFinished()
+{
+    QVector<model::Collection*> colls;
+    std::swap(m_providerman->foundCollections(), colls);
+
+    QVector<model::Game*> games;
+    std::swap(m_providerman->foundGames(), games);
+
+    m_api_public->setGameData(std::move(colls), std::move(games));
+}
+
+void Backend::onFavoritesChanged()
+{
+    m_providerman->onFavoritesChanged(m_api_public->allGames()->asList());
 }
 
 } // namespace backend

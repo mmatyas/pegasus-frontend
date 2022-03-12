@@ -23,6 +23,7 @@ namespace model { class ApiObject; }
 namespace model { class Internal; }
 class FrontendLayer;
 class ProcessLauncher;
+class ProviderManager;
 
 
 namespace backend {
@@ -45,6 +46,11 @@ private:
     model::Internal* m_api_private;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;
+    ProviderManager* m_providerman;
+
+    void onScanRequested();
+    void onScanFinished();
+    void onFavoritesChanged();
 };
 
 } // namespace backend

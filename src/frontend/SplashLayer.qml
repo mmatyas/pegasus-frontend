@@ -23,7 +23,7 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
-    property real progress: Internal.meta.loadingProgress
+    property real progress: Internal.scanner.progress
     property bool showDataProgressText: true
 
     Behavior on progress { NumberAnimation {} }
@@ -116,7 +116,7 @@ Rectangle {
         id: gameCounter
         visible: showDataProgressText
 
-        text: Internal.meta.loadingStage
+        text: Internal.scanner.stage
         color: "#999"
         font.pixelSize: vpx(16)
         font.family: global.fonts.sans

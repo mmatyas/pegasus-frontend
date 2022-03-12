@@ -28,10 +28,6 @@ namespace model {
 class Meta : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(bool loading READ isLoading NOTIFY loadingChanged)
-    Q_PROPERTY(QString loadingStage READ loadingStage NOTIFY loadingStageChanged)
-    Q_PROPERTY(float loadingProgress READ loadingProgress NOTIFY loadingProgressChanged)
-
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
     Q_PROPERTY(QString gitDate MEMBER m_git_date CONSTANT)
     Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
@@ -48,24 +44,9 @@ public:
     void onUiReady();
 
 public:
-    Q_INVOKABLE void resetLoadingState();
     Q_INVOKABLE void clearQMLCache();
 
-    bool isLoading() const { return m_loading; }
-    QString loadingStage() const { return m_loading_stage; }
-    float loadingProgress() const { return m_loading_progress; }
-
-public slots:
-    void onSearchStarted();
-    void onSearchProgressChanged(float, QString);
-    void onSearchPostProcessing();
-    void onSearchFinished();
-
 signals:
-    void loadingChanged();
-    void loadingStageChanged();
-    void loadingProgressChanged();
-
     void qmlClearCacheRequested();
 
 private:
@@ -78,10 +59,6 @@ private:
     const bool m_enable_menu_suspend;
     const bool m_enable_menu_appclose;
     const bool m_enable_menu_settings;
-
-    bool m_loading;
-    QString m_loading_stage;
-    float m_loading_progress;
 };
 
 } // namespace model

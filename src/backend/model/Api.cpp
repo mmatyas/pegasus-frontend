@@ -27,32 +27,26 @@ ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
     , m_allGames(new QQmlObjectListModel<model::Game>(this))
     , m_launch_game_file(nullptr)
-    , m_providerman(this)
 {
     connect(&m_memory, &model::Memory::dataChanged,
             this, &ApiObject::memoryChanged);
-
-    connect(&m_providerman, &ProviderManager::progressChanged,
-            this, &ApiObject::eventLoadingProgressChanged);
-    connect(&m_providerman, &ProviderManager::finished,
-            this, &ApiObject::onSearchFinished);
 }
 
-void ApiObject::startScanning()
+void ApiObject::onScanStarted()
 {
-    emit eventLoadingStarted();
-
     m_collections->clear();
     m_allGames->clear();
-
-    m_providerman.run(m_providerman_collections, m_providerman_games);
 }
 
-void ApiObject::onSearchFinished()
+void ApiObject::setGameData(QVector<model::Collection*>&& collections, QVector<model::Game*>&& games)
 {
-    emit eventLoadingPostProcessing();
+    Q_ASSERT(m_allGames && m_allGames->isEmpty());
+    Q_ASSERT(m_collections && m_collections->isEmpty());
 
-    for (model::Game* const game : qAsConst(m_providerman_games)) {
+    for (model::Game* const game : qAsConst(games)) {
+        game->moveToThread(thread());
+        game->setParent(this);
+
         connect(game, &model::Game::launchFileSelectorRequested,
                 this, &ApiObject::onGameFileSelectorRequested);
         connect(game, &model::Game::favoriteChanged,
@@ -64,16 +58,16 @@ void ApiObject::onSearchFinished()
         }
     }
 
-    QVector<model::Game*> game_vec;
-    std::swap(m_providerman_games, game_vec);
-    m_allGames->append(std::move(game_vec));
+    for (model::Collection* const coll : qAsConst(collections)) {
+        coll->moveToThread(thread());
+        coll->setParent(this);
+    }
 
-    QVector<model::Collection*> coll_vec;
-    std::swap(m_providerman_collections, coll_vec);
-    m_collections->append(std::move(coll_vec));
+    m_allGames->append(std::move(games));
+    m_collections->append(std::move(collections));
 
     Log::info(LOGMSG("%1 games found").arg(m_allGames->count()));
-    emit eventLoadingFinished();
+    emit gamedataReady();
 }
 
 void ApiObject::onGameFileSelectorRequested()
@@ -94,28 +88,26 @@ void ApiObject::onGameFileLaunchRequested()
 void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game_file);
-    m_providerman.onGameLaunched(m_launch_game_file);
+    emit gameFileLaunched(m_launch_game_file);
 }
 
 void ApiObject::onGameLaunchError(QString msg)
 {
     Q_ASSERT(m_launch_game_file);
     m_launch_game_file = nullptr;
-
     emit eventLaunchError(msg);
 }
 
-void ApiObject::onGameFinished()
+void ApiObject::onGameProcessFinished()
 {
     Q_ASSERT(m_launch_game_file);
-
-    m_providerman.onGameFinished(m_launch_game_file);
+    emit gameFileFinished(m_launch_game_file);
     m_launch_game_file = nullptr;
 }
 
 void ApiObject::onGameFavoriteChanged()
 {
-    m_providerman.onGameFavoriteChanged(m_allGames->asList());
+    emit favoritesChanged();
 }
 
 void ApiObject::onLocaleChanged()
