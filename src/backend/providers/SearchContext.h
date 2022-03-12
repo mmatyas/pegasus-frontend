@@ -64,7 +64,7 @@ public:
     bool has_pending_downloads() const;
 
     const HashMap<QString, model::GameFile*>& current_filepath_to_entry_map() const { return m_filepath_to_gamefile; }
-    std::pair<QVector<model::Collection*>, QVector<model::Game*>> finalize(QObject* const);
+    std::pair<QVector<model::Collection*>, QVector<model::Game*>> finalize(QObject* const parent = nullptr);
 
 signals:
     void downloadScheduled();
