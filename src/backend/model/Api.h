@@ -51,6 +51,7 @@ public:
     explicit ApiObject(const backend::CliArgs& args, QObject* parent = nullptr);
 
     // scanning
+    void clearGameData();
     void setGameData(QVector<model::Collection*>&&, QVector<model::Game*>&&);
 
 signals:
@@ -73,13 +74,10 @@ signals:
     void eventLaunchError(QString msg);
 
 public slots:
-    // loading
-    void onScanStarted();
-
     // game launch communication
-    void onGameProcessFinished();
     void onGameLaunchOk();
     void onGameLaunchError(QString);
+    void onGameProcessFinished();
 
     // setting changes
     void onLocaleChanged();

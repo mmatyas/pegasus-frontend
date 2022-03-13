@@ -217,8 +217,6 @@ Backend::Backend(const CliArgs& args)
                      m_api_private->scannerPtr(), &model::ScannerState::onScanFinished);
     QObject::connect(m_providerman, &ProviderManager::scanProgressChanged,
                      m_api_private->scannerPtr(), &model::ScannerState::onScanProgressChanged);
-    QObject::connect(m_providerman, &ProviderManager::scanStarted,
-                     m_api_public, &model::ApiObject::onScanStarted);
     QObject::connect(m_providerman, &ProviderManager::scanFinished,
                      [this](){ onScanFinished(); });
     QObject::connect(m_api_public, &model::ApiObject::gamedataReady,
@@ -240,6 +238,7 @@ void Backend::start()
 
 void Backend::onScanRequested()
 {
+    m_api_public->clearGameData();
     m_providerman->run();
 }
 

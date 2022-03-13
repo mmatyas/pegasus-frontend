@@ -32,7 +32,7 @@ ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
             this, &ApiObject::memoryChanged);
 }
 
-void ApiObject::onScanStarted()
+void ApiObject::clearGameData()
 {
     m_collections->clear();
     m_allGames->clear();
