@@ -141,7 +141,10 @@ FocusScope {
                     clip: true
 
                     model: Internal.settings.gameDirs
-                    delegate: listEntry
+                    delegate: GameDirEditorEntry {
+                        selected: root.isSelected(index)
+                        onPressed: root.toggleIndex(index)
+                    }
 
                     focus: true
                     highlightRangeMode: ListView.ApplyRange
@@ -197,56 +200,6 @@ FocusScope {
 
                     KeyNavigation.left: list
                 }
-            }
-        }
-    }
-
-    Component {
-        id: listEntry
-
-        Rectangle {
-            readonly property bool highlighted: ListView.view.focus
-                                                && (ListView.isCurrentItem || mouseArea.containsMouse)
-            readonly property bool selected: root.isSelected(index)
-
-            width: parent.width
-            height: label.height
-            color: highlighted ? "#585858" : "transparent"
-
-            Keys.onPressed: {
-                if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    root.toggleIndex(index);
-                }
-            }
-
-
-            Rectangle {
-                anchors.fill: parent
-                color: "#d55"
-                visible: parent.selected
-            }
-
-            Text {
-                id: label
-                text: modelData
-                verticalAlignment: Text.AlignVCenter
-                lineHeight: 2
-
-                color: "#eee"
-                font.family: globalFonts.sans
-                font.pixelSize: vpx(18)
-
-                width: parent.width
-                leftPadding: parent.height * 0.5
-                rightPadding: leftPadding
-                elide: Text.ElideRight
-            }
-
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                hoverEnabled: true
             }
         }
     }
