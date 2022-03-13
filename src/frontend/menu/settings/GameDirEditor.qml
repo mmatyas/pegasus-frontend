@@ -18,6 +18,7 @@
 import "common"
 import "gamedireditor"
 import QtQuick 2.6
+import QtQuick.Layouts 1.3
 
 
 FocusScope {
@@ -64,34 +65,6 @@ FocusScope {
     }
 
 
-    Timer {
-        readonly property real step: interval / 1000
-
-        id: deleteTimer
-        interval: 16
-        repeat: true
-        onTriggered: deletionPercent += step
-    }
-    property real deletionPercent: 0.0
-
-    function startDeletion() {
-        deletionPercent = 0.0;
-        deleteTimer.start();
-    }
-    function stopDeletion() {
-        deleteTimer.stop();
-        deletionPercent = 0.0;
-    }
-    onDeletionPercentChanged: {
-        if (deletionPercent < 1.0)
-            return;
-
-        stopDeletion();
-        Internal.settings.removeGameDirs(selectedIndices);
-        selectedIndices = [];
-    }
-
-
     Rectangle {
         id: shade
 
@@ -108,45 +81,16 @@ FocusScope {
 
 
     Rectangle {
+        id: main
+
+        readonly property int borderSize: vpx(10)
+
         height: parent.height * 0.8
-        width: height * 1.5
-        color: "#444"
-
-        radius: vpx(8)
-
+        width: Math.min(height * 1.5, parent.width)
         anchors.centerIn: parent
 
-        // TODO: proper gamepad button mapping
-        Keys.onPressed: {
-            if (event.isAutoRepeat)
-                return;
-
-            var do_remove = event.key === Qt.Key_Delete || api.keys.isDetails(event);
-            var do_add = api.keys.isFilters(event);
-            if (!do_add && !do_remove)
-                return;
-
-            event.accepted = true;
-
-            if (do_remove) {
-                if (list.focus && !root.isSelected(list.currentIndex))
-                    root.toggleIndex(list.currentIndex);
-
-                root.startDeletion();
-            }
-            if (do_add)
-                filePicker.focus = true;
-        }
-        Keys.onReleased: {
-            if (event.isAutoRepeat)
-                return;
-            if (event.key !== Qt.Key_Delete && !api.keys.isDetails(event))
-                return;
-
-            event.accepted = true;
-            root.stopDeletion();
-        }
-
+        color: "#444"
+        radius: vpx(8)
 
         MouseArea {
             anchors.fill: parent
@@ -163,7 +107,8 @@ FocusScope {
             lineHeight: 1.15
 
             anchors.top: parent.top
-            width: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
             padding: font.pixelSize * lineHeight
 
             horizontalAlignment: Text.AlignHCenter
@@ -171,87 +116,86 @@ FocusScope {
             wrapMode: Text.WordWrap
         }
 
-        Rectangle {
+        RowLayout {
             anchors.top: info.bottom
-            anchors.bottom: footer.top
-            width: parent.width - vpx(40)
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: "#333"
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: main.borderSize
+            anchors.topMargin: 0
 
-            ListView {
-                id: list
-                anchors.fill: parent
-                clip: true
+            spacing: main.borderSize
 
-                model: Internal.settings.gameDirs
-                delegate: listEntry
+            Rectangle {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                color: "#333"
 
-                focus: true
-                highlightRangeMode: ListView.ApplyRange
-                preferredHighlightBegin: height * 0.5 - vpx(18) * 1.25
-                preferredHighlightEnd: height * 0.5 + vpx(18) * 1.25
-                highlightMoveDuration: 0
+                ListView {
+                    id: list
 
-                KeyNavigation.down: buttonAdd
+                    property bool isComplete: false
+                    Component.onCompleted: isComplete = true
 
-                onModelChanged: {
-                    if (isComplete)
-                        root.mSettingsChanged = true;
-                }
-
-                property bool isComplete: false
-                Component.onCompleted: isComplete = true
-
-
-                MouseArea {
                     anchors.fill: parent
-                    onClicked: {
-                        var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
-                        if (new_idx < 0)
-                            return;
+                    clip: true
 
-                        list.currentIndex = new_idx;
-                        root.toggleIndex(new_idx);
+                    model: Internal.settings.gameDirs
+                    delegate: listEntry
+
+                    focus: true
+                    highlightRangeMode: ListView.ApplyRange
+                    preferredHighlightBegin: height * 0.5 - vpx(18) * 1.25
+                    preferredHighlightEnd: height * 0.5 + vpx(18) * 1.25
+                    highlightMoveDuration: 0
+
+                    KeyNavigation.right: buttonAdd
+
+                    onModelChanged: {
+                        if (isComplete)
+                            root.mSettingsChanged = true;
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            const new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
+                            if (new_idx >= 0) {
+                                list.currentIndex = new_idx;
+                                root.toggleIndex(new_idx);
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        Item {
-            id: footer
+            Column {
+                id: buttonArea
 
-            width: parent.width
-            height: buttonRow.height * 1.75
-            anchors.bottom: parent.bottom
-
-            Row {
-                id: buttonRow
-
-                anchors.centerIn: parent
-                spacing: height * 0.75
+                Layout.fillHeight: true
+                spacing: main.borderSize
 
                 GameDirEditorButton {
                     id: buttonAdd
 
-                    image1: "qrc:/buttons/xb_y.png"
-                    image2: "qrc:/buttons/ps_triangle.png"
-                    text: qsTr("Add new") + api.tr
+                    icon: "\u2795"
+                    color: "#4c5"
+                    onPressed: filePicker.focus = true
 
-                    onPress: filePicker.focus = true
-
-                    KeyNavigation.right: buttonDel
+                    KeyNavigation.down: buttonDel
                 }
+
                 GameDirEditorButton {
                     id: buttonDel
 
-                    image1: "qrc:/buttons/xb_x.png"
-                    image2: "qrc:/buttons/ps_square.png"
-                    text: qsTr("Remove selected") + api.tr
+                    icon: "\u2796"
+                    color: "#e43"
+                    onPressed: {
+                        Internal.settings.removeGameDirs(root.selectedIndices);
+                        root.selectedIndices = [];
+                    }
 
-                    onPress: root.startDeletion();
-                    onRelease: root.stopDeletion();
-
-                    KeyNavigation.up: list
+                    KeyNavigation.left: list
                 }
             }
         }
@@ -281,13 +225,6 @@ FocusScope {
                 anchors.fill: parent
                 color: "#d55"
                 visible: parent.selected
-            }
-            Rectangle {
-                id: deleteFill
-                height: parent.height
-                width: parent.width * deletionPercent
-                color: "#924"
-                visible: parent.selected && deleteTimer.running && width > 0
             }
 
             Text {

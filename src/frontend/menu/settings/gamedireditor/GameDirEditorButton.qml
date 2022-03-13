@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
+// Copyright (C) 2017-2022  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,79 +21,44 @@ import QtQuick 2.6
 Item {
     id: root
 
-    property alias image1: mImage1.source
-    property alias image2: mImage2.source
-    property alias text: mText.text
+    property color color
+    property string icon
 
-    readonly property color textColor: "#fff"
-    readonly property int textSize: vpx(20)
-    readonly property int textHPadding: textSize * 0.3
-    readonly property bool highlighted: focus || mMouse.containsMouse
+    readonly property bool highlighted: focus || mouseArea.containsMouse
 
-    signal press
-    signal release
+    signal pressed
 
-    width: mImage1.width * 2 + mText.width + textSize
-    height: textSize * 2.5
+    width: vpx(80)
+    height: width * 1.5
 
     Keys.onPressed: {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
-            root.press();
-        }
-    }
-    Keys.onReleased: {
-        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-            event.accepted = true;
-            root.release();
+            root.pressed();
         }
     }
 
 
     Rectangle {
+        color: root.color
+        radius: vpx(5)
         anchors.fill: parent
-        color: highlighted ? "#555" : "transparent"
-        radius: vpx(8)
+        opacity: root.highlighted ? 1.0 : 0.7
     }
 
-    Row {
-        height: parent.height
+    Text {
+        text: root.icon
+        font.family: globalFonts.sans
+        font.pixelSize: root.width * 0.33
+        color: "#eee"
         anchors.centerIn: parent
-
-        Image {
-            id: mImage1
-
-            height: textSize * 1.6
-            width: height
-            anchors.verticalCenter: parent.verticalCenter
-        }
-        Image {
-            id: mImage2
-
-            height: mImage1.height
-            width: height
-            anchors.verticalCenter: parent.verticalCenter
-        }
-        Text {
-            id: mText
-
-            font.family: globalFonts.sans
-            font.pixelSize: textSize
-            color: textColor
-
-            height: parent.height
-            verticalAlignment: Text.AlignVCenter
-            leftPadding: textHPadding
-            rightPadding: leftPadding
-        }
     }
 
     MouseArea {
-        id: mMouse
+        id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onPressed: root.press()
-        onReleased: root.release()
+        onPressed: root.pressed()
     }
 }
