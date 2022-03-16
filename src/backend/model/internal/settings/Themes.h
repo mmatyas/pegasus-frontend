@@ -47,6 +47,7 @@ class Themes : public QAbstractListModel {
 
 public:
     explicit Themes(QObject* parent = nullptr);
+    void postInit();
 
     enum Roles {
         Name = Qt::UserRole + 1,

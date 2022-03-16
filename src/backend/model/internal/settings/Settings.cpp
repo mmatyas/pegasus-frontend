@@ -62,8 +62,13 @@ namespace model {
 
 Settings::Settings(QObject* parent)
     : QObject(parent)
+{}
+
+void Settings::postInit()
 {
     change_mouse_support(AppSettings::general.mouse_support);
+
+    m_themes.postInit();
 }
 
 void Settings::setFullscreen(bool new_val)

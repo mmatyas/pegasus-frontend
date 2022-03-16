@@ -51,6 +51,7 @@ class Settings : public QObject {
 
 public:
     explicit Settings(QObject* parent = nullptr);
+    void postInit();
 
     bool fullscreen() const { return AppSettings::general.fullscreen; }
     void setFullscreen(bool);

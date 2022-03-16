@@ -158,6 +158,9 @@ Themes::Themes(QObject* parent)
     })
     , m_themes(find_available_themes())
     , m_current_idx(0)
+{}
+
+void Themes::postInit()
 {
     select_preferred_theme();
     print_change();

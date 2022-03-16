@@ -43,6 +43,7 @@ void test_Themes::initTestCase()
     QTest::ignoreMessage(QtInfoMsg, QRegularExpression("Theme set to .*"));
 
     model::Themes themes;
+    themes.postInit();
     initial_index = themes.currentIndex();
 
     QVERIFY(initial_index >= 0);
@@ -58,6 +59,7 @@ void test_Themes::indexChange()
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Invalid theme index .*"));
 
     model::Themes themes;
+    themes.postInit();
     QSignalSpy triggered(&themes, &model::Themes::themeChanged);
     QVERIFY(triggered.isValid());
 

@@ -233,6 +233,7 @@ Backend::Backend(const CliArgs& args)
 void Backend::start()
 {
     m_frontend->rebuild();
+    m_api_private->settings().postInit();
     onScanRequested();
 }
 
