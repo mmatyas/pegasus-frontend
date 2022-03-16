@@ -17,6 +17,8 @@
 
 #include "Internal.h"
 
+#include "CliArgs.h"
+
 
 namespace model {
 

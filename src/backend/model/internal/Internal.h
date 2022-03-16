@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "CliArgs.h"
 #include "GamepadManager.h"
 #include "Meta.h"
 #include "ScannerState.h"
@@ -26,6 +25,8 @@
 #include "utils/QmlHelpers.h"
 
 #include <QObject>
+
+namespace backend { struct CliArgs; }
 
 
 namespace model {
