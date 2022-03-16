@@ -42,6 +42,7 @@ void rewrite_gamedircfg(const std::function<void(QTextStream&)>& callback)
     }
 
     QTextStream stream(&config_file);
+    stream.setCodec("UTF-8");
     callback(stream);
     Log::info(LOGMSG("Game directory list saved"));
 }

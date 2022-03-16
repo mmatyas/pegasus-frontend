@@ -124,6 +124,8 @@ std::vector<GogEntry> find_game_entries(const HashMap<QString, std::vector<QStri
             QFile config_file(gameinfo_path);
             if (config_file.open(QFile::ReadOnly | QFile::Text)) {
                 QTextStream stream(&config_file);
+                stream.setCodec("UTF-8");
+
                 QString line;
                 unsigned short lineno = 0;
                 while (stream.readLineInto(&line, 256) && lineno <= 3) {

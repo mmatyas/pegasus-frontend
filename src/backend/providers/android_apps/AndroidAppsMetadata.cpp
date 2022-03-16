@@ -157,6 +157,7 @@ void MetadataHelper::fill_from_network(
 QJsonDocument MetadataHelper::parse_reply(const QByteArray& html_raw) const
 {
     QTextStream html_stream(html_raw);
+    html_stream.setCodec("UTF-8");
     const QString content = html_stream.read(1 * 1024 * 1024); // up to 1 MB
 
     QJsonObject json_root;

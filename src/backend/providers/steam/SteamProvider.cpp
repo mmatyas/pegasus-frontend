@@ -88,6 +88,8 @@ void find_installdirs_in_vdf(
         entry_regexes.emplace_back(pattern);
 
     QTextStream stream(&vdf);
+    stream.setCodec("UTF-8");
+
     while (!stream.atEnd()) {
         const QString line = stream.readLine();
         for (const QRegularExpression& entry_regex : entry_regexes) {

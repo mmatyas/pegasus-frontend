@@ -54,7 +54,9 @@ class Terminal : public LogSink {
 public:
     Terminal()
         : m_stream(stdout)
-    {}
+    {
+        m_stream.setCodec("UTF-8");
+    }
 
     void info(const QString& msg) override {
         colorlog(m_pre_info, msg);
@@ -98,6 +100,7 @@ public:
             return;
         }
 
+        m_stream.setCodec("UTF-8");
         m_stream.setDevice(&m_file);
     }
 
