@@ -181,7 +181,7 @@ FocusScope {
                 GameDirEditorButton {
                     id: buttonAdd
 
-                    icon: "\u2795"
+                    icon: "+"
                     color: "#4c5"
                     onPressed: filePicker.focus = true
 
@@ -191,7 +191,7 @@ FocusScope {
                 GameDirEditorButton {
                     id: buttonDel
 
-                    icon: "\u2796"
+                    icon: "\u2212"
                     color: "#e43"
                     onPressed: {
                         Internal.settings.removeGameDirs(root.selectedIndices);

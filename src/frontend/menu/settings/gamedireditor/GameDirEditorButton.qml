@@ -49,7 +49,8 @@ Item {
     Text {
         text: root.icon
         font.family: globalFonts.sans
-        font.pixelSize: root.width * 0.33
+        font.pixelSize: root.width * 0.45
+        font.bold: true
         color: "#eee"
         anchors.centerIn: parent
     }
