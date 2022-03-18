@@ -23,8 +23,9 @@ Rectangle {
     color: "#222"
     anchors.fill: parent
 
-    property real progress: Internal.scanner.progress
+    property real progress: 0
     property bool showDataProgressText: true
+    property alias stage: gameCounter.text
 
     Behavior on progress { NumberAnimation {} }
 
@@ -116,7 +117,6 @@ Rectangle {
         id: gameCounter
         visible: showDataProgressText
 
-        text: Internal.scanner.stage
         color: "#999"
         font.pixelSize: vpx(16)
         font.family: global.fonts.sans

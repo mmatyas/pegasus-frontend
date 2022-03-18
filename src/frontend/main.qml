@@ -226,7 +226,10 @@ Window {
 
         readonly property bool dataLoading: Internal.scanner.running
         readonly property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
+
         showDataProgressText: dataLoading
+        progress: Internal.scanner.progress
+        stage: Internal.scanner.stage
 
         function hideMaybe() {
             if (focus && !dataLoading && !skinLoading) {
