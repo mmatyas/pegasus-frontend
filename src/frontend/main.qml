@@ -211,8 +211,8 @@ Window {
     }
     Connections {
         target: Internal.scanner
-        function onRunningChanged(running) {
-            if (running)
+        function onRunningChanged() {
+            if (Internal.scanner.running)
                 splashScreen.focus = true;
         }
     }
@@ -224,8 +224,8 @@ Window {
         enabled: false
         visible: focus
 
-        property bool dataLoading: Internal.scanner.running
-        property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
+        readonly property bool dataLoading: Internal.scanner.running
+        readonly property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
         showDataProgressText: dataLoading
 
         function hideMaybe() {
