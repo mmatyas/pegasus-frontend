@@ -68,7 +68,7 @@ void read_stream(QTextStream& stream,
                  const std::function<void(const Error&)>& onError)
 {
     constexpr auto EMPTY_LINE_MARK = QChar('.');
-    const QRegularExpression rx_keyval(QStringLiteral(R"(^([^:]+):(.*)$)")); // key: value
+    constexpr auto CH_COLON = QChar(':');
 
     Error error {0, {}};
     Entry entry {0, {}, {}};
@@ -123,13 +123,12 @@ void read_stream(QTextStream& stream,
             continue;
 
         // keyval pair (after the multiline check)
-        const auto rx_keyval_match = rx_keyval.match(trimmed_line);
-        if (rx_keyval_match.hasMatch()) {
-            // the key is never empty if the regex matches the *trimmed* line
-            entry.key = rx_keyval_match.capturedRef(1).trimmed().toString().toLower();
+        const int key_end = trimmed_line.indexOf(CH_COLON);
+        if (key_end > 0) {
+            entry.key = trimmed_line.left(key_end).trimmed().toString().toLower();
 
             // the value can be empty here, if it's purely multiline
-            auto value_part = rx_keyval_match.capturedRef(2).trimmed();
+            const QStringRef value_part = trimmed_line.mid(key_end + 1).trimmed();
             if (!value_part.isEmpty())
                 entry.values.emplace_back(value_part.toString());
 
