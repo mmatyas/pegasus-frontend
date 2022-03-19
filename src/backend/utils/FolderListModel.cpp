@@ -33,7 +33,7 @@ void erase_if(QFileInfoList& list, const std::function<bool(const QFileInfo&)>& 
     list.erase(start_it, list.end());
 }
 
-std::vector<QString> drives()
+QStringList drives()
 {
 #if defined(Q_OS_ANDROID)
     return android::storage_paths();
@@ -43,11 +43,11 @@ std::vector<QString> drives()
     return { QStringLiteral("/") };
 
 #else
-    std::vector<QString> out;
+    QStringList out;
 
     const QFileInfoList drive_files = QDir::drives();
     for (const QFileInfo& file : drive_files)
-        out.emplace_back(::pretty_dir(file));
+        out.append(::pretty_dir(file));  // TODO: Qt 6 emplace_back
 
     return out;
 #endif
@@ -63,9 +63,9 @@ QDir startup_dir()
 #endif
 }
 
-bool is_drive_root(const QString& path, const std::vector<QString>& drives)
+bool is_drive_root(const QString& path, const QStringList& drives)
 {
-    return VEC_CONTAINS(drives, path);
+    return drives.contains(path);
 }
 } // namespace
 

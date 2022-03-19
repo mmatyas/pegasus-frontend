@@ -24,8 +24,6 @@ import QtQuick.Layouts 1.3
 FocusScope {
     id: root
 
-    property bool mSettingsChanged: false
-
     signal close
 
     anchors.fill: parent
@@ -35,38 +33,16 @@ FocusScope {
     opacity: focus ? 1.0 : 0.0
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
-    function closeMaybe() {
-        if (mSettingsChanged)
-            reloadDialog.focus = true;
-        else
-            root.close();
-    }
-
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
-            root.closeMaybe();
+            root.close();
         }
     }
 
 
-    property var selectedIndices: [] // we don't have Set yet
-    function isSelected(index) {
-        return selectedIndices.indexOf(index) >= 0;
-    }
-    function toggleIndex(idx) {
-        var arrayIdx = selectedIndices.indexOf(idx);
-        if (arrayIdx > -1)
-            selectedIndices.splice(arrayIdx, 1);
-        else
-            selectedIndices.push(idx);
-
-        selectedIndicesChanged();
-    }
-
-
     SimpleShade {
-        onClicked: root.closeMaybe()
+        onClicked: root.close()
     }
 
 
@@ -89,8 +65,9 @@ FocusScope {
         Text {
             id: info
 
-            text: qsTr("Pegasus will look for collection files (metadata.pegasus.txt or "
-                     + "metadata.txt)\nin the following directories:") + api.tr
+            text: qsTr("Some Android apps may not launch games unless you manually allow access "
+                     + "to the game's directory, in both Pegasus and the launched app. Pegasus "
+                     + "have permission for the following locations:") + api.tr
             color: "#eee"
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
@@ -124,17 +101,11 @@ FocusScope {
                 ListView {
                     id: list
 
-                    property bool isComplete: false
-                    Component.onCompleted: isComplete = true
-
                     anchors.fill: parent
                     clip: true
 
-                    model: Internal.settings.gameDirs
-                    delegate: GameDirEditorEntry {
-                        selected: root.isSelected(index)
-                        onPressed: root.toggleIndex(index)
-                    }
+                    model: Internal.settings.androidGrantedDirs
+                    delegate: GameDirEditorEntry {}
 
                     focus: true
                     highlightRangeMode: ListView.ApplyRange
@@ -144,18 +115,12 @@ FocusScope {
 
                     KeyNavigation.right: buttonAdd
 
-                    onModelChanged: {
-                        if (isComplete)
-                            root.mSettingsChanged = true;
-                    }
-
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             const new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
                             if (new_idx >= 0) {
                                 list.currentIndex = new_idx;
-                                root.toggleIndex(new_idx);
                             }
                         }
                     }
@@ -173,56 +138,9 @@ FocusScope {
 
                     icon: "+"
                     color: "#4c5"
-                    onPressed: filePicker.focus = true
-
-                    KeyNavigation.down: buttonDel
-                }
-
-                GameDirEditorButton {
-                    id: buttonDel
-
-                    icon: "\u2212"
-                    color: "#e43"
-                    onPressed: {
-                        Internal.settings.removeGameDirs(root.selectedIndices);
-                        root.selectedIndices = [];
-                    }
-
-                    KeyNavigation.left: list
+                    onPressed: Internal.settings.requestAndroidDir()
                 }
             }
-        }
-    }
-
-
-    ReloadQuestion {
-        id: reloadDialog
-        onAccept: {
-            list.focus = true;
-            root.mSettingsChanged = false;
-            Internal.settings.reloadProviders();
-        }
-        onCancel: {
-            list.focus = true;
-            root.mSettingsChanged = false;
-            root.close();
-        }
-    }
-
-
-    FilePicker {
-        id: filePicker
-
-        enabled: focus
-
-        visible: opacity > 0.01
-        opacity: focus ? 1.0 : 0.0
-        Behavior on opacity { PropertyAnimation { duration: 300 } }
-
-        onCancel: list.focus = true
-        onPick: {
-            Internal.settings.addGameDir(dir_path);
-            list.focus = true;
         }
     }
 }

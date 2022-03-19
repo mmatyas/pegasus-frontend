@@ -22,11 +22,20 @@
 #include "Paths.h"
 #include "utils/PathTools.h"
 
+#ifdef Q_OS_ANDROID
+#include "platform/AndroidHelpers.h"
+#endif
+
 #include <QCursor>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QSet>
 #include <QTextStream>
+
+#ifdef Q_OS_ANDROID
+#include <QtAndroid>
+#include <QtAndroidExtras/QAndroidIntent>
+#endif
 
 
 namespace {
@@ -189,6 +198,24 @@ void Settings::removeGameDirs(const QVariantList& idx_var_list)
     });
 
     emit gameDirsChanged();
+}
+
+QStringList Settings::androidGrantedDirs() const
+{
+#ifdef Q_OS_ANDROID
+    return android::granted_paths();
+#else
+    return {};
+#endif
+}
+
+void Settings::requestAndroidDir()
+{
+#ifdef Q_OS_ANDROID
+    android::request_saf_permission([this](){
+        emit androidDirsChanged();
+    });
+#endif
 }
 
 void Settings::reloadProviders()

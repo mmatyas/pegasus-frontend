@@ -74,6 +74,6 @@ private:
     QStringList m_filenames;
     QStringList m_extensions;
 
-    const std::vector<QString> m_drives_cache;
+    const QStringList m_drives_cache;
     const QHash<int, QByteArray> m_role_names;
 };

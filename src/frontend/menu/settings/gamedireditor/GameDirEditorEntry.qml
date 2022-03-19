@@ -23,7 +23,7 @@ Rectangle {
 
     readonly property bool highlighted: ListView.view.focus
                                         && (ListView.isCurrentItem || mouseArea.containsMouse)
-    property bool selected
+    property bool selected: false
 
     signal pressed
 

@@ -22,6 +22,7 @@ import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.UriPermission;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -171,6 +172,23 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         }
         paths.add("/"); // Always add the root
         return paths.toArray(new String[paths.size()]);
+    }
+
+
+    public static String[] grantedPaths() {
+        List<String> paths = new ArrayList();
+        for (UriPermission uriperm : m_self.getContentResolver().getPersistedUriPermissions()) {
+            final Uri uri = uriperm.getUri();
+            paths.add(uri.getPath());
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+
+    public static void rememberGrantedPath(Uri uri) {
+        m_self
+            .getContentResolver()
+            .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
 

@@ -31,6 +31,7 @@ FocusScope {
 
     width: parent.width
     height: fontSize * 2.5
+    opacity: enabled ? 1.0 : 0.25
 
     Keys.onPressed: {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {

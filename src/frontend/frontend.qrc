@@ -78,5 +78,7 @@
         <file>menu/settings/gamepad/GamepadFooter.qml</file>
         <file>menu/settings/gamepad/GamepadHeader.qml</file>
         <file>menu/settings/gamedireditor/GameDirEditorEntry.qml</file>
+        <file>menu/settings/AndroidSafEditor.qml</file>
+        <file>menu/settings/common/SimpleShade.qml</file>
     </qresource>
 </RCC>

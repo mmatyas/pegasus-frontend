@@ -36,4 +36,6 @@ QtObject {
     property string selectValue
 
     property var buttonAction
+
+    property bool enabled: true
 }

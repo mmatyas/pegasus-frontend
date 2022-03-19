@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// Copyright (C) 2017-2022  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,24 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
-
-#include <QString>
+import QtQuick 2.0
 
 
-namespace android {
+Rectangle {
+    id: root
 
-const char* jni_classname();
+    signal clicked
 
-QString primary_storage_path();
-QStringList storage_paths();
-bool has_external_storage_access();
+    anchors.fill: parent
+    color: "#000"
+    opacity: 0.3
 
-QStringList granted_paths();
-void request_saf_permission(const std::function<void()>&);
-
-QString run_am_call(const QStringList&);
-QString to_content_uri(const QString&);
-QString to_document_uri(const QString&);
-
-} // namespace android
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: root.clicked()
+    }
+}

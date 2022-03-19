@@ -21,9 +21,33 @@
 #include <QHash>  // Required for PermissionResultMap
 #include <QStandardPaths>
 #include <QtAndroid>
+#include <QtAndroidExtras/QAndroidIntent>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <QtAndroidExtras/QAndroidJniObject>
 #include <QUrl>
+
+
+namespace {
+QStringList query_string_array(const char* const method)
+{
+    static constexpr auto JNI_SIGNATURE = "()[Ljava/lang/String;";
+
+    QAndroidJniEnvironment jni_env;
+    const auto jni_path_arr_raw = QAndroidJniObject::callStaticObjectMethod(android::jni_classname(), method, JNI_SIGNATURE);
+    const auto jni_path_arr = jni_path_arr_raw.object<jobjectArray>();
+    const jsize path_count = jni_env->GetArrayLength(jni_path_arr);
+
+    QStringList out;
+    out.reserve(path_count);
+
+    for (jsize i = 0; i < path_count; i++) {
+        const auto jni_path_raw = QAndroidJniObject(jni_env->GetObjectArrayElement(jni_path_arr, i));
+        out.append(jni_path_raw.toString());  // TODO: Qt 6 emplace_back
+    }
+
+    return out;
+}
+} // namespace
 
 
 namespace android {
@@ -38,28 +62,41 @@ QString primary_storage_path()
     return QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).constFirst();
 }
 
-std::vector<QString> storage_paths()
+QStringList storage_paths()
 {
-    static constexpr auto JNI_METHOD = "sdcardPaths";
-    static constexpr auto JNI_SIGNATURE = "()[Ljava/lang/String;";
+    QStringList paths = query_string_array("sdcardPaths");
+    if (paths.empty())
+        paths.append(primary_storage_path());  // TODO: Qt 6 emplace_back
+    return paths;
+}
 
-    QAndroidJniEnvironment jni_env;
-    const auto jni_path_arr_raw = QAndroidJniObject::callStaticObjectMethod(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
-    const auto jni_path_arr = jni_path_arr_raw.object<jobjectArray>();
-    const jsize path_count = jni_env->GetArrayLength(jni_path_arr);
+QStringList granted_paths()
+{
+    return query_string_array("grantedPaths");
+}
 
-    std::vector<QString> out;
-    out.reserve(static_cast<size_t>(path_count));
+void request_saf_permission(const std::function<void()>& cb_success)
+{
+    constexpr int REQ_OPEN_DOCUMENT_TREE = 0x1;
 
-    for (jsize i = 0; i < path_count; i++) {
-        const auto jni_path_raw = QAndroidJniObject(jni_env->GetObjectArrayElement(jni_path_arr, i));
-        out.emplace_back(jni_path_raw.toString());
-    }
+    const auto activity_cb = [&cb_success](int requestCode, int resultCode, const QAndroidJniObject& data) {
+        const jint RESULT_OK = QAndroidJniObject::getStaticField<jint>("android/app/Activity", "RESULT_OK");
+        if (requestCode != REQ_OPEN_DOCUMENT_TREE || resultCode != RESULT_OK || !data.isValid())
+            return;
 
-    if (out.empty())
-        out.emplace_back(primary_storage_path());
+        const QAndroidJniObject uri = data.callObjectMethod("getData", "()Landroid/net/Uri;");
+        if (!uri.isValid())
+            return;
 
-    return out;
+        static constexpr auto REMEMBER_FN = "rememberGrantedPath";
+        static constexpr auto REMEMBER_SIGN = "(Landroid/net/Uri;)V";
+        QAndroidJniObject::callStaticMethod<void>(jni_classname(), REMEMBER_FN, REMEMBER_SIGN, uri.object());
+
+        cb_success();
+    };
+
+    QAndroidIntent intent(QStringLiteral("android.intent.action.OPEN_DOCUMENT_TREE"));
+    QtAndroid::startActivity(intent.handle(), REQ_OPEN_DOCUMENT_TREE, activity_cb);
 }
 
 bool has_external_storage_access()

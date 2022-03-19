@@ -43,6 +43,7 @@ class Settings : public QObject {
                READ verifyFiles WRITE setVerifyFiles
                NOTIFY verifyFilesChanged)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
+    Q_PROPERTY(QStringList androidGrantedDirs READ androidGrantedDirs NOTIFY androidDirsChanged)
 
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
     QML_CONST_PROPERTY(model::Locales, locales)
@@ -66,6 +67,9 @@ public:
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
 
+    QStringList androidGrantedDirs() const;
+    Q_INVOKABLE void requestAndroidDir();
+
     Q_INVOKABLE void reloadProviders();
 
 signals:
@@ -73,6 +77,7 @@ signals:
     void mouseSupportChanged();
     void verifyFilesChanged();
     void gameDirsChanged();
+    void androidDirsChanged();
     void providerReloadingRequested();
 };
 

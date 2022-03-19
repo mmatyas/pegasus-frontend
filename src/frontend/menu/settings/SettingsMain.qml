@@ -29,6 +29,7 @@ FocusScope {
     signal openKeySettings
     signal openGamepadSettings
     signal openGameDirSettings
+    signal openAndroidSafSettings
     signal openProviderSettings
 
     width: parent.width
@@ -115,6 +116,13 @@ FocusScope {
             section: "gaming"
         },
         SettingsEntry {
+            label: QT_TR_NOOP("Accessible Android directories...")
+            type: SettingsEntry.Type.Button
+            buttonAction: root.openAndroidSafSettings
+            section: "gaming"
+            enabled: Qt.platform.os === "android"
+        },
+        SettingsEntry {
             label: QT_TR_NOOP("Only show existing games")
             desc: QT_TR_NOOP("Check the game files and only show games that actually exist. You can disable this to improve loading times.")
             type: SettingsEntry.Type.Bool
@@ -149,6 +157,7 @@ FocusScope {
             SimpleButton {
                 label: qsTr(model.label) + api.tr
                 onActivate: model.buttonAction()
+                enabled: model.enabled
             }
         }
 
