@@ -63,6 +63,7 @@ void test_Utils::tokenize_command_data()
     QTest::newRow("missing quote pair 2") << QString("test \"cmd") << QStringList({"test", "cmd"});
     QTest::newRow("in-string quotes") << QString("test'cmd\" a'b  c' d") << QStringList({"test'cmd\"","a'b","c'","d"});
     QTest::newRow("whitespaces") << QString("  ' test cmd\t'  a\t \"b  c \"  d ") << QStringList({"test cmd","a","b  c","d"});
+    QTest::newRow("issue962") << QString("cmd \"param='something with spaces'\"") << QStringList({"cmd", "param='something with spaces'"});
 }
 
 void test_Utils::escape_command()

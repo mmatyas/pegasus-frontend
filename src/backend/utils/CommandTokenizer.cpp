@@ -59,12 +59,13 @@ QStringList tokenize_command(const QString& str)
             break;
 
         const QChar ch = str.at(o_start);
-        if (char_is_singlequote(ch))
+        if (char_is_singlequote(ch)) {
             o_end = str_next_matching(str, o_start + 1, char_is_singlequote) + 1;
-        else if (char_is_doublequote(ch))
+        } else if (char_is_doublequote(ch)) {
             o_end = str_next_matching(str, o_start + 1, char_is_doublequote) + 1;
-        else
+        } else {
             o_end = str_next_matching(str, o_start + 1, char_is_space);
+        }
 
         if (o_end <= o_start)
             o_end = str.length();
