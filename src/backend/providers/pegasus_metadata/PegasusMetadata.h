@@ -46,6 +46,7 @@ struct ParserState {
     model::Collection* cur_coll = nullptr;
     std::vector<FileFilter> filters;
     std::vector<model::Collection*> all_colls;
+    size_t found_issues = 0;
 
     explicit ParserState(const QString&);
     NO_COPY_NO_MOVE(ParserState)
@@ -77,10 +78,10 @@ private:
     const QRegularExpression rx_uri;
 
 
-    void print_error(const ParserState& ps, const metafile::Error&) const;
-    void print_warning(const ParserState& ps, const metafile::Entry&, const QString&) const;
+    void print_error(ParserState&, const metafile::Error&) const;
+    void print_warning(ParserState&, const metafile::Entry&, const QString&) const;
 
-    const QString& first_line_of(const ParserState& ps, const metafile::Entry&) const;
+    const QString& first_line_of(ParserState&, const metafile::Entry&) const;
     void replace_newlines(QString&) const;
 
     void apply_collection_entry(ParserState&, const metafile::Entry&) const;

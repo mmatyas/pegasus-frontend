@@ -33,6 +33,8 @@
 
 
 namespace {
+constexpr size_t ISSUE_LOG_LIMIT = 100;
+
 QStringList tokenize_by_comma(const QString& str)
 {
     QStringList list = str.split(QLatin1Char(','), Qt::SkipEmptyParts);
@@ -162,19 +164,25 @@ Metadata::Metadata(QString log_tag)
     , rx_uri(QStringLiteral("^[a-zA-Z][a-zA-Z0-9+\\-.]*:.+"))
 {}
 
-void Metadata::print_error(const ParserState& ps, const metafile::Error& err) const
+void Metadata::print_error(ParserState& ps, const metafile::Error& err) const
 {
-    Log::error(m_log_tag, LOGMSG("`%1`, line %2: %3")
-        .arg(::pretty_path(ps.path), QString::number(err.line), err.message));
+    ps.found_issues++;
+    if (ps.found_issues <= ISSUE_LOG_LIMIT) {
+        Log::error(m_log_tag, LOGMSG("`%1`, line %2: %3")
+            .arg(::pretty_path(ps.path), QString::number(err.line), err.message));
+    }
 }
 
-void Metadata::print_warning(const ParserState& ps, const metafile::Entry& entry, const QString& msg) const
+void Metadata::print_warning(ParserState& ps, const metafile::Entry& entry, const QString& msg) const
 {
-    Log::warning(m_log_tag, LOGMSG("`%1`, line %2: %3")
-        .arg(::pretty_path(ps.path), QString::number(entry.line), msg));
+    ps.found_issues++;
+    if (ps.found_issues <= ISSUE_LOG_LIMIT) {
+        Log::warning(m_log_tag, LOGMSG("`%1`, line %2: %3")
+            .arg(::pretty_path(ps.path), QString::number(entry.line), msg));
+    }
 }
 
-const QString& Metadata::first_line_of(const ParserState& ps, const metafile::Entry& entry) const
+const QString& Metadata::first_line_of(ParserState& ps, const metafile::Entry& entry) const
 {
     Q_ASSERT(!entry.key.isEmpty());
     Q_ASSERT(!entry.values.empty());
@@ -550,6 +558,9 @@ std::vector<FileFilter> Metadata::apply_metafile(const QString& metafile_path, S
     if (!metafile::read_file(metafile_path, on_entry, on_error)) {
         Log::error(m_log_tag, LOGMSG("Failed to read metadata file `%1`")
             .arg(::pretty_path(metafile_path)));
+    }
+    if (ps.found_issues > ISSUE_LOG_LIMIT) {
+        Log::warning(m_log_tag, LOGMSG("%1 other issues omitted").arg(QString::number(ps.found_issues - ISSUE_LOG_LIMIT)));
     }
 
     return std::move(ps.filters);
