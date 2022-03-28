@@ -48,7 +48,7 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 200
-      - run: git fetch --tags
+      - run: git fetch --tags -f
       - run: mkdir build
 
       - name: Configure
