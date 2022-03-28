@@ -177,7 +177,7 @@ jobs:
           name: macos-static
           path: deploy
       - name: Deploy
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           external_repository: mmatyas/pegasus-deploy-staging
