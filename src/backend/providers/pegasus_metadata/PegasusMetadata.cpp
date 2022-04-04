@@ -161,7 +161,7 @@ Metadata::Metadata(QString log_tag)
     , rx_float(QStringLiteral("^\\d(\\.\\d+)?$"))
     , rx_date(QStringLiteral("^(\\d{4})(-(\\d{1,2}))?(-(\\d{1,2}))?$"))
     , rx_unescaped_newline(QStringLiteral(R"((?<!\\)\\n)"))
-    , rx_uri(QStringLiteral("^[a-zA-Z][a-zA-Z0-9+\\-.]*:.+"))
+    , rx_uri(QStringLiteral("^[a-zA-Z][a-zA-Z0-9+\\-.]+:.+"))
 {}
 
 void Metadata::print_error(ParserState& ps, const metafile::Error& err) const
