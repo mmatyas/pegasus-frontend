@@ -18,6 +18,7 @@
 #include "LutrisProvider.h"
 
 #include "Log.h"
+#include "Paths.h"
 #include "model/gaming/Assets.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
@@ -38,6 +39,12 @@ QString find_datadir()
         if (QFileInfo::exists(lutrisdir))
             return lutrisdir;
     }
+
+#if defined(PEGASUS_INSIDE_FLATPAK)
+    QString user_root = paths::homePath() + QLatin1String("/.local/share/lutris/");
+    if (QFileInfo::exists(user_root))
+        return user_root;
+#endif
 
     return {};
 }
