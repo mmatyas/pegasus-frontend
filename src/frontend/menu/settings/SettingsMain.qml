@@ -31,6 +31,7 @@ FocusScope {
     signal openGameDirSettings
     signal openAndroidSafSettings
     signal openProviderSettings
+    signal reloadRequested
 
     width: parent.width
     height: parent.height
@@ -134,6 +135,12 @@ FocusScope {
             label: QT_TR_NOOP("Enable/disable data sources...")
             type: SettingsEntry.Type.Button
             buttonAction: root.openProviderSettings
+            section: "gaming"
+        },
+        SettingsEntry {
+            label: QT_TR_NOOP("Reload all games")
+            type: SettingsEntry.Type.Button
+            buttonAction: root.reloadRequested
             section: "gaming"
         }
     ]
