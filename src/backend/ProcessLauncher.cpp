@@ -107,6 +107,26 @@ QString processerror_to_string(QProcess::ProcessError error)
             return LOGMSG("Running the command `%1` failed due to an unknown error");
     }
 }
+
+#ifdef Q_OS_ANDROID
+QString pretty_android_exception(const QString& error)
+{
+    if (error.startsWith(QLatin1String("android.content.ActivityNotFoundExceptions:"))) {
+        return LOGMSG(
+            "The Android activity you are trying to launch does not exist. "
+            "Here is the full error message: %1"
+        );
+    }
+    if (error.startsWith(QLatin1String("java.lang.SecurityException:"))) {
+        return LOGMSG(
+            "The Android system refused to run the launch command. "
+            "This usually happens when you try to use native paths on Android 10 or later. "
+            "Here is the full error message: %1"
+        );
+    }
+    return LOGMSG("Failed to run the launch command: %1");
+}
+#endif // Q_OS_ANDROID
 } // namespace
 
 
@@ -232,7 +252,7 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
         Log::info(LOGMSG("Activity finished"));
     }
     else {
-        const QString message = LOGMSG("Failed to run the launch command: %1").arg(result);
+        const QString message = pretty_android_exception(result).arg(result);
         emit processLaunchError(message);
         Log::warning(message);
         afterRun();
