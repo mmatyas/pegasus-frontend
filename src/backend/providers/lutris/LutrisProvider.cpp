@@ -120,7 +120,7 @@ Provider& LutrisProvider::run(SearchContext& sctx)
         return *this;
 
     QSqlQuery query;
-    query.prepare(QLatin1String("SELECT id, slug, name, playtime FROM games"));
+    query.prepare(QLatin1String("SELECT id, slug, name, playtime, runner, steamid FROM games"));
     if (!query.exec()) {
         Log::warning(display_name(), query.lastError().text());
         return *this;
@@ -135,12 +135,17 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     const QString base_path_icons = QSP::standardLocations(QSP::GenericDataLocation).constFirst()
         + QLatin1String("/icons/hicolor/128x128/apps/lutris_");
 
-
+    const QLatin1String STEAM_RUNNER("steam");
     while (query.next()) {
         const QString id_str = query.value(0).toString();
         const QString slug = query.value(1).toString();
         const QString title = query.value(2).toString();
-        QString lutris_uri = QLatin1String("lutris:") + slug;
+
+        const QString runner = query.value(4).toString();
+        const QString steamid = query.value(5).toString();
+        QString lutris_uri = (runner == STEAM_RUNNER && !steamid.isEmpty())
+            ? QLatin1String("steam:") + steamid
+            : QLatin1String("lutris:") + slug;
 
         model::Game* game_ptr = sctx.game_by_uri(lutris_uri);
         if (!game_ptr) {
