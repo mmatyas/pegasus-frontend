@@ -441,7 +441,7 @@ private: // data members
 
 #define QML_OBJMODEL_PROPERTY(type, name) \
     protected: Q_PROPERTY (QQmlObjectListModelBase * name READ name CONSTANT) \
-    private: QQmlObjectListModel<type> * const m_##name; \
+    private: QQmlObjectListModel<type> * m_##name = nullptr; \
     public: QQmlObjectListModel<type> * name (void) const { return m_##name; } \
     private:
 

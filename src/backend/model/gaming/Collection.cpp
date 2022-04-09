@@ -37,7 +37,6 @@ void CollectionData::set_short_name(const QString& name)
 
 Collection::Collection(QString name, QObject* parent)
     : QObject(parent)
-    , m_games(new QQmlObjectListModel<model::Game>(this))
     , m_data(std::move(name))
     , m_assets(new model::Assets(this))
 {}
@@ -45,6 +44,9 @@ Collection::Collection(QString name, QObject* parent)
 Collection& Collection::setGames(std::vector<model::Game*>&& games)
 {
     std::sort(games.begin(), games.end(), model::sort_games);
+
+    Q_ASSERT(!m_games);
+    m_games = new QQmlObjectListModel<model::Game>(this);
 
     QVector<model::Game*> modelvec;
     modelvec.reserve(games.size());

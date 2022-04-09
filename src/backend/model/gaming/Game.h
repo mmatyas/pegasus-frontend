@@ -163,8 +163,8 @@ public:
 
     Game& setFiles(std::vector<model::GameFile*>&&);
     Game& setCollections(std::vector<model::Collection*>&&);
-    const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(!m_files->isEmpty()); return m_files->asList(); }
-    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(!m_collections->isEmpty()); return m_collections->asList(); }
+    const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(m_files); return m_files->asList(); }
+    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(m_collections); return m_collections->asList(); }
     QML_OBJMODEL_PROPERTY(model::GameFile, files)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
 

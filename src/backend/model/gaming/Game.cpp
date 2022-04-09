@@ -38,8 +38,6 @@ GameData::GameData(QString new_title)
 
 Game::Game(QString name, QObject* parent)
     : QObject(parent)
-    , m_files(new QQmlObjectListModel<model::GameFile>(this))
-    , m_collections(new QQmlObjectListModel<model::Collection>(this))
     , m_data(std::move(name))
     , m_assets(new model::Assets(this))
 {}
@@ -118,6 +116,9 @@ void Game::launch()
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 {
+    Q_ASSERT(!m_files);
+    m_files = new QQmlObjectListModel<model::GameFile>(this);
+
     for (model::GameFile* const gamefile : files) {
         connect(gamefile, &model::GameFile::playStatsChanged,
                 this, &model::Game::onEntryPlayStatsChanged);
@@ -138,6 +139,9 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 
 Game& Game::setCollections(std::vector<model::Collection*>&& collections)
 {
+    Q_ASSERT(!m_collections);
+    m_collections = new QQmlObjectListModel<model::Collection>(this);
+
     std::sort(collections.begin(), collections.end(), model::sort_collections);
 
     QVector<model::Collection*> modelvec;
