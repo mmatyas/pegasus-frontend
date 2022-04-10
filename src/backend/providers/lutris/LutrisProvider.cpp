@@ -127,7 +127,7 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     }
 
 
-    model::Collection& collection = *sctx.get_or_create_collection(QStringLiteral("Lutris"));
+    model::Collection& lutris_collection = *sctx.get_or_create_collection(QStringLiteral("Lutris"));
 
     using QSP = QStandardPaths;
     const QString base_path_banners = datadir + QLatin1String("banners/");
@@ -143,19 +143,27 @@ Provider& LutrisProvider::run(SearchContext& sctx)
 
         const QString runner = query.value(4).toString();
         const QString steamid = query.value(5).toString();
-        QString lutris_uri = (runner == STEAM_RUNNER && !steamid.isEmpty())
+        const bool uses_steam = runner == STEAM_RUNNER && !steamid.isEmpty();
+
+        QString target_uri = uses_steam
             ? QLatin1String("steam:") + steamid
             : QLatin1String("lutris:") + slug;
+        model::Collection& target_collection = uses_steam
+            ? *sctx.get_or_create_collection(QStringLiteral("Steam"))
+            : lutris_collection;
 
-        model::Game* game_ptr = sctx.game_by_uri(lutris_uri);
+        model::Game* game_ptr = sctx.game_by_uri(target_uri);
         if (!game_ptr) {
-            game_ptr = sctx.create_game_for(collection);
-            sctx.game_add_uri(*game_ptr, lutris_uri);
+            game_ptr = sctx.create_game_for(target_collection);
+            sctx.game_add_uri(*game_ptr, target_uri);
         }
-        model::Game& game = *game_ptr;
 
-        game.setTitle(title)
-            .setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
+        model::Game& game = *game_ptr;
+        sctx.game_add_to(game, target_collection);
+
+        game.setTitle(title);
+        if (game.launchCmd().isEmpty())
+            game.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
 
         find_banner_for(game, slug, base_path_banners);
         find_coverart_for(game, slug, base_path_coverart);
