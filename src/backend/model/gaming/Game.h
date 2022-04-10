@@ -159,6 +159,7 @@ public:
 
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
+    Assets* assetsPtr() const { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Game& setFiles(std::vector<model::GameFile*>&&);
@@ -173,7 +174,6 @@ private:
     Assets* const m_assets;
     QVariantMap m_extra;
 
-    Assets* assetsPtr() const { return m_assets; }
 
 signals:
     void launchFileSelectorRequested();

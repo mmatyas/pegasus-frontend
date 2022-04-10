@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2020  Mátyás Mustoha
+// Copyright (C) 2017-2022  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include "QtQmlTricks/QQmlObjectListModel.h"
+#include "GameListModel.h"
+
 #include <QString>
 
 #ifdef Q_CC_MSVC
@@ -98,8 +99,8 @@ public:
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Collection& setGames(std::vector<model::Game*>&&);
-    const QVector<model::Game*>& gamesConst() const { Q_ASSERT(m_games); return m_games->asList(); }
-    QML_OBJMODEL_PROPERTY(model::Game, games)
+    Q_PROPERTY(GameListModel* games READ games CONSTANT)
+    QVector<model::Game*> gamesConst() const;
 
 public:
     explicit Collection(QString name, QObject* parent = nullptr);
@@ -112,6 +113,10 @@ private:
     Assets* const m_assets;
 
     Assets* assetsPtr() { return m_assets; }
+    GameListModel* m_games = nullptr;
+
+private:
+    GameListModel* games() const { return m_games; }
 };
 
 
