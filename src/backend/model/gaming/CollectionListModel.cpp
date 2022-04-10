@@ -23,7 +23,7 @@
 
 
 namespace model {
-enum Roles {
+enum CollectionRoles {
     Self = Qt::UserRole,
     Name,
     SortBy,
@@ -34,6 +34,7 @@ enum Roles {
     Assets,
     Games,
 };
+using Roles = CollectionRoles;
 
 
 CollectionListModel::CollectionListModel(QObject* parent)

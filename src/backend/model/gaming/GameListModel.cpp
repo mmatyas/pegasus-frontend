@@ -24,7 +24,7 @@
 
 
 namespace model {
-enum Roles {
+enum GameRoles {
     Self = Qt::UserRole,
     Title,
     SortBy,
@@ -53,6 +53,7 @@ enum Roles {
     Files,
     Collections,
 };
+using Roles = GameRoles;
 
 
 GameListModel::GameListModel(QObject* parent)

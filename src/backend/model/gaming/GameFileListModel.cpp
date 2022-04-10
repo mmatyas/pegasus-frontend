@@ -22,7 +22,7 @@
 
 
 namespace model {
-enum Roles {
+enum GameFileRoles {
     Self = Qt::UserRole,
     Name,
     Path,
@@ -30,6 +30,7 @@ enum Roles {
     PlayTime,
     LastPlayed,
 };
+using Roles = GameFileRoles;
 
 
 GameFileListModel::GameFileListModel(QObject* parent)
