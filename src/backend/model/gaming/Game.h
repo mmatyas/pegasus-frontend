@@ -18,8 +18,8 @@
 #pragma once
 
 #include "CollectionListModel.h"
+#include "GameFileListModel.h"
 
-#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDateTime>
 #include <QStringList>
 
@@ -167,10 +167,11 @@ public:
     CollectionListModel* collectionsModel() const { return m_collections; }
     Q_PROPERTY(CollectionListModel* collections READ collectionsModel CONSTANT)
 
+    GameFileListModel* filesModel() const { return m_files; }
+    Q_PROPERTY(GameFileListModel* files READ filesModel CONSTANT)
+
     Game& setFiles(std::vector<model::GameFile*>&&);
     Game& setCollections(std::vector<model::Collection*>&&);
-    const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(m_files); return m_files->asList(); }
-    QML_OBJMODEL_PROPERTY(model::GameFile, files)
 
 
 private:
@@ -179,7 +180,7 @@ private:
     QVariantMap m_extra;
 
     CollectionListModel* m_collections = nullptr;
-
+    GameFileListModel* m_files = nullptr;
 
 signals:
     void launchFileSelectorRequested();

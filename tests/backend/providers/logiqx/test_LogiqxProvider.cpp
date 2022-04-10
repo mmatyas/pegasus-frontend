@@ -130,16 +130,16 @@ void test_LogiqxProvider::simple()
     QCOMPARE(game1.developerStr(), QStringLiteral("Game Corp."));
     QCOMPARE(game1.releaseYear(), 1990);
     QCOMPARE(game1.description(), QStringLiteral("The description of Game 1."));
-    QCOMPARE(game1.filesConst().size(), 1);
-    QCOMPARE(game1.filesConst().front()->path(), QStringLiteral(":/simple/Game 1.ext"));
+    QCOMPARE(game1.filesModel()->entries().size(), 1);
+    QCOMPARE(game1.filesModel()->entries().front()->path(), QStringLiteral(":/simple/Game 1.ext"));
 
     const model::Game& game2 = **game2_it;
     QCOMPARE(game2.developerStr(), QStringLiteral("Game Corp."));
     QCOMPARE(game2.releaseYear(), 2000);
     QCOMPARE(game2.description(), QStringLiteral("The description of Game 2."));
-    QCOMPARE(game2.filesConst().size(), 2);
-    QCOMPARE(game2.filesConst().front()->path(), QStringLiteral(":/simple/Game 2x1.ext"));
-    QCOMPARE(game2.filesConst().back()->path(), QStringLiteral(":/simple/Game 2x2.ext"));
+    QCOMPARE(game2.filesModel()->entries().size(), 2);
+    QCOMPARE(game2.filesModel()->entries().front()->path(), QStringLiteral(":/simple/Game 2x1.ext"));
+    QCOMPARE(game2.filesModel()->entries().back()->path(), QStringLiteral(":/simple/Game 2x2.ext"));
 }
 
 

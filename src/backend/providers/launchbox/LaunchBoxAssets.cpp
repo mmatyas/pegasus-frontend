@@ -21,6 +21,7 @@
 #include "model/gaming/Game.h"
 
 #include <QDirIterator>
+#include <QStringBuilder>
 
 
 namespace {

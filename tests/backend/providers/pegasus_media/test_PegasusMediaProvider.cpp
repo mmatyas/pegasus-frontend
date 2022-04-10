@@ -45,8 +45,8 @@ const model::Game* get_game_ptr_by_file_path(const std::vector<model::Game*>& li
         list.cbegin(),
         list.cend(),
         [&path](const model::Game* const game){ return std::any_of(
-            game->filesConst().cbegin(),
-            game->filesConst().cend(),
+            game->filesModel()->entries().cbegin(),
+            game->filesModel()->entries().cend(),
             [&path](const model::GameFile* const gf){ return gf->fileinfo().canonicalFilePath() == path; });
         });
     return it != list.cend()

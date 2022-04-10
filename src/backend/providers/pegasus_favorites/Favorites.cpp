@@ -94,7 +94,7 @@ void Favorites::onGameFavoriteChanged(const std::vector<model::Game*>& game_list
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const model::Game* const game : game_list) {
         if (game->isFavorite()) {
-            for (const model::GameFile* const file : game->filesConst()) {
+            for (const model::GameFile* const file : game->filesModel()->entries()) {
                 QString written_path;
                 if (!file->fileinfo().exists()) {
                     written_path = file->path();

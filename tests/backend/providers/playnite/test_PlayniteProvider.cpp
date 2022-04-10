@@ -32,8 +32,8 @@ const model::Game* get_game_ptr_by_file_path(const std::vector<model::Game*>& li
         list.cbegin(),
         list.cend(),
         [&path](const model::Game* const game) { return std::any_of(
-            game->filesConst().cbegin(),
-            game->filesConst().cend(),
+            game->filesModel()->entries().cbegin(),
+            game->filesModel()->entries().cend(),
             [&path](const model::GameFile* gf) { return gf->fileinfo().canonicalFilePath() == path; });
         });
     return it != list.cend()
@@ -117,11 +117,11 @@ void test_PlayniteProvider::basic()
     QCOMPARE(coll.gameList()->entries().front(), &game);
     QCOMPARE(game.collectionsModel()->entries().size(), 1);
     QCOMPARE(game.collectionsModel()->entries().front(), &coll);
-    QCOMPARE(game.filesConst().size(), 1);
+    QCOMPARE(game.filesModel()->count(), 1);
 
 
-    QCOMPARE(game.filesConst().first()->name(), QStringLiteral("Test Bros (JU) [!]"));
-    QCOMPARE(game.filesConst().first()->path(), entry1_filepath);
+    QCOMPARE(game.filesModel()->entries().front()->name(), QStringLiteral("Test Bros (JU) [!]"));
+    QCOMPARE(game.filesModel()->entries().front()->path(), entry1_filepath);
 }
 
 

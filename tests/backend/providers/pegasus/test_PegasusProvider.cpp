@@ -64,8 +64,8 @@ const model::Game* get_game_ptr_by_file_path(const std::vector<model::Game*>& li
         list.cbegin(),
         list.cend(),
         [&path](const model::Game* const game){ return std::any_of(
-            game->filesConst().cbegin(),
-            game->filesConst().cend(),
+            game->filesModel()->entries().cbegin(),
+            game->filesModel()->entries().cend(),
             [&path](const model::GameFile* gf){ return gf->path() == path; });
         });
     return it != list.cend()
@@ -261,7 +261,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.launchCmd(), common_launch);
         QCOMPARE(game.launchWorkdir(), common_workdir);
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
-        QCOMPARE(game.filesConst().size(), 1);
+        QCOMPARE(game.filesModel()->count(), 1);
 
         QCOMPARE(game.extraMap().size(), 1);
         const auto it = game.extraMap().find(QStringLiteral("something"));
@@ -294,7 +294,7 @@ void test_PegasusProvider::with_meta()
         const model::Game& game = get_game_by_file_path(games, file_path_a);
 
         QCOMPARE(game.title(), QStringLiteral("Multifile Game"));
-        QCOMPARE(game.filesConst().size(), 2);
+        QCOMPARE(game.filesModel()->count(), 2);
         QCOMPARE(game.launchCmd(), common_launch);
         QCOMPARE(game.launchWorkdir(), common_workdir);
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
@@ -308,7 +308,7 @@ void test_PegasusProvider::with_meta()
         const model::Game& game = get_game_by_file_path(games, uri);
 
         QCOMPARE(game.title(), QStringLiteral("Virtual Game"));
-        QCOMPARE(game.filesConst().size(), 1);
+        QCOMPARE(game.filesModel()->count(), 1);
         QCOMPARE(game.description(), QStringLiteral("Some virtual description"));
     }
 
@@ -323,7 +323,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.launchCmd(), QStringLiteral("dummy"));
         QCOMPARE(game.launchWorkdir(), QStringLiteral("some\\nice/work/dir"));
         QCOMPARE(game.launchCmdBasedir(), common_basedir);
-        QCOMPARE(game.filesConst().size(), 1);
+        QCOMPARE(game.filesModel()->count(), 1);
         QCOMPARE(game.summary(), QStringLiteral("manual break\nhere"));
         QCOMPARE(game.description(), QStringLiteral("manual break\nhere\n\nline end\n here\n\nescaped\\nbreak"));
     }
@@ -415,8 +415,8 @@ void test_PegasusProvider::multifile()
 
     QCOMPARE(collections.size(),  1);
     QCOMPARE(games.size(), 2);
-    QCOMPARE(games.at(0)->filesConst().size(), 2);
-    QCOMPARE(games.at(1)->filesConst().size(), 1);
+    QCOMPARE(games.at(0)->filesModel()->count(), 2);
+    QCOMPARE(games.at(1)->filesModel()->count(), 1);
 
     const std::vector<model::Game*>& child_vec = collections.front()->gameList()->entries();
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(0)) != child_vec.cend());
@@ -534,9 +534,9 @@ void test_PegasusProvider::nonASCII()
 
         const model::Game& game = *(*it);
         QCOMPARE(game.title(), expected.title);
-        QCOMPARE(game.filesConst().size(), 1);
-        QCOMPARE(game.filesConst().front()->fileinfo().absoluteFilePath(), tempdir.path() + "/" + expected.filename);
-        QCOMPARE(game.filesConst().front()->fileinfo().exists(), true);
+        QCOMPARE(game.filesModel()->entries().size(), 1);
+        QCOMPARE(game.filesModel()->entries().front()->fileinfo().absoluteFilePath(), tempdir.path() + "/" + expected.filename);
+        QCOMPARE(game.filesModel()->entries().front()->fileinfo().exists(), true);
         QCOMPARE(game.description(), expected.desc);
 
         // FIXME: This fails on macOS,

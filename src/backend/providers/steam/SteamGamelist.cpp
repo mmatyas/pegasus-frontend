@@ -23,6 +23,7 @@
 
 #include <QDirIterator>
 #include <QStringBuilder>
+#include <QTextStream>
 
 
 namespace providers {

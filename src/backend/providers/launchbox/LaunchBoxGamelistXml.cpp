@@ -30,6 +30,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QXmlStreamReader>
+#include <QStringBuilder>
 #include <array>
 
 

@@ -55,7 +55,7 @@ void ApiObject::setGameData(std::vector<model::Collection*>&& collections, std::
         connect(game, &model::Game::favoriteChanged,
                 this, &ApiObject::onGameFavoriteChanged);
 
-        for (model::GameFile* const gamefile : game->filesConst()) {
+        for (model::GameFile* const gamefile : game->filesModel()->entries()) {
             connect(gamefile, &model::GameFile::launchRequested,
                     this, &ApiObject::onGameFileLaunchRequested);
         }

@@ -30,6 +30,7 @@
 #include <QRegularExpression>
 #include <QSettings>
 #include <QStringBuilder>
+#include <QTextStream>
 
 
 namespace {

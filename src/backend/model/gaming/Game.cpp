@@ -84,15 +84,18 @@ void Game::onEntryPlayStatsChanged()
     const auto prev_play_time = m_data.playstats.play_time;
     const auto prev_last_played = m_data.playstats.last_played;
 
-    m_data.playstats.play_count = std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
+    Q_ASSERT(filesModel());
+    const std::vector<model::GameFile*>& filelist = filesModel()->entries();
+
+    m_data.playstats.play_count = std::accumulate(filelist.cbegin(), filelist.cend(), 0,
         [](int sum, const model::GameFile* const gamefile){
             return sum + gamefile->playCount();
         });
-    m_data.playstats.play_time = std::accumulate(filesConst().cbegin(), filesConst().cend(), 0,
+    m_data.playstats.play_time = std::accumulate(filelist.cbegin(), filelist.cend(), 0,
         [](qint64 sum, const model::GameFile* const gamefile){
             return sum + gamefile->playTime();
         });
-    m_data.playstats.last_played = std::accumulate(filesConst().cbegin(), filesConst().cend(), QDateTime(),
+    m_data.playstats.last_played = std::accumulate(filelist.cbegin(), filelist.cend(), QDateTime(),
         [](const QDateTime& current_max, const model::GameFile* const gamefile){
             return std::max(current_max, gamefile->lastPlayed());
         });
@@ -109,16 +112,13 @@ void Game::launch()
     Q_ASSERT(m_files->count() > 0);
 
     if (m_files->count() == 1)
-        m_files->first()->launch();
+        m_files->entries().front()->launch();
     else
         emit launchFileSelectorRequested();
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 {
-    Q_ASSERT(!m_files);
-    m_files = new QQmlObjectListModel<model::GameFile>(this);
-
     for (model::GameFile* const gamefile : files) {
         connect(gamefile, &model::GameFile::playStatsChanged,
                 this, &model::Game::onEntryPlayStatsChanged);
@@ -126,11 +126,9 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 
     std::sort(files.begin(), files.end(), model::sort_gamefiles);
 
-    QVector<model::GameFile*> modelvec;
-    modelvec.reserve(files.size());
-    std::move(files.begin(), files.end(), std::back_inserter(modelvec));
-
-    m_files->append(std::move(modelvec));
+    Q_ASSERT(!m_files);
+    m_files = new GameFileListModel(this);
+    m_files->update(std::move(files));
 
     onEntryPlayStatsChanged();
 
