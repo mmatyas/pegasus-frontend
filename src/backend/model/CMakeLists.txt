@@ -11,6 +11,8 @@ target_sources(pegasus-backend PRIVATE
     gaming/Game.h
     gaming/GameFile.cpp
     gaming/GameFile.h
+    gaming/GameListModel.cpp
+    gaming/GameListModel.h
     internal/Gamepad.cpp
     internal/Gamepad.h
     internal/GamepadManager.cpp
@@ -23,8 +25,6 @@ target_sources(pegasus-backend PRIVATE
     internal/Meta.h
     internal/ScannerState.cpp
     internal/ScannerState.h
-    internal/System.cpp
-    internal/System.h
     internal/settings/KeyEditor.cpp
     internal/settings/KeyEditor.h
     internal/settings/Locales.cpp
@@ -35,6 +35,8 @@ target_sources(pegasus-backend PRIVATE
     internal/settings/Settings.h
     internal/settings/Themes.cpp
     internal/settings/Themes.h
+    internal/System.cpp
+    internal/System.h
     keys/Key.cpp
     keys/Key.h
     keys/Keys.cpp
