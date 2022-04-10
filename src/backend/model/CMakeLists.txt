@@ -13,6 +13,8 @@ target_sources(pegasus-backend PRIVATE
     gaming/Game.h
     gaming/GameFile.cpp
     gaming/GameFile.h
+    gaming/GameFileListModel.cpp
+    gaming/GameFileListModel.h
     gaming/GameListModel.cpp
     gaming/GameListModel.h
     internal/Gamepad.cpp

@@ -4,6 +4,7 @@ HEADERS += \
     $$PWD/CollectionListModel.h \
     $$PWD/Game.h \
     $$PWD/GameFile.h \
+    $$PWD/GameFileListModel.h \
     $$PWD/GameListModel.h
 
 SOURCES += \
@@ -12,4 +13,5 @@ SOURCES += \
     $$PWD/CollectionListModel.cpp \
     $$PWD/Game.cpp \
     $$PWD/GameFile.cpp \
+    $$PWD/GameFileListModel.cpp \
     $$PWD/GameListModel.cpp
