@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2020  Mátyás Mustoha
+// Copyright (C) 2017-2022  Mátyás Mustoha
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 
 
 #pragma once
+
+#include "CollectionListModel.h"
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QDateTime>
@@ -162,17 +164,21 @@ public:
     Assets* assetsPtr() const { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
+    CollectionListModel* collectionsModel() const { return m_collections; }
+    Q_PROPERTY(CollectionListModel* collections READ collectionsModel CONSTANT)
+
     Game& setFiles(std::vector<model::GameFile*>&&);
     Game& setCollections(std::vector<model::Collection*>&&);
     const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(m_files); return m_files->asList(); }
-    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(m_collections); return m_collections->asList(); }
     QML_OBJMODEL_PROPERTY(model::GameFile, files)
-    QML_OBJMODEL_PROPERTY(model::Collection, collections)
+
 
 private:
     GameData m_data;
     Assets* const m_assets;
     QVariantMap m_extra;
+
+    CollectionListModel* m_collections = nullptr;
 
 
 signals:

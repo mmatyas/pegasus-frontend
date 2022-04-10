@@ -160,7 +160,7 @@ QVariant GameListModel::data(const QModelIndex& index, int role) const
         case Roles::TagList: return game.tagListConst();
         case Roles::Assets: return QVariant::fromValue(game.assetsPtr());
         case Roles::Files: return QVariant::fromValue(game.files());
-        case Roles::Collections: return QVariant::fromValue(game.collections());
+        case Roles::Collections: return QVariant::fromValue(game.collectionsModel());
         default: return {};
     }
 }

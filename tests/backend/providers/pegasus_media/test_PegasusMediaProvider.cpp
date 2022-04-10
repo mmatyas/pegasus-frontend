@@ -32,7 +32,7 @@
 
 
 namespace {
-bool has_collection(const QVector<model::Collection*>& list, const QString& name)
+bool has_collection(const std::vector<model::Collection*>& list, const QString& name)
 {
     const auto it = std::find_if(list.cbegin(), list.cend(),
         [&name](const model::Collection* const ptr){ return ptr->name() == name; });

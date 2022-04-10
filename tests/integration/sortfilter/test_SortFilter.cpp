@@ -25,7 +25,6 @@
 #include "SortFilterProxyModel/filters/filtersqmltypes.h"
 #include "SortFilterProxyModel/proxyroles/proxyrolesqmltypes.h"
 #include "SortFilterProxyModel/sorters/sortersqmltypes.h"
-#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QQmlEngine>
 #include <QQmlContext>
 
@@ -47,7 +46,7 @@ public slots:
     }
 
 private:
-    QQmlObjectListModel<model::Collection> m_collection_model;
+    model::CollectionListModel m_collection_model;
 
     void register_api() {
         constexpr auto api = "Pegasus.Test";
@@ -70,10 +69,10 @@ private:
             new model::Game("bbb", this),
         };
 
-        auto collection = new model::Collection("test", this);
+        auto* collection = new model::Collection("test", this);
         collection->setGames(std::move(games));
 
-        m_collection_model.append(collection);
+        m_collection_model.update({collection});
     }
 };
 

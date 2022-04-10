@@ -69,7 +69,7 @@ void test_LaunchBoxProvider::empty()
     const auto [collections, games] = sctx.finalize(this);
 
     QVERIFY(games.empty());
-    QVERIFY(collections.isEmpty());
+    QVERIFY(collections.empty());
 }
 
 void test_LaunchBoxProvider::basic()
@@ -131,8 +131,8 @@ void test_LaunchBoxProvider::basic()
 
     QCOMPARE(coll.gameList()->entries().size(), 1);
     QCOMPARE(coll.gameList()->entries().front(), &game);
-    QCOMPARE(game.collectionsConst().size(), 1);
-    QCOMPARE(game.collectionsConst().first(), &coll);
+    QCOMPARE(game.collectionsModel()->entries().size(), 1);
+    QCOMPARE(game.collectionsModel()->entries().front(), &coll);
     QCOMPARE(game.filesConst().size(), 2);
 
 

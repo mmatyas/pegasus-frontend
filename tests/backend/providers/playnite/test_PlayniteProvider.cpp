@@ -67,7 +67,7 @@ void test_PlayniteProvider::empty()
         .run(sctx);
     const auto [collections, games] = sctx.finalize(this);
 
-    QVERIFY(games.isEmpty());
+    QVERIFY(games.empty());
     QVERIFY(collections.empty());
 }
 
@@ -115,8 +115,8 @@ void test_PlayniteProvider::basic()
     const model::Collection& coll = **coll_it;
     QCOMPARE(coll.gameList()->entries().size(), 1);
     QCOMPARE(coll.gameList()->entries().front(), &game);
-    QCOMPARE(game.collectionsConst().size(), 1);
-    QCOMPARE(game.collectionsConst().first(), &coll);
+    QCOMPARE(game.collectionsModel()->entries().size(), 1);
+    QCOMPARE(game.collectionsModel()->entries().front(), &coll);
     QCOMPARE(game.filesConst().size(), 1);
 
 

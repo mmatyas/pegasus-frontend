@@ -37,7 +37,7 @@ public:
     void onGameFinished(model::GameFile* const) const;
     void onFavoritesChanged(const std::vector<model::Game*>&) const;
 
-    QVector<model::Collection*>& foundCollections() { return m_found_collections; }
+    std::vector<model::Collection*>& foundCollections() { return m_found_collections; }
     std::vector<model::Game*>& foundGames() { return m_found_games; }
 
 signals:
@@ -54,7 +54,7 @@ private:
     float m_current_progress = 0.f;
     QString m_current_stage;
 
-    QVector<model::Collection*> m_found_collections;  // TODO: std::vector
+    std::vector<model::Collection*> m_found_collections;
     std::vector<model::Game*> m_found_games;
 
     void finalize();

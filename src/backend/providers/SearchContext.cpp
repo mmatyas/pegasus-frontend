@@ -251,7 +251,7 @@ void SearchContext::finalize_apply_lists()
     }
 }
 
-std::pair<QVector<model::Collection*>, std::vector<model::Game*>> SearchContext::finalize(QObject* const parent)
+std::pair<std::vector<model::Collection*>, std::vector<model::Game*>> SearchContext::finalize(QObject* const parent)
 {
     // TODO: C++17
 
@@ -281,10 +281,10 @@ std::pair<QVector<model::Collection*>, std::vector<model::Game*>> SearchContext:
     }
 
 
-    QVector<model::Collection*> collections;
+    std::vector<model::Collection*> collections;
     collections.reserve(m_collections.size());
     for (auto& pair : m_collections)
-        collections.append(pair.second);
+        collections.emplace_back(pair.second);
 
     if (parent) {
         for (model::Collection* coll : collections) {

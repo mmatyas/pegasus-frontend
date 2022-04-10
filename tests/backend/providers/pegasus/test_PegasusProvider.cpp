@@ -36,7 +36,7 @@ namespace {
 #define PATHMSG(msg, path) qUtf8Printable(QStringLiteral(msg).arg(QDir::toNativeSeparators(QStringLiteral(path))))
 #define PATHMSG2(msg, path1, path2) qUtf8Printable(QStringLiteral(msg).arg(QDir::toNativeSeparators(QStringLiteral(path1)), QDir::toNativeSeparators(QStringLiteral(path2))))
 
-const model::Collection* get_collection_ptr(const QVector<model::Collection*>& list, const QString& name)
+const model::Collection* get_collection_ptr(const std::vector<model::Collection*>& list, const QString& name)
 {
     const auto it = std::find_if(list.cbegin(), list.cend(),
         [&name](const model::Collection* const ptr){ return ptr->name() == name; });
@@ -45,14 +45,14 @@ const model::Collection* get_collection_ptr(const QVector<model::Collection*>& l
         : nullptr;
 }
 
-const model::Collection& get_collection(const QVector<model::Collection*>& list, const QString& name)
+const model::Collection& get_collection(const std::vector<model::Collection*>& list, const QString& name)
 {
     const model::Collection* ptr = get_collection_ptr(list, name);
     Q_ASSERT(ptr != nullptr);
     return *ptr;
 }
 
-bool has_collection(const QVector<model::Collection*>& list, const QString& name)
+bool has_collection(const std::vector<model::Collection*>& list, const QString& name)
 {
     return get_collection_ptr(list, name) != nullptr;
 }
@@ -86,7 +86,7 @@ bool has_game_file(const std::vector<model::Game*>& list, const QString& path)
 }
 
 void verify_collected_files(
-    const QVector<model::Collection*>& collections,
+    const std::vector<model::Collection*>& collections,
     const HashMap<QString, QStringList>& expected_collection_files)
 {
     for (const auto& [collname, expected_files] : expected_collection_files) {
@@ -144,7 +144,7 @@ void test_PegasusProvider::empty()
     const auto [collections, games] = sctx.finalize(this);
 
     QVERIFY(games.empty());
-    QVERIFY(collections.isEmpty());
+    QVERIFY(collections.empty());
 }
 
 void test_PegasusProvider::simple()
@@ -338,7 +338,7 @@ void test_PegasusProvider::custom_assets()
     const auto [collections, games] = sctx.finalize(this);
 
     QCOMPARE(collections.size(), 1);
-    const model::Collection& coll = *collections.first();
+    const model::Collection& coll = *collections.front();
     QCOMPARE(coll.assets().cartridge(), QStringLiteral("file::/custom_assets/my_collection_assets/cartridge.png"));
 
     QCOMPARE(games.size(), 1);
@@ -418,7 +418,7 @@ void test_PegasusProvider::multifile()
     QCOMPARE(games.at(0)->filesConst().size(), 2);
     QCOMPARE(games.at(1)->filesConst().size(), 1);
 
-    const std::vector<model::Game*>& child_vec = collections.first()->gameList()->entries();
+    const std::vector<model::Game*>& child_vec = collections.front()->gameList()->entries();
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(0)) != child_vec.cend());
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(1)) != child_vec.cend());
 }
@@ -439,7 +439,7 @@ void test_PegasusProvider::multicoll()
 
     QCOMPARE(collections.size(),  2);
     QCOMPARE(games.size(), 1);
-    QCOMPARE(collections.first()->gameList()->entries().front(), collections.last()->gameList()->entries().front());
+    QCOMPARE(collections.front()->gameList()->entries().front(), collections.front()->gameList()->entries().front());
 
     const model::Game& game = *games.front();
     QCOMPARE(game.title(), QStringLiteral("My Game"));
@@ -616,18 +616,18 @@ void test_PegasusProvider::autoparenting()
     QVERIFY(game2);
     QVERIFY(game3);
 
-    const QVector<model::Collection*>* parents = nullptr;
+    const std::vector<model::Collection*>* parents = nullptr;
 
-    parents = &game1->collectionsConst();
+    parents = &game1->collectionsModel()->entries();
     QCOMPARE(parents->size(), 1);
     QVERIFY(std::find(parents->cbegin(), parents->cend(), coll1) != parents->cend());
 
-    parents = &game2->collectionsConst();
+    parents = &game2->collectionsModel()->entries();
     QCOMPARE(parents->size(), 2);
     QVERIFY(std::find(parents->cbegin(), parents->cend(), coll1) != parents->cend());
     QVERIFY(std::find(parents->cbegin(), parents->cend(), coll2) != parents->cend());
 
-    parents = &game3->collectionsConst();
+    parents = &game3->collectionsModel()->entries();
     QCOMPARE(parents->size(), 3);
     QVERIFY(std::find(parents->cbegin(), parents->cend(), coll1) != parents->cend());
     QVERIFY(std::find(parents->cbegin(), parents->cend(), coll2) != parents->cend());

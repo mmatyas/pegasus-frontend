@@ -245,7 +245,7 @@ void Backend::onScanRequested()
 
 void Backend::onScanFinished()
 {
-    QVector<model::Collection*> colls;
+    std::vector<model::Collection*> colls;
     std::swap(m_providerman->foundCollections(), colls);
 
     std::vector<model::Game*> games;

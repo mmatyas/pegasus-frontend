@@ -96,6 +96,7 @@ public:
 
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
+    Assets* assetsPtr() const { return m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Collection& setGames(std::vector<model::Game*>&&);
@@ -112,7 +113,6 @@ private:
     QVariantMap m_extra;
     Assets* const m_assets;
 
-    Assets* assetsPtr() { return m_assets; }
     GameListModel* m_games = nullptr;
 };
 

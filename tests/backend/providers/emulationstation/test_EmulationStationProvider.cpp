@@ -70,8 +70,8 @@ void test_EmulationStationProvider::basic()
     QCOMPARE(collections.size(), 1);
     QCOMPARE(games.size(), 1);
 
-    QCOMPARE(collections.first()->name(), QStringLiteral("My System 1"));
-    QCOMPARE(collections.first()->shortName(), QStringLiteral("mysys1"));
+    QCOMPARE(collections.front()->name(), QStringLiteral("My System 1"));
+    QCOMPARE(collections.front()->shortName(), QStringLiteral("mysys1"));
 }
 
 
@@ -91,8 +91,8 @@ void test_EmulationStationProvider::gamelist()
     QCOMPARE(collections.size(), 1);
     QCOMPARE(games.size(), 2);
 
-    QCOMPARE(collections.first()->name(), QStringLiteral("My System 1"));
-    QCOMPARE(collections.first()->shortName(), QStringLiteral("mysys1"));
+    QCOMPARE(collections.front()->name(), QStringLiteral("My System 1"));
+    QCOMPARE(collections.front()->shortName(), QStringLiteral("mysys1"));
 
     model::Game* game = games.front();
     QCOMPARE(game->title(), QStringLiteral("Game 1"));

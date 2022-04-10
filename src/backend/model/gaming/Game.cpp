@@ -139,16 +139,11 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 
 Game& Game::setCollections(std::vector<model::Collection*>&& collections)
 {
-    Q_ASSERT(!m_collections);
-    m_collections = new QQmlObjectListModel<model::Collection>(this);
-
     std::sort(collections.begin(), collections.end(), model::sort_collections);
 
-    QVector<model::Collection*> modelvec;
-    modelvec.reserve(collections.size());
-    std::move(collections.begin(), collections.end(), std::back_inserter(modelvec));
-
-    m_collections->append(std::move(modelvec));
+    Q_ASSERT(!m_collections);
+    m_collections = new CollectionListModel(this);
+    m_collections->update(std::move(collections));
     return *this;
 }
 

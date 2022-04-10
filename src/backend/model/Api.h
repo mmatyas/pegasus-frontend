@@ -26,7 +26,6 @@
 #include "providers/ProviderManager.h"
 #include "utils/QmlHelpers.h"
 
-#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 
 
@@ -41,7 +40,7 @@ class ApiObject : public QObject {
     QML_CONST_PROPERTY(model::DeviceInfo, device)
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
-    QML_OBJMODEL_PROPERTY(model::Collection, collections)
+    Q_PROPERTY(CollectionListModel* collections READ collections CONSTANT)
     Q_PROPERTY(GameListModel* allGames READ allGames CONSTANT)
 
     // retranslate on locale change
@@ -52,8 +51,9 @@ public:
 
     // scanning
     void clearGameData();
-    void setGameData(QVector<model::Collection*>&&, std::vector<model::Game*>&&);
+    void setGameData(std::vector<model::Collection*>&&, std::vector<model::Game*>&&);
 
+    CollectionListModel* collections() const { return m_collections; }
     GameListModel* allGames() const { return m_all_games; }
 
 signals:
@@ -98,6 +98,7 @@ private:
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
 
+    CollectionListModel* m_collections = nullptr;
     GameListModel* m_all_games = nullptr;
 };
 } // namespace model
