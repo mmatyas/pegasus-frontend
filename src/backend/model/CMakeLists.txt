@@ -7,6 +7,8 @@ target_sources(pegasus-backend PRIVATE
     gaming/Assets.h
     gaming/Collection.cpp
     gaming/Collection.h
+    gaming/CollectionListModel.cpp
+    gaming/CollectionListModel.h
     gaming/Game.cpp
     gaming/Game.h
     gaming/GameFile.cpp
