@@ -39,7 +39,7 @@ bool has_collection(const QVector<model::Collection*>& list, const QString& name
     return it != list.cend();
 }
 
-const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, const QString& path)
+const model::Game* get_game_ptr_by_file_path(const std::vector<model::Game*>& list, const QString& path)
 {
     const auto it = std::find_if(
         list.cbegin(),
@@ -54,14 +54,14 @@ const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, 
         : nullptr;
 }
 
-const model::Game& get_game_by_file_path(const QVector<model::Game*>& list, const QString& path)
+const model::Game& get_game_by_file_path(const std::vector<model::Game*>& list, const QString& path)
 {
     const model::Game* ptr = get_game_ptr_by_file_path(list, path);
     Q_ASSERT(ptr != nullptr);
     return *ptr;
 }
 
-bool has_game_file(const QVector<model::Game*>& list, const QString& path)
+bool has_game_file(const std::vector<model::Game*>& list, const QString& path)
 {
     return get_game_ptr_by_file_path(list, path) != nullptr;
 }

@@ -85,7 +85,7 @@ Provider& Favorites::run(SearchContext& sctx)
     return *this;
 }
 
-void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
+void Favorites::onGameFavoriteChanged(const std::vector<model::Game*>& game_list)
 {
     const QMutexLocker lock(&m_task_guard);
     const QDir config_dir(paths::writableConfigDir());

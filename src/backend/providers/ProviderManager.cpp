@@ -136,7 +136,7 @@ void ProviderManager::onProviderProgressChanged(float percent)
 }
 
 
-void ProviderManager::onFavoritesChanged(const QVector<model::Game*>& all_games) const
+void ProviderManager::onFavoritesChanged(const std::vector<model::Game*>& all_games) const
 {
     if (m_future.isRunning())
         return;

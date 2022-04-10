@@ -248,7 +248,7 @@ void Backend::onScanFinished()
     QVector<model::Collection*> colls;
     std::swap(m_providerman->foundCollections(), colls);
 
-    QVector<model::Game*> games;
+    std::vector<model::Game*> games;
     std::swap(m_providerman->foundGames(), games);
 
     m_api_public->setGameData(std::move(colls), std::move(games));
@@ -256,7 +256,7 @@ void Backend::onScanFinished()
 
 void Backend::onFavoritesChanged()
 {
-    m_providerman->onFavoritesChanged(m_api_public->allGames()->asList());
+    m_providerman->onFavoritesChanged(m_api_public->allGames()->entries());
 }
 
 } // namespace backend

@@ -42,7 +42,7 @@ class ApiObject : public QObject {
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
-    QML_OBJMODEL_PROPERTY(model::Game, allGames)
+    Q_PROPERTY(GameListModel* allGames READ allGames CONSTANT)
 
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY retranslationRequested)
@@ -52,7 +52,9 @@ public:
 
     // scanning
     void clearGameData();
-    void setGameData(QVector<model::Collection*>&&, QVector<model::Game*>&&);
+    void setGameData(QVector<model::Collection*>&&, std::vector<model::Game*>&&);
+
+    GameListModel* allGames() const { return m_all_games; }
 
 signals:
     // loading
@@ -95,5 +97,7 @@ private:
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
+
+    GameListModel* m_all_games = nullptr;
 };
 } // namespace model

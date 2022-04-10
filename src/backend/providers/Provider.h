@@ -51,7 +51,7 @@ public:
     virtual Provider& run(SearchContext&) { return *this; }
 
     // events
-    virtual void onGameFavoriteChanged(const QVector<model::Game*>&) {}
+    virtual void onGameFavoriteChanged(const std::vector<model::Game*>&) {}
     virtual void onGameLaunched(model::GameFile* const) {}
     virtual void onGameFinished(model::GameFile* const) {}
 

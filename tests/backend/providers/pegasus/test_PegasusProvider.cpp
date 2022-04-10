@@ -58,7 +58,7 @@ bool has_collection(const QVector<model::Collection*>& list, const QString& name
 }
 
 
-const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, const QString& path)
+const model::Game* get_game_ptr_by_file_path(const std::vector<model::Game*>& list, const QString& path)
 {
     const auto it = std::find_if(
         list.cbegin(),
@@ -73,14 +73,14 @@ const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, 
         : nullptr;
 }
 
-const model::Game& get_game_by_file_path(const QVector<model::Game*>& list, const QString& path)
+const model::Game& get_game_by_file_path(const std::vector<model::Game*>& list, const QString& path)
 {
     const model::Game* ptr = get_game_ptr_by_file_path(list, path);
     Q_ASSERT(ptr != nullptr);
     return *ptr;
 }
 
-bool has_game_file(const QVector<model::Game*>& list, const QString& path)
+bool has_game_file(const std::vector<model::Game*>& list, const QString& path)
 {
     return get_game_ptr_by_file_path(list, path) != nullptr;
 }
@@ -94,11 +94,11 @@ void verify_collected_files(
         const model::Collection& coll = get_collection(collections, collname);
 
         for (const QString& abs_path : expected_files)
-            QVERIFY(has_game_file(coll.gamesConst(), abs_path));
+            QVERIFY(has_game_file(coll.gameList()->entries(), abs_path));
     }
 }
 
-const model::Game* get_game_ptr_by_title(const QVector<model::Game*>& list, const QString& title)
+const model::Game* get_game_ptr_by_title(const std::vector<model::Game*>& list, const QString& title)
 {
     const auto it = std::find_if(
         list.cbegin(),
@@ -143,7 +143,7 @@ void test_PegasusProvider::empty()
     providers::pegasus::PegasusProvider().run(sctx);
     const auto [collections, games] = sctx.finalize(this);
 
-    QVERIFY(games.isEmpty());
+    QVERIFY(games.empty());
     QVERIFY(collections.isEmpty());
 }
 
@@ -163,9 +163,9 @@ void test_PegasusProvider::simple()
 
     // finds the correct amount of games
     QCOMPARE(games.size(), 8);
-    QCOMPARE(get_collection(collections, QStringLiteral("My Games")).gamesConst().size(), 8);
-    QCOMPARE(get_collection(collections, QStringLiteral("Favorite games")).gamesConst().size(), 3);
-    QCOMPARE(get_collection(collections, QStringLiteral("Multi-game ROMs")).gamesConst().size(), 1);
+    QCOMPARE(get_collection(collections, QStringLiteral("My Games")).gameList()->count(), 8);
+    QCOMPARE(get_collection(collections, QStringLiteral("Favorite games")).gameList()->count(), 3);
+    QCOMPARE(get_collection(collections, QStringLiteral("Multi-game ROMs")).gameList()->count(), 1);
 
     // finds the correct files for the collections
     const HashMap<QString, QStringList> coll_files_map {
@@ -342,7 +342,7 @@ void test_PegasusProvider::custom_assets()
     QCOMPARE(coll.assets().cartridge(), QStringLiteral("file::/custom_assets/my_collection_assets/cartridge.png"));
 
     QCOMPARE(games.size(), 1);
-    const model::Game& game = *games.first();
+    const model::Game& game = *games.front();
     QCOMPARE(game.assets().boxFront(), QStringLiteral("file::/custom_assets/different_dir/whatever.png"));
 }
 
@@ -388,8 +388,8 @@ void test_PegasusProvider::custom_directories()
     QCOMPARE(games.size(), 5);
     QVERIFY(has_collection(collections, QStringLiteral("x-files")));
     QVERIFY(has_collection(collections, QStringLiteral("y-files")));
-    QCOMPARE(get_collection(collections, QStringLiteral("x-files")).gamesConst().size(), 4);
-    QCOMPARE(get_collection(collections, QStringLiteral("y-files")).gamesConst().size(), 1);
+    QCOMPARE(get_collection(collections, QStringLiteral("x-files")).gameList()->count(), 4);
+    QCOMPARE(get_collection(collections, QStringLiteral("y-files")).gameList()->count(), 1);
 
     const HashMap<QString, QStringList> coll_files_map {
         { QStringLiteral("x-files"), {
@@ -418,7 +418,7 @@ void test_PegasusProvider::multifile()
     QCOMPARE(games.at(0)->filesConst().size(), 2);
     QCOMPARE(games.at(1)->filesConst().size(), 1);
 
-    const QVector<model::Game*>& child_vec = collections.first()->gamesConst();
+    const std::vector<model::Game*>& child_vec = collections.first()->gameList()->entries();
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(0)) != child_vec.cend());
     QVERIFY(std::find(child_vec.cbegin(), child_vec.cend(), games.at(1)) != child_vec.cend());
 }
@@ -439,9 +439,9 @@ void test_PegasusProvider::multicoll()
 
     QCOMPARE(collections.size(),  2);
     QCOMPARE(games.size(), 1);
-    QCOMPARE(collections.first()->gamesConst().first(), collections.last()->gamesConst().first());
+    QCOMPARE(collections.first()->gameList()->entries().front(), collections.last()->gameList()->entries().front());
 
-    const model::Game& game = *games.first();
+    const model::Game& game = *games.front();
     QCOMPARE(game.title(), QStringLiteral("My Game"));
     QCOMPARE(game.summary(), QStringLiteral("Some Summary"));
     QCOMPARE(game.description(), QStringLiteral("Some Description"));
@@ -634,9 +634,9 @@ void test_PegasusProvider::autoparenting()
     QVERIFY(std::find(parents->cbegin(), parents->cend(), coll3) != parents->cend());
 
     QCOMPARE(collections.size(), 3);
-    QCOMPARE(coll1->gamesConst().size(), 3);
-    QCOMPARE(coll2->gamesConst().size(), 2);
-    QCOMPARE(coll3->gamesConst().size(), 1);
+    QCOMPARE(coll1->gameList()->count(), 3);
+    QCOMPARE(coll2->gameList()->count(), 2);
+    QCOMPARE(coll3->gameList()->count(), 1);
     QCOMPARE(games.size(), 3);
 }
 

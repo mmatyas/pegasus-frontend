@@ -54,10 +54,10 @@ void test_Collection::games()
     collection->setGames(std::move(games));
 
     // matching count and sorted by title
-    QCOMPARE(collection->gamesConst().count(), 3);
-    QCOMPARE(collection->gamesConst().at(0)->property("title").toString(), QStringLiteral("a"));
-    QCOMPARE(collection->gamesConst().at(1)->property("title").toString(), QStringLiteral("b"));
-    QCOMPARE(collection->gamesConst().at(2)->property("title").toString(), QStringLiteral("c"));
+    QCOMPARE(collection->gameList()->entries().size(), 3);
+    QCOMPARE(collection->gameList()->entries().at(0)->property("title").toString(), QStringLiteral("a"));
+    QCOMPARE(collection->gameList()->entries().at(1)->property("title").toString(), QStringLiteral("b"));
+    QCOMPARE(collection->gameList()->entries().at(2)->property("title").toString(), QStringLiteral("c"));
 }
 
 void test_Collection::sorting()

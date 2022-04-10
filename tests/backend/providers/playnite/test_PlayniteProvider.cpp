@@ -26,7 +26,7 @@
 
 
 namespace {
-const model::Game* get_game_ptr_by_file_path(const QVector<model::Game*>& list, const QString& path)
+const model::Game* get_game_ptr_by_file_path(const std::vector<model::Game*>& list, const QString& path)
 {
     const auto it = std::find_if(
         list.cbegin(),
@@ -68,7 +68,7 @@ void test_PlayniteProvider::empty()
     const auto [collections, games] = sctx.finalize(this);
 
     QVERIFY(games.isEmpty());
-    QVERIFY(collections.isEmpty());
+    QVERIFY(collections.empty());
 }
 
 void test_PlayniteProvider::basic()
@@ -113,8 +113,8 @@ void test_PlayniteProvider::basic()
     QCOMPARE(game.launchWorkdir(), QStringLiteral(":/basic/emu"));
 
     const model::Collection& coll = **coll_it;
-    QCOMPARE(coll.gamesConst().size(), 1);
-    QCOMPARE(coll.gamesConst().first(), &game);
+    QCOMPARE(coll.gameList()->entries().size(), 1);
+    QCOMPARE(coll.gameList()->entries().front(), &game);
     QCOMPARE(game.collectionsConst().size(), 1);
     QCOMPARE(game.collectionsConst().first(), &coll);
     QCOMPARE(game.filesConst().size(), 1);

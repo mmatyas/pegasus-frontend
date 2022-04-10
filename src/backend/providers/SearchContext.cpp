@@ -251,7 +251,7 @@ void SearchContext::finalize_apply_lists()
     }
 }
 
-std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::finalize(QObject* const parent)
+std::pair<QVector<model::Collection*>, std::vector<model::Game*>> SearchContext::finalize(QObject* const parent)
 {
     // TODO: C++17
 
@@ -260,7 +260,7 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
     finalize_apply_lists();
 
 
-    QVector<model::Game*> games;
+    std::vector<model::Game*> games;
     games.reserve(m_game_entries.size());
 
     for (const auto& pair : m_game_entries) {
@@ -271,7 +271,7 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
         game.genreList().removeDuplicates();
         game.tagList().removeDuplicates();
 
-        games.append(pair.first);
+        games.emplace_back(pair.first);
     }
     if (parent) {
         for (model::Game* game : games) {

@@ -94,7 +94,7 @@ void test_EmulationStationProvider::gamelist()
     QCOMPARE(collections.first()->name(), QStringLiteral("My System 1"));
     QCOMPARE(collections.first()->shortName(), QStringLiteral("mysys1"));
 
-    model::Game* game = games.constFirst();
+    model::Game* game = games.front();
     QCOMPARE(game->title(), QStringLiteral("Game 1"));
     QCOMPARE(game->description(), QStringLiteral("Some Description"));
     QCOMPARE(game->developerStr(), QStringLiteral("Some Developer"));
@@ -110,7 +110,7 @@ void test_EmulationStationProvider::gamelist()
     QCOMPARE(game->assets().video(), QStringLiteral("file::/gamelist/abs_image2.png"));
     QCOMPARE(game->assets().marquee(), QStringLiteral("file::/gamelist/img/abs_image3.png"));
 
-    game = games.constLast();
+    game = games.back();
     QCOMPARE(game->title(), QStringLiteral("Game 2"));
     QCOMPARE(game->playerCount(), 5);
 

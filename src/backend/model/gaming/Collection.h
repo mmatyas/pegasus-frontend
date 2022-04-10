@@ -99,8 +99,8 @@ public:
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Collection& setGames(std::vector<model::Game*>&&);
-    Q_PROPERTY(GameListModel* games READ games CONSTANT)
-    QVector<model::Game*> gamesConst() const;
+    GameListModel* gameList() const { return m_games; }
+    Q_PROPERTY(GameListModel* games READ gameList CONSTANT)
 
 public:
     explicit Collection(QString name, QObject* parent = nullptr);
@@ -114,9 +114,6 @@ private:
 
     Assets* assetsPtr() { return m_assets; }
     GameListModel* m_games = nullptr;
-
-private:
-    GameListModel* games() const { return m_games; }
 };
 
 

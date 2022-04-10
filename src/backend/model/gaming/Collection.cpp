@@ -51,13 +51,6 @@ Collection& Collection::setGames(std::vector<model::Game*>&& games)
     return *this;
 }
 
-QVector<model::Game*> Collection::gamesConst() const
-{
-    // TODO: Update the tests
-    Q_ASSERT(m_games);
-    return QVector<model::Game*>(m_games->entries().cbegin(), m_games->entries().cend());
-}
-
 bool sort_collections(const model::Collection* const a, const model::Collection* const b) {
     return QString::localeAwareCompare(a->sortBy(), b->sortBy()) < 0;
 }

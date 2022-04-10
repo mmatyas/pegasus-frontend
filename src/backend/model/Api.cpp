@@ -25,8 +25,8 @@ namespace model {
 ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
     : QObject(parent)
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
-    , m_allGames(new QQmlObjectListModel<model::Game>(this))
     , m_launch_game_file(nullptr)
+    , m_all_games(new GameListModel(this))
 {
     connect(&m_memory, &model::Memory::dataChanged,
             this, &ApiObject::memoryChanged);
@@ -35,12 +35,14 @@ ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
 void ApiObject::clearGameData()
 {
     m_collections->clear();
-    m_allGames->clear();
+
+    Q_ASSERT(m_all_games);
+    m_all_games->update({});
 }
 
-void ApiObject::setGameData(QVector<model::Collection*>&& collections, QVector<model::Game*>&& games)
+void ApiObject::setGameData(QVector<model::Collection*>&& collections, std::vector<model::Game*>&& games)
 {
-    Q_ASSERT(m_allGames && m_allGames->isEmpty());
+    Q_ASSERT(m_all_games && m_all_games->entries().empty());
     Q_ASSERT(m_collections && m_collections->isEmpty());
 
     for (model::Game* const game : qAsConst(games)) {
@@ -63,10 +65,10 @@ void ApiObject::setGameData(QVector<model::Collection*>&& collections, QVector<m
         coll->setParent(this);
     }
 
-    m_allGames->append(std::move(games));
+    m_all_games->update(std::move(games));
     m_collections->append(std::move(collections));
 
-    Log::info(LOGMSG("%1 games found").arg(m_allGames->count()));
+    Log::info(LOGMSG("%1 games found").arg(m_all_games->count()));
     emit gamedataReady();
 }
 

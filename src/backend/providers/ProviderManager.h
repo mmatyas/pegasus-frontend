@@ -35,10 +35,10 @@ public:
 
     void onGameLaunched(model::GameFile* const) const;
     void onGameFinished(model::GameFile* const) const;
-    void onFavoritesChanged(const QVector<model::Game*>&) const;
+    void onFavoritesChanged(const std::vector<model::Game*>&) const;
 
     QVector<model::Collection*>& foundCollections() { return m_found_collections; }
-    QVector<model::Game*>& foundGames() { return m_found_games; }
+    std::vector<model::Game*>& foundGames() { return m_found_games; }
 
 signals:
     void scanStarted();
@@ -55,7 +55,7 @@ private:
     QString m_current_stage;
 
     QVector<model::Collection*> m_found_collections;  // TODO: std::vector
-    QVector<model::Game*> m_found_games;
+    std::vector<model::Game*> m_found_games;
 
     void finalize();
 };
