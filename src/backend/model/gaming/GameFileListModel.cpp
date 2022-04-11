@@ -22,8 +22,8 @@
 #include "model/gaming/ObjectListHelpers.h"
 
 
-namespace model {
-enum GameFileRoles {
+namespace {
+enum Roles {
     Self = Qt::UserRole,
     Name,
     Path,
@@ -31,9 +31,10 @@ enum GameFileRoles {
     PlayTime,
     LastPlayed,
 };
-using Roles = GameFileRoles;
+} // namespace
 
 
+namespace model {
 GameFileListModel::GameFileListModel(QObject* parent)
     : QAbstractListModel(parent)
 {}

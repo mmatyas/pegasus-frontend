@@ -23,8 +23,8 @@
 #include "model/gaming/ObjectListHelpers.h"
 
 
-namespace model {
-enum CollectionRoles {
+namespace {
+enum Roles {
     Self = Qt::UserRole,
     Name,
     SortBy,
@@ -35,9 +35,10 @@ enum CollectionRoles {
     Assets,
     Games,
 };
-using Roles = CollectionRoles;
+} // namespace
 
 
+namespace model {
 CollectionListModel::CollectionListModel(QObject* parent)
     : QAbstractListModel(parent)
 {}

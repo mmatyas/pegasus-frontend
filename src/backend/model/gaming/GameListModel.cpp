@@ -24,8 +24,8 @@
 #include "model/gaming/ObjectListHelpers.h"
 
 
-namespace model {
-enum GameRoles {
+namespace {
+enum Roles {
     Self = Qt::UserRole,
     Title,
     SortBy,
@@ -54,9 +54,10 @@ enum GameRoles {
     Files,
     Collections,
 };
-using Roles = GameRoles;
+} // namespace
 
 
+namespace model {
 GameListModel::GameListModel(QObject* parent)
     : QAbstractListModel(parent)
 {}
