@@ -19,6 +19,7 @@
 
 #include "model/gaming/Assets.h"
 #include "model/gaming/GameFile.h"
+#include "model/gaming/ObjectListHelpers.h"
 
 
 namespace model {
@@ -52,32 +53,17 @@ QHash<int, QByteArray> GameFileListModel::roleNames() const
 }
 
 
-GameFileListModel& GameFileListModel::update(std::vector<model::GameFile*>&& entries)
-{
-    const bool count_changed = m_entries.size() != entries.size();
-
+void GameFileListModel::update(std::vector<model::GameFile*>&& entries) {
     beginResetModel();
-    for (model::GameFile* game : m_entries)
-        disconnect(game, nullptr, this, nullptr);
-
-    m_entries = std::move(entries);
-
-    for (model::GameFile* game : m_entries) {
-        connect(game, &model::GameFile::playStatsChanged,
-                this, [this](){ onEntryPropertyChanged({Roles::PlayCount, Roles::PlayTime, Roles::LastPlayed}); });
-    }
+    utils::update(this, m_entries, std::move(entries));
     endResetModel();
-
-    if (count_changed)
-        emit countChanged();
-
-    return *this;
 }
 
 
-int GameFileListModel::rowCount(const QModelIndex& parent) const
+void GameFileListModel::connectEntry(model::GameFile* const entry)
 {
-    return parent.isValid() ? 0 : m_entries.size();
+    connect(entry, &model::GameFile::playStatsChanged,
+            this, [this](){ onEntryPropertyChanged({Roles::PlayCount, Roles::PlayTime, Roles::LastPlayed}); });
 }
 
 
@@ -100,21 +86,16 @@ QVariant GameFileListModel::data(const QModelIndex& index, int role) const
 }
 
 
-QVariantList GameFileListModel::toVarArray() const
-{
-    QVariantList varlist;
-    varlist.reserve(m_entries.size());
-    for (model::GameFile* ptr : m_entries)
-        varlist.append(QVariant::fromValue(ptr));
-    return varlist;
+int GameFileListModel::rowCount(const QModelIndex& parent) const {
+    return utils::rowCount(parent, m_entries);
 }
 
+QVariantList GameFileListModel::toVarArray() const {
+    return utils::toVarArray(m_entries);
+}
 
-model::GameFile* GameFileListModel::get(int idx) const
-{
-    return (0 <= idx && static_cast<size_t>(idx) < m_entries.size())
-        ? m_entries.at(idx)
-        : nullptr;
+model::GameFile* GameFileListModel::get(int idx) const {
+    return utils::get(m_entries, idx);
 }
 
 

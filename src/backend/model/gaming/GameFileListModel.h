@@ -30,7 +30,7 @@ class GameFileListModel : public QAbstractListModel {
 
 public:
     explicit GameFileListModel(QObject* parent = nullptr);
-    GameFileListModel& update(std::vector<model::GameFile*>&&);
+    void update(std::vector<model::GameFile*>&&);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -41,6 +41,8 @@ public:
 
     Q_INVOKABLE QVariantList toVarArray() const;
     Q_INVOKABLE model::GameFile* get(int idx) const;
+
+    void connectEntry(model::GameFile* const);
 
 signals:
     void countChanged();

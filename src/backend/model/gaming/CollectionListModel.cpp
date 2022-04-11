@@ -20,6 +20,7 @@
 #include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
+#include "model/gaming/ObjectListHelpers.h"
 
 
 namespace model {
@@ -59,27 +60,6 @@ QHash<int, QByteArray> CollectionListModel::roleNames() const
 }
 
 
-CollectionListModel& CollectionListModel::update(std::vector<model::Collection*>&& entries)
-{
-    const bool count_changed = m_entries.size() != entries.size();
-
-    beginResetModel();
-    m_entries = std::move(entries);
-    endResetModel();
-
-    if (count_changed)
-        emit countChanged();
-
-    return *this;
-}
-
-
-int CollectionListModel::rowCount(const QModelIndex& parent) const
-{
-    return parent.isValid() ? 0 : m_entries.size();
-}
-
-
 QVariant CollectionListModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
@@ -102,20 +82,21 @@ QVariant CollectionListModel::data(const QModelIndex& index, int role) const
 }
 
 
-QVariantList CollectionListModel::toVarArray() const
-{
-    QVariantList varlist;
-    varlist.reserve(m_entries.size());
-    for (model::Collection* ptr : m_entries)
-        varlist.append(QVariant::fromValue(ptr));
-    return varlist;
+void CollectionListModel::update(std::vector<model::Collection*>&& entries) {
+    beginResetModel();
+    utils::update(this, m_entries, std::move(entries));
+    endResetModel();
 }
 
+int CollectionListModel::rowCount(const QModelIndex& parent) const {
+    return utils::rowCount(parent, m_entries);
+}
 
-model::Collection* CollectionListModel::get(int idx) const
-{
-    return (0 <= idx && static_cast<size_t>(idx) < m_entries.size())
-        ? m_entries.at(idx)
-        : nullptr;
+QVariantList CollectionListModel::toVarArray() const {
+    return utils::toVarArray(m_entries);
+}
+
+model::Collection* CollectionListModel::get(int idx) const {
+    return utils::get(m_entries, idx);
 }
 } // namespace model

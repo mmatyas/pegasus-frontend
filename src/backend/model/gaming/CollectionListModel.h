@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "model/gaming/ObjectListHelpers.h"
 #include <QAbstractListModel>
 #include <QVariantList>
 
@@ -30,7 +31,7 @@ class CollectionListModel : public QAbstractListModel {
 
 public:
     explicit CollectionListModel(QObject* parent = nullptr);
-    CollectionListModel& update(std::vector<model::Collection*>&&);
+    void update(std::vector<model::Collection*>&&);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -41,6 +42,8 @@ public:
 
     Q_INVOKABLE QVariantList toVarArray() const;
     Q_INVOKABLE model::Collection* get(int idx) const;
+
+    void connectEntry(model::Collection* const) {}
 
 signals:
     void countChanged();
