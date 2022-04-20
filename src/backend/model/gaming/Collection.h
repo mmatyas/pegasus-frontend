@@ -101,7 +101,7 @@ public:
 
     Collection& setGames(std::vector<model::Game*>&&);
     GameListModel* gameList() const { return m_games; }
-    Q_PROPERTY(GameListModel* games READ gameList CONSTANT)
+    Q_PROPERTY(ObjectListModel* games READ gameList CONSTANT)
 
 public:
     explicit Collection(QString name, QObject* parent = nullptr);

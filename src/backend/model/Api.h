@@ -41,7 +41,7 @@ class ApiObject : public QObject {
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
     Q_PROPERTY(CollectionListModel* collections READ collections CONSTANT)
-    Q_PROPERTY(GameListModel* allGames READ allGames CONSTANT)
+    Q_PROPERTY(ObjectListModel* allGames READ allGames CONSTANT)
 
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY retranslationRequested)

@@ -1,5 +1,7 @@
 SOURCES += $$PWD/Api.cpp
-HEADERS += $$PWD/Api.h
+HEADERS += \
+    $$PWD/Api.h \
+    $$PWD/ObjectListModel.h
 
 include(device/device.pri)
 include(gaming/gaming.pri)

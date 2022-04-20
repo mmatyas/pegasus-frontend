@@ -1,6 +1,7 @@
 target_sources(pegasus-backend PRIVATE
     Api.cpp
     Api.h
+    ObjectListModel.h
     device/DeviceInfo.cpp
     device/DeviceInfo.h
     gaming/Assets.cpp
