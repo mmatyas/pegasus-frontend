@@ -54,7 +54,6 @@ target_link_libraries(pegasus-backend PUBLIC
     Qt::Multimedia
     Qt::Sql
     Qt::Svg
-    QtQmlTricks
     SortFilterProxyModel
 )
 

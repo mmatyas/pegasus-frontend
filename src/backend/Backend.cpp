@@ -32,7 +32,6 @@
 #include "model/gaming/GameFile.h"
 #include "model/internal/Internal.h"
 #include "utils/FolderListModel.h"
-#include "QtQmlTricks/QQmlObjectListModel.h"
 #include "SortFilterProxyModel/qqmlsortfilterproxymodel.h"
 #include "SortFilterProxyModel/filters/filtersqmltypes.h"
 #include "SortFilterProxyModel/proxyroles/proxyrolesqmltypes.h"
@@ -85,8 +84,6 @@ void register_api_classes()
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
 
     // third-party
-    qmlRegisterUncreatableType<QQmlObjectListModelBase>("QtQmlTricks.SmartDataModels",
-                                                        2, 0, "ObjectListModel", error_msg);
     qqsfpm::registerSorterTypes();
     qqsfpm::registerFiltersTypes();
     qqsfpm::registerProxyRoleTypes();
