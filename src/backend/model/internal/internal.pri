@@ -1,5 +1,6 @@
 HEADERS += \
     $$PWD/Gamepad.h \
+    $$PWD/GamepadListModel.h \
     $$PWD/GamepadManager.h \
     $$PWD/GamepadManagerBackend.h \
     $$PWD/Internal.h \
@@ -9,6 +10,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/Gamepad.cpp \
+    $$PWD/GamepadListModel.cpp \
     $$PWD/GamepadManager.cpp \
     $$PWD/GamepadManagerBackend.cpp \
     $$PWD/Internal.cpp \

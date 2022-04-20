@@ -26,21 +26,14 @@
 #  include "GamepadManagerQt.h"
 #endif
 
+#include <QStringBuilder>
+
 
 namespace {
 void call_gamepad_reconfig_scripts()
 {
     ScriptRunner::run(ScriptEvent::CONFIG_CHANGED);
     ScriptRunner::run(ScriptEvent::CONTROLS_CHANGED);
-}
-
-QQmlObjectListModel<model::Gamepad>::const_iterator
-find_by_deviceid(QQmlObjectListModel<model::Gamepad>& model, int device_id)
-{
-    return std::find_if(
-        model.constBegin(),
-        model.constEnd(),
-        [device_id](const model::Gamepad* const gp){ return gp->deviceId() == device_id; });
 }
 
 inline QString pretty_id(int device_id) {
@@ -53,8 +46,8 @@ namespace model {
 
 GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
-    , m_devices(new QQmlObjectListModel<model::Gamepad>(this))
     , m_log_tag(QStringLiteral("Gamepad"))
+    , m_devices(new GamepadListModel(this))
 #ifdef WITH_SDL_GAMEPAD
     , m_backend(new GamepadManagerSDL2(this))
 #else
@@ -134,10 +127,10 @@ void GamepadManager::bkOnDisconnected(int device_id)
 {
     QString name;
 
-    const auto it = find_by_deviceid(*m_devices, device_id);
-    if (it != m_devices->constEnd()) {
-        name = (*it)->name();
-        m_devices->remove(*it);
+    model::Gamepad* const gamepad = m_devices->findById(device_id);
+    if (gamepad) {
+        name = gamepad->name();
+        m_devices->remove(gamepad);
     }
 
     Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
@@ -146,10 +139,10 @@ void GamepadManager::bkOnDisconnected(int device_id)
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)
 {
-    const auto it = find_by_deviceid(*m_devices, device_id);
-    if (it != m_devices->constEnd()) {
+    model::Gamepad* const gamepad = m_devices->findById(device_id);
+    if (gamepad) {
         Log::info(m_log_tag, LOGMSG("Set name of device %1 to '%2'").arg(pretty_id(device_id), name));
-        (*it)->setName(std::move(name));
+        gamepad->setName(std::move(name));
     }
 }
 
@@ -167,16 +160,16 @@ void GamepadManager::bkOnAxisCfg(int device_id, GamepadAxis axis)
 
 void GamepadManager::bkOnButtonChanged(int device_id, GamepadButton button, bool pressed)
 {
-    const auto it = find_by_deviceid(*m_devices, device_id);
-    if (it != m_devices->constEnd())
-        (*it)->setButtonState(button, pressed);
+    model::Gamepad* const gamepad = m_devices->findById(device_id);
+    if (gamepad)
+        gamepad->setButtonState(button, pressed);
 }
 
 void GamepadManager::bkOnAxisChanged(int device_id, GamepadAxis axis, double value)
 {
-    const auto it = find_by_deviceid(*m_devices, device_id);
-    if (it != m_devices->constEnd())
-        (*it)->setAxisState(axis, value);
+    model::Gamepad* const gamepad = m_devices->findById(device_id);
+    if (gamepad)
+        gamepad->setAxisState(axis, value);
 }
 
 } // namespace model

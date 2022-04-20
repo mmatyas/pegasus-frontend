@@ -19,10 +19,10 @@
 
 #include "CliArgs.h"
 #include "Gamepad.h"
+#include "GamepadListModel.h"
 #include "GamepadManagerBackend.h"
 #include "utils/HashMap.h"
 
-#include "QtQmlTricks/QQmlObjectListModel.h"
 #include <QObject>
 #include <QString>
 
@@ -37,8 +37,6 @@ namespace model {
 class GamepadManager : public QObject {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
-
-    QML_OBJMODEL_PROPERTY(Gamepad, devices)
 
 public:
     explicit GamepadManager(const backend::CliArgs& args, QObject* parent = nullptr);
@@ -61,6 +59,8 @@ public:
         RightX, RightY,
     };
     Q_ENUM(GMAxis)
+
+    Q_PROPERTY(ObjectListModel* devices READ devices CONSTANT)
 
     Q_INVOKABLE void configureButton(int deviceId, model::GamepadManager::GMButton button);
     Q_INVOKABLE void configureAxis(int deviceId, model::GamepadManager::GMAxis axis);
@@ -89,7 +89,12 @@ private slots:
     void bkOnAxisChanged(int, GamepadAxis, double);
 
 private:
+    GamepadListModel* devices() const { return m_devices; }
+
+private:
     const QString m_log_tag;
+
+    GamepadListModel* const m_devices;
     GamepadManagerBackend* const m_backend;
 
 #ifndef Q_OS_ANDROID
