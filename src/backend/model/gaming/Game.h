@@ -168,7 +168,7 @@ public:
     Q_PROPERTY(ObjectListModel* collections READ collectionsModel CONSTANT)
 
     GameFileListModel* filesModel() const { return m_files; }
-    Q_PROPERTY(GameFileListModel* files READ filesModel CONSTANT)
+    Q_PROPERTY(ObjectListModel* files READ filesModel CONSTANT)
 
     Game& setFiles(std::vector<model::GameFile*>&&);
     Game& setCollections(std::vector<model::Collection*>&&);

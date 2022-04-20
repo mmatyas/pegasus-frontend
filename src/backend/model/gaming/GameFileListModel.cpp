@@ -19,7 +19,6 @@
 
 #include "model/gaming/Assets.h"
 #include "model/gaming/GameFile.h"
-#include "model/gaming/ObjectListHelpers.h"
 
 
 namespace {
@@ -36,7 +35,7 @@ enum Roles {
 
 namespace model {
 GameFileListModel::GameFileListModel(QObject* parent)
-    : QAbstractListModel(parent)
+    : TypeListModel(parent)
 {}
 
 
@@ -51,20 +50,6 @@ QHash<int, QByteArray> GameFileListModel::roleNames() const
         { Roles::LastPlayed, QByteArrayLiteral("lastPlayed") },
     };
     return ROLE_NAMES;
-}
-
-
-void GameFileListModel::update(std::vector<model::GameFile*>&& entries) {
-    beginResetModel();
-    utils::update(this, m_entries, std::move(entries));
-    endResetModel();
-}
-
-
-void GameFileListModel::connectEntry(model::GameFile* const entry)
-{
-    connect(entry, &model::GameFile::playStatsChanged,
-            this, [this](){ onEntryPropertyChanged({Roles::PlayCount, Roles::PlayTime, Roles::LastPlayed}); });
 }
 
 
@@ -87,16 +72,10 @@ QVariant GameFileListModel::data(const QModelIndex& index, int role) const
 }
 
 
-int GameFileListModel::rowCount(const QModelIndex& parent) const {
-    return utils::rowCount(parent, m_entries);
-}
-
-QVariantList GameFileListModel::toVarArray() const {
-    return utils::toVarArray(m_entries);
-}
-
-model::GameFile* GameFileListModel::get(int idx) const {
-    return utils::get(m_entries, idx);
+void GameFileListModel::connectEntry(model::GameFile* const entry)
+{
+    connect(entry, &model::GameFile::playStatsChanged,
+            this, [this](){ onEntryPropertyChanged({Roles::PlayCount, Roles::PlayTime, Roles::LastPlayed}); });
 }
 
 

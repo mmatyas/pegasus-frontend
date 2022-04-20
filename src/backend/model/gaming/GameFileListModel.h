@@ -17,39 +17,21 @@
 
 #pragma once
 
-#include <QAbstractListModel>
-#include <QVariantList>
+#include "model/ObjectListModel.h"
 
 namespace model { class GameFile; }
 
 
 namespace model {
-class GameFileListModel : public QAbstractListModel {
-    Q_OBJECT
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-
+class GameFileListModel : public TypeListModel<model::GameFile> {
 public:
     explicit GameFileListModel(QObject* parent = nullptr);
-    void update(std::vector<model::GameFile*>&&);
 
-    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
-
-    const std::vector<model::GameFile*>& entries() const { return m_entries; }
-    int count() const { return m_entries.size(); }
-
-    Q_INVOKABLE QVariantList toVarArray() const;
-    Q_INVOKABLE model::GameFile* get(int idx) const;
-
-    void connectEntry(model::GameFile* const);
-
-signals:
-    void countChanged();
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
 private:
-    std::vector<model::GameFile*> m_entries;
-
+    void connectEntry(model::GameFile* const) override;
     void onEntryPropertyChanged(const QVector<int>& roles);
 };
 } // namespace model
