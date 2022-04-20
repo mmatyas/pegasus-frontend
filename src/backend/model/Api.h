@@ -40,7 +40,7 @@ class ApiObject : public QObject {
     QML_CONST_PROPERTY(model::DeviceInfo, device)
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
-    Q_PROPERTY(CollectionListModel* collections READ collections CONSTANT)
+    Q_PROPERTY(ObjectListModel* collections READ collections CONSTANT)
     Q_PROPERTY(ObjectListModel* allGames READ allGames CONSTANT)
 
     // retranslate on locale change

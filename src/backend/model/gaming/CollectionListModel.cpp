@@ -20,7 +20,6 @@
 #include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
-#include "model/gaming/ObjectListHelpers.h"
 
 
 namespace {
@@ -40,7 +39,7 @@ enum Roles {
 
 namespace model {
 CollectionListModel::CollectionListModel(QObject* parent)
-    : QAbstractListModel(parent)
+    : TypeListModel(parent)
 {}
 
 
@@ -80,24 +79,5 @@ QVariant CollectionListModel::data(const QModelIndex& index, int role) const
         case Roles::Games: return QVariant::fromValue(coll.gameList());
         default: return {};
     }
-}
-
-
-void CollectionListModel::update(std::vector<model::Collection*>&& entries) {
-    beginResetModel();
-    utils::update(this, m_entries, std::move(entries));
-    endResetModel();
-}
-
-int CollectionListModel::rowCount(const QModelIndex& parent) const {
-    return utils::rowCount(parent, m_entries);
-}
-
-QVariantList CollectionListModel::toVarArray() const {
-    return utils::toVarArray(m_entries);
-}
-
-model::Collection* CollectionListModel::get(int idx) const {
-    return utils::get(m_entries, idx);
 }
 } // namespace model

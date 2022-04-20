@@ -165,7 +165,7 @@ public:
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     CollectionListModel* collectionsModel() const { return m_collections; }
-    Q_PROPERTY(CollectionListModel* collections READ collectionsModel CONSTANT)
+    Q_PROPERTY(ObjectListModel* collections READ collectionsModel CONSTANT)
 
     GameFileListModel* filesModel() const { return m_files; }
     Q_PROPERTY(GameFileListModel* files READ filesModel CONSTANT)
