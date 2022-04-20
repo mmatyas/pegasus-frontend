@@ -5,8 +5,7 @@ HEADERS += \
     $$PWD/Game.h \
     $$PWD/GameFile.h \
     $$PWD/GameFileListModel.h \
-    $$PWD/GameListModel.h \
-    $$PWD/ObjectListHelpers.h
+    $$PWD/GameListModel.h
 
 SOURCES += \
     $$PWD/Assets.cpp \

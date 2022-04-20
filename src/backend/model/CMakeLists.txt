@@ -18,7 +18,6 @@ target_sources(pegasus-backend PRIVATE
     gaming/GameFileListModel.h
     gaming/GameListModel.cpp
     gaming/GameListModel.h
-    gaming/ObjectListHelpers.h
     internal/Gamepad.cpp
     internal/Gamepad.h
     internal/GamepadManager.cpp
