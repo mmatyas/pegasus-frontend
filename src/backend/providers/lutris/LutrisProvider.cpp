@@ -23,9 +23,11 @@
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
 #include "utils/SqliteDb.h"
+#include "utils/StdHelpers.h"
 
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QStandardPaths>
 #include <QStringBuilder>
 
@@ -120,12 +122,31 @@ Provider& LutrisProvider::run(SearchContext& sctx)
         return *this;
 
     QSqlQuery query;
-    query.prepare(QLatin1String("SELECT id, slug, name, playtime, runner, steamid FROM games"));
+    query.prepare(QLatin1String("SELECT * FROM games"));
     if (!query.exec()) {
-        Log::warning(display_name(), query.lastError().text());
+        Log::warning(display_name(), LOGMSG("Could not query game data: %1").arg(query.lastError().text()));
         return *this;
     }
 
+    const QSqlRecord record = query.record();
+    // TODO: C++20 designated initializers
+    const int record_col_id = record.indexOf(QLatin1String("id"));
+    const int record_col_slug = record.indexOf(QLatin1String("slug"));
+    const int record_col_name = record.indexOf(QLatin1String("name"));
+    const int record_col_service = record.indexOf(QLatin1String("service"));
+    const int record_col_serviceid = record.indexOf(QLatin1String("service_id"));
+    const int record_col_runner = record.indexOf(QLatin1String("runner"));
+    const int record_col_steamid = record.indexOf(QLatin1String("steamid"));
+
+    const std::array<int, 3> required_columns {
+        record_col_id,
+        record_col_slug,
+        record_col_name,
+    };
+    if (VEC_CONTAINS_PRED(required_columns, [](int val){ return val < 0; })) {
+        Log::warning(display_name(), LOGMSG("The Lutris database seems to have a different structure than expected"));
+        return *this;
+    }
 
     model::Collection& lutris_collection = *sctx.get_or_create_collection(QStringLiteral("Lutris"));
 
@@ -135,20 +156,38 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     const QString base_path_icons = QSP::standardLocations(QSP::GenericDataLocation).constFirst()
         + QLatin1String("/icons/hicolor/128x128/apps/lutris_");
 
-    const QLatin1String STEAM_RUNNER("steam");
+    const QLatin1String STEAM_NAME("steam");
     while (query.next()) {
-        const QString id_str = query.value(0).toString();
-        const QString slug = query.value(1).toString();
-        const QString title = query.value(2).toString();
+        const QString id_str = query.value(record_col_id).toString();
+        const QString slug = query.value(record_col_slug).toString();
+        const QString title = query.value(record_col_name).toString();
+        if (id_str.isEmpty() || slug.isEmpty() || title.isEmpty())
+            continue;
 
-        const QString runner = query.value(4).toString();
-        const QString steamid = query.value(5).toString();
-        const bool uses_steam = runner == STEAM_RUNNER && !steamid.isEmpty();
+        QString steamid;
 
-        QString target_uri = uses_steam
+        // A. Try the service + serviceid pair
+        const bool uses_service_cols = record_col_service >= 0 && record_col_serviceid >= 0;
+        if (uses_service_cols) {
+            const QString service = query.value(record_col_service).toString();
+            if (service == STEAM_NAME)
+                steamid = query.value(record_col_serviceid).toString();
+        }
+
+        // B. Try the older runner + steamid pair
+        if (steamid.isEmpty()) {
+            const bool uses_runner_steamid_cols = record_col_runner >= 0 && record_col_steamid >= 0;
+            if (uses_runner_steamid_cols) {
+                const QString runner = query.value(record_col_runner).toString();
+                if (runner == STEAM_NAME)
+                    steamid = query.value(record_col_steamid).toString();
+            }
+        }
+
+        QString target_uri = !steamid.isEmpty()
             ? QLatin1String("steam:") + steamid
             : QLatin1String("lutris:") + slug;
-        model::Collection& target_collection = uses_steam
+        model::Collection& target_collection = !steamid.isEmpty()
             ? *sctx.get_or_create_collection(QStringLiteral("Steam"))
             : lutris_collection;
 

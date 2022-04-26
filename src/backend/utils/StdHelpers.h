@@ -37,6 +37,9 @@
 #define VEC_CONTAINS(vec, val) \
     (std::find(vec.cbegin(), vec.cend(), val) != vec.cend())
 
+#define VEC_CONTAINS_PRED(vec, pred) \
+    (std::find_if(vec.cbegin(), vec.cend(), pred) != vec.cend())
+
 
 template<typename List1, typename List2>
 typename List1::iterator vec_append_move(List1& dest, List2&& src)
