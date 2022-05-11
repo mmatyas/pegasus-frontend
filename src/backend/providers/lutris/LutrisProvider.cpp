@@ -30,6 +30,7 @@
 #include <QSqlRecord>
 #include <QStandardPaths>
 #include <QStringBuilder>
+#include <array>
 
 
 namespace {
