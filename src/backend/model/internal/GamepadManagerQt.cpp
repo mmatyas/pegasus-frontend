@@ -29,10 +29,10 @@ GamepadButton translate_button(QGamepadManager::GamepadButton button)
         GEN(Down, DOWN);
         GEN(Left, LEFT);
         GEN(Right, RIGHT);
-        GEN(A, SOUTH);
-        GEN(B, EAST);
-        GEN(X, WEST);
-        GEN(Y, NORTH);
+        GEN(A, A);
+        GEN(B, B);
+        GEN(X, X);
+        GEN(Y, Y);
         GEN(L1, L1);
         GEN(L2, L2);
         GEN(L3, L3);

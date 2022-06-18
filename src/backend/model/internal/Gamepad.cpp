@@ -44,10 +44,12 @@ void Gamepad::setButtonState(GamepadButton button, bool pressed)
         GEN(DOWN, Down);
         GEN(LEFT, Left);
         GEN(RIGHT, Right);
-        GEN(SOUTH, South);
-        GEN(EAST, East);
-        GEN(WEST, West);
-        GEN(NORTH, North);
+        GEN(A, A);
+        GEN(B, B);
+        GEN(C, C);
+        GEN(X, X);
+        GEN(Y, Y);
+        GEN(Z, Z);
         GEN(L1, L1);
         GEN(L2, L2);
         GEN(L3, L3);

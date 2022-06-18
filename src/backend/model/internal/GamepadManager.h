@@ -44,7 +44,8 @@ public:
     enum class GMButton {
         Invalid,
         Up, Down, Left, Right,
-        North, South, East, West,
+        A, B, C,
+        X, Y, Z,
         L1, L2, L3,
         R1, R2, R3,
         Select,

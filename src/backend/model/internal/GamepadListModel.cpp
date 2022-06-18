@@ -36,6 +36,13 @@ enum Roles {
     ButtonEast,
     ButtonWest,
 
+    ButtonA,
+    ButtonB,
+    ButtonC,
+    ButtonX,
+    ButtonY,
+    ButtonZ,
+
     ButtonL1,
     ButtonL2,
     ButtonL3,
@@ -109,10 +116,16 @@ QVariant GamepadListModel::data(const QModelIndex& index, int role) const
         case Roles::ButtonDown: return gamepad.buttonDown();
         case Roles::ButtonLeft: return gamepad.buttonLeft();
         case Roles::ButtonRight: return gamepad.buttonRight();
-        case Roles::ButtonNorth: return gamepad.buttonNorth();
-        case Roles::ButtonSouth: return gamepad.buttonSouth();
-        case Roles::ButtonEast: return gamepad.buttonEast();
-        case Roles::ButtonWest: return gamepad.buttonWest();
+        case Roles::ButtonA: return gamepad.buttonA();
+        case Roles::ButtonB: return gamepad.buttonB();
+        case Roles::ButtonC: return gamepad.buttonC();
+        case Roles::ButtonX: return gamepad.buttonX();
+        case Roles::ButtonY: return gamepad.buttonY();
+        case Roles::ButtonZ: return gamepad.buttonZ();
+        case Roles::ButtonEast: return gamepad.buttonX();
+        case Roles::ButtonNorth: return gamepad.buttonY();
+        case Roles::ButtonSouth: return gamepad.buttonA();
+        case Roles::ButtonWest: return gamepad.buttonB();
         case Roles::ButtonL1: return gamepad.buttonL1();
         case Roles::ButtonL2: return gamepad.buttonL2();
         case Roles::ButtonL3: return gamepad.buttonL3();

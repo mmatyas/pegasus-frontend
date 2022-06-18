@@ -93,12 +93,12 @@ private slots:
 
 private:
     // game launching
-    model::GameFile* m_launch_game_file;
+    model::GameFile* m_launch_game_file = nullptr;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
 
-    CollectionListModel* m_collections = nullptr;
-    GameListModel* m_all_games = nullptr;
+    CollectionListModel* const m_collections;
+    GameListModel* const m_all_games;
 };
 } // namespace model

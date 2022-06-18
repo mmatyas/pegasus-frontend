@@ -42,10 +42,14 @@ class Gamepad : public QObject {
     GEN_BTN(Left)
     GEN_BTN(Right)
 
-    GEN_BTN(North)
-    GEN_BTN(South)
-    GEN_BTN(East)
-    GEN_BTN(West)
+    // Top row: X-Y-Z
+    GEN_BTN(X)
+    GEN_BTN(Y)
+    GEN_BTN(Z)
+    // Bottom row: A-B-C
+    GEN_BTN(A)
+    GEN_BTN(B)
+    GEN_BTN(C)
 
     GEN_BTN(L1)
     GEN_BTN(L2)
@@ -66,6 +70,11 @@ class Gamepad : public QObject {
 #undef GEN_AXIS
 #undef GEN_BTN
 #undef GEN
+
+    Q_PROPERTY(bool buttonWest READ buttonX NOTIFY buttonXChanged)
+    Q_PROPERTY(bool buttonNorth READ buttonY NOTIFY buttonYChanged)
+    Q_PROPERTY(bool buttonSouth READ buttonA NOTIFY buttonAChanged)
+    Q_PROPERTY(bool buttonEast READ buttonB NOTIFY buttonBChanged)
 
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(int deviceId READ deviceId CONSTANT)
@@ -89,10 +98,12 @@ signals:
     void buttonLeftChanged(bool);
     void buttonRightChanged(bool);
 
-    void buttonNorthChanged(bool);
-    void buttonSouthChanged(bool);
-    void buttonEastChanged(bool);
-    void buttonWestChanged(bool);
+    void buttonXChanged(bool);
+    void buttonYChanged(bool);
+    void buttonZChanged(bool);
+    void buttonAChanged(bool);
+    void buttonBChanged(bool);
+    void buttonCChanged(bool);
 
     void buttonL1Changed(bool);
     void buttonL2Changed(bool);

@@ -24,27 +24,26 @@
 namespace model {
 ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
     : QObject(parent)
-    , m_launch_game_file(nullptr)
     , m_collections(new CollectionListModel(this))
     , m_all_games(new GameListModel(this))
 {
     connect(&m_memory, &model::Memory::dataChanged,
             this, &ApiObject::memoryChanged);
+
+    Q_ASSERT(m_collections);
+    Q_ASSERT(m_all_games);
 }
 
 void ApiObject::clearGameData()
 {
-    Q_ASSERT(m_collections);
     m_collections->update({});
-
-    Q_ASSERT(m_all_games);
     m_all_games->update({});
 }
 
 void ApiObject::setGameData(std::vector<model::Collection*>&& collections, std::vector<model::Game*>&& games)
 {
-    Q_ASSERT(m_all_games && m_all_games->entries().empty());
-    Q_ASSERT(m_collections && m_collections->entries().empty());
+    Q_ASSERT(m_all_games->entries().empty());
+    Q_ASSERT(m_collections->entries().empty());
 
     for (model::Game* const game : qAsConst(games)) {
         game->moveToThread(thread());

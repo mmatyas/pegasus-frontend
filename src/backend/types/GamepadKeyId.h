@@ -19,8 +19,8 @@
 
 // NOTE: This is a regular enum, for Qt::Key compatibility
 enum GamepadKeyId {
-    A = 0x100000,
-    B, X, Y,
+    A = 0x100000, B, C,
+    X, Y, Z,
     L1, L2, L3,
     R1, R2, R3,
     SELECT,
@@ -32,7 +32,8 @@ enum GamepadKeyId {
 enum class GamepadButton : unsigned char {
     INVALID,
     UP, DOWN, LEFT, RIGHT,
-    NORTH, SOUTH, EAST, WEST,
+    A, B, C,
+    X, Y, Z,
     L1, L2, L3,
     R1, R2, R3,
     SELECT,

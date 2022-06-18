@@ -64,22 +64,22 @@ FocusScope {
         ListElement {
             name: QT_TR_NOOP("A")
             icon: "a"
-            field: GamepadManager.GMButton.South
+            field: GamepadManager.GMButton.A
         }
         ListElement {
             name: QT_TR_NOOP("B")
             icon: "b"
-            field: GamepadManager.GMButton.East
+            field: GamepadManager.GMButton.B
         }
         ListElement {
             name: QT_TR_NOOP("X")
             icon: "x"
-            field: GamepadManager.GMButton.West
+            field: GamepadManager.GMButton.X
         }
         ListElement {
             name: QT_TR_NOOP("Y")
             icon: "y"
-            field: GamepadManager.GMButton.North
+            field: GamepadManager.GMButton.Y
         }
 
         ListElement {
