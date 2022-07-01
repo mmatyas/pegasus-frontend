@@ -320,6 +320,7 @@ bool GamepadManagerSDL2::RecordingState::is_active() const
 {
     return device >= 0 && !first_frame;
 }
+
 void GamepadManagerSDL2::RecordingState::reset()
 {
     device = -1;
@@ -338,7 +339,7 @@ GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
 
 void GamepadManagerSDL2::start(const backend::CliArgs& args)
 {
-    if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
+    if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0) {
         Log::info(LOGMSG("Failed to initialize SDL2. Gamepad support may not work."));
         print_sdl_error();
         return;
@@ -355,11 +356,15 @@ void GamepadManagerSDL2::start(const backend::CliArgs& args)
     m_poll_timer.start(16);
 }
 
-GamepadManagerSDL2::~GamepadManagerSDL2()
+void GamepadManagerSDL2::stop()
 {
     // Make sure the polling stops before the devices disappear
     m_poll_timer.stop();
+    m_iid_to_idx.clear();
     m_idx_to_device.clear();
+
+    SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
+    SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 }
 
 void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)

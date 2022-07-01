@@ -24,4 +24,9 @@ GamepadManagerBackend::GamepadManagerBackend(QObject* parent)
     : QObject(parent)
 {}
 
+GamepadManagerBackend::~GamepadManagerBackend()
+{
+    stop();
+}
+
 } // namespace model

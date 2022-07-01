@@ -31,9 +31,10 @@ class GamepadManagerBackend : public QObject {
 
 public:
     GamepadManagerBackend(QObject* parent = nullptr);
-    virtual ~GamepadManagerBackend() = default;
+    virtual ~GamepadManagerBackend();
 
     virtual void start(const backend::CliArgs&) {}
+    virtual void stop() {}
 
     virtual void start_recording(int, GamepadButton) {}
     virtual void start_recording(int, GamepadAxis) {}

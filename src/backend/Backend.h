@@ -40,6 +40,8 @@ public:
     void start();
 
 private:
+    const CliArgs m_args;
+
     // frontend <-> api <-> launcher
     // NOTE: unique_ptr had forward declaration issues
     model::ApiObject* m_api_public;
@@ -51,6 +53,8 @@ private:
     void onScanRequested();
     void onScanFinished();
     void onFavoritesChanged();
+    void onProcessLaunched();
+    void onProcessFinished();
 };
 
 } // namespace backend

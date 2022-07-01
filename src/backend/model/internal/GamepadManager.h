@@ -39,7 +39,10 @@ class GamepadManager : public QObject {
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
 
 public:
-    explicit GamepadManager(const backend::CliArgs& args, QObject* parent = nullptr);
+    explicit GamepadManager(QObject* parent = nullptr);
+
+    void start(const backend::CliArgs& args);
+    void stop();
 
     enum class GMButton {
         Invalid,

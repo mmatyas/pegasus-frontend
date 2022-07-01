@@ -30,9 +30,9 @@ namespace model {
 class GamepadManagerSDL2 : public GamepadManagerBackend {
 public:
     explicit GamepadManagerSDL2(QObject* parent);
-    ~GamepadManagerSDL2();
 
     void start(const backend::CliArgs&) final;
+    void stop() final;
 
     void start_recording(int, GamepadButton) final;
     void start_recording(int, GamepadAxis) final;

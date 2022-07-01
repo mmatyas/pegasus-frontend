@@ -143,6 +143,7 @@ Backend::~Backend()
 }
 
 Backend::Backend(const CliArgs& args)
+    : m_args(args)
 {
     // Make sure this comes before any file related operations
     AppSettings::general.portable = args.portable;
@@ -180,7 +181,7 @@ Backend::Backend(const CliArgs& args)
                      m_api_public, &model::ApiObject::onGameLaunchError);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
-                     m_frontend, &FrontendLayer::teardown);
+                     [this](){ onProcessLaunched(); });
 
     QObject::connect(m_frontend, &FrontendLayer::teardownComplete,
                      m_launcher, &ProcessLauncher::onTeardownComplete);
@@ -192,7 +193,7 @@ Backend::Backend(const CliArgs& args)
                      m_providerman, &ProviderManager::onGameFinished);
 
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
-                     m_frontend, &FrontendLayer::rebuild);
+                     [this](){ onProcessFinished(); });
 
     // Setting changes
     QObject::connect(m_api_private->settings().localesPtr(), &model::Locales::localeChanged,
@@ -229,8 +230,8 @@ Backend::Backend(const CliArgs& args)
 
 void Backend::start()
 {
-    m_frontend->rebuild();
     m_api_private->settings().postInit();
+    onProcessFinished();
     onScanRequested();
 }
 
@@ -254,6 +255,18 @@ void Backend::onScanFinished()
 void Backend::onFavoritesChanged()
 {
     m_providerman->onFavoritesChanged(m_api_public->allGames()->entries());
+}
+
+void Backend::onProcessLaunched()
+{
+    m_frontend->teardown();
+    m_api_private->gamepad().stop();
+}
+
+void Backend::onProcessFinished()
+{
+    m_frontend->rebuild();
+    m_api_private->gamepad().start(m_args);
 }
 
 } // namespace backend
