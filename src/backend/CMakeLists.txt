@@ -12,10 +12,6 @@ add_library(pegasus-backend
     CliArgs.h
     FrontendLayer.cpp
     FrontendLayer.h
-    GamepadAxisNavigation.cpp
-    GamepadAxisNavigation.h
-    GamepadButtonNavigation.cpp
-    GamepadButtonNavigation.h
     Log.cpp
     Log.h
     Paths.cpp

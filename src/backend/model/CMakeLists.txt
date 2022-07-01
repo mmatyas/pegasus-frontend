@@ -20,6 +20,10 @@ target_sources(pegasus-backend PRIVATE
     gaming/GameListModel.h
     internal/Gamepad.cpp
     internal/Gamepad.h
+    internal/GamepadAxisNavigation.cpp
+    internal/GamepadAxisNavigation.h
+    internal/GamepadButtonNavigation.cpp
+    internal/GamepadButtonNavigation.h
     internal/GamepadListModel.cpp
     internal/GamepadListModel.h
     internal/GamepadManager.cpp

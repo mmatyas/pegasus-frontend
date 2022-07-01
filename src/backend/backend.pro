@@ -15,27 +15,23 @@ msvc: DEFINES *= _USE_MATH_DEFINES
 SOURCES += \
     Backend.cpp \
     FrontendLayer.cpp \
-    GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
     Log.cpp \
-    GamepadButtonNavigation.cpp
 
 HEADERS += \
     Backend.h \
     CliArgs.h \
     FrontendLayer.h \
-    GamepadAxisNavigation.h \
     PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \
     Paths.h \
     AppSettings.h \
     Log.h \
-    GamepadButtonNavigation.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)
