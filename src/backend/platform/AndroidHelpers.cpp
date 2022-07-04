@@ -175,11 +175,29 @@ QString to_content_uri(const QString& path)
 QString to_document_uri(const QString& path)
 {
     const QFileInfo finfo(path);
-    const QDir storage_root(primary_storage_path());
+    const QString abs_path = finfo.absoluteFilePath();
+    const QString abs_dir = finfo.absolutePath();
 
-    const QString primary_prefix = QStringLiteral("primary:");
-    const QString rel_dir = primary_prefix + storage_root.relativeFilePath(finfo.absolutePath());
-    const QString rel_path = primary_prefix + storage_root.relativeFilePath(finfo.absoluteFilePath());
+    const QString most_specific_root = [&abs_path](){
+        QString result = QChar('/');
+        const QStringList all_roots = storage_paths();
+        for (const QString& root : all_roots) {
+            if (abs_path.startsWith(root) && result.length() < root.length())
+                result = root;
+        }
+        return result;
+    }();
+    const QDir storage_root(most_specific_root);
+
+    const QString prefix = [&most_specific_root](){
+        if (most_specific_root == primary_storage_path())
+            return QStringLiteral("primary:");
+
+        QVector<QStringRef> parts = most_specific_root.splitRef(QChar('/'));
+        return parts.last().toString() + QChar(':');
+    }();
+    const QString rel_dir = prefix + storage_root.relativeFilePath(abs_dir);
+    const QString rel_path = prefix + storage_root.relativeFilePath(abs_path);
 
     const QString uri_str = QStringLiteral("content://com.android.externalstorage.documents/tree/%1/document/%2")
         .arg(QUrl::toPercentEncoding(rel_dir), QUrl::toPercentEncoding(rel_path));
