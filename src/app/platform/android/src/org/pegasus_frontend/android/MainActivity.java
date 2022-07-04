@@ -119,6 +119,12 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
     }
 
 
+    public static String primaryStoragePath() {
+        final File storage = Environment.getExternalStorageDirectory();
+        return storage.getAbsolutePath();
+    }
+
+
     public static String[] sdcardPaths() {
         // Functions with high API level dependencies:
         // - https://developer.android.com/reference/android/os/storage/StorageManager#getStorageVolumes()

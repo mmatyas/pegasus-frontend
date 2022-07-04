@@ -58,8 +58,11 @@ const char* jni_classname() {
 
 QString primary_storage_path()
 {
-    // should be the same as storage_paths().front(), but perhaps faster
-    return QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).constFirst();
+    static constexpr auto JNI_METHOD = "primaryStoragePath";
+    static constexpr auto JNI_SIGNATURE = "()Ljava/lang/String;";
+
+    const auto result_obj = QAndroidJniObject::callStaticObjectMethod(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+    return result_obj.toString();
 }
 
 QStringList storage_paths()
