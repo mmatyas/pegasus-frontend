@@ -41,7 +41,6 @@ jobs:
     steps:
       - checkout
       - run: .circleci/prepare.sh
-      - run: cp ./etc/android/build.gradle /opt/${QT_VERSION}_${QT_TARGET}/src/android/templates/
       - run: .circleci/build.sh
       - run: if [ "$CIRCLE_BRANCH" != "master" ]; then
           /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
