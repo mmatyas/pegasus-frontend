@@ -87,7 +87,8 @@ android {
         platform/android/src/org/pegasus_frontend/android/IntentHelper.java \
         platform/android/src/org/pegasus_frontend/android/LaunchFileProvider.java \
         platform/android/src/org/pegasus_frontend/android/MainActivity.java \
-        platform/android/res/values/icon_bg.xml \
+        platform/android/res/values/colors.xml \
+        platform/android/res/values/themes.xml \
         platform/android/res/values/libs.xml \
 
     ANDROID_MIN_SDK_VERSION = 21
