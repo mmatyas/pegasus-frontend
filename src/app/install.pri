@@ -68,7 +68,6 @@ android {
     QT += androidextras
     OTHER_FILES += \
         platform/android/AndroidManifest.xml \
-        platform/android/res/mipmap/banner.png \
         platform/android/res/mipmap-ldpi/icon.png \
         platform/android/res/mipmap-mdpi/icon.png \
         platform/android/res/mipmap-hdpi/icon.png \
@@ -82,6 +81,7 @@ android {
         platform/android/res/mipmap-xxhdpi/icon_fg.png \
         platform/android/res/mipmap-xxxhdpi/icon_fg.png \
         platform/android/res/mipmap-anydpi-v26/icon.xml \
+        platform/android/res/mipmap-xhdpi/banner.png \
         platform/android/src/org/pegasus_frontend/android/App.java \
         platform/android/src/org/pegasus_frontend/android/BatteryInfo.java \
         platform/android/src/org/pegasus_frontend/android/IntentHelper.java \
