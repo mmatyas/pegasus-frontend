@@ -165,7 +165,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     const QString raw_launch_cmd =
 #if defined(Q_OS_LINUX) && defined(PEGASUS_INSIDE_FLATPAK)
-        QLatin1String("flatpak-spawn --host ") % game.launchCmd();
+        QLatin1String("flatpak-spawn --host ") + game.launchCmd();
 #else
         game.launchCmd();
 #endif
