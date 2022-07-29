@@ -19,6 +19,10 @@
 
 #include "AppSettings.h"
 
+#ifdef Q_OS_ANDROID
+#include "platform/AndroidHelpers.h"
+#endif
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -125,6 +129,15 @@ const QStringList& configDirs()
             const QRegularExpression regex(QStringLiteral("(/pegasus-frontend){2}$"));
             paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
         }
+
+#ifdef Q_OS_ANDROID
+        const QStringList all_roots = android::storage_paths();
+        for (const QString& storage_root : all_roots) {
+            QString path = storage_root + QStringLiteral("/pegasus-frontend");
+            if (QFileInfo::exists(path))
+                paths << std::move(path);
+        }
+#endif
 
         paths.removeDuplicates();
         return paths;
