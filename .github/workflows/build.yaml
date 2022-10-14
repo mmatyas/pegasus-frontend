@@ -2,8 +2,8 @@ on: [push, pull_request, workflow_dispatch]
 
 env:
   TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
-  QT_VERSION: qt5153
-  QT_VERSION_PRETTY: "5.15.3"
+  QT_VERSION: qt5156
+  QT_VERSION_PRETTY: "5.15.6"
   SDL_VERSION: "2.0.20"
 
 

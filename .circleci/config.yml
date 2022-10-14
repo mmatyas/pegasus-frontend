@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt_x11-bionic
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: x11-static
       BUILDOPTS:
         USE_SDL_GAMEPAD=1
@@ -34,9 +34,10 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-android
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: android
-      ANDROID_NDK_ROOT: /opt/android-ndk
+      ANDROID_SDK_ROOT: /opt/android-sdk
+      ANDROID_NDK_ROOT: /opt/android-sdk/ndk/21.4.7075529
       BUILDOPTS: ANDROID_ABIS=armeabi-v7a FORCE_QT_PNG=1
     steps:
       - checkout
@@ -74,7 +75,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-mingw
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: win32-mingw-static
       BUILDOPTS:
         USE_SDL_GAMEPAD=1
@@ -98,7 +99,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: rpi1-static
       BUILDOPTS:
         USE_SDL_GAMEPAD=1
@@ -120,7 +121,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: rpi2-static
       BUILDOPTS:
         USE_SDL_GAMEPAD=1
@@ -142,7 +143,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: rpi3-static
       BUILDOPTS:
         USE_SDL_GAMEPAD=1
@@ -164,7 +165,7 @@ jobs:
     docker:
       - image: mmatyas/pegasus-qt-buster
     environment:
-      QT_VERSION: qt5153
+      QT_VERSION: qt5156
       QT_TARGET: rpi4-static
       BUILDOPTS:
         USE_SDL_GAMEPAD=1
