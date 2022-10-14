@@ -9,14 +9,14 @@ env:
 
 jobs:
   x11-cmake:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       QT_TARGET: x11-static
       SDL_TARGET: x11-bionic
     steps:
       - name: GCC PPA
         run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        if: matrix.os == 'ubuntu-18.04'
+        if: matrix.os == 'ubuntu-20.04'
       - name: APT deps
         run: sudo apt-get update && sudo apt-get install -y
           g++-10
@@ -25,11 +25,16 @@ jobs:
           libgstreamer-plugins-base1.0-dev
           libpulse-dev
           libudev-dev
+          libxcb-glx0-dev
           libxcb-icccm4-dev
           libxcb-image0-dev
           libxcb-keysyms1-dev
+          libxcb-randr0-dev
           libxcb-render-util0-dev
+          libxcb-shape0-dev
+          libxcb-sync-dev
           libxcb-util-dev
+          libxcb-xfixes0-dev
           libxcb-xinerama0-dev
           libxi-dev
           libxkbcommon-dev
@@ -76,7 +81,7 @@ jobs:
 
 
   x11-tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       QT_TARGET: x11-static
     steps:
@@ -88,14 +93,19 @@ jobs:
           libpulse-dev
           libudev-dev
           libxi-dev
-          libxkbcommon-dev
-          libxkbcommon-x11-dev
+          libxcb-glx0-dev
           libxcb-icccm4-dev
           libxcb-image0-dev
           libxcb-keysyms1-dev
+          libxcb-randr0-dev
           libxcb-render-util0-dev
+          libxcb-shape0-dev
+          libxcb-sync-dev
           libxcb-util-dev
+          libxcb-xfixes0-dev
           libxcb-xinerama0-dev
+          libxkbcommon-dev
+          libxkbcommon-x11-dev
           libsdl2-dev
           libzstd-dev
           lcov
@@ -131,7 +141,7 @@ jobs:
 
 
   macos-static:
-    runs-on: macos-10.15
+    runs-on: macos-11
     env:
       QT_TARGET: macos-static
     steps:
