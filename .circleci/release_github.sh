@@ -19,6 +19,7 @@ TARGETS=" \
   rpi4-static \
   macos-static \
   android \
+  android64 \
   win32-mingw-static \
   odroid-c1-static \
   odroid-c2-static \

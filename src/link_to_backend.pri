@@ -51,9 +51,14 @@ isEmpty(USE_SDL_GAMEPAD): QT *= gamepad
     else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BUILDDIR}/thirdparty/apng/debug/qapng.lib"
 }
 
-
 # NOTE: This is a workaround for the Android CI, where qmake doesn't link Qt's PNG otherwise
 !isEmpty(FORCE_QT_PNG):android {
-    LIBS += "-L$$[QT_INSTALL_LIBS]" -lqtlibpng_armeabi-v7a
-    PRE_TARGETDEPS += "$$[QT_INSTALL_LIBS]/libqtlibpng_armeabi-v7a.a"
+    contains(QT_ARCH, ".*armeabi.*") {
+        LIBS += "-L$$[QT_INSTALL_LIBS]" -lqtlibpng_armeabi-v7a
+        PRE_TARGETDEPS += "$$[QT_INSTALL_LIBS]/libqtlibpng_armeabi-v7a.a"
+    }
+    contains(QT_ARCH, ".*arm64.*") {
+        LIBS += "-L$$[QT_INSTALL_LIBS]" -lqtlibpng_arm64-v8a
+        PRE_TARGETDEPS += "$$[QT_INSTALL_LIBS]/libqtlibpng_arm64-v8a.a"
+    }
 }

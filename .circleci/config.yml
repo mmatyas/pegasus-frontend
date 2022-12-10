@@ -71,6 +71,47 @@ jobs:
       # Deploy
       - run: .circleci/stage.sh
 
+  android64:
+    docker:
+      - image: mmatyas/pegasus-qt-android
+    environment:
+      QT_VERSION: qt5156
+      QT_TARGET: android
+      ANDROID_SDK_ROOT: /opt/android-sdk
+      ANDROID_NDK_ROOT: /opt/android-sdk/ndk/21.4.7075529
+      BUILDOPTS: ANDROID_ABIS=arm64-v8a FORCE_QT_PNG=1
+    steps:
+      - checkout
+      - run: .circleci/prepare.sh
+      - run: .circleci/build.sh
+      - run: if [ "$CIRCLE_BRANCH" != "master" ]; then
+          /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
+            --input src/app/android-pegasus-fe-deployment-settings.json
+            --output ${PWD}/installdir
+            --android-platform android-30
+            --gradle &&
+          cp
+            installdir/build/outputs/apk/debug/installdir-debug.apk
+            dist/pegasus-fe_$(git describe --always)_android64.apk;
+          fi
+      - run: if [ "$CIRCLE_BRANCH" == "master" ]; then
+          curl -LO https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1/aks.enc &&
+          openssl aes-256-cbc -k "${AKS_ENC_KEY}" -in aks.enc -out aks -d &&
+          /opt/${QT_VERSION}_${QT_TARGET}/bin/androiddeployqt
+            --input src/app/android-pegasus-fe-deployment-settings.json
+            --output ${PWD}/installdir
+            --android-platform android-30
+            --gradle
+            --sign ./aks "${AKS_ALIAS}"
+            --storepass "${AKS_STOREPASS}"
+            --keypass "${AKS_KEYPASS}" &&
+          cp
+            installdir/build/outputs/apk/release/installdir-release-signed.apk
+            dist/pegasus-fe_$(git describe --always)_android64.apk;
+          fi
+      # Deploy
+      - run: .circleci/stage.sh
+
   mingw:
     docker:
       - image: mmatyas/pegasus-qt-mingw
@@ -247,6 +288,7 @@ workflows:
     jobs:
       - x11
       - android
+      - android64
       - mingw
       - buster-pi1
       - buster-pi2
@@ -259,6 +301,7 @@ workflows:
           requires:
             - x11
             - android
+            - android64
             - mingw
             - buster-pi1
             - buster-pi2
