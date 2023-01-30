@@ -44,6 +44,8 @@ Gamelist::Gamelist(QString log_tag)
           QLatin1String("appmanifest_1245040.acf"), // Proton 5.0
           QLatin1String("appmanifest_1391110.acf"), // Steam Linux Runtime - Soldier
           QLatin1String("appmanifest_1420170.acf"), // Proton 5.13
+          QLatin1String("appmanifest_1493710.acf"), // Proton Experimental
+          QLatin1String("appmanifest_431960.acf"), // Wallpaper Engine
     }
     , m_rx_acf_appid(QStringLiteral(R""("appid"\s+"(\d+)")""), QRegularExpression::CaseInsensitiveOption)
     , m_rx_acf_title(QStringLiteral(R""("name"\s+"([^"]+)")""))
