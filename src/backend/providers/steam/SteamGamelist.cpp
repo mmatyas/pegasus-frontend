@@ -43,7 +43,15 @@ Gamelist::Gamelist(QString log_tag)
           QLatin1String("appmanifest_1113280.acf"), // Proton 4.11
           QLatin1String("appmanifest_1245040.acf"), // Proton 5.0
           QLatin1String("appmanifest_1391110.acf"), // Steam Linux Runtime - Soldier
+          QLatin1String("appmanifest_1628350.acf"), // Steam Linux Runtime - Sniper
           QLatin1String("appmanifest_1420170.acf"), // Proton 5.13
+          QLatin1String("appmanifest_1580130.acf"), // Proton 6.3
+          QLatin1String("appmanifest_1887720.acf"), // Proton 7.0
+          QLatin1String("appmanifest_1493710.acf"), // Proton Experimental
+          QLatin1String("appmanifest_2180100.acf"), // Proton Hotfix
+          QLatin1String("appmanifest_2230260.acf"), // Proton Next
+          QLatin1String("appmanifest_1826330.acf"), // Proton EasyAntiCheat Runtime
+          QLatin1String("appmanifest_1161040.acf"), // Proton BattlEye Runtime
     }
     , m_rx_acf_appid(QStringLiteral(R""("appid"\s+"(\d+)")""), QRegularExpression::CaseInsensitiveOption)
     , m_rx_acf_title(QStringLiteral(R""("name"\s+"([^"]+)")""))
