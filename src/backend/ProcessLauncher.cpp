@@ -111,7 +111,7 @@ QString processerror_to_string(QProcess::ProcessError error)
 #ifdef Q_OS_ANDROID
 QString pretty_android_exception(const QString& error)
 {
-    if (error.startsWith(QLatin1String("android.content.ActivityNotFoundExceptions:"))) {
+    if (error.startsWith(QLatin1String("android.content.ActivityNotFoundException"))) {
         return LOGMSG(
             "The Android activity you are trying to launch does not exist. "
             "Here is the full error message: %1"
