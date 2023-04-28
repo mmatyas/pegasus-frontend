@@ -110,7 +110,7 @@ jobs:
             dist/pegasus-fe_$(git describe --always)_android64.apk;
           fi
       # Deploy
-      - run: .circleci/stage.sh
+      - run: QT_TARGET=android64 .circleci/stage.sh
 
   mingw:
     docker:
