@@ -18,7 +18,7 @@
             android:name=".MainActivity"
             android:label="Pegasus"
             android:screenOrientation="userLandscape"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android.theme="@style/PegasusMain">
 
             <intent-filter>
