@@ -109,8 +109,14 @@ android {
 
     ANDROID_PACKAGE_SOURCE_DIR = $${ANDROID_CFGDIR_OUT}
     ANDROID_EXTRA_LIBS += \
-        /opt/openssl-111d_android/lib/libcrypto.so \
-        /opt/openssl-111d_android/lib/libssl.so
+        /opt/openssl-111t_android-arm/lib/libcrypto.so \
+        /opt/openssl-111t_android-arm/lib/libssl.so \
+        /opt/openssl-111t_android-arm64/lib/libcrypto.so \
+        /opt/openssl-111t_android-arm64/lib/libssl.so \
+        /opt/openssl-111t_android-x86/lib/libcrypto.so \
+        /opt/openssl-111t_android-x86/lib/libssl.so \
+        /opt/openssl-111t_android-x86_64/lib/libcrypto.so \
+        /opt/openssl-111t_android-x86_64/lib/libssl.so
 }
 
 
