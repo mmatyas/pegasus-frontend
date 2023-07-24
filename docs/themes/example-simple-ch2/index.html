@@ -180,10 +180,10 @@
         <span class=k>elide:</span> <span class=nx>Text</span><span class=p>.</span><span class=nx>ElideRight</span>
     <span class=p>}</span>
 <span class=p>}</span>
-</code></pre></div><div class="admonition help"><p class=admonition-title>Help</p><p>When setting values, the <code>X ? A : B</code> form is called "inline-if": if the condition <code>X</code> is true, <code>A</code> will be used, otherwise <code>B</code>. In our case, it would equal to the following JavaScript code:</p><div class=codehilite><pre><span></span><code><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=nx>ListView</span><span class=p>.</span><span class=nx>isCurrentItem</span><span class=p>)</span>
-<span class=w>    </span><span class=k>return</span><span class=w> </span><span class=s2>&quot;orange&quot;</span>
+</code></pre></div><div class="admonition help"><p class=admonition-title>Help</p><p>When setting values, the <code>X ? A : B</code> form is called "inline-if": if the condition <code>X</code> is true, <code>A</code> will be used, otherwise <code>B</code>. In our case, it would equal to the following JavaScript code:</p><div class=codehilite><pre><span></span><code><span class=k>if</span> <span class=p>(</span><span class=nx>ListView</span><span class=p>.</span><span class=nx>isCurrentItem</span><span class=p>)</span>
+    <span class=k>return</span> <span class=s2>&quot;orange&quot;</span>
 <span class=k>else</span>
-<span class=w>    </span><span class=k>return</span><span class=w> </span><span class=s2>&quot;white&quot;</span>
+    <span class=k>return</span> <span class=s2>&quot;white&quot;</span>
 </code></pre></div><p>(which you can also use, if you wish).</p></div><p>The list should now scroll around with a visible highlight for the current selection.</p><h3 id=launching-games>Launching games</h3><p>The last feature required to make our theme functional is launching games. Game objects from the API have a <code>launch()</code> command you can use. Simply call it on the game list delegate, for example on <span class=keys><kbd class=key-enter>Enter</kbd></span>:</p><div class=codehilite><pre><span></span><code><span class=nx>Component</span> <span class=p>{</span>
     <span class=kd>id: gameViewDelegate</span>
 
