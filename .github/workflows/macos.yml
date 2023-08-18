@@ -50,11 +50,13 @@ jobs:
           export ZIPNAME="pegasus-fe_$(git describe --always)_${QT_TARGET}.zip"
           cd staging
           zip -r "../deploy/${ZIPNAME}" ./*
+
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: macos-static
           path: deploy
+
       - name: Deploy
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
