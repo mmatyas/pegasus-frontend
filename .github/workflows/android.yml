@@ -79,6 +79,12 @@ jobs:
           installdir/build/outputs/apk/release/installdir-release-signed.apk
           dist/pegasus-fe_$(git describe --always)_${{ matrix.name }}.apk
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.name }}
+          path: dist
+
       - name: Deploy
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
@@ -86,5 +92,5 @@ jobs:
           external_repository: mmatyas/pegasus-deploy-staging
           personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}
           publish_branch: continuous-${{ matrix.name }}
-          publish_dir: ./deploy
+          publish_dir: ./dist
           force_orphan: true

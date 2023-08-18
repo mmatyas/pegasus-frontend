@@ -112,12 +112,19 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: coverage.clean
 
+      - name: Upload artifact
+        if: matrix.buildgen == 'qmake'
+        uses: actions/upload-artifact@v3
+        with:
+          name: x11-static
+          path: dist
+
       - name: Deploy
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
+        if: matrix.buildgen == 'qmake' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           external_repository: mmatyas/pegasus-deploy-staging
           personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}
           publish_branch: continuous-x11-static
-          publish_dir: ./deploy
+          publish_dir: ./dist
           force_orphan: true
