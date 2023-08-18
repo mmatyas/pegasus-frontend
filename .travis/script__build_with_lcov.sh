@@ -3,13 +3,14 @@
 set -o errexit
 set -o nounset
 
-if [[ -z "${QT_HOSTDIR-}" ]]; then
-  echo "Please define QT_HOSTDIR first"
-  exit 1
+QT_DIR=/opt/${QT_VERSION}_${QT_TARGET}_hosttools
+if [[ ! -d "$QT_DIR" ]]; then
+  QT_DIR=/opt/${QT_VERSION}_${QT_TARGET}
 fi
 
 
-${QT_HOSTDIR}/bin/qmake .. \
+${QT_DIR}/bin/qmake --version
+${QT_DIR}/bin/qmake . \
   ENABLE_APNG=1 \
   USE_SDL_GAMEPAD=1 \
   QMAKE_CXXFLAGS="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
