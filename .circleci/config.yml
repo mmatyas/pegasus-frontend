@@ -2,7 +2,7 @@ version: 2
 jobs:
   x11:
     docker:
-      - image: mmatyas/pegasus-qt_x11-bionic
+      - image: mmatyas/pegasus-qt_x11-2004
     environment:
       QT_VERSION: qt51510
       QT_TARGET: x11-static
@@ -17,7 +17,7 @@ jobs:
         SDL_LIBS="-L/opt/SDL2-2.0.20/lib -lSDL2"
         SDL_INCLUDES=/opt/SDL2-2.0.20/include/SDL2
       INSTALL_BINDIR: /usr/bin/
-      GEMDIR: /home/build/.gem/ruby/2.5.0/bin/
+      GEMDIR: /home/build/.gem/ruby/2.7.0/bin/
     steps:
       - run: gem install --user-install -N fpm -v 1.10.2
       - checkout
