@@ -286,9 +286,6 @@ workflows:
   version: 2
   all:
     jobs:
-      - x11
-      - android
-      - android64
       - mingw
       - buster-pi1
       - buster-pi2
@@ -299,9 +296,6 @@ workflows:
       - odroid-xu3
       - release:
           requires:
-            - x11
-            - android
-            - android64
             - mingw
             - buster-pi1
             - buster-pi2
