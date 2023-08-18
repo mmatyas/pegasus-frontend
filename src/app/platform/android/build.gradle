@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.0'
+        classpath 'com.android.tools.build:gradle:7.0.2'
     }
 }
 
@@ -36,8 +36,11 @@ android {
      *******************************************************/
 
     compileSdkVersion androidCompileSdkVersion.toInteger()
+    buildToolsVersion androidBuildToolsVersion
+    ndkVersion androidNdkVersion
 
-    buildToolsVersion '28.0.3'
+    // Extract native libraries from the APK
+    packagingOptions.jniLibs.useLegacyPackaging true
 
     sourceSets {
         main {
