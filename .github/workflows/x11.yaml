@@ -110,7 +110,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.clean
+          file: coverage.clean
 
       - name: Upload artifact
         if: matrix.buildgen == 'qmake'

@@ -30,6 +30,8 @@ head -n 30 coverage.total
 PARENTDIR="$(dirname "$(pwd)")"
 echo $PARENTDIR
 sed -i "s|SF:$PARENTDIR/|SF:|g" coverage.total
+echo "Utana:"
+head -n 30 coverage.total
 
 lcov --compat-libtool -r coverage.total \
   '/usr/*' \
