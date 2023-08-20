@@ -26,7 +26,9 @@ lcov --compat-libtool -c -d . -o coverage.post
 
 
 lcov --compat-libtool -a coverage.pre -a coverage.post -o coverage.total
+head -n 30 coverage.total
 PARENTDIR="$(dirname "$(pwd)")"
+echo $PARENTDIR
 sed -i "s|SF:$PARENTDIR/|SF:|g" coverage.total
 
 lcov --compat-libtool -r coverage.total \

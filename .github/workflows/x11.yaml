@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        buildgen: [cmake, qmake, qmake-lcov]
+        buildgen: [qmake-lcov]
     steps:
       - uses: actions/checkout@v3
         with: {submodules: 'recursive', fetch-depth: 200}
