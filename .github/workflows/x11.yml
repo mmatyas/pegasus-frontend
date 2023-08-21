@@ -21,10 +21,20 @@ jobs:
         with: {submodules: 'recursive', fetch-depth: 200}
       - run: git fetch --tags -f
 
+      - uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ccache-x11-${{ matrix.buildgen }}-${{ hashFiles('.github/workflows/x11.yml') }}
+          restore-keys: |
+            ccache-x11-${{ matrix.buildgen }}
+            ccache-x11-
+            ccache-
+
       - name: GCC PPA
         run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test
       - name: APT deps
         run: sudo apt-get update && sudo apt-get install -y
+          ccache
           g++-10
           lcov
           libasound-dev
@@ -58,6 +68,7 @@ jobs:
           /opt/${QT_VERSION}_${QT_TARGET}/bin/qmake --version
           cmake --version
       - run: gem install --user-install -N fpm -v 1.10.2
+      - run: ccache --show-stats
 
       - name: Lint QML
         run: find -name *.qml -exec /opt/${QT_VERSION}_${QT_TARGET}/bin/qmllint {} \;
@@ -70,6 +81,8 @@ jobs:
         run: cmake
           -B build
           -G Ninja
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           -DCMAKE_PREFIX_PATH="/opt/${QT_VERSION}_${QT_TARGET};/opt/SDL2-${SDL_VERSION}"
           -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
           -DCMAKE_INSTALL_PREFIX=/usr/
@@ -94,6 +107,7 @@ jobs:
             INSTALL_DOCDIR=/usr/share/doc/pegasus-frontend
             SDL_LIBS="-L/opt/SDL2-2.0.20/lib -lSDL2"
             SDL_INCLUDES=/opt/SDL2-2.0.20/include/SDL2
+            CONFIG+=ccache
           INSTALL_BINDIR: /usr/bin/
         run: .circleci/build.sh && .circleci/objdump_linux.sh '' && .circleci/zip_linux.sh
         if: matrix.buildgen == 'qmake'
