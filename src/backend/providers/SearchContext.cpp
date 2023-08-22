@@ -58,7 +58,6 @@ SearchContext::SearchContext(QObject* parent)
 SearchContext::SearchContext(QStringList game_dirs, QObject* parent)
     : QObject(parent)
     , m_root_game_dirs(std::move(game_dirs))
-    , m_netman(nullptr)
     , m_pending_downloads(0)
 {}
 

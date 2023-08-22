@@ -74,7 +74,7 @@ private:
     const QStringList m_root_game_dirs;
     QStringList m_pegasus_game_dirs;
 
-    QNetworkAccessManager* m_netman;
+    QNetworkAccessManager* m_netman = nullptr;
     std::atomic<size_t> m_pending_downloads;
 
     HashMap<QString, model::Collection*> m_collections;

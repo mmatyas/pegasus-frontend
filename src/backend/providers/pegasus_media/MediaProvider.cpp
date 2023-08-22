@@ -29,13 +29,33 @@
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QStringBuilder>
+#include <QStringList>
 
 
 namespace {
+const QStringList& allowed_asset_exts(AssetType type)
+{
+    static const QStringList empty_list({});
+    static const QStringList image_exts { "png", "jpg", "webp", "apng" };
+    static const QStringList video_exts { "webm", "mp4", "avi" };
+    static const QStringList audio_exts { "mp3", "ogg", "wav" };
+
+    switch (type) {
+        case AssetType::UNKNOWN:
+            return empty_list;
+        case AssetType::VIDEO:
+            return video_exts;
+        case AssetType::MUSIC:
+            return audio_exts;
+        default:
+            return image_exts;
+    }
+}
+
 AssetType detect_asset_type(const QString& basename, const QString& ext)
 {
     const AssetType type = pegasus_assets::str_to_type(basename);
-    if (pegasus_assets::allowed_asset_exts(type).contains(ext))
+    if (allowed_asset_exts(type).contains(ext))
         return type;
 
     return AssetType::UNKNOWN;

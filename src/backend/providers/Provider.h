@@ -72,7 +72,7 @@ private:
     const QString m_display_name;
     const uint8_t m_flags;
 
-    bool m_enabled;
+    bool m_enabled = true;
     HashMap<QString, std::vector<QString>> m_options;
 };
 

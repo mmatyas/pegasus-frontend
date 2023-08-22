@@ -27,7 +27,6 @@ Provider::Provider(QLatin1String codename, QString display_name, uint8_t flags, 
     , m_codename(std::move(codename))
     , m_display_name(std::move(display_name))
     , m_flags(flags)
-    , m_enabled(true)
 {}
 
 Provider::Provider(QLatin1String codename, QString display_name, QObject* parent)

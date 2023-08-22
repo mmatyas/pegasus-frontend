@@ -18,14 +18,11 @@
 #pragma once
 
 class QString;
-class QStringList;
 enum class AssetType : unsigned char;
 
 
 namespace pegasus_assets {
 
 AssetType str_to_type(const QString&);
-AssetType ext_to_type(const QString&);
-const QStringList& allowed_asset_exts(AssetType);
 
 } // namespace pegasus_assets

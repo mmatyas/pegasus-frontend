@@ -46,7 +46,7 @@ void test_System::appClose()
 
     QCOMPARE(spy.count(), 1);
     QVERIFY(!spy.isEmpty() && !spy.constFirst().isEmpty()
-            && spy.takeFirst().first() == close_type);
+            && spy.takeFirst().constFirst() == close_type);
 }
 
 void test_System::appClose_data()

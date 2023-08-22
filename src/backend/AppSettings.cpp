@@ -147,10 +147,6 @@ namespace appsettings {
 General::General()
     : DEFAULT_LOCALE(QStringLiteral("en"))
     , DEFAULT_THEME(QStringLiteral(":/themes/pegasus-theme-grid/"))
-    , portable(false)
-    , fullscreen(true)
-    , mouse_support(true)
-    , verify_files(true)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}

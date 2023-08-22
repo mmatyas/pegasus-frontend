@@ -53,8 +53,8 @@ signals:
     void progressChanged();
 
 private:
-    bool m_running;
+    bool m_running = false;
     QString m_stage;
-    float m_progress;
+    float m_progress = 0.f;
 };
 } // namespace model

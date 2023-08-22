@@ -21,7 +21,6 @@
 #include "utils/HashMap.h"
 
 #include <QString>
-#include <QStringList>
 
 
 namespace pegasus_assets {
@@ -98,47 +97,6 @@ AssetType str_to_type(const QString& str)
     }
 
     return AssetType::UNKNOWN;
-}
-
-AssetType ext_to_type(const QString& ext)
-{
-    static const HashMap<QString, AssetType> map {
-        { QStringLiteral("png"), AssetType::BOX_FRONT },
-        { QStringLiteral("jpg"), AssetType::BOX_FRONT },
-        { QStringLiteral("webp"), AssetType::BOX_FRONT },
-        { QStringLiteral("apng"), AssetType::BOX_FRONT },
-        { QStringLiteral("webm"), AssetType::VIDEO },
-        { QStringLiteral("mp4"), AssetType::VIDEO },
-        { QStringLiteral("avi"), AssetType::VIDEO },
-        { QStringLiteral("mp3"), AssetType::MUSIC },
-        { QStringLiteral("ogg"), AssetType::MUSIC },
-        { QStringLiteral("wav"), AssetType::MUSIC },
-    };
-
-    const auto it = map.find(ext);
-    if (it != map.cend())
-        return it->second;
-
-    return AssetType::UNKNOWN;
-}
-
-const QStringList& allowed_asset_exts(AssetType type)
-{
-    static const QStringList empty_list({});
-    static const QStringList image_exts { "png", "jpg", "webp", "apng" };
-    static const QStringList video_exts { "webm", "mp4", "avi" };
-    static const QStringList audio_exts { "mp3", "ogg", "wav" };
-
-    switch (type) {
-        case AssetType::UNKNOWN:
-            return empty_list;
-        case AssetType::VIDEO:
-            return video_exts;
-        case AssetType::MUSIC:
-            return audio_exts;
-        default:
-            return image_exts;
-    }
 }
 
 } // namespace pegasus_assets
