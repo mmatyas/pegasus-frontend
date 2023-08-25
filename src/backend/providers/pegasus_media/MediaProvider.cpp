@@ -30,6 +30,7 @@
 #include <QFileInfo>
 #include <QStringBuilder>
 #include <QStringList>
+#include <array>
 
 
 namespace {
@@ -94,28 +95,33 @@ Provider& MediaProvider::run(SearchContext& sctx)
 {
     constexpr auto dir_filters = QDir::Files | QDir::NoDotAndDotDot;
     constexpr auto dir_flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
-    constexpr int media_len = 6; // length of `/media`
+    const std::array<QLatin1String, 2> MEDIA_SUBDIRS {
+        QLatin1String("/media"),
+        QLatin1String("/.media"),
+    };
 
     const HashMap<QString, model::Game*> lookup_map = create_lookup_map(sctx.current_filepath_to_entry_map());
 
     for (const QString& dir_base : sctx.pegasus_game_dirs()) {
-        const QString media_dir = dir_base + QLatin1String("/media");
+        for (const QLatin1String& media_subdir_name : MEDIA_SUBDIRS) {
+            const QString media_dir = dir_base % media_subdir_name;
 
-        QDirIterator dir_it(media_dir, dir_filters, dir_flags);
-        while (dir_it.hasNext()) {
-            dir_it.next();
-            const QFileInfo fileinfo = dir_it.fileInfo();
+            QDirIterator dir_it(media_dir, dir_filters, dir_flags);
+            while (dir_it.hasNext()) {
+                dir_it.next();
+                const QFileInfo fileinfo = dir_it.fileInfo();
 
-            const QString lookup_key = ::clean_abs_dir(fileinfo).remove(dir_base.length(), media_len);
-            const auto lookup_it = lookup_map.find(lookup_key);
-            if (lookup_it == lookup_map.cend())
-                continue;
+                const QString lookup_key = ::clean_abs_dir(fileinfo).remove(dir_base.length(), media_subdir_name.size());
+                const auto lookup_it = lookup_map.find(lookup_key);
+                if (lookup_it == lookup_map.cend())
+                    continue;
 
-            const AssetType asset_type = detect_asset_type(fileinfo.completeBaseName(), fileinfo.suffix());
-            if (asset_type == AssetType::UNKNOWN)
-                continue;
+                const AssetType asset_type = detect_asset_type(fileinfo.completeBaseName(), fileinfo.suffix());
+                if (asset_type == AssetType::UNKNOWN)
+                    continue;
 
-            lookup_it->second->assetsMut().add_file(asset_type, dir_it.filePath());
+                lookup_it->second->assetsMut().add_file(asset_type, dir_it.filePath());
+            }
         }
     }
 

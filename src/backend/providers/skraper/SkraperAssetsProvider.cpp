@@ -100,9 +100,10 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         }},
     };
 
-    const std::array<QString, 2> MEDIA_DIRS {
+    const std::array<QString, 3> MEDIA_DIRS {
         QStringLiteral("/skraper/"),
         QStringLiteral("/media/"),
+        QStringLiteral("/.media/"),
     };
 
     constexpr auto DIR_FILTERS = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;

@@ -21,7 +21,7 @@
         <file>separate_media_dirs/games-a/game1.ext</file>
         <file>separate_media_dirs/games-a/media/Game 1/box_front.png</file>
         <file>separate_media_dirs/games-b/game2.ext</file>
-        <file>separate_media_dirs/games-b/media/Game 2/box_front.png</file>
+        <file>separate_media_dirs/games-b/.media/Game 2/box_front.png</file>
         <file>separate_media_dirs/metadata/metadata.pegasus.txt</file>
     </qresource>
 </RCC>

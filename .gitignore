@@ -2,7 +2,7 @@
 build*/
 
 # ignore all dotfiles
-.*
+./.*
 
 # except these
 !.gitignore

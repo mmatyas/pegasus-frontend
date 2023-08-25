@@ -25,7 +25,6 @@
 #include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
 #include "providers/pegasus_media/MediaProvider.h"
-#include "utils/StdHelpers.h"
 
 #include <QString>
 #include <QStringList>
@@ -197,7 +196,7 @@ void test_PegasusMediaProvider::separate_media_dirs()
     QCOMPARE(games.size(), 2);
 
     QCOMPARE(games.at(0)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/games-a/media/Game 1/box_front.png"));
-    QCOMPARE(games.at(1)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/games-b/media/Game 2/box_front.png"));
+    QCOMPARE(games.at(1)->assets().boxFront(), QStringLiteral("file::/separate_media_dirs/games-b/.media/Game 2/box_front.png"));
 }
 
 
