@@ -52,6 +52,18 @@ QString find_datadir()
     return {};
 }
 
+QString find_assetdir()
+{
+    const QStringList asset_roots = QStandardPaths::standardLocations(QStandardPaths::GenericCacheLocation);
+    for (const QString& root_path : asset_roots) {
+        QString assetdir = root_path + QLatin1String("/lutris/");  
+        QString banner_subdir = assetdir + QLatin1String("banners/");
+        if (QFileInfo::exists(banner_subdir)) 
+            return assetdir;
+    }
+    return {};
+}
+
 void find_banner_for(model::Game& game, const QString& slug, const QString& base_path)
 {
     const std::array<QLatin1String, 2> exts {
@@ -107,6 +119,11 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     }
     Log::info(display_name(), LOGMSG("Found data directory: `%1`").arg(datadir));
 
+    QString assetdir = find_assetdir();
+    if (assetdir.isEmpty()) {
+        assetdir = datadir;
+    }
+
     const QString db_path = datadir + QLatin1String("pga.db");
     if (!QFileInfo::exists(db_path)) {
         Log::warning(display_name(), LOGMSG("Database not found"));
@@ -152,8 +169,8 @@ Provider& LutrisProvider::run(SearchContext& sctx)
     model::Collection& lutris_collection = *sctx.get_or_create_collection(QStringLiteral("Lutris"));
 
     using QSP = QStandardPaths;
-    const QString base_path_banners = datadir + QLatin1String("banners/");
-    const QString base_path_coverart = datadir + QLatin1String("coverart/");
+    const QString base_path_banners = assetdir + QLatin1String("banners/");
+    const QString base_path_coverart = assetdir + QLatin1String("coverart/");
     const QString base_path_icons = QSP::standardLocations(QSP::GenericDataLocation).constFirst()
         + QLatin1String("/icons/hicolor/128x128/apps/lutris_");
 
