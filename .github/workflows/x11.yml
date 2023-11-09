@@ -18,8 +18,7 @@ jobs:
         buildgen: [cmake, qmake, qmake-lcov]
     steps:
       - uses: actions/checkout@v3
-        with: {submodules: 'recursive', fetch-depth: 200}
-      - run: git fetch --tags -f
+        with: {submodules: 'recursive', fetch-depth: 0, fetch-tags: true}
 
       - uses: actions/cache@v3
         with:
