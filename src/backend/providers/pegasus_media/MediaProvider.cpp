@@ -88,7 +88,7 @@ namespace providers {
 namespace media {
 
 MediaProvider::MediaProvider(QObject* parent)
-    : Provider(QLatin1String("pegasus_media"), QStringLiteral("Media"), PROVIDER_FLAG_INTERNAL, parent)
+    : Provider(QLatin1String("pegasus_media"), QStringLiteral("Media"), parent)
 {}
 
 Provider& MediaProvider::run(SearchContext& sctx)
