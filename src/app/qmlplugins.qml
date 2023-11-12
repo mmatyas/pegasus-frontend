@@ -23,6 +23,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Particles 2.0
+import QtQuick.Shapes 1.15
 import QtQuick.Timeline 1.0
 import QtQuick.Window 2.0
 
