@@ -47,7 +47,7 @@ Favorites::Favorites(QObject* parent)
 {}
 
 Favorites::Favorites(QString db_path, QObject* parent)
-    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
+    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Pegasus Favorites"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
     , m_db_path(std::move(db_path))
 {}
 

@@ -42,7 +42,7 @@ void bench_PegasusProvider::find_in_empty_dir()
     providers::pegasus::PegasusProvider provider;
 
     QBENCHMARK {
-        QTest::ignoreMessage(QtInfoMsg, "Metafiles: No metadata files found");
+        QTest::ignoreMessage(QtInfoMsg, "Pegasus Metafiles: No metadata files found");
         provider.run(sctx);
     }
 }
@@ -52,7 +52,7 @@ void bench_PegasusProvider::find_in_filled_dir()
     providers::SearchContext sctx({QStringLiteral(":/filled")});
     providers::pegasus::PegasusProvider provider;
 
-    const QString msg = QStringLiteral("Metafiles: Found `%1`")
+    const QString msg = QStringLiteral("Pegasus Metafiles: Found `%1`")
         .arg(QDir::toNativeSeparators(QStringLiteral(":/filled/metadata.pegasus.txt")));
 
     QBENCHMARK {

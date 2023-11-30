@@ -84,7 +84,7 @@ private slots:
 void test_PegasusMediaProvider::asset_search()
 {
     const QString display_path = QDir::toNativeSeparators(QStringLiteral(":/asset_search/metadata.txt"));
-    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Metafiles: Found `%1`").arg(display_path)));
+    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Pegasus Metafiles: Found `%1`").arg(display_path)));
 
     providers::SearchContext sctx({QStringLiteral(":/asset_search")});
     providers::pegasus::PegasusProvider().run(sctx);
@@ -127,7 +127,7 @@ void test_PegasusMediaProvider::asset_search()
 void test_PegasusMediaProvider::asset_search_by_title()
 {
     const QString display_path = QDir::toNativeSeparators(QStringLiteral(":/asset_search_by_title/metadata.txt"));
-    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Metafiles: Found `%1`").arg(display_path)));
+    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Pegasus Metafiles: Found `%1`").arg(display_path)));
 
     providers::SearchContext sctx({QStringLiteral(":/asset_search_by_title")});
     providers::pegasus::PegasusProvider().run(sctx);
@@ -152,7 +152,7 @@ void test_PegasusMediaProvider::asset_search_by_title()
 void test_PegasusMediaProvider::asset_search_multifile()
 {
     const QString display_path = QDir::toNativeSeparators(QStringLiteral(":/asset_search_multifile/metadata.txt"));
-    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Metafiles: Found `%1`").arg(display_path)));
+    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Pegasus Metafiles: Found `%1`").arg(display_path)));
 
     providers::SearchContext sctx({QStringLiteral(":/asset_search_multifile")});
     providers::pegasus::PegasusProvider().run(sctx);
@@ -185,7 +185,7 @@ void test_PegasusMediaProvider::separate_media_dirs()
     // NOTE: see issue 407
 
     const QString display_path = QDir::toNativeSeparators(QStringLiteral(":/separate_media_dirs/metadata/metadata.pegasus.txt"));
-    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Metafiles: Found `%1`").arg(display_path)));
+    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Pegasus Metafiles: Found `%1`").arg(display_path)));
 
     providers::SearchContext sctx({QStringLiteral(":/separate_media_dirs/metadata")});
     providers::pegasus::PegasusProvider().run(sctx);

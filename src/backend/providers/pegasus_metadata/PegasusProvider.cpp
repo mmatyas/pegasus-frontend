@@ -79,7 +79,7 @@ namespace providers {
 namespace pegasus {
 
 PegasusProvider::PegasusProvider(QObject* parent)
-    : Provider(QLatin1String("pegasus_metafiles"), QStringLiteral("Metafiles"), PROVIDER_FLAG_INTERNAL, parent)
+    : Provider(QLatin1String("pegasus_metafiles"), QStringLiteral("Pegasus Metafiles"), PROVIDER_FLAG_INTERNAL, parent)
 {}
 
 Provider& PegasusProvider::run(SearchContext& sctx)
