@@ -140,7 +140,7 @@ Provider& LutrisProvider::run(SearchContext& sctx)
         return *this;
 
     QSqlQuery query;
-    query.prepare(QLatin1String("SELECT * FROM games"));
+    query.prepare(QLatin1String("SELECT * FROM games WHERE installed = 1"));
     if (!query.exec()) {
         Log::warning(display_name(), LOGMSG("Could not query game data: %1").arg(query.lastError().text()));
         return *this;
