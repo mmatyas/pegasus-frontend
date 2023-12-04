@@ -73,7 +73,9 @@ void find_banner_for(model::Game& game, const QString& slug, const QString& base
     for (const QLatin1String& ext : exts) {
         QString path = base_path % slug % ext;
         if (QFileInfo::exists(path)) {
-            game.assetsMut().add_file(AssetType::UI_STEAMGRID, path);
+            game.assetsMut()
+                .add_file(AssetType::UI_STEAMGRID, path)
+                .add_file(AssetType::UI_BANNER, path);
             return;
         }
     }
@@ -88,7 +90,10 @@ void find_coverart_for(model::Game& game, const QString& slug, const QString& ba
     for (const QLatin1String& ext : exts) {
         QString path = base_path % slug % ext;
         if (QFileInfo::exists(path)) {
-            game.assetsMut().add_file(AssetType::BACKGROUND, path);
+            game.assetsMut()
+                .add_file(AssetType::BACKGROUND, path)
+                .add_file(AssetType::POSTER, path)
+                .add_file(AssetType::BOX_FRONT, path);
             return;
         }
     }
