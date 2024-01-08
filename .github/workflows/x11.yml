@@ -4,18 +4,20 @@ on: [push, pull_request, workflow_dispatch]
 env:
   TOOLS_URL: https://github.com/mmatyas/pegasus-frontend/releases/download/alpha1
   QT_TARGET: x11-static
-  QT_VERSION: qt51510
-  QT_VERSION_PRETTY: "5.15.10"
+  QT_VERSION: qt51512
+  QT_VERSION_PRETTY: "5.15.12"
   SDL_TARGET: x11-bionic
   SDL_VERSION: "2.0.20"
 
 
 jobs:
   x11:
-    runs-on: ubuntu-20.04
     strategy:
       matrix:
         buildgen: [cmake, qmake, qmake-lcov]
+        runner: ['ubuntu-22.04']
+
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v3
         with: {submodules: 'recursive', fetch-depth: 0, fetch-tags: true}
@@ -23,18 +25,17 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.ccache
-          key: ccache-x11-${{ matrix.buildgen }}-${{ hashFiles('.github/workflows/x11.yml') }}
+          key: ccache-x11-${{ matrix.runner }}-${{ matrix.buildgen }}-${{ hashFiles('.github/workflows/x11.yml') }}
           restore-keys: |
-            ccache-x11-${{ matrix.buildgen }}
+            ccache-x11-${{ matrix.runner }}-${{ matrix.buildgen }}
+            ccache-x11-${{ matrix.runner }}-
             ccache-x11-
             ccache-
 
-      - name: GCC PPA
-        run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test
       - name: APT deps
-        run: sudo apt-get update && sudo apt-get install -y
+        run: sudo apt-get update && sudo apt-get install -y libunwind-dev && sudo apt-get install -y
           ccache
-          g++-10
+          g++
           lcov
           libasound-dev
           libgl1-mesa-dev
@@ -66,7 +67,7 @@ jobs:
           curl -L "${TOOLS_URL}/SDL2-${SDL_VERSION}_${SDL_TARGET}.tar.xz" | tar xJf - -C /opt/
           /opt/${QT_VERSION}_${QT_TARGET}/bin/qmake --version
           cmake --version
-      - run: gem install --user-install -N fpm -v 1.10.2
+      - run: gem install --user-install -N fpm
       - run: ccache --show-stats
 
       - name: Lint QML
@@ -74,9 +75,6 @@ jobs:
 
       - name: Configure (cmake)
         if: matrix.buildgen == 'cmake'
-        env:
-          CC: gcc-10
-          CXX: g++-10
         run: cmake
           -B build
           -G Ninja
@@ -110,7 +108,7 @@ jobs:
           INSTALL_BINDIR: /usr/bin/
         run: .circleci/build.sh && .circleci/objdump_linux.sh '' && .circleci/zip_linux.sh
         if: matrix.buildgen == 'qmake'
-      - run: PATH="$PATH:/home/runner/.gem/ruby/2.7.0/bin" ../.travis/script__create_deb.sh
+      - run: PATH="$PATH:/home/runner/.local/share/gem/ruby/3.0.0/bin" ../.travis/script__create_deb.sh
         working-directory: dist
         if: matrix.buildgen == 'qmake'
 
