@@ -199,8 +199,11 @@ QString to_document_uri(const QString& path)
     const QString rel_dir = prefix + storage_root.relativeFilePath(abs_dir);
     const QString rel_path = prefix + storage_root.relativeFilePath(abs_path);
 
+    const auto uri_encode = [](const QString& path) {
+        return QUrl::toPercentEncoding(path, "_-!.~'()*");
+    };
     const QString uri_str = QStringLiteral("content://com.android.externalstorage.documents/tree/%1/document/%2")
-        .arg(QUrl::toPercentEncoding(rel_dir, "_-!.~'()*"), QUrl::toPercentEncoding(rel_path));
+        .arg(uri_encode(rel_dir), uri_encode(rel_path));
 
     return uri_str;
 }
