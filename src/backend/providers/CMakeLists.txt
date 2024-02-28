@@ -51,6 +51,7 @@ endfunction()
 
 
 add_subdirectory(android_apps)
+add_subdirectory(epicgames)
 add_subdirectory(es2)
 add_subdirectory(gog)
 add_subdirectory(launchbox)
