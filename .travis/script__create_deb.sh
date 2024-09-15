@@ -32,7 +32,7 @@ fpm -s dir -t deb \
   -d 'libasound2' \
   -d 'libc6 >= 2.25' \
   -d 'libgl1' \
-  -d 'libssl1.1' \
+  -d 'libssl3' \
   -d 'libx11-6' \
   -d 'libx11-xcb1' \
   -d 'libxcb-glx0' \
