@@ -54,8 +54,9 @@ win32 {
     RC_ICONS = platform/windows/app_icon.ico
     OTHER_FILES += $${RC_ICONS}
 
-    VERSION_STR = $$GIT_REVISION
+    VERSION_STR = $${GIT_REVISION}
     VERSION_STR ~= s|^alpha([0-9]+?)-([0-9]+?)-.+|0.\1.\2|
+    message("VERSION_STR", $${GIT_REVISION}, "->", $${VERSION_STR}}
     VERSION = $$VERSION_STR
 
     target.path = $${INSTALL_BINDIR}
