@@ -56,7 +56,7 @@ win32 {
 
     VERSION_STR = $${GIT_REVISION}
     VERSION_STR ~= s|^alpha([0-9]+?)-([0-9]+?)-.+|0.\1.\2|
-    message("VERSION_STR", $${GIT_REVISION}, "->", $${VERSION_STR}}
+    message("VERSION_STR", $${GIT_REVISION}, "->", $${VERSION_STR})
     VERSION = $$VERSION_STR
 
     target.path = $${INSTALL_BINDIR}
