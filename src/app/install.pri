@@ -50,9 +50,13 @@ win32 {
     QMAKE_TARGET_PRODUCT = "pegasus-frontend"
     QMAKE_TARGET_COMPANY = "pegasus-frontend.org"
     QMAKE_TARGET_DESCRIPTION = "Pegasus emulator frontend"
-    QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2020 Matyas Mustoha"
+    QMAKE_TARGET_COPYRIGHT = "Copyright (c) 2017-2024 Matyas Mustoha"
     RC_ICONS = platform/windows/app_icon.ico
     OTHER_FILES += $${RC_ICONS}
+
+    VERSION_STR = $$GIT_REVISION
+    VERSION_STR ~= s|^alpha([0-9]+?)-([0-9]+?)-.+|0.\1.\2|
+    VERSION = $$VERSION_STR
 
     target.path = $${INSTALL_BINDIR}
 }
