@@ -138,7 +138,7 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
     for (const QString& filepath: include_files) {
         if (VEC_CONTAINS(exclude_files, filepath))
             continue;
-        if (AppSettings::general.verify_files && !QFileInfo::exists(filepath))
+        if (AppSettings::general.verify_files && !AppSettings::general.show_missing_games && !QFileInfo::exists(filepath))
             continue;
         accept_filtered_file(filepath, collection, sctx);
     }

@@ -30,7 +30,7 @@ FocusScope {
 
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
-
+    opacity: enabled ? 1.0 : 0.25
 
     Rectangle {
         id: underline

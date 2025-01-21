@@ -66,6 +66,12 @@ Game& Game::setFavorite(bool new_val)
     return *this;
 }
 
+Game& Game::setMissing(bool new_val)
+{
+    m_data.missing = new_val;
+    return *this;
+}
+
 Game& Game::setRating(float rating)
 {
     m_data.rating = qBound(0.f, rating, 1.f);

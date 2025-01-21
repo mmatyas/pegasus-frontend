@@ -42,6 +42,7 @@ struct General {
     bool fullscreen = true;
     bool mouse_support = true;
     bool verify_files = true;
+    bool show_missing_games = false;
     QString locale;
     QString theme;
 
