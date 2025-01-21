@@ -69,6 +69,7 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
         { QStringLiteral("verify-files"), GeneralOption::VERIFY_FILES },
+        { QStringLiteral("show-missing-games"), GeneralOption::SHOW_MISSING_GAMES },
         { QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
     }
@@ -173,6 +174,10 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
             break;
         case ConfigEntryGeneralOption::VERIFY_FILES:
             if (!store_bool_maybe(val, AppSettings::general.verify_files))
+                log_needs_bool(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::SHOW_MISSING_GAMES:
+            if (!store_bool_maybe(val, AppSettings::general.show_missing_games))
                 log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::LOCALE:
@@ -307,6 +312,7 @@ void SaveContext::print_general(QTextStream& stream) const
         { GeneralOption::FULLSCREEN, AppSettings::general.fullscreen ? STR_TRUE : STR_FALSE },
         { GeneralOption::MOUSE_SUPPORT, AppSettings::general.mouse_support ? STR_TRUE : STR_FALSE },
         { GeneralOption::VERIFY_FILES, AppSettings::general.verify_files ? STR_TRUE : STR_FALSE },
+        { GeneralOption::SHOW_MISSING_GAMES, AppSettings::general.show_missing_games ? STR_TRUE : STR_FALSE },
         { GeneralOption::LOCALE, AppSettings::general.locale },
         { GeneralOption::THEME, theme_path },
     };

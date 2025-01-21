@@ -42,6 +42,9 @@ class Settings : public QObject {
     Q_PROPERTY(bool verifyFiles
                READ verifyFiles WRITE setVerifyFiles
                NOTIFY verifyFilesChanged)
+    Q_PROPERTY(bool showMissingGames
+               READ showMissingGames WRITE setShowMissingGames
+               NOTIFY showMissingGamesChanged)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
     Q_PROPERTY(QStringList androidGrantedDirs READ androidGrantedDirs NOTIFY androidDirsChanged)
 
@@ -63,6 +66,9 @@ public:
     bool verifyFiles() const { return AppSettings::general.verify_files; }
     void setVerifyFiles(bool);
 
+    bool showMissingGames() const { return AppSettings::general.show_missing_games; }
+    void setShowMissingGames(bool);
+
     QStringList gameDirs() const;
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
@@ -76,6 +82,7 @@ signals:
     void fullscreenChanged();
     void mouseSupportChanged();
     void verifyFilesChanged();
+    void showMissingGamesChanged();
     void gameDirsChanged();
     void androidDirsChanged();
     void providerReloadingRequested();

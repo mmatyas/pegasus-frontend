@@ -60,6 +60,7 @@ struct GameData {
     } playstats;
 
     bool is_favorite = false;
+    bool missing = false;
 
     struct LaunchParams {
         QString launch_cmd;
@@ -97,6 +98,7 @@ public:
     GETTER(int, playTime, playstats.play_time)
     GETTER(const QDateTime&, lastPlayed, playstats.last_played)
     GETTER(bool, isFavorite, is_favorite)
+    GETTER(bool, isMissing, missing)
 
     GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
@@ -120,6 +122,7 @@ public:
     Game& setFavorite(bool val);
     Game& setRating(float rating);
     Game& setPlayerCount(int player_count);
+    Game& setMissing(bool val);
 #undef SETTER
 
 
@@ -153,6 +156,7 @@ public:
     Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
+    Q_PROPERTY(bool missing READ isMissing WRITE setMissing NOTIFY missingChanged)
 
     Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
     const QVariantMap& extraMap() const { return m_extra; }
@@ -186,6 +190,7 @@ signals:
     void launchFileSelectorRequested();
     void favoriteChanged();
     void playStatsChanged();
+    void missingChanged();
 
 private slots:
     void onEntryPlayStatsChanged();

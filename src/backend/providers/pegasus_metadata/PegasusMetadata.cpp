@@ -318,7 +318,9 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                     QFileInfo finfo(ps.dir, line);
                     if (AppSettings::general.verify_files && !finfo.exists()) {
                         print_warning(ps, entry, LOGMSG("Game file `%1` doesn't seem to exist").arg(::pretty_path(finfo)));
-                        continue;
+                        ps.cur_game->setMissing(true);
+                        if (!AppSettings::general.show_missing_games)
+                            continue;
                     }
 
                     QString path = ::clean_abs_path(finfo);
