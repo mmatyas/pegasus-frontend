@@ -7,5 +7,5 @@ Comment=A cross platform, customizable graphical frontend for launching emulator
 Exec=${INSTALL_BINDIR}/pegasus-fe
 Icon=org.pegasus_frontend.Pegasus
 Terminal=false
-Categories=Game;Player;
+Categories=Game;Emulator;
 Keywords=emulator;retro;game;videogame;video game;player;
