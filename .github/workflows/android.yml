@@ -19,7 +19,7 @@ jobs:
           - name: android64
             abi: arm64-v8a
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with: {submodules: 'recursive', fetch-depth: 0, fetch-tags: true}
 
       - uses: nttld/setup-ndk@v1
@@ -80,14 +80,14 @@ jobs:
           dist/pegasus-fe_$(git describe --always)_${{ matrix.name }}.apk
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}
           path: dist
 
       - name: Deploy
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           external_repository: mmatyas/pegasus-deploy-staging
           personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}

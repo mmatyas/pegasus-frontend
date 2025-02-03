@@ -19,10 +19,10 @@ jobs:
 
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with: {submodules: 'recursive', fetch-depth: 0, fetch-tags: true}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.ccache
           key: ccache-x11-${{ matrix.runner }}-${{ matrix.buildgen }}-${{ hashFiles('.github/workflows/x11.yml') }}
@@ -125,14 +125,14 @@ jobs:
 
       - name: Upload artifact
         if: matrix.buildgen == 'qmake'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: x11-static
           path: dist
 
       - name: Deploy
         if: matrix.buildgen == 'qmake' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           external_repository: mmatyas/pegasus-deploy-staging
           personal_token: ${{ secrets.PEGASUS_GHACTIONS_TOKEN }}
