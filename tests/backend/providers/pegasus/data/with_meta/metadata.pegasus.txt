@@ -26,6 +26,7 @@ genres:
   genre with spaces
 sortby: Game IX
 players: 2-4
+age: 13+
 rating: 80%
 # repeating single keys will overwrite
 release: 1998
