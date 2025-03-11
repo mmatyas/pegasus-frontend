@@ -9,24 +9,24 @@
    │  └─ Alien_Hominid.jpg
    └─ logos/
       └─ Alien_Hominid_logo.jpg
-</code></pre></div><p>Our <code>metadata.pegasus.txt</code> file could then look like this:</p><div class=codehilite><pre><span></span><code><span class=nf>collection</span><span class=o>:</span> <span class=n>Game</span> <span class=n>Boy</span> <span class=n>Advance</span>
-<span class=nf>extension</span><span class=o>:</span> <span class=n>gba</span>
+</code></pre></div><p>Our <code>metadata.pegasus.txt</code> file could then look like this:</p><div class=codehilite><pre><span></span><code><span class=nf>collection</span><span class=o>:</span><span class=w> </span><span class=n>Game</span> <span class=n>Boy</span> <span class=n>Advance</span>
+<span class=nf>extension</span><span class=o>:</span><span class=w> </span><span class=n>gba</span>
 
 
-<span class=nf>game</span><span class=o>:</span> <span class=n>Alien</span> <span class=n>Hominid</span>
-<span class=nf>file</span><span class=o>:</span> <span class=n>Alien</span> <span class=n>Hominid</span>.<span class=n>gba</span>
-<span class=nf>developer</span><span class=o>:</span> <span class=n>Zoo</span> <span class=n>Digital</span>
-<span class=nf>assets.box_front</span><span class=o>:</span> <span class=n>assets</span>/<span class=n>covers</span>/<span class=n>Alien_Hominid</span>.<span class=n>jpg</span>
-<span class=nf>assets.logo</span><span class=o>:</span> <span class=n>assets</span>/<span class=n>logos</span>/<span class=n>Alien_Hominid_logo</span>.<span class=n>jpg</span>
-</code></pre></div><h2 id=collection-assets-in-the-metadata-file>Collection assets in the Metadata file</h2><p>Similarly, you can also set default assets for a collection by adding a <code>assets.&lt;assetname&gt;: &lt;file&gt;</code> field.</p><p><strong>However</strong>, note that using these default assets depends on the theme set in Pegasus, as a theme's creator can decide to use a different artwork for such purposes as well.</p><h3 id=example_1>Example</h3><p>Continuing the example above, let's say we have an <code>assets/default_cover.jpg</code> file. In this case the collection could be defined like this:</p><div class=codehilite><pre><span></span><code><span class=nf>collection</span><span class=o>:</span> <span class=n>Game</span> <span class=n>Boy</span> <span class=n>Advance</span>
-<span class=nf>extension</span><span class=o>:</span> <span class=n>gba</span>
-<span class=nf>description</span><span class=o>:</span> <span class=n>The</span> <span class=n>Game</span> <span class=n>Boy</span> <span class=n>Advance</span> (<span class=n>GBA</span>) <span class=n>is</span> <span class=n>a</span> 32-<span class=n>bit</span> <span class=n>handheld</span>
-  video game console developed, manufactured and marketed by Nintendo
-  as the successor to the Game Boy Color.
-<span class=nf>assets.box_front</span><span class=o>:</span> <span class=n>assets</span>/<span class=n>default_cover</span>.<span class=n>jpg</span>
+<span class=nf>game</span><span class=o>:</span><span class=w> </span><span class=n>Alien</span> <span class=n>Hominid</span>
+<span class=nf>file</span><span class=o>:</span><span class=w> </span><span class=n>Alien</span> <span class=n>Hominid</span>.<span class=n>gba</span>
+<span class=nf>developer</span><span class=o>:</span><span class=w> </span><span class=n>Zoo</span> <span class=n>Digital</span>
+<span class=nf>assets.box_front</span><span class=o>:</span><span class=w> </span><span class=n>assets</span>/<span class=n>covers</span>/<span class=n>Alien_Hominid</span>.<span class=n>jpg</span>
+<span class=nf>assets.logo</span><span class=o>:</span><span class=w> </span><span class=n>assets</span>/<span class=n>logos</span>/<span class=n>Alien_Hominid_logo</span>.<span class=n>jpg</span>
+</code></pre></div><h2 id=collection-assets-in-the-metadata-file>Collection assets in the Metadata file</h2><p>Similarly, you can also set default assets for a collection by adding a <code>assets.&lt;assetname&gt;: &lt;file&gt;</code> field.</p><p><strong>However</strong>, note that using these default assets depends on the theme set in Pegasus, as a theme's creator can decide to use a different artwork for such purposes as well.</p><h3 id=example_1>Example</h3><p>Continuing the example above, let's say we have an <code>assets/default_cover.jpg</code> file. In this case the collection could be defined like this:</p><div class=codehilite><pre><span></span><code><span class=nf>collection</span><span class=o>:</span><span class=w> </span><span class=n>Game</span> <span class=n>Boy</span> <span class=n>Advance</span>
+<span class=nf>extension</span><span class=o>:</span><span class=w> </span><span class=n>gba</span>
+<span class=nf>description</span><span class=o>:</span><span class=w> </span><span class=n>The</span> <span class=n>Game</span> <span class=n>Boy</span> <span class=n>Advance</span> (<span class=n>GBA</span>) <span class=n>is</span> <span class=n>a</span> 32-<span class=n>bit</span> <span class=n>handheld</span>
+<span class=w>  </span>video<span class=w> </span>game<span class=w> </span>console<span class=w> </span>developed,<span class=w> </span>manufactured<span class=w> </span>and<span class=w> </span>marketed<span class=w> </span>by<span class=w> </span>Nintendo
+<span class=w>  </span>as<span class=w> </span>the<span class=w> </span>successor<span class=w> </span>to<span class=w> </span>the<span class=w> </span>Game<span class=w> </span>Boy<span class=w> </span>Color.
+<span class=nf>assets.box_front</span><span class=o>:</span><span class=w> </span><span class=n>assets</span>/<span class=n>default_cover</span>.<span class=n>jpg</span>
 
 
-<span class=nf>game</span><span class=o>:</span> <span class=n>Alien</span> <span class=n>Hominid</span>
+<span class=nf>game</span><span class=o>:</span><span class=w> </span><span class=n>Alien</span> <span class=n>Hominid</span>
 <span class=c># ...</span>
 </code></pre></div><h2 id=the-media-directory>The media directory</h2><p>If the game's assets haven't beed defined manually, Pegasus will also look for a matching file under <code>&lt;dir&gt;/media/&lt;gamename&gt;/</code>, where <code>&lt;dir&gt;</code> is the directory where the Metadata file looks for games, and <code>&lt;gamename&gt;</code> can be either the title of the game found in this directory, or the filename (without extension) of one of the game's files.</p><h3 id=example_2>Example</h3><div class=codehilite><pre><span></span><code>NES/
 ├─ metadata.pegasus.txt
