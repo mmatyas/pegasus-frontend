@@ -255,6 +255,7 @@ void test_PegasusProvider::with_meta()
         QCOMPARE(game.genreListConst(), QStringList({"genre1", "genre2", "genre with spaces"}));
         QCOMPARE(game.playerCount(), 4);
         QCOMPARE(game.releaseDate(), QDate(1998, 5, 1));
+        QCOMPARE(game.ageRating(), QStringLiteral("13+"));
         QCOMPARE(game.summary(), QStringLiteral("something short here"));
         QCOMPARE(game.description(), QStringLiteral("a very long\n\ndescription"));
         QCOMPARE(game.rating(), 0.8f);

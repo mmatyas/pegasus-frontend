@@ -49,6 +49,7 @@ struct GameData {
     QStringList genres;
     QStringList tags;
 
+    QString age_rating;
     short player_count = 1;
     float rating = 0.0;
     QDate release_date;
@@ -81,6 +82,7 @@ public:
     GETTER(const QString&, sortBy, sort_by)
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
+    GETTER(const QString&, ageRating, age_rating)
     GETTER(const QDate&, releaseDate, release_date)
     GETTER(int, playerCount, player_count)
     GETTER(float, rating, rating)
@@ -113,6 +115,7 @@ public:
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
+    SETTER(QString, AgeRating, age_rating)
     SETTER(QDate, ReleaseDate, release_date)
 
     SETTER(QString, LaunchCmd, launch_params.launch_cmd)
@@ -144,6 +147,7 @@ public:
     Q_PROPERTY(QString sortBy READ sortBy CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QString age READ ageRating CONSTANT)
     Q_PROPERTY(QDate release READ releaseDate CONSTANT)
     Q_PROPERTY(int players READ playerCount CONSTANT)
     Q_PROPERTY(float rating READ rating CONSTANT)

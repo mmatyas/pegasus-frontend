@@ -20,6 +20,7 @@ genres: genre1, genre2,
 players: 2-4
 
 file: subdir/game_in_subdir.ext
+age: 13+
 rating: 80%
 # repeating keys will overwrite previous values
 release: 1998

@@ -77,6 +77,7 @@ enum class GameAttrib : unsigned char {
     PLAYER_COUNT,
     SHORT_DESC,
     LONG_DESC,
+    AGE,
     RELEASE,
     RATING,
     LAUNCH_CMD,
@@ -133,6 +134,7 @@ Metadata::Metadata(QString log_tag)
         { QStringLiteral("summary"), GameAttrib::SHORT_DESC },
         { QStringLiteral("description"), GameAttrib::LONG_DESC },
         { QStringLiteral("release"), GameAttrib::RELEASE },
+        { QStringLiteral("age"), GameAttrib::AGE },
         { QStringLiteral("rating"), GameAttrib::RATING },
         // sort title variations
         { QStringLiteral("sorttitle"), GameAttrib::SORT_BY },
@@ -377,6 +379,13 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
                 QString text = metafile::merge_lines(entry.values);
                 replace_newlines(text);
                 ps.cur_game->setDescription(std::move(text));
+            }
+            break;
+        case GameAttrib::AGE:
+            {
+                QString text = metafile::merge_lines(entry.values);
+                replace_newlines(text);
+                ps.cur_game->setAgeRating(std::move(text));
             }
             break;
         case GameAttrib::RELEASE:
