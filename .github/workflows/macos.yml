@@ -33,6 +33,8 @@ jobs:
           SDL_INCLUDES=/usr/local/SDL2-${SDL_VERSION}/include/SDL2
           QMAKE_CFLAGS='-Wall -Wextra -pedantic -D_THREAD_SAFE'
           QMAKE_CXXFLAGS='-Wall -Wextra -pedantic -D_THREAD_SAFE'
+          QMAKE_DEFAULT_INCDIRS='/usr/include /usr/local/include'
+          QMAKE_DEFAULT_LIBDIRS='/lib /usr/lib'
       - name: Build
         run: make
       - name: Test
