@@ -17,7 +17,6 @@ TARGETS=" \
   rpi2-static \
   rpi3-static \
   rpi4-static \
-  macos-static \
   android \
   android64 \
   win32-mingw-static \
