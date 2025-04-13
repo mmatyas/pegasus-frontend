@@ -32,13 +32,13 @@ MouseArea {
 
     propagateComposedEvents: true
 
-    onPressed: {
+    onPressed: mouse => {
         startX = mouse.x;
         lastX = startX;
         active = true;
     }
 
-    onPositionChanged: {
+    onPositionChanged: mouse => {
         if (!active)
             return;
 

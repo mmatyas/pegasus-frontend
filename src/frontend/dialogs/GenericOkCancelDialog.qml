@@ -40,7 +40,7 @@ FocusScope {
             cancelButton.focus = true;
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
@@ -147,7 +147,7 @@ FocusScope {
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "#3c4" : "#666"
 
-                Keys.onPressed: {
+                Keys.onPressed: event => {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         root.accept();
@@ -183,7 +183,7 @@ FocusScope {
                 color: (focus || cancelMouseArea.containsMouse) ? "#f43" : "#666"
 
                 KeyNavigation.left: okButton
-                Keys.onPressed: {
+                Keys.onPressed: event => {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         root.cancel();

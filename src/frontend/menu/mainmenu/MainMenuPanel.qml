@@ -36,7 +36,7 @@ FocusScope {
     signal requestReboot
     signal requestQuit
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (event.isAutoRepeat)
             return;
 

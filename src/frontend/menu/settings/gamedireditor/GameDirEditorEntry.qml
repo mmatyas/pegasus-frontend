@@ -31,7 +31,7 @@ Rectangle {
     height: label.height
     color: highlighted ? "#585858" : "transparent"
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.pressed();

@@ -32,7 +32,7 @@ TestCase {
         width: 50; height: 50
         focus: true
 
-        Keys.onPressed: keyEditor.replaceKeyCode(0, oldKey, event);
+        Keys.onPressed: event => keyEditor.replaceKeyCode(0, oldKey, event);
     }
 
     SignalSpy {

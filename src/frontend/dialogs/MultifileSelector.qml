@@ -35,7 +35,7 @@ FocusScope {
 
     onActiveFocusChanged: state = activeFocus ? "open" : ""
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
@@ -122,7 +122,7 @@ FocusScope {
                     height: entryList.itemHeight
                     color: highlighted ? "#585858" : "transparent"
 
-                    Keys.onPressed: {
+                    Keys.onPressed: event => {
                         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                             event.accepted = true;
                             launchEntry();

@@ -31,7 +31,7 @@ FocusScope {
     enabled: focus
     visible: 0 < (x + width) && x < Window.window.width
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();

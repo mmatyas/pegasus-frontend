@@ -42,7 +42,7 @@ FocusScope {
             root.close();
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.closeMaybe();

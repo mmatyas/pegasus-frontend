@@ -33,7 +33,7 @@ FocusScope {
     opacity: focus ? 1.0 : 0.0
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();

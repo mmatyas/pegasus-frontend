@@ -36,7 +36,7 @@ Item {
     height: vpx(48)
 
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.selected();
