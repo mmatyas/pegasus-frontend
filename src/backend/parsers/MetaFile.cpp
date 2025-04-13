@@ -68,8 +68,8 @@ void read_stream(QTextStream& stream,
     constexpr auto EMPTY_LINE_MARK = QChar('.');
     constexpr auto CH_COLON = QChar(':');
 
-    Error error {0, {}};
-    Entry entry {0, {}, {}};
+    Error error;
+    Entry entry;
 
     const auto close_current_attrib = [&](){
         if (!entry.key.isEmpty()) {

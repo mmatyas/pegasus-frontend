@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "utils/MoveOnly.h"
-
 #include <QString>
 #include <vector>
 #include <functional>
@@ -30,18 +28,15 @@ class QTextStream;
 namespace metafile {
 
 struct Entry {
-    size_t line;
+    size_t line = 0;
     QString key;
     std::vector<QString> values;
 
     void reset();
-    MOVE_ONLY(Entry)
 };
 struct Error {
-    size_t line;
+    size_t line = 0;
     QString message;
-
-    MOVE_ONLY(Error)
 };
 
 
