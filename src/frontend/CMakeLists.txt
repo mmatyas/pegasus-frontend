@@ -1,11 +1,9 @@
-include(PegasusQtUtils)
-pegasus_require_qt(COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Qml
     Quick
-    QuickCompiler
 )
 
-qtquick_compiler_add_resources(PEGASUS_QML_ASSETS
+qt_add_resources(PEGASUS_QML_ASSETS
     frontend.qrc
     "${PROJECT_SOURCE_DIR}/src/qmlutils/qmlutils.qrc"  # FIXME
     "${PROJECT_SOURCE_DIR}/src/themes/themes.qrc"  # FIXME

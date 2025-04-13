@@ -1,5 +1,4 @@
-include(PegasusQtUtils)
-pegasus_require_qt(COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Core
     Qml
     QmlImportScanner

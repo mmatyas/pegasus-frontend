@@ -1,8 +1,7 @@
 include(PegasusCommonProps)
 include(PegasusTargetPlatform)
 
-include(PegasusQtUtils)
-pegasus_require_qt(COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Test
     QuickTest
     Qml

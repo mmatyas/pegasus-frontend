@@ -1,8 +1,4 @@
 find_package(Qt6 COMPONENTS Gui QUIET)
-if (NOT Qt6_FOUND)
-    find_package(Qt5 5.15 COMPONENTS Gui REQUIRED)
-endif()
-
 
 add_library(apng
     apngimagehandler.cpp
