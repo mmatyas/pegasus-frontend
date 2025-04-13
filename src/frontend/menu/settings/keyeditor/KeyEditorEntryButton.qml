@@ -25,7 +25,7 @@ Item {
 
     readonly property bool highlighted: mouseArea.containsMouse || activeFocus
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isAccept(event)) {
             event.accepted = true;
             pressed();

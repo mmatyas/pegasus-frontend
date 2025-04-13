@@ -39,7 +39,7 @@ FocusScope {
 
     enabled: focus
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
@@ -236,7 +236,7 @@ FocusScope {
         index: Internal.settings.locales.currentIndex
 
         onClose: options.focus = true
-        onSelect: Internal.settings.locales.currentIndex = index
+        onSelect: index => Internal.settings.locales.currentIndex = index
     }
     MultivalueBox {
         id: themeBox
@@ -246,6 +246,6 @@ FocusScope {
         index: Internal.settings.themes.currentIndex
 
         onClose: options.focus = true
-        onSelect: Internal.settings.themes.currentIndex = index
+        onSelect: index => Internal.settings.themes.currentIndex = index
     }
 }

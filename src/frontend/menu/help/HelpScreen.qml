@@ -23,7 +23,7 @@ import QtQuick 2.6
 MenuScreen {
     id: root
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();

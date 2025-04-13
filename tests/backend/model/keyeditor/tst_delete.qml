@@ -30,7 +30,7 @@ TestCase {
         width: 50; height: 50
         focus: true
 
-        Keys.onPressed: keyEditor.addKey(0, event);
+        Keys.onPressed: event => keyEditor.addKey(0, event);
     }
 
     SignalSpy {

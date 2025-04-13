@@ -31,7 +31,7 @@ Rectangle {
     height: textSizePx * 2
     color: selected || mouseArea.containsMouse ? activeColor : inactiveColor
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             activated();

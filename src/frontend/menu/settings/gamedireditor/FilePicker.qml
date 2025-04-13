@@ -27,7 +27,7 @@ FocusScope {
 
     anchors.fill: parent
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
@@ -164,7 +164,7 @@ FocusScope {
                 folderModel.cd(name);
             }
 
-            Keys.onPressed: {
+            Keys.onPressed: event => {
                 if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                     event.accepted = true;
                     pickItem();

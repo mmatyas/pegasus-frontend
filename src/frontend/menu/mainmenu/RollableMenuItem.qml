@@ -84,7 +84,7 @@ FocusScope {
         visible: heightDiff > 0
         anchors.bottom: parent.bottom
 
-        Keys.onPressed: {
+        Keys.onPressed: event => {
             if (api.keys.isCancel(event) && !event.isAutoRepeat) {
                 event.accepted = true;
                 head.focus = true;

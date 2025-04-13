@@ -166,7 +166,7 @@ FocusScope {
 
         focus: true
 
-        Keys.onPressed: {
+        Keys.onPressed: event => {
             if (api.keys.isCancel(event) && !event.isAutoRepeat) {
                 event.accepted = true;
                 root.close();

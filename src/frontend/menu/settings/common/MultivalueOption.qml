@@ -33,7 +33,7 @@ FocusScope {
     width: parent.width
     height: fontSize * 2.5
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.activate();

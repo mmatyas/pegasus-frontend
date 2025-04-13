@@ -41,7 +41,7 @@ FocusScope {
     enabled: focus
     visible: focus || animClosing.running
 
-    Keys.onPressed: {
+    Keys.onPressed: event => {
         if (event.isAutoRepeat)
             return;
 
@@ -118,7 +118,7 @@ FocusScope {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {
+                    onClicked: mouse => {
                         var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
                         if (new_idx < 0)
                             return;
