@@ -17,8 +17,9 @@
 
 #pragma once
 
+#include <QtCore/qcontainerfwd.h>
+
 class QString;
-class QStringList;
 
 
 namespace paths {

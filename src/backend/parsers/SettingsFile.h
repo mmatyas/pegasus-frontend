@@ -20,6 +20,7 @@
 #include "types/KeyEventType.h"
 #include "utils/HashMap.h"
 
+#include <QKeySequence>
 #include <QString>
 #include <QStringList>
 #include <QTextStream>
