@@ -285,7 +285,6 @@ void SaveContext::save() const
     }
 
     QTextStream stream(&config_file);
-    stream.setCodec("UTF-8");
 
     print_general(stream);
     print_providers(stream);

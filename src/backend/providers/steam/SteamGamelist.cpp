@@ -69,7 +69,6 @@ std::pair<QString, QString> Gamelist::read_manifest_file(const QString& manifest
     QString title;
 
     QTextStream stream(&manifest);
-    stream.setCodec("UTF-8");
 
     while (!stream.atEnd() && (appid.isEmpty() || title.isEmpty())) {
         const QString line = stream.readLine();

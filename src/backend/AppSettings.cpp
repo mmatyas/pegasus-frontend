@@ -230,8 +230,6 @@ void AppSettings::parse_gamedirs(const std::function<void(const QString&)>& call
             continue;
 
         QTextStream stream(&config_file);
-        stream.setCodec("UTF-8");
-
         QString line;
         while (stream.readLineInto(&line, LINE_MAX_LEN)) {
             if (!line.startsWith('#'))

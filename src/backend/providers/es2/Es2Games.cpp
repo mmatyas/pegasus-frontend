@@ -81,8 +81,6 @@ std::vector<QString> read_mame_blacklists(const QString& log_tag, const std::vec
         const QString line_tail = QStringLiteral("</%1>").arg(blacklist_entry.second);
 
         QTextStream stream(&file);
-        stream.setCodec("UTF-8");
-
         QString line;
         int hit_count = 0;
         while (stream.readLineInto(&line, 128)) {
