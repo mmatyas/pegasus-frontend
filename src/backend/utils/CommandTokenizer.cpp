@@ -75,7 +75,7 @@ QStringList tokenize_command(const QString& str)
         const bool fully_quoted = starts_with_quote && (ch == str.at(o_end - 1));
         const int mid_from = starts_with_quote ? o_start + 1 : o_start;
         const int mid_len = fully_quoted ? len - 2 : len;
-        results.append(str.midRef(mid_from, mid_len).trimmed().toString());
+        results.append(QStringView(str).mid(mid_from, mid_len).trimmed().toString());
 
         o_start = o_end;
     }

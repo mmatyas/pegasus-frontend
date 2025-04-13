@@ -66,7 +66,7 @@ QFileInfo shell_to_finfo(const QDir& base_dir, const QString& shell_filepath)
         return {};
 
     const QString real_path = shell_filepath.startsWith(QLatin1String("~/"))
-        ? paths::homePath() + shell_filepath.midRef(1)
+        ? paths::homePath() + QStringView(shell_filepath).mid(1)
         : shell_filepath;
     return QFileInfo(base_dir, real_path);
 }
