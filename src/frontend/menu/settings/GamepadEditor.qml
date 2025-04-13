@@ -19,9 +19,9 @@ import "common"
 import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
+import QtQml.Models
 import QtQuick 2.8
 import QtQuick.Window 2.2
-import Qt.labs.qmlmodels 1.0
 
 
 FocusScope {
