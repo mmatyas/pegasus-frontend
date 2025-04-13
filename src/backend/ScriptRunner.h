@@ -17,7 +17,7 @@
 
 #pragma once
 
-class QStringList;
+#include <QtCore/qcontainerfwd.h>
 
 
 enum class ScriptEvent : unsigned char {
