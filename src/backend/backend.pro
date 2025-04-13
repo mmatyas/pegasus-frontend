@@ -33,7 +33,6 @@ HEADERS += \
     AppSettings.h \
     Log.h \
 
-include(imggen/imggen.pri)
 include(model/model.pri)
 include(parsers/parsers.pri)
 include(platform/platform.pri)

@@ -24,7 +24,6 @@ add_library(pegasus-backend
     ScriptRunner.h
 )
 
-add_subdirectory(imggen)
 add_subdirectory(parsers)
 add_subdirectory(model)
 add_subdirectory(platform)

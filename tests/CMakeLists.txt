@@ -55,7 +55,6 @@ if(PEGASUS_ON_WINDOWS)
     add_subdirectory(backend/providers/playnite)
 endif()
 
-add_subdirectory(integration/blurhash)
 add_subdirectory(integration/sortfilter)
 
 if(PEGASUS_USE_SDL2_GAMEPAD)
