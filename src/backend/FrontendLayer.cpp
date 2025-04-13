@@ -18,7 +18,6 @@
 #include "FrontendLayer.h"
 
 #include "Paths.h"
-#include "imggen/BlurhashProvider.h"
 #include "utils/DiskCachedNAM.h"
 
 #ifdef Q_OS_ANDROID
@@ -63,7 +62,6 @@ void FrontendLayer::rebuild()
     m_engine->addImportPath(QStringLiteral("qml"));
     m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
 
-    m_engine->addImageProvider(QStringLiteral("blurhash"), new BlurhashProvider);
 #ifdef Q_OS_ANDROID
     m_engine->addImageProvider(QStringLiteral("androidicons"), new AndroidAppIconProvider);
 #endif
