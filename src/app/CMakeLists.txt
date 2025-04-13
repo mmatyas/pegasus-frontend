@@ -47,9 +47,6 @@ qt_import_qml_plugins(pegasus-fe)
 include(PegasusCommonProps)
 pegasus_add_common_props_optimized(pegasus-fe)
 
-# TODO: Workaround for asset differences for now
-target_compile_definitions(pegasus-fe PRIVATE PEGASUS_USING_CMAKE)
-
 if(PEGASUS_ENABLE_APNG)
     target_compile_definitions(pegasus-fe PUBLIC WITH_APNG_SUPPORT)
 endif()
