@@ -17,9 +17,9 @@
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
+import QtQml.Models
 import QtQuick 2.15
 import QtQuick.Window 2.2
-import Qt.labs.qmlmodels 1.0
 
 
 FocusScope {
