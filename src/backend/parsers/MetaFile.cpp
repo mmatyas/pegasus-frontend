@@ -91,7 +91,7 @@ void read_stream(QTextStream& stream,
         if (line.startsWith('#'))
             continue;
 
-        const QStringRef trimmed_line = line.leftRef(-1).trimmed();
+        const QStringView trimmed_line = QStringView(line).left(-1).trimmed();
         if (trimmed_line.isEmpty()) {
             close_current_attrib();
             continue;
@@ -126,7 +126,7 @@ void read_stream(QTextStream& stream,
             entry.key = trimmed_line.left(key_end).trimmed().toString().toLower();
 
             // the value can be empty here, if it's purely multiline
-            const QStringRef value_part = trimmed_line.mid(key_end + 1).trimmed();
+            const QStringView value_part = trimmed_line.mid(key_end + 1).trimmed();
             if (!value_part.isEmpty())
                 entry.values.emplace_back(value_part.toString());
 

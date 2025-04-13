@@ -112,7 +112,7 @@ void apply_game_fields(
                 }
                 break;
             case GameField::PLAYMODE:
-                for (const QStringRef& ref : pair.second.splitRef(QChar(';')))
+                for (const QStringView ref : QStringView(pair.second).split(QChar(';')))
                     game.genreList().append(ref.trimmed().toString());
                 break;
             case GameField::EMULATOR_ID:

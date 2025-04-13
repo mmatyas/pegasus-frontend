@@ -193,8 +193,8 @@ QString to_document_uri(const QString& path)
         if (most_specific_root == primary_storage_path())
             return QStringLiteral("primary:");
 
-        QVector<QStringRef> parts = most_specific_root.splitRef(QChar('/'));
-        return parts.last().toString() + QChar(':');
+        const QList<QStringView> parts = QStringView(most_specific_root).split(QChar('/'));
+        return parts.last() + QChar(':');
     }();
     const QString rel_dir = prefix + storage_root.relativeFilePath(abs_dir);
     const QString rel_path = prefix + storage_root.relativeFilePath(abs_path);

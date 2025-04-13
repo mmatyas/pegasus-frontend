@@ -46,7 +46,7 @@ QString find_systems_xml(const std::vector<QString>& possible_config_dirs)
 }
 
 HashMap<QLatin1String, QString>::iterator
-find_by_str_ref(HashMap<QLatin1String, QString>& map, const QStringRef& str)
+find_by_str_ref(HashMap<QLatin1String, QString>& map, const QStringView str)
 {
     HashMap<QLatin1String, QString>::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
