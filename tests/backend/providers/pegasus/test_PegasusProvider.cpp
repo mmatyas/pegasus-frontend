@@ -487,7 +487,6 @@ void test_PegasusProvider::nonASCII()
         QFile metafile(metapath);
         QVERIFY(metafile.open(QFile::WriteOnly | QFile::Text));
         QTextStream stream(&metafile);
-        stream.setCodec("UTF-8");
         stream << QStringLiteral("collection: Test\nextension: ext\n\n");
 
         for (const TestEntry& entry : entries) {
