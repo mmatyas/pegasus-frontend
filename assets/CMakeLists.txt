@@ -1,5 +1,4 @@
-include(PegasusQtUtils)
-pegasus_require_qt(COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 qt_add_big_resources(PEGASUS_ASSETS_SRC assets.qrc)
 add_library(pegasus-assets ${PEGASUS_ASSETS_SRC})

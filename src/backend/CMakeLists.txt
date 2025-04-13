@@ -1,5 +1,4 @@
 include(PegasusTargetPlatform)
-include(PegasusQtUtils)
 
 set(USE_SDL2 OFF CACHE INTERNAL "")
 
@@ -36,7 +35,7 @@ target_include_directories(pegasus-backend PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-pegasus_require_qt(COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Qml
     Quick
     Multimedia

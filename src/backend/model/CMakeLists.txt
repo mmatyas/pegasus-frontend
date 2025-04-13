@@ -72,7 +72,7 @@ else()
         internal/GamepadManagerQt.cpp
         internal/GamepadManagerQt.h
     )
-    pegasus_require_qt(COMPONENTS Gamepad)
+    find_package(Qt6 REQUIRED COMPONENTS Gamepad)
     target_link_libraries(pegasus-backend PUBLIC Qt::Gamepad)
     set(GAMEPAD_IMPL_NAME "Qt" CACHE INTERNAL "")
 endif()
