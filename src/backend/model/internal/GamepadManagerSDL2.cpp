@@ -306,8 +306,6 @@ void write_mappings(const std::vector<std::string>& mappings)
     }
 
     QTextStream db_stream(&db_file);
-    db_stream.setCodec("UTF-8");
-
     for (const std::string& mapping : mappings)
         db_stream << mapping.data() << '\n';
 }
@@ -384,8 +382,6 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
     Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
 
     QTextStream db_stream(&db_file);
-    db_stream.setCodec("UTF-8");
-
     QString line;
     int linenum = 0;
     while (db_stream.readLineInto(&line)) {

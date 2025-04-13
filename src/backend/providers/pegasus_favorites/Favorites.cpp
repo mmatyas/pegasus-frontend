@@ -65,8 +65,6 @@ Provider& Favorites::run(SearchContext& sctx)
     const QDir base_dir = QFileInfo(m_db_path).dir();
 
     QTextStream db_stream(&db_file);
-    db_stream.setCodec("UTF-8");
-
     QString line;
     while (db_stream.readLineInto(&line)) {
         if (line.startsWith('#'))

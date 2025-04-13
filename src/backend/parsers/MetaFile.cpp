@@ -46,7 +46,6 @@ bool read_file(const QString& path,
         return false;
 
     QTextStream stream(&file);
-    stream.setCodec("UTF-8");
     read_stream(stream, onAttributeFound, onError);
     return true;
 }
@@ -58,7 +57,6 @@ void read_file(QFile& file,
 {
     Q_ASSERT(file.isOpen() && file.isReadable());
     QTextStream stream(&file);
-    stream.setCodec("UTF-8");
     return read_stream(stream, onAttributeFound, onError);
 }
 
