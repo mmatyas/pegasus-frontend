@@ -6,6 +6,7 @@ function(pegasus_add_common_props target)
     target_compile_definitions(${target} PRIVATE
         QT_DEPRECATED_WARNINGS
         QT_DISABLE_DEPRECATED_BEFORE=0x050F00
+        QT_DISABLE_DEPRECATED_UP_TO=0x060300
         QT_NO_CAST_TO_ASCII
         QT_NO_FOREACH
         QT_NO_JAVA_STYLE_ITERATORS
@@ -16,7 +17,7 @@ function(pegasus_add_common_props target)
         GIT_DATE="${PEGASUS_GIT_DATE}"
     )
 
-    target_compile_features(${target} PUBLIC cxx_std_17)
+    target_compile_features(${target} PUBLIC cxx_std_20)
     set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
     target_link_options(${target} PRIVATE -fno-exceptions)
 

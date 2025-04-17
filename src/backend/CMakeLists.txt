@@ -2,6 +2,14 @@ include(PegasusTargetPlatform)
 
 set(USE_SDL2 OFF CACHE INTERNAL "")
 
+find_package(Qt6 REQUIRED COMPONENTS
+    Qml
+    Quick
+    Multimedia
+    Sql
+    Svg
+)
+
 
 add_library(pegasus-backend
     AppSettings.cpp
@@ -35,13 +43,6 @@ target_include_directories(pegasus-backend PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-find_package(Qt6 REQUIRED COMPONENTS
-    Qml
-    Quick
-    Multimedia
-    Sql
-    Svg
-)
 target_link_libraries(pegasus-backend PUBLIC
     Qt::Qml
     Qt::Quick

@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Gui QUIET)
+find_package(Qt6 REQUIRED COMPONENTS Gui)
 
 add_library(apng
     apngimagehandler.cpp

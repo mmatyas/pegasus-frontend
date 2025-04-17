@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 project(pegasus-frontend
     DESCRIPTION "Cross platform, customizable graphical frontend for launching games"
