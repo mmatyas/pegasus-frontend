@@ -27,16 +27,11 @@ add_library(pegasus-locales "${PEGASUS_LOCALE_SRC}")
 
 # Main runtime
 
-if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
-    qt_add_executable(pegasus-fe MANUAL_FINALIZATION WIN32 main.cpp)
-else()
-    add_executable(pegasus-fe WIN32 main.cpp)
-endif()
+qt_add_executable(pegasus-fe main.cpp)
 target_include_directories(pegasus-fe PRIVATE
     "${PROJECT_SOURCE_DIR}/src"
 )
 target_link_libraries(pegasus-fe PUBLIC
-    Qt::Core
     pegasus-assets
     pegasus-backend
     pegasus-locales
@@ -49,10 +44,6 @@ pegasus_add_common_props_optimized(pegasus-fe)
 
 if(PEGASUS_ENABLE_APNG)
     target_compile_definitions(pegasus-fe PUBLIC WITH_APNG_SUPPORT)
-endif()
-
-if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
-    qt_finalize_executable(pegasus-fe)
 endif()
 
 
