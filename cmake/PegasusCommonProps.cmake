@@ -31,6 +31,10 @@ endfunction()
 function(pegasus_add_common_props_optimized target)
     pegasus_add_common_props(${target})
 
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        return()
+    endif()
+
     check_ipo_supported(RESULT ipo_supported)
     if(PEGASUS_ENABLE_LTO AND ipo_supported)
         set_target_properties(${target} PROPERTIES INTERPROCEDURAL_OPTIMIZATION ON)
