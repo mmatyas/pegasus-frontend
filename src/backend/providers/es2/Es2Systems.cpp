@@ -31,6 +31,8 @@
 #include <QXmlStreamReader>
 #include <array>
 
+using namespace Qt::Literals::StringLiterals;
+
 
 namespace {
 
@@ -59,7 +61,7 @@ find_by_str_ref(HashMap<QLatin1String, QString>& map, const QStringView str)
 
 providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStreamReader& xml)
 {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "system");
+    Q_ASSERT(xml.isStartElement() && xml.name() == "system"_L1);
 
     // read all XML fields into a key-value map
 

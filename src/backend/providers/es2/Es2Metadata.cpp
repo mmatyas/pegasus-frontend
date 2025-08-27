@@ -31,8 +31,11 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
+#include <QLatin1StringView>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
+
+using namespace Qt::Literals::StringLiterals;
 
 
 namespace {
@@ -65,8 +68,8 @@ QFileInfo shell_to_finfo(const QDir& base_dir, const QString& shell_filepath)
     if (shell_filepath.isEmpty())
         return {};
 
-    const QString real_path = shell_filepath.startsWith(QLatin1String("~/"))
-        ? paths::homePath() + QStringView(shell_filepath).mid(1)
+    const QString real_path = shell_filepath.startsWith("~/"_L1)
+        ? paths::homePath().append(QStringView(shell_filepath).mid(1))
         : shell_filepath;
     return QFileInfo(base_dir, real_path);
 }
@@ -126,7 +129,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
 
 HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStreamReader& xml) const
 {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "game");
+    Q_ASSERT(xml.isStartElement() && xml.name() == "game"_L1);
 
     HashMap<MetaType, QString, EnumHash> xml_props;
     while (xml.readNextStartElement()) {

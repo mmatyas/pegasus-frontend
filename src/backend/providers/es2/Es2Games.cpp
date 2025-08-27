@@ -31,6 +31,8 @@
 #include <QStringBuilder>
 #include <QTextStream>
 
+using namespace Qt::Literals::StringLiterals;
+
 
 namespace {
 QList<QStringView> split_list(const QStringView str)
@@ -47,7 +49,7 @@ QStringList parse_filters(const QString& filters_raw) {
 
     QStringList filter_list;
     for (const QStringView filter_ref : filter_refs)
-        filter_list.append(QChar('*') + filter_ref.trimmed());
+        filter_list.append(QString("*").append(filter_ref.trimmed()));
 
     filter_list.removeDuplicates();
     return filter_list;

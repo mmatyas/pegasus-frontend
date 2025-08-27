@@ -33,9 +33,11 @@
 #include <QUrl>
 #include <QRegularExpression>
 
+using namespace Qt::Literals::StringLiterals;
+
 
 namespace {
-static constexpr auto SEPARATOR = "----------------------------------------";
+static constexpr auto SEPARATOR = "----------------------------------------"_L1;
 
 void replace_env_vars(QString& param)
 {
