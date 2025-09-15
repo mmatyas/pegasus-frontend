@@ -37,7 +37,7 @@ namespace {
 const QStringList& allowed_asset_exts(AssetType type)
 {
     static const QStringList empty_list({});
-    static const QStringList image_exts { "png", "jpg", "webp", "apng" };
+    static const QStringList image_exts { "png", "jpg", "webp", "gif", "apng" };
     static const QStringList video_exts { "webm", "mp4", "avi" };
     static const QStringList audio_exts { "mp3", "ogg", "wav" };
 
