@@ -1,0 +1,35 @@
+name: Python tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
+          pip install websockets pytest pytest-asyncio
+
+      - name: Run tests (fail on DeprecationWarning)
+        env:
+          PYTHONWARNINGS: error::DeprecationWarning
+        run: |
+          python -V
+          python -W error::DeprecationWarning -m pytest -q
