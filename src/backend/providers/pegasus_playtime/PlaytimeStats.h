@@ -60,6 +60,17 @@ private:
     };
     std::vector<QueueEntry> m_pending_tasks;
     std::vector<QueueEntry> m_active_tasks;
+
+    struct MigrationQueueEntry {
+        model::GameFile* const gamefile;
+
+        MigrationQueueEntry(model::GameFile* const gamefile)
+            : gamefile(std::move(gamefile))
+        {}
+    };
+    std::vector<MigrationQueueEntry> m_pending_migrations;
+    std::vector<MigrationQueueEntry> m_active_migrations;
+
     QMutex m_queue_guard;
 
     void start_processing();

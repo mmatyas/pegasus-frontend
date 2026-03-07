@@ -85,7 +85,7 @@ bool create_missing_tables(const QString& log_tag, SqliteDb& channel)
     return true;
 }
 
-int get_path_id(const QString& log_tag, const QString& game_key)
+int get_path_id(const QString& log_tag, const QString& game_key, bool do_insert = true)
 {
     {
         QSqlQuery query;
@@ -99,7 +99,7 @@ int get_path_id(const QString& log_tag, const QString& game_key)
             return query.value(0).toInt();
     }
     // no hit -> insert
-    {
+    if (do_insert) {
         QSqlQuery query;
         query.prepare(QStringLiteral("INSERT INTO paths VALUES(null, ?);"));
         query.addBindValue(game_key);
@@ -108,7 +108,7 @@ int get_path_id(const QString& log_tag, const QString& game_key)
             return -1;
         }
     }
-    {
+    if (do_insert) {
         QSqlQuery query;
         query.prepare(QStringLiteral("SELECT last_insert_rowid() FROM paths;"));
         if (!query.exec()) {
@@ -135,6 +135,27 @@ void save_play_entry(const QString& log_tag, const int path_id, const QDateTime&
     query.addBindValue(duration);
     if (!query.exec())
         print_query_error(log_tag, query);
+}
+
+void migrate_play_entry(const QString& log_tag, int old_path_id, int new_path_id)
+{
+    Q_ASSERT(old_path_id != -1);
+    Q_ASSERT(new_path_id != -1);
+
+    // update plays to use new path
+    QSqlQuery update_plays_query;
+    update_plays_query.prepare(QStringLiteral("UPDATE plays SET path_id = ? WHERE path_id = ?;"));
+    update_plays_query.addBindValue(new_path_id);
+    update_plays_query.addBindValue(old_path_id);
+    if (!update_plays_query.exec())
+        print_query_error(log_tag, update_plays_query);
+
+    // delete old path
+    QSqlQuery delete_path_query;
+    delete_path_query.prepare(QStringLiteral("DELETE FROM paths WHERE id = ?;"));
+    delete_path_query.addBindValue(old_path_id);
+    if (!delete_path_query.exec())
+        print_query_error(log_tag, delete_path_query);
 }
 
 void update_modelgame(model::GameFile* const gamefile, const QDateTime& start_time, const qint64 duration)
@@ -193,9 +214,17 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
     };
     HashMap<model::GameFile*, Stats> stat_map;
 
+    QMutexLocker lock(&m_queue_guard);
+
     while (query.next()) {
         const QString path = query.value(0).toString();
-        model::GameFile* const game_ptr = sctx.gamefile_by_filepath(path); // TODO: URI support
+        model::GameFile* game_ptr = sctx.gamefile_by_uri(path);
+        if (!game_ptr) {
+            game_ptr = sctx.gamefile_by_filepath(path);
+            // schedule a data migration if path is being used for a URI game
+            if (game_ptr && game_ptr->hasURI())
+                m_pending_migrations.emplace_back(game_ptr);
+        }
         if (!game_ptr)
             continue;
 
@@ -215,6 +244,10 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
         const Stats& stats = pair.second;
         gamefile->update_playstats(stats.playcount, stats.playtime, stats.last_played);
     }
+
+    // process any migrations
+    if (m_active_tasks.empty())
+        start_processing();
 
     return *this;
 }
@@ -250,11 +283,12 @@ void PlaytimeStats::start_processing()
     Q_ASSERT(m_active_tasks.empty());
 
     m_active_tasks.swap(m_pending_tasks);
+    m_active_migrations.swap(m_pending_migrations);
 
     QtConcurrent::run([this]{
         emit startedWriting();
 
-        while (!m_active_tasks.empty()) {
+        while (!m_active_tasks.empty() || !m_active_migrations.empty()) {
             for (const QueueEntry& entry : m_active_tasks)
                 update_modelgame(entry.gamefile, entry.launch_time, entry.duration);
 
@@ -273,10 +307,28 @@ void PlaytimeStats::start_processing()
             }
 
             for (const QueueEntry& entry : m_active_tasks) {
-                const QString path = ::clean_abs_path(entry.gamefile->fileinfo());
+                const QString path = entry.gamefile->hasURI()
+                    ? entry.gamefile->uri()
+                    : ::clean_abs_path(entry.gamefile->fileinfo());
                 const int path_id = get_path_id(display_name(), path);
                 if (path_id >= 0)
                     save_play_entry(display_name(), path_id, entry.launch_time, entry.duration);
+            }
+
+            for (const MigrationQueueEntry& entry : m_active_migrations) {
+                // we don't have a uri to migrate??
+                if (!entry.gamefile->hasURI()) continue;
+                const QString uri = entry.gamefile->uri();
+
+                const QString path = ::clean_abs_path(entry.gamefile->fileinfo());
+                const int old_path_id = get_path_id(display_name(), path, false);
+                if (old_path_id == -1) continue; // no path ID to migrate
+
+                const int new_path_id = get_path_id(display_name(), uri);
+                if (new_path_id >= 0) {
+                    Log::info(LOGMSG("Migrating playtime stats for '%1'.").arg(uri));
+                    migrate_play_entry(display_name(), old_path_id, new_path_id);
+                }
             }
 
             channel.commit();
@@ -285,6 +337,8 @@ void PlaytimeStats::start_processing()
             QMutexLocker lock(&m_queue_guard);
             m_active_tasks.clear();
             m_active_tasks.swap(m_pending_tasks);
+            m_active_migrations.clear();
+            m_active_migrations.swap(m_pending_migrations);
         }
 
         emit finishedWriting();

@@ -155,8 +155,10 @@ model::GameFile* SearchContext::game_add_uri(model::Game& game, QString uri)
         return registered_ptr;
 
     auto* const entry_ptr = new model::GameFile(uri, game);
+    entry_ptr->setURI(uri);
     m_game_entries[&game].emplace_back(entry_ptr);
     m_uri_to_gamefile.emplace(uri, entry_ptr);
+    m_filepath_to_gamefile.emplace(entry_ptr->fileinfo().absoluteFilePath(), entry_ptr); // backwards compatibility with old relative path database
     return entry_ptr;
 }
 
