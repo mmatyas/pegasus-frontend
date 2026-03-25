@@ -66,6 +66,7 @@ public:
     bool hasUri() const { return !m_data.uri.isEmpty(); }
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString path READ path CONSTANT)
+    Q_PROPERTY(QString uri READ uri CONSTANT)
 
     int playCount() const { return m_data.playstats.play_count; }
     qint64 playTime() const { return m_data.playstats.play_time; }

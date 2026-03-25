@@ -325,8 +325,9 @@ void PlaytimeStats::start_processing()
 
                 const QString path = ::clean_abs_path(entry.gamefile->fileinfo());
                 const int old_path_id = get_path_id(display_name(), path, false);
+                // no path ID to migrate
                 if (old_path_id == -1)
-                    continue; // no path ID to migrate
+                    continue;
 
                 const int new_path_id = get_path_id(display_name(), uri);
                 if (new_path_id >= 0) {
