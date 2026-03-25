@@ -62,8 +62,8 @@ public:
     GameFile& setName(QString val) { m_data.name = std::move(val); return *this; }
     QString path() const { return m_data.fileinfo.filePath(); }
     const QString& uri() const { return m_data.uri; }
-    GameFile& setURI(QString val) { m_data.uri = std::move(val); return *this; }
-    bool hasURI() const { return !m_data.uri.isEmpty(); }
+    GameFile& setUri(QString val) { m_data.uri = std::move(val); return *this; }
+    bool hasUri() const { return !m_data.uri.isEmpty(); }
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString path READ path CONSTANT)
 

@@ -85,7 +85,7 @@ bool create_missing_tables(const QString& log_tag, SqliteDb& channel)
     return true;
 }
 
-int get_path_id(const QString& log_tag, const QString& game_key, bool do_insert = true)
+int get_path_id(const QString& log_tag, const QString& game_key, bool insert_on_missing = true)
 {
     {
         QSqlQuery query;
@@ -99,7 +99,7 @@ int get_path_id(const QString& log_tag, const QString& game_key, bool do_insert 
             return query.value(0).toInt();
     }
     // no hit -> insert
-    if (do_insert) {
+    if (insert_on_missing) {
         QSqlQuery query;
         query.prepare(QStringLiteral("INSERT INTO paths VALUES(null, ?);"));
         query.addBindValue(game_key);
@@ -108,7 +108,7 @@ int get_path_id(const QString& log_tag, const QString& game_key, bool do_insert 
             return -1;
         }
     }
-    if (do_insert) {
+    if (insert_on_missing) {
         QSqlQuery query;
         query.prepare(QStringLiteral("SELECT last_insert_rowid() FROM paths;"));
         if (!query.exec()) {
@@ -147,8 +147,10 @@ void migrate_play_entry(const QString& log_tag, int old_path_id, int new_path_id
     update_plays_query.prepare(QStringLiteral("UPDATE plays SET path_id = ? WHERE path_id = ?;"));
     update_plays_query.addBindValue(new_path_id);
     update_plays_query.addBindValue(old_path_id);
-    if (!update_plays_query.exec())
+    if (!update_plays_query.exec()) {
         print_query_error(log_tag, update_plays_query);
+        return;
+    }
 
     // delete old path
     QSqlQuery delete_path_query;
@@ -222,7 +224,7 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
         if (!game_ptr) {
             game_ptr = sctx.gamefile_by_filepath(path);
             // schedule a data migration if path is being used for a URI game
-            if (game_ptr && game_ptr->hasURI())
+            if (game_ptr && game_ptr->hasUri())
                 m_pending_migrations.emplace_back(game_ptr);
         }
         if (!game_ptr)
@@ -246,7 +248,7 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
     }
 
     // process any migrations
-    if (m_active_tasks.empty())
+    if (m_active_migrations.empty())
         start_processing();
 
     return *this;
@@ -280,7 +282,7 @@ void PlaytimeStats::onGameFinished(model::GameFile* const gamefile)
 
 void PlaytimeStats::start_processing()
 {
-    Q_ASSERT(m_active_tasks.empty());
+    Q_ASSERT(m_active_tasks.empty() || m_active_migrations.empty());
 
     m_active_tasks.swap(m_pending_tasks);
     m_active_migrations.swap(m_pending_migrations);
@@ -307,7 +309,7 @@ void PlaytimeStats::start_processing()
             }
 
             for (const QueueEntry& entry : m_active_tasks) {
-                const QString path = entry.gamefile->hasURI()
+                const QString path = entry.gamefile->hasUri()
                     ? entry.gamefile->uri()
                     : ::clean_abs_path(entry.gamefile->fileinfo());
                 const int path_id = get_path_id(display_name(), path);
@@ -317,12 +319,14 @@ void PlaytimeStats::start_processing()
 
             for (const MigrationQueueEntry& entry : m_active_migrations) {
                 // we don't have a uri to migrate??
-                if (!entry.gamefile->hasURI()) continue;
+                if (!entry.gamefile->hasUri())
+                    continue;
                 const QString uri = entry.gamefile->uri();
 
                 const QString path = ::clean_abs_path(entry.gamefile->fileinfo());
                 const int old_path_id = get_path_id(display_name(), path, false);
-                if (old_path_id == -1) continue; // no path ID to migrate
+                if (old_path_id == -1)
+                    continue; // no path ID to migrate
 
                 const int new_path_id = get_path_id(display_name(), uri);
                 if (new_path_id >= 0) {
