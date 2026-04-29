@@ -1,0 +1,51 @@
+{
+  "configurations": [
+    {
+      "name": "Nix devshell (Qt5 / GCC)",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-x64",
+      // These are fallback paths used before compile_commands.json exists.
+      // Run `nix develop` first so the .env file is written, then:
+      //   cmake -B build -DCMAKE_BUILD_TYPE=Debug && cmake --build build
+      // After that, IntelliSense will use compile_commands.json automatically.
+      "includePath": [
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/thirdparty/**",
+        "/nix/store/*-qtbase-5.15.18-dev/include",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtCore",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtConcurrent",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtGui",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtQml",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtQuick",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtNetwork",
+        "/nix/store/*-qtbase-5.15.18-dev/include/QtWidgets",
+        "/nix/store/*-qtmultimedia-5.15.18-dev/include",
+        "/nix/store/*-qtmultimedia-5.15.18-dev/include/QtMultimedia",
+        "/nix/store/*-qtsvg-5.15.18-dev/include",
+        "/nix/store/*-qtsvg-5.15.18-dev/include/QtSvg",
+        "/nix/store/*-qtdeclarative-5.15.18-dev/include",
+        "/nix/store/*-qtdeclarative-5.15.18-dev/include/QtQml",
+        "/nix/store/*-qtdeclarative-5.15.18-dev/include/QtQuick",
+        "/nix/store/*-qtx11extras-5.15.18-dev/include",
+        "/nix/store/*-qtx11extras-5.15.18-dev/include/QtX11Extras",
+        "/nix/store/*-sdl2-compat-2.32.64-dev/include/SDL2",
+        "/nix/store/*-sqlite-3.51.2-dev/include"
+      ],
+      "defines": [
+        "QT_CORE_LIB",
+        "QT_GUI_LIB",
+        "QT_QML_LIB",
+        "QT_QUICK_LIB",
+        "QT_MULTIMEDIA_LIB",
+        "QT_SVG_LIB",
+        "QT_SQL_LIB",
+        "QT_NETWORK_LIB",
+        "SDL_MAIN_HANDLED",
+        "PEGASUS_USING_CMAKE"
+      ]
+    }
+  ],
+  "version": 4
+}

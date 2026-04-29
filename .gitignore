@@ -21,3 +21,5 @@ build*/
 *.qmlc
 *.jsc
 *.autosave
+
+.vscode/.env
