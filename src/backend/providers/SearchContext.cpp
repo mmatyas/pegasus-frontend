@@ -130,6 +130,14 @@ model::GameFile* SearchContext::gamefile_by_uri(const QString& uri) const
         : nullptr;
 }
 
+model::GameFile* SearchContext::first_gamefile_by_slug(const QString& slug) const
+{
+    for (const auto& pair : m_game_entries) {
+        if (pair.first->slug().compare(slug) == 0) return pair.second[0];
+    }
+    return nullptr;
+}
+
 model::GameFile* SearchContext::game_add_filepath(model::Game& game, QString can_path)
 {
     model::GameFile* const registered_ptr = gamefile_by_filepath(can_path);
@@ -231,6 +239,12 @@ void SearchContext::finalize_apply_lists()
     // Apply game entries
     for (auto& pair : m_game_entries) {
         Q_ASSERT(!pair.second.empty());
+        // Apply slug to game files
+        if(!pair.first->slug().isEmpty())
+            for (model::GameFile* gamefile : pair.second) {
+                gamefile->setUri(QStringLiteral("pegasus:") + pair.first->slug());
+                m_uri_to_gamefile.emplace(gamefile->uri(), gamefile);
+        }
         pair.first->setFiles(std::move(pair.second));
     }
 

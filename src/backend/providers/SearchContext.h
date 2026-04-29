@@ -51,6 +51,7 @@ public:
     model::Game* game_by_uri(const QString&) const;
     model::GameFile* gamefile_by_filepath(const QString&) const;
     model::GameFile* gamefile_by_uri(const QString&) const;
+    model::GameFile* first_gamefile_by_slug(const QString&) const;
     model::GameFile* game_add_filepath(model::Game&, QString);
     model::GameFile* game_add_uri(model::Game&, QString);
 

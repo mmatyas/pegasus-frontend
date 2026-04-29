@@ -59,6 +59,12 @@ Game& Game::setTitle(QString title)
     return *this;
 }
 
+Game& Game::setSlug(QString slug)
+{
+    m_data.slug = std::move(slug);
+    return *this;
+}
+
 Game& Game::setFavorite(bool new_val)
 {
     m_data.is_favorite = new_val;

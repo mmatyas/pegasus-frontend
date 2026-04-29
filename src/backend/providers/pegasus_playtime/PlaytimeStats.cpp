@@ -221,6 +221,10 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
     while (query.next()) {
         const QString path = query.value(0).toString();
         model::GameFile* game_ptr = sctx.gamefile_by_uri(path);
+        if (!game_ptr && path.startsWith(QStringLiteral("pegasus:"))) {
+            // try finding the gamefile with the game slug
+            game_ptr = sctx.first_gamefile_by_slug(path.mid(QStringLiteral("pegasus:").size()));
+        }
         if (!game_ptr) {
             game_ptr = sctx.gamefile_by_filepath(path);
             // schedule a data migration if path is being used for a URI game
