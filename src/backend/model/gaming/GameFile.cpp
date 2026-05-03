@@ -54,14 +54,6 @@ void GameFile::launch()
     emit launchRequested();
 }
 
-void GameFile::update_playstats(int playcount, qint64 playtime, QDateTime last_played)
-{
-    m_data.playstats.last_played = std::max(m_data.playstats.last_played, std::move(last_played));
-    m_data.playstats.play_time += playtime;
-    m_data.playstats.play_count += playcount;
-    emit playStatsChanged();
-}
-
 bool sort_gamefiles(const model::GameFile* const a, const model::GameFile* const b) {
     return QString::localeAwareCompare(a->name(), b->name()) < 0;
 }

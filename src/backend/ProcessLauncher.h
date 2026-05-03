@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QProcess>
 
-namespace model { class GameFile; }
+#include "types/GameLaunchPair.h"
 
 
 namespace helpers {
@@ -45,7 +45,7 @@ signals:
     void processFinished();
 
 public slots:
-    void onLaunchRequested(const model::GameFile*);
+    void onLaunchRequested(const model::GameLaunchPair*);
     void onTeardownComplete();
 
 private slots:

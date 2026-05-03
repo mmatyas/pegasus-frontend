@@ -40,7 +40,7 @@ struct GameData {
     explicit GameData(QString);
 
     QString title;
-    QString slug;
+    QString uri;
     QString sort_by;
     QString summary;
     QString description;
@@ -79,7 +79,7 @@ public:
     type name() const { return m_data.field; }
 
     GETTER(const QString&, title, title)
-    GETTER(const QString&, slug, slug)
+    GETTER(const QString&, uri, uri)
     GETTER(const QString&, sortBy, sort_by)
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
@@ -112,7 +112,7 @@ public:
     Game& set##name(type val) { m_data.field = std::move(val); return *this; }
 
     Game& setTitle(QString);
-    Game& setSlug(QString);
+    Game& setUri(QString);
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
@@ -143,7 +143,7 @@ public:
 
 
     Q_PROPERTY(QString title READ title CONSTANT)
-    Q_PROPERTY(QString slug READ slug CONSTANT)
+    Q_PROPERTY(QString uri READ uri CONSTANT)
     Q_PROPERTY(QString sortTitle READ sortBy CONSTANT)
     Q_PROPERTY(QString sortBy READ sortBy CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
@@ -166,6 +166,7 @@ public:
     const QVariantMap& extraMap() const { return m_extra; }
     QVariantMap& extraMapMut() { return m_extra; }
 
+    bool hasUri() const { return !m_data.uri.isEmpty(); }
 
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -181,6 +182,8 @@ public:
     Game& setFiles(std::vector<model::GameFile*>&&);
     Game& setCollections(std::vector<model::Collection*>&&);
 
+    void update_playstats(int playcount, qint64 playtime, QDateTime last_played);
+
 
 private:
     GameData m_data;
@@ -191,13 +194,11 @@ private:
     GameFileListModel* m_files = nullptr;
 
 signals:
+    void launchRequested();
     void launchFileSelectorRequested();
     void favoriteChanged();
     void playStatsChanged();
     void missingChanged();
-
-private slots:
-    void onEntryPlayStatsChanged();
 
 
 public:

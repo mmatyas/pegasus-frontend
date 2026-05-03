@@ -34,6 +34,7 @@
 
 namespace {
 constexpr size_t ISSUE_LOG_LIMIT = 100;
+const QString URI_PREFIX = QStringLiteral("pegasus:");
 
 QStringList tokenize_by_comma(const QString& str)
 {
@@ -430,7 +431,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
             break;
         case GameAttrib::SLUG:
             // normalize slug to lowercase without spaces
-            ps.cur_game->setSlug(first_line_of(ps, entry)
+            ps.cur_game->setUri(URI_PREFIX + first_line_of(ps, entry)
                 .toLower()
                 .remove(QLatin1String(R"( )")));
             break;

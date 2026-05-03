@@ -160,10 +160,10 @@ void migrate_play_entry(const QString& log_tag, int old_path_id, int new_path_id
         print_query_error(log_tag, delete_path_query);
 }
 
-void update_modelgame(model::GameFile* const gamefile, const QDateTime& start_time, const qint64 duration)
+void update_modelgame(model::Game* const game, const QDateTime& start_time, const qint64 duration)
 {
-    Q_ASSERT(gamefile);
-    gamefile->update_playstats(1, duration, start_time.addSecs(duration));
+    Q_ASSERT(game);
+    game->update_playstats(1, duration, start_time.addSecs(duration));
 }
 
 } // namespace
@@ -214,22 +214,25 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
         qint64 playtime { 0 };
         QDateTime last_played;
     };
-    HashMap<model::GameFile*, Stats> stat_map;
+    HashMap<model::Game*, Stats> stat_map;
 
     QMutexLocker lock(&m_queue_guard);
 
     while (query.next()) {
         const QString path = query.value(0).toString();
-        model::GameFile* game_ptr = sctx.gamefile_by_uri(path);
-        if (!game_ptr && path.startsWith(QStringLiteral("pegasus:"))) {
-            // try finding the gamefile with the game slug
-            game_ptr = sctx.first_gamefile_by_slug(path.mid(QStringLiteral("pegasus:").size()));
-        }
+        model::Game* game_ptr = sctx.game_by_uri(path);
+        // deprecated game path support
+        // also required to migrate pegasus-metadata games with newly added slugs
         if (!game_ptr) {
-            game_ptr = sctx.gamefile_by_filepath(path);
+            model::GameFile* const gamefile = sctx.gamefile_by_filepath(path);
+            if (gamefile)
+                game_ptr = gamefile->parentGame();
+            else // try legacy file-path URI as a last resort
+                game_ptr = sctx.legacy_game_by_filepath(path);
+
             // schedule a data migration if path is being used for a URI game
             if (game_ptr && game_ptr->hasUri())
-                m_pending_migrations.emplace_back(game_ptr);
+                m_pending_migrations.emplace_back(new MigrationPair(game_ptr, path));
         }
         if (!game_ptr)
             continue;
@@ -246,9 +249,9 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
     // trigger update only once
     // TODO: C++17
     for (const auto& pair : stat_map) {
-        model::GameFile* const gamefile = pair.first;
+        model::Game* const game = pair.first;
         const Stats& stats = pair.second;
-        gamefile->update_playstats(stats.playcount, stats.playtime, stats.last_played);
+        game->update_playstats(stats.playcount, stats.playtime, stats.last_played);
     }
 
     // process any migrations
@@ -258,15 +261,15 @@ Provider& PlaytimeStats::run(SearchContext& sctx)
     return *this;
 }
 
-void PlaytimeStats::onGameLaunched(model::GameFile* const gamefile)
+void PlaytimeStats::onGameLaunched(model::GameLaunchPair* const pair)
 {
-    Q_ASSERT(gamefile);
+    Q_ASSERT(pair);
     m_last_launch_time = QDateTime::currentDateTimeUtc();
 }
 
-void PlaytimeStats::onGameFinished(model::GameFile* const gamefile)
+void PlaytimeStats::onGameFinished(model::GameLaunchPair* const pair)
 {
-    Q_ASSERT(gamefile);
+    Q_ASSERT(pair);
     Q_ASSERT(m_last_launch_time.isValid());
 
     QMutexLocker lock(&m_queue_guard);
@@ -275,7 +278,7 @@ void PlaytimeStats::onGameFinished(model::GameFile* const gamefile)
     const auto duration = m_last_launch_time.secsTo(now);
 
     m_pending_tasks.emplace_back(
-        gamefile,
+        pair,
         m_last_launch_time,
         duration
     );
@@ -296,7 +299,7 @@ void PlaytimeStats::start_processing()
 
         while (!m_active_tasks.empty() || !m_active_migrations.empty()) {
             for (const QueueEntry& entry : m_active_tasks)
-                update_modelgame(entry.gamefile, entry.launch_time, entry.duration);
+                update_modelgame(entry.pair->first, entry.launch_time, entry.duration);
 
             SqliteDb channel(m_db_path);
             if (!channel.open()) {
@@ -313,21 +316,34 @@ void PlaytimeStats::start_processing()
             }
 
             for (const QueueEntry& entry : m_active_tasks) {
-                const QString path = entry.gamefile->hasUri()
-                    ? entry.gamefile->uri()
-                    : ::clean_abs_path(entry.gamefile->fileinfo());
+                const QString path =
+                // use game URI if its set
+                entry.pair->first->hasUri()
+                    ? entry.pair->first->uri()
+                // otherwise use gamefile path if available
+                : entry.pair->second
+                    ? ::clean_abs_path(entry.pair->second->fileinfo())
+                : QString();
+
+                // no URI/files, impossible for game to even be launched
+                if (path.isEmpty()) {
+                    Log::warning(display_name(), LOGMSG("Unable to save playtime stats for game '%1'.").arg(entry.pair->first->title()));
+                    continue;
+                }
+
                 const int path_id = get_path_id(display_name(), path);
                 if (path_id >= 0)
                     save_play_entry(display_name(), path_id, entry.launch_time, entry.duration);
             }
 
             for (const MigrationQueueEntry& entry : m_active_migrations) {
+                const model::Game* game = entry.pair->first;
                 // we don't have a uri to migrate??
-                if (!entry.gamefile->hasUri())
+                if (!game->hasUri())
                     continue;
-                const QString uri = entry.gamefile->uri();
+                const QString uri = game->uri();
+                const QString path = entry.pair->second;
 
-                const QString path = ::clean_abs_path(entry.gamefile->fileinfo());
                 const int old_path_id = get_path_id(display_name(), path, false);
                 // no path ID to migrate
                 if (old_path_id == -1)

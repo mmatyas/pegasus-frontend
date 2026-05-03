@@ -175,7 +175,7 @@ Backend::Backend(const CliArgs& args)
     // see the relevant classes
 
     // the Api asks the Launcher to start the game
-    QObject::connect(m_api_public, &model::ApiObject::launchGameFile,
+    QObject::connect(m_api_public, &model::ApiObject::launchGame,
                      m_launcher, &ProcessLauncher::onLaunchRequested);
 
     // the Launcher tries to start the game, ask the Frontend
@@ -183,7 +183,7 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_api_public, &model::ApiObject::onGameLaunchOk);
 
-    QObject::connect(m_api_public, &model::ApiObject::gameFileLaunched,
+    QObject::connect(m_api_public, &model::ApiObject::gameLaunched,
                      m_providerman, &ProviderManager::onGameLaunched);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
@@ -198,7 +198,7 @@ Backend::Backend(const CliArgs& args)
     // when the game ends, the Launcher wakes up the Api and the Frontend
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,
                      m_api_public, &model::ApiObject::onGameProcessFinished);
-    QObject::connect(m_api_public, &model::ApiObject::gameFileFinished,
+    QObject::connect(m_api_public, &model::ApiObject::gameFinished,
                      m_providerman, &ProviderManager::onGameFinished);
 
     QObject::connect(m_launcher, &ProcessLauncher::processFinished,

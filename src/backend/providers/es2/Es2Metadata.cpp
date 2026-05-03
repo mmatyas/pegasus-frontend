@@ -265,7 +265,7 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
     const QDateTime last_played = QDateTime::fromString(xml_props[MetaType::LASTPLAYED], m_date_format);
     const QDateTime release_time(QDateTime::fromString(xml_props[MetaType::RELEASE], m_date_format));
     game.setReleaseDate(release_time.date());
-    gamefile.update_playstats(play_count, 0, last_played);
+    game.update_playstats(play_count, 0, last_played);
 
     // then assets
     // TODO: C++17

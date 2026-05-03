@@ -59,9 +59,9 @@ Game& Game::setTitle(QString title)
     return *this;
 }
 
-Game& Game::setSlug(QString slug)
+Game& Game::setUri(QString uri)
 {
-    m_data.slug = std::move(slug);
+    m_data.uri = std::move(uri);
     return *this;
 }
 
@@ -90,39 +90,18 @@ Game& Game::setPlayerCount(int player_count)
     return *this;
 }
 
-void Game::onEntryPlayStatsChanged()
+void Game::update_playstats(int playcount, qint64 playtime, QDateTime last_played)
 {
-    const auto prev_play_count = m_data.playstats.play_count;
-    const auto prev_play_time = m_data.playstats.play_time;
-    const auto prev_last_played = m_data.playstats.last_played;
-
-    Q_ASSERT(filesModel());
-    const std::vector<model::GameFile*>& filelist = filesModel()->entries();
-
-    m_data.playstats.play_count = std::accumulate(filelist.cbegin(), filelist.cend(), 0,
-        [](int sum, const model::GameFile* const gamefile){
-            return sum + gamefile->playCount();
-        });
-    m_data.playstats.play_time = std::accumulate(filelist.cbegin(), filelist.cend(), 0,
-        [](qint64 sum, const model::GameFile* const gamefile){
-            return sum + gamefile->playTime();
-        });
-    m_data.playstats.last_played = std::accumulate(filelist.cbegin(), filelist.cend(), QDateTime(),
-        [](const QDateTime& current_max, const model::GameFile* const gamefile){
-            return std::max(current_max, gamefile->lastPlayed());
-        });
-
-    const bool changed = prev_play_count != m_data.playstats.play_count
-        || prev_play_time != m_data.playstats.play_time
-        || prev_last_played != m_data.playstats.last_played;
-    if (changed)
-        emit playStatsChanged();
+    m_data.playstats.last_played = std::max(m_data.playstats.last_played, std::move(last_played));
+    m_data.playstats.play_time += playtime;
+    m_data.playstats.play_count += playcount;
+    emit playStatsChanged();
 }
 
 void Game::launch()
 {
-    Q_ASSERT(m_files->count() > 0);
-
+    if (m_files->isEmpty())
+        emit launchRequested();
     if (m_files->count() == 1)
         m_files->entries().front()->launch();
     else
@@ -132,8 +111,8 @@ void Game::launch()
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 {
     for (model::GameFile* const gamefile : files) {
-        connect(gamefile, &model::GameFile::playStatsChanged,
-                this, &model::Game::onEntryPlayStatsChanged);
+        connect(this, &model::Game::playStatsChanged,
+                gamefile, &model::GameFile::playStatsChanged);
     }
 
     std::sort(files.begin(), files.end(), model::sort_gamefiles);
@@ -141,8 +120,6 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
     Q_ASSERT(!m_files);
     m_files = new GameFileListModel(this);
     m_files->update(std::move(files));
-
-    onEntryPlayStatsChanged();
 
     return *this;
 }

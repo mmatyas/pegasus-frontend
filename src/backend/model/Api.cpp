@@ -24,7 +24,7 @@
 namespace model {
 ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
     : QObject(parent)
-    , m_launch_game_file(nullptr)
+    , m_launch_game(nullptr)
     , m_collections(new CollectionListModel(this))
     , m_all_games(new GameListModel(this))
 {
@@ -50,6 +50,8 @@ void ApiObject::setGameData(std::vector<model::Collection*>&& collections, std::
         game->moveToThread(thread());
         game->setParent(this);
 
+        connect(game, &model::Game::launchRequested,
+                this, &ApiObject::onGameLaunchRequested);
         connect(game, &model::Game::launchFileSelectorRequested,
                 this, &ApiObject::onGameFileSelectorRequested);
         connect(game, &model::Game::favoriteChanged,
@@ -79,33 +81,43 @@ void ApiObject::onGameFileSelectorRequested()
     emit eventSelectGameFile(game);
 }
 
-void ApiObject::onGameFileLaunchRequested()
+void ApiObject::onGameLaunchRequested()
 {
-    if (m_launch_game_file)
+    if (m_launch_game)
         return;
 
-    m_launch_game_file = static_cast<model::GameFile*>(QObject::sender());
-    emit launchGameFile(m_launch_game_file);
+    model::Game* game = static_cast<model::Game*>(QObject::sender());
+    m_launch_game = new model::GameLaunchPair(game, nullptr);
+    emit launchGame(m_launch_game);
+}
+void ApiObject::onGameFileLaunchRequested()
+{
+    if (m_launch_game)
+        return;
+
+    model::GameFile* gamefile = static_cast<model::GameFile*>(QObject::sender());
+    m_launch_game = new model::GameLaunchPair(gamefile->parentGame(), gamefile);
+    emit launchGame(m_launch_game);
 }
 
 void ApiObject::onGameLaunchOk()
 {
-    Q_ASSERT(m_launch_game_file);
-    emit gameFileLaunched(m_launch_game_file);
+    Q_ASSERT(m_launch_game);
+    emit gameLaunched(m_launch_game);
 }
 
 void ApiObject::onGameLaunchError(QString msg)
 {
-    Q_ASSERT(m_launch_game_file);
-    m_launch_game_file = nullptr;
+    Q_ASSERT(m_launch_game);
+    m_launch_game = nullptr;
     emit eventLaunchError(msg);
 }
 
 void ApiObject::onGameProcessFinished()
 {
-    Q_ASSERT(m_launch_game_file);
-    emit gameFileFinished(m_launch_game_file);
-    m_launch_game_file = nullptr;
+    Q_ASSERT(m_launch_game);
+    emit gameFinished(m_launch_game);
+    m_launch_game = nullptr;
 }
 
 void ApiObject::onGameFavoriteChanged()

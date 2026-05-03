@@ -108,9 +108,9 @@ model::Game* SearchContext::game_by_filepath(const QString& can_path) const
 
 model::Game* SearchContext::game_by_uri(const QString& uri) const
 {
-    model::GameFile* const entry_ptr = gamefile_by_uri(uri);
-    return entry_ptr
-        ? entry_ptr->parentGame()
+    const auto it = m_uri_to_game.find(uri);
+    return it != m_uri_to_game.cend()
+        ? it->second
         : nullptr;
 }
 
@@ -122,20 +122,13 @@ model::GameFile* SearchContext::gamefile_by_filepath(const QString& can_path) co
         : nullptr;
 }
 
-model::GameFile* SearchContext::gamefile_by_uri(const QString& uri) const
+// backwards compatibility with old file-path URIs
+model::Game* SearchContext::legacy_game_by_filepath(const QString& can_path) const
 {
-    const auto it = m_uri_to_gamefile.find(uri);
-    return it != m_uri_to_gamefile.cend()
+    const auto it = m_legacy_filepath_to_game.find(can_path);
+    return it != m_legacy_filepath_to_game.cend()
         ? it->second
         : nullptr;
-}
-
-model::GameFile* SearchContext::first_gamefile_by_slug(const QString& slug) const
-{
-    for (const auto& pair : m_game_entries) {
-        if (pair.first->slug().compare(slug) == 0) return pair.second[0];
-    }
-    return nullptr;
 }
 
 model::GameFile* SearchContext::game_add_filepath(model::Game& game, QString can_path)
@@ -156,18 +149,17 @@ model::GameFile* SearchContext::game_add_filepath(model::Game& game, QString can
     return entry_ptr;
 }
 
-model::GameFile* SearchContext::game_add_uri(model::Game& game, QString uri)
+model::Game* SearchContext::game_add_uri(model::Game& game, QString uri)
 {
-    model::GameFile* const registered_ptr = gamefile_by_uri(uri);
+    model::Game* const registered_ptr = game_by_uri(uri);
     if (registered_ptr)
         return registered_ptr;
 
-    auto* const entry_ptr = new model::GameFile(uri, game);
-    entry_ptr->setUri(uri);
-    m_game_entries[&game].emplace_back(entry_ptr);
-    m_uri_to_gamefile.emplace(uri, entry_ptr);
-    m_filepath_to_gamefile.emplace(::clean_abs_path(entry_ptr->fileinfo()), entry_ptr); // backwards compatibility with old relative path database
-    return entry_ptr;
+    game.setUri(uri);
+    m_uri_to_game.emplace(uri, &game);
+    // backwards compatibility with old relative path database
+    m_legacy_filepath_to_game.emplace(::clean_abs_path(QFileInfo(uri)), &game);
+    return registered_ptr;
 }
 
 SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& collection)
@@ -239,12 +231,6 @@ void SearchContext::finalize_apply_lists()
     // Apply game entries
     for (auto& pair : m_game_entries) {
         Q_ASSERT(!pair.second.empty());
-        // Apply slug to game files
-        if(!pair.first->slug().isEmpty())
-            for (model::GameFile* gamefile : pair.second) {
-                gamefile->setUri(QStringLiteral("pegasus:") + pair.first->slug());
-                m_uri_to_gamefile.emplace(gamefile->uri(), gamefile);
-        }
         pair.first->setFiles(std::move(pair.second));
     }
 

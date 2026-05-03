@@ -156,12 +156,16 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
     , m_process(nullptr)
 {}
 
-void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
+void ProcessLauncher::onLaunchRequested(const model::GameLaunchPair* q_pair)
 {
-    Q_ASSERT(q_gamefile);
+    Q_ASSERT(q_pair);
+    Q_ASSERT(q_pair->first);
 
-    const model::GameFile& gamefile = *q_gamefile;
-    const model::Game& game = *gamefile.parentGame();
+    const model::Game& game = *q_pair->first;
+    
+    //TEMPORARY
+    Q_ASSERT(q_pair->second);
+    const model::GameFile& gamefile = *q_pair->second;
 
     const QString raw_launch_cmd =
 #if defined(Q_OS_LINUX) && defined(PEGASUS_INSIDE_FLATPAK)

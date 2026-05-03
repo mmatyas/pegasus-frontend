@@ -87,8 +87,9 @@ void test_Playtime::write()
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
-    playtime.onGameLaunched(games.at(0)->filesModel()->entries().front());
-    playtime.onGameFinished(games.at(0)->filesModel()->entries().front());
+    model::GameLaunchPair* launch_pair = new model::GameLaunchPair(games.at(0), games.at(0)->filesModel()->entries().front());
+    playtime.onGameLaunched(launch_pair);
+    playtime.onGameFinished(launch_pair);
 
     QVERIFY(spy_start.count() || spy_start.wait());
     QVERIFY(spy_end.count() || spy_end.wait());
@@ -112,15 +113,16 @@ void test_Playtime::write_queue()
     QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
     QVERIFY(spy_start.isValid() && spy_end.isValid());
 
+    model::GameLaunchPair* launch_pair = new model::GameLaunchPair(games.at(0), games.at(0)->filesModel()->entries().front());
 
-    playtime.onGameLaunched(games.at(0)->filesModel()->entries().front());
-    playtime.onGameFinished(games.at(0)->filesModel()->entries().front());
+    playtime.onGameLaunched(launch_pair);
+    playtime.onGameFinished(launch_pair);
 
-    playtime.onGameLaunched(games.at(0)->filesModel()->entries().front());
-    playtime.onGameFinished(games.at(0)->filesModel()->entries().front());
+    playtime.onGameLaunched(launch_pair);
+    playtime.onGameFinished(launch_pair);
 
-    playtime.onGameLaunched(games.at(0)->filesModel()->entries().front());
-    playtime.onGameFinished(games.at(0)->filesModel()->entries().front());
+    playtime.onGameLaunched(launch_pair);
+    playtime.onGameFinished(launch_pair);
 
 
     QVERIFY(spy_start.count() || spy_start.wait());

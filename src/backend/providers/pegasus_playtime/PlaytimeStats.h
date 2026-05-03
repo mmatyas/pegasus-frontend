@@ -35,8 +35,8 @@ public:
 
     Provider& run(SearchContext&) final;
 
-    void onGameLaunched(model::GameFile* const) final;
-    void onGameFinished(model::GameFile* const) final;
+    void onGameLaunched(model::GameLaunchPair* const) final;
+    void onGameFinished(model::GameLaunchPair* const) final;
 
 signals:
     void startedWriting();
@@ -48,12 +48,12 @@ private:
     QDateTime m_last_launch_time;
 
     struct QueueEntry {
-        model::GameFile* const gamefile;
+        model::GameLaunchPair* const pair;
         const QDateTime launch_time;
         const qint64 duration;
 
-        QueueEntry(model::GameFile* const gamefile, QDateTime launch_time, qint64 duration)
-            : gamefile(std::move(gamefile))
+        QueueEntry(model::GameLaunchPair* const pair, QDateTime launch_time, qint64 duration)
+            : pair(std::move(pair))
             , launch_time(std::move(launch_time))
             , duration(std::move(duration))
         {}
@@ -61,11 +61,12 @@ private:
     std::vector<QueueEntry> m_pending_tasks;
     std::vector<QueueEntry> m_active_tasks;
 
+    using MigrationPair = std::pair<model::Game*, QString>;
     struct MigrationQueueEntry {
-        model::GameFile* const gamefile;
+        MigrationPair* const pair;
 
-        MigrationQueueEntry(model::GameFile* const gamefile)
-            : gamefile(std::move(gamefile))
+        MigrationQueueEntry(MigrationPair* const pair)
+            : pair(std::move(pair))
         {}
     };
     std::vector<MigrationQueueEntry> m_pending_migrations;
