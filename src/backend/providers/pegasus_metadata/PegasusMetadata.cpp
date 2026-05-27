@@ -34,6 +34,7 @@
 
 namespace {
 constexpr size_t ISSUE_LOG_LIMIT = 100;
+const QString URI_PREFIX = QStringLiteral("pegasus:");
 
 QStringList tokenize_by_comma(const QString& str)
 {
@@ -82,6 +83,7 @@ enum class GameAttrib : unsigned char {
     LAUNCH_CMD,
     LAUNCH_WORKDIR,
     SORT_BY,
+    SLUG,
 };
 
 
@@ -134,6 +136,7 @@ Metadata::Metadata(QString log_tag)
         { QStringLiteral("description"), GameAttrib::LONG_DESC },
         { QStringLiteral("release"), GameAttrib::RELEASE },
         { QStringLiteral("rating"), GameAttrib::RATING },
+        { QStringLiteral("slug"), GameAttrib::SLUG },
         // sort title variations
         { QStringLiteral("sorttitle"), GameAttrib::SORT_BY },
         { QStringLiteral("sortname"), GameAttrib::SORT_BY },
@@ -425,6 +428,12 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
             break;
         case GameAttrib::SORT_BY:
             ps.cur_game->setSortBy(first_line_of(ps, entry));
+            break;
+        case GameAttrib::SLUG:
+            // normalize slug to lowercase without spaces
+            ps.cur_game->setUri(URI_PREFIX + first_line_of(ps, entry)
+                .toLower()
+                .remove(QLatin1String(R"( )")));
             break;
     }
 }

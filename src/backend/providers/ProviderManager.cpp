@@ -145,7 +145,7 @@ void ProviderManager::onFavoritesChanged(const std::vector<model::Game*>& all_ga
         provider->onGameFavoriteChanged(all_games);
 }
 
-void ProviderManager::onGameLaunched(model::GameFile* const game) const
+void ProviderManager::onGameLaunched(model::GameLaunchPair* const game) const
 {
     if (m_future.isRunning())
         return;
@@ -154,7 +154,7 @@ void ProviderManager::onGameLaunched(model::GameFile* const game) const
         provider->onGameLaunched(game);
 }
 
-void ProviderManager::onGameFinished(model::GameFile* const game) const
+void ProviderManager::onGameFinished(model::GameLaunchPair* const game) const
 {
     if (m_future.isRunning())
         return;

@@ -36,7 +36,6 @@ struct GameFileData {
     const QString path;
     const QFileInfo fileinfo;
     QString name;
-    QString uri;
 
     // TODO: in the future...
     // QString summary;
@@ -61,12 +60,8 @@ public:
     const QString& name() const { return m_data.name; }
     GameFile& setName(QString val) { m_data.name = std::move(val); return *this; }
     QString path() const { return m_data.fileinfo.filePath(); }
-    const QString& uri() const { return m_data.uri; }
-    GameFile& setUri(QString val) { m_data.uri = std::move(val); return *this; }
-    bool hasUri() const { return !m_data.uri.isEmpty(); }
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString path READ path CONSTANT)
-    Q_PROPERTY(QString uri READ uri CONSTANT)
 
     int playCount() const { return m_data.playstats.play_count; }
     qint64 playTime() const { return m_data.playstats.play_time; }
@@ -83,8 +78,6 @@ public:
     model::Game* parentGame() const;
 
     Q_INVOKABLE void launch();
-
-    void update_playstats(int playcount, qint64 playtime, QDateTime last_played);
 
 signals:
     void launchRequested();

@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "types/GameLaunchPair.h"
 #include "utils/HashMap.h"
 
 #include <QFileInfo>
@@ -25,8 +26,6 @@
 #include <vector>
 
 namespace model { class Collection; }
-namespace model { class Game; }
-namespace model { class GameFile; }
 namespace providers { class SearchContext; }
 
 
@@ -52,8 +51,8 @@ public:
 
     // events
     virtual void onGameFavoriteChanged(const std::vector<model::Game*>&) {}
-    virtual void onGameLaunched(model::GameFile* const) {}
-    virtual void onGameFinished(model::GameFile* const) {}
+    virtual void onGameLaunched(model::GameLaunchPair* const) {}
+    virtual void onGameFinished(model::GameLaunchPair* const) {}
 
     // common
     const QLatin1String& codename() const { return m_codename; }

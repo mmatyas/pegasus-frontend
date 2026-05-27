@@ -61,10 +61,10 @@ signals:
     void gamedataReady();
 
     // user actions
-    void launchGameFile(const model::GameFile*);
+    void launchGame(const model::GameLaunchPair*);
     void launchFailed(QString);
-    void gameFileFinished(model::GameFile* const);
-    void gameFileLaunched(model::GameFile* const);
+    void gameFinished(model::GameLaunchPair* const);
+    void gameLaunched(model::GameLaunchPair* const);
     void favoritesChanged();
     void memoryChanged();
 
@@ -89,11 +89,12 @@ private slots:
     // internal communication
     void onGameFavoriteChanged();
     void onGameFileSelectorRequested();
+    void onGameLaunchRequested();
     void onGameFileLaunchRequested();
 
 private:
     // game launching
-    model::GameFile* m_launch_game_file;
+    model::GameLaunchPair* m_launch_game = nullptr;
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }

@@ -50,9 +50,11 @@ public:
     model::Game* game_by_filepath(const QString&) const;
     model::Game* game_by_uri(const QString&) const;
     model::GameFile* gamefile_by_filepath(const QString&) const;
-    model::GameFile* gamefile_by_uri(const QString&) const;
     model::GameFile* game_add_filepath(model::Game&, QString);
-    model::GameFile* game_add_uri(model::Game&, QString);
+    model::Game* game_add_uri(model::Game&, QString);
+
+    // backwards compatibility with old file-path URIs
+    model::Game* legacy_game_by_filepath(const QString&) const;
 
     const QStringList& root_game_dirs() const { return m_root_game_dirs; }
     const QStringList& pegasus_game_dirs() const { return m_pegasus_game_dirs; }
@@ -81,7 +83,10 @@ private:
     HashMap<model::Collection*, std::vector<model::Game*>> m_collection_games;
     HashMap<model::Game*, std::vector<model::GameFile*>> m_game_entries;
     HashMap<QString, model::GameFile*> m_filepath_to_gamefile;
-    HashMap<QString, model::GameFile*> m_uri_to_gamefile;
+    HashMap<QString, model::Game*> m_uri_to_game;
+
+    // backwards compatibility with old file-path URIs
+    HashMap<QString, model::Game*> m_legacy_filepath_to_game;
 
     std::vector<model::Game*> m_parentless_games;
 

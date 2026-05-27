@@ -17,12 +17,12 @@
 
 #pragma once
 
+#include "types/GameLaunchPair.h"
+
 #include <QObject>
 #include <QFuture>
 
 namespace model { class Collection; }
-namespace model { class Game; }
-namespace model { class GameFile; }
 
 
 class ProviderManager : public QObject {
@@ -33,8 +33,8 @@ public:
 
     void run();
 
-    void onGameLaunched(model::GameFile* const) const;
-    void onGameFinished(model::GameFile* const) const;
+    void onGameLaunched(model::GameLaunchPair* const) const;
+    void onGameFinished(model::GameLaunchPair* const) const;
     void onFavoritesChanged(const std::vector<model::Game*>&) const;
 
     std::vector<model::Collection*>& foundCollections() { return m_found_collections; }
