@@ -90,7 +90,7 @@ FocusScope {
         }
         PrimaryMenuItem {
             id: mbQuickExit
-            text: scopeQuit.name + "2"
+            text: scopeQuit.name
 
             enabled: callable
             visible: callable
