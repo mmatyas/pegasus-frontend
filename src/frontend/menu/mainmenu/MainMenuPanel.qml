@@ -86,7 +86,24 @@ FocusScope {
             }
             selected: focus
 
-            KeyNavigation.down: scopeQuit
+            KeyNavigation.down: mbQuickExit.callable ? mbQuickExit : scopeQuit
+        }
+        PrimaryMenuItem {
+            id: mbQuickExit
+            text: scopeQuit.name + "2"
+
+            enabled: callable
+            visible: callable
+            readonly property bool callable: mbQuitExit.callable
+                && [mbQuitShutdown, mbQuitSuspend, mbQuitReboot].every(elem => !elem.callable)
+
+            Component.onCompleted: {
+                if (callable)
+                    mbQuickExit.focus = true;
+            }
+
+            onActivated: requestQuit()
+            selected: focus
         }
         RollableMenuItem {
             id: scopeQuit
@@ -94,11 +111,12 @@ FocusScope {
 
             enabled: callable
             visible: callable
-            readonly property bool callable: mbQuitShutdown.callable
-                || mbQuitReboot.callable
-                || mbQuitExit.callable
+            readonly property bool callable: !mbQuickExit.callable
+                && [mbQuitShutdown, mbQuitSuspend, mbQuitReboot, mbQuitExit].some(e => e.callable);
 
             Component.onCompleted: {
+                if (!callable)
+                    return;
                 const first_callable = [mbQuitShutdown, mbQuitSuspend, mbQuitReboot, mbQuitExit].find(e => e.callable);
                 if (first_callable) {
                     first_callable.focus = true;
