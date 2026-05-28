@@ -145,7 +145,7 @@ void apply_filter(FileFilter& filter, SearchContext& sctx)
 
     const bool has_valid_regex = !filter.include.regex.pattern().isEmpty() && filter.include.regex.isValid();
     const bool needs_scan = !filter.include.extensions.empty() || has_valid_regex;
-    if (!needs_scan)
+    if (!AppSettings::general.verify_files || !needs_scan)
         return;
 
     constexpr auto entry_filters_files = QDir::Files | QDir::NoDotAndDotDot;
