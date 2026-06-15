@@ -18,6 +18,7 @@
 #include "ProviderManager.h"
 
 #include "AppSettings.h"
+#include "GameDataCache.h"
 #include "Log.h"
 #include "Provider.h"
 #include "SearchContext.h"
@@ -62,12 +63,35 @@ void ProviderManager::run()
         providers::SearchContext sctx;
         sctx.enable_network();
 
-
         QElapsedTimer run_timer;
         run_timer.start();
 
         const std::vector<ProviderPtr> providers = enabled_providers();
+        if (GameDataCache::load(sctx, providers)) {
+            for (const ProviderPtr& provider : providers) {
+                const QString provider_name = provider->display_name().toLower();
+                if (!provider_name.contains(QStringLiteral("favorite"))
+                    && !provider_name.contains(QStringLiteral("playtime")))
+                    continue;
 
+                Log::info(LOGMSG("Running lightweight provider after cache restore: %1")
+                    .arg(provider->display_name()));
+                provider->run(sctx);
+            }
+
+            QElapsedTimer finalize_timer;
+            finalize_timer.start();
+            // TODO: C++17
+            std::tie(m_found_collections, m_found_games) = sctx.finalize();
+            Log::info(LOGMSG("Game list cache restore took %1ms").arg(finalize_timer.elapsed()));
+
+            m_current_progress = 1.f;
+            m_current_stage = QString();
+            emit scanProgressChanged(m_current_progress, m_current_stage);
+            emit scanFinished();
+            return;
+        }
+        
         size_t progress_sections = providers.size();
         for (const ProviderPtr provider : providers) {
             if (provider->flags() & providers::PROVIDER_FLAG_HIDE_PROGRESS)
@@ -122,6 +146,7 @@ void ProviderManager::run()
         std::tie(m_found_collections, m_found_games) = sctx.finalize();
 
         Log::info(LOGMSG("Game list post-processing took %1ms").arg(finalize_timer.elapsed()));
+        GameDataCache::save(sctx, providers, m_found_collections, m_found_games);
         emit scanFinished();
     });
 }
