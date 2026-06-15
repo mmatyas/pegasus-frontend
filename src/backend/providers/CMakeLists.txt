@@ -7,6 +7,8 @@ target_sources(pegasus-backend PRIVATE
     ProviderUtils.h
     SearchContext.cpp
     SearchContext.h
+    GameDataCache.cpp
+    GameDataCache.h
 )
 
 
