@@ -50,7 +50,7 @@ private:
     ProcessLauncher* m_launcher;
     ProviderManager* m_providerman;
 
-    void onScanRequested();
+    void onScanRequested(bool force_refresh = false);
     void onScanFinished();
     void onFavoritesChanged();
     void onProcessLaunched();

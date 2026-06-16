@@ -232,12 +232,12 @@ QString GameDataCache::buildFingerprint(
     QJsonObject root;
     root[QStringLiteral("schema")] = CACHE_SCHEMA_VERSION;
 
-    QJsonArray provider_names;
+    QJsonArray provider_ids;
     for (const providers::Provider* provider : providers) {
         if (provider)
-            provider_names.append(provider->display_name());
+            provider_ids.append(QString(provider->codename()));
     }
-    root[QStringLiteral("providers")] = provider_names;
+    root[QStringLiteral("providers")] = provider_ids;
     root[QStringLiteral("root_game_dirs")] = string_list_to_json(sctx.root_game_dirs());
 
     // Keep the fingerprint based only on inputs that are known before the
@@ -269,8 +269,10 @@ bool GameDataCache::load(
     const QJsonObject root = doc.object();
     if (root.value(QStringLiteral("schema")).toInt() != CACHE_SCHEMA_VERSION)
         return false;
-    if (root.value(QStringLiteral("fingerprint")).toString() != expected_fingerprint)
+    if (root.value(QStringLiteral("fingerprint")).toString() != expected_fingerprint){
+        Log::info(LOGMSG("Ignoring game index cache: fingerprint mismatch"));
         return false;
+    }
 
     const QJsonArray collections = root.value(QStringLiteral("collections")).toArray();
     for (const QJsonValue& value : collections) {

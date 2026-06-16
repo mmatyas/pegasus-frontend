@@ -31,7 +31,7 @@ class ProviderManager : public QObject {
 public:
     explicit ProviderManager(QObject* parent = nullptr);
 
-    void run();
+    void run(bool force_refresh = false);
 
     void onGameLaunched(model::GameFile* const) const;
     void onGameFinished(model::GameFile* const) const;
