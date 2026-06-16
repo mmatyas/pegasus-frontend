@@ -212,7 +212,7 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_api_private->settings().keyEditorPtr(), &model::KeyEditor::keysChanged,
                      m_api_public->keysPtr(), &model::Keys::refresh_keys);
     QObject::connect(m_api_private->settingsPtr(), &model::Settings::providerReloadingRequested,
-                     [this](){ onScanRequested(); });
+                     [this](){ onScanRequested(true); });
 
     QObject::connect(m_api_public, &model::ApiObject::favoritesChanged,
                      [this](){ onFavoritesChanged(); });
@@ -244,10 +244,10 @@ void Backend::start()
     onScanRequested();
 }
 
-void Backend::onScanRequested()
+void Backend::onScanRequested(const bool force_refresh)
 {
     m_api_public->clearGameData();
-    m_providerman->run();
+    m_providerman->run(force_refresh);
 }
 
 void Backend::onScanFinished()

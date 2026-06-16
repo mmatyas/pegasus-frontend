@@ -50,14 +50,14 @@ ProviderManager::ProviderManager(QObject* parent)
     }
 }
 
-void ProviderManager::run()
+void ProviderManager::run(bool force_refresh);
 {
     Q_ASSERT(!m_future.isRunning());
 
     m_found_games.clear();
     m_found_collections.clear();
 
-    m_future = QtConcurrent::run([this]{
+    m_future = QtConcurrent::run([this, force_refresh]{
         emit scanStarted();
 
         providers::SearchContext sctx;
@@ -67,7 +67,11 @@ void ProviderManager::run()
         run_timer.start();
 
         const std::vector<ProviderPtr> providers = enabled_providers();
-        if (GameDataCache::load(sctx, providers)) {
+
+        if (force_refresh)
+            Log::info(LOGMSG("Bypassing game index cache due to forced refresh"));
+
+        if (!force_refresh && GameDataCache::load(sctx, providers)) {
             for (const ProviderPtr& provider : providers) {
                 const QString provider_name = provider->display_name().toLower();
                 if (!provider_name.contains(QStringLiteral("favorite"))
