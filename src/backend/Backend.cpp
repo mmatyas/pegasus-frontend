@@ -241,7 +241,7 @@ void Backend::start()
 {
     m_api_private->settings().postInit();
     onProcessFinished();
-    onScanRequested();
+    onScanRequested(AppSettings::general.scan_on_launch);
 }
 
 void Backend::onScanRequested(const bool force_refresh)

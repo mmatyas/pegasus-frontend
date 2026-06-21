@@ -115,6 +115,17 @@ void Settings::setVerifyFiles(bool new_val)
     emit verifyFilesChanged();
 }
 
+void Settings::setScanOnLaunch(bool new_val)
+{
+    if (new_val == AppSettings::general.scan_on_launch)
+        return;
+
+    AppSettings::general.scan_on_launch = new_val;
+    AppSettings::save_config();
+
+    emit scanOnLaunchChanged();
+}
+
 void Settings::setShowMissingGames(bool new_val)
 {
     if (new_val == AppSettings::general.show_missing_games)

@@ -42,6 +42,9 @@ class Settings : public QObject {
     Q_PROPERTY(bool verifyFiles
                READ verifyFiles WRITE setVerifyFiles
                NOTIFY verifyFilesChanged)
+    Q_PROPERTY(bool scanOnLaunch
+               READ scanOnLaunch WRITE setScanOnLaunch
+               NOTIFY scanOnLaunchChanged)
     Q_PROPERTY(bool showMissingGames
                READ showMissingGames WRITE setShowMissingGames
                NOTIFY showMissingGamesChanged)
@@ -66,6 +69,9 @@ public:
     bool verifyFiles() const { return AppSettings::general.verify_files; }
     void setVerifyFiles(bool);
 
+    bool scanOnLaunch() const { return AppSettings::general.scan_on_launch; }
+    void setScanOnLaunch(bool);
+
     bool showMissingGames() const { return AppSettings::general.show_missing_games; }
     void setShowMissingGames(bool);
 
@@ -82,6 +88,7 @@ signals:
     void fullscreenChanged();
     void mouseSupportChanged();
     void verifyFilesChanged();
+    void scanOnLaunchChanged();
     void showMissingGamesChanged();
     void gameDirsChanged();
     void androidDirsChanged();
