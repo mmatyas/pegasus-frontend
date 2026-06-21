@@ -124,6 +124,14 @@ FocusScope {
             enabled: Qt.platform.os === "android"
         },
         SettingsEntry {
+            label: QT_TR_NOOP("Scan for games on launch")
+            desc: QT_TR_NOOP("Scan for games every time Pegasus starts. Disable this to restore the previous game list from cache; manually reload after making library changes.")
+            type: SettingsEntry.Type.Bool
+            boolValue: Internal.settings.scanOnLaunch
+            boolSetter: (val) => Internal.settings.scanOnLaunch = val
+            section: "gaming"
+        },
+        SettingsEntry {
             label: QT_TR_NOOP("Validate game files")
             desc: QT_TR_NOOP("Check the game files and only show games that actually exist. You can disable this to improve loading times.")
             type: SettingsEntry.Type.Bool

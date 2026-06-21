@@ -50,7 +50,7 @@ ProviderManager::ProviderManager(QObject* parent)
     }
 }
 
-void ProviderManager::run(bool force_refresh)
+void ProviderManager::run(const bool force_refresh)
 {
     Q_ASSERT(!m_future.isRunning());
 
