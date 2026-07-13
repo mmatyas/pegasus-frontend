@@ -52,6 +52,12 @@ QJsonArray string_list_to_json(const QStringList& values)
     return out;
 }
 
+void add_non_empty_array(QJsonObject& obj, const QString& key, const QJsonArray& values)
+{
+    if (!values.isEmpty())
+        obj[key] = values;
+}
+
 QStringList json_to_string_list(const QJsonValue& value)
 {
     QStringList out;
@@ -65,26 +71,26 @@ QStringList json_to_string_list(const QJsonValue& value)
 QJsonObject assets_to_json(const model::Assets& assets)
 {
     QJsonObject obj;
-    obj[QStringLiteral("box_front")] = string_list_to_json(assets.boxFrontList());
-    obj[QStringLiteral("box_back")] = string_list_to_json(assets.boxBackList());
-    obj[QStringLiteral("box_spine")] = string_list_to_json(assets.boxSpineList());
-    obj[QStringLiteral("box_full")] = string_list_to_json(assets.boxFullList());
-    obj[QStringLiteral("cartridge")] = string_list_to_json(assets.cartridgeList());
-    obj[QStringLiteral("logo")] = string_list_to_json(assets.logoList());
-    obj[QStringLiteral("poster")] = string_list_to_json(assets.posterList());
-    obj[QStringLiteral("marquee")] = string_list_to_json(assets.marqueeList());
-    obj[QStringLiteral("bezel")] = string_list_to_json(assets.bezelList());
-    obj[QStringLiteral("panel")] = string_list_to_json(assets.panelList());
-    obj[QStringLiteral("cabinet_left")] = string_list_to_json(assets.cabinetLeftList());
-    obj[QStringLiteral("cabinet_right")] = string_list_to_json(assets.cabinetRightList());
-    obj[QStringLiteral("tile")] = string_list_to_json(assets.tileList());
-    obj[QStringLiteral("banner")] = string_list_to_json(assets.bannerList());
-    obj[QStringLiteral("steam")] = string_list_to_json(assets.steamList());
-    obj[QStringLiteral("background")] = string_list_to_json(assets.backgroundList());
-    obj[QStringLiteral("music")] = string_list_to_json(assets.musicList());
-    obj[QStringLiteral("screenshot")] = string_list_to_json(assets.screenshotList());
-    obj[QStringLiteral("titlescreen")] = string_list_to_json(assets.titlescreenList());
-    obj[QStringLiteral("video")] = string_list_to_json(assets.videoList());
+    add_non_empty_array(obj, QStringLiteral("box_front"), string_list_to_json(assets.boxFrontList()));
+    add_non_empty_array(obj, QStringLiteral("box_back"), string_list_to_json(assets.boxBackList()));
+    add_non_empty_array(obj, QStringLiteral("box_spine"), string_list_to_json(assets.boxSpineList()));
+    add_non_empty_array(obj, QStringLiteral("box_full"), string_list_to_json(assets.boxFullList()));
+    add_non_empty_array(obj, QStringLiteral("cartridge"), string_list_to_json(assets.cartridgeList()));
+    add_non_empty_array(obj, QStringLiteral("logo"), string_list_to_json(assets.logoList()));
+    add_non_empty_array(obj, QStringLiteral("poster"), string_list_to_json(assets.posterList()));
+    add_non_empty_array(obj, QStringLiteral("marquee"), string_list_to_json(assets.marqueeList()));
+    add_non_empty_array(obj, QStringLiteral("bezel"), string_list_to_json(assets.bezelList()));
+    add_non_empty_array(obj, QStringLiteral("panel"), string_list_to_json(assets.panelList()));
+    add_non_empty_array(obj, QStringLiteral("cabinet_left"), string_list_to_json(assets.cabinetLeftList()));
+    add_non_empty_array(obj, QStringLiteral("cabinet_right"), string_list_to_json(assets.cabinetRightList()));
+    add_non_empty_array(obj, QStringLiteral("tile"), string_list_to_json(assets.tileList()));
+    add_non_empty_array(obj, QStringLiteral("banner"), string_list_to_json(assets.bannerList()));
+    add_non_empty_array(obj, QStringLiteral("steam"), string_list_to_json(assets.steamList()));
+    add_non_empty_array(obj, QStringLiteral("background"), string_list_to_json(assets.backgroundList()));
+    add_non_empty_array(obj, QStringLiteral("music"), string_list_to_json(assets.musicList()));
+    add_non_empty_array(obj, QStringLiteral("screenshot"), string_list_to_json(assets.screenshotList()));
+    add_non_empty_array(obj, QStringLiteral("titlescreen"), string_list_to_json(assets.titlescreenList()));
+    add_non_empty_array(obj, QStringLiteral("video"), string_list_to_json(assets.videoList()));
     return obj;
 }
 
@@ -179,10 +185,10 @@ QJsonObject game_to_json(const model::Game& game)
     obj[QStringLiteral("sort_by")] = game.sortBy();
     obj[QStringLiteral("summary")] = game.summary();
     obj[QStringLiteral("description")] = game.description();
-    obj[QStringLiteral("developers")] = string_list_to_json(game.developerListConst());
-    obj[QStringLiteral("publishers")] = string_list_to_json(game.publisherListConst());
-    obj[QStringLiteral("genres")] = string_list_to_json(game.genreListConst());
-    obj[QStringLiteral("tags")] = string_list_to_json(game.tagListConst());
+    add_non_empty_array(obj, QStringLiteral("developers"), string_list_to_json(game.developerListConst()));
+    add_non_empty_array(obj, QStringLiteral("publishers"), string_list_to_json(game.publisherListConst()));
+    add_non_empty_array(obj, QStringLiteral("genres"), string_list_to_json(game.genreListConst()));
+    add_non_empty_array(obj, QStringLiteral("tags"), string_list_to_json(game.tagListConst()));
     obj[QStringLiteral("player_count")] = game.playerCount();
     obj[QStringLiteral("rating")] = game.rating();
     obj[QStringLiteral("release_date")] = game.releaseDate().toString(Qt::ISODate);
@@ -199,7 +205,7 @@ QJsonObject game_to_json(const model::Game& game)
                 collection_names.append(collection->name());
         }
     }
-    obj[QStringLiteral("collections")] = collection_names;
+    add_non_empty_array(obj, QStringLiteral("collections"), collection_names);
 
     QJsonArray files;
     if (game.filesModel()) {
@@ -214,7 +220,7 @@ QJsonObject game_to_json(const model::Game& game)
             files.append(file_obj);
         }
     }
-    obj[QStringLiteral("files")] = files;
+    add_non_empty_array(obj, QStringLiteral("files"), files);
 
     return obj;
 }
@@ -360,14 +366,14 @@ void GameDataCache::save(
         if (collection)
             collection_array.append(collection_to_json(*collection));
     }
-    root[QStringLiteral("collections")] = collection_array;
+    add_non_empty_array(root, QStringLiteral("collections"), collection_array);
 
     QJsonArray game_array;
     for (const model::Game* game : games) {
         if (game)
             game_array.append(game_to_json(*game));
     }
-    root[QStringLiteral("games")] = game_array;
+    add_non_empty_array(root, QStringLiteral("games"), game_array);
 
     QDir().mkpath(paths::writableCacheDir());
     QSaveFile file(cacheFilePath());

@@ -70,7 +70,7 @@ namespace providers {
 namespace gog {
 
 GogProvider::GogProvider(QObject* parent)
-    : Provider(QLatin1String("gog"), QStringLiteral("GOG"), parent)
+    : Provider(QLatin1String("gog"), QStringLiteral("GOG"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& GogProvider::run(SearchContext& sctx)

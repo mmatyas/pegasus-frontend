@@ -112,7 +112,7 @@ namespace providers {
 namespace lutris {
 
 LutrisProvider::LutrisProvider(QObject* parent)
-    : Provider(QLatin1String("lutris"), QStringLiteral("Lutris"), parent)
+    : Provider(QLatin1String("lutris"), QStringLiteral("Lutris"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& LutrisProvider::run(SearchContext& sctx)

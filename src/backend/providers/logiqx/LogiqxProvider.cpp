@@ -261,7 +261,7 @@ namespace providers {
 namespace logiqx {
 
 LogiqxProvider::LogiqxProvider(QObject* parent)
-    : Provider(QLatin1String("logiqx"), QStringLiteral("Logiqx"), parent)
+    : Provider(QLatin1String("logiqx"), QStringLiteral("Logiqx"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 

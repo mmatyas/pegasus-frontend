@@ -171,7 +171,7 @@ namespace providers {
 namespace steam {
 
 SteamProvider::SteamProvider(QObject* parent)
-    : Provider(QLatin1String("steam"), QStringLiteral("Steam"), parent)
+    : Provider(QLatin1String("steam"), QStringLiteral("Steam"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& SteamProvider::run(SearchContext& sctx)

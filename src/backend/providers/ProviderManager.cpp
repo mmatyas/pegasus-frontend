@@ -68,14 +68,11 @@ void ProviderManager::run(const bool force_refresh)
 
         const std::vector<ProviderPtr> providers = enabled_providers();
 
-        if (force_refresh)
-            Log::info(LOGMSG("Bypassing game index cache due to forced refresh"));
-
         if (!force_refresh && GameDataCache::load(sctx, providers)) {
+            Log::info(LOGMSG("Skipping full scan due to game index cache"));
+
             for (const ProviderPtr& provider : providers) {
-                const QString provider_name = provider->display_name().toLower();
-                if (!provider_name.contains(QStringLiteral("favorite"))
-                    && !provider_name.contains(QStringLiteral("playtime")))
+                if (provider->flags() & providers::PROVIDER_FLAG_CACHEABLE)
                     continue;
 
                 Log::info(LOGMSG("Running lightweight provider after cache restore: %1")
