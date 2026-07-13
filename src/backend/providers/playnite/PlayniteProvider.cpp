@@ -129,7 +129,7 @@ void apply_game_fields(
 } // namespace
 
 PlayniteProvider::PlayniteProvider(QObject* parent)
-    : Provider(QLatin1String("playnite"), QStringLiteral("Playnite"), parent)
+    : Provider(QLatin1String("playnite"), QStringLiteral("Playnite"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& PlayniteProvider::run(SearchContext& sctx)

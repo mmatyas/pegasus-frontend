@@ -42,7 +42,7 @@ namespace providers {
 namespace es2 {
 
 Es2Provider::Es2Provider(QObject* parent)
-    : Provider(QLatin1String("es2"), QStringLiteral("EmulationStation"), parent)
+    : Provider(QLatin1String("es2"), QStringLiteral("EmulationStation"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& Es2Provider::run(SearchContext& sctx)

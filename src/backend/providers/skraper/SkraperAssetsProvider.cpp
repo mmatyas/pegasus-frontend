@@ -50,7 +50,7 @@ namespace providers {
 namespace skraper {
 
 SkraperAssetsProvider::SkraperAssetsProvider(QObject* parent)
-    : Provider(QLatin1String("skraper"), QStringLiteral("Skraper Assets"), parent)
+    : Provider(QLatin1String("skraper"), QStringLiteral("Skraper Assets"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& SkraperAssetsProvider::run(SearchContext& sctx)

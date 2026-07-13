@@ -40,7 +40,7 @@ namespace providers {
 namespace launchbox {
 
 LaunchboxProvider::LaunchboxProvider(QObject* parent)
-    : Provider(QLatin1String("launchbox"), QStringLiteral("LaunchBox"), parent)
+    : Provider(QLatin1String("launchbox"), QStringLiteral("LaunchBox"), PROVIDER_FLAG_CACHEABLE, parent)
 {}
 
 Provider& LaunchboxProvider::run(providers::SearchContext& sctx)

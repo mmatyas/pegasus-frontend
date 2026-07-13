@@ -123,7 +123,7 @@ namespace providers {
 namespace android {
 
 AndroidAppsProvider::AndroidAppsProvider(QObject* parent)
-    : Provider(QLatin1String("androidapps"), QStringLiteral("Android Apps"), parent)
+    : Provider(QLatin1String("androidapps"), QStringLiteral("Android Apps"), PROVIDER_FLAG_CACHEABLE, parent)
     , m_metahelper(display_name())
 {}
 
