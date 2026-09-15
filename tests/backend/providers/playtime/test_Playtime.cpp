@@ -23,6 +23,7 @@
 #include "providers/pegasus_playtime/PlaytimeStats.h"
 
 #include <QSqlDatabase>
+#include <QSqlQuery>
 
 
 namespace {
@@ -50,6 +51,8 @@ private slots:
     void read();
     void write();
     void write_queue();
+    void write_slug();
+    void read_slug();
 };
 
 void test_Playtime::read()
@@ -132,6 +135,69 @@ void test_Playtime::write_queue()
     // FIXME: Flaky results on Mac
     QCOMPARE(games.at(0)->property("playCount").toInt(), 3);
 #endif
+}
+
+
+void test_Playtime::write_slug()
+{
+    QTemporaryFile db_file;
+    QVERIFY(db_file.open());
+
+    providers::SearchContext sctx;
+    model::Collection& collection = *sctx.get_or_create_collection(QStringLiteral("coll_slug"));
+    model::Game& game = *sctx.create_game_for(collection);
+    sctx.game_add_filepath(game, QStringLiteral("dummy_slug"));
+    game.setSlug(QStringLiteral("my-slug"));
+
+    providers::playtime::PlaytimeStats playtime(db_file.fileName());
+    const auto [collections, games] = sctx.finalize(this);
+
+    QSignalSpy spy_start(&playtime, &providers::playtime::PlaytimeStats::startedWriting);
+    QSignalSpy spy_end(&playtime, &providers::playtime::PlaytimeStats::finishedWriting);
+    QVERIFY(spy_start.isValid() && spy_end.isValid());
+
+    playtime.onGameLaunched(games.at(0)->filesModel()->entries().front());
+    playtime.onGameFinished(games.at(0)->filesModel()->entries().front());
+
+    QVERIFY(spy_start.count() || spy_start.wait());
+    QVERIFY(spy_end.count() || spy_end.wait());
+    QCOMPARE(spy_start.count(), 1);
+    QCOMPARE(spy_end.count(), 1);
+
+    QCOMPARE(games.at(0)->property("playCount").toInt(), 1);
+}
+
+void test_Playtime::read_slug()
+{
+    QTemporaryFile db_file;
+    QVERIFY(db_file.open());
+
+    {
+        QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), QStringLiteral("slug_read"));
+        db.setDatabaseName(db_file.fileName());
+        QVERIFY(db.open());
+
+        QSqlQuery query(db);
+        query.exec(QStringLiteral("CREATE TABLE paths (id INTEGER PRIMARY KEY, path TEXT UNIQUE NOT NULL);"));
+        query.exec(QStringLiteral("CREATE TABLE plays (id INTEGER PRIMARY KEY, path_id INTEGER NOT NULL REFERENCES plays(id), start_time INTEGER NOT NULL, duration INTEGER NOT NULL);"));
+        query.exec(QStringLiteral("INSERT INTO paths VALUES (1, 'pegasus-slug:my-slug');"));
+        query.exec(QStringLiteral("INSERT INTO plays VALUES (1, 1, 1531755000, 35);"));
+        db.close();
+    }
+    QSqlDatabase::removeDatabase(QStringLiteral("slug_read"));
+
+    providers::SearchContext sctx;
+    model::Collection& collection = *sctx.get_or_create_collection(QStringLiteral("coll_slug"));
+    model::Game& game = *sctx.create_game_for(collection);
+    sctx.game_add_filepath(game, QStringLiteral("/my/game"));
+    game.setSlug(QStringLiteral("my-slug"));
+
+    providers::playtime::PlaytimeStats(db_file.fileName()).run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
+
+    QCOMPARE(games.at(0)->property("playCount").toInt(), 1);
+    QCOMPARE(games.at(0)->property("playTime").toInt(), 35);
+    QCOMPARE(games.at(0)->property("lastPlayed").toDateTime(), QDateTime::fromSecsSinceEpoch(1531755035));
 }
 
 

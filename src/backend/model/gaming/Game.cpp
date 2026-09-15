@@ -90,7 +90,10 @@ void Game::onEntryPlayStatsChanged()
     const auto prev_play_time = m_data.playstats.play_time;
     const auto prev_last_played = m_data.playstats.last_played;
 
-    Q_ASSERT(filesModel());
+    // this is null if called inside PlaytimeStats::run
+    if (filesModel() == nullptr) 
+        return;
+
     const std::vector<model::GameFile*>& filelist = filesModel()->entries();
 
     m_data.playstats.play_count = std::accumulate(filelist.cbegin(), filelist.cend(), 0,
@@ -105,6 +108,10 @@ void Game::onEntryPlayStatsChanged()
         [](const QDateTime& current_max, const model::GameFile* const gamefile){
             return std::max(current_max, gamefile->lastPlayed());
         });
+
+    m_data.playstats.play_count += m_data.playstats_self.play_count;
+    m_data.playstats.play_time += m_data.playstats_self.play_time;
+    m_data.playstats.last_played = std::max(m_data.playstats.last_played, m_data.playstats_self.last_played);
 
     const bool changed = prev_play_count != m_data.playstats.play_count
         || prev_play_time != m_data.playstats.play_time
@@ -121,6 +128,14 @@ void Game::launch()
         m_files->entries().front()->launch();
     else
         emit launchFileSelectorRequested();
+}
+
+void Game::update_playstats(int playcount, qint64 playtime, QDateTime last_played)
+{
+    m_data.playstats_self.last_played = std::max(m_data.playstats_self.last_played, std::move(last_played));
+    m_data.playstats_self.play_time += playtime;
+    m_data.playstats_self.play_count += playcount;
+    onEntryPlayStatsChanged();
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
