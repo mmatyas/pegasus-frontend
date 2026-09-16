@@ -101,9 +101,9 @@ MetadataHelper::MetadataHelper(QString log_tag)
     , rx_meta_itemprops(QStringLiteral(R""(<meta itemprop="(.+?)" content="(.+?)")""), QRegularExpression::DotMatchesEverythingOption)
     , rx_background(QStringLiteral(R""(<meta property="og:image" content="(.+?)")""))
     , rx_developer(QStringLiteral(R""(<a href="/store\/apps\/dev(eloper)?\?id=.+?" class=".*?">([^<]+)<\/a><\/span>)""))
-    , rx_category(QStringLiteral(R""(<a itemprop="genre".*?>([^<]+)<\/a>)""))
+    , rx_category(QStringLiteral(R""(href="\/store\/apps\/category\/([^"]+)" aria-label)""))
     , rx_screenshots(QStringLiteral(R""(<img src="([^"]+=w720-h310)")""))
-    , rx_release(QStringLiteral(R""("Google Commerce Ltd"],"(.+?)")""))
+    , rx_release(QStringLiteral(R""("\]\]\],\["(.+?[0-9]{4})",\[)""))
     , rx_rating(QStringLiteral(R""("AggregateRating","ratingValue":"(.+?)")""))
 {}
 
