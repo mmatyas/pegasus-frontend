@@ -47,6 +47,7 @@ public:
     model::Game* create_game();
     SearchContext& game_add_to(model::Game&, model::Collection&);
 
+    std::vector<model::Game*> games_by_slug(const QString&) const;
     model::Game* game_by_filepath(const QString&) const;
     model::Game* game_by_uri(const QString&) const;
     model::GameFile* gamefile_by_filepath(const QString&) const;

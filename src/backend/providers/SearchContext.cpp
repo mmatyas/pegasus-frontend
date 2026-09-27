@@ -98,6 +98,16 @@ model::Game* SearchContext::create_game()
     return game_ptr;
 }
 
+std::vector<model::Game*> SearchContext::games_by_slug(const QString& slug) const
+{
+    std::vector<model::Game*> found_games;
+    for (const auto& pair : m_game_entries) {
+        if (pair.first->slug() == slug) 
+            found_games.emplace_back(pair.first);
+    }
+    return found_games;
+}
+
 model::Game* SearchContext::game_by_filepath(const QString& can_path) const
 {
     model::GameFile* const entry_ptr = gamefile_by_filepath(can_path);

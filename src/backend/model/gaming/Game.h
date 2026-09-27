@@ -43,6 +43,7 @@ struct GameData {
     QString sort_by;
     QString summary;
     QString description;
+    QString slug;
 
     QStringList developers;
     QStringList publishers;
@@ -58,6 +59,9 @@ struct GameData {
         int play_time = 0;
         QDateTime last_played;
     } playstats;
+
+    // playstats tied to the game itself and not a specific file
+    PlayStats playstats_self;
 
     bool is_favorite = false;
     bool missing = false;
@@ -81,6 +85,7 @@ public:
     GETTER(const QString&, sortBy, sort_by)
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
+    GETTER(const QString&, slug, slug)
     GETTER(const QDate&, releaseDate, release_date)
     GETTER(int, playerCount, player_count)
     GETTER(float, rating, rating)
@@ -113,6 +118,7 @@ public:
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
+    SETTER(QString, Slug, slug)
     SETTER(QDate, ReleaseDate, release_date)
 
     SETTER(QString, LaunchCmd, launch_params.launch_cmd)
@@ -144,6 +150,7 @@ public:
     Q_PROPERTY(QString sortBy READ sortBy CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QString slug READ slug CONSTANT)
     Q_PROPERTY(QDate release READ releaseDate CONSTANT)
     Q_PROPERTY(int players READ playerCount CONSTANT)
     Q_PROPERTY(float rating READ rating CONSTANT)
@@ -163,6 +170,8 @@ public:
     QVariantMap& extraMapMut() { return m_extra; }
 
 
+    bool hasSlug() const { return !m_data.slug.isEmpty(); }
+    
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
     Assets* assetsPtr() const { return m_assets; }
@@ -201,6 +210,7 @@ public:
     explicit Game(QString name, QObject* parent = nullptr);
 
     Q_INVOKABLE void launch();
+    void update_playstats(int playcount, qint64 playtime, QDateTime last_played);
 
     void finalize();
 };
