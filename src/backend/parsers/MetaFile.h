@@ -22,6 +22,7 @@
 #include <QString>
 #include <vector>
 #include <functional>
+#include <utility>
 
 class QFile;
 class QTextStream;
@@ -34,12 +35,18 @@ struct Entry {
     QString key;
     std::vector<QString> values;
 
+    Entry(size_t line, QString key, std::vector<QString> values)
+        : line(line), key(std::move(key)), values(std::move(values)) {}
+
     void reset();
     MOVE_ONLY(Entry)
 };
 struct Error {
     size_t line;
     QString message;
+
+    Error(size_t line, QString message)
+        : line(line), message(std::move(message)) {}
 
     MOVE_ONLY(Error)
 };
