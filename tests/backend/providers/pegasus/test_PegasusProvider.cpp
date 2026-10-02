@@ -465,13 +465,13 @@ void test_PegasusProvider::nonASCII()
             "ascii.ext",
             "A simple ASCII filename",
         }, {
-            u8"\u00C1rv\u00EDzt\u0171r\u0151", // Árvíztűrő
-            u8"\u00E1rv\u00EDzt\u0171r\u0151.ext", // árvíztűrő.ext
-            u8"\u00C1rv\u00EDzt\u0171r\u0151 t\u00FCk\u00F6rf\u00FAr\u00F3g\u00E9p", // Árvíztűrő tükörfúrógép
+            reinterpret_cast<const char*>(u8"\u00C1rv\u00EDzt\u0171r\u0151"), // Árvíztűrő
+            reinterpret_cast<const char*>(u8"\u00E1rv\u00EDzt\u0171r\u0151.ext"), // árvíztűrő.ext
+            reinterpret_cast<const char*>(u8"\u00C1rv\u00EDzt\u0171r\u0151 t\u00FCk\u00F6rf\u00FAr\u00F3g\u00E9p"), // Árvíztűrő tükörfúrógép
         }, {
-            u8"\u65E5\u672C\u30B2\u30FC\u30E0", // 日本ゲーム
-            u8"\u30B2\u30FC\u30E0.ext", // ゲーム.ext
-            u8"\u8272\u306F\u5302\u3078\u3069 \u6563\u308A\u306C\u308B\u3092", // 色は匂へど 散りぬるを
+            reinterpret_cast<const char*>(u8"\u65E5\u672C\u30B2\u30FC\u30E0"), // 日本ゲーム
+            reinterpret_cast<const char*>(u8"\u30B2\u30FC\u30E0.ext"), // ゲーム.ext
+            reinterpret_cast<const char*>(u8"\u8272\u306F\u5302\u3078\u3069 \u6563\u308A\u306C\u308B\u3092"), // 色は匂へど 散りぬるを
         },
     };
     QCOMPARE(entries.at(1).title.size(), 9); // Árvíztűrő, spec = 2 bytes
