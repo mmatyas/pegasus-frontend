@@ -31,6 +31,35 @@ jobs:
         run: |
           .circleci/prepare.sh
           curl -L ${TOOLS_URL}/openssl-111t_android.tar.xz | tar xJf - -C /opt/
+
+      - name: Patch Qt Android focus highlight
+        run: |
+          set -euxo pipefail
+          qt_root="/opt/${QT_VERSION}_${QT_TARGET}"
+          qt_android_jar="${qt_root}/jar/QtAndroid.jar"
+          qt_source_root="${RUNNER_TEMP}/qtbase"
+          qt_package_dir="${qt_source_root}/src/android/jar/src/org/qtproject/qt5/android"
+          qt_classes="${RUNNER_TEMP}/qt-android-classes"
+          android_jar="$(find "${ANDROID_HOME}/platforms" -mindepth 2 -maxdepth 2 \
+            -name android.jar -print | sort -V | tail -n 1)"
+
+          test -f "${qt_android_jar}"
+          test -f "${android_jar}"
+          mkdir -p "${qt_package_dir}" "${qt_classes}"
+          curl --fail --location --retry 3 \
+            --output "${qt_package_dir}/QtEditText.java" \
+            "https://raw.githubusercontent.com/qt/qtbase/v${QT_VERSION_PRETTY}-lts-lgpl/src/android/jar/src/org/qtproject/qt5/android/QtEditText.java"
+          patch --batch --forward --strip=1 --directory="${qt_source_root}" \
+            < "${GITHUB_WORKSPACE}/etc/patches/qt-5.15.10-android-disable-focus-highlight.patch"
+          javac -source 8 -target 8 \
+            -classpath "${qt_android_jar}:${android_jar}" \
+            -d "${qt_classes}" \
+            "${qt_package_dir}/QtEditText.java"
+          jar --update --file "${qt_android_jar}" \
+            -C "${qt_classes}" org/qtproject/qt5/android/QtEditText.class
+          javap -classpath "${qt_android_jar}" -c org.qtproject.qt5.android.QtEditText \
+            | grep -F 'setDefaultFocusHighlightEnabled'
+
       - name: Build
         env:
           BUILDOPTS: ANDROID_ABIS=${{ matrix.abi }} FORCE_QT_PNG=1

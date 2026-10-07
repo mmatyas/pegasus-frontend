@@ -1,0 +1,13 @@
+diff --git a/src/android/jar/src/org/qtproject/qt5/android/QtEditText.java b/src/android/jar/src/org/qtproject/qt5/android/QtEditText.java
+--- a/src/android/jar/src/org/qtproject/qt5/android/QtEditText.java
++++ b/src/android/jar/src/org/qtproject/qt5/android/QtEditText.java
+@@ -83,6 +83,8 @@ public class QtEditText extends View
+     {
+         super(context);
+         setFocusable(true);
+         setFocusableInTouchMode(true);
++        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
++            setDefaultFocusHighlightEnabled(false);
+         m_activityDelegate = activityDelegate;
+     }
+     public QtActivityDelegate getActivityDelegate()
