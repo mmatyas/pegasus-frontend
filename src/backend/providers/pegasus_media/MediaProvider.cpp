@@ -31,6 +31,7 @@
 #include <QStringBuilder>
 #include <QStringList>
 #include <array>
+#include <vector>
 
 
 namespace {
@@ -62,9 +63,10 @@ AssetType detect_asset_type(const QString& basename, const QString& ext)
     return AssetType::UNKNOWN;
 }
 
-HashMap<QString, model::Game*> create_lookup_map(const HashMap<QString, model::GameFile*>& games)
+HashMap<QString, model::Game*> create_lookup_map(const HashMap<QString, model::GameFile*>& games, const QStringList& game_dirs)
 {
     HashMap<QString, model::Game*> out;
+    std::vector<std::pair<QString, model::Game*>> root_title_paths;
 
     // TODO: C++17
     for (const auto& pair : games) {
@@ -75,9 +77,21 @@ HashMap<QString, model::Game*> create_lookup_map(const HashMap<QString, model::G
         out.emplace(std::move(extless_path), game_ptr);
 
         // NOTE: the files are not necessarily in the same directory
-        QString title_path = ::clean_abs_dir(fi) % QChar('/') % game_ptr->title();
+        const QString abs_dir = ::clean_abs_dir(fi);
+        QString title_path = abs_dir % QChar('/') % game_ptr->title();
         out.emplace(std::move(title_path), game_ptr);
+
+        // Media is searched in <game dir>/media/<title>, so a file in a
+        // subdirectory of a game dir should be found by title there too
+        for (const QString& game_dir : game_dirs) {
+            if (abs_dir.startsWith(game_dir % QChar('/')))
+                root_title_paths.emplace_back(game_dir % QChar('/') % game_ptr->title(), game_ptr);
+        }
     }
+
+    // added last, so they never take a key that an existing layout already uses
+    for (auto& pair : root_title_paths)
+        out.emplace(std::move(pair.first), pair.second);
 
     return out;
 }
@@ -100,7 +114,7 @@ Provider& MediaProvider::run(SearchContext& sctx)
         QLatin1String("/.media"),
     };
 
-    const HashMap<QString, model::Game*> lookup_map = create_lookup_map(sctx.current_filepath_to_entry_map());
+    const HashMap<QString, model::Game*> lookup_map = create_lookup_map(sctx.current_filepath_to_entry_map(), sctx.pegasus_game_dirs());
 
     for (const QString& dir_base : sctx.pegasus_game_dirs()) {
         for (const QLatin1String& media_subdir_name : MEDIA_SUBDIRS) {

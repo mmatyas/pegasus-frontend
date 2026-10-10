@@ -77,6 +77,7 @@ private slots:
 
     void asset_search();
     void asset_search_by_title();
+    void asset_search_by_title_nested();
     void asset_search_multifile();
     void separate_media_dirs();
 };
@@ -147,6 +148,31 @@ void test_PegasusMediaProvider::asset_search_by_title()
         QStringLiteral("file::/asset_search_by_title/media/My Precious Game/box_front.png"));
     QCOMPARE(game.assets().videoList(),
         { QStringLiteral("file::/asset_search_by_title/media/My Precious Game/video.mp4") });
+}
+
+void test_PegasusMediaProvider::asset_search_by_title_nested()
+{
+    const QString display_path = QDir::toNativeSeparators(QStringLiteral(":/asset_search_by_title_nested/metadata.txt"));
+    QTest::ignoreMessage(QtInfoMsg, qUtf8Printable(QStringLiteral("Pegasus Metafiles: Found `%1`").arg(display_path)));
+
+    providers::SearchContext sctx({QStringLiteral(":/asset_search_by_title_nested")});
+    providers::pegasus::PegasusProvider().run(sctx);
+    providers::media::MediaProvider().run(sctx);
+    const auto [collections, games] = sctx.finalize(this);
+
+    const QString collection_name(QStringLiteral("mygames"));
+    QCOMPARE(collections.size(), 1);
+    QVERIFY(has_collection(collections, collection_name));
+    QCOMPARE(games.size(), 1);
+
+    // The game file is nested under a subdirectory, but the media is stored
+    // flat by title at <root>/media/<title>/. The media must still be found.
+    const QString path = QStringLiteral(":/asset_search_by_title_nested/subdir/mygame.ext");
+    QVERIFY(has_game_file(games, path));
+    const model::Game& game = get_game_by_file_path(games, path);
+
+    QCOMPARE(game.assets().boxFront(),
+        QStringLiteral("file::/asset_search_by_title_nested/media/My Precious Game/box_front.png"));
 }
 
 void test_PegasusMediaProvider::asset_search_multifile()
