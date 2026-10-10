@@ -14,6 +14,9 @@
         <file>asset_search_by_title/mygame.ext</file>
         <file>asset_search_by_title/media/My Precious Game/box_front.png</file>
         <file>asset_search_by_title/media/My Precious Game/video.mp4</file>
+        <file>asset_search_by_title_nested/metadata.txt</file>
+        <file>asset_search_by_title_nested/subdir/mygame.ext</file>
+        <file>asset_search_by_title_nested/media/My Precious Game/box_front.png</file>
         <file>asset_search_multifile/metadata.txt</file>
         <file>asset_search_multifile/mygame.ext</file>
         <file>asset_search_multifile/media/mygame/screenshot01.png</file>
