@@ -28,6 +28,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQmlNetworkAccessManagerFactory>
+#include <QWindow>
 
 
 namespace {
@@ -86,6 +87,22 @@ void FrontendLayer::teardown()
 
     m_engine->deleteLater();
     m_engine = nullptr;
+}
+
+void FrontendLayer::bringToFront()
+{
+    Q_ASSERT(m_engine);
+
+    const auto root_objects = m_engine->rootObjects();
+    if (root_objects.isEmpty())
+        return;
+
+    auto* const window = qobject_cast<QWindow*>(root_objects.first());
+    if (!window)
+        return;
+
+    window->raise();
+    window->requestActivate();
 }
 
 void FrontendLayer::clearCache()

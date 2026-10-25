@@ -55,6 +55,7 @@ private slots:
 
 private:
     QProcess* m_process;
+    bool m_waiting_after_teardown;
 
     void runProcess(const QString&, const QStringList&, const QString&);
 

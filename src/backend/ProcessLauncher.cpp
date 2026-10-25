@@ -154,6 +154,7 @@ QString abs_workdir(const QString& workdir, const QString& base_dir, const QStri
 ProcessLauncher::ProcessLauncher(QObject* parent)
     : QObject(parent)
     , m_process(nullptr)
+    , m_waiting_after_teardown(false)
 {}
 
 void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
@@ -264,8 +265,14 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
 void ProcessLauncher::onTeardownComplete()
 {
 #ifndef Q_OS_ANDROID
-    Q_ASSERT(m_process);
+    // the program may have finished while the delayed teardown was running,
+    // in which case processFinished was already emitted
+    if (!m_process)
+        return;
+
+    m_waiting_after_teardown = true;
     m_process->waitForFinished(-1);
+    m_waiting_after_teardown = false;
 #endif
     emit processFinished();
 }
@@ -316,6 +323,10 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
     }
 
     afterRun();
+
+    // if the frontend was kept alive, nobody else will report the finish
+    if (!m_waiting_after_teardown)
+        emit processFinished();
 }
 
 void ProcessLauncher::beforeRun(const QString& game_path)

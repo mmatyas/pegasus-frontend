@@ -24,6 +24,7 @@ namespace model { class Internal; }
 class FrontendLayer;
 class ProcessLauncher;
 class ProviderManager;
+class QTimer;
 
 
 namespace backend {
@@ -49,6 +50,7 @@ private:
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;
     ProviderManager* m_providerman;
+    QTimer* m_hide_timer;
 
     void onScanRequested(bool force_refresh = false);
     void onScanFinished();
