@@ -24,10 +24,12 @@ class QQmlApplicationEngine;
 
 /// Manages the dynamic reload of the frontend layer
 ///
-/// When we launch a game, the frontend stack will be teared down to save
-/// resources. However, this happens asyncronously (see QObject destructor).
-/// When it's done, the relevant signal will be triggered. After the actual
-/// execution is finished, the frontend layer can be rebuilt again.
+/// When we launch a game, the frontend stack may be teared down to save
+/// resources, or to let the game draw on platforms that allow only one
+/// program on the screen. However, this happens asyncronously (see QObject
+/// destructor). When it's done, the relevant signal will be triggered. After
+/// the actual execution is finished, the frontend layer can be rebuilt again.
+/// If it was kept alive instead, it can simply be brought to the front.
 ///
 /// Some funtions require a pointer to the API object, to connect and make
 /// it accessible to the frontend.
@@ -39,6 +41,8 @@ public:
 
     void rebuild();
     void teardown();
+    void bringToFront();
+    bool isLoaded() const { return m_engine; }
 
     void clearCache();
 

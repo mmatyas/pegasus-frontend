@@ -45,6 +45,9 @@ class Settings : public QObject {
     Q_PROPERTY(bool scanOnLaunch
                READ scanOnLaunch WRITE setScanOnLaunch
                NOTIFY scanOnLaunchChanged)
+    Q_PROPERTY(int hideDelayAfterLaunch
+               READ hideDelayAfterLaunch WRITE setHideDelayAfterLaunch
+               NOTIFY hideDelayAfterLaunchChanged)
     Q_PROPERTY(bool showMissingGames
                READ showMissingGames WRITE setShowMissingGames
                NOTIFY showMissingGamesChanged)
@@ -72,6 +75,9 @@ public:
     bool scanOnLaunch() const { return AppSettings::general.scan_on_launch; }
     void setScanOnLaunch(bool);
 
+    int hideDelayAfterLaunch() const { return AppSettings::general.hide_delay_after_launch; }
+    void setHideDelayAfterLaunch(int);
+
     bool showMissingGames() const { return AppSettings::general.show_missing_games; }
     void setShowMissingGames(bool);
 
@@ -89,6 +95,7 @@ signals:
     void mouseSupportChanged();
     void verifyFilesChanged();
     void scanOnLaunchChanged();
+    void hideDelayAfterLaunchChanged();
     void showMissingGamesChanged();
     void gameDirsChanged();
     void androidDirsChanged();

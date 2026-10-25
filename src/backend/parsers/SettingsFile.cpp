@@ -54,6 +54,16 @@ bool store_bool_maybe(const QString& str, bool& target)
     return success;
 }
 
+bool store_int_maybe(const QString& str, int& target)
+{
+    bool success = false;
+    const int value = str.toInt(&success);
+    if (success)
+        target = value;
+
+    return success;
+}
+
 } // namespace
 
 
@@ -70,6 +80,7 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
         { QStringLiteral("verify-files"), GeneralOption::VERIFY_FILES },
         { QStringLiteral("scan-on-launch"), GeneralOption::SCAN_ON_LAUNCH },
+        { QStringLiteral("hide-delay-after-launch"), GeneralOption::HIDE_DELAY_AFTER_LAUNCH },
         { QStringLiteral("show-missing-games"), GeneralOption::SHOW_MISSING_GAMES },
         { QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
@@ -123,6 +134,11 @@ void LoadContext::log_unknown_key(const size_t lineno, const QString& key) const
 void LoadContext::log_needs_bool(const size_t lineno, const QString& key) const
 {
     log_error(lineno, LOGMSG("this option (`%1`) must be a boolean (true/false) value").arg(key));
+}
+
+void LoadContext::log_needs_int(const size_t lineno, const QString& key) const
+{
+    log_error(lineno, LOGMSG("this option (`%1`) must be a whole number").arg(key));
 }
 
 void LoadContext::handle_entry(const size_t lineno,
@@ -180,6 +196,10 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
         case ConfigEntryGeneralOption::SCAN_ON_LAUNCH:
             if (!store_bool_maybe(val, AppSettings::general.scan_on_launch))
                 log_needs_bool(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::HIDE_DELAY_AFTER_LAUNCH:
+            if (!store_int_maybe(val, AppSettings::general.hide_delay_after_launch))
+                log_needs_int(lineno, key);
             break;
         case ConfigEntryGeneralOption::SHOW_MISSING_GAMES:
             if (!store_bool_maybe(val, AppSettings::general.show_missing_games))
@@ -318,6 +338,7 @@ void SaveContext::print_general(QTextStream& stream) const
         { GeneralOption::MOUSE_SUPPORT, AppSettings::general.mouse_support ? STR_TRUE : STR_FALSE },
         { GeneralOption::VERIFY_FILES, AppSettings::general.verify_files ? STR_TRUE : STR_FALSE },
         { GeneralOption::SCAN_ON_LAUNCH, AppSettings::general.scan_on_launch ? STR_TRUE : STR_FALSE },
+        { GeneralOption::HIDE_DELAY_AFTER_LAUNCH, QString::number(AppSettings::general.hide_delay_after_launch) },
         { GeneralOption::SHOW_MISSING_GAMES, AppSettings::general.show_missing_games ? STR_TRUE : STR_FALSE },
         { GeneralOption::LOCALE, AppSettings::general.locale },
         { GeneralOption::THEME, theme_path },

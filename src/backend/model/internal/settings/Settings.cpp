@@ -126,6 +126,17 @@ void Settings::setScanOnLaunch(bool new_val)
     emit scanOnLaunchChanged();
 }
 
+void Settings::setHideDelayAfterLaunch(int new_val)
+{
+    if (new_val == AppSettings::general.hide_delay_after_launch)
+        return;
+
+    AppSettings::general.hide_delay_after_launch = new_val;
+    AppSettings::save_config();
+
+    emit hideDelayAfterLaunchChanged();
+}
+
 void Settings::setShowMissingGames(bool new_val)
 {
     if (new_val == AppSettings::general.show_missing_games)

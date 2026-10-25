@@ -43,6 +43,7 @@ struct General {
     bool mouse_support = true;
     bool verify_files = true;
     bool scan_on_launch = true;
+    int hide_delay_after_launch = 0; // seconds; negative: never hide
     bool show_missing_games = false;
     QString locale;
     QString theme;

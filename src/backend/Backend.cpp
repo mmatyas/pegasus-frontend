@@ -40,6 +40,7 @@
 
 #include <QGuiApplication>
 #include <QQmlEngine>
+#include <QTimer>
 
 #if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
 #include <SDL.h>
@@ -66,6 +67,21 @@ void create_config_dirs()
     QDir configDir(paths::writableConfigDir());
     if (!configDir.mkpath(QStringLiteral("themes/")))
         Log::warning(LOGMSG("Failed to automatically create the `themes` directory"));
+}
+
+// On some platforms only one program can draw to the screen at a time,
+// so Pegasus must hide its frontend as soon as the game has started.
+bool platform_requires_hiding()
+{
+#ifdef Q_OS_ANDROID
+    return true;
+#else
+    const QString platform = QGuiApplication::platformName();
+    return platform == QLatin1String("eglfs")
+        || platform == QLatin1String("linuxfb")
+        || platform == QLatin1String("vkkhrdisplay")
+        || platform.startsWith(QLatin1String("minimal"));
+#endif
 }
 
 void register_api_classes()
@@ -139,6 +155,7 @@ Backend::Backend()
 
 Backend::~Backend()
 {
+    delete m_hide_timer;
     delete m_launcher;
     delete m_frontend;
     delete m_providerman;
@@ -170,9 +187,17 @@ Backend::Backend(const CliArgs& args)
     m_launcher = new ProcessLauncher();
     m_providerman = new ProviderManager();
 
+    m_hide_timer = new QTimer();
+    m_hide_timer->setSingleShot(true);
+    QObject::connect(m_hide_timer, &QTimer::timeout, [this](){
+        Log::info(LOGMSG("Hiding the frontend after the configured delay"));
+        m_frontend->teardown();
+    });
+
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
-    // see the relevant classes
+    // see the relevant classes. Depending on the settings and the platform,
+    // the frontend may also be kept alive while the game runs.
 
     // the Api asks the Launcher to start the game
     QObject::connect(m_api_public, &model::ApiObject::launchGameFile,
@@ -268,13 +293,35 @@ void Backend::onFavoritesChanged()
 
 void Backend::onProcessLaunched()
 {
-    m_frontend->teardown();
+    int delay_sec = AppSettings::general.hide_delay_after_launch;
+    if (delay_sec != 0 && platform_requires_hiding()) {
+        Log::info(LOGMSG("This platform allows only one program on the screen, hiding Pegasus immediately"));
+        delay_sec = 0;
+    }
+
+    if (delay_sec == 0) {
+        m_frontend->teardown();
+    }
+    else if (delay_sec > 0) {
+        Log::info(LOGMSG("Keeping the frontend visible for %1 seconds").arg(delay_sec));
+        m_hide_timer->start(delay_sec * 1000);
+    }
+    else {
+        Log::info(LOGMSG("Keeping the frontend visible while the program runs"));
+    }
+
     m_api_private->gamepad().stop();
 }
 
 void Backend::onProcessFinished()
 {
-    m_frontend->rebuild();
+    m_hide_timer->stop();
+
+    if (m_frontend->isLoaded())
+        m_frontend->bringToFront();
+    else
+        m_frontend->rebuild();
+
     m_api_private->gamepad().start(m_args);
 }
 

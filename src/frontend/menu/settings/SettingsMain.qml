@@ -132,6 +132,14 @@ FocusScope {
             section: "gaming"
         },
         SettingsEntry {
+            label: QT_TR_NOOP("Hide Pegasus after launching a game")
+            desc: QT_TR_NOOP("Keeping Pegasus visible for a while hides the desktop until the game appears. On platforms that allow only one program on the screen, Pegasus always hides immediately.")
+            type: SettingsEntry.Type.Select
+            selectBox: hideDelayBox
+            selectValue: root.hideDelayLabel(Internal.settings.hideDelayAfterLaunch)
+            section: "gaming"
+        },
+        SettingsEntry {
             label: QT_TR_NOOP("Validate game files")
             desc: QT_TR_NOOP("Check the game files and only show games that actually exist. You can disable this to improve loading times.")
             type: SettingsEntry.Type.Bool
@@ -245,6 +253,41 @@ FocusScope {
 
         onClose: options.focus = true
         onSelect: Internal.settings.locales.currentIndex = index
+    }
+    // `value` is the delay in seconds, -1 means never hide
+    ListModel {
+        id: hideDelayModel
+        ListElement { name: QT_TR_NOOP("Immediately"); value: 0 }
+        ListElement { name: QT_TR_NOOP("After 2 seconds"); value: 2 }
+        ListElement { name: QT_TR_NOOP("After 5 seconds"); value: 5 }
+        ListElement { name: QT_TR_NOOP("After 10 seconds"); value: 10 }
+        ListElement { name: QT_TR_NOOP("Never"); value: -1 }
+    }
+    function hideDelayIndex(seconds) {
+        for (let i = 0; i < hideDelayModel.count; i++) {
+            if (hideDelayModel.get(i).value === seconds)
+                return i;
+        }
+        return -1;
+    }
+    function hideDelayLabel(seconds) {
+        const idx = hideDelayIndex(seconds);
+        if (idx >= 0)
+            return qsTr(hideDelayModel.get(idx).name) + api.tr;
+        if (seconds < 0)
+            return qsTr("Never") + api.tr;
+        return qsTr("After %1 seconds").arg(seconds) + api.tr;
+    }
+
+    MultivalueBox {
+        id: hideDelayBox
+        z: 3
+
+        model: hideDelayModel
+        index: root.hideDelayIndex(Internal.settings.hideDelayAfterLaunch)
+
+        onClose: options.focus = true
+        onSelect: Internal.settings.hideDelayAfterLaunch = hideDelayModel.get(index).value
     }
     MultivalueBox {
         id: themeBox
