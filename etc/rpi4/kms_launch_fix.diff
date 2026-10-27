@@ -1,5 +1,5 @@
 diff --git a/src/backend/ProcessLauncher.cpp b/src/backend/ProcessLauncher.cpp
-index a2d44a79..1e76b401 100644
+index 9aa63ae63da6a5ed80d087acacab0b1307576002..05f89703d6149cef18bd587d678080f64d1ab4ed 100644
 --- a/src/backend/ProcessLauncher.cpp
 +++ b/src/backend/ProcessLauncher.cpp
 @@ -33,6 +33,14 @@
@@ -17,7 +17,7 @@ index a2d44a79..1e76b401 100644
  
  namespace {
  static constexpr auto SEPARATOR = "----------------------------------------";
-@@ -208,7 +216,6 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -234,7 +242,6 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
      m_process = new QProcess(this);
  
      // set up signals and slots
@@ -25,7 +25,7 @@ index a2d44a79..1e76b401 100644
      connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
      connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
              this, &ProcessLauncher::onProcessFinished);
-@@ -217,8 +224,9 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -243,8 +250,9 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
      m_process->setProcessChannelMode(QProcess::ForwardedChannels);
      m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
      m_process->setWorkingDirectory(workdir);
@@ -37,19 +37,25 @@ index a2d44a79..1e76b401 100644
  
  #else // Q_OS_ANDROID
      const QString result = android::run_am_call(args);
-@@ -238,10 +246,20 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
+@@ -264,16 +272,22 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
  
  void ProcessLauncher::onTeardownComplete()
  {
 -#ifndef Q_OS_ANDROID
-     Q_ASSERT(m_process);
+-    // the program may have finished while the delayed teardown was running,
+-    // in which case processFinished was already emitted
+-    if (!m_process)
+-        return;
++    Q_ASSERT(m_process);
 +    auto platint = static_cast<QEglFSIntegration* const>(QGuiApplicationPrivate::platformIntegration());
 +
 +    platint->destroy();
 +    platint->m_vtHandler.reset(nullptr);
-+
+ 
+     m_waiting_after_teardown = true;
 +    m_process->start(QProcess::ReadOnly);
      m_process->waitForFinished(-1);
+     m_waiting_after_teardown = false;
 -#endif
 +
 +    const bool backup = platint->m_disableInputHandlers;
@@ -60,7 +66,7 @@ index a2d44a79..1e76b401 100644
      emit processFinished();
  }
  
-@@ -295,7 +313,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
+@@ -331,7 +345,6 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
  
  void ProcessLauncher::beforeRun(const QString& game_path)
  {
@@ -68,14 +74,14 @@ index a2d44a79..1e76b401 100644
      ScriptRunner::run(ScriptEvent::PROCESS_STARTED, { game_path });
  }
  
-@@ -308,5 +325,4 @@ void ProcessLauncher::afterRun()
+@@ -344,5 +357,4 @@ void ProcessLauncher::afterRun()
  #endif
  
      ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
 -    TerminalKbd::disable();
  }
 diff --git a/src/backend/backend.pro b/src/backend/backend.pro
-index c5e62d23..60e2a9c7 100644
+index fd5fbf2206ad5f8bd922430d655ef24b026b13f4..8629d64242507ca4549dee191348495ad6d7ab7e 100644
 --- a/src/backend/backend.pro
 +++ b/src/backend/backend.pro
 @@ -12,6 +12,9 @@ isEmpty(USE_SDL_GAMEPAD): QT += gamepad
