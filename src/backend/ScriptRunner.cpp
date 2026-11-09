@@ -27,11 +27,20 @@
 #include <QStringBuilder>
 #include <vector>
 
+#ifdef Q_OS_ANDROID
+#include "platform/AndroidHelpers.h"
+#endif
+
 
 namespace {
 std::vector<QString> find_scripts_in(const QString& dirname)
 {
+    #ifdef Q_OS_ANDROID
+    constexpr auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    #else
     constexpr auto filters = QDir::Files | QDir::Readable | QDir::Executable | QDir::NoDotAndDotDot;
+    #endif
+
     constexpr auto flags = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
 
     Q_ASSERT(!dirname.isEmpty());
@@ -66,7 +75,13 @@ void execute_all(const std::vector<QString>& paths, const QStringList& args)
             .arg(i + 1, num_field_width)
             .arg(paths.size())
             .arg(paths[i]));
+        #ifdef Q_OS_ANDROID
+        QStringList cmd { QStringLiteral("/system/bin/sh"), paths[i] };
+        cmd.append(args);
+        android::run_script(cmd);
+        #else
         QProcess::execute(paths[i], args);
+        #endif
     }
 }
 } // namespace
