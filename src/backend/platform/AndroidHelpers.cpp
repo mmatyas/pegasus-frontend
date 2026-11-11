@@ -156,6 +156,24 @@ QString run_am_call(const QStringList& args)
     return result_obj.toString();
 }
 
+int run_script(const QStringList& args)
+{
+    QAndroidJniEnvironment jni_env;
+
+    std::vector<QAndroidJniObject> str_objs;
+    str_objs.reserve(args.length());
+    for (const QString& arg : args)
+        str_objs.emplace_back(QAndroidJniObject::fromString(arg));
+
+    jobjectArray jni_arr = jni_env->NewObjectArray(args.size(), jni_env->FindClass("java/lang/String"), nullptr);
+    for (size_t i = 0; i < str_objs.size(); i++)
+        jni_env->SetObjectArrayElement(jni_arr, i, str_objs.at(i).object<jstring>());
+
+    static constexpr auto JNI_METHOD = "runScript";
+    static constexpr auto JNI_SIGNATURE = "([Ljava/lang/String;)I";
+    return QAndroidJniObject::callStaticMethod<jint>(jni_classname(), JNI_METHOD, JNI_SIGNATURE, jni_arr);
+}
+
 QString to_content_uri(const QString& path)
 {
     static constexpr auto JNI_METHOD = "toContentUri";

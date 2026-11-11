@@ -255,6 +255,27 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         return null;
     }
 
+    public static int runScript(String[] args) {
+        try {
+            final ProcessBuilder pb = new ProcessBuilder(args);
+            pb.redirectErrorStream(true);
+            final Process proc = pb.start();
+
+            // consume output so a full pipe can't block the script
+            final java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(proc.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null)
+                android.util.Log.i("Pegasus/script", line);
+
+            return proc.waitFor();
+        }
+        catch (Exception e) {
+            android.util.Log.w("Pegasus/script", e.toString());
+            return -1;
+        }
+    }
+
     public static String toContentUri(String path) {
         final Uri uri = FileProvider.getUriForFile(
             m_self,
