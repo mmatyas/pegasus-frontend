@@ -44,6 +44,16 @@ std::vector<QString> find_metafiles_in(const QString& dir_path)
 
     std::vector<QString> result;
 
+    QDir dir(dir_path);
+
+    // look for standalone files first, to avoid reading the entire directory
+    if (dir.exists("metadata.pegasus.txt")) {
+        return { QDir::cleanPath(dir_path + QDir::separator() + "metadata.pegasus.txt") };
+    } else if (dir.exists("metadata.txt")) {
+        return { QDir::cleanPath(dir_path + QDir::separator() + "metadata.txt") };
+    }
+
+    // else look for wildcard metadata files
     QDirIterator dir_it(dir_path, dir_filters, dir_flags);
     while (dir_it.hasNext()) {
         dir_it.next();
