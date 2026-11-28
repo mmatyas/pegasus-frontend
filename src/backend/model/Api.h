@@ -23,6 +23,7 @@
 #include "model/device/DeviceInfo.h"
 #include "model/keys/Keys.h"
 #include "model/memory/Memory.h"
+#include "model/secondary/SecondaryScreen.h"
 #include "providers/ProviderManager.h"
 #include "utils/QmlHelpers.h"
 
@@ -39,6 +40,7 @@ class ApiObject : public QObject {
 
     QML_CONST_PROPERTY(model::DeviceInfo, device)
     QML_CONST_PROPERTY(model::Keys, keys)
+    QML_CONST_PROPERTY(model::SecondaryScreen, secondary)
     QML_READONLY_PROPERTY(model::Memory, memory)
     Q_PROPERTY(ObjectListModel* collections READ collections CONSTANT)
     Q_PROPERTY(ObjectListModel* allGames READ allGames CONSTANT)
