@@ -84,6 +84,7 @@ android {
         platform/android/res/mipmap-xhdpi/banner.png \
         platform/android/src/org/pegasus_frontend/android/App.java \
         platform/android/src/org/pegasus_frontend/android/BatteryInfo.java \
+        platform/android/src/org/pegasus_frontend/android/DualScreen.java \
         platform/android/src/org/pegasus_frontend/android/IntentHelper.java \
         platform/android/src/org/pegasus_frontend/android/LaunchFileProvider.java \
         platform/android/src/org/pegasus_frontend/android/MainActivity.java \

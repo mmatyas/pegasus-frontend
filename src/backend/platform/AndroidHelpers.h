@@ -18,6 +18,8 @@
 #pragma once
 
 #include <QString>
+#include <QImage>
+#include <QByteArray>
 
 
 namespace android {
@@ -35,5 +37,13 @@ QString run_am_call(const QStringList&);
 int run_script(const QStringList&);
 QString to_content_uri(const QString&);
 QString to_document_uri(const QString&);
+
+bool has_secondary_display();
+int secondary_width();
+int secondary_height();
+void secondary_show();
+// Returns false if the frame was dropped (the Android side is still busy)
+bool secondary_push_frame(const QImage& rgba_premultiplied);
+void secondary_hide();
 
 } // namespace android

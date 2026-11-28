@@ -47,6 +47,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import android.hardware.display.DisplayManager;
+import android.view.Display;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.concurrent.atomic.AtomicBoolean;
+import android.graphics.Point;
+import android.os.Handler;
+import android.os.Looper;
 
 
 public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity {
@@ -54,12 +62,15 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
     private static PackageManager m_pm;
     private static int m_icon_density;
 
+    private static DualScreen m_presentation;
+
 
     @Override
     protected void onStart() {
         super.onStart();
         m_self = this;
         m_pm = getPackageManager();
+        registerDisplayListener();
 
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         m_icon_density = am.getLauncherLargeIconDensity();
@@ -193,8 +204,8 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
 
     public static void rememberGrantedPath(Uri uri) {
         m_self
-            .getContentResolver()
-            .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                .getContentResolver()
+                .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
 
@@ -227,8 +238,8 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
         final int batLevel = batIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         final int batScale = batIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         final float batPercent = (batLevel >= 0 && batScale > 0)
-            ? batLevel / (float) batScale
-            : Float.NaN;
+                ? batLevel / (float) batScale
+                : Float.NaN;
 
         return new BatteryInfo(hasBattery, batPlugged, batCharged, batPercent);
     }
@@ -278,9 +289,180 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity 
 
     public static String toContentUri(String path) {
         final Uri uri = FileProvider.getUriForFile(
-            m_self,
-            "org.pegasus_frontend.android.files",
-            new File(path));
+                m_self,
+                m_self.getPackageName() + ".files",
+                new File(path));
         return uri.toString();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (m_display_listener != null) {
+            final DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+            dm.unregisterDisplayListener(m_display_listener);
+            m_display_listener = null;
+        }
+        if (m_presentation != null) {
+            m_presentation.dismiss();
+            m_presentation = null;
+        }
+        super.onDestroy();
+    }
+
+    // ---- Secondary display (dual screen) support ----
+
+    // ---- Frame transport: the Qt thread writes, the UI thread reads ----
+    private static ByteBuffer m_frame_buf;
+    private static int m_frame_w, m_frame_h;
+    private static Bitmap m_frame_bmp;   // last frame, kept to paint a Presentation shown late
+    private static final AtomicBoolean m_frame_busy = new AtomicBoolean(false);
+    private static native void nativeDisplaysChanged();
+    private static DisplayManager.DisplayListener m_display_listener;
+
+    private static Display secondaryDisplay() {
+        if (m_self == null)
+            return null;
+        final DisplayManager dm = (DisplayManager) m_self.getSystemService(Context.DISPLAY_SERVICE);
+        final Display[] displays = dm.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION);
+        return displays.length > 0 ? displays[0] : null;
+    }
+
+    private void registerDisplayListener() {
+        if (m_display_listener != null)
+            return;
+
+        m_display_listener = new DisplayManager.DisplayListener() {
+            @Override public void onDisplayAdded(int displayId) { notifyDisplaysChanged(); }
+            @Override public void onDisplayRemoved(int displayId) { notifyDisplaysChanged(); }
+            @Override public void onDisplayChanged(int displayId) { notifyDisplaysChanged(); }
+        };
+        final DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        dm.registerDisplayListener(m_display_listener, new Handler(Looper.getMainLooper()));
+    }
+
+    private static void notifyDisplaysChanged() {
+        try {
+            nativeDisplaysChanged();
+        } catch (UnsatisfiedLinkError e) {
+            android.util.Log.w("Pegasus/dualscreen", "nativeDisplaysChanged not linked: " + e);
+        }
+    }
+
+    // True if Pegasus is the default home app (launcher)
+    private static boolean isDefaultLauncher() {
+        final Intent home = new Intent(Intent.ACTION_MAIN);
+        home.addCategory(Intent.CATEGORY_HOME);
+        final ResolveInfo info = m_pm.resolveActivity(home, PackageManager.MATCH_DEFAULT_ONLY);
+        return info != null
+                && info.activityInfo != null
+                && m_self.getPackageName().equals(info.activityInfo.packageName);
+    }
+
+    public static boolean secondaryAvailable() {
+        return secondaryDisplay() != null;
+    }
+
+    public static int secondaryWidth() {
+        final Display display = secondaryDisplay();
+        if (display == null)
+            return 0;
+        final Point size = new Point();
+        display.getRealSize(size);
+        return size.x;
+    }
+
+    public static int secondaryHeight() {
+        final Display display = secondaryDisplay();
+        if (display == null)
+            return 0;
+        final Point size = new Point();
+        display.getRealSize(size);
+        return size.y;
+    }
+
+    public static void secondaryShow() {
+        if (m_self == null)
+            return;
+
+        m_self.runOnUiThread(() -> {
+            final Display display = secondaryDisplay();
+            if (display == null)
+                return;
+
+            if (m_presentation != null) {
+                if (m_presentation.isShowing())
+                    return;
+                m_presentation = null;
+            }
+
+            try {
+                m_presentation = new DualScreen(m_self, display, isDefaultLauncher());
+                m_presentation.show();
+                if (m_frame_bmp != null)
+                    m_presentation.showBitmap(m_frame_bmp);
+            } catch (Exception e) {
+                android.util.Log.w("Pegasus/dualscreen", e.toString());
+                m_presentation = null;
+            }
+        });
+    }
+
+    public static void secondaryHide() {
+        if (m_self == null)
+            return;
+
+        m_self.runOnUiThread(() -> {
+            m_frame_bmp = null;
+            if (m_presentation != null) {
+                m_presentation.dismiss();
+                m_presentation = null;
+            }
+        });
+    }
+
+    // Qt thread. Returns null if the previous frame is still being consumed (drop this one).
+    public static ByteBuffer secondaryBeginFrame(int w, int h) {
+        if (!m_frame_busy.compareAndSet(false, true))
+            return null;
+        if (m_frame_buf == null || m_frame_w != w || m_frame_h != h) {
+            m_frame_buf = ByteBuffer.allocateDirect(w * h * 4).order(ByteOrder.nativeOrder());
+            m_frame_w = w;
+            m_frame_h = h;
+        }
+        return m_frame_buf;
+    }
+
+    // Qt thread. Gives up the buffer without showing it.
+    public static void secondaryAbortFrame() {
+        m_frame_busy.set(false);
+    }
+
+    // Qt thread. The buffer has been filled.
+    public static void secondaryCommitFrame() {
+        if (m_self == null) {
+            m_frame_busy.set(false);
+            return;
+        }
+        m_self.runOnUiThread(() -> {
+            try {
+                applyFrame();
+            } finally {
+                m_frame_busy.set(false);
+            }
+        });
+    }
+
+    // UI thread only
+    private static void applyFrame() {
+        final int w = m_frame_w;
+        final int h = m_frame_h;
+        if (m_frame_bmp == null || m_frame_bmp.getWidth() != w || m_frame_bmp.getHeight() != h)
+            m_frame_bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+        m_frame_buf.rewind();
+        m_frame_bmp.copyPixelsFromBuffer(m_frame_buf);
+
+        if (m_presentation != null && m_presentation.isShowing())
+            m_presentation.showBitmap(m_frame_bmp);
     }
 }

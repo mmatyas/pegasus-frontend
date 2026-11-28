@@ -25,6 +25,8 @@
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <QtAndroidExtras/QAndroidJniObject>
 #include <QUrl>
+#include <QImage>
+#include <cstring>
 
 
 namespace {
@@ -226,4 +228,64 @@ QString to_document_uri(const QString& path)
     return uri_str;
 }
 
+bool has_secondary_display()
+{
+    static constexpr auto JNI_METHOD = "secondaryAvailable";
+    static constexpr auto JNI_SIGNATURE = "()Z";
+    return QAndroidJniObject::callStaticMethod<jboolean>(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+}
+
+int secondary_width()
+{
+    static constexpr auto JNI_METHOD = "secondaryWidth";
+    static constexpr auto JNI_SIGNATURE = "()I";
+    return QAndroidJniObject::callStaticMethod<jint>(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+}
+
+int secondary_height()
+{
+    static constexpr auto JNI_METHOD = "secondaryHeight";
+    static constexpr auto JNI_SIGNATURE = "()I";
+    return QAndroidJniObject::callStaticMethod<jint>(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+}
+
+void secondary_show()
+{
+    static constexpr auto JNI_METHOD = "secondaryShow";
+    static constexpr auto JNI_SIGNATURE = "()V";
+    QAndroidJniObject::callStaticMethod<void>(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+}
+
+bool secondary_push_frame(const QImage& img)
+{
+    QAndroidJniEnvironment env;
+    QAndroidJniObject buffer = QAndroidJniObject::callStaticObjectMethod(
+            jni_classname(), "secondaryBeginFrame", "(II)Ljava/nio/ByteBuffer;",
+            static_cast<jint>(img.width()), static_cast<jint>(img.height()));
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return false;
+    }
+    if (!buffer.isValid())
+        return false;  // the previous frame is still being consumed
+
+    void* const dst = env->GetDirectBufferAddress(buffer.object());
+    const jlong capacity = env->GetDirectBufferCapacity(buffer.object());
+    const qint64 size = img.sizeInBytes();
+    if (!dst || capacity < size || img.bytesPerLine() != img.width() * 4) {
+        QAndroidJniObject::callStaticMethod<void>(jni_classname(), "secondaryAbortFrame", "()V");
+        return false;
+    }
+
+    std::memcpy(dst, img.constBits(), static_cast<size_t>(size));
+    QAndroidJniObject::callStaticMethod<void>(jni_classname(), "secondaryCommitFrame", "()V");
+    return true;
+}
+
+void secondary_hide()
+{
+    static constexpr auto JNI_METHOD = "secondaryHide";
+    static constexpr auto JNI_SIGNATURE = "()V";
+    QAndroidJniObject::callStaticMethod<void>(jni_classname(), JNI_METHOD, JNI_SIGNATURE);
+}
 } // namespace android
