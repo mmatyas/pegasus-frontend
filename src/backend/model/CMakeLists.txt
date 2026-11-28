@@ -54,6 +54,8 @@ target_sources(pegasus-backend PRIVATE
     keys/Keys.h
     memory/Memory.cpp
     memory/Memory.h
+        secondary/SecondaryScreen.cpp
+        secondary/SecondaryScreen.h
 )
 
 

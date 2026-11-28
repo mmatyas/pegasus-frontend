@@ -30,6 +30,8 @@ ApiObject::ApiObject(const backend::CliArgs&, QObject* parent)
 {
     connect(&m_memory, &model::Memory::dataChanged,
             this, &ApiObject::memoryChanged);
+
+    m_secondary.setApi(this);
 }
 
 void ApiObject::clearGameData()
